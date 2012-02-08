@@ -115,7 +115,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Tests that check the correct decoding of GML 3 geometry elements.
+ * Tests that check the correct parsing of GML 3 geometry elements.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -1001,7 +1001,7 @@ public class GML3GeometryReaderTest {
         assertEquals( CRSManager.lookup( "EPSG:4326" ), geom.getCoordinateSystem() );
 
         List<Property> props = geom.getProperties();
-        assertEquals( 9, props.size() );
+        assertEquals( 12, props.size() );
         assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
         assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
         assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
@@ -1011,6 +1011,9 @@ public class GML3GeometryReaderTest {
         assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
         assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
         assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+        assertEquals( new QName( aixmNs, "geoidUndulation" ), props.get( 9 ).getName() );
+        assertEquals( new QName( aixmNs, "verticalDatum" ), props.get( 10 ).getName() );
+        assertEquals( new QName( aixmNs, "verticalAccuracy" ), props.get( 11 ).getName() );
 
         assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
                       getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
@@ -1024,6 +1027,11 @@ public class GML3GeometryReaderTest {
         assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
         assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
         assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
+        assertEquals( "3.22", getPrimitive( "aixm:geoidUndulation/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
+        assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
+        assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );        
     }
 
     @Test
@@ -1068,7 +1076,7 @@ public class GML3GeometryReaderTest {
         Curve geom = (Curve) readAIXMGeometry( "AIXMElevatedCurve.gml" );
 
         List<Property> props = geom.getProperties();
-        assertEquals( 9, props.size() );
+        assertEquals( 12, props.size() );
         assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
         assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
         assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
@@ -1078,6 +1086,9 @@ public class GML3GeometryReaderTest {
         assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
         assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
         assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+        assertEquals( new QName( aixmNs, "geoidUndulation" ), props.get( 9 ).getName() );
+        assertEquals( new QName( aixmNs, "verticalDatum" ), props.get( 10 ).getName() );
+        assertEquals( new QName( aixmNs, "verticalAccuracy" ), props.get( 11 ).getName() );
 
         assertEquals( "Example for metadata: Ce curve ne pas une GML curve, c'est une AIXM curve.",
                       getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
@@ -1091,6 +1102,11 @@ public class GML3GeometryReaderTest {
         assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
         assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
         assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
+        assertEquals( "3.22", getPrimitive( "aixm:geoidUndulation/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
+        assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
+        assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );        
     }
 
     @Test
@@ -1135,7 +1151,7 @@ public class GML3GeometryReaderTest {
         Surface geom = (Surface) readAIXMGeometry( "AIXMElevatedSurface.gml" );
 
         List<Property> props = geom.getProperties();
-        assertEquals( 9, props.size() );
+        assertEquals( 12, props.size() );
         assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
         assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
         assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
@@ -1145,6 +1161,9 @@ public class GML3GeometryReaderTest {
         assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
         assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
         assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+        assertEquals( new QName( aixmNs, "geoidUndulation" ), props.get( 9 ).getName() );
+        assertEquals( new QName( aixmNs, "verticalDatum" ), props.get( 10 ).getName() );
+        assertEquals( new QName( aixmNs, "verticalAccuracy" ), props.get( 11 ).getName() );
 
         assertEquals( "Example for metadata: Ce surface ne pas une GML surface, c'est une AIXM surface.",
                       getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
@@ -1158,6 +1177,11 @@ public class GML3GeometryReaderTest {
         assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
         assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
         assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
+        assertEquals( "3.22", getPrimitive( "aixm:geoidUndulation/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
+        assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
+        assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );        
     }
 
     private PrimitiveValue getPrimitive( String xpath, GMLObject object )

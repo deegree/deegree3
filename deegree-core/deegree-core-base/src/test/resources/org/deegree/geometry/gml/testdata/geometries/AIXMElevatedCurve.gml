@@ -21,4 +21,7 @@
   <horizontalAccuracy uom="M">1.0</horizontalAccuracy>
   <annotation xsi:nil="true" nilReason="inapplicable" />
   <elevation uom="M">47.11</elevation>
+  <geoidUndulation uom="M">3.22</geoidUndulation>
+  <verticalDatum>NAVD88</verticalDatum>
+  <verticalAccuracy uom="M">2.0</verticalAccuracy>  
 </ElevatedCurve>
