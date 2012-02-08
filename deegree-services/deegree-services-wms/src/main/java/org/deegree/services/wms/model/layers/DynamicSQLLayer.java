@@ -64,6 +64,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
@@ -165,7 +166,8 @@ public class DynamicSQLLayer extends Layer {
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
         // TODO
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
 
         LinkedList<Style> defStyles = new LinkedList<Style>();
         for ( Integer code : symbolCodes ) {

@@ -55,6 +55,7 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -128,9 +129,9 @@ class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
                 Iterator<Feature> iter = wfsFc.getMembers();
                 while ( iter.hasNext() ) {
                     Feature feature = iter.next();
+                    XPathEvaluator<?> evaluator = new FeatureXPathEvaluator( GMLVersion.GML_32 );
                     LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
-                                                                                                         new FeatureXPathEvaluator(
-                                                                                                                                    GMLVersion.GML_32 ) );
+                                                                                                         (XPathEvaluator<Feature>) evaluator );
                     for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {
                         for ( Geometry geom : triple.second ) {
                             renderer.render( triple.first, geom );

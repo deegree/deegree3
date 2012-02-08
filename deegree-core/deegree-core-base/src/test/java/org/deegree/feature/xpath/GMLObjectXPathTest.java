@@ -71,14 +71,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the correct evaluation of {@link FeatureXPath} expressions.
+ * Tests the correct evaluation of {@link GMLObjectXPath} expressions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeatureXPathTest {
+public class GMLObjectXPathTest {
 
     private static final String BASE_DIR = "../../gml/feature/testdata/features/";
 

@@ -36,7 +36,6 @@
 package org.deegree.feature.xpath;
 
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.feature.Feature;
 
 /**
  * {@link XPathNode} that represents an XML document node.
@@ -46,11 +45,11 @@ import org.deegree.feature.Feature;
  * 
  * @version $Revision$, $Date$
  */
-class DocumentNode implements XPathNode<Feature> {
+class DocumentNode implements XPathNode<GMLObject> {
 
-    private final GMLObjectNode<Feature, ? extends GMLObject> rootNode;
+    private final GMLObjectNode<GMLObject, ? extends GMLObject> rootNode;
 
-    DocumentNode( GMLObjectNode<Feature, ? extends GMLObject> rootNode ) {
+    DocumentNode( GMLObjectNode<GMLObject, ? extends GMLObject> rootNode ) {
         this.rootNode = rootNode;
     }
 
@@ -63,12 +62,12 @@ class DocumentNode implements XPathNode<Feature> {
         return null;
     }
 
-    public GMLObjectNode<Feature, ? extends GMLObject> getRootNode() {
+    public GMLObjectNode<GMLObject, ? extends GMLObject> getRootNode() {
         return rootNode;
     }
 
     @Override
-    public Feature getValue() {
+    public GMLObject getValue() {
         return rootNode.getValue();
     }
 }

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
+import static java.util.Collections.emptyList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +105,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     private GMLObjectType type;
 
     private List<Property> props;
-    
+
     /** Reference to a coordinate system. */
     protected ICRS crs;
 
@@ -304,13 +306,24 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public List<Property> getProperties() {
+        if ( props == null ) {
+            return emptyList();
+        }
         return props;
     }
-    
+
     @Override
     public List<Property> getProperties( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
+        if ( props == null ) {
+            return emptyList();
+        }
+        List<Property> namedProps = new ArrayList<Property>( props.size() );
+        for ( Property property : props ) {
+            if ( propName.equals( property.getName() ) ) {
+                namedProps.add( property );
+            }
+        }
+        return namedProps;
     }
 
     @Override

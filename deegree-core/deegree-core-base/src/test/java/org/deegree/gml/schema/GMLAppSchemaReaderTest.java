@@ -39,6 +39,7 @@ import static javax.xml.namespace.QName.valueOf;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
@@ -189,13 +190,13 @@ public class GMLAppSchemaReaderTest {
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
         FeatureCollectionType ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/gml}_FeatureCollection" ) );
-        System.out.println (ft);
+        System.out.println( ft );
         ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/cite/geometry}GeometryFeatureCollection" ) );
-        System.out.println (ft);
+        System.out.println( ft );
         List<PropertyType> newPropertyDecls = schema.getNewPropertyDecls( ft );
-        System.out.println (newPropertyDecls.size());
+        System.out.println( newPropertyDecls.size() );
         for ( PropertyType pt : newPropertyDecls ) {
-            System.out.println (pt);    
+            System.out.println( pt );
         }
     }
 
@@ -321,42 +322,114 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
-    public void testAIXMElevatedPoint()
+    public void testAIXMCustomGeometryDeclarations()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
         String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
 
-        QName elevatedCurveName = QName.valueOf( "{http://www.aixm.aero/schema/5.1}ElevatedCurve" );
-        GMLObjectType gt = schema.getGeometryType( elevatedCurveName );
+        // {http://www.aixm.aero/schema/5.1}Point
+        GMLObjectType gt = schema.getGeometryType( new QName( aixmNs, "Point" ) );
+        Assert.assertEquals( 9, gt.getPropertyDeclarations().size() );
+        assertPropertyType( gt, 0, new QName( GML3_2_NS, "metaDataProperty" ), 0, -1 );
+        assertPropertyType( gt, 1, new QName( GML3_2_NS, "description" ), 0, 1 );
+        assertPropertyType( gt, 2, new QName( GML3_2_NS, "descriptionReference" ), 0, 1 );
+        assertPropertyType( gt, 3, new QName( GML3_2_NS, "identifier" ), 0, 1 );
+        assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
+        // gml:pos/gml:coordinates are actually part of a choice (that's why minOccurs is 1)
+        assertPropertyType( gt, 5, new QName( GML3_2_NS, "pos" ), 1, 1 );
+        assertPropertyType( gt, 6, new QName( GML3_2_NS, "coordinates" ), 1, 1 );       
+        assertPropertyType( gt, 7, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 8, new QName( aixmNs, "annotation" ), 0, -1 );
+
+        // {http://www.aixm.aero/schema/5.1}ElevatedPoint
+        gt = schema.getGeometryType( new QName( aixmNs, "ElevatedPoint" ) );
+        Assert.assertEquals( 14, gt.getPropertyDeclarations().size() );
+        assertPropertyType( gt, 0, new QName( GML3_2_NS, "metaDataProperty" ), 0, -1 );
+        assertPropertyType( gt, 1, new QName( GML3_2_NS, "description" ), 0, 1 );
+        assertPropertyType( gt, 2, new QName( GML3_2_NS, "descriptionReference" ), 0, 1 );
+        assertPropertyType( gt, 3, new QName( GML3_2_NS, "identifier" ), 0, 1 );
+        assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
+        // gml:pos/gml:coordinates are actually part of a choice (that's why minOccurs is 1)
+        assertPropertyType( gt, 5, new QName( GML3_2_NS, "pos" ), 1, 1 );
+        assertPropertyType( gt, 6, new QName( GML3_2_NS, "coordinates" ), 1, 1 );
+        assertPropertyType( gt, 7, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 8, new QName( aixmNs, "annotation" ), 0, -1 );
+        assertPropertyType( gt, 9, new QName( aixmNs, "elevation" ), 0, 1 );
+        assertPropertyType( gt, 10, new QName( aixmNs, "geoidUndulation" ), 0, 1 );
+        assertPropertyType( gt, 11, new QName( aixmNs, "verticalDatum" ), 0, 1 );
+        assertPropertyType( gt, 12, new QName( aixmNs, "verticalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 13, new QName( aixmNs, "extension" ), 0, -1 );
+
+        // {http://www.aixm.aero/schema/5.1}Curve
+        gt = schema.getGeometryType( new QName( aixmNs, "Curve" ) );
+        Assert.assertEquals( 8, gt.getPropertyDeclarations().size() );
+        assertPropertyType( gt, 0, new QName( GML3_2_NS, "metaDataProperty" ), 0, -1 );
+        assertPropertyType( gt, 1, new QName( GML3_2_NS, "description" ), 0, 1 );
+        assertPropertyType( gt, 2, new QName( GML3_2_NS, "descriptionReference" ), 0, 1 );
+        assertPropertyType( gt, 3, new QName( GML3_2_NS, "identifier" ), 0, 1 );
+        assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
+        assertPropertyType( gt, 5, new QName( GML3_2_NS, "segments" ), 1, 1 );
+        assertPropertyType( gt, 6, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 7, new QName( aixmNs, "annotation" ), 0, -1 );
+
+        // {http://www.aixm.aero/schema/5.1}ElevatedCurve
+        gt = schema.getGeometryType( new QName( aixmNs, "ElevatedCurve" ) );
         Assert.assertEquals( 13, gt.getPropertyDeclarations().size() );
-        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}metaDataProperty" ),
-                      gt.getPropertyDeclarations().get( 0 ).getName() );
-        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}description" ),
-                      gt.getPropertyDeclarations().get( 1 ).getName() );
-        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}descriptionReference" ),
-                      gt.getPropertyDeclarations().get( 2 ).getName() );
-        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}identifier" ),
-                      gt.getPropertyDeclarations().get( 3 ).getName() );
-        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}name" ),
-                      gt.getPropertyDeclarations().get( 4 ).getName() );
-        assertEquals( valueOf( "{http://www.opengis.net/gml/3.2}segments" ),
-                      gt.getPropertyDeclarations().get( 5 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}horizontalAccuracy" ),
-                      gt.getPropertyDeclarations().get( 6 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}annotation" ),
-                      gt.getPropertyDeclarations().get( 7 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}elevation" ),
-                      gt.getPropertyDeclarations().get( 8 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}geoidUndulation" ),
-                      gt.getPropertyDeclarations().get( 9 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}verticalDatum" ),
-                      gt.getPropertyDeclarations().get( 10 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}verticalAccuracy" ),
-                      gt.getPropertyDeclarations().get( 11 ).getName() );
-        assertEquals( valueOf( "{http://www.aixm.aero/schema/5.1}extension" ),
-                      gt.getPropertyDeclarations().get( 12 ).getName() );
+        assertPropertyType( gt, 0, new QName( GML3_2_NS, "metaDataProperty" ), 0, -1 );
+        assertPropertyType( gt, 1, new QName( GML3_2_NS, "description" ), 0, 1 );
+        assertPropertyType( gt, 2, new QName( GML3_2_NS, "descriptionReference" ), 0, 1 );
+        assertPropertyType( gt, 3, new QName( GML3_2_NS, "identifier" ), 0, 1 );
+        assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
+        assertPropertyType( gt, 5, new QName( GML3_2_NS, "segments" ), 1, 1 );
+        assertPropertyType( gt, 6, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 7, new QName( aixmNs, "annotation" ), 0, -1 );
+        assertPropertyType( gt, 8, new QName( aixmNs, "elevation" ), 0, 1 );
+        assertPropertyType( gt, 9, new QName( aixmNs, "geoidUndulation" ), 0, 1 );
+        assertPropertyType( gt, 10, new QName( aixmNs, "verticalDatum" ), 0, 1 );
+        assertPropertyType( gt, 11, new QName( aixmNs, "verticalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 12, new QName( aixmNs, "extension" ), 0, -1 );
+        
+        // {http://www.aixm.aero/schema/5.1}Surface
+        gt = schema.getGeometryType( new QName( aixmNs, "Surface" ) );
+        Assert.assertEquals( 8, gt.getPropertyDeclarations().size() );
+        assertPropertyType( gt, 0, new QName( GML3_2_NS, "metaDataProperty" ), 0, -1 );
+        assertPropertyType( gt, 1, new QName( GML3_2_NS, "description" ), 0, 1 );
+        assertPropertyType( gt, 2, new QName( GML3_2_NS, "descriptionReference" ), 0, 1 );
+        assertPropertyType( gt, 3, new QName( GML3_2_NS, "identifier" ), 0, 1 );
+        assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
+        assertPropertyType( gt, 5, new QName( GML3_2_NS, "patches" ), 1, 1 );
+        assertPropertyType( gt, 6, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 7, new QName( aixmNs, "annotation" ), 0, -1 );
+
+        // {http://www.aixm.aero/schema/5.1}ElevatedSurface
+        gt = schema.getGeometryType( new QName( aixmNs, "ElevatedSurface" ) );
+        Assert.assertEquals( 13, gt.getPropertyDeclarations().size() );
+        assertPropertyType( gt, 0, new QName( GML3_2_NS, "metaDataProperty" ), 0, -1 );
+        assertPropertyType( gt, 1, new QName( GML3_2_NS, "description" ), 0, 1 );
+        assertPropertyType( gt, 2, new QName( GML3_2_NS, "descriptionReference" ), 0, 1 );
+        assertPropertyType( gt, 3, new QName( GML3_2_NS, "identifier" ), 0, 1 );
+        assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
+        assertPropertyType( gt, 5, new QName( GML3_2_NS, "patches" ), 1, 1 );
+        assertPropertyType( gt, 6, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 7, new QName( aixmNs, "annotation" ), 0, -1 );
+        assertPropertyType( gt, 8, new QName( aixmNs, "elevation" ), 0, 1 );
+        assertPropertyType( gt, 9, new QName( aixmNs, "geoidUndulation" ), 0, 1 );
+        assertPropertyType( gt, 10, new QName( aixmNs, "verticalDatum" ), 0, 1 );
+        assertPropertyType( gt, 11, new QName( aixmNs, "verticalAccuracy" ), 0, 1 );
+        assertPropertyType( gt, 12, new QName( aixmNs, "extension" ), 0, -1 );                
+    }
+
+    private void assertPropertyType( GMLObjectType geometryDecl, int propDeclIdx, QName propName, int minOccurs,
+                                     int maxOccurs ) {
+        PropertyType pt = geometryDecl.getPropertyDeclarations().get( propDeclIdx );
+        assertEquals( propName, pt.getName() );
+        assertEquals( minOccurs, pt.getMinOccurs() );
+        assertEquals( maxOccurs, pt.getMaxOccurs() );
+        assertEquals( propName.getLocalPart(), pt.getElementDecl().getName() );
+        assertEquals( propName.getNamespaceURI(), pt.getElementDecl().getNamespace() );
     }
 }

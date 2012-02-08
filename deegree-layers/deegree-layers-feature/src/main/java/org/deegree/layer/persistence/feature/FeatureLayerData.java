@@ -51,6 +51,7 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
 import org.deegree.layer.LayerData;
 import org.deegree.rendering.r2d.Renderer;
@@ -76,7 +77,7 @@ public class FeatureLayerData implements LayerData {
 
     private final Style style;
 
-    private FeatureXPathEvaluator evaluator;
+    private XPathEvaluator<?> evaluator;
 
     private final List<Query> queries;
 
@@ -104,7 +105,8 @@ public class FeatureLayerData implements LayerData {
 
             for ( Feature f : features ) {
                 try {
-                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate( f, evaluator );
+                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate( f,
+                                                                                                       (XPathEvaluator<Feature>) evaluator );
                     for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
                         if ( evald.first instanceof TextStyling ) {
                             textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );

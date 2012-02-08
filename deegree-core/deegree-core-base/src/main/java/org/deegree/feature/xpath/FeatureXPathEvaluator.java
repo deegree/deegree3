@@ -45,9 +45,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.feature.Feature;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
@@ -56,24 +56,24 @@ import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 
 /**
- * {@link XPathEvaluator} for {@link Feature} objects.
+ * {@link XPathEvaluator} for {@link GMLObject} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
+public class FeatureXPathEvaluator implements XPathEvaluator<GMLObject> {
 
     private final GMLVersion version;
 
-    private static Map<Feature, Map<ValueReference, TypedObjectNode[]>> EVAL_CACHE = null;
+    private static Map<GMLObject, Map<ValueReference, TypedObjectNode[]>> EVAL_CACHE = null;
 
     /**
      * temporary hack to enable caching again
      */
     public static void enableCache() {
-        EVAL_CACHE = synchronizedMap( new HashMap<Feature, Map<ValueReference, TypedObjectNode[]>>() );
+        EVAL_CACHE = synchronizedMap( new HashMap<GMLObject, Map<ValueReference, TypedObjectNode[]>>() );
     }
 
     /**
@@ -88,8 +88,8 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
     public TypedObjectNode[] eval( TypedObjectNode particle, ValueReference path )
                             throws FilterEvaluationException {
-        if ( particle instanceof Feature ) {
-            return eval( (Feature) particle, path );
+        if ( particle instanceof GMLObject ) {
+            return eval( (GMLObject) particle, path );
         }
         if ( particle instanceof ElementNode ) {
             return eval( (ElementNode) particle, path );
@@ -99,7 +99,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
     }
 
     @Override
-    public TypedObjectNode[] eval( Feature context, ValueReference propName )
+    public TypedObjectNode[] eval( GMLObject context, ValueReference propName )
                             throws FilterEvaluationException {
 
         // simple property with just a simple element step?
@@ -122,10 +122,10 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
                         }
                     }
                 }
-                XPath xpath = new FeatureXPath( propName.getAsText(), context, version );
+                XPath xpath = new GMLObjectXPath( propName.getAsText(), context, version );
                 xpath.setNamespaceContext( propName.getNsContext() );
                 List<?> selectedNodes;
-                selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature, Feature>( null, context, version ) );
+                selectedNodes = xpath.selectNodes( new GMLObjectNode<GMLObject, GMLObject>( null, context, version ) );
                 resultValues = new TypedObjectNode[selectedNodes.size()];
                 int i = 0;
                 for ( Object node : selectedNodes ) {
@@ -188,7 +188,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new FeatureXPath( propName.getAsText(), null, version );
+            XPath xpath = new GMLObjectXPath( propName.getAsText(), null, version );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
             selectedNodes = xpath.selectNodes( new XMLElementNode( null, element ) );
@@ -216,7 +216,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new FeatureXPath( propName.getAsText(), null, version );
+            XPath xpath = new GMLObjectXPath( propName.getAsText(), null, version );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
             selectedNodes = xpath.selectNodes( new PropertyNode( null, element ) );
@@ -240,7 +240,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
     }
 
     @Override
-    public String getId( Feature context ) {
+    public String getId( GMLObject context ) {
         return context.getId();
     }
 }

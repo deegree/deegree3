@@ -50,7 +50,7 @@ import org.deegree.commons.tom.gml.property.PropertyType;
  * <li>A (qualified) name</li>
  * <li>Minimum number of times that a property must be present in a corresponding feature instance (minOccurs)</li>
  * <li>Maximum number of times that a property must be present in a corresponding feature instance (maxOccurs)</li>
- * <li>The XML schema element delaration (optional)</li>
+ * <li>XML schema element delaration (optional)</li>
  * </ul>
  * </p>
  * 

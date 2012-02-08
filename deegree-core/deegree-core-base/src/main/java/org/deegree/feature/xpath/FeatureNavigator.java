@@ -88,9 +88,9 @@ class FeatureNavigator extends DefaultNavigator {
      *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
      *            properties such as "gml:name" are used)
      */
-    FeatureNavigator( Feature rootFeature, GMLVersion version ) {
+    FeatureNavigator( GMLObject rootFeature, GMLVersion version ) {
         if ( rootFeature != null ) {
-            this.documentNode = new DocumentNode( new GMLObjectNode<Feature, Feature>( null, rootFeature, version ) );
+            this.documentNode = new DocumentNode( new GMLObjectNode<GMLObject, GMLObject>( null, rootFeature, version ) );
         }
         this.version = version;
         this.gmlNs = version.getNamespace();
@@ -468,7 +468,7 @@ class FeatureNavigator extends DefaultNavigator {
     @Override
     public XPath parseXPath( String xpath )
                             throws SAXPathException {
-        return new FeatureXPath( xpath, null, version );
+        return new GMLObjectXPath( xpath, null, version );
     }
 
     /**

@@ -64,6 +64,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
@@ -76,6 +77,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.dims.Dimension;
@@ -216,7 +218,8 @@ public class StatisticsLayer extends FeatureLayer {
                                                       gm.getPixelSize() );
 
         // TODO
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
 
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {

@@ -90,6 +90,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
@@ -303,7 +304,8 @@ public class FeatureLayer extends Layer {
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
         // TODO
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );

@@ -105,6 +105,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.LayerRef;
@@ -733,7 +734,7 @@ public class MapService {
                 Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
                 // TODO
-                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+                XPathEvaluator<?> evaluator = new FeatureXPathEvaluator( GML_31 );
 
                 Collection<LinkedList<Query>> qs = queries.values();
                 FeatureInputStream rs = null;
@@ -749,8 +750,8 @@ public class MapService {
                             FeatureLayer l = ftToLayer.get( name );
 
                             applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
-                            render( f, evaluator, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(),
-                                    gm.getResolution() );
+                            render( f, (XPathEvaluator<Feature>) evaluator, ftToStyle.get( name ), renderer,
+                                    textRenderer, gm.getScale(), gm.getResolution() );
                         }
                     } else {
                         LOG.warn( "No queries were found for the requested layers." );

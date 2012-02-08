@@ -77,6 +77,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -331,7 +332,8 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
                 Iterator<Feature> it = frs.iterator();
 
                 // TODO
-                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+                @SuppressWarnings({ "rawtypes", "unchecked" })
+                XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
 
                 sT = currentTimeMillis();
                 int index = 0;

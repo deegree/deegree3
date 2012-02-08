@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
@@ -43,6 +46,7 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -55,16 +59,22 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeGeometry;
@@ -920,7 +930,7 @@ public class GML3GeometryReaderTest {
         pv = (PrimitiveValue) nameProp1.getChildren().get( 0 );
         assertEquals( STRING, pv.getType().getBaseType() );
         assertEquals( "Point P1", pv.getValue() );
-        
+
         // gml:name
         assertEquals( QName.valueOf( "{http://www.opengis.net/gml}name" ), point.getProperties().get( 4 ).getName() );
         GenericXMLElement nameProp2 = (GenericXMLElement) point.getProperties().get( 4 ).getValue();
@@ -929,7 +939,7 @@ public class GML3GeometryReaderTest {
         pv = (PrimitiveValue) nameProp2.getChildren().get( 0 );
         assertEquals( STRING, pv.getType().getBaseType() );
         assertEquals( "P1", pv.getValue() );
-        
+
         // gml:name
         assertEquals( QName.valueOf( "{http://www.opengis.net/gml}name" ), point.getProperties().get( 5 ).getName() );
         GenericXMLElement nameProp3 = (GenericXMLElement) point.getProperties().get( 5 ).getValue();
@@ -937,49 +947,79 @@ public class GML3GeometryReaderTest {
         assertEquals( 1, nameProp3.getChildren().size() );
         pv = (PrimitiveValue) nameProp3.getChildren().get( 0 );
         assertEquals( STRING, pv.getType().getBaseType() );
-        assertEquals( "Point_P1", pv.getValue() );        
+        assertEquals( "Point_P1", pv.getValue() );
     }
 
     @Test
-    public void parseAIXMElevatedPoint()
+    public void parseAIXMPoint()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, TransformationException {
+                            IllegalAccessException, TransformationException, FilterEvaluationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Point point = (Point) readAIXMGeometry( "AIXMPoint.gml" );
+
+        assertEquals( 7.12, point.get0(), DELTA );
+        assertEquals( 50.72, point.get1(), DELTA );
+        assertEquals( 2, point.getCoordinateDimension() );
+        assertEquals( CRSManager.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
+
+        List<Property> props = point.getProperties();
+        assertEquals( 8, props.size() );
+        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+
+        assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
+                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", point ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", point ).getAsText() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", point ).getAsText() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", point ).getAsText() );
+        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", point ).getAsText() );
+        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", point ).getAsText() );
+        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", point ).getAsText() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", point ).getAsText() );
+    }
+
+    private PrimitiveValue getPrimitive( String xpath, GMLObject object )
+                            throws FilterEvaluationException {
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_32 );
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "gml", GML3_2_NS );
+        nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
+        ValueReference path = new ValueReference( xpath, nsContext );
+        TypedObjectNode[] eval = evaluator.eval( object, path );
+        assertEquals( 1, eval.length );
+        assertTrue( eval[0] instanceof PrimitiveValue );
+        return (PrimitiveValue) eval[0];
+    }
+
+    private Geometry readAIXMGeometry( String fileName )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
+                            XMLParsingException, UnknownCRSException {
 
         String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
 
-        String fileName = "Custom_AIXM_ElevatedPoint.gml";
         GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource( BASE_DIR + fileName ) );
         gmlStream.setApplicationSchema( schema );
 
         XMLStreamReader xmlReader = gmlStream.getXMLReader();
-        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
-        Assert.assertEquals( new QName( "http://www.aixm.aero/schema/5.1", "ElevatedPoint" ), xmlReader.getName() );
+        Assert.assertEquals( START_ELEMENT, xmlReader.getEventType() );
+        QName elName = xmlReader.getName();
         Assert.assertTrue( gmlStream.isGeometryElement() );
         Geometry geom = gmlStream.readGeometry();
-        List<Property> props = geom.getProperties();
-        Assert.assertNotNull( props );
-        Assert.assertEquals( 1, props.size() );
-        Assert.assertEquals( QName.valueOf( "{http://www.aixm.aero/schema/5.1}elevation" ), props.get( 0 ).getName() );
-        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
-        Assert.assertEquals( new QName( "http://www.aixm.aero/schema/5.1", "ElevatedPoint" ), xmlReader.getName() );
-
-        // XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-        // outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        // XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        // IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
-        // writer.setPrefix( "app", "http://www.deegree.org/app" );
-        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        // writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
-        // writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
-        // writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-        // writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        // GMLStreamWriter exporter = GMLOutputFactory.createGMLStreamWriter( GML_32, writer );
-        // exporter.write( geom );
-        // writer.flush();
-        // System.out.println( memoryWriter );
+        Assert.assertEquals( END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( elName, xmlReader.getName() );
+        return geom;
     }
 
     private GMLStreamReader getParser( String fileName )
