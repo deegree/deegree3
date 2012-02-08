@@ -770,8 +770,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( Exception e ) {
-            throw new IllegalArgumentException( "Could not creation revision date ('" + revisionDateString
-                                                + "'), cause: " + e.getMessage() );
+            throw new IllegalArgumentException( "Could not parse creation date ('" + creationDateString + "'), cause: "
+                                                + e.getMessage() );
         }
         qp.setCreationDate( date );
 
@@ -786,7 +786,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 date = null;
             }
         } catch ( Exception e ) {
-            throw new IllegalArgumentException( "Could not parse publication date ('" + revisionDateString
+            throw new IllegalArgumentException( "Could not parse publication date ('" + publicationDateString
                                                 + "'), cause: " + e.getMessage() );
         }
         qp.setPublicationDate( date );
