@@ -40,6 +40,8 @@ import java.util.List;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.feature.xpath.node.GMLObjectNode;
+import org.deegree.feature.xpath.node.PropertyNode;
 import org.jaxen.Context;
 import org.jaxen.Function;
 import org.jaxen.FunctionCallException;
@@ -65,7 +67,7 @@ public class ValueOf implements Function {
                     if ( o instanceof PropertyNode ) {
                         Property prop = ( (PropertyNode) o ).getValue();
                         GMLObject gmlObject = (GMLObject) prop.getValue();
-                        GMLObjectNode elNode = new GMLObjectNode( ( (PropertyNode) o ), gmlObject, null );
+                        GMLObjectNode elNode = new GMLObjectNode( ( (PropertyNode) o ), gmlObject );
                         values.add( elNode );
                     } else {
                         throw new FunctionCallException(
@@ -76,7 +78,7 @@ public class ValueOf implements Function {
             } else if ( arg instanceof PropertyNode ) {
                 Property prop = ( (PropertyNode) arg ).getValue();
                 GMLObject gmlObject = (GMLObject) prop.getValue();
-                GMLObjectNode elNode = new GMLObjectNode( ( (PropertyNode) arg ), gmlObject, null );
+                GMLObjectNode elNode = new GMLObjectNode( ( (PropertyNode) arg ), gmlObject );
                 values.add( elNode );
             } else {
                 throw new FunctionCallException( "Arguments of valueOf() must be feature properties, but found: "

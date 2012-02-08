@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.jaxen.JaxenConstants.EMPTY_ITERATOR;
 
 import java.util.ArrayList;
@@ -53,7 +55,14 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
-import org.deegree.gml.GMLVersion;
+import org.deegree.feature.xpath.node.AttributeNode;
+import org.deegree.feature.xpath.node.DocumentNode;
+import org.deegree.feature.xpath.node.ElementNode;
+import org.deegree.feature.xpath.node.GMLObjectNode;
+import org.deegree.feature.xpath.node.PrimitiveNode;
+import org.deegree.feature.xpath.node.PropertyNode;
+import org.deegree.feature.xpath.node.XMLElementNode;
+import org.deegree.feature.xpath.node.XPathNode;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
@@ -61,39 +70,30 @@ import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
 
 /**
- * <a href="http://jaxen.codehaus.org/">Jaxen</a> {@link DefaultNavigator} implementation for {@link Feature} objects.
+ * <a href="http://jaxen.codehaus.org/">Jaxen</a> {@link DefaultNavigator} implementation for {@link GMLObject} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-class FeatureNavigator extends DefaultNavigator {
+class GMLObjectNavigator extends DefaultNavigator {
 
     private static final long serialVersionUID = 5684363154723828577L;
 
     private DocumentNode documentNode;
 
-    private GMLVersion version;
-
-    private String gmlNs;
-
     /**
-     * Creates a new {@link FeatureNavigator} instance with a {@link Feature} that acts as the root of the navigation
+     * Creates a new {@link GMLObjectNavigator} instance with a {@link Feature} that acts as the root of the navigation
      * hierarchy.
      * 
-     * @param rootFeature
+     * @param root
      *            root of the navigation hierarchy (child of the document node), can be <code>null</code>
-     * @param version
-     *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
-     *            properties such as "gml:name" are used)
      */
-    FeatureNavigator( GMLObject rootFeature, GMLVersion version ) {
-        if ( rootFeature != null ) {
-            this.documentNode = new DocumentNode( new GMLObjectNode<GMLObject, GMLObject>( null, rootFeature, version ) );
+    GMLObjectNavigator( GMLObject root ) {
+        if ( root != null ) {
+            this.documentNode = new DocumentNode( new GMLObjectNode<GMLObject, GMLObject>( null, root ) );
         }
-        this.version = version;
-        this.gmlNs = version.getNamespace();
     }
 
     /**
@@ -110,10 +110,13 @@ class FeatureNavigator extends DefaultNavigator {
             GMLObjectNode<GMLObject, ?> gmlObjectNode = (GMLObjectNode<GMLObject, ?>) node;
             GMLObject object = gmlObjectNode.getValue();
             if ( object.getId() != null ) {
+                List<AttributeNode<?>> idAttrs = new ArrayList<AttributeNode<?>>( 4 );
                 PrimitiveValue id = new PrimitiveValue( object.getId() );
-                AttributeNode<GMLObject> gmlIdAttrNode = new AttributeNode<GMLObject>( gmlObjectNode,
-                                                                                       new QName( gmlNs, "id" ), id );
-                return new SingleObjectIterator( gmlIdAttrNode );
+                idAttrs.add( new AttributeNode<GMLObject>( gmlObjectNode, new QName( "fid" ), id ) );
+                idAttrs.add( new AttributeNode<GMLObject>( gmlObjectNode, new QName( "gid" ), id ) );
+                idAttrs.add( new AttributeNode<GMLObject>( gmlObjectNode, new QName( GMLNS, "id" ), id ) );
+                idAttrs.add( new AttributeNode<GMLObject>( gmlObjectNode, new QName( GML3_2_NS, "id" ), id ) );
+                return idAttrs.iterator();
             }
         } else if ( node instanceof PropertyNode ) {
             Object value = ( (PropertyNode) node ).getValue().getValue();
@@ -228,7 +231,7 @@ class FeatureNavigator extends DefaultNavigator {
         if ( node instanceof GMLObjectNode<?, ?> ) {
             GMLObjectNode<GMLObject, GMLObject> gmlObjectNode = (GMLObjectNode<GMLObject, GMLObject>) node;
             if ( gmlObjectNode.getValue() != null ) {
-                iter = new PropertyNodeIterator( gmlObjectNode, version );
+                iter = new PropertyNodeIterator( gmlObjectNode );
             }
         } else if ( node instanceof DocumentNode ) {
             iter = new SingleObjectIterator( ( (DocumentNode) node ).getRootNode() );
@@ -242,9 +245,9 @@ class FeatureNavigator extends DefaultNavigator {
                         xpathNodes.add( new XMLElementNode<Property>( propNode,
                                                                       (org.deegree.commons.tom.ElementNode) xmlNode ) );
                     } else if ( xmlNode instanceof GMLObject ) {
-                        xpathNodes.add( new GMLObjectNode<GMLObject, Property>( propNode, (GMLObject) xmlNode, version ) );
+                        xpathNodes.add( new GMLObjectNode<GMLObject, Property>( propNode, (GMLObject) xmlNode ) );
                     } else if ( xmlNode instanceof PrimitiveValue ) {
-                        xpathNodes.add( new TextNode<Property>( propNode, (PrimitiveValue) xmlNode ) );
+                        xpathNodes.add( new PrimitiveNode<Property>( propNode, (PrimitiveValue) xmlNode ) );
                     }
                 }
                 iter = xpathNodes.iterator();
@@ -252,16 +255,17 @@ class FeatureNavigator extends DefaultNavigator {
                 Object propValue = prop.getValue();
                 if ( propValue instanceof GMLObject ) {
                     GMLObject castNode = (GMLObject) propValue;
-                    iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode,
-                                                                                             version ) );
+                    iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode ) );
                 } else if ( propValue instanceof PrimitiveValue ) {
-                    iter = new SingleObjectIterator( new TextNode<Property>( (PropertyNode) node,
-                                                                             (PrimitiveValue) propValue ) );
+                    iter = new SingleObjectIterator( new PrimitiveNode<Property>( (PropertyNode) node,
+                                                                                  (PrimitiveValue) propValue ) );
                 } else {
                     // TODO remove this case
                     iter = new SingleObjectIterator(
-                                                     new TextNode<Property>( (PropertyNode) node,
-                                                                             new PrimitiveValue( propValue.toString() ) ) );
+                                                     new PrimitiveNode<Property>(
+                                                                                  (PropertyNode) node,
+                                                                                  new PrimitiveValue(
+                                                                                                      propValue.toString() ) ) );
                 }
             }
         } else if ( node instanceof XMLElementNode<?> ) {
@@ -276,11 +280,10 @@ class FeatureNavigator extends DefaultNavigator {
                 } else if ( xmlNode instanceof GMLObject ) {
                     xpathNodes.add( new GMLObjectNode<GMLObject, org.deegree.commons.tom.ElementNode>(
                                                                                                        xmlElementNode,
-                                                                                                       (GMLObject) xmlNode,
-                                                                                                       version ) );
+                                                                                                       (GMLObject) xmlNode ) );
                 } else if ( xmlNode instanceof PrimitiveValue ) {
-                    xpathNodes.add( new TextNode<org.deegree.commons.tom.ElementNode>( xmlElementNode,
-                                                                                       (PrimitiveValue) xmlNode ) );
+                    xpathNodes.add( new PrimitiveNode<org.deegree.commons.tom.ElementNode>( xmlElementNode,
+                                                                                            (PrimitiveValue) xmlNode ) );
                 }
             }
             iter = xpathNodes.iterator();
@@ -412,8 +415,8 @@ class FeatureNavigator extends DefaultNavigator {
     @Override
     public String getTextStringValue( Object obj ) {
         String value = null;
-        if ( obj instanceof TextNode<?> ) {
-            value = ( (TextNode<?>) obj ).getValue().getAsText();
+        if ( obj instanceof PrimitiveNode<?> ) {
+            value = ( (PrimitiveNode<?>) obj ).getValue().getAsText();
         }
         return value;
     }
@@ -452,7 +455,7 @@ class FeatureNavigator extends DefaultNavigator {
 
     @Override
     public boolean isText( Object obj ) {
-        return obj instanceof TextNode<?>;
+        return obj instanceof PrimitiveNode<?>;
     }
 
     /**
@@ -468,7 +471,7 @@ class FeatureNavigator extends DefaultNavigator {
     @Override
     public XPath parseXPath( String xpath )
                             throws SAXPathException {
-        return new GMLObjectXPath( xpath, null, version );
+        return new GMLObjectXPath( xpath, null );
     }
 
     /**

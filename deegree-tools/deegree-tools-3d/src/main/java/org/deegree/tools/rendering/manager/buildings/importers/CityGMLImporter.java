@@ -36,7 +36,6 @@
 
 package org.deegree.tools.rendering.manager.buildings.importers;
 
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +64,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
@@ -553,7 +552,7 @@ public class CityGMLImporter implements ModelImporter {
         nsContext.addNamespace( "cgml", NS );
         ValueReference propName = new ValueReference( "cgml:externalReference/cgml:informationSystem/text()", nsContext );
 
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
         TypedObjectNode[] tons;
         try {
             tons = evaluator.eval( building, propName );

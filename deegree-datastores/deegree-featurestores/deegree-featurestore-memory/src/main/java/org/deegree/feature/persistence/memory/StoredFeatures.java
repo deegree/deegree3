@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +61,7 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;
@@ -90,7 +89,7 @@ class StoredFeatures {
 
     private final ICRS storageCRS;
 
-    final FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+    final GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
 
     final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 

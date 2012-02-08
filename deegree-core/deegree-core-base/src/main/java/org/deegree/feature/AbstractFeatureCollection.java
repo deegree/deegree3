@@ -56,8 +56,6 @@ import org.deegree.geometry.Envelope;
  */
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
-    private boolean envelopeCalculated = false;
-
     /**
      * Creates a new {@link AbstractFeatureCollection} instance.
      * 

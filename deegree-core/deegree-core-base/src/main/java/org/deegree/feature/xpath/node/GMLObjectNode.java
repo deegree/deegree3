@@ -33,41 +33,52 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.xpath.node;
 
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.feature.Feature;
 
 /**
- * {@link XPathNode} that represents an XML document node.
+ * {@link ElementNode} that wraps a {@link GMLObject} and it's parent.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author:$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision:$, $Date:$
  */
-class DocumentNode implements XPathNode<GMLObject> {
+public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> extends ElementNode<V> {
 
-    private final GMLObjectNode<GMLObject, ? extends GMLObject> rootNode;
+    private XPathNode<P> parentNode;
 
-    DocumentNode( GMLObjectNode<GMLObject, ? extends GMLObject> rootNode ) {
-        this.rootNode = rootNode;
+    private V object;
+
+    public GMLObjectNode( XPathNode<P> parentNode, V object ) {
+        super( getName( object ) );
+        this.parentNode = parentNode;
+        this.object = object;
     }
 
-    public boolean isElement() {
-        return false;
+    private static QName getName( GMLObject object ) {
+        if ( object.getType() != null ) {
+            return object.getType().getName();
+        }
+        if ( object instanceof Feature ) {
+            return ( (Feature) object ).getName();
+        }
+        throw new IllegalArgumentException( "Creating GMLObjectNode from " + object.getClass()
+                                            + " needs implementation." );
     }
 
     @Override
-    public XPathNode<? extends GMLObject> getParent() {
-        return null;
-    }
-
-    public GMLObjectNode<GMLObject, ? extends GMLObject> getRootNode() {
-        return rootNode;
+    public XPathNode<P> getParent() {
+        return parentNode;
     }
 
     @Override
-    public GMLObject getValue() {
-        return rootNode.getValue();
+    public V getValue() {
+        return object;
     }
 }

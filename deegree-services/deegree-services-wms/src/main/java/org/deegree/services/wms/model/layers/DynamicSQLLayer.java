@@ -36,7 +36,6 @@
 package org.deegree.services.wms.model.layers;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -59,7 +58,7 @@ import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
@@ -167,7 +166,7 @@ public class DynamicSQLLayer extends Layer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
 
         LinkedList<Style> defStyles = new LinkedList<Style>();
         for ( Integer code : symbolCodes ) {

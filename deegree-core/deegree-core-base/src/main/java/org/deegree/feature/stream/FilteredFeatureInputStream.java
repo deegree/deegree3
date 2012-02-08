@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.stream;
 
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -43,7 +42,7 @@ import java.util.NoSuchElementException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 
@@ -89,7 +88,7 @@ public class FilteredFeatureInputStream implements FeatureInputStream {
         return new Iterator<Feature>() {
 
             // TODO
-            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+            GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
 
             Iterator<Feature> iter = rs.iterator();
 

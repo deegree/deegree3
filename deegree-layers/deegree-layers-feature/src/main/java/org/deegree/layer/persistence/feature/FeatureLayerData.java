@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
@@ -49,7 +48,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
@@ -88,7 +87,7 @@ public class FeatureLayerData implements LayerData {
         this.featureStore = featureStore;
         this.maxFeatures = maxFeatures;
         this.style = style;
-        evaluator = new FeatureXPathEvaluator( GML_31 );
+        evaluator = new GMLObjectXPathEvaluator( );
     }
 
     @Override

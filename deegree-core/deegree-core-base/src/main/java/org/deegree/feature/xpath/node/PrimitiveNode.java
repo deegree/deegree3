@@ -33,32 +33,27 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
-
-import javax.xml.namespace.QName;
+package org.deegree.feature.xpath.node;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
- * {@link XPathNode} that represents an XML attribute node.
+ * {@link XPathNode} that represents an XML text node (with primitive type information).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class AttributeNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
+public class PrimitiveNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 
-    private ElementNode<P> parentNode;
-
-    private QName name;
+    private ElementNode<P> parent;
 
     private PrimitiveValue value;
 
-    AttributeNode( ElementNode<P> parentNode, QName attrName, PrimitiveValue value ) {
-        this.parentNode = parentNode;
-        this.name = attrName;
+    public PrimitiveNode( ElementNode<P> parent, PrimitiveValue value ) {
+        this.parent = parent;
         this.value = value;
     }
 
@@ -69,33 +64,10 @@ public class AttributeNode<P extends TypedObjectNode> implements XPathNode<Primi
 
     @Override
     public ElementNode<P> getParent() {
-        return parentNode;
-    }
-
-    public String getLocalName() {
-        return name.getLocalPart();
-    }
-
-    public String getPrefixedName() {
-        String prefixedName = "";
-        String prefix = name.getPrefix();
-        if ( prefix != null && prefix.length() > 0 ) {
-            prefixedName = prefix + ":";
-        }
-        prefixedName += name.getLocalPart();
-        return prefixedName;
-    }
-
-    public String getNamespaceUri() {
-        return name.getNamespaceURI();
+        return parent;
     }
 
     public PrimitiveValue getValue() {
         return value;
-    }
-
-    @Override
-    public String toString() {
-        return value.getAsText();
     }
 }

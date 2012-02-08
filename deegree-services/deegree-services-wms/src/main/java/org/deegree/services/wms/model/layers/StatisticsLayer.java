@@ -42,7 +42,6 @@ import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.services.controller.FrontControllerStats.getCombinedGetMapEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -74,7 +73,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -157,7 +156,7 @@ public class StatisticsLayer extends FeatureLayer {
         Pair<Filter, LinkedList<String>> filter = getDimensionFilter( fi.getDimensions() );
 
         // TODO
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
 
         GenericFeatureCollection col = new GenericFeatureCollection();
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
@@ -219,7 +218,7 @@ public class StatisticsLayer extends FeatureLayer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
 
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {

@@ -71,7 +71,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
@@ -254,7 +254,7 @@ public class InsertRowManager {
             }
         }
 
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( gmlVersion );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
         TypedObjectNode[] values = evaluator.eval( particle, mapping.getPath() );
         int childIdx = 1;
         for ( TypedObjectNode value : values ) {

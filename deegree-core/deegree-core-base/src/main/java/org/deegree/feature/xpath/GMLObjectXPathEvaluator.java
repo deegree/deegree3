@@ -48,10 +48,13 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.feature.xpath.node.GMLObjectNode;
+import org.deegree.feature.xpath.node.PropertyNode;
+import org.deegree.feature.xpath.node.XMLElementNode;
+import org.deegree.feature.xpath.node.XPathNode;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 
@@ -63,27 +66,15 @@ import org.jaxen.XPath;
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureXPathEvaluator implements XPathEvaluator<GMLObject> {
-
-    private final GMLVersion version;
+public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
 
     private static Map<GMLObject, Map<ValueReference, TypedObjectNode[]>> EVAL_CACHE = null;
 
     /**
-     * temporary hack to enable caching again
+     * temporary hack to have a hook for enabliing caching (don't call this unless you know what you are doing)
      */
     public static void enableCache() {
         EVAL_CACHE = synchronizedMap( new HashMap<GMLObject, Map<ValueReference, TypedObjectNode[]>>() );
-    }
-
-    /**
-     * Creates a new {@link FeatureXPathEvaluator} instance.
-     * 
-     * @param version
-     *            gml version (determines the names and types of GML standard properties), must not be <code>null</code>
-     */
-    public FeatureXPathEvaluator( GMLVersion version ) {
-        this.version = version;
     }
 
     public TypedObjectNode[] eval( TypedObjectNode particle, ValueReference path )
@@ -122,10 +113,10 @@ public class FeatureXPathEvaluator implements XPathEvaluator<GMLObject> {
                         }
                     }
                 }
-                XPath xpath = new GMLObjectXPath( propName.getAsText(), context, version );
+                XPath xpath = new GMLObjectXPath( propName.getAsText(), context );
                 xpath.setNamespaceContext( propName.getNsContext() );
                 List<?> selectedNodes;
-                selectedNodes = xpath.selectNodes( new GMLObjectNode<GMLObject, GMLObject>( null, context, version ) );
+                selectedNodes = xpath.selectNodes( new GMLObjectNode<GMLObject, GMLObject>( null, context ) );
                 resultValues = new TypedObjectNode[selectedNodes.size()];
                 int i = 0;
                 for ( Object node : selectedNodes ) {
@@ -155,40 +146,12 @@ public class FeatureXPathEvaluator implements XPathEvaluator<GMLObject> {
         return resultValues;
     }
 
-    // private TypedObjectNode[] eval( Property prop, PropertyName propName )
-    // throws FilterEvaluationException {
-    //
-    // TypedObjectNode[] resultValues = null;
-    // try {
-    // XPath xpath = new FeatureXPath( propName.getAsText(), null, version );
-    // xpath.setNamespaceContext( propName.getNsContext() );
-    // List<?> selectedNodes;
-    // selectedNodes = xpath.selectNodes( new PropertyNode( null, prop ) );
-    // resultValues = new TypedObjectNode[selectedNodes.size()];
-    // int i = 0;
-    // for ( Object node : selectedNodes ) {
-    // if ( node instanceof XPathNode<?> ) {
-    // resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-    // } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-    // resultValues[i++] = new PrimitiveValue( node );
-    // } else {
-    // throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-    // + node.getClass().getName() + "' (=" + node
-    // + ") during XPath-evaluation." );
-    // }
-    // }
-    // } catch ( JaxenException e ) {
-    // throw new FilterEvaluationException( e.getMessage() );
-    // }
-    // return resultValues;
-    // }
-
     public TypedObjectNode[] eval( ElementNode element, ValueReference propName )
                             throws FilterEvaluationException {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new GMLObjectXPath( propName.getAsText(), null, version );
+            XPath xpath = new GMLObjectXPath( propName.getAsText(), null );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
             selectedNodes = xpath.selectNodes( new XMLElementNode( null, element ) );
@@ -216,7 +179,7 @@ public class FeatureXPathEvaluator implements XPathEvaluator<GMLObject> {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new GMLObjectXPath( propName.getAsText(), null, version );
+            XPath xpath = new GMLObjectXPath( propName.getAsText(), null );
             xpath.setNamespaceContext( propName.getNsContext() );
             List<?> selectedNodes;
             selectedNodes = xpath.selectNodes( new PropertyNode( null, element ) );

@@ -33,36 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.xpath.node;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.property.Property;
 
 /**
- * {@link ElementNode} that wraps an {@link ElementNode}.
+ * {@link ElementNode} that wraps a {@link Property} of a {@link GMLObject}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author:$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision:$, $Date:$
  */
-public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<org.deegree.commons.tom.ElementNode> {
+public class PropertyNode extends ElementNode<Property> {
 
-    private XPathNode<P> parentNode;
+    private GMLObjectNode<? extends TypedObjectNode, ? extends TypedObjectNode> parent;
 
-    private org.deegree.commons.tom.ElementNode element;
+    private Property prop;
 
-    public XMLElementNode( XPathNode<P> parentNode, org.deegree.commons.tom.ElementNode element ) {
-        super( element.getName() );
-        this.parentNode = parentNode;
-        this.element = element;
+    public PropertyNode( GMLObjectNode<? extends TypedObjectNode, ? extends TypedObjectNode> parent, final Property prop ) {
+        super( prop.getName() );
+        this.parent = parent;
+        this.prop = prop;
     }
 
     @Override
-    public XPathNode<P> getParent() {
-        return parentNode;
+    public GMLObjectNode<? extends TypedObjectNode, ? extends TypedObjectNode> getParent() {
+        return parent;
     }
 
-    public org.deegree.commons.tom.ElementNode getValue() {
-        return element;
+    /**
+     * The wrapped property.
+     * 
+     * @return wrapped property
+     */
+    public Property getValue() {
+        return prop;
     }
 }

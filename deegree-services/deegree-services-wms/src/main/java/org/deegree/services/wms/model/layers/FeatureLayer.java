@@ -45,7 +45,6 @@ import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.cs.CRSCodeType.getUndefined;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.style.utils.Styles.getStyleFilters;
@@ -83,7 +82,7 @@ import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -305,7 +304,7 @@ public class FeatureLayer extends Layer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );

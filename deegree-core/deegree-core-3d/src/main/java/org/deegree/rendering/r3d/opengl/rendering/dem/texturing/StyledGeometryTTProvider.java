@@ -38,7 +38,6 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -74,7 +73,7 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
 import org.deegree.filter.XPathEvaluator;
@@ -333,7 +332,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 
                 // TODO
                 @SuppressWarnings({ "rawtypes", "unchecked" })
-                XPathEvaluator<Feature> evaluator = (XPathEvaluator) new FeatureXPathEvaluator( GML_31 );
+                XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
 
                 sT = currentTimeMillis();
                 int index = 0;

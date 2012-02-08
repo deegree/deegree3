@@ -58,7 +58,6 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
 import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
@@ -102,7 +101,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.XPathEvaluator;
@@ -734,7 +733,7 @@ public class MapService {
                 Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
                 // TODO
-                XPathEvaluator<?> evaluator = new FeatureXPathEvaluator( GML_31 );
+                XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator( );
 
                 Collection<LinkedList<Query>> qs = queries.values();
                 FeatureInputStream rs = null;

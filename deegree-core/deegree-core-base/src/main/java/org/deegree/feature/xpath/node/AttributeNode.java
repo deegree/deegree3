@@ -33,30 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.xpath.node;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
- * {@link XPathNode} that represents an XML element node.
+ * {@link XPathNode} that represents an XML attribute node.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class ElementNode<V extends TypedObjectNode> implements XPathNode<V> {
+public class AttributeNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
+
+    private ElementNode<P> parentNode;
 
     private QName name;
 
-    protected ElementNode( QName name ) {
-        this.name = name;
+    private PrimitiveValue value;
+
+    public AttributeNode( ElementNode<P> parentNode, QName attrName, PrimitiveValue value ) {
+        this.parentNode = parentNode;
+        this.name = attrName;
+        this.value = value;
     }
 
+    @Override
     public boolean isElement() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public ElementNode<P> getParent() {
+        return parentNode;
     }
 
     public String getLocalName() {
@@ -75,5 +88,14 @@ public abstract class ElementNode<V extends TypedObjectNode> implements XPathNod
 
     public String getNamespaceUri() {
         return name.getNamespaceURI();
+    }
+
+    public PrimitiveValue getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value.getAsText();
     }
 }

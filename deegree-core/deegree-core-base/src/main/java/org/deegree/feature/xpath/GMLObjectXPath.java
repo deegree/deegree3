@@ -39,7 +39,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.gml.GMLVersion;
+import org.deegree.feature.xpath.node.GMLObjectNode;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleFunctionContext;
@@ -79,14 +79,11 @@ public class GMLObjectXPath extends BaseXPath {
      *            the XPath expression, must not be <code>null</code>
      * @param root
      *            root of the navigation hierarchy (document node), must not be <code>null</code>
-     * @param version
-     *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
-     *            properties such as "gml:name" are used)
      * @throws JaxenException
      *             if there is a syntax error in the expression
      */
-    public GMLObjectXPath( String xpathExpr, GMLObject root, GMLVersion version ) throws JaxenException {
-        super( xpathExpr, new FeatureNavigator( root, version ) );
+    public GMLObjectXPath( String xpathExpr, GMLObject root ) throws JaxenException {
+        super( xpathExpr, new GMLObjectNavigator( root ) );
 
         SimpleFunctionContext fc = new XPathFunctionContext();
         fc.registerFunction( WFS_200_NS, "valueOf", new ValueOf() );

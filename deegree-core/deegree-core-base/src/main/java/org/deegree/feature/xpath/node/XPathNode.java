@@ -33,41 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.xpath.node;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
- * {@link XPathNode} that represents an XML text node.
+ * Base interface for XML nodes that have to be represented during XPath-evaluation.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class TextNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
+public interface XPathNode<V extends TypedObjectNode> {
 
-    private ElementNode<P> parent;
+    /**
+     * Returns the parent node.
+     * 
+     * @return the parent node or <code>null</code> if this is the root node
+     */
+    public XPathNode<? extends TypedObjectNode> getParent();
 
-    private PrimitiveValue value;
+    /**
+     * @return the value of the node.
+     */
+    public V getValue();
 
-    TextNode( ElementNode<P> parent, PrimitiveValue value ) {
-        this.parent = parent;
-        this.value = value;
-    }
-
-    @Override
-    public boolean isElement() {
-        return false;
-    }
-
-    @Override
-    public ElementNode<P> getParent() {
-        return parent;
-    }
-
-    public PrimitiveValue getValue() {
-        return value;
-    }
+    public boolean isElement();
 }

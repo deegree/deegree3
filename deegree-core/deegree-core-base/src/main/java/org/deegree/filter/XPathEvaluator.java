@@ -37,12 +37,12 @@
 package org.deegree.filter;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.feature.Feature;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.filter.expression.ValueReference;
 
 /**
  * Implementations enable the evaluation of XPath expressions (given as {@link ValueReference}s) on a specific class of
- * objects, e.g. {@link Feature} instances.
+ * objects, e.g. {@link GMLObject} instances.
  * 
  * @param <T>
  *            object type that this evaluator works on

@@ -33,31 +33,47 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.xpath.node;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 
 /**
- * Base interface for XML nodes that have to be represented during XPath-evaluation.
+ * {@link XPathNode} that represents an XML element node.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface XPathNode<V extends TypedObjectNode> {
+public abstract class ElementNode<V extends TypedObjectNode> implements XPathNode<V> {
 
-    /**
-     * Returns the parent node.
-     * 
-     * @return the parent node or <code>null</code> if this is the root node
-     */
-    public XPathNode<? extends TypedObjectNode> getParent();
+    private QName name;
 
-    /**
-     * @return the value of the node.
-     */
-    public V getValue();
+    protected ElementNode( QName name ) {
+        this.name = name;
+    }
 
-    public boolean isElement();
+    public boolean isElement() {
+        return true;
+    }
+
+    public String getLocalName() {
+        return name.getLocalPart();
+    }
+
+    public String getPrefixedName() {
+        String prefixedName = "";
+        String prefix = name.getPrefix();
+        if ( prefix != null && prefix.length() > 0 ) {
+            prefixedName = prefix + ":";
+        }
+        prefixedName += name.getLocalPart();
+        return prefixedName;
+    }
+
+    public String getNamespaceUri() {
+        return name.getNamespaceURI();
+    }
 }

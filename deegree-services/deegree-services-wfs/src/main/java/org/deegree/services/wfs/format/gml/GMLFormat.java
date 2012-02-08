@@ -102,7 +102,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -410,7 +410,7 @@ public class GMLFormat implements Format {
             maxResults = request.getPresentationParams().getCount().intValue();
         }
 
-        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( gmlVersion );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
         GMLFeatureWriter featureWriter = gmlStream.getFeatureWriter();
 
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {

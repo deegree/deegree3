@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,7 +51,7 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
@@ -103,7 +102,7 @@ public class Features {
     public static FeatureCollection sortFc( final FeatureCollection fc, final SortProperty[] sortCrits ) {
 
         // TODO
-        final FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+        final GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
 
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {

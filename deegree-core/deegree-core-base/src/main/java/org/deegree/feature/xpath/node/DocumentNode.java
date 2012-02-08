@@ -33,59 +33,41 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.xpath.node;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLVersion;
 
 /**
- * {@link ElementNode} that wraps a {@link GMLObject}.
- * 
- * @param <V>
+ * {@link XPathNode} that represents an XML document node.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> extends ElementNode<V> {
+public class DocumentNode implements XPathNode<GMLObject> {
 
-    private XPathNode<P> parentNode;
+    private final GMLObjectNode<GMLObject, ? extends GMLObject> rootNode;
 
-    private V object;
-
-    public GMLObjectNode( XPathNode<P> parentNode, V object, GMLVersion version ) {
-        super( getName( object, version ) );
-        this.parentNode = parentNode;
-        this.object = object;
+    public DocumentNode( GMLObjectNode<GMLObject, ? extends GMLObject> rootNode ) {
+        this.rootNode = rootNode;
     }
 
-    private static QName getName( GMLObject object, GMLVersion version ) {
-        if ( object.getType() != null ) {
-            return object.getType().getName();
-        }
-        if ( object instanceof Feature ) {
-            return ( (Feature) object ).getName();
-        } else if ( object instanceof Geometry ) {
-            // TODO
-            return new QName( version.getNamespace(), "Geometry" );
-        }
-        throw new IllegalArgumentException( "Creating GMLObjectNode from " + object.getClass()
-                                            + " needs implementation." );
+    public boolean isElement() {
+        return false;
     }
 
     @Override
-    public XPathNode<P> getParent() {
-        return parentNode;
+    public XPathNode<? extends GMLObject> getParent() {
+        return null;
+    }
+
+    public GMLObjectNode<GMLObject, ? extends GMLObject> getRootNode() {
+        return rootNode;
     }
 
     @Override
-    public V getValue() {
-        return object;
+    public GMLObject getValue() {
+        return rootNode.getValue();
     }
 }

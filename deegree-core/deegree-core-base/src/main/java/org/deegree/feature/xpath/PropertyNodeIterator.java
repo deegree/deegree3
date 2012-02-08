@@ -40,7 +40,8 @@ import java.util.NoSuchElementException;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.gml.GMLVersion;
+import org.deegree.feature.xpath.node.GMLObjectNode;
+import org.deegree.feature.xpath.node.PropertyNode;
 
 /**
  * {@link Iterator} over property nodes of a feature node.
@@ -56,7 +57,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     private Iterator<Property> props;
 
-    PropertyNodeIterator( GMLObjectNode<GMLObject, GMLObject> parent, GMLVersion version ) {
+    PropertyNodeIterator( GMLObjectNode<GMLObject, GMLObject> parent ) {
         this.parent = parent;
         if ( parent.getValue().getProperties() != null ) {
             this.props = parent.getValue().getProperties().iterator();
