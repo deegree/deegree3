@@ -105,7 +105,8 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
                                   Map<ProcessDefinition, String> processDefToWSDLUrl )
                             throws XMLStreamException {
 
-        writer.writeStartElement( WPS_PREFIX, WPS_NS, "ProcessDescriptions" );
+        writer.setPrefix( WPS_PREFIX, WPS_NS );
+        writer.writeStartElement( WPS_NS, "ProcessDescriptions" );
         writer.writeNamespace( WPS_PREFIX, WPS_NS );
         writer.writeNamespace( OWS_PREFIX, OWS_NS );
         writer.writeNamespace( OGC_PREFIX, OGC_NS );
