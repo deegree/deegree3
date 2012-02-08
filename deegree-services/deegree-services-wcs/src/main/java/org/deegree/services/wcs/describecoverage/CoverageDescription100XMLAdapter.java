@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs.describecoverage;
 
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_PRE;
@@ -47,6 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
@@ -97,8 +100,8 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
         writer.writeAttribute( "updateSequence", Integer.toString( updateSequence ) );
         writer.writeDefaultNamespace( WCS_100_NS );
         writer.writeNamespace( GML_PREFIX, GML_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeNamespace( "xlink", XLN_NS );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeNamespace( XLINK_PREFIX, XLN_NS );
         writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
 
         for ( WCSCoverage coverage : coverages ) {
@@ -245,7 +248,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
             String type = ( singleValue.type == ValueType.Void ) ? ValueType.String.toString()
                                                                 : singleValue.type.toString();
             writeElement( writer, WCS_100_NS, elementName, singleValue.value.toString(), WCS_100_NS, WCS_100_PRE,
-                          "type", type );
+                          "type", type, true );
         }
     }
 
@@ -307,6 +310,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         if ( interval != null ) {
             writer.writeStartElement( WCS_100_NS, "interval" );
+            writer.writeNamespace( WCS_100_PRE, WCS_100_NS );
             if ( interval.getSemantic() != null ) {
                 writer.writeAttribute( WCS_100_PRE, WCS_100_NS, "semantic", interval.getSemantic() );
             }
@@ -381,6 +385,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
     private static void exportGMLPos( XMLStreamWriter writer, double... values )
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "pos" );
+        writer.writeNamespace( GML_PREFIX, GML_NS );
         writer.writeAttribute( "dimension", Integer.toString( values.length ) );
         writer.writeCharacters( ArrayUtils.join( " ", values ) );
         writer.writeEndElement(); // pos
@@ -389,6 +394,7 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
     private static void exportGMLEnvelope( XMLStreamWriter writer, Envelope envelope )
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "Envelope" );
+        writer.writeNamespace( GML_PREFIX, GML_NS );
         writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getAlias() );
 
         exportGMLPos( writer, envelope.getMin().get0(), envelope.getMin().get1() );

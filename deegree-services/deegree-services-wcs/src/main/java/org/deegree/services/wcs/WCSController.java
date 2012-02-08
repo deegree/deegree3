@@ -498,7 +498,7 @@ public class WCSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( "application/vnd.ogc.se_xml", null, null, 200, new ServiceException120XMLAdapter(), ex, response );
+        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new ServiceException120XMLAdapter(), ex, response );
     }
 
     private void checkRequiredKeys( Map<String, String> param )
@@ -541,7 +541,6 @@ public class WCSController extends AbstractOWS {
     private static XMLStreamWriter getXMLStreamWriter( Writer writer )
                             throws XMLStreamException {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         return new IndentingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
     }
 

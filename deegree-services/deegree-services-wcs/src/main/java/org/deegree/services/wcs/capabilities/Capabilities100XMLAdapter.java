@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs.capabilities;
 
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_SCHEMA;
@@ -47,7 +49,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.controller.OGCFrontController;
@@ -120,12 +121,14 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
 
         writer.setDefaultNamespace( WCS_100_NS );
         writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xsi", XSINS );
-        writer.setPrefix( "xlink", XLN_NS );
+        writer.setPrefix( XSI_PREFIX, XSINS );
+        writer.setPrefix( XLINK_PREFIX, XLN_NS );
 
         if ( sections.isEmpty() ) {
             writer.writeStartElement( WCS_100_NS, "WCS_Capabilities" );
             writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
+            writer.writeDefaultNamespace( WCS_100_NS );
+            writer.writeNamespace( XSI_PREFIX, XSINS );
             writeVersionAndUpdateSequence( writer, updateSequence );
             exportService( writer, identification, provider, updateSequence, false );
             exportCapability( writer, mainConf, allowedOperations, updateSequence, false );
@@ -146,6 +149,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                                                boolean isSection )
                             throws XMLStreamException {
         writer.writeStartElement( WCS_100_NS, "ContentMetadata" );
+        writer.writeDefaultNamespace( WCS_100_NS );
         if ( isSection ) {
             writeVersionAndUpdateSequence( writer, updateSequence );
         }
@@ -163,6 +167,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         if ( coverage != null ) {
             writer.writeStartElement( WCS_100_NS, "CoverageOfferingBrief" );
+            writer.writeDefaultNamespace( WCS_100_NS );
             CoverageDescription100XMLAdapter.exportBriefCoverageData( writer, coverage );
             writer.writeEndElement(); // CoverageOfferingBrief
         }
@@ -179,6 +184,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
 
         writer.writeStartElement( WCS_100_NS, "Capability" );
+        writer.writeDefaultNamespace( WCS_100_NS );
         if ( isSection ) {
             // @version
             // @updateSequence
@@ -200,17 +206,20 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
     private static void exportOperationsMetadata( XMLStreamWriter writer, List<String> operations, DCPType dcp )
                             throws XMLStreamException {
         writer.writeStartElement( WCS_100_NS, "Request" );
+        writer.writeDefaultNamespace( WCS_100_NS );
         for ( String operation : operations ) {
             writer.writeStartElement( WCS_100_NS, operation );
             writer.writeStartElement( WCS_100_NS, "DCPType" );
             writer.writeStartElement( WCS_100_NS, "HTTP" );
             if ( !isEmpty( OGCFrontController.getHttpGetURL() ) ) {
                 writer.writeStartElement( WCS_100_NS, "Get" );
+                writer.writeNamespace( XLINK_PREFIX, XLN_NS );
                 writeElement( writer, WCS_100_NS, "OnlineResource", XLN_NS, "href", OGCFrontController.getHttpGetURL() );
                 writer.writeEndElement(); // Get
             }
             if ( !isEmpty( OGCFrontController.getHttpPostURL() ) ) {
                 writer.writeStartElement( WCS_100_NS, "Post" );
+                writer.writeNamespace( XLINK_PREFIX, XLN_NS );
                 writeElement( writer, WCS_100_NS, "OnlineResource", XLN_NS, "href", OGCFrontController.getHttpPostURL() );
                 writer.writeEndElement(); // Post
             }
@@ -225,6 +234,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                                        ServiceProviderType provider, int updateSequence, boolean isSection )
                             throws XMLStreamException {
         writer.writeStartElement( WCS_100_NS, "Service" );
+        writer.writeDefaultNamespace( WCS_100_NS );
         if ( isSection ) {
             // @version optional (1.0.0)
             // @updateSequence optional
@@ -291,6 +301,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         if ( serviceContactType != null ) {
             writer.writeStartElement( WCS_100_NS, "responsibleParty" );
+            writer.writeDefaultNamespace( WCS_100_NS );
             // choice{
             // --
             // -> individualName [1]
@@ -315,6 +326,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                  || !isEmpty( serviceContactType.getFacsimile() ) || !isEmpty( serviceContactType.getOnlineResource() ) ) {
                 // -> contactInfo[0,1]
                 writer.writeStartElement( WCS_100_NS, "contactInfo" );
+                writer.writeNamespace( XLINK_PREFIX, XLN_NS );
                 // --> phone [0,1]
                 if ( !isEmpty( serviceContactType.getPhone() ) || !isEmpty( serviceContactType.getFacsimile() ) ) {
                     writer.writeStartElement( WCS_100_NS, "phone" );
@@ -332,7 +344,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                 exportAddress( writer, serviceContactType.getAddress(), serviceContactType.getElectronicMailAddress() );
 
                 if ( !isEmpty( serviceContactType.getOnlineResource() ) ) {
-                    writeElement( writer, WCS_100_NS, "onlineResource", CommonNamespaces.XLNNS, "href",
+                    writeElement( writer, WCS_100_NS, "onlineResource", XLN_NS, "href",
                                   serviceContactType.getOnlineResource() );
                     // --> onlineResource [0,1]
                     // ---> @"xlink:simpleLink"
@@ -356,6 +368,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         if ( addressType != null ) {
             writer.writeStartElement( WCS_100_NS, "address" );
+            writer.writeDefaultNamespace( WCS_100_NS );
             if ( !addressType.getDeliveryPoint().isEmpty() ) {
                 for ( String dp : addressType.getDeliveryPoint() ) {
                     // ---> deliveryPoint [0,n]
@@ -409,7 +422,9 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
             // -> @about optional
             // -> gml:_MetaData element [0,n]
             writer.writeStartElement( WCS_100_NS, "metadataLink" );
-            writer.writeAttribute( CommonNamespaces.XLNNS, "href", link );
+            writer.writeDefaultNamespace( WCS_100_NS );
+            writer.writeAttribute( XLN_NS, "href", link );
+            writer.writeNamespace( XLINK_PREFIX, XLN_NS );
             String t = type;
             if ( !( "FGDC".equals( type ) || "TC211".equals( type ) ) ) {
                 t = "other";
@@ -433,6 +448,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
             for ( KeywordsType kwt : keywords ) {
                 if ( kwt != null ) {
                     writer.writeStartElement( WCS_100_NS, "keywords" );
+                    writer.writeDefaultNamespace( WCS_100_NS );
                     List<LanguageStringType> keyword = kwt.getKeyword();
                     for ( LanguageStringType lst : keyword ) {
                         exportKeyword( writer, lst );

@@ -1227,7 +1227,17 @@ public class XMLAdapter {
     public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String value,
                                      String attrNS, String attribPRE, String attrName, String attrValue )
                             throws XMLStreamException {
+        writeElement( writer, namespace, elemName, value, attrNS, attribPRE, attrName, attrValue, false );
+    }
+
+    public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String value,
+                                     String attrNS, String attribPRE, String attrName, String attrValue,
+                                     boolean writeNamespace )
+                            throws XMLStreamException {
         writer.writeStartElement( namespace, elemName );
+        if ( writeNamespace && attrNS != null && attribPRE != null ) {
+            writer.writeNamespace( attribPRE, attrNS );
+        }
         if ( attrValue != null ) {
             if ( attrNS == null ) {
                 writer.writeAttribute( attrName, attrValue );
