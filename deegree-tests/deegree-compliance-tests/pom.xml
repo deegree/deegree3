@@ -8,6 +8,7 @@
 
   <properties>
     <serviceUrl>http://localhost:${portnumber}/deegree-compliance-tests</serviceUrl>
+    <testPattern>*IntegrationTest</testPattern>
   </properties>
 
   <parent>
@@ -69,7 +70,7 @@
           <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
           <includes>
-            <include>**/*IntegrationTest.java</include>
+            <include>**/${testPattern}.java</include>
           </includes>
           <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc</argLine>
         </configuration>
