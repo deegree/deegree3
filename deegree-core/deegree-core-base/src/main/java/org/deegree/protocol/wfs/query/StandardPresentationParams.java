@@ -57,6 +57,20 @@ public class StandardPresentationParams {
 
     private final String outputFormat;
 
+    /**
+     * Creates a new {@link StandardPresentationParams} instance.
+     * 
+     * @param startIndex
+     *            index within the result set from which the server shall begin returning results (conting starts at 0),
+     *            can be <code>null</code> (unspecified)
+     * @param count
+     *            limit for the number of returned results (non-negative integer), can be <code>null</code>
+     *            (unspecified)
+     * @param resultType
+     *            requested query mode (result or hits), can be <code>null</code> (unspecified)
+     * @param outputFormat
+     *            requested output format, can be <code>null</code> (unspecified)
+     */
     public StandardPresentationParams( BigInteger startIndex, BigInteger count, ResultType resultType,
                                        String outputFormat ) {
         this.startIndex = startIndex;
@@ -66,10 +80,11 @@ public class StandardPresentationParams {
     }
 
     /**
-     * Returns the index within the result set from which the server shall begin returning results.
+     * Returns the index within the result set from which the server shall begin returning results (conting starts at
+     * 0).
      * 
-     * @return index within the result set from which the server shall begin returning results (non-negative integer),
-     *         can be <code>null</code> (unspecified)
+     * @return index within the result set from which the server shall begin returning results (non-negative integer,
+     *         counting starts at 0), can be <code>null</code> (unspecified)
      */
     public BigInteger getStartIndex() {
         return startIndex;
