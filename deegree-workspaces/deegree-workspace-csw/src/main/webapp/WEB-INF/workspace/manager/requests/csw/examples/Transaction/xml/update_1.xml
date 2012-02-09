@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
   xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
   <csw:Update>
-
 <MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gmd="http://www.isotc211.org/2005/gmd"
       xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.isotc211.org/2005/gmd ../../apiso.xsd">
+      xmlns:gml="http://www.opengis.net/gml/3.2">
       <fileIdentifier>
         <gco:CharacterString>0C12204F-5626-4A2E-94F4-514424F093A1</gco:CharacterString>
       </fileIdentifier>
@@ -133,6 +131,16 @@
                   </dateType>
                 </CI_Date>
               </date>
+              <identifier>
+                <RS_Identifier>
+                  <code>
+                    <gco:CharacterString>_15A2204F-5626-4A2E-94F4-514424F093A1</gco:CharacterString>
+                  </code>
+                  <codeSpace>
+                    <gco:CharacterString>http://www.bkg.de</gco:CharacterString>
+                  </codeSpace>
+                </RS_Identifier>
+              </identifier>
             </CI_Citation>
           </citation>
           <abstract>
@@ -149,6 +157,57 @@
             <MD_ProgressCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_ProgressCode"
               codeListValue="onGoing" />
           </status>
+          <pointOfContact>
+        <CI_ResponsibleParty>
+          <organisationName>
+            <gco:CharacterString>Landesamt für Wasserschutzgebiete</gco:CharacterString>
+          </organisationName>
+          <contactInfo>
+            <CI_Contact>
+              <phone>
+                <CI_Telephone>
+                  <voice>
+                    <gco:CharacterString>++49 0611-1219</gco:CharacterString>
+                  </voice>
+                  <facsimile>
+                    <gco:CharacterString>++49 0611-1384</gco:CharacterString>
+                  </facsimile>
+                </CI_Telephone>
+              </phone>
+              <address>
+                <CI_Address>
+                  <deliveryPoint>
+                    <gco:CharacterString>Heinemannstr 1</gco:CharacterString>
+                  </deliveryPoint>
+                  <city>
+                    <gco:CharacterString>Wiesbaden</gco:CharacterString>
+                  </city>
+                  <postalCode>
+                    <gco:CharacterString>65203</gco:CharacterString>
+                  </postalCode>
+                  <country>
+                    <gco:CharacterString>Germany</gco:CharacterString>
+                  </country>
+                  <electronicMailAddress>
+                    <gco:CharacterString>lfw@lfw.hessen.de</gco:CharacterString>
+                  </electronicMailAddress>
+                </CI_Address>
+              </address>
+              <onlineResource>
+                <CI_OnlineResource>
+                  <linkage>
+                    <URL>http://www.lfw.hessen.de</URL>
+                  </linkage>
+                </CI_OnlineResource>
+              </onlineResource>
+            </CI_Contact>
+          </contactInfo>
+          <role>
+            <CI_RoleCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?CI_RoleCode"
+              codeListValue="publisher" />
+          </role>
+        </CI_ResponsibleParty>
+          </pointOfContact>
           <resourceMaintenance>
             <MD_MaintenanceInformation>
               <maintenanceAndUpdateFrequency>
