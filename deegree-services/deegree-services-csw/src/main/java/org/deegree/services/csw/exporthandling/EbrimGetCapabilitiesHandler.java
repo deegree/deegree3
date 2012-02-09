@@ -180,17 +180,17 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
                 exportDCP( writer, get, post, owsNS );
                 if ( name.equals( CSWRequestType.GetCapabilities.name() ) ) {
                     writeParam( owsNS, "AcceptVersions", "2.0.2", "1.0.0" );
-                    gcHelper.writeGetCapabilities( writer, owsNS );
+                    gcHelper.writeGetCapabilitiesParameters( writer, owsNS );
                     writer.writeEndElement();// Operation
                 } else if ( name.equals( CSWRequestType.DescribeRecord.name() ) ) {
                     writeParam( owsNS, "version", "2.0.2", "1.0.0" );
-                    gcHelper.writeDescribeRecord( writer, owsNS, null, outputFormats, schemaLang );
+                    gcHelper.writeDescribeRecordParameters( writer, owsNS, null, outputFormats, schemaLang );
                     writeParam( owsNS, "typeNames", "csw:Record", "rim:RegistryPackage", "rim:ExtrinsicObject",
                                 "rim:RegistryObject" );
                     writer.writeEndElement();// Operation
                 } else if ( name.equals( CSWRequestType.GetRecords.name() ) ) {
                     writeParam( owsNS, "version", "2.0.2", "1.0.0" );
-                    gcHelper.writeGetRecords( writer, owsNS,
+                    gcHelper.writeGetRecordsParameters( writer, owsNS,
                                               new String[] { "csw:Record", "rim:RegistryPackage",
                                                             "rim:ExtrinsicObject", "rim:RegistryObject" },
                                               outputFormats,
@@ -200,7 +200,7 @@ public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter imple
                     writer.writeEndElement();// Operation
                 } else if ( name.equals( CSWRequestType.GetRecordById.name() ) ) {
                     writeParam( owsNS, "version", "2.0.2", "1.0.0" );
-                    gcHelper.writeGetRecordById( writer, owsNS, outputFormats, new String[] { EbrimProfile.RIM_NS } );
+                    gcHelper.writeGetRecordByIdParameters( writer, owsNS, outputFormats, new String[] { EbrimProfile.RIM_NS } );
                     writeParam( owsNS, "TypeName", "csw:Record", "rim:RegistryPackage", "rim:ExtrinsicObject",
                                 "rim:RegistryObject" );
                     writer.writeEndElement();// Operation

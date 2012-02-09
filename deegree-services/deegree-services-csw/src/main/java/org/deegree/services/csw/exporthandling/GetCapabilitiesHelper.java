@@ -129,7 +129,7 @@ public class GetCapabilitiesHelper {
      *            the OWS namespace
      * @throws XMLStreamException
      */
-    public void writeDescribeRecord( XMLStreamWriter writer, String owsNS, String[] typeNames, String[] outputFormats,
+    public void writeDescribeRecordParameters( XMLStreamWriter writer, String owsNS, String[] typeNames, String[] outputFormats,
                                      String schemaLanguage )
                             throws XMLStreamException {
         if ( typeNames != null && typeNames.length > 0 ) {
@@ -168,7 +168,7 @@ public class GetCapabilitiesHelper {
      *            the OWS namespace
      * @throws XMLStreamException
      */
-    public void writeGetCapabilities( XMLStreamWriter writer, String owsNS )
+    public void writeGetCapabilitiesParameters( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
 
         writer.writeStartElement( owsNS, "Parameter" );
@@ -199,7 +199,7 @@ public class GetCapabilitiesHelper {
      *            the elementSetNames to write, if null this parameter will be ignored, can be <code>null</code>
      * @throws XMLStreamException
      */
-    public void writeGetRecords( XMLStreamWriter writer, String owsNS, String[] typeNames, String[] outputFormats,
+    public void writeGetRecordsParameters( XMLStreamWriter writer, String owsNS, String[] typeNames, String[] outputFormats,
                                  String[] outputSchemas, String[] elementSetNames )
                             throws XMLStreamException {
 
@@ -248,7 +248,7 @@ public class GetCapabilitiesHelper {
      *            the outputSChemas to write
      * @throws XMLStreamException
      */
-    public void writeGetRecordById( XMLStreamWriter writer, String owsNS, String[] outputFormats, String[] outputSchemas )
+    public void writeGetRecordByIdParameters( XMLStreamWriter writer, String owsNS, String[] outputFormats, String[] outputSchemas )
                             throws XMLStreamException {
         writeOutputFormat( writer, owsNS, outputFormats );
 

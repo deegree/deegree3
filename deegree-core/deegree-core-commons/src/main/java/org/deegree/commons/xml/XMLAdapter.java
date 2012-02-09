@@ -1415,7 +1415,11 @@ public class XMLAdapter {
                 for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
                     String nsPrefix = inStream.getNamespacePrefix( i );
                     String nsURI = inStream.getNamespaceURI( i );
-                    writer.writeNamespace( nsPrefix, nsURI );
+                    if ( nsPrefix != null && nsURI != null ) {
+                        writer.writeNamespace( nsPrefix, nsURI );
+                    } else if ( nsPrefix == null ) {
+                        writer.writeDefaultNamespace(  nsURI );
+                    }
                 }
 
                 // copy all attributes

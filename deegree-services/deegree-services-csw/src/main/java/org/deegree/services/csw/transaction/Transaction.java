@@ -42,7 +42,7 @@ import org.deegree.metadata.persistence.transaction.TransactionOperation;
 import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
- * Represents a <Code>Transaction</Code> request to a CSW.
+ * Represents a <code>Transaction</code> request to a CSW.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -84,5 +84,4 @@ public class Transaction extends AbstractCSWRequest {
     public boolean isVerboseRequest() {
         return verboseRequest;
     }
-
 }

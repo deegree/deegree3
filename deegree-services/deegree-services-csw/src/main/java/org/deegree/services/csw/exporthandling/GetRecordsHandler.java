@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
@@ -85,6 +87,8 @@ import org.deegree.services.csw.getrecords.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.odysseus.staxon.json.JsonXMLOutputFactory;
+
 /**
  * Defines the export functionality for a {@link GetRecords} request
  * 
@@ -103,7 +107,7 @@ public class GetRecordsHandler {
 
     private final String schemaLocation;
 
-    private final MetadataStore store;
+    private final MetadataStore<?> store;
 
     public GetRecordsHandler( int maxMatches, String schemaLocation, MetadataStore store ) {
         this.maxMatches = maxMatches;
@@ -127,9 +131,10 @@ public class GetRecordsHandler {
         LOG.debug( "doGetRecords: " + getRec );
 
         Version version = getRec.getVersion();
-        response.setContentType( getRec.getOutputFormat() );
+        String outputFormat = getRec.getOutputFormat();
+        response.setContentType( outputFormat );
+        XMLStreamWriter xmlWriter = getXmlorJsonStreamWriter( outputFormat, response );
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
             export( xmlWriter, getRec, version, store );
         } catch ( OWSException e ) {
@@ -140,6 +145,21 @@ public class GetRecordsHandler {
             throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
+    }
+
+    private XMLStreamWriter getXmlorJsonStreamWriter( String outputFormat, HttpResponseBuffer response )
+                            throws XMLStreamException, IOException {
+        XMLStreamWriter xmlWriter = null;
+        if ( "application/json".equals( outputFormat ) ) {
+            JsonXMLOutputFactory factory = new JsonXMLOutputFactory();
+            factory.setProperty( PROP_PRETTY_PRINT, true );
+            factory.setProperty( PROP_NAMESPACE_DECLARATIONS, false );
+            xmlWriter = factory.createXMLStreamWriter( response.getOutputStream() );
+            xmlWriter.writeStartDocument();
+        } else {
+            xmlWriter = getXMLResponseWriter( response, schemaLocation );
+        }
+        return xmlWriter;
     }
 
     /**
@@ -190,6 +210,7 @@ public class GetRecordsHandler {
                 }
                 throw new IllegalArgumentException( errorMessage );
             }
+            writer.writeStartDocument();
             writer.writeStartElement( CSW_PREFIX, "Acknowledgement", CSW_202_NS );
             writer.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
             writer.writeStartElement( CSW_202_NS, "EchoedRequest" );

@@ -46,6 +46,10 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.DescribeRecord;
+import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetCapabilities;
+import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetRecordById;
+import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetRecords;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,7 +118,9 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
 
     private final Map<String, String> varToValue;
 
-    private static final String[] outputFormats = new String[] { "text/xml", "application/xml" };
+    private static final String[] dataOutputFormats = new String[] { "text/xml", "application/xml", "application/json" };
+
+    private static final String[] schemaOutputFormats = new String[] { "text/xml", "application/xml" };
 
     private static final String[] outputSchemas = new String[] { CSW_202_NS, GMD_NS };
 
@@ -289,39 +295,18 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements
             writer.writeAttribute( "name", name );
             exportDCP( writer, get, post, owsNS );
 
-            if ( name.equals( CSWRequestType.GetCapabilities.name() ) ) {
-
-                gcHelper.writeGetCapabilities( writer, owsNS );
-
-                writer.writeEndElement();// Operation
-                continue;
-            } else if ( name.equals( CSWRequestType.DescribeRecord.name() ) ) {
-
-                gcHelper.writeDescribeRecord( writer, owsNS, typeNames, outputFormats, "XMLSCHEMA" );
-
-                writer.writeEndElement();// Operation
-                continue;
-            } else if ( name.equals( CSWRequestType.GetRecords.name() ) ) {
-
-                gcHelper.writeGetRecords( writer, owsNS, typeNames, outputFormats, outputSchemas, elementSetNames );
+            if ( name.equals( GetCapabilities.name() ) ) {
+                gcHelper.writeGetCapabilitiesParameters( writer, owsNS );
+            } else if ( name.equals( DescribeRecord.name() ) ) {
+                gcHelper.writeDescribeRecordParameters( writer, owsNS, typeNames, schemaOutputFormats, "XMLSCHEMA" );
+            } else if ( name.equals( GetRecords.name() ) ) {
+                gcHelper.writeGetRecordsParameters( writer, owsNS, typeNames, dataOutputFormats, outputSchemas,
+                                                    elementSetNames );
                 writeGetRecordsConstraints( writer, owsNS );
-
-                writer.writeEndElement();// Operation
-                continue;
-            } else if ( name.equals( CSWRequestType.GetRecordById.name() ) ) {
-
-                gcHelper.writeGetRecordById( writer, owsNS, outputFormats, outputSchemas );
-
-                writer.writeEndElement();// Operation
-                continue;
-            } else if ( name.equals( CSWRequestType.Transaction.name() ) ) {
-                // because there is the same output like for GetRecordById
-                gcHelper.writeGetRecordById( writer, owsNS, outputFormats, outputSchemas );
-
-                writer.writeEndElement();// Operation
-                continue;
+            } else if ( name.equals( GetRecordById.name() ) ) {
+                gcHelper.writeGetRecordByIdParameters( writer, owsNS, dataOutputFormats, outputSchemas );
             }
-
+            writer.writeEndElement();// Operation
         }
 
         // if xPathQueryables are allowed than this should be set

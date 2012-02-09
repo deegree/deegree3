@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -60,6 +62,8 @@ import org.deegree.services.csw.profile.ServiceProfile;
 import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.odysseus.staxon.json.JsonXMLOutputFactory;
 
 /**
  * Defines the export functionality for a {@link GetRecordById} request
@@ -95,12 +99,13 @@ public class GetRecordByIdHandler {
         LOG.debug( "doGetRecordById: " + getRecBI );
         Version version = getRecBI.getVersion();
 
-        response.setContentType( getRecBI.getOutputFormat() );
+        String outputFormat = getRecBI.getOutputFormat();
+        response.setContentType( outputFormat );
 
         // to be sure of a valid response
         String schemaLocation = profile.getGetRecordByIdSchemaLocation( getRecBI.getVersion() );
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
+        XMLStreamWriter xmlWriter = getXmlorJsonStreamWriter( outputFormat, response, schemaLocation );
         try {
             export( xmlWriter, getRecBI, version, store );
         } catch ( OWSException e ) {
@@ -110,7 +115,22 @@ public class GetRecordByIdHandler {
             throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
+    }
 
+    private XMLStreamWriter getXmlorJsonStreamWriter( String outputFormat, HttpResponseBuffer response,
+                                                      String schemaLocation )
+                            throws XMLStreamException, IOException {
+        XMLStreamWriter xmlWriter = null;
+        if ( "application/json".equals( outputFormat ) ) {
+            JsonXMLOutputFactory factory = new JsonXMLOutputFactory();
+            factory.setProperty( PROP_PRETTY_PRINT, true );
+            factory.setProperty( PROP_NAMESPACE_DECLARATIONS, false );
+            xmlWriter = factory.createXMLStreamWriter( response.getOutputStream() );
+            xmlWriter.writeStartDocument();
+        } else {
+            xmlWriter = getXMLResponseWriter( response, schemaLocation );
+        }
+        return xmlWriter;
     }
 
     /**
