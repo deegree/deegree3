@@ -643,7 +643,7 @@ public abstract class AbstractOWS implements OWS {
         }
 
         int statusCode = 200;
-        String contentType = "application:soap+xml; action=" + action;
+        String contentType = "application/soap+xml; action=" + action;
         if ( "http://schemas.xmlsoap.org/soap/envelope/".equals( factory.getSoapVersionURI() ) ) {
             extraHeaders.put( "SOAPAction", action );
             statusCode = 500;
