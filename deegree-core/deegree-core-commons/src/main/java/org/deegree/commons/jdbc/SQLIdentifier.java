@@ -179,6 +179,11 @@ public class SQLIdentifier implements Comparable<SQLIdentifier> {
         this.name = table;
         this.qualifier = schema;
         this.isEscaped = false;
+        if ( schema == null ) {
+            normalizedString = table.toUpperCase();
+        } else {
+            normalizedString = schema.toUpperCase() + "." + table.toUpperCase();
+        }
     }
 
     /**
