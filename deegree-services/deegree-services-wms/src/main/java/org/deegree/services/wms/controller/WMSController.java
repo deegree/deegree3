@@ -76,8 +76,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import java_cup.runtime.Symbol;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLInputFactory;
@@ -109,6 +107,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.utils.templating.TemplatingLexer;
 import org.deegree.feature.utils.templating.TemplatingParser;
+import org.deegree.feature.utils.templating.java_cup.runtime.Symbol;
 import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
