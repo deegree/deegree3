@@ -77,10 +77,13 @@ public abstract class XMLExceptionSerializer<T extends OWSException> extends XML
                             throws IOException {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         try {
+            if ( requestedEncoding == null ) {
+                requestedEncoding = "UTF-8";
+            }
             IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter(
                                                                                factory.createXMLStreamWriter( outputStream,
                                                                                                               requestedEncoding ) );
-            xmlWriter.writeStartDocument( "UTF-8", "1.0" );
+            xmlWriter.writeStartDocument( requestedEncoding, "1.0" );
             serializeExceptionToXML( xmlWriter, exception );
             xmlWriter.writeEndDocument();
             xmlWriter.close();
