@@ -252,9 +252,7 @@ public class FeatureLayer extends Layer {
 
         final ValueReference geomProp;
 
-        for ( Style s : gm.getStyles() ) {
-            exprs.addAll( Styles.getGeometryExpressions( s ) );
-        }
+        exprs.addAll( Styles.getGeometryExpressions( style ) );
 
         if ( exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference ) {
             geomProp = (ValueReference) exprs.iterator().next();
@@ -304,7 +302,7 @@ public class FeatureLayer extends Layer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator();
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );
