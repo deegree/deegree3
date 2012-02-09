@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_AUTO_ARRAY;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
@@ -154,6 +155,7 @@ public class GetRecordsHandler {
             JsonXMLOutputFactory factory = new JsonXMLOutputFactory();
             factory.setProperty( PROP_PRETTY_PRINT, true );
             factory.setProperty( PROP_NAMESPACE_DECLARATIONS, false );
+            factory.setProperty( PROP_AUTO_ARRAY, true );
             xmlWriter = factory.createXMLStreamWriter( response.getOutputStream() );
             xmlWriter.writeStartDocument();
         } else {
