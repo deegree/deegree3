@@ -36,23 +36,35 @@
 
 package org.deegree.gml.geometry;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
@@ -60,8 +72,11 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.gml.schema.GMLAppSchemaReaderTest;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -351,6 +366,98 @@ public class GML3GeometryWriterTest {
         writer.flush();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
+    }
+
+    @Test
+    public void testAIXMPoint()
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+        assertReexport( "AIXMPoint.gml", "AIXMPoint-reexport.gml" );
+    }
+
+    @Test
+    public void testAIXMCurve()
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+        assertReexport( "AIXMCurve.gml", "AIXMCurve-reexport.gml" );
+    }
+
+    @Test
+    public void testAIXMSurface()
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+        assertReexport( "AIXMSurface.gml", "AIXMSurface-reexport.gml" );
+    }
+
+    @Test
+    public void testAIXMElevatedPoint()
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+        assertReexport( "AIXMElevatedPoint.gml", "AIXMElevatedPoint-reexport.gml" );
+    }
+
+    @Test
+    public void testAIXMElevatedCurve()
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+        assertReexport( "AIXMElevatedCurve.gml", "AIXMElevatedCurve-reexport.gml" );
+    }
+
+    @Test
+    public void testAIXMElevatedSurface()
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+        assertReexport( "AIXMElevatedSurface.gml", "AIXMElevatedSurface-reexport.gml" );
+    }
+
+    private void assertReexport( String srcFileName, String expectedFileName )
+                            throws XMLParsingException, ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException, XMLStreamException,
+                            FactoryConfigurationError, IOException, UnknownCRSException, TransformationException {
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        Geometry geom = readAIXMGeometry( srcFileName );
+
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter xmlWriter = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_32, xmlWriter );
+        Map<String, String> nsBindings = new HashMap<String, String>();
+        nsBindings.put( "aixm", aixmNs );
+        exporter.setNamespaceBindings( nsBindings );
+        exporter.write( geom );
+        xmlWriter.flush();
+
+        byte[] expected = IOUtils.toByteArray( GML3GeometryWriterTest.class.getResourceAsStream( expectedFileName ) );
+        String s = new String( expected, "UTF-8" );
+        Assert.assertEquals( s, memoryWriter.toString() );
+    }
+
+    private Geometry readAIXMGeometry( String fileName )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
+                            XMLParsingException, UnknownCRSException {
+
+        String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+
+        GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource( DIR + fileName ) );
+        gmlStream.setApplicationSchema( schema );
+
+        XMLStreamReader xmlReader = gmlStream.getXMLReader();
+        Assert.assertEquals( START_ELEMENT, xmlReader.getEventType() );
+        QName elName = xmlReader.getName();
+        Assert.assertTrue( gmlStream.isGeometryElement() );
+        Geometry geom = gmlStream.readGeometry();
+        Assert.assertEquals( END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( elName, xmlReader.getName() );
+        return geom;
     }
 
     private GMLStreamReader getGML31StreamReader( URL docURL )
