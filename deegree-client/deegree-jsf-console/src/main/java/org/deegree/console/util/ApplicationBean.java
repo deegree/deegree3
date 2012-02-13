@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.util;
 
+import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class ApplicationBean implements Serializable {
     private List<String> internalModules = new ArrayList<String>();
 
     public ApplicationBean() {
-        for ( ModuleInfo info : ModuleInfo.getModulesInfo() ) {
+        for ( ModuleInfo info : getModulesInfo() ) {
             if ( baseVersion == null ) {
                 baseVersion = info.getVersion();
             }

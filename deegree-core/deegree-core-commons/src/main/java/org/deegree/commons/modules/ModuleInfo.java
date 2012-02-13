@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
@@ -50,7 +51,6 @@ import java.util.regex.Pattern;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,15 +75,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 
     private static final Logger LOG = LoggerFactory.getLogger( ModuleInfo.class );
 
-    private static Collection<ModuleInfo> modulesInfo;
-
-    static {
-        try {
-            modulesInfo = extractModulesInfo( ClasspathHelper.getUrlsForCurrentClasspath() );
-        } catch ( IOException e ) {
-            LOG.error( "Error extracting module info: " + e.getMessage(), e );
-        }
-    }
+    private static Collection<ModuleInfo> modulesInfo = Collections.emptyList();
 
     private final URL classpath;
 
@@ -159,15 +151,6 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
      */
     public String getSvnRevision() {
         return scmRevision;
-    }
-
-    /**
-     * Returns the {@link ModuleInfo}s for the deegree modules accessible by the default classloader.
-     * 
-     * @return module infos, never <code>null</code>, but can be empty
-     */
-    public static Collection<ModuleInfo> getModulesInfo() {
-        return modulesInfo;
     }
 
     /**

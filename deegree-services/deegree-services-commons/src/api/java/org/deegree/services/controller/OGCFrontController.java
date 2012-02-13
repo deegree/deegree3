@@ -36,8 +36,9 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
-import static org.deegree.commons.modules.ModuleInfo.getModulesInfo;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.reflections.util.ClasspathHelper.forClassLoader;
+import static org.reflections.util.ClasspathHelper.forWebInfLib;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.beans.Introspector;
@@ -181,6 +182,10 @@ public class OGCFrontController extends HttpServlet {
 
     private transient String ctxPath;
 
+    private transient Collection<ModuleInfo> modulesInfo;
+
+    private transient String version;
+
     /**
      * Returns the only instance of this class.
      * 
@@ -268,18 +273,20 @@ public class OGCFrontController extends HttpServlet {
         return url;
     }
 
+    /**
+     * Returns the {@link ModuleInfo}s for the deegree modules accessible by the webapp classloader.
+     * 
+     * @return module infos, never <code>null</code>, but can be empty
+     */
+    public static Collection<ModuleInfo> getModulesInfo() {
+        return getInstance().modulesInfo;
+    }
+
     private static void addHeaders( HttpServletResponse response ) {
         // add cache control headers
         response.addHeader( "Cache-Control", "no-cache, no-store" );
         // add deegree header
-        String version = null;
-        for ( ModuleInfo moduleInfo : getModulesInfo() ) {
-            if ( moduleInfo.getArtifactId().equals( "deegree-core-base" ) && moduleInfo.getVersion() != null ) {
-                version = moduleInfo.getVersion();
-                break;
-            }
-        }
-        response.addHeader( "deegree-version", version == null ? "unknown" : version );
+        response.addHeader( "deegree-version", getInstance().version );
     }
 
     /**
@@ -1020,8 +1027,15 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "deegree modules" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            for ( ModuleInfo moduleInfo : getModulesInfo() ) {
+            modulesInfo = extractModulesInfo( config.getServletContext() );
+            for ( ModuleInfo moduleInfo : modulesInfo ) {
                 LOG.info( "- " + moduleInfo.toString() );
+                if ( moduleInfo.getArtifactId().equals( "deegree-services-commons" ) ) {
+                    version = moduleInfo.getVersion();
+                }
+            }
+            if ( version == null ) {
+                version = "unknown";
             }
             LOG.info( "" );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -1032,6 +1046,7 @@ public class OGCFrontController extends HttpServlet {
                       + System.getProperty( "java.vendor" ) + ")" );
             LOG.info( "- operating system   " + System.getProperty( "os.name" ) + " ("
                       + System.getProperty( "os.version" ) + ", " + System.getProperty( "os.arch" ) + ")" );
+            LOG.info( "- container          " + config.getServletContext().getServerInfo() );
             LOG.info( "- webapp path        " + ctxPath );
             LOG.info( "- default encoding   " + DEFAULT_ENCODING );
             LOG.info( "- system encoding    " + Charset.defaultCharset().displayName() );
@@ -1054,6 +1069,16 @@ public class OGCFrontController extends HttpServlet {
             JAXBUtils.fixThreadLocalLeaks();
             CONTEXT.remove();
         }
+    }
+
+    private Collection<ModuleInfo> extractModulesInfo( ServletContext servletContext )
+                            throws IOException, URISyntaxException {
+
+        if ( servletContext.getServerInfo() != null && servletContext.getServerInfo().contains( "WebLogic" ) ) {
+            LOG.debug( "Running on weblogic. Not extracting module info from classpath, but from WEB-INF/lib." );
+            return ModuleInfo.extractModulesInfo( forWebInfLib( servletContext ) );
+        }
+        return ModuleInfo.extractModulesInfo( forClassLoader() );
     }
 
     private void initWorkspace()

@@ -41,6 +41,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -385,7 +386,7 @@ public class WorkspaceBean implements Serializable {
 
     private String getVersion() {
         String version = null;
-        Collection<ModuleInfo> modules = ModuleInfo.getModulesInfo();
+        Collection<ModuleInfo> modules = getModulesInfo();
         for ( ModuleInfo module : modules ) {
             if ( module.getArtifactId().equals( "deegree-core-commons" ) ) {
                 version = module.getVersion();
