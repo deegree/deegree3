@@ -36,6 +36,7 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
+import static java.util.Collections.emptyList;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.reflections.util.ClasspathHelper.forClassLoader;
 import static org.reflections.util.ClasspathHelper.forWebInfLib;
@@ -1027,7 +1028,12 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "deegree modules" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            modulesInfo = extractModulesInfo( config.getServletContext() );
+            try {
+                modulesInfo = extractModulesInfo( config.getServletContext() );
+            } catch ( Throwable t ) {
+                LOG.error( "Unable to extract deegree module information: " + t.getMessage() );
+                modulesInfo = emptyList();
+            }
             for ( ModuleInfo moduleInfo : modulesInfo ) {
                 LOG.info( "- " + moduleInfo.toString() );
                 if ( moduleInfo.getArtifactId().equals( "deegree-services-commons" ) ) {
