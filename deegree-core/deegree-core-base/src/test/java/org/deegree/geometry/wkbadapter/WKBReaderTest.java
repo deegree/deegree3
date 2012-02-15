@@ -65,7 +65,7 @@ import org.junit.Test;
  */
 public class WKBReaderTest {
 
-    private final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
+    private final String BASE_DIR = "../wkb/";
 
     @Test
     public void testWKBToGML()

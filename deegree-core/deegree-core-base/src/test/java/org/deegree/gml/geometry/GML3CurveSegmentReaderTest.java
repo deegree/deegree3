@@ -360,7 +360,7 @@ public class GML3CurveSegmentReaderTest {
     private XMLStreamReaderWrapper getReader( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML3CurveSegmentReaderTest.class.getResource( "../../geometry/gml/testdata/segments/"
+                                                                       GML3CurveSegmentReaderTest.class.getResource( "../misc/geometry/segments/"
                                                                                                                      + fileName ) );
         xmlReader.nextTag();
         return xmlReader;

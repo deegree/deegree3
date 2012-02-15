@@ -126,7 +126,7 @@ public class GML3GeometryReaderTest {
 
     private static final Logger LOG = getLogger( GML3GeometryReaderTest.class );
 
-    private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
+    private static final String BASE_DIR = "../misc/geometry/";
 
     private static double DELTA = 0.00000001;
 
@@ -1206,7 +1206,7 @@ public class GML3GeometryReaderTest {
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
 
-        GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource( BASE_DIR + fileName ) );
+        GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource( "../aixm/geometry/" + fileName ) );
         gmlStream.setApplicationSchema( schema );
 
         XMLStreamReader xmlReader = gmlStream.getXMLReader();

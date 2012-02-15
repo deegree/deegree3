@@ -134,7 +134,7 @@ public class GML3SurfacePatchReaderTest {
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML3SurfacePatchReaderTest.class.getResource( "../../geometry/gml/testdata/patches/"
+                                                                       GML3SurfacePatchReaderTest.class.getResource( "../misc/geometry/patches/"
                                                                                                                      + fileName ) );
         xmlReader.nextTag();
         return xmlReader;

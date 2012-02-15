@@ -81,7 +81,7 @@ import org.junit.Test;
  */
 public class WKTWriterTest extends TestCase {
 
-    private final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
+    private final String BASE_DIR = "../../gml/misc/geometry/";
 
     private DecimalCoordinateFormatter decimalFormatter;
 

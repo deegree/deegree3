@@ -580,7 +580,7 @@ public class GMLFeatureReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( "aixm/AIXM51_BasicMessage.gml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../aixm/feature/AIXM51_BasicMessage.gml" );
         GMLStreamReader gmlReader = createGMLStreamReader( GML_32, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         assertEquals( 157, gmlReader.getAppSchema().getFeatureTypes().length );

@@ -70,7 +70,7 @@ import org.slf4j.Logger;
  */
 public class GeometryValidatorTest {
 
-    private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
+    private static final String BASE_DIR = "../../gml/misc/geometry/";
 
     @Test
     public void validateCurve()

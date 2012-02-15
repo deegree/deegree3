@@ -80,7 +80,7 @@ import org.junit.Test;
  */
 public class GML2GeometryTest extends TestCase {
 
-    private static final String BASE_DIR = "../../geometry/gml/testdata/gml21/";
+    private static final String BASE_DIR = "../misc/geometry/gml21/";
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 

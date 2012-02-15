@@ -64,7 +64,7 @@ import org.junit.Test;
  */
 public class GMLGeometryValidatorTest {
 
-    private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
+    private static final String BASE_DIR = "../misc/geometry/";
 
     @Test
     public void validateCurve()
