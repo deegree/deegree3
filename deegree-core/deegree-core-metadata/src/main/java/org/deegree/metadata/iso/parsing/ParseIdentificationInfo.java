@@ -36,6 +36,8 @@
 package org.deegree.metadata.iso.parsing;
 
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -554,14 +556,22 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<String> geographicDescCode = new ArrayList<String>();
             if ( extent != null ) {
                 for ( OMElement extentElem : extent ) {
-                    String temporalExtentBegin = getNodeAsString( extentElem,
-                                                                  new XPath(
-                                                                             "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
-                                                                             nsContextParseII ), null );
-                    String temporalExtentEnd = getNodeAsString( extentElem,
-                                                                new XPath(
-                                                                           "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
-                                                                           nsContextParseII ), null );
+                    String baseXPath = "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/";
+                    StringBuilder beginXPath = new StringBuilder();
+                    beginXPath.append( baseXPath ).append( "gmd:TimePeriod/gmd:beginPosition" ).append( " | " );
+                    beginXPath.append( baseXPath ).append( GML_PREFIX ).append( ":TimePeriod/" ).append( GML_PREFIX ).append( ":beginPosition" ).append( " | " );
+                    beginXPath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":beginPosition" );
+
+                    String temporalExtentBegin = getNodeAsString( extentElem, new XPath( beginXPath.toString(),
+                                                                                         nsContextParseII ), null );
+
+                    StringBuilder endXpath = new StringBuilder();
+                    endXpath.append( baseXPath ).append( "gmd:TimePeriod/gmd:endPosition" ).append( " | " );
+                    endXpath.append( baseXPath ).append( GML_PREFIX ).append( ":TimePeriod/" ).append( GML_PREFIX ).append( ":endPosition" ).append( " | " );
+                    endXpath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":endPosition" );
+
+                    String temporalExtentEnd = getNodeAsString( extentElem, new XPath( endXpath.toString(),
+                                                                                       nsContextParseII ), null );
                     try {
                         if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
                             tempBeg = parseDate( temporalExtentBegin );
@@ -667,7 +677,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 if ( keywordsOtherLang != null ) {
                     keywordList.addAll( Arrays.asList( keywordsOtherLang ) );
                 }
-                listOfKeywords.add( new Keyword( keywordType, keywordList, thesaurus ) );
+                if ( thesaurus != null || keywordType != null || keywordList.size() > 0 ) {
+                    listOfKeywords.add( new Keyword( keywordType, keywordList, thesaurus ) );
+                }
             }
             qp.setKeywords( listOfKeywords );
 
