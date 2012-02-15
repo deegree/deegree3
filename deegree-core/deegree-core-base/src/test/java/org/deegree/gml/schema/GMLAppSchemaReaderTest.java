@@ -275,7 +275,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
         FeatureType[] fts = schema.getFeatureTypes();
@@ -287,7 +287,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
         Assert.assertEquals( 35, schema.getGeometryTypes().size() );
@@ -298,7 +298,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
 
@@ -326,7 +326,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaUrl = this.getClass().getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
         String aixmNs = "http://www.aixm.aero/schema/5.1";

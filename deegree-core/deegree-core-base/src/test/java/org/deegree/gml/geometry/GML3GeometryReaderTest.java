@@ -1202,7 +1202,7 @@ public class GML3GeometryReaderTest {
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
                             XMLParsingException, UnknownCRSException {
 
-        String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
 

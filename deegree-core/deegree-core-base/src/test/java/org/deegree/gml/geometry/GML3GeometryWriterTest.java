@@ -433,7 +433,7 @@ public class GML3GeometryWriterTest {
         exporter.write( geom );
         xmlWriter.flush();
 
-        byte[] expected = IOUtils.toByteArray( GML3GeometryWriterTest.class.getResourceAsStream( expectedFileName ) );
+        byte[] expected = IOUtils.toByteArray( GML3GeometryWriterTest.class.getResourceAsStream( "../aixm/geometry/" + expectedFileName ) );
         String s = new String( expected, "UTF-8" );
         Assert.assertEquals( s, memoryWriter.toString() );
     }
@@ -443,7 +443,7 @@ public class GML3GeometryWriterTest {
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
                             XMLParsingException, UnknownCRSException {
 
-        String schemaUrl = GMLAppSchemaReaderTest.class.getResource( "aixm/message/AIXM_BasicMessage.xsd" ).toString();
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
 
