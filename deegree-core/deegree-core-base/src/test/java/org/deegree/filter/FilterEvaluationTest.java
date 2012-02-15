@@ -85,7 +85,7 @@ public class FilterEvaluationTest {
         GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractAppSchema();
 
-        URL docURL = this.getClass().getResource( "../gml/feature/Philosopher_FeatureCollection.xml" );
+        URL docURL = this.getClass().getResource( "../gml/misc/feature/Philosopher_FeatureCollection.xml" );
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         gmlStream.setApplicationSchema( schema );
         fc = (FeatureCollection) gmlStream.readFeature();

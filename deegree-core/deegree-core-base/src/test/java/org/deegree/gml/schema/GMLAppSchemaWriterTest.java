@@ -326,7 +326,7 @@ public class GMLAppSchemaWriterTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException {
 
-        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf1.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf1.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
 

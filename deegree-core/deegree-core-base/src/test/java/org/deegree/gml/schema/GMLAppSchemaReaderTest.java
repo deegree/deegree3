@@ -131,7 +131,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf0.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf0.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         List<FeatureType> fts = adapter.extractAppSchema().getFeatureTypes( "http://cite.opengeospatial.org/gmlsf",
                                                                             false, false );
@@ -143,7 +143,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf1.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf1.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 5, fts.length );
@@ -160,7 +160,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "cite/cite-gmlsf2.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf2.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         for ( int i = 0; i < fts.length; i++ ) {
@@ -175,7 +175,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "cite/all.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../cite/schema/all.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 21, fts.length );
@@ -186,7 +186,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "cite/all.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../cite/schema/all.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
         FeatureCollectionType ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/gml}_FeatureCollection" ) );

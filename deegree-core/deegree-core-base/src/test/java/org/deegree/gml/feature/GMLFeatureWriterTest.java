@@ -76,7 +76,7 @@ import org.junit.Test;
  */
 public class GMLFeatureWriterTest {
 
-    private final String SOURCE_FILE = "Philosopher_FeatureCollection.xml";
+    private final String SOURCE_FILE = "../misc/feature/Philosopher_FeatureCollection.xml";
 
     private final String SCHEMA_LOCATION_ATTRIBUTE = "../schema/Philosopher.xsd";
 
@@ -202,7 +202,7 @@ public class GMLFeatureWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             TransformationException, FactoryConfigurationError, IOException {
 
-        URL url = GMLFeatureWriterTest.class.getResource( "test.gml" );
+        URL url = GMLFeatureWriterTest.class.getResource( "../misc/feature/test.gml" );
         GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GML_2, url );
         FeatureCollection fc = reader.readFeatureCollection();
         XMLOutputFactory outfac = XMLOutputFactory.newInstance();
