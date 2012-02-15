@@ -4,7 +4,7 @@
   xmlns:sf="http://cite.opengeospatial.org/gmlsf"
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf ../../schema/cite/cite-gmlsf1.xsd">
+  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf ../schema/cite-gmlsf1.xsd">
 
   <gml:description>
   Test data for assessing compliance with the GMLSF profile at level SF-1.

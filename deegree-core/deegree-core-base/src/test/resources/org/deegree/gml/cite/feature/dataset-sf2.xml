@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gml:FeatureCollection gml:id="f106" xmlns:gml="http://www.opengis.net/gml" xmlns:sf="http://cite.opengeospatial.org/gmlsf"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf ../../schema/cite/cite-gmlsf2.xsd">
+  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf ../schema/cite-gmlsf2.xsd">
 
   <gml:description>
     Test data for assessing compliance with the GMLSF profile at level SF-2.
