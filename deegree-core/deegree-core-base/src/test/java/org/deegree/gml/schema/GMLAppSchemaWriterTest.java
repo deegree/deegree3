@@ -80,7 +80,7 @@ public class GMLAppSchemaWriterTest {
                             IllegalAccessException {
 
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null,
-                                                          this.getClass().getResource( "Philosopher.xsd" ).toString() );
+                                                          this.getClass().getResource( "../misc/schema/Philosopher.xsd" ).toString() );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app",
                                                                                                  false );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
@@ -106,7 +106,7 @@ public class GMLAppSchemaWriterTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../misc/schema/Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
         GMLSchemaInfoSet analyzer = new GMLSchemaInfoSet( null, schemaURL2, schemaURL );
         Assert.assertEquals( 4, analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true ).size() );

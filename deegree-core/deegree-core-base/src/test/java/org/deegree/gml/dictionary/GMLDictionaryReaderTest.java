@@ -65,7 +65,7 @@ public class GMLDictionaryReaderTest {
     public void testReadExampleDictionary()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URL url = GMLDictionaryReaderTest.class.getResource( "example_dictionary.gml" );
+        URL url = GMLDictionaryReaderTest.class.getResource( "../misc/dictionary/example_dictionary.gml" );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         // skip START_DOCUMENT event
@@ -84,7 +84,7 @@ public class GMLDictionaryReaderTest {
     public void testWriteExampleDictionary()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URL url = GMLDictionaryReaderTest.class.getResource( "example_dictionary.gml" );
+        URL url = GMLDictionaryReaderTest.class.getResource( "../misc/dictionary/example_dictionary.gml" );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         // skip START_DOCUMENT event

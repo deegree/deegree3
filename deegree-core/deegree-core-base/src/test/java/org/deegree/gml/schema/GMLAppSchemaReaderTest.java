@@ -76,7 +76,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../misc/schema/Philosopher.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
         List<FeatureType> fts = schema.getFeatureTypes( "http://www.deegree.org/app", true, true );
@@ -88,7 +88,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../misc/schema/Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL, schemaURL2 );
         List<FeatureType> fts = adapter.extractAppSchema().getFeatureTypes( "http://www.deegree.org/app", false, false );
@@ -262,7 +262,7 @@ public class GMLAppSchemaReaderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "CustomProperties.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../misc/schema/CustomProperties.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         List<FeatureType> fts = adapter.extractAppSchema().getFeatureTypes( "http://www.deegree.org/app", false, false );
         Assert.assertEquals( 1, fts.size() );

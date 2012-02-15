@@ -78,7 +78,7 @@ public class GMLFeatureWriterTest {
 
     private final String SOURCE_FILE = "../misc/feature/Philosopher_FeatureCollection.xml";
 
-    private final String SCHEMA_LOCATION_ATTRIBUTE = "../schema/Philosopher.xsd";
+    private final String SCHEMA_LOCATION_ATTRIBUTE = "../misc/schema/Philosopher.xsd";
 
     private final String SCHEMA_LOCATION = "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/feature.xsd http://www.deegree.org/app testdata/schema/Philosopher.xsd";
 
