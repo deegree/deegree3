@@ -153,7 +153,7 @@ public class Filter110XMLDecoderTest {
 
     private Filter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = Filter110XMLDecoderTest.class.getResource( "testdata/v110/" + resourceName );
+        URL url = Filter110XMLDecoderTest.class.getResource( "v110/" + resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();

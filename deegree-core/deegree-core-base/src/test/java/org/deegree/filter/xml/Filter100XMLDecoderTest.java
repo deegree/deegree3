@@ -105,7 +105,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter1()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter1.xml" );
+        Filter result = parse( "v100/testfilter1.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
@@ -121,7 +121,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter2()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter2.xml" );
+        Filter result = parse( "v100/testfilter2.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
@@ -137,7 +137,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter3()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter3.xml" );
+        Filter result = parse( "v100/testfilter3.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         Not op = (Not) opFilter.getOperator();
@@ -154,7 +154,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter4()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter4.xml" );
+        Filter result = parse( "v100/testfilter4.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         BBOX op = (BBOX) opFilter.getOperator();
@@ -177,7 +177,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter5()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter5.xml" );
+        Filter result = parse( "v100/testfilter5.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         And op = (And) opFilter.getOperator();
@@ -210,7 +210,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter6()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter6.xml" );
+        Filter result = parse( "v100/testfilter6.xml" );
         IdFilter idFilter = (IdFilter) result;
 
         Set<String> matchingIds = idFilter.getMatchingIds();
@@ -225,7 +225,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter7()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter7.xml" );
+        Filter result = parse( "v100/testfilter7.xml" );
         IdFilter idFilter = (IdFilter) result;
 
         Set<String> matchingIds = idFilter.getMatchingIds();
@@ -246,7 +246,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter8()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter8.xml" );
+        Filter result = parse( "v100/testfilter8.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
@@ -269,7 +269,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter9()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter9.xml" );
+        Filter result = parse( "v100/testfilter9.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
@@ -293,7 +293,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter10()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter10.xml" );
+        Filter result = parse( "v100/testfilter10.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
@@ -316,7 +316,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter11()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter11.xml" );
+        Filter result = parse( "v100/testfilter11.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
@@ -338,7 +338,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter12()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter12.xml" );
+        Filter result = parse( "v100/testfilter12.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsLike propIsLike = (PropertyIsLike) opFilter.getOperator();
@@ -356,7 +356,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter13()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter13.xml" );
+        Filter result = parse( "v100/testfilter13.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         Overlaps overlaps = (Overlaps) opFilter.getOperator();
@@ -386,7 +386,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter14()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter14.xml" );
+        Filter result = parse( "v100/testfilter14.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         And and = (And) opFilter.getOperator();
@@ -413,7 +413,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter15()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter15.xml" );
+        Filter result = parse( "v100/testfilter15.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         And and = (And) opFilter.getOperator();
@@ -442,7 +442,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Test
     public void testFilter16()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "testdata/v100/testfilter16.xml" );
+        Filter result = parse( "v100/testfilter16.xml" );
         OperatorFilter opFilter = (OperatorFilter) result;
 
         And and = (And) opFilter.getOperator();

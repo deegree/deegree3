@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -91,7 +90,7 @@ public class Filter110XMLEncoderTest {
     private Filter testImportExportImport( String resource )
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException {
-        URL url = Filter110XMLEncoderTest.class.getResource( "testdata/v110/" + resource );
+        URL url = Filter110XMLEncoderTest.class.getResource( "v110/" + resource );
         XMLStreamReader in = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(), url.openStream() );
         in.nextTag();
         Filter filter = Filter110XMLDecoder.parse( in );
@@ -101,7 +100,7 @@ public class Filter110XMLEncoderTest {
         out.close();
         in = XMLInputFactory.newInstance().createXMLStreamReader( new ByteArrayInputStream( bos.toByteArray() ) );
         in.nextTag();
-        System.out.println(new String(bos.toByteArray()));
+        System.out.println( new String( bos.toByteArray() ) );
         return Filter110XMLDecoder.parse( in );
     }
 
