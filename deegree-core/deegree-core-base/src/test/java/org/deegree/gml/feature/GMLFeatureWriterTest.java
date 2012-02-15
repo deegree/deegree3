@@ -76,8 +76,6 @@ import org.junit.Test;
  */
 public class GMLFeatureWriterTest {
 
-    private final String DIR = "testdata/features/";
-
     private final String SOURCE_FILE = "Philosopher_FeatureCollection.xml";
 
     private final String SCHEMA_LOCATION_ATTRIBUTE = "../schema/Philosopher.xsd";
@@ -93,7 +91,7 @@ public class GMLFeatureWriterTest {
         GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractAppSchema();
 
-        URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         Feature feature = gmlReader.readFeature();
@@ -127,7 +125,7 @@ public class GMLFeatureWriterTest {
         GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractAppSchema();
 
-        URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         Feature feature = gmlReader.readFeature();
@@ -204,14 +202,14 @@ public class GMLFeatureWriterTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             TransformationException, FactoryConfigurationError, IOException {
 
-        URL url = GMLFeatureWriterTest.class.getResource( "testdata/features/test.gml" );
+        URL url = GMLFeatureWriterTest.class.getResource( "test.gml" );
         GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GML_2, url );
         FeatureCollection fc = reader.readFeatureCollection();
         XMLOutputFactory outfac = XMLOutputFactory.newInstance();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         XMLStreamWriter writer = outfac.createXMLStreamWriter( os );
         GMLStreamWriter gmlwriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, writer );
-        gmlwriter.setNamespaceBindings( reader.getFeatureReader().getAppSchema().getNamespaceBindings() );
+        gmlwriter.setNamespaceBindings( reader.getAppSchema().getNamespaceBindings() );
         gmlwriter.write( fc );
         gmlwriter.close();
     }

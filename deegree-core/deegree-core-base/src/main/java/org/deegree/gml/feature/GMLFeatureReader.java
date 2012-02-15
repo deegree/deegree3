@@ -102,10 +102,10 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
     private static String FID = "fid";
 
     private static String GMLID = "id";
-    
-    public static final QName BOUNDED_BY_GML31 = new QName (GMLNS, "boundedBy", "gml");
 
-    public static final QName BOUNDED_BY_GML32 = new QName (GML3_2_NS, "boundedBy", "gml");
+    public static final QName BOUNDED_BY_GML31 = new QName( GMLNS, "boundedBy", "gml" );
+
+    public static final QName BOUNDED_BY_GML32 = new QName( GML3_2_NS, "boundedBy", "gml" );
 
     /**
      * Creates a new {@link GMLFeatureReader} instance that is configured from the given {@link GMLStreamReader}.
@@ -115,15 +115,6 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
      */
     public GMLFeatureReader( GMLStreamReader gmlStreamReader ) {
         super( gmlStreamReader );
-    }
-
-    /**
-     * Returns the associated {@link AppSchema} that describes the structure of the feature types.
-     * 
-     * @return the associated {@link AppSchema}
-     */
-    public AppSchema getAppSchema() {
-        return schema;
     }
 
     /**
@@ -145,6 +136,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
         if ( schema == null ) {
             schema = buildAppSchema( xmlStream );
+            gmlStreamReader.setApplicationSchema( schema );
         }
         if ( schema instanceof DynamicAppSchema ) {
             return parseFeatureDynamic( xmlStream, crs, (DynamicAppSchema) schema );
@@ -249,6 +241,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
                 propDecl = ( (DynamicFeatureType) ft ).addSimplePropertyDeclaration( lastPropDecl, propName );
             }
         } else {
+            System.out.println (xmlStream.getName());
             if ( gmlStreamReader.getGeometryReader().isGeometryElement( xmlStream ) ) {
                 LOG.debug( "Detected geometry property '" + propName + "'." );
                 propDecl = ( (DynamicFeatureType) ft ).addGeometryPropertyDeclaration( lastPropDecl, propName );
@@ -420,6 +413,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
         if ( schema == null ) {
             schema = buildAppSchema( xmlStream );
+            gmlStreamReader.setApplicationSchema( schema );
         }
         String fid = parseFeatureId( xmlStream );
         QName featureName = xmlStream.getName();

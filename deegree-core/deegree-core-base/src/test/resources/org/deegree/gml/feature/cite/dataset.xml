@@ -7,7 +7,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="
 	http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd
-	http://www.opengis.net/cite/data ../schema/cite/all.xsd">
+	http://www.opengis.net/cite/data ../../schema/cite/all.xsd">
 
 	<gml:description>Test data for assessing compliance</gml:description>
 	<gml:name>CITE/WFS-1.0.0</gml:name>

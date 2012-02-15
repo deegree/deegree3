@@ -79,7 +79,7 @@ import org.junit.Test;
  */
 public class GMLObjectXPathTest {
 
-    private static final String BASE_DIR = "../../gml/feature/testdata/features/";
+    private static final String BASE_DIR = "../../gml/feature/";
 
     private FeatureCollection fc;
 

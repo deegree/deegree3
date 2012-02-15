@@ -279,7 +279,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @return true, if the element is a GML 3.1.1 geometry element, false otherwise
      */
     public boolean isGeometryElement( QName elName ) {
-        if ( schema != null ) {
+        if ( schema != null && schema.getGeometryHierarchy() != null ) {
             GMLObjectType type = schema.getGeometryType( elName );
             return type != null;
         }
