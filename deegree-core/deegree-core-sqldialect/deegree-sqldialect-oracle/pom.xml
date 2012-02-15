@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.2-pre4-SNAPSHOT</version>
+    <version>3.2-pre4</version>
   </parent>
 
   <repositories>
@@ -54,8 +54,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre1</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.2-pre1</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre1</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre4/deegree3/tags/3.2-pre1</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.2-pre4/deegree3/tags/3.2-pre1</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre4/deegree3/tags/3.2-pre1</url>
   </scm>
 </project>
