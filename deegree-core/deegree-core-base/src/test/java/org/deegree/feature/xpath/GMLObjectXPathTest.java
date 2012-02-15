@@ -92,7 +92,7 @@ public class GMLObjectXPathTest {
     public void setUp()
                             throws Exception {
 
-        String schemaURL = this.getClass().getResource( "../../gml/schema/Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../../gml/misc/schema/Philosopher.xsd" ).toString();
         GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractAppSchema();
 

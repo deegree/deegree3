@@ -360,14 +360,11 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
-        if ( schemaURL == null ) {
-            return;
-        }
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL );
+        URL schemaURL = GMLFeatureReaderTest.class.getResource( "../inspire/schema/Addresses.xsd" );
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL.toString() );
         AppSchema schema = adapter.extractAppSchema();
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( "inspire_addresses1.gml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../inspire/feature/inspire_addresses1.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
         gmlReader.setApplicationSchema( schema );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
@@ -382,14 +379,11 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
-        if ( schemaURL == null ) {
-            return;
-        }
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL );
+        URL schemaURL = GMLFeatureReaderTest.class.getResource( "../inspire/schema/Addresses.xsd" );
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL.toString() );
         AppSchema schema = adapter.extractAppSchema();
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( "inspire_addresses1.gml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../inspire/feature/inspire_addresses1.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
         gmlReader.setApplicationSchema( schema );
         StreamFeatureCollection fc = gmlReader.readFeatureCollectionStream();
@@ -406,14 +400,11 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
-        if ( schemaURL == null ) {
-            return;
-        }
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL );
+        URL schemaURL = GMLFeatureReaderTest.class.getResource( "../inspire/schema/Addresses.xsd" );
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL.toString() );
         AppSchema schema = adapter.extractAppSchema();
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( "inspire_addresses2.gml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../inspire/feature/inspire_addresses2.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
         gmlReader.setApplicationSchema( schema );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
@@ -428,14 +419,11 @@ public class GMLFeatureReaderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        String schemaURL = TestProperties.getProperty( "schema_inspire_addresses" );
-        if ( schemaURL == null ) {
-            return;
-        }
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL );
+        URL schemaURL = GMLFeatureReaderTest.class.getResource( "../inspire/schema/Addresses.xsd" );
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_32, null, schemaURL.toString() );
         AppSchema schema = adapter.extractAppSchema();
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( "inspire_addresses2.gml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../inspire/feature/inspire_addresses2.gml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
         gmlReader.setApplicationSchema( schema );
         StreamFeatureCollection fc = gmlReader.readFeatureCollectionStream();
