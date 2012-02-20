@@ -897,12 +897,15 @@ public class WebFeatureService extends AbstractOWS {
                                                         String schemaLocation )
                             throws XMLStreamException, IOException {
 
-        writer.setContentType( mimeType );
         boolean needsEncoding = mimeType.startsWith( "text" );
+        XMLStreamWriter xmlWriter = writer.getXMLWriter( needsEncoding );
+        // call setContentType(...) after setCharacterEncoding(...) to avoid problems on certain web containers
+        // see http://tracker.deegree.org/deegree-services/ticket/323
+        writer.setContentType( mimeType );
         if ( schemaLocation == null ) {
-            return writer.getXMLWriter( needsEncoding );
+            return xmlWriter;
         }
-        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter( needsEncoding ), schemaLocation );
+        return new SchemaLocationXMLStreamWriter( xmlWriter, schemaLocation );
     }
 
     private void sendServiceException110( OWSException ex, HttpResponseBuffer response )
