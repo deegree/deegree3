@@ -45,6 +45,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.observation.model.Procedure;
+import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.services.jaxb.sos.ServiceConfiguration;
 import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering;
 import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Procedure.Location;
@@ -89,17 +90,21 @@ public class SOSBuilder {
     private SOService buildService( DeegreeWorkspace workspace, URL configUrl ) {
         SOService result = new SOService();
         ServiceConfiguration serviceConf = ServiceConfigurationXMLAdapter.parse( workspace, configUrl );
+
+        ObservationStoreManager storeMgr = workspace.getSubsystemManager( ObservationStoreManager.class );
+
         for ( Offering conf : serviceConf.getOffering() ) {
-            result.addOffering( createOffering( conf ) );
+            result.addOffering( createOffering( conf, storeMgr ) );
         }
         return result;
     }
 
     /**
      * @param conf
+     * @param storeMgr
      * @return
      */
-    private org.deegree.observation.model.Offering createOffering( Offering conf ) {
+    private org.deegree.observation.model.Offering createOffering( Offering conf, ObservationStoreManager storeMgr ) {
         String offeringName = conf.getName();
         String observationStoreId = conf.getObservationStoreId();
         String srsName = conf.getSrsName();
@@ -131,7 +136,8 @@ public class SOSBuilder {
                                                                                                       offeringName,
                                                                                                       observationStoreId,
                                                                                                       srsName,
-                                                                                                      procedures );
+                                                                                                      procedures,
+                                                                                                      storeMgr );
         return offering;
     }
 }

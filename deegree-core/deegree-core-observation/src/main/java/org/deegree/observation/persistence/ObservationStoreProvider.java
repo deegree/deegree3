@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence;
 
-import java.net.URL;
-
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
  * The <code>ObservationStoreProvider</code> class makes an observation store model available. This can include a
@@ -48,17 +46,8 @@ import org.deegree.commons.config.ResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface ObservationStoreProvider extends ResourceProvider {
+public interface ObservationStoreProvider extends ExtendedResourceProvider<ObservationDatastore> {
 
-    /**
-     * Creates a new {@link ObservationDatastore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new observation store instance, configured, not initialized yet
-     * @throws ObservationDatastoreException
-     */
-    public ObservationDatastore getObservationStore( URL configURL )
-                            throws ObservationDatastoreException;
+    // specializes type parameter
 
 }

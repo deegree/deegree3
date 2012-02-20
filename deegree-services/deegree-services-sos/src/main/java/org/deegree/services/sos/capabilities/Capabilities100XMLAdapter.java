@@ -113,7 +113,7 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
      */
     public static void export( Set<Sections> sections, List<Offering> offerings,
                                DeegreeServicesMetadataType serviceMetadata, ServiceIdentificationType identification,
-                               XMLStreamWriter writer )
+                               XMLStreamWriter writer, ObservationStoreManager storeMgr )
                             throws XMLStreamException, ObservationDatastoreException {
 
         writer.writeStartElement( SOS_PREFIX, "Capabilities", SOS_NS );
@@ -140,20 +140,20 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
             exportFilterCapabilities( writer );
         }
         if ( sections.contains( Sections.Contents ) ) {
-            exportContents( writer, offerings );
+            exportContents( writer, offerings, storeMgr );
         }
         writer.writeEndElement(); // Capabilities
         writer.writeEndDocument();
     }
 
-    private static void exportContents( XMLStreamWriter writer, List<Offering> offerings )
+    private static void exportContents( XMLStreamWriter writer, List<Offering> offerings,
+                                        ObservationStoreManager storeMgr )
                             throws XMLStreamException, ObservationDatastoreException {
         writer.writeStartElement( SOS_NS, "Contents" );
         writer.writeStartElement( SOS_NS, "ObservationOfferingList" );
 
         for ( Offering offering : offerings ) {
-            Offering100XMLAdapter.export( writer, offering,
-                                          ObservationStoreManager.getDatastoreById( offering.getObservationStoreId() ) );
+            Offering100XMLAdapter.export( writer, offering, storeMgr.get( offering.getObservationStoreId() ) );
         }
         writer.writeEndElement(); // ObservationOfferingList
         writer.writeEndElement(); // Contents
@@ -185,8 +185,6 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement();
     }
-
-
 
     private static void exportFilterCapabilities( XMLStreamWriter writer )
                             throws XMLStreamException {

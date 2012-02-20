@@ -66,6 +66,8 @@ public class Offering {
 
     private final List<Procedure> procedures;
 
+    private final ObservationStoreManager storeMgr;
+    
     /**
      * map between procedure sensor id and the procedure bean
      */
@@ -89,11 +91,13 @@ public class Offering {
      * @param procedures
      * @param propertiesHref
      */
-    public Offering( String offeringName, String observationStoreId, String srsName, List<Procedure> procedures ) {
+    public Offering( String offeringName, String observationStoreId, String srsName, List<Procedure> procedures,
+                     ObservationStoreManager storeMgr ) {
         this.offeringName = offeringName;
         this.observationStoreId = observationStoreId;
         this.srsName = srsName;
         this.procedures = procedures;
+        this.storeMgr = storeMgr;
 
         for ( Procedure proc : procedures ) {
             procedureMap.put( proc.getSensorId(), proc );
@@ -129,7 +133,7 @@ public class Offering {
 
     public ObservationDatastore getDatastore()
                             throws ObservationDatastoreException {
-        return ObservationStoreManager.getDatastoreById( observationStoreId );
+        return storeMgr.get(  observationStoreId );
     }
 
     public Procedure getProcedureBySensorId( String sensorId ) {

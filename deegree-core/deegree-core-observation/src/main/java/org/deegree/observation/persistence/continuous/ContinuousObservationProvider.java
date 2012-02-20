@@ -35,21 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence.continuous;
 
-import static java.util.Collections.singletonMap;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.observation.model.Property;
 import org.deegree.observation.persistence.ObservationDatastore;
-import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreProvider;
 import org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore;
 import org.slf4j.Logger;
@@ -59,15 +58,19 @@ import org.slf4j.LoggerFactory;
  * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class ContinuousObservationProvider implements ObservationStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( ContinuousObservationProvider.class );
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.observation.persistence.contsql.jaxb";
+
+    private static final URL CONFIG_SCHEMA = ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/contsql/3.0.0/contsql.xsd" );
+
+    private DeegreeWorkspace ws;
 
     @Override
     public String getConfigNamespace() {
@@ -80,30 +83,30 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
-    public ObservationDatastore getObservationStore( URL configURL )
-                            throws ObservationDatastoreException {
+    public ObservationDatastore create( URL configURL )
+                            throws ResourceInitException {
+
         ContinuousObservationDatastore store = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.observation.persistence.contsql.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            ContinuousObservationStore config = (ContinuousObservationStore) u.unmarshal( configURL );
-
-            String jdbcId = config.getJDBCConnId();
-            String tableName = config.getTable();
+            ContinuousObservationStore cfg = (ContinuousObservationStore) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                                CONFIG_SCHEMA,
+                                                                                                configURL, ws );
+            String jdbcId = cfg.getJDBCConnId();
+            String tableName = cfg.getTable();
 
             Map<String, String> columnMap = new HashMap<String, String>();
-            List<org.deegree.observation.persistence.contsql.jaxb.ColumnType> columns = config.getColumn();
+            List<org.deegree.observation.persistence.contsql.jaxb.ColumnType> columns = cfg.getColumn();
             for ( org.deegree.observation.persistence.contsql.jaxb.ColumnType col : columns ) {
                 columnMap.put( col.getType(), col.getName() );
             }
 
             Map<String, String> optionsMap = new HashMap<String, String>();
-            List<org.deegree.observation.persistence.contsql.jaxb.OptionType> optionTypes = config.getOption();
+            List<org.deegree.observation.persistence.contsql.jaxb.OptionType> optionTypes = cfg.getOption();
             for ( org.deegree.observation.persistence.contsql.jaxb.OptionType opt : optionTypes ) {
                 optionsMap.put( opt.getName(), opt.getValue() );
             }
 
-            List<org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property> jaxbProps = config.getProperty();
+            List<org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property> jaxbProps = cfg.getProperty();
             List<Property> properties = new ArrayList<Property>();
             for ( org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property propType : jaxbProps ) {
                 org.deegree.observation.model.Property prop = new org.deegree.observation.model.Property(
@@ -121,8 +124,19 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new ObservationDatastoreException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
         return store;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        this.ws = workspace;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[0];
     }
 }

@@ -41,13 +41,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.observation.persistence.ObservationDatastore;
-import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreProvider;
+import org.deegree.observation.persistence.continuous.ContinuousObservationProvider;
 import org.deegree.observation.persistence.simplesql.jaxb.ColumnType;
 import org.deegree.observation.persistence.simplesql.jaxb.OptionType;
 import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore;
@@ -60,15 +62,19 @@ import org.slf4j.LoggerFactory;
  * te
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class SimpleObservationProvider implements ObservationStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( SimpleObservationProvider.class );
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.observation.persistence.simplesql.jaxb";
+
+    private static final URL CONFIG_SCHEMA = ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/simplesql/3.0.0/simplesql.xsd" );;
+
+    private DeegreeWorkspace ws;
 
     @Override
     public String getConfigNamespace() {
@@ -81,13 +87,14 @@ public class SimpleObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
-    public ObservationDatastore getObservationStore( URL configURL )
-                            throws ObservationDatastoreException {
+    public ObservationDatastore create( URL configURL )
+                            throws ResourceInitException {
+
         SimpleObservationDatastore store = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.observation.persistence.simplesql.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            SimpleObservationStore config = (SimpleObservationStore) u.unmarshal( configURL );
+
+            SimpleObservationStore config = (SimpleObservationStore) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                           CONFIG_SCHEMA, configURL, ws );
 
             String jdbcId = config.getJDBCConnId();
             String tableName = config.getTable();
@@ -122,8 +129,19 @@ public class SimpleObservationProvider implements ObservationStoreProvider {
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
-            throw new ObservationDatastoreException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
         return store;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        this.ws = workspace;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[0];
     }
 }

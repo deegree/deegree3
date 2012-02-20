@@ -36,10 +36,11 @@
 package org.deegree.observation.persistence.binary;
 
 import java.net.URL;
-import java.util.Map;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.observation.persistence.ObservationDatastore;
-import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreProvider;
 
 /**
@@ -69,10 +70,21 @@ public class BinaryObservationProvider implements ObservationStoreProvider {
     }
 
     @Override
-    public ObservationDatastore getObservationStore( URL configURL )
-                            throws ObservationDatastoreException {
+    public ObservationDatastore create( URL configURL )
+                            throws ResourceInitException {
         // TODO
-        throw new ObservationDatastoreException(
-                                                 "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
+        throw new ResourceInitException(
+                                         "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace ) {
+        // nothing to do
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<? extends ResourceManager>[] getDependencies() {
+        return new Class[0];
     }
 }

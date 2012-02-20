@@ -50,6 +50,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.JDBCUtils;
@@ -393,4 +395,14 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         return result;
     }
 
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // TODO Auto-generated method stub        
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub        
+    }
 }

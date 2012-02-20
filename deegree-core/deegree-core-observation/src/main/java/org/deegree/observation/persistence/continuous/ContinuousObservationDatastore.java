@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Duration;
@@ -102,7 +103,7 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
      */
     public ContinuousObservationDatastore( String jdbcId, String tableName, Map<String, String> columnMap,
                                            Map<String, String> optionMap, List<Property> properties )
-                            throws ObservationDatastoreException {
+                            throws ResourceInitException {
         super( jdbcId, tableName, columnMap, optionMap, properties );
         try {
             begin = parseDateTime( optionMap.get( "beginDate" ) ).getDate();
@@ -115,11 +116,11 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
             }
             String idField = optionMap.get( "id" );
             if ( idField == null ) {
-                throw new ObservationDatastoreException( "the datastore configuration is missing the 'id' column" );
+                throw new ResourceInitException( "the datastore configuration is missing the 'id' column" );
             }
             filterConverter = new ContinuousFilterConverter( columnMap, idField, begin, interval, id );
         } catch ( ParseException e ) {
-            throw new ObservationDatastoreException( "error setting the beginDate/interval", e.getCause() );
+            throw new ResourceInitException( "error setting the beginDate/interval", e.getCause() );
         }
     }
 

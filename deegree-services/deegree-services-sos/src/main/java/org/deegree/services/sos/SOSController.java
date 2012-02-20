@@ -92,6 +92,7 @@ import org.deegree.observation.model.Observation;
 import org.deegree.observation.model.Offering;
 import org.deegree.observation.model.Procedure;
 import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
@@ -589,8 +590,9 @@ public class SOSController extends AbstractOWS {
         negotiateVersion( capabilitiesReq ); // throws OWS Exception, if version is not supported
         XMLStreamWriter xmlWriter = response.getXMLWriter();
         Set<Sections> sections = getSections( capabilitiesReq );
+        ObservationStoreManager storeMgr = workspace.getSubsystemManager( ObservationStoreManager.class );
         Capabilities100XMLAdapter.export( sections, sosService.getAllOfferings(), serviceMetadata, identification,
-                                          xmlWriter );
+                                          xmlWriter, storeMgr );
         xmlWriter.flush();
     }
 

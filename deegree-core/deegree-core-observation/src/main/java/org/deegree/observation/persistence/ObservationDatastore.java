@@ -37,6 +37,7 @@ package org.deegree.observation.persistence;
 
 import java.util.List;
 
+import org.deegree.commons.config.Resource;
 import org.deegree.observation.model.Observation;
 import org.deegree.observation.model.Offering;
 import org.deegree.observation.model.Property;
@@ -52,7 +53,7 @@ import org.deegree.protocol.sos.time.SamplingTime;
  * @version $Revision$, $Date$
  * 
  */
-public interface ObservationDatastore {
+public interface ObservationDatastore extends Resource {
 
     /**
      * Get measurements from the datastore.
