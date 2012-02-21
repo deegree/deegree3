@@ -96,11 +96,11 @@ public class FeatureLayerExtractor {
                 XMLStreamReader reader = infac.createXMLStreamReader( new StreamSource( s.getConfigLocation() ) );
                 reader.next();
 
-                if ( crs == null && reader.isStartElement() && reader.getLocalName().equals( "CRS" ) ) {
-                    crs = reader.getElementText();
-                }
-
                 while ( reader.hasNext() ) {
+                    if ( crs == null && reader.isStartElement() && reader.getLocalName().equals( "CRS" ) ) {
+                        crs = reader.getElementText();
+                    }
+
                     if ( reader.isStartElement()
                          && ( reader.getLocalName().equals( "RequestableLayer" ) || reader.getLocalName().equals( "LogicalLayer" ) ) ) {
 
