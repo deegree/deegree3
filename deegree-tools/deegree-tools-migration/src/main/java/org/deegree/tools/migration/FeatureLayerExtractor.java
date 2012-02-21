@@ -89,10 +89,17 @@ public class FeatureLayerExtractor {
 
         int logicalLayerCount = 0;
 
+        String crs = null;
+
         for ( ResourceState<?> s : states ) {
             if ( s.getResource() instanceof WMSController ) {
                 XMLStreamReader reader = infac.createXMLStreamReader( new StreamSource( s.getConfigLocation() ) );
                 reader.next();
+
+                if ( crs == null && reader.isStartElement() && reader.getLocalName().equals( "CRS" ) ) {
+                    crs = reader.getElementText();
+                }
+
                 while ( reader.hasNext() ) {
                     if ( reader.isStartElement()
                          && ( reader.getLocalName().equals( "RequestableLayer" ) || reader.getLocalName().equals( "LogicalLayer" ) ) ) {
@@ -160,6 +167,7 @@ public class FeatureLayerExtractor {
             String flns = "http://www.deegree.org/layers/feature";
             String lns = "http://www.deegree.org/layers/base";
             String dns = "http://www.deegree.org/metadata/description";
+            String gns = "http://www.deegree.org/metadata/spatial";
 
             XMLStreamWriter writer = new IndentingXMLStreamWriter( outfac.createXMLStreamWriter( bos ) );
             writer.writeStartDocument();
@@ -168,6 +176,7 @@ public class FeatureLayerExtractor {
             writer.writeDefaultNamespace( flns );
             writer.writeNamespace( "l", lns );
             writer.writeNamespace( "d", dns );
+            writer.writeNamespace( "g", gns );
             writer.writeAttribute( "configVersion", "3.2.0" );
 
             XMLAdapter.writeElement( writer, flns, "FeatureStoreId", id );
@@ -176,6 +185,7 @@ public class FeatureLayerExtractor {
                 writer.writeStartElement( flns, "FeatureLayer" );
                 XMLAdapter.writeElement( writer, lns, "Name", l.name );
                 XMLAdapter.writeElement( writer, dns, "Title", l.title );
+                XMLAdapter.writeElement( writer, gns, "CRS", crs );
                 if ( !( Double.isInfinite( l.minscale ) && Double.isInfinite( l.maxscale ) ) ) {
                     writer.writeStartElement( lns, "ScaleDenominators" );
                     if ( !Double.isInfinite( l.minscale ) ) {
