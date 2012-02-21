@@ -224,7 +224,7 @@ public class GetMap {
                    boolean transparent ) throws OWSException {
         for ( Pair<String, String> layer : layers ) {
             this.layers.add( new LayerRef( layer.first ) );
-            this.styles.add( new StyleRef( layer.second ) );
+            this.styles.add( layer.second != null ? new StyleRef( layer.second ) : null );
         }
         this.width = width;
         this.height = height;
