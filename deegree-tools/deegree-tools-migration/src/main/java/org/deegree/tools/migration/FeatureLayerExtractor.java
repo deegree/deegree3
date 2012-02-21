@@ -55,6 +55,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.layer.persistence.LayerStoreManager;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.wms.controller.WMSController;
@@ -76,7 +77,7 @@ public class FeatureLayerExtractor {
 
     public void extract()
                             throws XMLStreamException {
-        Pattern stylepattern = Pattern.compile( "\\.\\./styles/([a-z]+)\\.xml" );
+        Pattern stylepattern = Pattern.compile( "\\.\\./styles/([A-Za-z_0-9]+)\\.xml" );
         LayerStoreManager lmgr = workspace.getSubsystemManager( LayerStoreManager.class );
         WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
         ResourceState<?>[] states = mgr.getStates();
@@ -86,17 +87,28 @@ public class FeatureLayerExtractor {
 
         Map<String, List<FeatureLayer>> map = new HashMap<String, List<FeatureLayer>>();
 
+        int logicalLayerCount = 0;
+
         for ( ResourceState<?> s : states ) {
             if ( s.getResource() instanceof WMSController ) {
                 XMLStreamReader reader = infac.createXMLStreamReader( new StreamSource( s.getConfigLocation() ) );
+                reader.next();
                 while ( reader.hasNext() ) {
-                    reader.next();
-                    if ( reader.isStartElement() && reader.getLocalName().equals( "RequestableLayer" ) ) {
-                        reader.nextTag();
+                    if ( reader.isStartElement()
+                         && ( reader.getLocalName().equals( "RequestableLayer" ) || reader.getLocalName().equals( "LogicalLayer" ) ) ) {
+
                         FeatureLayer l = new FeatureLayer();
-                        l.name = reader.getElementText();
-                        reader.nextTag();
-                        l.title = reader.getElementText();
+
+                        if ( reader.getLocalName().equals( "RequestableLayer" ) ) {
+                            reader.nextTag();
+                            l.name = reader.getElementText();
+                            reader.nextTag();
+                            l.title = reader.getElementText();
+                        } else {
+                            l.name = "LogicalLayer_" + ++logicalLayerCount;
+                            l.title = l.name;
+                        }
+
                         reader.nextTag();
                         if ( reader.getLocalName().equals( "ScaleDenominators" ) ) {
                             if ( reader.getAttributeValue( null, "min" ) != null ) {
@@ -106,12 +118,15 @@ public class FeatureLayerExtractor {
                                 l.maxscale = Double.parseDouble( reader.getAttributeValue( null, "max" ) );
                             }
                             reader.nextTag();
+                            reader.nextTag();
                         }
+
                         String ftid = null;
                         if ( reader.getLocalName().equals( "FeatureStoreId" ) ) {
                             ftid = reader.getElementText();
                             reader.nextTag();
                         }
+
                         if ( reader.getLocalName().equals( "DirectStyle" ) ) {
                             reader.nextTag();
                             String text = reader.getElementText();
@@ -132,6 +147,7 @@ public class FeatureLayerExtractor {
                         }
                         list.add( l );
                     }
+                    reader.next();
                 }
             }
         }
@@ -145,7 +161,7 @@ public class FeatureLayerExtractor {
             String lns = "http://www.deegree.org/layers/base";
             String dns = "http://www.deegree.org/metadata/description";
 
-            XMLStreamWriter writer = outfac.createXMLStreamWriter( bos );
+            XMLStreamWriter writer = new IndentingXMLStreamWriter( outfac.createXMLStreamWriter( bos ) );
             writer.writeStartDocument();
             writer.setDefaultNamespace( flns );
             writer.writeStartElement( flns, "FeatureLayers" );
@@ -163,10 +179,10 @@ public class FeatureLayerExtractor {
                 if ( !( Double.isInfinite( l.minscale ) && Double.isInfinite( l.maxscale ) ) ) {
                     writer.writeStartElement( lns, "ScaleDenominators" );
                     if ( !Double.isInfinite( l.minscale ) ) {
-                        writer.writeAttribute( null, "min", Double.toString( l.minscale ) );
+                        writer.writeAttribute( "min", Double.toString( l.minscale ) );
                     }
                     if ( !Double.isInfinite( l.maxscale ) ) {
-                        writer.writeAttribute( null, "max", Double.toString( l.maxscale ) );
+                        writer.writeAttribute( "max", Double.toString( l.maxscale ) );
                     }
                     writer.writeEndElement();
                 }

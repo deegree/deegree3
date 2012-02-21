@@ -3,11 +3,10 @@
   xmlns:t='http://www.deegree.org/themes/standard' xmlns:d='http://www.deegree.org/metadata/description' xmlns:g='http://www.deegree.org/metadata/spatial'>
 
   <strip-space elements='*' />
-  <output indent='yes' />
 
   <template match="text()|@*|*" />
-  <template match="text()|@*|*" mode="fstore"/>
-  <template match="text()|@*|*" mode="layer"/>
+  <template match="text()|@*|*" mode="fstore" />
+  <template match="text()|@*|*" mode="layer" />
 
   <template match='/*'>
     <apply-templates />
@@ -40,7 +39,9 @@
     </t:Theme>
   </template>
 
-  <template match='wms:LogicalLayer' mode='layer' />
+  <template match='wms:LogicalLayer' mode='layer'>
+    <t:Layer>LogicalLayer</t:Layer>
+  </template>
 
   <template match='wms:CRS'>
     <g:CRS><value-of select='.' /></g:CRS>
