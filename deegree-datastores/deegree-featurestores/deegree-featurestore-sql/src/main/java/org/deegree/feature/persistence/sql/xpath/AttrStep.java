@@ -50,12 +50,17 @@ class AttrStep extends MappableNameStep {
     public AttrStep( QName nodeName ) {
         super( nodeName );
     }
-    
+
     @Override
     public boolean equals( Object o ) {
         if ( !( o instanceof AttrStep ) ) {
             return false;
         }
         return ( (AttrStep) o ).getNodeName().equals( getNodeName() );
-    }    
+    }
+
+    @Override
+    public String toString() {
+        return "@" + getNodeName().toString();
+    }
 }

@@ -1,0 +1,1291 @@
+<SQLFeatureStore configVersion="3.1.0" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd"
+  xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:message="http://www.aixm.aero/schema/5.1/message" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:gml="http://www.opengis.net/gml/3.2">
+  <JDBCConnId>deegree-test</JDBCConnId>
+  <StorageCRS srid="-1" dim="2D">urn:ogc:def:crs:EPSG:4326</StorageCRS>
+  <GMLSchema>../../appschemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchema>
+
+  <FeatureTypeMapping name="aixm:AirportHeliport" table="aixm_airportheliport">
+    <FIDMapping prefix="AIXM_AIRPORTHELIPORT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+    <Complex path="aixm:timeSlice">
+      <Join fromColumns="attr_gml_id" toColumns="fk_attr_gml_id" table="aixm_airportheliport_aixm_timeslice" />
+      <Complex path="aixm:AirportHeliportTimeSlice">
+        <Primitive path="@gml:id" mapping="attr_gml_id" />
+        <Complex path="gml:validTime">
+          <Complex path="gml:TimePeriod">
+            <Primitive path="@gml:id" mapping="gml_validtime_gml_timeperiod_attr_gml_id" />
+            <Complex path="gml:beginPosition">
+              <Primitive path="@indeterminatePosition" mapping="gml_validtime_gml_timeperiod_gml_beginposition_attr_indeterminateposition" />
+              <Primitive path="text()" mapping="gml_validtime_gml_timeperiod_gml_beginposition_value" />
+            </Complex>
+            <Complex path="gml:endPosition">
+              <Primitive path="@indeterminatePosition" mapping="gml_validtime_gml_timeperiod_gml_endposition_attr_indeterminateposition" />
+              <Primitive path="text()" mapping="gml_validtime_gml_timeperiod_gml_endposition_value" />
+            </Complex>
+          </Complex>
+        </Complex>
+        <Primitive path="aixm:interpretation" mapping="aixm_interpretation" />
+        <Primitive path="aixm:sequenceNumber" mapping="aixm_sequencenumber" />
+        <Primitive path="aixm:correctionNumber" mapping="aixm_correctionnumber" />
+        <Complex path="aixm:ARP">
+          <Complex path="aixm:ElevatedPoint">
+            <Geometry path="." mapping="aixm_arp_aixm_elevatedpoint_geom" />
+            <Complex path="aixm:elevation">
+              <Primitive path="@uom" mapping="aixm_arp_aixm_elevatedpoint_attr_uom" />
+              <Primitive path="text()" mapping="aixm_arp_aixm_elevatedpoint_value" />
+            </Complex>
+          </Complex>
+        </Complex>
+      </Complex>
+    </Complex>
+  </FeatureTypeMapping>
+
+  <FeatureTypeMapping name="aixm:AerialRefuelling" table="aixm_aerialrefuelling">
+    <FIDMapping prefix="AIXM_AERIALREFUELLING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AeronauticalGroundLight" table="aixm_aeronauticalgroundlight">
+    <FIDMapping prefix="AIXM_AERONAUTICALGROUNDLIGHT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirTrafficControlService" table="aixm_airtrafficcontrolservice">
+    <FIDMapping prefix="AIXM_AIRTRAFFICCONTROLSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirTrafficManagementService" table="aixm_airtrafficmanagementservice">
+    <FIDMapping prefix="AIXM_AIRTRAFFICMANAGEMENTSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AircraftGroundService" table="aixm_aircraftgroundservice">
+    <FIDMapping prefix="AIXM_AIRCRAFTGROUNDSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AircraftStand" table="aixm_aircraftstand">
+    <FIDMapping prefix="AIXM_AIRCRAFTSTAND_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirportClearanceService" table="aixm_airportclearanceservice">
+    <FIDMapping prefix="AIXM_AIRPORTCLEARANCESERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirportHeliportCollocation" table="aixm_airportheliportcollocation">
+    <FIDMapping prefix="AIXM_AIRPORTHELIPORTCOLLOCATION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirportHotSpot" table="aixm_airporthotspot">
+    <FIDMapping prefix="AIXM_AIRPORTHOTSPOT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirportProtectionAreaMarking" table="aixm_airportprotectionareamarking">
+    <FIDMapping prefix="AIXM_AIRPORTPROTECTIONAREAMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirportSuppliesService" table="aixm_airportsuppliesservice">
+    <FIDMapping prefix="AIXM_AIRPORTSUPPLIESSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Airspace" table="aixm_airspace">
+    <FIDMapping prefix="AIXM_AIRSPACE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AirspaceBorderCrossing" table="aixm_airspacebordercrossing">
+    <FIDMapping prefix="AIXM_AIRSPACEBORDERCROSSING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AltimeterSource" table="aixm_altimetersource">
+    <FIDMapping prefix="AIXM_ALTIMETERSOURCE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AngleIndication" table="aixm_angleindication">
+    <FIDMapping prefix="AIXM_ANGLEINDICATION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ApproachLightingSystem" table="aixm_approachlightingsystem">
+    <FIDMapping prefix="AIXM_APPROACHLIGHTINGSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Apron" table="aixm_apron">
+    <FIDMapping prefix="AIXM_APRON_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ApronElement" table="aixm_apronelement">
+    <FIDMapping prefix="AIXM_APRONELEMENT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ApronLightSystem" table="aixm_apronlightsystem">
+    <FIDMapping prefix="AIXM_APRONLIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ApronMarking" table="aixm_apronmarking">
+    <FIDMapping prefix="AIXM_APRONMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ArrestingGear" table="aixm_arrestinggear">
+    <FIDMapping prefix="AIXM_ARRESTINGGEAR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ArrivalFeederLeg" table="aixm_arrivalfeederleg">
+    <FIDMapping prefix="AIXM_ARRIVALFEEDERLEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ArrivalLeg" table="aixm_arrivalleg">
+    <FIDMapping prefix="AIXM_ARRIVALLEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:AuthorityForAirspace" table="aixm_authorityforairspace">
+    <FIDMapping prefix="AIXM_AUTHORITYFORAIRSPACE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Azimuth" table="aixm_azimuth">
+    <FIDMapping prefix="AIXM_AZIMUTH_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ChangeOverPoint" table="aixm_changeoverpoint">
+    <FIDMapping prefix="AIXM_CHANGEOVERPOINT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:CheckpointINS" table="aixm_checkpointins">
+    <FIDMapping prefix="AIXM_CHECKPOINTINS_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:CheckpointVOR" table="aixm_checkpointvor">
+    <FIDMapping prefix="AIXM_CHECKPOINTVOR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:CirclingArea" table="aixm_circlingarea">
+    <FIDMapping prefix="AIXM_CIRCLINGAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DME" table="aixm_dme">
+    <FIDMapping prefix="AIXM_DME_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DeicingArea" table="aixm_deicingarea">
+    <FIDMapping prefix="AIXM_DEICINGAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DeicingAreaMarking" table="aixm_deicingareamarking">
+    <FIDMapping prefix="AIXM_DEICINGAREAMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DepartureLeg" table="aixm_departureleg">
+    <FIDMapping prefix="AIXM_DEPARTURELEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DesignatedPoint" table="aixm_designatedpoint">
+    <FIDMapping prefix="AIXM_DESIGNATEDPOINT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DirectionFinder" table="aixm_directionfinder">
+    <FIDMapping prefix="AIXM_DIRECTIONFINDER_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:DistanceIndication" table="aixm_distanceindication">
+    <FIDMapping prefix="AIXM_DISTANCEINDICATION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Elevation" table="aixm_elevation">
+    <FIDMapping prefix="AIXM_ELEVATION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:FinalLeg" table="aixm_finalleg">
+    <FIDMapping prefix="AIXM_FINALLEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:FireFightingService" table="aixm_firefightingservice">
+    <FIDMapping prefix="AIXM_FIREFIGHTINGSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:FlightRestriction" table="aixm_flightrestriction">
+    <FIDMapping prefix="AIXM_FLIGHTRESTRICTION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:FloatingDockSite" table="aixm_floatingdocksite">
+    <FIDMapping prefix="AIXM_FLOATINGDOCKSITE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:GeoBorder" table="aixm_geoborder">
+    <FIDMapping prefix="AIXM_GEOBORDER_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Glidepath" table="aixm_glidepath">
+    <FIDMapping prefix="AIXM_GLIDEPATH_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:GroundTrafficControlService" table="aixm_groundtrafficcontrolservice">
+    <FIDMapping prefix="AIXM_GROUNDTRAFFICCONTROLSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:GuidanceLine" table="aixm_guidanceline">
+    <FIDMapping prefix="AIXM_GUIDANCELINE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:GuidanceLineLightSystem" table="aixm_guidancelinelightsystem">
+    <FIDMapping prefix="AIXM_GUIDANCELINELIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:GuidanceLineMarking" table="aixm_guidancelinemarking">
+    <FIDMapping prefix="AIXM_GUIDANCELINEMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:HoldingAssessment" table="aixm_holdingassessment">
+    <FIDMapping prefix="AIXM_HOLDINGASSESSMENT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:HoldingPattern" table="aixm_holdingpattern">
+    <FIDMapping prefix="AIXM_HOLDINGPATTERN_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:InformationService" table="aixm_informationservice">
+    <FIDMapping prefix="AIXM_INFORMATIONSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:InitialLeg" table="aixm_initialleg">
+    <FIDMapping prefix="AIXM_INITIALLEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:InstrumentApproachProcedure" table="aixm_instrumentapproachprocedure">
+    <FIDMapping prefix="AIXM_INSTRUMENTAPPROACHPROCEDURE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:IntermediateLeg" table="aixm_intermediateleg">
+    <FIDMapping prefix="AIXM_INTERMEDIATELEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Localizer" table="aixm_localizer">
+    <FIDMapping prefix="AIXM_LOCALIZER_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:MarkerBeacon" table="aixm_markerbeacon">
+    <FIDMapping prefix="AIXM_MARKERBEACON_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:MarkingBuoy" table="aixm_markingbuoy">
+    <FIDMapping prefix="AIXM_MARKINGBUOY_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:MissedApproachLeg" table="aixm_missedapproachleg">
+    <FIDMapping prefix="AIXM_MISSEDAPPROACHLEG_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:NDB" table="aixm_ndb">
+    <FIDMapping prefix="AIXM_NDB_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Navaid" table="aixm_navaid">
+    <FIDMapping prefix="AIXM_NAVAID_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:NavigationArea" table="aixm_navigationarea">
+    <FIDMapping prefix="AIXM_NAVIGATIONAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:NavigationAreaRestriction" table="aixm_navigationarearestriction">
+    <FIDMapping prefix="AIXM_NAVIGATIONAREARESTRICTION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:NonMovementArea" table="aixm_nonmovementarea">
+    <FIDMapping prefix="AIXM_NONMOVEMENTAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ObstacleArea" table="aixm_obstaclearea">
+    <FIDMapping prefix="AIXM_OBSTACLEAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:OrganisationAuthority" table="aixm_organisationauthority">
+    <FIDMapping prefix="AIXM_ORGANISATIONAUTHORITY_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:PassengerLoadingBridge" table="aixm_passengerloadingbridge">
+    <FIDMapping prefix="AIXM_PASSENGERLOADINGBRIDGE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:PassengerService" table="aixm_passengerservice">
+    <FIDMapping prefix="AIXM_PASSENGERSERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:PilotControlledLighting" table="aixm_pilotcontrolledlighting">
+    <FIDMapping prefix="AIXM_PILOTCONTROLLEDLIGHTING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:PrecisionApproachRadar" table="aixm_precisionapproachradar">
+    <FIDMapping prefix="AIXM_PRECISIONAPPROACHRADAR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:PrimarySurveillanceRadar" table="aixm_primarysurveillanceradar">
+    <FIDMapping prefix="AIXM_PRIMARYSURVEILLANCERADAR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:ProcedureDME" table="aixm_proceduredme">
+    <FIDMapping prefix="AIXM_PROCEDUREDME_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RadarSystem" table="aixm_radarsystem">
+    <FIDMapping prefix="AIXM_RADARSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RadioCommunicationChannel" table="aixm_radiocommunicationchannel">
+    <FIDMapping prefix="AIXM_RADIOCOMMUNICATIONCHANNEL_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RadioFrequencyArea" table="aixm_radiofrequencyarea">
+    <FIDMapping prefix="AIXM_RADIOFREQUENCYAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Road" table="aixm_road">
+    <FIDMapping prefix="AIXM_ROAD_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Route" table="aixm_route">
+    <FIDMapping prefix="AIXM_ROUTE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RouteDME" table="aixm_routedme">
+    <FIDMapping prefix="AIXM_ROUTEDME_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RouteSegment" table="aixm_routesegment">
+    <FIDMapping prefix="AIXM_ROUTESEGMENT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RulesProcedures" table="aixm_rulesprocedures">
+    <FIDMapping prefix="AIXM_RULESPROCEDURES_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Runway" table="aixm_runway">
+    <FIDMapping prefix="AIXM_RUNWAY_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayBlastPad" table="aixm_runwayblastpad">
+    <FIDMapping prefix="AIXM_RUNWAYBLASTPAD_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayCentrelinePoint" table="aixm_runwaycentrelinepoint">
+    <FIDMapping prefix="AIXM_RUNWAYCENTRELINEPOINT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayDirection" table="aixm_runwaydirection">
+    <FIDMapping prefix="AIXM_RUNWAYDIRECTION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayDirectionLightSystem" table="aixm_runwaydirectionlightsystem">
+    <FIDMapping prefix="AIXM_RUNWAYDIRECTIONLIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayElement" table="aixm_runwayelement">
+    <FIDMapping prefix="AIXM_RUNWAYELEMENT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayMarking" table="aixm_runwaymarking">
+    <FIDMapping prefix="AIXM_RUNWAYMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayProtectArea" table="aixm_runwayprotectarea">
+    <FIDMapping prefix="AIXM_RUNWAYPROTECTAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayProtectAreaLightSystem" table="aixm_runwayprotectarealightsystem">
+    <FIDMapping prefix="AIXM_RUNWAYPROTECTAREALIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:RunwayVisualRange" table="aixm_runwayvisualrange">
+    <FIDMapping prefix="AIXM_RUNWAYVISUALRANGE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SDF" table="aixm_sdf">
+    <FIDMapping prefix="AIXM_SDF_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SafeAltitudeArea" table="aixm_safealtitudearea">
+    <FIDMapping prefix="AIXM_SAFEALTITUDEAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SeaplaneLandingArea" table="aixm_seaplanelandingarea">
+    <FIDMapping prefix="AIXM_SEAPLANELANDINGAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SeaplaneRampSite" table="aixm_seaplanerampsite">
+    <FIDMapping prefix="AIXM_SEAPLANERAMPSITE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SearchRescueService" table="aixm_searchrescueservice">
+    <FIDMapping prefix="AIXM_SEARCHRESCUESERVICE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SecondarySurveillanceRadar" table="aixm_secondarysurveillanceradar">
+    <FIDMapping prefix="AIXM_SECONDARYSURVEILLANCERADAR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SignificantPointInAirspace" table="aixm_significantpointinairspace">
+    <FIDMapping prefix="AIXM_SIGNIFICANTPOINTINAIRSPACE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SpecialDate" table="aixm_specialdate">
+    <FIDMapping prefix="AIXM_SPECIALDATE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SpecialNavigationStation" table="aixm_specialnavigationstation">
+    <FIDMapping prefix="AIXM_SPECIALNAVIGATIONSTATION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SpecialNavigationSystem" table="aixm_specialnavigationsystem">
+    <FIDMapping prefix="AIXM_SPECIALNAVIGATIONSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:StandMarking" table="aixm_standmarking">
+    <FIDMapping prefix="AIXM_STANDMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:StandardInstrumentArrival" table="aixm_standardinstrumentarrival">
+    <FIDMapping prefix="AIXM_STANDARDINSTRUMENTARRIVAL_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:StandardInstrumentDeparture" table="aixm_standardinstrumentdeparture">
+    <FIDMapping prefix="AIXM_STANDARDINSTRUMENTDEPARTURE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:StandardLevelColumn" table="aixm_standardlevelcolumn">
+    <FIDMapping prefix="AIXM_STANDARDLEVELCOLUMN_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:StandardLevelSector" table="aixm_standardlevelsector">
+    <FIDMapping prefix="AIXM_STANDARDLEVELSECTOR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:StandardLevelTable" table="aixm_standardleveltable">
+    <FIDMapping prefix="AIXM_STANDARDLEVELTABLE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:SurveyControlPoint" table="aixm_surveycontrolpoint">
+    <FIDMapping prefix="AIXM_SURVEYCONTROLPOINT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TACAN" table="aixm_tacan">
+    <FIDMapping prefix="AIXM_TACAN_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TaxiHoldingPosition" table="aixm_taxiholdingposition">
+    <FIDMapping prefix="AIXM_TAXIHOLDINGPOSITION_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TaxiHoldingPositionLightSystem" table="aixm_taxiholdingpositionlightsystem">
+    <FIDMapping prefix="AIXM_TAXIHOLDINGPOSITIONLIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TaxiHoldingPositionMarking" table="aixm_taxiholdingpositionmarking">
+    <FIDMapping prefix="AIXM_TAXIHOLDINGPOSITIONMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Taxiway" table="aixm_taxiway">
+    <FIDMapping prefix="AIXM_TAXIWAY_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TaxiwayElement" table="aixm_taxiwayelement">
+    <FIDMapping prefix="AIXM_TAXIWAYELEMENT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TaxiwayLightSystem" table="aixm_taxiwaylightsystem">
+    <FIDMapping prefix="AIXM_TAXIWAYLIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TaxiwayMarking" table="aixm_taxiwaymarking">
+    <FIDMapping prefix="AIXM_TAXIWAYMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TerminalArrivalArea" table="aixm_terminalarrivalarea">
+    <FIDMapping prefix="AIXM_TERMINALARRIVALAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TouchDownLiftOff" table="aixm_touchdownliftoff">
+    <FIDMapping prefix="AIXM_TOUCHDOWNLIFTOFF_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TouchDownLiftOffLightSystem" table="aixm_touchdownliftofflightsystem">
+    <FIDMapping prefix="AIXM_TOUCHDOWNLIFTOFFLIGHTSYSTEM_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TouchDownLiftOffMarking" table="aixm_touchdownliftoffmarking">
+    <FIDMapping prefix="AIXM_TOUCHDOWNLIFTOFFMARKING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:TouchDownLiftOffSafeArea" table="aixm_touchdownliftoffsafearea">
+    <FIDMapping prefix="AIXM_TOUCHDOWNLIFTOFFSAFEAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:Unit" table="aixm_unit">
+    <FIDMapping prefix="AIXM_UNIT_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:UnplannedHolding" table="aixm_unplannedholding">
+    <FIDMapping prefix="AIXM_UNPLANNEDHOLDING_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:VOR" table="aixm_vor">
+    <FIDMapping prefix="AIXM_VOR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:VerticalStructure" table="aixm_verticalstructure">
+    <FIDMapping prefix="AIXM_VERTICALSTRUCTURE_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:VisualGlideSlopeIndicator" table="aixm_visualglideslopeindicator">
+    <FIDMapping prefix="AIXM_VISUALGLIDESLOPEINDICATOR_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+  <FeatureTypeMapping name="aixm:WorkArea" table="aixm_workarea">
+    <FIDMapping prefix="AIXM_WORKAREA_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace" />
+    </Complex>
+  </FeatureTypeMapping>
+</SQLFeatureStore>

@@ -180,11 +180,11 @@ public class MappedXPath {
         boolean matchFound = false;
         for ( Mapping mapping : mappedParticles ) {
             List<MappableStep> mapSteps = MappableNameStep.extractSteps( mapping.getPath() );
-            if ( mapSteps.isEmpty() ) {
-                matchFound = true;
-            } else if ( steps.size() == 1 ) {
+            if ( steps.size() == 1 ) {
                 matchFound = true;
                 matchFound = mapSteps.get( 0 ).equals( steps.get( 0 ) );
+            } else if ( mapSteps.isEmpty() ) {
+                matchFound = true;
             } else if ( mapSteps.get( 0 ) instanceof TextStep ) {
                 matchFound = true;
             }
@@ -211,9 +211,14 @@ public class MappedXPath {
                 }
                 break;
             }
-            
         }
         if ( !matchFound ) {
+            if ( !steps.isEmpty() ) {
+                MappableStep mappableStep = steps.get( 0 );
+                String msg = "No mapping for PropertyName '" + propName.getAsText() + "' available. Could map step '"
+                             + mappableStep + "'.";
+                throw new UnmappableException( msg );
+            }
             String msg = "No mapping for PropertyName '" + propName.getAsText() + "' available.";
             throw new UnmappableException( msg );
         }

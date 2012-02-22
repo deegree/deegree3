@@ -70,4 +70,9 @@ class ElementStep extends MappableNameStep {
         // TODO what about pos?
         return ( (ElementStep) o ).getNodeName().equals( getNodeName() );
     }
+
+    @Override
+    public String toString () {
+        return getNodeName().toString();
+    }
 }
