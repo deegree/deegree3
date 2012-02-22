@@ -64,4 +64,7 @@ public interface PropertyNameMapper {
      */
     public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException;
+    
+    public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException;
 }

@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import static junit.framework.Assert.assertEquals;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -54,21 +58,35 @@ import junit.framework.Assert;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.test.TestDBProperties;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.function.FunctionManager;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.sqldialect.SQLDialect;
@@ -202,7 +220,6 @@ public class SQLFeatureStoreAIXMTest {
         try {
             stmt = conn.createStatement();
             for ( String sql : ddl ) {
-                System.out.println( sql );
                 stmt.execute( sql );
             }
         } finally {
@@ -226,13 +243,99 @@ public class SQLFeatureStoreAIXMTest {
         fs.destroy();
     }
 
+//    @Test
+//    public void testElevatedPointReconstruction()
+//                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
+//
+//        ValueReference propName = new ValueReference( GML_IDENTIFIER );
+//        Literal literal = new Literal( "dd062d88-3e64-4a5d-bebd-89476db9ebea" );
+//        PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
+//        Filter filter = new OperatorFilter( oper );
+//        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
+//        FeatureCollection fc = fs.query( query ).toCollection();
+//        Feature f = fc.iterator().next();
+//        System.out.println( "HUHU: " + f.getName() );
+//        System.out.println( "HUHU: " + f.getProperties().size() );
+//        for ( Property p : f.getProperties() ) {
+//            System.out.println (p.getName());
+//        }
+//        Point geom = (Point) getGeometry( "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP/aixm:ElevatedPoint", f );
+//
+//        String aixmNs = "http://www.aixm.aero/schema/5.1";
+//
+//        double DELTA = 0.00000001;
+//        assertEquals( -32.035, geom.get0(), DELTA );
+//        assertEquals( 52.288888888888884, geom.get1(), DELTA );
+//        assertEquals( 2, geom.getCoordinateDimension() );
+//        assertEquals( CRSManager.lookup( "urn:ogc:def:crs:EPSG:4326" ), geom.getCoordinateSystem() );
+//
+//        List<Property> props = geom.getProperties();
+//        assertEquals( 12, props.size() );
+//        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+//        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
+//        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
+//        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
+//        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
+//        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
+//        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
+//        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
+//        assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
+//        assertEquals( new QName( aixmNs, "geoidUndulation" ), props.get( 9 ).getName() );
+//        assertEquals( new QName( aixmNs, "verticalDatum" ), props.get( 10 ).getName() );
+//        assertEquals( new QName( aixmNs, "verticalAccuracy" ), props.get( 11 ).getName() );
+//
+//        assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
+//                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+//        assertEquals( "This is just for testing the parsing of standard GML properties.",
+//                      getPrimitive( "gml:description/text()", geom ).getAsText() );
+//        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
+//        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
+//        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
+//        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
+//        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
+//        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
+//        assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
+//        assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
+//        assertEquals( "3.22", getPrimitive( "aixm:geoidUndulation/text()", geom ).getAsText() );
+//        assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
+//        assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
+//        assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
+//        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );
+//    }
+
+    private Geometry getGeometry( String xpath, GMLObject object )
+                            throws FilterEvaluationException {
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "gml", GML3_2_NS );
+        nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
+        ValueReference path = new ValueReference( xpath, nsContext );
+        TypedObjectNode[] eval = evaluator.eval( object, path );
+        assertEquals( 1, eval.length );
+        assertTrue( eval[0] instanceof Geometry );
+        return (Geometry) eval[0];
+    }
+
+    private PrimitiveValue getPrimitive( String xpath, GMLObject object )
+                            throws FilterEvaluationException {
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "gml", GML3_2_NS );
+        nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
+        ValueReference path = new ValueReference( xpath, nsContext );
+        TypedObjectNode[] eval = evaluator.eval( object, path );
+        assertEquals( 1, eval.length );
+        assertTrue( eval[0] instanceof PrimitiveValue );
+        return (PrimitiveValue) eval[0];
+    }
+
     @Test
     public void queryAllHeliports()
                             throws FeatureStoreException, FilterEvaluationException {
 
         Query query = new Query( HELIPORT_NAME, null, -1, -1, -1 );
         FeatureCollection fc = fs.query( query ).toCollection();
-        Assert.assertEquals( 2, fc.size() );
+        assertEquals( 2, fc.size() );
     }
 
     @Test
@@ -245,23 +348,67 @@ public class SQLFeatureStoreAIXMTest {
         Filter filter = new OperatorFilter( oper );
         Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
         FeatureCollection fc = fs.query( query ).toCollection();
+        assertEquals( 1, fc.size() );
+    }
+
+    @Test
+    public void queryHeliportByElevatedPointElevation()
+                            throws FeatureStoreException, FilterEvaluationException {
+
+        ValueReference propName = new ValueReference(
+                                                      "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP/aixm:ElevatedPoint/aixm:elevation",
+                                                      nsContext );
+        Literal literal = new Literal( "18.0" );
+        PropertyIsLessThanOrEqualTo oper = new PropertyIsLessThanOrEqualTo( propName, literal, false, null );
+        Filter filter = new OperatorFilter( oper );
+        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
+        FeatureCollection fc = fs.query( query ).toCollection();
         Assert.assertEquals( 1, fc.size() );
     }
 
-    // @Test
-    // public void queryHeliportByElevatedPointElevation()
-    // throws FeatureStoreException, FilterEvaluationException {
-    //
-    // ValueReference propName = new ValueReference(
-    // "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP/aixm:ElevatedPoint/aixm:elevation",
-    // nsContext );
-    // Literal literal = new Literal( "19.0" );
-    // PropertyIsLessThanOrEqualTo oper = new PropertyIsLessThanOrEqualTo( propName, literal, false, null );
-    // Filter filter = new OperatorFilter( oper );
-    // Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
-    // FeatureCollection fc = fs.query( query ).toCollection();
-    // Assert.assertEquals( 1, fc.size() );
-    // }
+    @Test
+    public void queryHeliportByBboxPathToGeometry()
+                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
+
+        ValueReference propName = new ValueReference(
+                                                      "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP/aixm:ElevatedPoint",
+                                                      nsContext );
+        Envelope env = new GeometryFactory().createEnvelope( -32.036, 52.288, -32.034, 52.289,
+                                                             lookup( "urn:ogc:def:crs:EPSG:4326" ) );
+        BBOX oper = new BBOX( propName, env );
+        Filter filter = new OperatorFilter( oper );
+        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
+        FeatureCollection fc = fs.query( query ).toCollection();
+        Assert.assertEquals( 1, fc.size() );
+    }
+
+    @Test
+    public void queryHeliportByBboxPathToGeometryProperty()
+                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
+
+        ValueReference propName = new ValueReference( "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP",
+                                                      nsContext );
+        Envelope env = new GeometryFactory().createEnvelope( -32.036, 52.288, -32.034, 52.289,
+                                                             lookup( "urn:ogc:def:crs:EPSG:4326" ) );
+        BBOX oper = new BBOX( propName, env );
+        Filter filter = new OperatorFilter( oper );
+        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
+        FeatureCollection fc = fs.query( query ).toCollection();
+        Assert.assertEquals( 1, fc.size() );
+    }
+
+    @Test
+    public void queryHeliportByBboxNoPropertyName()
+                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
+
+        Envelope env = new GeometryFactory().createEnvelope( -32.036, 52.288, -32.034, 52.289,
+                                                             lookup( "urn:ogc:def:crs:EPSG:4326" ) );
+        BBOX oper = new BBOX( env );
+        Filter filter = new OperatorFilter( oper );
+        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
+        FeatureCollection fc = fs.query( query ).toCollection();
+        Assert.assertEquals( 1, fc.size() );
+    }
 
     @Parameters
     public static Collection<TestDBProperties[]> data()

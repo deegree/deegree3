@@ -71,6 +71,7 @@ import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
+import org.deegree.sqldialect.filter.UnmappableException;
 import org.slf4j.Logger;
 
 /**
@@ -416,5 +417,11 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
      */
     public Map<QName, Triple<Pair<String, String>, Boolean, BaseType>> getPropToTableAndCol() {
         return propToTableAndCol;
+    }
+
+    @Override
+    public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException {
+        return getMapping( propName, aliasManager );
     }
 }

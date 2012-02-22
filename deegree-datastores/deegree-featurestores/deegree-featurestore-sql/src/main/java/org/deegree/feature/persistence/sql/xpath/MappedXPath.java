@@ -54,8 +54,6 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.ConstantPropertyNameMapping;
 import org.deegree.sqldialect.filter.DBField;
@@ -89,80 +87,46 @@ public class MappedXPath {
 
     private final List<Join> joins = new ArrayList<Join>();
 
+    private final boolean isSpatial;
+
     private String currentTable;
 
     private String currentTableAlias;
 
     private PropertyNameMapping propMapping;
 
-    public MappedXPath( MappedAppSchema schema, FeatureTypeMapping ftMapping, ValueReference propName,
-                        TableAliasManager aliasManager ) throws UnmappableException {
-        this.fs = null;
-        this.schema = schema;
-        this.aliasManager = aliasManager;
-
-        // check for empty property name
-        if ( propName == null || propName.getAsText().isEmpty() ) {
-            LOG.debug( "Null / empty property name (=targets default geometry property)." );
-            FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
-            GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
-            if ( pt == null ) {
-                String msg = "Feature type '" + ft.getName()
-                             + "' does not have a geometry property and PropertyName is missing / empty.";
-                throw new UnmappableException( msg );
-            }
-            propName = new ValueReference( pt.getName() );
-        }
-
-        this.propName = propName;
-
-        List<MappableStep> steps = MappableStep.extractSteps( propName );
-
-        // the first step may be the name of the feature type or the name of a property
-        if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
-            steps.subList( 1, steps.size() );
-        }
-
-        currentTable = ftMapping.getFtTable().toString();
-        currentTableAlias = aliasManager.getRootTableAlias();
-        map( ftMapping.getMappings(), steps );
-    }
-
     /**
      * @param fs
      * @param ftMapping
      * @param propName
      * @param aliasManager
+     * @param isSpatial
+     *            if <code>true</code>, a spatial property is targeted (in this case, mapped property names are
+     *            automatically extended to the nearest geometry child in the mapping configuration)
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
     public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, ValueReference propName,
-                        TableAliasManager aliasManager ) throws UnmappableException {
+                        TableAliasManager aliasManager, boolean isSpatial ) throws UnmappableException {
 
         this.fs = fs;
         this.schema = fs.getSchema();
         this.aliasManager = aliasManager;
+        this.isSpatial = isSpatial;
 
         // check for empty property name
+        List<MappableStep> steps = null;
         if ( propName == null || propName.getAsText().isEmpty() ) {
             LOG.debug( "Null / empty property name (=targets default geometry property)." );
-            FeatureType ft = schema.getFeatureType( ftMapping.getFeatureType() );
-            GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
-            if ( pt == null ) {
-                String msg = "Feature type '" + ft.getName()
-                             + "' does not have a geometry property and PropertyName is missing / empty.";
-                throw new UnmappableException( msg );
+            this.propName = new ValueReference( "geometry()", null );
+            steps = Collections.emptyList();
+        } else {
+            this.propName = propName;
+            steps = MappableStep.extractSteps( propName );
+            // the first step may be the name of the feature type or the name of a property
+            if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
+                steps.subList( 1, steps.size() );
             }
-            propName = new ValueReference( pt.getName() );
-        }
-
-        this.propName = propName;
-
-        List<MappableStep> steps = MappableStep.extractSteps( propName );
-
-        // the first step may be the name of the feature type or the name of a property
-        if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
-            steps.subList( 1, steps.size() );
         }
 
         currentTable = ftMapping.getFtTable().toString();
@@ -180,12 +144,11 @@ public class MappedXPath {
         boolean matchFound = false;
         for ( Mapping mapping : mappedParticles ) {
             List<MappableStep> mapSteps = MappableNameStep.extractSteps( mapping.getPath() );
-            if ( steps.size() == 1 ) {
-                matchFound = true;
+            if ( !mapSteps.isEmpty() && !steps.isEmpty() ) {
                 matchFound = mapSteps.get( 0 ).equals( steps.get( 0 ) );
-            } else if ( mapSteps.isEmpty() ) {
+            } else if ( mapSteps.isEmpty() && steps.isEmpty() ) {
                 matchFound = true;
-            } else if ( mapSteps.get( 0 ) instanceof TextStep ) {
+            } else if ( !mapSteps.isEmpty() && mapSteps.get( 0 ) instanceof TextStep ) {
                 matchFound = true;
             }
             if ( matchFound ) {
@@ -212,16 +175,48 @@ public class MappedXPath {
                 break;
             }
         }
+
+        if ( !matchFound && isSpatial ) {
+            // determine path to nearest geometry mapping
+            List<Mapping> additionalSteps = new ArrayList<Mapping>();
+            if ( determineNearestGeometryMapping( mappedParticles, additionalSteps ) ) {
+                matchFound = true;
+                for ( int i = 0; i < additionalSteps.size() - 1; i++ ) {
+                    followJoins( additionalSteps.get( i ).getJoinedTable() );
+                }
+                map( (GeometryMapping) additionalSteps.get( additionalSteps.size() - 1 ), steps );
+            }
+        }
+
         if ( !matchFound ) {
             if ( !steps.isEmpty() ) {
                 MappableStep mappableStep = steps.get( 0 );
-                String msg = "No mapping for PropertyName '" + propName.getAsText() + "' available. Could map step '"
-                             + mappableStep + "'.";
+                String msg = "No mapping for PropertyName '" + propName.getAsText()
+                             + "' available. Could not map step '" + mappableStep + "'.";
                 throw new UnmappableException( msg );
             }
             String msg = "No mapping for PropertyName '" + propName.getAsText() + "' available.";
             throw new UnmappableException( msg );
         }
+    }
+
+    private boolean determineNearestGeometryMapping( Collection<Mapping> mappedParticles, List<Mapping> steps ) {
+        boolean found = false;
+        for ( Mapping mapping : mappedParticles ) {
+            if ( mapping instanceof GeometryMapping ) {
+                steps.add( mapping );
+                found = true;
+                break;
+            } else if ( mapping instanceof CompoundMapping ) {
+                steps.add( mapping );
+                found = determineNearestGeometryMapping( ( (CompoundMapping) mapping ).getParticles(), steps );
+                if ( found ) {
+                    break;
+                }
+                steps.remove( steps.size() - 1 );
+            }
+        }
+        return found;
     }
 
     private void map( ConstantMapping<?> mapping, List<MappableStep> steps ) {

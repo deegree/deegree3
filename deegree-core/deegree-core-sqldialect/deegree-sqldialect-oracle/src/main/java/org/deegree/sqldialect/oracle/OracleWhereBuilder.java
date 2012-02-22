@@ -122,7 +122,7 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
 
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
-        SQLExpression propNameExpr = toProtoSQL( op.getPropName() );
+        SQLExpression propNameExpr = toProtoSQLSpatial(  op.getPropName() );
 
         switch ( op.getSubType() ) {
         case BBOX:

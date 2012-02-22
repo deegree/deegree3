@@ -38,10 +38,42 @@
         <Complex path="aixm:ARP">
           <Complex path="aixm:ElevatedPoint">
             <Geometry path="." mapping="aixm_arp_aixm_elevatedpoint_geom" />
-            <Complex path="aixm:elevation">
-              <Primitive path="@uom" mapping="aixm_arp_aixm_elevatedpoint_attr_uom" />
-              <Primitive path="text()" mapping="aixm_arp_aixm_elevatedpoint_value" />
+            <!-- Complex path="gml:metadataProperty">
+              <Primitive path="gml:GenericMetaData" mapping="elp_metadata" />
+            </Complex-->
+            <Primitive path="gml:description" mapping="elp_gml_description" />
+            <Complex path="gml:descriptionReference">
+              <Primitive path="@xlink:href" mapping="elp_descriptionreference_xlink_href" />
             </Complex>
+            <Complex path="gml:name">
+              <Join fromColumns="id" toColumns="fk" table="aixm_airportheliport_aixm_timeslice_elp_gml_name" />
+              <Primitive path="text()" mapping="value" />
+            </Complex>
+            <Complex path="gml:identifier">
+              <Primitive path="text()" mapping="elp_gml_identifier" />
+              <Primitive path="@codeSpace" mapping="elp_gml_identifier_attr_codespace" />
+            </Complex>
+            <Complex path="aixm:horizontalAccuracy">
+              <Primitive path="@uom" mapping="elp_horizontalaccuracy_uom" />
+              <Primitive path="text()" mapping="elp_horizontalaccuracy_value" />
+            </Complex>
+            <Complex path="aixm:annotation">
+              <Primitive path="@xsi:nil" mapping="elp_annotation_xsi_nil" />
+              <Primitive path="@nilReason" mapping="elp_annotation_nilreason" />
+            </Complex>            
+            <Complex path="aixm:elevation">
+              <Primitive path="@uom" mapping="elp_attr_uom" />
+              <Primitive path="text()" mapping="elp_value" />
+            </Complex>
+            <Complex path="aixm:geoidUndulation">
+              <Primitive path="@uom" mapping="elp_geoidundulation_uom" />
+              <Primitive path="text()" mapping="elp_geoidundulation_value" />
+            </Complex>
+            <Primitive path="aixm:verticalDatum" mapping="elp_verticaldatum" />
+            <Complex path="aixm:verticalAccuracy">
+              <Primitive path="@uom" mapping="elp_verticalaccuracy_uom" />
+              <Primitive path="text()" mapping="elp_verticalaccuracy_value" />
+            </Complex>            
           </Complex>
         </Complex>
       </Complex>

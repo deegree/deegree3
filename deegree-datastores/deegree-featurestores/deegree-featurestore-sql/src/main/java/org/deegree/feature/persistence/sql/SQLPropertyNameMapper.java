@@ -65,6 +65,12 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
     @Override
     public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
-        return new MappedXPath( fs, ftMapping, propName, aliasManager ).getPropertyNameMapping();
+        return new MappedXPath( fs, ftMapping, propName, aliasManager, false ).getPropertyNameMapping();
+    }
+
+    @Override
+    public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException {
+        return new MappedXPath( fs, ftMapping, propName, aliasManager, true ).getPropertyNameMapping();
     }
 }

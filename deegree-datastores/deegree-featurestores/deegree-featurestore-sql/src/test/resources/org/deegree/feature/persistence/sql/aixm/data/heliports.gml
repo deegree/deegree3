@@ -2,6 +2,12 @@
   xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2"
   xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.aixm.aero/schema/5.1/message ../appschemas/aixm/message/AIXM_BasicMessage.xsd" gml:id="uniqueid">
+  <gml:boundedBy>
+    <gml:Envelope srsName="urn:ogc:def:crs:EPSG:4326">
+      <gml:lowerCorner>-32.31632162667984 52.36833333333333</gml:lowerCorner>
+      <gml:upperCorner>-32.546517283367514 52.29638464616918</gml:upperCorner>
+    </gml:Envelope>
+  </gml:boundedBy>
   <message:hasMember>
     <aixm:AirportHeliport gml:id="EADH">
       <gml:identifier codeSpace="http://www.aixm.aero/schema/5.1/example">dd062d88-3e64-4a5d-bebd-89476db9ebea</gml:identifier>
@@ -34,8 +40,21 @@
           </aixm:responsibleOrganisation>
           <aixm:ARP>
             <aixm:ElevatedPoint srsDimension="2" gml:id="elpoint1EADH">
-              <gml:pos srsDimension="3">-32.035 52.288888888888884 </gml:pos>
+              <gml:metaDataProperty>
+                <gml:GenericMetaData>Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.</gml:GenericMetaData>
+              </gml:metaDataProperty>
+              <gml:description>This is just for testing the parsing of standard GML properties.</gml:description>
+              <gml:descriptionReference xlink:href="http://www.aixm.org/whatever" />
+              <gml:identifier codeSpace="urn:blabla:bla">XYZ</gml:identifier>
+              <gml:name>Point P1</gml:name>
+              <gml:name>P1</gml:name>
+              <gml:pos srsDimension="2">-32.035 52.288888888888884</gml:pos>
+              <aixm:horizontalAccuracy uom="M">1.0</aixm:horizontalAccuracy>
+              <aixm:annotation xsi:nil="true" nilReason="inapplicable" />
               <aixm:elevation uom="M">18.0</aixm:elevation>
+              <aixm:geoidUndulation uom="M">3.22</aixm:geoidUndulation>
+              <aixm:verticalDatum>NAVD88</aixm:verticalDatum>
+              <aixm:verticalAccuracy uom="M">2.0</aixm:verticalAccuracy>
             </aixm:ElevatedPoint>
           </aixm:ARP>
         </aixm:AirportHeliportTimeSlice>

@@ -172,7 +172,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
-        SQLExpression propNameExpr = toProtoSQL( op.getPropName() );
+        SQLExpression propNameExpr = toProtoSQLSpatial(  op.getPropName() );
         if ( !propNameExpr.isSpatial() ) {
             String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
                          + "' does not denote a spatial column.";

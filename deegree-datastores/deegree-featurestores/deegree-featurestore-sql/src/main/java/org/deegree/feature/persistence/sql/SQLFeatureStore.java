@@ -1476,6 +1476,12 @@ public class SQLFeatureStore implements FeatureStore {
                 return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null, blobMapping.getBBoxColumn(),
                                                 aliasManager.getRootTableAlias() );
             }
+            
+            @Override
+            public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
+                                    throws FilterEvaluationException, UnmappableException {
+                return getMapping( propName, aliasManager );
+            }
         };
         return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );
     }

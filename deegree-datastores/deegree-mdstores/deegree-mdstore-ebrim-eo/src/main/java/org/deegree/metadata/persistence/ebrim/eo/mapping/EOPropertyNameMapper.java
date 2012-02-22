@@ -577,4 +577,10 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         // TODO namespace awareness
         return elName.getLocalPart().equals( step.getLocalName() );
     }
+
+    @Override
+    public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException {
+        return getMapping( propName, aliasManager );
+    }
 }

@@ -837,6 +837,39 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
+     * Translates the given spatial {@link ValueReference} into an {@link SQLExpression}.
+     * 
+     * @param expr
+     *            expression to be translated, must not be <code>null</code>
+     * @return corresponding SQL expression, never <code>null</code>
+     * @throws UnmappableException
+     *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link ValueReference}s
+     */
+    protected SQLExpression toProtoSQLSpatial( ValueReference propName ) throws FilterEvaluationException, UnmappableException {
+        SQLExpression sql = null;
+        PropertyNameMapping propMapping = mapper.getSpatialMapping( propName, aliasManager );
+        if ( propMapping != null ) {
+            propNameMappingList.add( propMapping );
+            if ( propMapping instanceof ConstantPropertyNameMapping ) {
+                // TODO get rid of ConstantPropertyNameMapping
+                PrimitiveType pt = new PrimitiveType( STRING );
+                PrimitiveValue value = new PrimitiveValue( ""
+                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
+                                                           pt );
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+                sql = new SQLArgument( value, converter );
+            } else {
+                sql = new SQLColumn( propMapping.getTableAlias(), propMapping.getColumn(), propMapping.getConverter() );
+            }
+        } else {
+            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
+        }
+        return sql;
+    }
+
+    /**
      * Translates the given {@link SortProperty} array into an {@link SQLExpression}.
      * 
      * @param sortCrits
