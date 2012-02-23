@@ -96,7 +96,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
      * Creates a new {@link AbstractOWSClient} instance.
      * 
      * @param capaUrl
-     *            url of a WFS capabilities document, usually this is a <code>GetCapabilities</code> request to the
+     *            url of a OWS capabilities document, usually this is a <code>GetCapabilities</code> request to the
      *            service, must not be <code>null</code>
      * @throws OWSExceptionReport
      *             if the server replied with a service exception report
@@ -150,7 +150,12 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         }
     }
 
-    private HttpClient initHttpClient() {
+    /**
+     * Called in the contructor, can be overwritten to set special parameters (e.g. a connection timeout). 
+     * 
+     * @return the initialised {@link HttpClient}.
+     */
+    protected HttpClient initHttpClient() {
         ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager();
         return new DefaultHttpClient( connManager );
     }
