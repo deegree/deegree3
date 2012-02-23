@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -49,9 +51,17 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.SpatialOperator.SubType;
+import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.primitive.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +78,104 @@ import org.slf4j.LoggerFactory;
 public class Filters {
 
     private static Logger LOG = LoggerFactory.getLogger( Filters.class );
+
+    /**
+     * Tries to extract a {@link BBOX} constraint from the given {@link Filter} that can be used as a pre-filtering step
+     * to narrow the result set.
+     * <p>
+     * The returned {@link Envelope} is determined by the following strategy:
+     * <ul>
+     * <li>If the filter is an {@link OperatorFilter}, it is attempted to extract an {@link BBOX} constraint from it.</li>
+     * <li>If no {@link BBOX} constraint can be extracted from the filter (not presented or nested in <code>Or</code> or
+     * <code>Not</code> expressions, <code>null</code> is returned.</li>
+     * </ul>
+     * </p>
+     * 
+     * @return a {@link BBOX} suitable for pre-filtering feature candidates, can be <code>null</code>
+     */
+    public static BBOX extractPrefilterBBoxConstraint( Filter filter ) {
+        BBOX env = null;
+        if ( filter != null && filter.getType() == OPERATOR_FILTER ) {
+            OperatorFilter of = (OperatorFilter) filter;
+            Operator oper = of.getOperator();
+            env = extractBBox( oper );
+        }
+        return env;
+    }
+
+    private static BBOX extractBBox( Operator oper ) {
+        switch ( oper.getType() ) {
+        case COMPARISON: {
+            return null;
+        }
+        case LOGICAL: {
+            LogicalOperator logical = (LogicalOperator) oper;
+            switch ( logical.getSubType() ) {
+            case AND:
+                BBOX env = null;
+                for ( Operator child : logical.getParams() ) {
+                    BBOX childEnv = extractBBox( child );
+                    if ( childEnv != null ) {
+                        if ( env == null ) {
+                            env = childEnv;
+                        } else {
+                            env = merge( env, childEnv );
+                        }
+                    }
+                }
+                return env;
+            case OR:
+                return null;
+            case NOT:
+                return null;
+            }
+            return null;
+        }
+        case SPATIAL: {
+            return extractBBox( (SpatialOperator) oper );
+        }
+        }
+        return null;
+    }
+
+    private static BBOX merge( BBOX bbox1, BBOX bbox2 ) {
+        // TODO handle different SRS
+        Envelope env = bbox1.getBoundingBox().merge( bbox2.getBoundingBox() );
+        Expression expr = bbox1.getParam1();
+        if ( expr == null || !expr.equals( bbox2.getParam1() ) ) {
+            expr = null;
+        }
+        return new BBOX( expr, env );
+    }
+
+    private static BBOX extractBBox( SpatialOperator oper ) {
+        SubType type = oper.getSubType();
+        switch ( type ) {
+        case BBOX:
+            return (BBOX) oper;
+        case CONTAINS:
+            // Oracle does not like zero-extent bboxes
+            if ( !( ( (Contains) oper ).getGeometry() instanceof Point ) )
+                return new BBOX( ( (Contains) oper ).getParam1(), ( (Contains) oper ).getGeometry().getEnvelope() );
+            return null;
+        case CROSSES:
+            return new BBOX( ( (Crosses) oper ).getParam1(), ( (Crosses) oper ).getGeometry().getEnvelope() );
+        case DWITHIN:
+            // TOOD use enlarged bbox
+            return null;
+        case EQUALS:
+            return new BBOX( ( (Equals) oper ).getParam1(), ( (Equals) oper ).getGeometry().getEnvelope() );
+        case INTERSECTS:
+            return new BBOX( ( (Intersects) oper ).getParam1(), ( (Intersects) oper ).getGeometry().getEnvelope() );
+        case OVERLAPS:
+            return new BBOX( ( (Overlaps) oper ).getParam1(), ( (Overlaps) oper ).getGeometry().getEnvelope() );
+        case WITHIN:
+            return new BBOX( ( (Within) oper ).getParam1(), ( (Within) oper ).getGeometry().getEnvelope() );
+        default: {
+            return null;
+        }
+        }
+    }
 
     /**
      * Adds a bounding box constraint to the given {@link Filter}.
