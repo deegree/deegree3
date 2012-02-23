@@ -49,6 +49,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -93,7 +96,39 @@ import org.deegree.protocol.ows.metadata.OperationsMetadata;
  */
 public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
+    private int connectionTimeout = 0;
+
+    /**
+     * Creates a new {@link CSWClient} instance with infinite timeout.
+     * 
+     * @param capaUrl
+     *            url of a CSW capabilities document, usually this is a <code>GetCapabilities</code> request to the
+     *            service, must not be <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with a service exception report
+     * @throws XMLStreamException
+     * @throws IOException
+     *             if a communication/network problem occured
+     */
     public CSWClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
+        super( capaUrl );
+    }
+
+    /**
+     * Creates a new {@link CSWClient} instance.
+     * 
+     * @param capaUrl
+     *            url of a CSW capabilities document, usually this is a <code>GetCapabilities</code> request to the
+     *            service, must not be <code>null</code>
+     * @param connectionTimeout
+     *            the timeout for get/post requests in milliseconds, 0 is interpreted as an infinite timeout (default)
+     * @throws OWSExceptionReport
+     *             if the server replied with a service exception report
+     * @throws XMLStreamException
+     * @throws IOException
+     *             if a communication/network problem occured
+     */
+    public CSWClient( URL capaUrl, int connectionTimeout ) throws OWSExceptionReport, XMLStreamException, IOException {
         super( capaUrl );
     }
 
@@ -211,6 +246,14 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         OperationsMetadata om = getOperations();
         if ( om.getOperation( operationName ) == null )
             throw new UnsupportedOperationException( "Operation " + operationName + " is not supported!" );
+    }
+
+    @Override
+    protected HttpClient initHttpClient() {
+        HttpClient initHttpClient = super.initHttpClient();
+        DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
+        HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
+        return initHttpClient;
     }
 
 }
