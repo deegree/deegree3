@@ -55,7 +55,6 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.types.BoundingBox;
 import org.deegree.metadata.iso.types.Constraint;
 import org.deegree.metadata.iso.types.Keyword;
@@ -559,16 +558,37 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     String baseXPath = "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/";
                     StringBuilder beginXPath = new StringBuilder();
                     beginXPath.append( baseXPath ).append( "gmd:TimePeriod/gmd:beginPosition" ).append( " | " );
+                    // <gml:TimePeriod gml:id="id_1">
+                    // <gml:beginPosition>2011-07-21</gml:beginPosition>
+                    // ...
+                    // </gml:TimePeriod>
                     beginXPath.append( baseXPath ).append( GML_PREFIX ).append( ":TimePeriod/" ).append( GML_PREFIX ).append( ":beginPosition" ).append( " | " );
-                    beginXPath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":beginPosition" );
-
+                    beginXPath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":beginPosition" ).append( " | " );
+                    // <gml:TimePeriod gml:id="id_1">
+                    // <gml:begin>
+                    // <gml:TimeInstant gml:id="id_455">
+                    // <gml:timePosition>2010-07-21</gml:timePosition>
+                    // </gml:TimeInstant>
+                    // </gml:begin>
+                    // ...
+                    // </gml:TimePeriod>
+                    beginXPath.append( baseXPath ).append( GML_PREFIX ).append( ":TimePeriod/" ).append( GML_PREFIX ).append( ":begin/" );
+                    beginXPath.append( GML_PREFIX ).append( ":TimeInstant/" ).append( GML_PREFIX ).append( ":timePosition" ).append( " | " );
+                    beginXPath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":begin/" );
+                    beginXPath.append( GML3_2_PREFIX ).append( ":TimeInstant/" ).append( GML3_2_PREFIX ).append( ":timePosition" );
+                    
                     String temporalExtentBegin = getNodeAsString( extentElem, new XPath( beginXPath.toString(),
                                                                                          nsContextParseII ), null );
 
                     StringBuilder endXpath = new StringBuilder();
                     endXpath.append( baseXPath ).append( "gmd:TimePeriod/gmd:endPosition" ).append( " | " );
                     endXpath.append( baseXPath ).append( GML_PREFIX ).append( ":TimePeriod/" ).append( GML_PREFIX ).append( ":endPosition" ).append( " | " );
-                    endXpath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":endPosition" );
+                    endXpath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":endPosition" ).append( " | " );
+
+                    endXpath.append( baseXPath ).append( GML_PREFIX ).append( ":TimePeriod/" ).append( GML_PREFIX ).append( ":end/" );
+                    endXpath.append( GML_PREFIX ).append( ":TimeInstant/" ).append( GML_PREFIX ).append( ":timePosition" ).append( " | " );
+                    endXpath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":end/" );
+                    endXpath.append( GML3_2_PREFIX ).append( ":TimeInstant/" ).append( GML3_2_PREFIX ).append( ":timePosition" );
 
                     String temporalExtentEnd = getNodeAsString( extentElem, new XPath( endXpath.toString(),
                                                                                        nsContextParseII ), null );
@@ -578,10 +598,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
                             tempEnd = parseDate( temporalExtentEnd );
                         }
                     } catch ( Exception e ) {
-                        String msg = Messages.getMessage( "ERROR_PARSING_TEMP_EXTENT", temporalExtentBegin,
-                                                          temporalExtentEnd, e.getMessage() );
-                        LOG.debug( msg );
-                        throw new IllegalArgumentException( msg );
+                        LOG.info( "Could not parse temporalExtent : Begin - '{}'; END -'{}' -- with error message: {}. TemporalExtent is not stored as search property!",
+                                  new Object[] { temporalExtentBegin, temporalExtentEnd, e.getMessage() } );
+                        // don't be so strict: there are differnt kinds of dates allowed!
+                        // throw new IllegalArgumentException( msg );
                     }
                     List<OMElement> geographicElement = getElements( extentElem,
                                                                      new XPath(
