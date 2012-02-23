@@ -38,6 +38,8 @@ package org.deegree.protocol.csw.client.transaction;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PREFIX;
 
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLAdapter;
@@ -87,6 +89,11 @@ public class TransactionResponse extends XMLAdapter {
     private XPath getXPath( String attribute ) {
         return new XPath( "//" + CSW_202_PREFIX + ":TransactionResponse/" + CSW_202_PREFIX + ":TransactionSummary/"
                           + CSW_202_PREFIX + ":" + attribute, nsContext );
+    }
+
+    public void close()
+                            throws IOException {
+        response.close();
     }
 
 }

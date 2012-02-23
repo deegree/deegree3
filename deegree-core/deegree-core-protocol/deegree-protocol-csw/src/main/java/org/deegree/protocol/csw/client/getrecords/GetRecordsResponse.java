@@ -38,6 +38,7 @@ package org.deegree.protocol.csw.client.getrecords;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PREFIX;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -95,4 +96,10 @@ public class GetRecordsResponse extends XMLAdapter {
         return new XPath( "//" + CSW_202_PREFIX + ":GetRecordsResponse/" + CSW_202_PREFIX + ":SearchResults/@"
                           + attribute, nsContext );
     }
+
+    public void close()
+                            throws IOException {
+        response.close();
+    }
+
 }
