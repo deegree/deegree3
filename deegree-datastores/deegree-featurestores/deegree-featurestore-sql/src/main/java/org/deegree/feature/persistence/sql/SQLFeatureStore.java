@@ -788,7 +788,7 @@ public class SQLFeatureStore implements FeatureStore {
             BlobMapping blobMapping = getSchema().getBlobMapping();
 
             if ( query.getPrefilterBBox() != null ) {
-                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
+                OperatorFilter bboxFilter = new OperatorFilter( query.getPrefilterBBox() );
                 wb = getWhereBuilderBlob( bboxFilter, conn );
                 LOG.debug( "WHERE clause: " + wb.getWhere() );
             }
@@ -928,12 +928,12 @@ public class SQLFeatureStore implements FeatureStore {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
         boolean wmsStyleQuery = false;
-        Envelope env = queries[0].getPrefilterBBox();
+        Envelope env = queries[0].getPrefilterBBox().getBoundingBox();
         if ( getSchema().getBlobMapping() != null && queries[0].getFilter() == null
              && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = queries[i].getPrefilterBBox();
+                Envelope queryBBox = queries[i].getPrefilterBBox().getBoundingBox();
                 if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
                     wmsStyleQuery = false;
                     break;
@@ -1149,7 +1149,7 @@ public class SQLFeatureStore implements FeatureStore {
             List<String> columns = builder.getInitialSelectColumns();
 
             if ( query.getPrefilterBBox() != null ) {
-                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( query.getPrefilterBBox() ) );
+                OperatorFilter bboxFilter = new OperatorFilter( query.getPrefilterBBox() );
                 wb = getWhereBuilderBlob( bboxFilter, conn );
                 LOG.debug( "WHERE clause: " + wb.getWhere() );
                 // LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
@@ -1476,7 +1476,7 @@ public class SQLFeatureStore implements FeatureStore {
                 return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null, blobMapping.getBBoxColumn(),
                                                 aliasManager.getRootTableAlias() );
             }
-            
+
             @Override
             public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {

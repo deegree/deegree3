@@ -38,6 +38,7 @@ package org.deegree.sqldialect.filter;
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.SQLDialect;
@@ -169,6 +171,7 @@ public abstract class AbstractWhereBuilder {
      */
     protected void build( boolean allowPartialMappings )
                             throws FilterEvaluationException, UnmappableException {
+
         if ( filter != null ) {
             try {
                 whereClause = toProtoSQL( filter.getOperator() );
@@ -176,8 +179,17 @@ public abstract class AbstractWhereBuilder {
                 if ( !allowPartialMappings ) {
                     throw e;
                 }
-                LOG.debug( "Unable to map filter to WHERE-clause. Setting post filter.", e );
-                LOG.warn( "Using full filter for post filtering step. Partial backend-filtering is not implemented yet. " );
+                LOG.debug( "Unable to map full filter to WHERE-clause. Trying mapping of bbox constraint only.", e );
+
+                BBOX preFilterBBox = extractPrefilterBBoxConstraint( filter );
+                if ( preFilterBBox != null ) {
+                    try {
+                        whereClause = toProtoSQL( preFilterBBox );
+                    } catch ( UnmappableException e2 ) {
+                        LOG.warn( "Unable to map any filter constraints to WHERE-clause. Fallback to full memory filtering.",
+                                  e );
+                    }
+                }
                 postFilter = filter;
             } catch ( FilterEvaluationException e ) {
                 throw e;
@@ -186,6 +198,7 @@ public abstract class AbstractWhereBuilder {
                 throw e;
             }
         }
+
         if ( sortCrit != null && sortCrit.length != 0 ) {
             try {
                 orderByClause = toProtoSQL( sortCrit );
@@ -847,7 +860,8 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link ValueReference}s
      */
-    protected SQLExpression toProtoSQLSpatial( ValueReference propName ) throws FilterEvaluationException, UnmappableException {
+    protected SQLExpression toProtoSQLSpatial( ValueReference propName )
+                            throws FilterEvaluationException, UnmappableException {
         SQLExpression sql = null;
         PropertyNameMapping propMapping = mapper.getSpatialMapping( propName, aliasManager );
         if ( propMapping != null ) {

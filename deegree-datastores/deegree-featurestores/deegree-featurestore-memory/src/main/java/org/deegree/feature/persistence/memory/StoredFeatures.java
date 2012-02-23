@@ -211,7 +211,7 @@ class StoredFeatures {
             // perform index filtering
             Envelope ftEnv = ftToFeatures.get( ft ).getEnvelope();
             if ( query.getPrefilterBBox() != null && ftEnv != null && storageCRS != null ) {
-                Envelope prefilterBox = query.getPrefilterBBox();
+                Envelope prefilterBox = query.getPrefilterBBox().getBoundingBox();
                 if ( prefilterBox.getCoordinateSystem() != null
                      && !prefilterBox.getCoordinateSystem().equals( storageCRS ) ) {
                     try {

@@ -37,7 +37,7 @@ package org.deegree.feature.persistence.query;
 
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_RESOLUTION;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
-import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
+import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,21 +49,10 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
-import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
-import org.deegree.filter.spatial.Contains;
-import org.deegree.filter.spatial.Crosses;
-import org.deegree.filter.spatial.Equals;
-import org.deegree.filter.spatial.Intersects;
-import org.deegree.filter.spatial.Overlaps;
-import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.filter.spatial.SpatialOperator.SubType;
-import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
@@ -192,94 +181,21 @@ public class Query {
     }
 
     /**
-     * Returns an {@link Envelope} suitable for performing a spatial pre-filtering step on the set of feature
-     * candidates.
+     * Tries to extract a {@link BBOX} constraint from the query {@link Filter} that can be used as a pre-filtering step
+     * to narrow the result set.
      * <p>
      * The returned {@link Envelope} is determined by the following strategy:
      * <ul>
-     * <li>If the {@link Query} contains an {@link OperatorFilter}, it is attempted to extract an {@link Envelope} from
-     * it. TODO Note that the envelope is only used when the corresponding property name targets a property of the root
-     * feature (and not a property of a subfeature).</li>
-     * <li>If no bbox can be extracted from the filter, <code>null</code> is returned.</li>
+     * <li>If the filter is an {@link OperatorFilter}, it is attempted to extract an {@link BBOX} constraint from it.</li>
+     * <li>If no {@link BBOX} constraint can be extracted from the filter (not presented or nested in <code>Or</code> or
+     * <code>Not</code> expressions, <code>null</code> is returned.</li>
      * </ul>
      * </p>
      * 
-     * @return an {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
+     * @return a {@link BBOX} suitable for pre-filtering feature candidates, can be <code>null</code>
      */
-    public Envelope getPrefilterBBox() {
-        Envelope env = null;
-        if ( filter != null && filter.getType() == OPERATOR_FILTER ) {
-            OperatorFilter of = (OperatorFilter) filter;
-            Operator oper = of.getOperator();
-            env = extractBBox( oper );
-        }
-        return env;
-    }
-
-    // TODO implement full strategy
-    private Envelope extractBBox( Operator oper ) {
-        switch ( oper.getType() ) {
-        case COMPARISON: {
-            return null;
-        }
-        case LOGICAL: {
-            LogicalOperator logical = (LogicalOperator) oper;
-            switch ( logical.getSubType() ) {
-            case AND:
-                Envelope env = null;
-                for ( Operator child : logical.getParams() ) {
-                    Envelope childEnv = extractBBox( child );
-                    if ( childEnv != null ) {
-                        if ( env == null ) {
-                            env = childEnv;
-                        } else {
-                            // TODO what about different CRS?
-                            env = env.merge( childEnv );
-                        }
-                    }
-                }
-                return env;
-            case OR:
-                return null;
-            case NOT:
-                return null;
-            }
-            return null;
-        }
-        case SPATIAL: {
-            return extractBBox( (SpatialOperator) oper );
-        }
-        }
-        return null;
-    }
-
-    private Envelope extractBBox( SpatialOperator oper ) {
-        SubType type = oper.getSubType();
-        switch ( type ) {
-        case BBOX:
-            return ( (BBOX) oper ).getBoundingBox();
-        case CONTAINS:
-            // Oracle does not like zero-extent bboxes
-            if ( !( ( (Contains) oper ).getGeometry() instanceof Point ) )
-                return ( (Contains) oper ).getGeometry().getEnvelope();
-            return null;
-        case CROSSES:
-            return ( (Crosses) oper ).getGeometry().getEnvelope();
-        case DWITHIN:
-            // TOOD use enlarged bbox
-            return null;
-        case EQUALS:
-            return ( (Equals) oper ).getGeometry().getEnvelope();
-        case INTERSECTS:
-            return ( (Intersects) oper ).getGeometry().getEnvelope();
-        case OVERLAPS:
-            return ( (Overlaps) oper ).getGeometry().getEnvelope();
-        case WITHIN:
-            return ( (Within) oper ).getGeometry().getEnvelope();
-        default: {
-            return null;
-        }
-        }
+    public BBOX getPrefilterBBox() {
+        return extractPrefilterBBoxConstraint( filter );
     }
 
     /**

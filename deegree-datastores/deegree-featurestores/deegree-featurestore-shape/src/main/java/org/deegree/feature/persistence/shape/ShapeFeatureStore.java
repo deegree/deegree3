@@ -444,7 +444,7 @@ public class ShapeFeatureStore implements FeatureStore {
         Pair<Filter, Envelope> filterPair = splitOffBBoxConstraint( filter );
 
         List<Pair<Integer, Long>> recNumsAndPos = new LinkedList<Pair<Integer, Long>>();
-        Envelope bbox = getTransformedEnvelope( query.getPrefilterBBox() );
+        Envelope bbox = getTransformedEnvelope( query.getPrefilterBBox().getBoundingBox() );
 
         boolean queryIndex = filterPair.first == null || !generateAlphanumericIndexes;
         Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filterPair.first,

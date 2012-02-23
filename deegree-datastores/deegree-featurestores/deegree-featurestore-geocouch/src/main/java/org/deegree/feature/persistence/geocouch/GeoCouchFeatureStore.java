@@ -170,7 +170,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
         return schema;
     }
 
-    @Override    
+    @Override
     public boolean isMapped( QName ftName ) {
         return schema.getFeatureType( ftName ) != null;
     }
@@ -246,7 +246,7 @@ public class GeoCouchFeatureStore implements FeatureStore {
         try {
             if ( query.getPrefilterBBox() != null ) {
                 List<String> ids = new ArrayList<String>();
-                Envelope box = query.getPrefilterBBox();
+                Envelope box = query.getPrefilterBBox().getBoundingBox();
                 Point min = box.getMin();
                 Point max = box.getMax();
 
@@ -315,11 +315,11 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
         // check for most common case: multiple featuretypes, same bbox (WMS), no filter
         boolean wmsStyleQuery = false;
-        Envelope env = queries[0].getPrefilterBBox();
+        Envelope env = queries[0].getPrefilterBBox().getBoundingBox();
         if ( queries[0].getFilter() == null && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = queries[i].getPrefilterBBox();
+                Envelope queryBBox = queries[i].getPrefilterBBox().getBoundingBox();
                 if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
                     wmsStyleQuery = false;
                     break;

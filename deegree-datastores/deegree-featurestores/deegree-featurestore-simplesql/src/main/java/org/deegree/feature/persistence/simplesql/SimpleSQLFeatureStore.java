@@ -300,7 +300,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
             for ( final Query q : queries ) {
 
-                Envelope bbox = q.getPrefilterBBox();
+                Envelope bbox = q.getPrefilterBBox().getBoundingBox();
                 if ( bbox == null ) {
                     bbox = calcEnvelope( ftName );
                 }
