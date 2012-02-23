@@ -58,6 +58,7 @@ import org.deegree.commons.jdbc.UpdateRow;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
@@ -290,17 +291,17 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle() ) );
         Timestamp revDate = null;
         if ( qp.getRevisionDate() != null ) {
-            revDate = new Timestamp( qp.getRevisionDate().getTimeInMilliseconds()  );
+            revDate = new Timestamp( qp.getRevisionDate().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "revisiondate", revDate );
         Timestamp createDate = null;
         if ( qp.getCreationDate() != null ) {
-            createDate = new Timestamp( qp.getCreationDate().getTimeInMilliseconds()  );
+            createDate = new Timestamp( qp.getCreationDate().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "creationdate", createDate );
         Timestamp pubDate = null;
         if ( qp.getPublicationDate() != null ) {
-            pubDate = new Timestamp( qp.getPublicationDate().getTimeInMilliseconds()  );
+            pubDate = new Timestamp( qp.getPublicationDate().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "publicationdate", pubDate );
         tr.addPreparedArgument( "organisationname", qp.getOrganisationName() );
@@ -312,12 +313,12 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
         Timestamp begTmpExten = null;
         if ( qp.getTemporalExtentBegin() != null ) {
-            begTmpExten = new Timestamp( qp.getTemporalExtentBegin().getTimeInMilliseconds()  );
+            begTmpExten = new Timestamp( qp.getTemporalExtentBegin().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "tempextent_begin", begTmpExten );
         Timestamp endTmpExten = null;
         if ( qp.getTemporalExtentEnd() != null ) {
-            endTmpExten = new Timestamp( qp.getTemporalExtentEnd().getTimeInMilliseconds()  );
+            endTmpExten = new Timestamp( qp.getTemporalExtentEnd().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "tempextent_end", endTmpExten );
         tr.addPreparedArgument( "servicetype", qp.getServiceType() );
@@ -331,12 +332,17 @@ class TransactionHelper extends SqlHelper {
         tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle() ) );
         Timestamp specDate = null;
         if ( qp.getSpecificationDate() != null ) {
-            specDate = new Timestamp( qp.getSpecificationDate().getTimeInMilliseconds()  );
+            specDate = new Timestamp( qp.getSpecificationDate().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "specdate", specDate );
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
 
-        Geometry geom = calculateMainBBox( qp.getBoundingBox() );
+        Envelope env = calculateMainBBox( qp.getBoundingBox() );
+        Geometry geom = null;
+        if ( env != null ) {
+            geom = Geometries.getAsGeometry( env );
+        }
+
         String bboxColumn = "bbox";
         String srid = null;
         // TODO: srid
