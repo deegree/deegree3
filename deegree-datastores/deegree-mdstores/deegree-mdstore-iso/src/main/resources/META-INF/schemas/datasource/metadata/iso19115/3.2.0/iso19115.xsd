@@ -167,6 +167,7 @@
   <element name="QueryableProperty">
     <complexType>
       <sequence>
+        <!-- Use gmd, srv, gml, gco as namespace prefices as long as individual bindings are not allowed! -->
         <element name="xpath" type="string" />
         <element name="name" maxOccurs="unbounded">
           <complexType>

@@ -50,6 +50,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
@@ -75,6 +76,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty;
 import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty.Name;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
@@ -165,7 +167,11 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                                                          e );
                     }
                 }
-                XPath xpath = new XPath( qp.getXpath(), CommonNamespaces.getNamespaceContext() );
+                
+                // TODO: namespace bindings configured by the user!?
+                NamespaceBindings namespaceContext = CommonNamespaces.getNamespaceContext();
+                namespaceContext.addNamespace( CSWConstants.SRV_PREFIX, CSWConstants.SRV_NS );
+                XPath xpath = new XPath( qp.getXpath(), namespaceContext );
                 List<Name> name = qp.getName();
                 List<QName> names = new ArrayList<QName>();
                 for ( Name n : name ) {
