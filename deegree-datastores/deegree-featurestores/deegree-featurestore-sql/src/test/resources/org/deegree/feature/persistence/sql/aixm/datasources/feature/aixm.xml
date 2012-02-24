@@ -28,7 +28,7 @@
             </Complex>
             <Complex path="gml:endPosition">
               <Primitive path="@indeterminatePosition" mapping="gml_validtime_gml_timeperiod_gml_endposition_attr_indeterminateposition" />
-              <Primitive path="text()" mapping="gml_validtime_gml_timeperiod_gml_endposition_value" />
+              <!-- <Primitive path="text()" mapping="gml_validtime_gml_timeperiod_gml_endposition_value" /> -->
             </Complex>
           </Complex>
         </Complex>
@@ -38,20 +38,23 @@
         <Complex path="aixm:ARP">
           <Complex path="aixm:ElevatedPoint">
             <Geometry path="." mapping="aixm_arp_aixm_elevatedpoint_geom" />
-            <!-- Complex path="gml:metadataProperty">
-              <Primitive path="gml:GenericMetaData" mapping="elp_metadata" />
+            <!-- Complex path="gml:metaDataProperty">
+              <Complex path="gml:GenericMetaData">
+                <Primitive path="text()" mapping="elp_metadata" />
+              </Complex>
             </Complex-->
             <Primitive path="gml:description" mapping="elp_gml_description" />
             <Complex path="gml:descriptionReference">
               <Primitive path="@xlink:href" mapping="elp_descriptionreference_xlink_href" />
             </Complex>
-            <Complex path="gml:name">
-              <Join fromColumns="id" toColumns="fk" table="aixm_airportheliport_aixm_timeslice_elp_gml_name" />
-              <Primitive path="text()" mapping="value" />
-            </Complex>
             <Complex path="gml:identifier">
               <Primitive path="text()" mapping="elp_gml_identifier" />
               <Primitive path="@codeSpace" mapping="elp_gml_identifier_attr_codespace" />
+            </Complex>
+            <Complex path="gml:name">
+              <Join fromColumns="id" toColumns="fk" table="aixm_airportheliport_aixm_timeslice_elp_gml_name"
+                numbered="true" orderColumns="num" />
+              <Primitive path="text()" mapping="value" />
             </Complex>
             <Complex path="aixm:horizontalAccuracy">
               <Primitive path="@uom" mapping="elp_horizontalaccuracy_uom" />
@@ -60,7 +63,7 @@
             <Complex path="aixm:annotation">
               <Primitive path="@xsi:nil" mapping="elp_annotation_xsi_nil" />
               <Primitive path="@nilReason" mapping="elp_annotation_nilreason" />
-            </Complex>            
+            </Complex>
             <Complex path="aixm:elevation">
               <Primitive path="@uom" mapping="elp_attr_uom" />
               <Primitive path="text()" mapping="elp_value" />
@@ -73,7 +76,7 @@
             <Complex path="aixm:verticalAccuracy">
               <Primitive path="@uom" mapping="elp_verticalaccuracy_uom" />
               <Primitive path="text()" mapping="elp_verticalaccuracy_value" />
-            </Complex>            
+            </Complex>
           </Complex>
         </Complex>
       </Complex>

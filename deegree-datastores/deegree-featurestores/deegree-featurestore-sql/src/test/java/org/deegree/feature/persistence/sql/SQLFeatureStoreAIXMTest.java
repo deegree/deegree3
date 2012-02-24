@@ -43,6 +43,7 @@ import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -102,7 +103,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLFeatureStore} test for peculiar aspects of AIXM.
+ * {@link SQLFeatureStore} test for peculiar aspects of mapping AIXM.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -243,65 +244,63 @@ public class SQLFeatureStoreAIXMTest {
         fs.destroy();
     }
 
-//    @Test
-//    public void testElevatedPointReconstruction()
-//                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
-//
-//        ValueReference propName = new ValueReference( GML_IDENTIFIER );
-//        Literal literal = new Literal( "dd062d88-3e64-4a5d-bebd-89476db9ebea" );
-//        PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
-//        Filter filter = new OperatorFilter( oper );
-//        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
-//        FeatureCollection fc = fs.query( query ).toCollection();
-//        Feature f = fc.iterator().next();
-//        System.out.println( "HUHU: " + f.getName() );
-//        System.out.println( "HUHU: " + f.getProperties().size() );
-//        for ( Property p : f.getProperties() ) {
-//            System.out.println (p.getName());
-//        }
-//        Point geom = (Point) getGeometry( "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP/aixm:ElevatedPoint", f );
-//
-//        String aixmNs = "http://www.aixm.aero/schema/5.1";
-//
-//        double DELTA = 0.00000001;
-//        assertEquals( -32.035, geom.get0(), DELTA );
-//        assertEquals( 52.288888888888884, geom.get1(), DELTA );
-//        assertEquals( 2, geom.getCoordinateDimension() );
-//        assertEquals( CRSManager.lookup( "urn:ogc:def:crs:EPSG:4326" ), geom.getCoordinateSystem() );
-//
-//        List<Property> props = geom.getProperties();
-//        assertEquals( 12, props.size() );
-//        assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
-//        assertEquals( new QName( GML3_2_NS, "description" ), props.get( 1 ).getName() );
-//        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( 2 ).getName() );
-//        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( 3 ).getName() );
-//        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 4 ).getName() );
-//        assertEquals( new QName( GML3_2_NS, "name" ), props.get( 5 ).getName() );
-//        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( 6 ).getName() );
-//        assertEquals( new QName( aixmNs, "annotation" ), props.get( 7 ).getName() );
-//        assertEquals( new QName( aixmNs, "elevation" ), props.get( 8 ).getName() );
-//        assertEquals( new QName( aixmNs, "geoidUndulation" ), props.get( 9 ).getName() );
-//        assertEquals( new QName( aixmNs, "verticalDatum" ), props.get( 10 ).getName() );
-//        assertEquals( new QName( aixmNs, "verticalAccuracy" ), props.get( 11 ).getName() );
-//
-//        assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
-//                      getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
-//        assertEquals( "This is just for testing the parsing of standard GML properties.",
-//                      getPrimitive( "gml:description/text()", geom ).getAsText() );
-//        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getAsText() );
-//        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getAsText() );
-//        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", geom ).getAsText() );
-//        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", geom ).getAsText() );
-//        assertEquals( "1.0", getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getAsText() );
-//        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getAsText() );
-//        assertEquals( "47.11", getPrimitive( "aixm:elevation/text()", geom ).getAsText() );
-//        assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getAsText() );
-//        assertEquals( "3.22", getPrimitive( "aixm:geoidUndulation/text()", geom ).getAsText() );
-//        assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
-//        assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
-//        assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
-//        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );
-//    }
+    @Test
+    public void testElevatedPointReconstruction()
+                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
+
+        ValueReference propName = new ValueReference( GML_IDENTIFIER );
+        Literal literal = new Literal( "dd062d88-3e64-4a5d-bebd-89476db9ebea" );
+        PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
+        Filter filter = new OperatorFilter( oper );
+        Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
+        FeatureCollection fc = fs.query( query ).toCollection();
+        Feature f = fc.iterator().next();
+        Point geom = (Point) getGeometry( "aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP/aixm:ElevatedPoint", f );
+
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+
+        double DELTA = 0.00000001;
+        assertEquals( -32.035, geom.get0(), DELTA );
+        assertEquals( 52.288888888888884, geom.get1(), DELTA );
+        assertEquals( 2, geom.getCoordinateDimension() );
+        assertEquals( CRSManager.lookup( "urn:ogc:def:crs:EPSG:4326" ), geom.getCoordinateSystem() );
+
+        List<Property> props = geom.getProperties();
+        assertEquals( 11, props.size() );
+        int i = 0;
+        // assertEquals( new QName( GML3_2_NS, "metaDataProperty" ), props.get( 0 ).getName() );
+        assertEquals( new QName( GML3_2_NS, "description" ), props.get( i++ ).getName() );
+        assertEquals( new QName( GML3_2_NS, "descriptionReference" ), props.get( i++ ).getName() );
+        assertEquals( new QName( GML3_2_NS, "identifier" ), props.get( i++ ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( i++ ).getName() );
+        assertEquals( new QName( GML3_2_NS, "name" ), props.get( i++ ).getName() );
+        assertEquals( new QName( aixmNs, "horizontalAccuracy" ), props.get( i++ ).getName() );
+        assertEquals( new QName( aixmNs, "annotation" ), props.get( i++ ).getName() );
+        assertEquals( new QName( aixmNs, "elevation" ), props.get( i++ ).getName() );
+        assertEquals( new QName( aixmNs, "geoidUndulation" ), props.get( i++ ).getName() );
+        assertEquals( new QName( aixmNs, "verticalDatum" ), props.get( i++ ).getName() );
+        assertEquals( new QName( aixmNs, "verticalAccuracy" ), props.get( i++ ).getName() );
+
+        // assertEquals( "Example for metadata: Ce point ne pas une GML point, c'est une AIXM point.",
+        // getPrimitive( "gml:metaDataProperty/gml:GenericMetaData/text()", geom ).getAsText() );
+        assertEquals( "This is just for testing the parsing of standard GML properties.",
+                      getPrimitive( "gml:description/text()", geom ).getValue() );
+        assertEquals( "XYZ", getPrimitive( "gml:identifier/text()", geom ).getValue() );
+        assertEquals( "urn:blabla:bla", getPrimitive( "gml:identifier/@codeSpace", geom ).getValue() );
+        assertEquals( "Point P1", getPrimitive( "gml:name[1]/text()", geom ).getValue() );
+        assertEquals( "P1", getPrimitive( "gml:name[2]/text()", geom ).getValue() );
+        assertEquals( new BigDecimal( 1 ), getPrimitive( "aixm:horizontalAccuracy/text()", geom ).getValue() );
+        assertEquals( "M", getPrimitive( "aixm:horizontalAccuracy/@uom", geom ).getValue() );
+        assertEquals( "18.0", getPrimitive( "aixm:elevation/text()", geom ).getValue() );
+        assertEquals( "M", getPrimitive( "aixm:elevation/@uom", geom ).getValue() );
+        assertEquals( new BigDecimal( 3.22 ).doubleValue(),
+                      ( (BigDecimal) getPrimitive( "aixm:geoidUndulation/text()", geom ).getValue() ).doubleValue(),
+                      DELTA );
+        assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getValue() );
+        assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getValue() );
+        assertEquals( new BigDecimal( 2 ), getPrimitive( "aixm:verticalAccuracy/text()", geom ).getValue() );
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getValue() );
+    }
 
     private Geometry getGeometry( String xpath, GMLObject object )
                             throws FilterEvaluationException {
