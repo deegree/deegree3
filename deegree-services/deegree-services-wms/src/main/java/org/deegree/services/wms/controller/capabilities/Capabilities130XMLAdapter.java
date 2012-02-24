@@ -248,7 +248,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                     break inner;
                 }
             }
-System.out.println(id);
+
             if ( id == null ) {
                 break mdlabel;
             }
