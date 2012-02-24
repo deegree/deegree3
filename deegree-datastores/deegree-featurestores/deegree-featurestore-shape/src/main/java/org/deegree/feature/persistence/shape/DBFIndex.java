@@ -64,8 +64,10 @@ import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
@@ -289,6 +291,7 @@ public class DBFIndex {
         H2WhereBuilder where = null;
         SQLExpression generated = null;
         if ( filter instanceof OperatorFilter ) {
+            filter = Filters.splitOffBBoxConstraint( filter ).first;
             where = new H2WhereBuilder( null, (OperatorFilter) filter, sort );
             generated = where.getWhere();
             if ( generated == null ) {
@@ -303,7 +306,8 @@ public class DBFIndex {
             conn = ConnectionManager.getConnection( connid );
             if ( generated == null ) {
                 StringBuilder sb = new StringBuilder();
-                for ( String id : ( (IdFilter) filter ).getMatchingIds() ) {
+                for ( ResourceId rid : ( (IdFilter) filter ).getSelectedIds() ) {
+                    String id = rid.getRid();
                     sb.append( id.substring( id.lastIndexOf( "_" ) + 1 ) );
                     sb.append( "," );
                 }
