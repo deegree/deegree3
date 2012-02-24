@@ -258,7 +258,7 @@ public class RasterLayer extends Layer {
             Layer parent = this;
             while ( fromRequest == null ) {
                 fromRequest = gm.getRenderingOptions().getInterpolation( parent.getName() );
-                parent = getParent();
+                parent = parent.getParent();
             }
             switch ( fromRequest ) {
             case BICUBIC:
