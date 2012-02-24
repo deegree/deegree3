@@ -121,7 +121,7 @@ public class WMSController111 extends WMSControllerBase {
         response.setContentType( "application/vnd.ogc.wms_xml" );
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();
-            new Capabilities111XMLAdapter( identification, provider, getUrl, postUrl, service, controller ).export( xmlWriter );
+            new Capabilities111XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }

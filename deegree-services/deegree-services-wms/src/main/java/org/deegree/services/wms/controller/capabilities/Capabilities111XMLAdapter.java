@@ -40,6 +40,7 @@ import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
+import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
@@ -51,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -59,6 +61,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -67,12 +70,14 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.ows.metadata.DatasetMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.LanguageStringType;
+import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.model.layers.Layer;
@@ -105,6 +110,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
     private WMSController controller;
 
+    private final OWSMetadataProvider metadata;
+
     /**
      * @param identification
      * @param provider
@@ -113,10 +120,12 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
      * @param service
      * @param controller
      */
-    public Capabilities111XMLAdapter( ServiceIdentification identification, ServiceProvider provider, String getUrl,
-                                      String postUrl, MapService service, WMSController controller ) {
+    public Capabilities111XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
+                                      OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
+                                      WMSController controller ) {
         this.identification = identification;
         this.provider = provider;
+        this.metadata = metadata;
         this.getUrl = getUrl;
         this.postUrl = postUrl;
         this.service = service;
@@ -139,6 +148,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writer.writeStartElement( "WMT_MS_Capabilities" );
         writer.writeAttribute( "version", "1.1.1" );
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );
+        writer.writeNamespace( "xlink", XLNNS );
 
         writeService( writer );
 
@@ -198,6 +208,39 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         SpatialMetadata smd = md.getSpatialMetadata();
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
         writeDimensions( writer, md.getDimensions() );
+
+        mdlabel: if ( controller.getMetadataURLTemplate() != null ) {
+            String id = null;
+
+            inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
+                if ( l.getMetadata().getMetadataId() != null ) {
+                    id = l.getMetadata().getMetadataId();
+                    break inner;
+                }
+            }
+
+            if ( id == null ) {
+                break mdlabel;
+            }
+            String mdurlTemplate = controller.getMetadataURLTemplate();
+            if ( mdurlTemplate.isEmpty() ) {
+                mdurlTemplate = getUrl;
+                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
+                    mdurlTemplate += "?";
+                }
+                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+            }
+
+            writer.writeStartElement( "MetadataURL" );
+            writer.writeAttribute( "type", "ISO19115:2003" );
+            writeElement( writer, "Format", "application/xml" );
+            writer.writeStartElement( "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            writer.writeAttribute( XLNNS, "href", StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
+
         Map<String, Style> legends = md.getLegendStyles();
         for ( Entry<String, Style> e : md.getStyles().entrySet() ) {
             if ( e.getKey() == null || e.getKey().isEmpty() ) {
@@ -349,6 +392,58 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writeSrsAndEnvelope( writer, layer.getSrs(), layer.getBbox() );
 
         writeDimensions( writer, layer.getDimensions() );
+
+        if ( layer.getAuthorityURL() != null ) {
+            writer.writeStartElement( WMSNS, "AuthorityURL" );
+            writer.writeAttribute( "name", "fromISORecord" );
+            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "href", layer.getAuthorityURL() );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
+
+        if ( layer.getAuthorityIdentifier() != null ) {
+            writer.writeStartElement( WMSNS, "Identifier" );
+            writer.writeAttribute( "authority", "fromISORecord" );
+            writer.writeCharacters( layer.getAuthorityIdentifier() );
+            writer.writeEndElement();
+        }
+
+        String mdUrl = null;
+        if ( layer.getName() != null && metadata != null ) {
+            DatasetMetadata dsMd = metadata.getDatasetMetadata( new QName( layer.getName() ) );
+            if ( dsMd != null ) {
+                mdUrl = dsMd.getUrl();
+            }
+        }
+
+        mdlabel: if ( mdUrl == null && controller.getMetadataURLTemplate() != null ) {
+            String id = layer.getDataMetadataSetId();
+            if ( id == null ) {
+                break mdlabel;
+            }
+            String mdurlTemplate = controller.getMetadataURLTemplate();
+            if ( mdurlTemplate.isEmpty() ) {
+                mdurlTemplate = getUrl;
+                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
+                    mdurlTemplate += "?";
+                }
+                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+            }
+
+            mdUrl = StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id );
+        }
+
+        if ( mdUrl != null ) {
+            writer.writeStartElement( "MetadataURL" );
+            writer.writeAttribute( "type", "ISO19115:2003" );
+            writeElement( writer, "Format", "application/xml" );
+            writer.writeStartElement( "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            writer.writeAttribute( XLNNS, "href", mdUrl );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
 
         Style def = service.getStyles().get( layer.getName(), null );
         if ( def != null ) {
