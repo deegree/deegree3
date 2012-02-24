@@ -179,15 +179,16 @@ public abstract class AbstractWhereBuilder {
                 if ( !allowPartialMappings ) {
                     throw e;
                 }
-                LOG.debug( "Unable to map full filter to WHERE-clause. Trying mapping of bbox constraint only.", e );
+                LOG.debug( "Unable to map full filter to WHERE-clause. Trying mapping of bbox constraint only." );
+                LOG.trace( "Stack trace:", e );
 
                 BBOX preFilterBBox = extractPrefilterBBoxConstraint( filter );
                 if ( preFilterBBox != null ) {
                     try {
                         whereClause = toProtoSQL( preFilterBBox );
                     } catch ( UnmappableException e2 ) {
-                        LOG.warn( "Unable to map any filter constraints to WHERE-clause. Fallback to full memory filtering.",
-                                  e );
+                        LOG.warn( "Unable to map any filter constraints to WHERE-clause. Fallback to full memory filtering." );
+                        LOG.trace( "Stack trace:", e2 );
                     }
                 }
                 postFilter = filter;
