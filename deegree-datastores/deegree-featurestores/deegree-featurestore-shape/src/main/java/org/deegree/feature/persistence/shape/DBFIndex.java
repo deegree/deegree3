@@ -291,7 +291,6 @@ public class DBFIndex {
         H2WhereBuilder where = null;
         SQLExpression generated = null;
         if ( filter instanceof OperatorFilter ) {
-            filter = Filters.splitOffBBoxConstraint( filter ).first;
             where = new H2WhereBuilder( null, (OperatorFilter) filter, sort );
             generated = where.getWhere();
             if ( generated == null ) {
