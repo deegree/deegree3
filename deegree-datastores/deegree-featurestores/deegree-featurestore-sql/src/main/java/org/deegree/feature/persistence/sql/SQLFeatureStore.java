@@ -926,14 +926,14 @@ public class SQLFeatureStore implements FeatureStore {
     public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
 
-        // check for most common case: multiple featuretypes, same bbox (WMS), no filter
+        // check for common case: multiple featuretypes, same bbox (WMS), no other filter constraints
         boolean wmsStyleQuery = false;
-        Envelope env = queries[0].getPrefilterBBox().getBoundingBox();
+        Envelope env = queries[0].getPrefilterBBoxEnvelope();
         if ( getSchema().getBlobMapping() != null && queries[0].getFilter() == null
              && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
-                Envelope queryBBox = queries[i].getPrefilterBBox().getBoundingBox();
+                Envelope queryBBox = queries[i].getPrefilterBBoxEnvelope();
                 if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
                     wmsStyleQuery = false;
                     break;

@@ -199,6 +199,28 @@ public class Query {
     }
 
     /**
+     * Tries to extract an {@link Envelope} from the query {@link Filter} that can be used as a pre-filtering step to
+     * narrow the result set.
+     * <p>
+     * The returned {@link Envelope} is determined by the following strategy:
+     * <ul>
+     * <li>If the filter is an {@link OperatorFilter}, it is attempted to extract an {@link BBOX} constraint from it.</li>
+     * <li>If no {@link BBOX} constraint can be extracted from the filter (not presented or nested in <code>Or</code> or
+     * <code>Not</code> expressions, <code>null</code> is returned.</li>
+     * </ul>
+     * </p>
+     * 
+     * @return a {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
+     */
+    public Envelope getPrefilterBBoxEnvelope() {
+        BBOX bbox = extractPrefilterBBoxConstraint( filter );
+        if ( bbox == null ) {
+            return null;
+        }
+        return bbox.getBoundingBox();
+    }
+
+    /**
      * Returns the names of the requested feature types.
      * 
      * @return the names of the requested feature types, never <code>null</code> (but may be empty for id filter
