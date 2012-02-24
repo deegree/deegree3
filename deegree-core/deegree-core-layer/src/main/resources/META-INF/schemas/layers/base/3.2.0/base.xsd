@@ -20,6 +20,7 @@
       <element name="Name" type="string" />
       <group ref="d:Description" />
       <group ref="s:SpatialMetadata" />
+      <element name="MetadataSetId" type="string" minOccurs="0" />
       <element name="ScaleDenominators" type="l:ScaleDenominatorsType" minOccurs="0" />
       <element name="Dimension" type="l:DimensionType" minOccurs="0" maxOccurs="unbounded" />
       <element name="StyleRef" minOccurs="0" maxOccurs="unbounded" type="l:StyleRefType" />

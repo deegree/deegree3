@@ -209,6 +209,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
                 md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
                 md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
+                md.setMetadataId( lay.getMetadataSetId() );
                 if ( featureType != null ) {
                     md.getFeatureTypes().add( store.getSchema().getFeatureType( featureType ) );
                 } else {

@@ -64,6 +64,8 @@ public class LayerMetadata {
 
     private Description description;
 
+    private String metadataId;
+
     private SpatialMetadata spatialMetadata;
 
     private DoublePair scaleDenominators = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
@@ -278,6 +280,21 @@ public class LayerMetadata {
      */
     public void setMapOptions( MapOptions mapOptions ) {
         this.mapOptions = mapOptions;
+    }
+
+    /**
+     * @return the metadataId
+     */
+    public String getMetadataId() {
+        return metadataId;
+    }
+
+    /**
+     * @param metadataId
+     *            the metadataId to set
+     */
+    public void setMetadataId( String metadataId ) {
+        this.metadataId = metadataId;
     }
 
 }

@@ -238,6 +238,39 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         SpatialMetadata smd = md.getSpatialMetadata();
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
         writeDimensions( writer, md.getDimensions() );
+
+        mdlabel: if ( controller.getMetadataURLTemplate() != null ) {
+            String id = null;
+
+            inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
+                if ( l.getMetadata().getMetadataId() != null ) {
+                    id = l.getMetadata().getMetadataId();
+                    break inner;
+                }
+            }
+System.out.println(id);
+            if ( id == null ) {
+                break mdlabel;
+            }
+            String mdurlTemplate = controller.getMetadataURLTemplate();
+            if ( mdurlTemplate.isEmpty() ) {
+                mdurlTemplate = getUrl;
+                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
+                    mdurlTemplate += "?";
+                }
+                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+            }
+
+            writer.writeStartElement( WMSNS, "MetadataURL" );
+            writer.writeAttribute( "type", "ISO19115:2003" );
+            writeElement( writer, WMSNS, "Format", "application/xml" );
+            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            writer.writeAttribute( XLNNS, "href", StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
+
         Map<String, Style> legends = md.getLegendStyles();
         for ( Entry<String, Style> e : md.getStyles().entrySet() ) {
             if ( e.getKey() == null || e.getKey().isEmpty() ) {

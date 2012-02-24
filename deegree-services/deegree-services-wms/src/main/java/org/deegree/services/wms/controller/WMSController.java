@@ -233,10 +233,12 @@ public class WMSController extends AbstractOWS {
     }
 
     private void handleMetadata( String metadataURLTemplate, String storeid ) {
+        this.metadataURLTemplate = metadataURLTemplate;
+
         if ( service.isNewStyle() ) {
             return;
         }
-        this.metadataURLTemplate = metadataURLTemplate;
+
         HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {

@@ -100,6 +100,7 @@ public class TileLayerProvider implements LayerStoreProvider {
         Description desc = fromJaxb( cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords() );
         LayerMetadata md = new LayerMetadata( cfg.getName(), desc, smd );
         md.setMapOptions( ConfigUtils.parseLayerOptions( cfg.getLayerOptions() ) );
+        md.setMetadataId( cfg.getMetadataSetId() );
         return new TileLayer( md, store );
     }
 

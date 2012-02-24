@@ -179,6 +179,7 @@ public class CoverageLayerProvider implements LayerStoreProvider {
                 LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
                 md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
                 md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
+                md.setMetadataId( lay.getMetadataSetId() );
                 // add standard coverage feature type to list of feature types
                 List<PropertyType> pts = new LinkedList<PropertyType>();
                 pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1,
