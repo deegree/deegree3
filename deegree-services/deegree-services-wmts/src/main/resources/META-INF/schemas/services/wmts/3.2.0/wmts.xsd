@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:wmts="http://www.deegree.org/services/wmts" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/wmts" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.wmts.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="deegreeWMTS">
+    <complexType>
+      <sequence>
+        <element name="ServiceConfiguration" type="wmts:ServiceConfigurationType" />
+      </sequence>
+      <attribute name="configVersion" use="required" type="wmts:ConfigVersionType" />
+    </complexType>
+  </element>
+
+  <complexType name="ServiceConfigurationType">
+    <sequence>
+      <element name="TileStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.2.0" />
+    </restriction>
+  </simpleType>
+
+</schema>

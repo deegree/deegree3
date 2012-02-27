@@ -74,7 +74,7 @@ public class WMSConstants {
      * 
      * @version $Revision: $, $Date: $
      */
-    public enum WMSRequestType {
+    public static enum WMSRequestType {
 
         /** Retrieve the description for one more layers. */
         DescribeLayer,

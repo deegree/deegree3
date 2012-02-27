@@ -45,6 +45,7 @@
     <module>deegree-services-wcs</module>
     <module>deegree-services-wfs</module>
     <module>deegree-services-wms</module>
+    <module>deegree-services-wmts</module>
     <module>deegree-services-wps</module>
     <module>deegree-services-wpvs</module>
     <module>deegree-webservices</module>
