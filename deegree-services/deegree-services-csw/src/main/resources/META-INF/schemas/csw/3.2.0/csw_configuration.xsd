@@ -56,6 +56,19 @@
             </documentation>
           </annotation>
         </element>
+        <element name="ElementNames" minOccurs="0">
+          <annotation>
+            <documentation>
+              Configure a set of ElementNames which can be used by the short name in the ElementName 
+              element in GetRecords requests.
+            </documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element ref="csw:ElementName" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>
@@ -66,6 +79,39 @@
           </restriction>
         </simpleType>
       </attribute>
+    </complexType>
+  </element>
+  <element name="ElementName">
+    <complexType>
+      <sequence>
+        <element name="name">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="namespace" type="anyURI" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="XPath" type="string" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Supported namespace bindings are:
+              gmd ->
+              http://www.isotc211.org/2005/gmd
+              srv ->
+              http://www.isotc211.org/2005/srv
+              gco ->
+              http://www.isotc211.org/2005/gco
+              gml3_2 ->
+              http://www.opengis.net/gml/3.2
+              gml ->
+              http://www.opengis.net/gml
+              Use the prefixes as defined
+              above in the XPath expressions. 
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
     </complexType>
   </element>
   <simpleType name="CSWVersionType">

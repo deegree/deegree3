@@ -52,6 +52,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -83,6 +84,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
+import org.deegree.services.csw.getrecords.ConfiguredElementName;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.Query;
 import org.slf4j.Logger;
@@ -110,10 +112,14 @@ public class GetRecordsHandler {
 
     private final MetadataStore<?> store;
 
-    public GetRecordsHandler( int maxMatches, String schemaLocation, MetadataStore store ) {
+    private final Map<QName, ConfiguredElementName> configuredElementNames;
+
+    public GetRecordsHandler( int maxMatches, String schemaLocation, MetadataStore<?> store,
+                              Map<QName, ConfiguredElementName> elementNames ) {
         this.maxMatches = maxMatches;
         this.schemaLocation = schemaLocation;
         this.store = store;
+        this.configuredElementNames = elementNames;
     }
 
     /**
@@ -483,9 +489,48 @@ public class GetRecordsHandler {
             rec = rec.toDublinCore();
         }
         if ( returnElements.length > 0 ) {
-            rec.serialize( writer, returnElements );
+            List<String> newReturnElements = new ArrayList<String>();
+            for ( String returnElement : returnElements ) {
+                System.out.println( returnElement );
+                ConfiguredElementName configuredElementName = getConfiguredElementName( getAsQName( returnElement ) );
+                System.out.println( configuredElementName );
+                if ( configuredElementName != null ) {
+                    newReturnElements.addAll( configuredElementName.getxPaths() );
+                } else {
+                    newReturnElements.add( returnElement );
+                }
+            }
+            System.out.println( newReturnElements );
+            String[] returnElementsAsArray = new String[newReturnElements.size()];
+            newReturnElements.toArray( returnElementsAsArray );
+            rec.serialize( writer, returnElementsAsArray );
         } else {
             rec.serialize( writer, elementSetName );
         }
+    }
+
+    private ConfiguredElementName getConfiguredElementName( QName qName ) {
+        if ( qName != null ) {
+            // TODO: NamespaceBindings are not considered yet!
+            for ( QName key : configuredElementNames.keySet() ) {
+                if ( key.getLocalPart().equals( qName.getLocalPart() ) ) {
+                    return configuredElementNames.get( key );
+                }
+            }
+        }
+        return null;
+    }
+
+    private QName getAsQName( String qname ) {
+        // TODO: NamespaceBindings are not considered yet!
+        if ( qname != null && qname.length() > 0 && !qname.contains( "/" ) ) {
+            String[] split = qname.split( ":" );
+            if ( split.length > 1 ) {
+                return new QName( split[1] );
+            } else {
+                return new QName( split[0] );
+            }
+        }
+        return null;
     }
 }

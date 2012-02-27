@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,7 @@ import org.deegree.services.csw.exporthandling.TransactionHandler;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdKVPAdapter;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdXMLAdapter;
+import org.deegree.services.csw.getrecords.ConfiguredElementName;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.GetRecordsKVPAdapter;
 import org.deegree.services.csw.getrecords.GetRecordsXMLAdapter;
@@ -117,6 +119,7 @@ import org.deegree.services.csw.transaction.TransactionXMLAdapter;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
+import org.deegree.services.jaxb.csw.ElementName;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.ows.OWSException120XMLAdapter;
@@ -139,6 +142,8 @@ import org.slf4j.LoggerFactory;
  * 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
@@ -247,8 +252,17 @@ public class CSWController extends AbstractOWS {
         }
         int maxMatches = jaxbConfig.getMaxMatches() == null ? 0 : jaxbConfig.getMaxMatches().intValue();
 
+        Map<QName, ConfiguredElementName> elNames = new HashMap<QName, ConfiguredElementName>();
+        if ( jaxbConfig.getElementNames() != null ) {
+            List<ElementName> elementNames = jaxbConfig.getElementNames().getElementName();
+            for ( ElementName en : elementNames ) {
+                QName qName = new QName( en.getName().getNamespace(), en.getName().getValue() );
+                elNames.put( qName, new ConfiguredElementName( qName, en.getXPath() ) );
+            }
+        }
+
         describeRecordHandler = new DescribeRecordHandler();
-        getRecordsHandler = new GetRecordsHandler( maxMatches, SCHEMA_LOCATION, store );
+        getRecordsHandler = new GetRecordsHandler( maxMatches, SCHEMA_LOCATION, store, elNames );
         transactionHandler = new TransactionHandler();
         getRecordByIdHandler = new GetRecordByIdHandler();
     }
