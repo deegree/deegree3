@@ -96,9 +96,8 @@ public class JTSPoints implements Points {
     @Override
     public Point get( int i ) {
         double[] pointCoordinates = new double[getDimension()];
-        int idx = i * getDimension();
         for ( int d = 0; d < getDimension(); d++ ) {
-            pointCoordinates[d] = getOrdinate( idx, d );
+            pointCoordinates[d] = getOrdinate( i, d );
         }
         return new DefaultPoint( null, crs, null, pointCoordinates );
     }
