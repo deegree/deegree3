@@ -672,6 +672,12 @@ public class WMSController extends AbstractOWS {
                 }
                 if ( ns != null ) {
                     bindings.put( ns, loc );
+                    if ( !nsBindings.containsValue( ns ) ) {
+                        nsBindings.put( "app", ns );
+                    }
+                }
+                if ( !nsBindings.containsKey( "app" ) ) {
+                    nsBindings.put( "app", "http://www.deegree.org/app" );
                 }
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
 
