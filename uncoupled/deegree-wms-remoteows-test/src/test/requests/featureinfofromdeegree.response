@@ -7,11 +7,6 @@
   </gml:boundedBy>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_21">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">388999.403,4600998.550 407839.303,4623340.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>22</app0:OBJECTID>
       <app0:ZIP>84337</app0:ZIP>
       <app0:PO_NAME>Tremonton</app0:PO_NAME>
@@ -24,11 +19,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_25">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">345620.303,4563076.050 408218.903,4620836.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>26</app0:OBJECTID>
       <app0:ZIP>84307</app0:ZIP>
       <app0:PO_NAME>Corinne</app0:PO_NAME>
@@ -41,11 +31,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_32">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">400728.703,4585992.550 419122.603,4606592.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>33</app0:OBJECTID>
       <app0:ZIP>84302</app0:ZIP>
       <app0:PO_NAME>Brigham City</app0:PO_NAME>
@@ -58,11 +43,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_40">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">393255.603,4589020.550 398113.803,4593093.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>41</app0:OBJECTID>
       <app0:ZIP>84302</app0:ZIP>
       <app0:PO_NAME>Brigham City</app0:PO_NAME>
@@ -75,11 +55,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_41">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">397938.503,4591254.550 398381.103,4591910.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>42</app0:OBJECTID>
       <app0:ZIP>84302</app0:ZIP>
       <app0:PO_NAME>Brigham City</app0:PO_NAME>
@@ -92,11 +67,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_42">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">394559.703,4588684.050 395537.503,4590540.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>43</app0:OBJECTID>
       <app0:ZIP>84302</app0:ZIP>
       <app0:PO_NAME>Brigham City</app0:PO_NAME>
@@ -109,11 +79,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_43">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">392082.103,4590082.550 392311.003,4590486.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>44</app0:OBJECTID>
       <app0:ZIP>84307</app0:ZIP>
       <app0:PO_NAME>Corinne</app0:PO_NAME>
@@ -126,11 +91,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_48">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">398894.403,4587492.050 399442.103,4587964.550</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>49</app0:OBJECTID>
       <app0:ZIP>84302</app0:ZIP>
       <app0:PO_NAME>Brigham City</app0:PO_NAME>
@@ -143,11 +103,6 @@
   </gml:featureMember>
   <gml:featureMember>
     <app0:SGID500_ZipCodes xmlns:app0="http://www.deegree.org/app" fid="SGID500_ZIPCODES_49">
-      <gml:boundedBy>
-        <gml:Box srsName="EPSG:26912">
-          <gml:coordinates decimal="." cs="," ts=" ">389779.403,4579538.550 405010.603,4587558.050</gml:coordinates>
-        </gml:Box>
-      </gml:boundedBy>
       <app0:OBJECTID>50</app0:OBJECTID>
       <app0:ZIP>84302</app0:ZIP>
       <app0:PO_NAME>Brigham City</app0:PO_NAME>
