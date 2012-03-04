@@ -24,6 +24,7 @@
     </repository>
   </repositories>
 
+
   <build>
     <plugins>
       <plugin>
@@ -76,7 +77,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/latex/deegreeWebservices</file>
+                  <file>target/latex/deegreeWebservices.pdf</file>
                   <type>pdf</type>
                 </artifact>
               </artifacts>
