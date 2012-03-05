@@ -771,8 +771,10 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } else {
             try {
                 updated = performUpdateRelational( ftName, replacementProps, filter );
-                for ( ResourceId id : filter.getSelectedIds() ) {
-                    fs.getCache().remove( id.getRid() );
+                if ( fs.getCache() != null ) {
+                    for ( ResourceId id : filter.getSelectedIds() ) {
+                        fs.getCache().remove( id.getRid() );
+                    }
                 }
             } catch ( Exception e ) {
                 LOG.debug( e.getMessage(), e );

@@ -243,9 +243,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 gmlId += ftMapping.getFidMapping().getDelimiter()
                          + rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
             }
-            feature = (Feature) fs.getCache().get( gmlId );
+            if ( fs.getCache() != null ) {
+                feature = (Feature) fs.getCache().get( gmlId );
+            }
             if ( feature == null ) {
-                LOG.debug( "Cache miss. Recreating feature '" + gmlId + "' from db (relational mode)." );
+                LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
                     ValueReference propName = mapping.getPath();
@@ -260,7 +262,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     }
                 }
                 feature = ft.newFeature( gmlId, props, null );
-                fs.getCache().add( feature );
+                if ( fs.getCache() != null ) {
+                    fs.getCache().add( feature );
+                }
             } else {
                 LOG.debug( "Cache hit." );
             }

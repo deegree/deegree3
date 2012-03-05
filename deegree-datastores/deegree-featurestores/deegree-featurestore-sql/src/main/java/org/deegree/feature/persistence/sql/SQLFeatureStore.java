@@ -171,8 +171,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final Map<Mapping, ParticleConverter<?>> particeMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
 
-    // TODO make caching configurable
-    private final FeatureStoreCache cache = new SimpleFeatureStoreCache( DEFAULT_CACHE_SIZE );
+    private final FeatureStoreCache cache;
 
     private BBoxCache bboxCache;
 
@@ -210,6 +209,12 @@ public class SQLFeatureStore implements FeatureStore {
         readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
                                                                           : !dialect.requiresTransactionForCursorMode();
         LOG.debug( "Read auto commit: " + readAutoCommit );
+
+        if ( config.getFeatureCache() != null ) {
+            cache = new SimpleFeatureStoreCache( DEFAULT_CACHE_SIZE );
+        } else {
+            cache = null;
+        }
     }
 
     @Override
@@ -515,7 +520,10 @@ public class SQLFeatureStore implements FeatureStore {
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
 
-        GMLObject geomOrFeature = getCache().get( id );
+        GMLObject geomOrFeature = null;
+        if ( getCache() != null ) {
+            geomOrFeature = getCache().get( id );
+        }
         if ( geomOrFeature == null ) {
             if ( getSchema().getBlobMapping() != null ) {
                 geomOrFeature = getObjectByIdBlob( id, getSchema().getBlobMapping() );
@@ -550,7 +558,9 @@ public class SQLFeatureStore implements FeatureStore {
                 BlobCodec codec = blobMapping.getCodec();
                 geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
                                               blobMapping.getCRS(), new FeatureStoreGMLIdResolver( this ) );
-                getCache().add( geomOrFeature );
+                if ( getCache() != null ) {
+                    getCache().add( geomOrFeature );
+                }
             }
         } catch ( Exception e ) {
             String msg = "Error retrieving object by id (BLOB mode): " + e.getMessage();
@@ -608,7 +618,7 @@ public class SQLFeatureStore implements FeatureStore {
     /**
      * Returns the {@link FeatureStoreCache}.
      * 
-     * @return feature store cache, never <code>null</code>
+     * @return feature store cache, can be <code>null</code> (no cache configured)
      */
     public FeatureStoreCache getCache() {
         return cache;

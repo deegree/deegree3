@@ -68,12 +68,17 @@
             </choice>
           </complexType>
         </element>
+        <element name="FeatureCache" minOccurs="0">
+          <!-- Placeholder element for feature cache implementations/options (currently, the presence of the element just 
+            turns the cache on). In the future, this may be extended. -->
+          <complexType />
+        </element>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>
           <restriction base="string">
             <enumeration value="3.2.0" />
-            <enumeration value="3.1.0" />            
+            <enumeration value="3.1.0" />
           </restriction>
         </simpleType>
       </attribute>
@@ -216,7 +221,7 @@
               <documentation>Mapping expression.</documentation>
             </annotation>
           </attribute>
-          <attribute name="type" type="sqlfs:PrimitiveType">
+          <attribute name="type" type="sqlfs:GeometryType">
             <annotation>
               <documentation>Type information (only for table-driven mode)</documentation>
             </annotation>

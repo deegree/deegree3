@@ -96,12 +96,16 @@ public class FeatureBuilderBlob implements FeatureBuilder {
         Feature feature = null;
         try {
             String gmlId = rs.getString( 1 );
-            feature = (Feature) fs.getCache().get( gmlId );
+            if ( fs.getCache() != null ) {
+                feature = (Feature) fs.getCache().get( gmlId );
+            }
             if ( feature == null ) {
-                LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
+                LOG.debug( "Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
                 feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getNamespaceContext(), fs.getSchema(),
                                                   crs, fs.getResolver() );
-                fs.getCache().add( feature );
+                if ( fs.getCache() != null ) {
+                    fs.getCache().add( feature );
+                }
             } else {
                 LOG.debug( "Cache hit." );
             }
