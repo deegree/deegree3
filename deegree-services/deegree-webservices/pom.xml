@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-webservices-handbook</artifactId>
-  <packaging>pom</packaging>
-  <name>deegree-webservices-handbook</name>
+  <artifactId>deegree-webservices</artifactId>
+  <packaging>war</packaging>
+  <name>deegree-webservices</name>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -27,60 +26,29 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>build-html</id>
-            <phase>compile</phase>
             <goals>
-              <goal>run</goal>
+              <goal>copy</goal>
+              <goal>assemble-log4j</goal>
+              <goal>generate-buildinfo</goal>
             </goals>
             <configuration>
-              <tasks>
-                <exec dir="${basedir}" executable="sphinx-build" failonerror="true">
-                  <arg line="-b html -d target/doctrees src/main/sphinx target/html" />
-                </exec>
-              </tasks>
+              <files>
+                <file>
+                  <from>src/main/tomcat/tomcat-users.xml</from>
+                  <to>target/deegree-tomcat/conf/tomcat-users.xml</to>
+                </file>
+              </files>
             </configuration>
           </execution>
           <execution>
-            <id>build-pdf</id>
-            <phase>compile</phase>
+            <id>assemble-console</id>
             <goals>
-              <goal>run</goal>
+              <goal>assemble-console</goal>
             </goals>
-            <configuration>
-              <tasks>
-                <exec dir="${basedir}" executable="sphinx-build" failonerror="true">
-                  <arg line="-b latex -d target/doctrees -D latex_paper_size=a4 src/main/sphinx target/latex" />
-                </exec>
-                <exec dir="${basedir}" executable="make" failonerror="true">
-                  <arg line="-C target/latex all-pdf" />
-                </exec>
-              </tasks>
-            </configuration>
-          </execution>          
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>target/latex/deegreeWebservices</file>
-                  <type>pdf</type>
-                </artifact>
-              </artifacts>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -94,7 +62,7 @@
         </configuration>
         <executions>
           <execution>
-            <id>assemble-html</id>
+            <id>assemble-tomcat</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -108,5 +76,149 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
+  <profiles>
+    <profile>
+      <id>activate-dependency-plugin</id>
+      <activation>
+        <property>
+          <name>!deactivateDependencyPlugin</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.3</version>
+            <executions>
+              <execution>
+                <id>jsf-console</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <classifier>webapp-template</classifier>
+                  <type>zip</type>
+                  <includeGroupIds>org.deegree</includeGroupIds>
+                  <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
+                  <outputDirectory>src/main/webapp</outputDirectory>
+                </configuration>
+              </execution>
+              <execution>
+                <id>tomcat</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <type>zip</type>
+                  <includeGroupIds>org.deegree</includeGroupIds>
+                  <includeArtifactIds>deegree-tomcat</includeArtifactIds>
+                  <outputDirectory>target/deegree-tomcat</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>jersey-provided</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-server</artifactId>
+          <version>1.5</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>jsf-provided</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun.faces</groupId>
+          <artifactId>jsf-api</artifactId>
+          <version>2.0.6</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.sun.faces</groupId>
+          <artifactId>jsf-impl</artifactId>
+          <version>2.0.6</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>jstl-provided</id>
+      <dependencies>
+        <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>jstl</artifactId>
+          <version>1.2</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oracle</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.deegree</groupId>
+          <artifactId>deegree-sqldialect-oracle</artifactId>
+          <version>${project.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>com.oracle</groupId>
+              <artifactId>ojdbc6</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tomcat</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-jsf-console</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Dependencies provided by servlet container -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>
