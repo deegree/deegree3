@@ -55,6 +55,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.Arc;
@@ -219,7 +220,7 @@ public class CurveLinearizer {
         LineStringSegment lineSegment = null;
 
         if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
-            // if the points are already on a line we don't need to apply any linearization algorithm
+            // if the points are already on a line we don't need to (and must not) apply any linearization algorithm
             Points points = null;
             if ( arc instanceof Circle ) {
                 points = new PointsList(
@@ -560,8 +561,8 @@ public class CurveLinearizer {
     private Points interpolate( Point p0, Point p1, Point p2, int numPoints, boolean isCircle ) {
 
         // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
-        double minOrd0 = CurveLinearizer.findShiftOrd0( p0, p1, p2 );
-        double minOrd1 = CurveLinearizer.findShiftOrd1( p0, p1, p2 );
+        double minOrd0 = findShiftOrd0( p0, p1, p2 );
+        double minOrd1 = findShiftOrd1( p0, p1, p2 );
 
         // if the points are already shifted, this does no harm!
         Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
@@ -841,8 +842,21 @@ public class CurveLinearizer {
      * @return true if the points are collinear, false otherwise
      */
     public static boolean areCollinear( Point p0, Point p1, Point p2 ) {
-        double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
-                     * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
+
+        // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
+        double minOrd0 = findShiftOrd0( p0, p1, p2 );
+        double minOrd1 = findShiftOrd1( p0, p1, p2 );
+
+        // if the points are already shifted, this does no harm!
+        Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
+                                            new double[] { p0.get0() - minOrd0, p0.get1() - minOrd1 } );
+        Point p1Shifted = new DefaultPoint( null, p1.getCoordinateSystem(), p1.getPrecision(),
+                                            new double[] { p1.get0() - minOrd0, p1.get1() - minOrd1 } );
+        Point p2Shifted = new DefaultPoint( null, p2.getCoordinateSystem(), p2.getPrecision(),
+                                            new double[] { p2.get0() - minOrd0, p2.get1() - minOrd1 } );
+
+        double res = ( p2Shifted.get0() - p0Shifted.get0() ) * ( ( p2Shifted.get1() + p0Shifted.get1() ) / 2 ) + ( p1Shifted.get0() - p2Shifted.get0() )
+                     * ( ( p1Shifted.get1() + p2Shifted.get1() ) / 2 ) + ( p0Shifted.get0() - p1Shifted.get0() ) * ( ( p0Shifted.get1() + p1Shifted.get1() ) / 2 );
         return Math.abs( res ) < EPSILON;
     }
 }
