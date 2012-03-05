@@ -153,8 +153,15 @@ public class ISO19139Validator {
             System.out.println( fileToValidate );
             fw.write( "validate file " + fileToValidate.getAbsolutePath() );
             fw.write( "\n" );
-
-            parser.parse( new InputSource( new FileInputStream( fileToValidate ) ) );
+            try {
+                parser.parse( new InputSource( new FileInputStream( fileToValidate ) ) );
+            } catch ( Exception e ) {
+                String msg = "Could not validate current occured: " + e.getMessage() + ". Continue with next record";
+                System.err.println( msg );
+                fw.write( msg );
+                fw.write( "\n" );
+                continue;
+            }
             fw.flush();
             if ( feh.isValid() )
                 noOfValidRecords++;
