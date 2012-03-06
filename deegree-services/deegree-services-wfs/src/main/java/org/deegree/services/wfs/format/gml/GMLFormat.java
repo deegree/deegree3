@@ -410,7 +410,7 @@ public class GMLFormat implements Format {
             maxResults = request.getPresentationParams().getCount().intValue();
         }
 
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
         GMLFeatureWriter featureWriter = gmlStream.getFeatureWriter();
 
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
@@ -617,8 +617,7 @@ public class GMLFormat implements Format {
         } else if ( responseFeatureMemberEl != null ) {
             // WFS 1.0.0 / 1.1.0 with a custom configured member element
             memberElementName = new QName( responseFeatureMemberEl.getNamespaceURI(),
-                                           responseFeatureMemberEl.getLocalPart(),
-                                           responseFeatureMemberEl.getPrefix());
+                                           responseFeatureMemberEl.getLocalPart(), responseFeatureMemberEl.getPrefix() );
         } else if ( gmlVersion == GML_32 ) {
             // WFS 1.0.0 / 1.1.0 without custom configured member element, GML 3.2 -> wfs:featureMember
             memberElementName = new QName( WFS_NS, "member", "wfs" );
@@ -776,6 +775,10 @@ public class GMLFormat implements Format {
 
         if ( gmlStream.isObjectExported( member.getId() ) ) {
             xmlStream.writeEmptyElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
+            if ( xmlStream.getPrefix( XLNNS ) == null ) {
+                xmlStream.setPrefix( "xlink", XLNNS );
+                xmlStream.writeNamespace( "xlink", XLNNS );
+            }
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
             xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
