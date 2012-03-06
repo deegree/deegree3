@@ -358,6 +358,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
+                endEmptyElement();
             } else {
                 exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, currentLevel,
                                        maxInlineLevels );
@@ -366,6 +367,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
+                endEmptyElement();
             } else {
                 // must be a primitive value
                 PrimitiveValue pValue = (PrimitiveValue) value;
@@ -384,11 +386,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
+                endEmptyElement();
             } else {
                 Geometry gValue = (Geometry) value;
                 if ( !exportSf && gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
                     writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writeAttributeWithNS( XLNNS, "href", "#" + gValue.getId() );
+                    endEmptyElement();
                 } else {
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     if ( gValue.getId() != null ) {
@@ -419,6 +423,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             if ( nilled ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
+                endEmptyElement();
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( value != null ) {
@@ -461,6 +466,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 if ( nilled ) {
                     writeAttributeWithNS( XSINS, "nil", "true" );
                 }
+                endEmptyElement();
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( nilled ) {
@@ -490,8 +496,9 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeEndElement();
         } else if ( propertyType instanceof ArrayPropertyType ) {
             if ( nilled ) {
-                writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
+                endEmptyElement();
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 export( (TypedObjectNode) property.getValue(), currentLevel, maxInlineLevels );
@@ -509,7 +516,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         QName propName = pt.getName();
         LOG.debug( "Exporting feature property '" + propName + "'" );
         if ( subFeature == null ) {
-            writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+            writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            endEmptyElement();
         } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
             // normal feature or local feature reference
             String subFid = subFeature.getId();
@@ -523,15 +531,16 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 // has feature id
                 if ( exportedIds.contains( subFid ) ) {
                     // already exported -> put a local xlink to the feature instance
-                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writeAttributeWithNS( XLNNS, "href", "#" + subFid );
+                    endEmptyElement();
                 } else {
                     // not exported yet
                     if ( maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) ) {
                         // force export (maximum number of inline levels not reached)
                         if ( pt.getAllowedRepresentation() == REMOTE ) {
                             // only export by reference possible
-                            writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                            writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                             if ( additionalObjectHandler != null ) {
                                 String uri = additionalObjectHandler.requireObject( (GMLReference<?>) subFeature );
                                 writeAttributeWithNS( XLNNS, "href", uri );
@@ -540,6 +549,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                                 String uri = remoteXlinkTemplate.replace( "{}", subFid );
                                 writeAttributeWithNS( XLNNS, "href", uri );
                             }
+                            endEmptyElement();
                         } else {
                             // export inline
                             exportedIds.add( subFeature.getId() );
@@ -553,7 +563,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                         if ( !( subFeature instanceof GMLReference<?> ) ) {
                             LOG.warn( "References not expected at this point. Needs investigation." );
                         }
-                        writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                        writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                         if ( additionalObjectHandler != null && subFeature instanceof GMLReference<?> ) {
                             String uri = additionalObjectHandler.handleReference( (GMLReference<?>) subFeature );
                             writeAttributeWithNS( XLNNS, "href", uri );
@@ -562,6 +572,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                             String uri = remoteXlinkTemplate.replace( "{}", subFid );
                             writeAttributeWithNS( XLNNS, "href", uri );
                         }
+                        endEmptyElement();
                     }
                 }
             }
@@ -577,13 +588,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                                                              "Inlining of remote feature references is not implemented yet." );
                 } catch ( MalformedURLException e ) {
                     LOG.warn( "Not inlining remote feature reference -- not a valid URI." );
-                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writeAttributeWithNS( XLNNS, "href", ref.getURI() );
+                    endEmptyElement();
                 }
             } else {
                 // must be exported by reference
-                writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XLNNS, "href", ref.getURI() );
+                endEmptyElement();
             }
         }
     }

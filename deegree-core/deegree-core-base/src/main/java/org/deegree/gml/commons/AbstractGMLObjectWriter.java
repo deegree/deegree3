@@ -101,14 +101,14 @@ public class AbstractGMLObjectWriter {
 
     protected void writeStartElementWithNS( String namespaceURI, String localname )
                             throws XMLStreamException {
+
         if ( namespaceURI == null || namespaceURI.length() == 0 ) {
             writer.writeStartElement( localname );
         } else {
             if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
-                    writer.setPrefix( prefix, namespaceURI );
-                    writer.writeStartElement( namespaceURI, localname );
+                    writer.writeStartElement( prefix, localname, namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
@@ -130,6 +130,7 @@ public class AbstractGMLObjectWriter {
             if ( prefix == null ) {
                 prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
+                    writer.setPrefix( prefix, namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
@@ -148,8 +149,7 @@ public class AbstractGMLObjectWriter {
             if ( writer.getNamespaceContext().getPrefix( namespaceURI ) == null ) {
                 String prefix = nsToPrefix.get( namespaceURI );
                 if ( prefix != null ) {
-                    writer.setPrefix( prefix, namespaceURI );
-                    writer.writeEmptyElement( namespaceURI, localname );
+                    writer.writeEmptyElement( prefix, localname, namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                 } else {
                     LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
@@ -160,5 +160,10 @@ public class AbstractGMLObjectWriter {
                 writer.writeEmptyElement( namespaceURI, localname );
             }
         }
+    }
+
+    protected void endEmptyElement() throws XMLStreamException {
+        // signal "end" of empty element to get rid of locally bound namespace prefixes
+        writer.writeCharacters( "" );
     }
 }
