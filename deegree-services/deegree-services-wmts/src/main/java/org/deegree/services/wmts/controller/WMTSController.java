@@ -40,8 +40,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
+import static org.deegree.commons.tom.ows.Version.parseVersion;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
+import static org.deegree.services.wmts.WMTSProvider.IMPLEMENTATION_METADATA;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,13 +59,28 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.protocol.ows.OWSCommonKVPAdapter;
+import org.deegree.protocol.ows.capabilities.OWSCapabilities;
+import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
+import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.wmts.jaxb.DeegreeWMTS;
+import org.deegree.theme.Theme;
+import org.deegree.theme.persistence.ThemeManager;
+import org.slf4j.Logger;
 
 /**
  * <code>WMTSController</code>
@@ -69,6 +92,18 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
  */
 
 public class WMTSController extends AbstractOWS {
+
+    private static final Logger LOG = getLogger( WMTSController.class );
+
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.wmts.jaxb";
+
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wmts/3.2.0/wmts.xsd";
+
+    private ServiceIdentification identification;
+
+    private ServiceProvider provider;
+
+    private List<Theme> themes = new ArrayList<Theme>();
 
     /**
      * @param configURL
@@ -82,26 +117,86 @@ public class WMTSController extends AbstractOWS {
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
                       ImplementationMetadata<?> md, XMLAdapter controllerConf )
                             throws ResourceInitException {
-        
+        super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
+
+        identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
+        provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
+
+        DeegreeWMTS conf = (DeegreeWMTS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
+        ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
+
+        List<String> ids = conf.getServiceConfiguration().getThemeId();
+        for ( String id : ids ) {
+            Theme t = mgr.get( id );
+            if ( t == null ) {
+                LOG.warn( "Theme with id {} was not available.", id );
+                continue;
+            }
+            themes.add( t );
+        }
     }
 
     @Override
-    public void doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest request,
-                       HttpResponseBuffer response, List<FileItem> multiParts )
+    public void doKVP( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
+                       List<FileItem> multiParts )
                             throws ServletException, IOException, SecurityException {
+        String v = map.get( "VERSION" );
+        Version version = v == null ? serviceInfo.getSupportedConfigVersions().iterator().next() : parseVersion( v );
 
+        WMTSRequestType req;
+        try {
+            req = (WMTSRequestType) serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
+        } catch ( IllegalArgumentException e ) {
+            sendException( new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS operation.",
+                                             OWSException.OPERATION_NOT_SUPPORTED ), response );
+            return;
+        } catch ( NullPointerException e ) {
+            sendException( new OWSException( "The REQUEST parameter is missing.", OPERATION_NOT_SUPPORTED ), response );
+            return;
+        }
+
+        try {
+            handleRequest( req, response, map, version );
+        } catch ( OWSException e ) {
+            LOG.debug( "The response is an exception with the message '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace of OWSException being sent", e );
+
+            sendException( e, response );
+        }
     }
 
     @Override
     public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
                             throws ServletException, IOException, SecurityException {
-
+        OWSException ex = new OWSException( "XML support is not implemented for WMTS.",
+                                            OWSException.OPERATION_NOT_SUPPORTED );
+        sendException( ex, response );
     }
 
     @Override
     public void destroy() {
+        // anything to destroy?
+    }
 
+    private void sendException( OWSException e, HttpResponseBuffer response )
+                            throws ServletException {
+        sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), e, response );
+    }
+
+    private void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map,
+                                Version version )
+                            throws OWSException {
+        switch ( req ) {
+        case GetCapabilities:
+            GetCapabilities gc = GetCapabilitiesKVPParser.parse( map );
+            System.out.println(gc);
+            break;
+        case GetFeatureInfo:
+            throw new OWSException( "The GetFeatureInfo operation is not supported yet.", OPERATION_NOT_SUPPORTED );
+        case GetTile:
+            break;
+        }
     }
 
 }

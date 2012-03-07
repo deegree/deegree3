@@ -64,7 +64,7 @@ import org.deegree.tile.persistence.TileStoreManager;
 
 public class WMTSProvider implements OWSProvider {
 
-    protected static final ImplementationMetadata<WMTSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMTSRequestType>() {
+    public static final ImplementationMetadata<WMTSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMTSRequestType>() {
         {
             supportedVersions = new Version[] { Version.parseVersion( "1.0.0" ) };
             handledNamespaces = new String[] { "http://www.opengis.net/wmts/1.0" };

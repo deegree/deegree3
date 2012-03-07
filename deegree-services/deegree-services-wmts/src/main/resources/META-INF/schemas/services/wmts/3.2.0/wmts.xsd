@@ -22,7 +22,7 @@
 
   <complexType name="ServiceConfigurationType">
     <sequence>
-      <element name="TileStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="ThemeId" type="string" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>
 
