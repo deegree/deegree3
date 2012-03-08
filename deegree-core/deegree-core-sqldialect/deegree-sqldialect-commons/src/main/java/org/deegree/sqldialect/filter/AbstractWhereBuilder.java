@@ -344,13 +344,13 @@ public abstract class AbstractWhereBuilder {
             SQLExpression upper = toProtoSQL( propIsBetween.getUpperBoundary(), true );
             inferType( lower, expr, upper );
             builder.add( "(" );
-            builder.add( lower );
+            addExpression( builder, lower, op.isMatchCase() );
             builder.add( " <= " );
-            builder.add( expr );
+            addExpression( builder, expr, op.isMatchCase() );
             builder.add( " AND " );
-            builder.add( expr );
+            addExpression( builder, expr, op.isMatchCase() );
             builder.add( " <= " );
-            builder.add( upper );
+            addExpression( builder, upper, op.isMatchCase() );
             builder.add( ")" );
             sqlOper = builder.toOperation();
             break;
@@ -362,9 +362,9 @@ public abstract class AbstractWhereBuilder {
             if ( !param1.isMultiValued() && !param2.isMultiValued() ) {
                 inferType( param1, param2 );
                 SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-                builder.add( param1 );
+                addExpression( builder, param1, op.isMatchCase() );
                 builder.add( " = " );
-                builder.add( param2 );
+                addExpression( builder, param2, op.isMatchCase() );
                 sqlOper = builder.toOperation();
             } else {
                 Expression propName = propIsEqualTo.getParameter1();
@@ -385,9 +385,9 @@ public abstract class AbstractWhereBuilder {
             SQLExpression param1 = toProtoSQL( propIsGT.getParameter1(), true );
             SQLExpression param2 = toProtoSQL( propIsGT.getParameter2(), true );
             inferType( param1, param2 );
-            builder.add( param1 );
+            addExpression( builder, param1, op.isMatchCase() );
             builder.add( " > " );
-            builder.add( param2 );
+            addExpression( builder, param2, op.isMatchCase() );
             sqlOper = builder.toOperation();
             break;
         }
@@ -397,9 +397,9 @@ public abstract class AbstractWhereBuilder {
             SQLExpression param1 = toProtoSQL( propIsGTOrEqualTo.getParameter1(), true );
             SQLExpression param2 = toProtoSQL( propIsGTOrEqualTo.getParameter2(), true );
             inferType( param1, param2 );
-            builder.add( param1 );
+            addExpression( builder, param1, op.isMatchCase() );
             builder.add( " >= " );
-            builder.add( param2 );
+            addExpression( builder, param2, op.isMatchCase() );
             sqlOper = builder.toOperation();
             break;
         }
@@ -409,9 +409,9 @@ public abstract class AbstractWhereBuilder {
             SQLExpression param1 = toProtoSQL( propIsLT.getParameter1(), true );
             SQLExpression param2 = toProtoSQL( propIsLT.getParameter2(), true );
             inferType( param1, param2 );
-            builder.add( param1 );
+            addExpression( builder, param1, op.isMatchCase() );
             builder.add( " < " );
-            builder.add( param2 );
+            addExpression( builder, param2, op.isMatchCase() );
             sqlOper = builder.toOperation();
             break;
         }
@@ -421,9 +421,9 @@ public abstract class AbstractWhereBuilder {
             SQLExpression param1 = toProtoSQL( propIsLTOrEqualTo.getParameter1(), true );
             SQLExpression param2 = toProtoSQL( propIsLTOrEqualTo.getParameter2(), true );
             inferType( param1, param2 );
-            builder.add( param1 );
+            addExpression( builder, param1, op.isMatchCase() );
             builder.add( " <= " );
-            builder.add( param2 );
+            addExpression( builder, param2, op.isMatchCase() );
             sqlOper = builder.toOperation();
             break;
         }
@@ -438,9 +438,9 @@ public abstract class AbstractWhereBuilder {
             SQLExpression param2 = toProtoSQL( propIsNotEqualTo.getParameter2(), true );
             if ( !param1.isMultiValued() && !param2.isMultiValued() ) {
                 inferType( param1, param2 );
-                builder.add( param1 );
+                addExpression( builder, param1, op.isMatchCase() );
                 builder.add( " <> " );
-                builder.add( param2 );
+                addExpression( builder, param2, op.isMatchCase() );
                 sqlOper = builder.toOperation();
             } else {
                 Expression propName = propIsNotEqualTo.getParameter1();
@@ -532,6 +532,16 @@ public abstract class AbstractWhereBuilder {
         Literal<PrimitiveValue> escapedLiteral = new Literal<PrimitiveValue>( new PrimitiveValue( s ), null );
         return new PropertyIsLike( (ValueReference) propName, escapedLiteral, wildCard, singleChar, escapeChar,
                                    matchCase, null );
+    }
+
+    protected void addExpression( SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase ) {
+        if ( matchCase == null || matchCase ) {
+            builder.add( expr );
+        } else {
+            builder.add( "LOWER(" );
+            builder.add( expr );
+            builder.add( ")" );
+        }
     }
 
     /**

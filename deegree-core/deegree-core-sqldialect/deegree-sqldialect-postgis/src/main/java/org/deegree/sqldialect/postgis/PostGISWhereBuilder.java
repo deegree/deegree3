@@ -348,6 +348,17 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         return builder.toOperation();
     }
+    
+    @Override
+    protected void addExpression( SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase ) {
+        if ( matchCase == null || matchCase ) {
+            builder.add( expr );
+        } else {
+            builder.add( "LOWER(" );
+            builder.add( expr );
+            builder.add( "::TEXT)" );
+        }
+    }
 
     private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid )
                             throws FilterEvaluationException {

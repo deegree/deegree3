@@ -54,6 +54,7 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.ConstantPropertyNameMapping;
 import org.deegree.sqldialect.filter.DBField;
@@ -150,6 +151,15 @@ public class MappedXPath {
                 matchFound = true;
             } else if ( !mapSteps.isEmpty() && mapSteps.get( 0 ) instanceof TextStep ) {
                 matchFound = true;
+            } else if ( mapSteps.isEmpty() && mapping instanceof FeatureMapping
+                        && steps.get( 0 ) instanceof MappableNameStep ) {
+                QName featureName = ( (MappableNameStep) steps.get( 0 ) ).getNodeName();
+                FeatureType[] featureTypes = schema.getFeatureTypes();
+                for ( FeatureType ft : featureTypes ) {
+                    if ( ft.getName().equals( featureName ) ) {
+                        matchFound = true;
+                    }
+                }
             }
             if ( matchFound ) {
                 if ( mapping instanceof CompoundMapping ) {
