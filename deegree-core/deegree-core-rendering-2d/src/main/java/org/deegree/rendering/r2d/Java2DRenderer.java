@@ -42,6 +42,7 @@ import static java.awt.BasicStroke.CAP_SQUARE;
 import static java.awt.BasicStroke.JOIN_BEVEL;
 import static java.awt.BasicStroke.JOIN_MITER;
 import static java.awt.BasicStroke.JOIN_ROUND;
+import static java.awt.geom.Path2D.WIND_EVEN_ODD;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -654,7 +655,7 @@ public class Java2DRenderer implements Renderer {
 
                 // just appending the holes appears to work, the Java2D rendering mechanism can determine that they lie
                 // inside and thus no substraction etc. is needed. This speeds up things SIGNIFICANTLY
-                GeneralPath polygon = new GeneralPath();
+                GeneralPath polygon = new GeneralPath( WIND_EVEN_ODD );
                 for ( Curve curve : polygonPatch.getBoundaryRings() ) {
                     Double d = fromCurve( curve, true );
                     lines.add( d );
