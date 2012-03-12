@@ -30,12 +30,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>jfreechart</groupId>
+      <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
       <version>1.0.13</version>
     </dependency>
     <dependency>
-      <groupId>jfreechart</groupId>
+      <groupId>jfree</groupId>
       <artifactId>jcommon</artifactId>
       <version>1.0.16</version>
     </dependency>
