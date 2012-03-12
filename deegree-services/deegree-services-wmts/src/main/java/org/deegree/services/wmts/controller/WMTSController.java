@@ -41,8 +41,8 @@
 package org.deegree.services.wmts.controller;
 
 import static org.deegree.commons.tom.ows.Version.parseVersion;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.deegree.services.wmts.WMTSProvider.IMPLEMENTATION_METADATA;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -55,15 +55,13 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.ows.OWSCommonKVPAdapter;
-import org.deegree.protocol.ows.capabilities.OWSCapabilities;
-import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
@@ -82,6 +80,8 @@ import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeManager;
 import org.slf4j.Logger;
 
+import capabilities.WMTSCapabilitiesWriter;
+
 /**
  * <code>WMTSController</code>
  * 
@@ -90,7 +90,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class WMTSController extends AbstractOWS {
 
     private static final Logger LOG = getLogger( WMTSController.class );
@@ -190,7 +189,12 @@ public class WMTSController extends AbstractOWS {
         switch ( req ) {
         case GetCapabilities:
             GetCapabilities gc = GetCapabilitiesKVPParser.parse( map );
-            System.out.println(gc);
+            try {
+                WMTSCapabilitiesWriter.export100( response.getXMLWriter(), mainMetadataConf );
+            } catch ( Throwable e ) {
+                LOG.trace( "Stack trace:", e );
+                throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
+            }
             break;
         case GetFeatureInfo:
             throw new OWSException( "The GetFeatureInfo operation is not supported yet.", OPERATION_NOT_SUPPORTED );
