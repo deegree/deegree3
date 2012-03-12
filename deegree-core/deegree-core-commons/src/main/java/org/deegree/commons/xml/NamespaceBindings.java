@@ -48,8 +48,8 @@ import javax.xml.namespace.NamespaceContext;
  * Modifiable prefix to namespace (and namespace to prefix) mappings for dealing with qualified names and XPath
  * expressions.
  * <p>
- * This class implements both <code>org.jaxen.NamespaceContext</code> and the
- * <code>javax.xml.namespace.NamespaceContext</code> interfaces.
+ * Implements both the <code>org.jaxen.NamespaceContext</code> and the <code>javax.xml.namespace.NamespaceContext</code>
+ * interfaces.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>

@@ -58,6 +58,7 @@ import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
 import org.deegree.metadata.iso.persistence.inspectors.FIInspector;
 import org.deegree.metadata.iso.persistence.inspectors.HierarchyLevelInspector;
 import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspector;
+import org.deegree.metadata.iso.persistence.inspectors.NamespaceNormalizationInspector;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.iso.persistence.queryable.QueryableConverter;
 import org.deegree.metadata.persistence.MetadataQuery;
@@ -72,11 +73,12 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.QueryableProperties;
 import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.NamespaceNormalizer;
 import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty;
 import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty.Name;
 import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
@@ -131,6 +133,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             InspireInspector ii = inspectors.getInspireInspector();
             CoupledResourceInspector cri = inspectors.getCoupledResourceInspector();
             SchemaValidator sv = inspectors.getSchemaValidator();
+            NamespaceNormalizer nn = inspectors.getNamespaceNormalizer();
             if ( fi != null ) {
                 inspectorChain.add( new FIInspector( fi ) );
             }
@@ -142,6 +145,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             }
             if ( sv != null ) {
                 inspectorChain.add( new MetadataSchemaValidationInspector<ISORecord>() );
+            }
+            if ( nn != null ) {
+                inspectorChain.add( new NamespaceNormalizationInspector(nn) );
             }
         }
         // hard coded because there is no configuration planned
@@ -167,7 +173,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                                                          e );
                     }
                 }
-                
+
                 // TODO: namespace bindings configured by the user!?
                 NamespaceBindings namespaceContext = CommonNamespaces.getNamespaceContext();
                 namespaceContext.addNamespace( CSWConstants.SRV_PREFIX, CSWConstants.SRV_NS );
