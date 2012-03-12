@@ -51,14 +51,19 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
+import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
+import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.ows.metadata.domain.Domain;
 import org.deegree.protocol.ows.metadata.operation.DCP;
 import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.theme.Theme;
 
 /**
  * <code>WMTSCapabilitiesWriter</code>
@@ -74,7 +79,8 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
 
-    public static void export100( XMLStreamWriter writer, DeegreeServicesMetadataType serviceMetadata )
+    public static void export100( XMLStreamWriter writer, ServiceIdentification identification,
+                                  ServiceProvider provider, List<Theme> themes )
                             throws XMLStreamException {
 
         writer.setDefaultNamespace( WMTSNS );
@@ -89,28 +95,30 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeAttribute( XSINS, "schemaLocation",
                                "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd" );
 
-        exportServiceIdentification( writer, serviceMetadata.getServiceIdentification() );
-        exportServiceProvider110( writer, serviceMetadata.getServiceProvider() );
+        exportServiceIdentification( writer, identification );
+        exportServiceProvider110New( writer, provider );
         exportOperationsMetadata( writer );
 
         // export contents
         // exportProcessOfferings( writer, processes );
 
+        exportThemes( writer, themes );
+
         writer.writeEndElement(); // Capabilities
     }
 
-    private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType ident )
+    private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentification ident )
                             throws XMLStreamException {
         writer.writeStartElement( OWS110_NS, "ServiceIdentification" );
         if ( ident == null ) {
             writeElement( writer, OWS110_NS, "Title", "deegree 3 WMTS" );
             writeElement( writer, OWS110_NS, "Abstract", "deegree 3 WMTS implementation" );
         } else {
-            List<String> title = ident.getTitle();
-            writeElement( writer, OWS110_NS, "Title", title.isEmpty() ? "deegree 3 WMTS" : title.get( 0 ) );
-            List<String> _abstract = ident.getAbstract();
-            writeElement( writer, OWS110_NS, "Abstract", _abstract.isEmpty() ? "deegree 3 WMTS implementation"
-                                                                            : _abstract.get( 0 ) );
+            LanguageString title = ident.getTitle( null );
+            writeElement( writer, OWS110_NS, "Title", title == null ? "deegree 3 WMTS" : title.getString() );
+            LanguageString _abstract = ident.getAbstract( null );
+            writeElement( writer, OWS110_NS, "Abstract", _abstract == null ? "deegree 3 WMTS implementation"
+                                                                          : _abstract.getString() );
         }
         writeElement( writer, OWS110_NS, "ServiceType", "WMTS" );
         writeElement( writer, OWS110_NS, "ServiceTypeVersion", "1.0.0" );
@@ -140,6 +148,28 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
 
         exportOperationsMetadata110( writer, operationsMd );
+    }
+
+    private static void exportThemes( XMLStreamWriter writer, List<Theme> themes )
+                            throws XMLStreamException {
+        if ( themes.isEmpty() ) {
+            return;
+        }
+        writer.writeStartElement( WMTSNS, "Themes" );
+        for ( Theme t : themes ) {
+            writer.writeStartElement( WMTSNS, "Theme" );
+            LayerMetadata md = t.getMetadata();
+            Description desc = md.getDescription();
+            writeElement( writer, OWS110_NS, "Identifier", md.getName() );
+            writeElement( writer, OWS110_NS, "Title", desc.getTitle( null ).getString() );
+            LanguageString abs = desc.getAbstract( null );
+            if ( abs != null ) {
+                writeElement( writer, OWS110_NS, "Abstract", abs.getString() );
+            }
+            exportKeyWords110New( writer, desc.getKeywords() );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
     }
 
 }

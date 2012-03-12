@@ -190,7 +190,7 @@ public class WMTSController extends AbstractOWS {
         case GetCapabilities:
             GetCapabilities gc = GetCapabilitiesKVPParser.parse( map );
             try {
-                WMTSCapabilitiesWriter.export100( response.getXMLWriter(), mainMetadataConf );
+                WMTSCapabilitiesWriter.export100( response.getXMLWriter(), identification, provider, themes );
             } catch ( Throwable e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
