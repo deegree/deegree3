@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDate;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatTime;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseTime;
@@ -45,6 +48,7 @@ import java.math.BigInteger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
+import org.deegree.commons.tom.datetime.TimeInstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +93,7 @@ public class XMLValueMangler {
             break;
         }
         case DATE_TIME: {
-            value = parseDateTime(  s );
+            value = parseDateTime( s );
             break;
         }
         case DECIMAL: {
@@ -130,7 +134,7 @@ public class XMLValueMangler {
                 switch ( pt ) {
                 case DATE:
                     if ( o instanceof Date ) {
-                        xml = "" + o.toString();
+                        xml = "" + formatDate( (TimeInstant) o );
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -138,7 +142,7 @@ public class XMLValueMangler {
                     break;
                 case DATE_TIME:
                     if ( o instanceof DateTime ) {
-                        xml = "" + o.toString();
+                        xml = "" + formatDateTime( (TimeInstant) o );
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -146,7 +150,7 @@ public class XMLValueMangler {
                     break;
                 case TIME: {
                     if ( o instanceof Time ) {
-                        xml = "" + o.toString();
+                        xml = "" + formatTime( (TimeInstant) o );
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
