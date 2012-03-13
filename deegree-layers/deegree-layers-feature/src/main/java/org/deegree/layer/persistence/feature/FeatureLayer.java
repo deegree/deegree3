@@ -324,7 +324,7 @@ public class FeatureLayer extends AbstractLayer {
                         }
                     }
                     Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>( formatDateTime( theVal ) );
-                    os[i++] = new PropertyIsEqualTo( property, lit, false, null );
+                    os[i++] = new PropertyIsEqualTo( property, lit, null, null );
                 }
             }
             if ( os.length > 1 ) {
