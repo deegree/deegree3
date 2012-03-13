@@ -94,6 +94,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -733,7 +734,7 @@ public class MapService {
                 Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
                 // TODO
-                XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator( );
+                XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator();
 
                 Collection<LinkedList<Query>> qs = queries.values();
                 FeatureInputStream rs = null;
@@ -889,6 +890,9 @@ public class MapService {
             FeatureCollection col = d.info();
             feats.addAll( col );
         }
+
+        feats = Features.clearDuplicates( feats );
+
         if ( feats.size() > gfi.getFeatureCount() ) {
             feats = feats.subList( 0, gfi.getFeatureCount() );
         }
@@ -974,6 +978,8 @@ public class MapService {
             }
             warnings.addAll( getFeatures( list, layer, fi, styles.next() ) );
         }
+
+        list = Features.clearDuplicates( list );
 
         if ( list.size() > fi.getFeatureCount() ) {
             list = list.subList( 0, fi.getFeatureCount() );

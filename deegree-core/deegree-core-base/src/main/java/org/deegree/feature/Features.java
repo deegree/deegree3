@@ -36,7 +36,9 @@
 package org.deegree.feature;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -142,6 +144,24 @@ public class Features {
             sortedFc = new GenericFeatureCollection( fc.getId(), sortedFeatures );
         }
         return sortedFc;
+    }
+
+    /**
+     * Clears out features with identical ids.
+     * 
+     * @param col
+     * @return a new list of features
+     */
+    public static List<Feature> clearDuplicates( Collection<Feature> col ) {
+        List<Feature> list = new ArrayList<Feature>();
+        HashSet<String> ids = new HashSet<String>();
+        for ( Feature f : col ) {
+            if ( !ids.contains( f.getId() ) ) {
+                list.add( f );
+                ids.add( f.getId() );
+            }
+        }
+        return list;
     }
 
     /**
