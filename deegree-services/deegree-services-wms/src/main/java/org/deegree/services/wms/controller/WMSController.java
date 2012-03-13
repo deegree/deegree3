@@ -68,8 +68,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -176,6 +178,11 @@ public class WMSController extends AbstractOWS {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.2.0/wms_configuration.xsd";
 
+    /**
+     * Default GML info formats. Will only be used if not overridden by config.
+     */
+    public final HashSet<String> defaultGMLGFIFormats = new LinkedHashSet<String>();
+
     private final HashMap<String, FeatureInfoSerializer> featureInfoSerializers = new HashMap<String, FeatureInfoSerializer>();
 
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
@@ -212,6 +219,14 @@ public class WMSController extends AbstractOWS {
         } catch ( URISyntaxException e ) {
             // then no configId will be available
         }
+        defaultGMLGFIFormats.add( "application/gml+xml; version=2.1" );
+        defaultGMLGFIFormats.add( "application/gml+xml; version=3.0" );
+        defaultGMLGFIFormats.add( "application/gml+xml; version=3.1" );
+        defaultGMLGFIFormats.add( "application/gml+xml; version=3.2" );
+        defaultGMLGFIFormats.add( "text/xml; subtype=gml/2.1.2" );
+        defaultGMLGFIFormats.add( "text/xml; subtype=gml/3.0.1" );
+        defaultGMLGFIFormats.add( "text/xml; subtype=gml/3.1.1" );
+        defaultGMLGFIFormats.add( "text/xml; subtype=gml/3.2.1" );
     }
 
     /**
@@ -341,6 +356,7 @@ public class WMSController extends AbstractOWS {
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     String format = t.getFormat();
+                    defaultGMLGFIFormats.remove( format );
                     if ( t.getFile() != null ) {
                         supportedFeatureInfoFormats.put( format,
                                                          new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
@@ -354,6 +370,10 @@ public class WMSController extends AbstractOWS {
                         featureInfoSerializers.put( format, xslt );
                     }
                 }
+            }
+
+            for ( String f : defaultGMLGFIFormats ) {
+                supportedFeatureInfoFormats.put( f, "" );
             }
 
             // if ( pi.getImageFormat() != null ) {
@@ -659,7 +679,8 @@ public class WMSController extends AbstractOWS {
             return;
         }
 
-        if ( format.equalsIgnoreCase( "application/vnd.ogc.gml" ) || format.equalsIgnoreCase( "text/xml" ) ) {
+        if ( format.equalsIgnoreCase( "application/vnd.ogc.gml" ) || format.equalsIgnoreCase( "text/xml" )
+             || defaultGMLGFIFormats.contains( format.toLowerCase() ) ) {
             try {
                 XMLStreamWriter xmlWriter = response.getXMLWriter();
                 String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
@@ -681,7 +702,18 @@ public class WMSController extends AbstractOWS {
                 }
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
 
-                GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_2, xmlWriter );
+                GMLVersion gmlVersion = GMLVersion.GML_2;
+                if ( format.endsWith( "3.0" ) || format.endsWith( "3.0.1" ) ) {
+                    gmlVersion = GMLVersion.GML_30;
+                }
+                if ( format.endsWith( "3.1" ) || format.endsWith( "3.1.1" ) ) {
+                    gmlVersion = GMLVersion.GML_31;
+                }
+                if ( format.endsWith( "3.2" ) || format.endsWith( "3.2.1" ) ) {
+                    gmlVersion = GMLVersion.GML_32;
+                }
+
+                GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
                 gmlWriter.setOutputCrs( crs );
                 gmlWriter.setNamespaceBindings( nsBindings );
                 gmlWriter.setExportGeometries( geometries );
