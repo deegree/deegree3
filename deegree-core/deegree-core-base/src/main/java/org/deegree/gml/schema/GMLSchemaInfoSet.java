@@ -35,6 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
+import static org.apache.xerces.xs.XSConstants.ELEMENT_DECLARATION;
+import static org.apache.xerces.xs.XSConstants.MODEL_GROUP;
+import static org.apache.xerces.xs.XSConstants.WILDCARD;
+import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_ALL;
+import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_CHOICE;
+import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_SEQUENCE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
@@ -298,7 +305,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         GMLVersion gmlVersion = GML_32;
         Set<String> namespaces = xmlSchemaInfoSet.getSchemaNamespaces();
         if ( namespaces.contains( GML_32_NS ) ) {
-            LOG.info( "Schema must be GML 3.2 (found GML 3.2 namespace)" );
+            LOG.debug( "Schema must be GML 3.2 (found GML 3.2 namespace)" );
         } else if ( !namespaces.contains( GMLNS ) ) {
             String msg = "Cannot interpret XML schema as GML schema. "
                          + "Neither GML core schema components in GML 3.2 namespace (" + GML3_2_NS + "), nor in "
@@ -306,7 +313,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             throw new IllegalArgumentException( msg );
         } else {
             gmlVersion = GML_31;
-            LOG.warn( "Automatic differentiation between GML 3.1, 3.0 and 2 is not implemented (same namespace URLs)." );
+            LOG.debug( "Automatic differentiation between GML 3.1, 3.0 and 2 is not implemented (same namespace URLs)." );
         }
         return gmlVersion;
     }
@@ -834,19 +841,19 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                                                             int maxOccurs, List<PropertyType> ptSubstitutions ) {
 
         switch ( typeDef.getContentType() ) {
-        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+        case CONTENTTYPE_ELEMENT: {
             LOG.trace( "CONTENTTYPE_ELEMENT" );
             XSParticle particle = typeDef.getParticle();
             XSTerm term = particle.getTerm();
             switch ( term.getType() ) {
-            case XSConstants.MODEL_GROUP: {
+            case MODEL_GROUP: {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
-                case XSModelGroup.COMPOSITOR_ALL: {
+                case COMPOSITOR_ALL: {
                     LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
-                case XSModelGroup.COMPOSITOR_CHOICE: {
+                case COMPOSITOR_CHOICE: {
                     LOG.trace( "Found choice." );
                     XSObjectList geomChoice = modelGroup.getParticles();
                     int length = geomChoice.getLength();
@@ -854,7 +861,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                     for ( int i = 0; i < length; ++i ) {
                         XSParticle geomChoiceParticle = (XSParticle) geomChoice.item( i );
                         XSTerm geomChoiceTerm = geomChoiceParticle.getTerm();
-                        if ( geomChoiceTerm.getType() == XSConstants.ELEMENT_DECLARATION ) {
+                        if ( geomChoiceTerm.getType() == ELEMENT_DECLARATION ) {
                             // other types are not supported
                             XSElementDeclaration geomChoiceElement = (XSElementDeclaration) geomChoiceTerm;
                             // min occurs check should be done, in regards to the xlinking.
@@ -875,8 +882,12 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                             } else {
                                 LOG.debug( "Unknown geometry type '" + elementName + "'." );
                             }
+                        } else if ( geomChoiceTerm.getType() == MODEL_GROUP ) {
+                            LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        } else if ( geomChoiceTerm.getType() == WILDCARD ) {
+                            LOG.warn( "Unhandled particle: WILDCARD" );
                         } else {
-                            LOG.warn( "Unsupported type particle type." );
+                            LOG.warn( "Unexpected XSTerm type: " + geomChoiceTerm.getType() );
                         }
                     }
                     if ( !allowedTypes.isEmpty() ) {
@@ -885,7 +896,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                     }
                     break;
                 }
-                case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                case COMPOSITOR_SEQUENCE: {
                     LOG.trace( "Found sequence." );
                     XSObjectList sequence = modelGroup.getParticles();
                     if ( sequence.getLength() != 1 ) {
@@ -895,7 +906,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                     XSParticle particle2 = (XSParticle) sequence.item( 0 );
                     XSTerm geomTerm = particle2.getTerm();
                     switch ( geomTerm.getType() ) {
-                    case XSConstants.ELEMENT_DECLARATION: {
+                    case ELEMENT_DECLARATION: {
                         XSElementDeclaration elementDecl2 = (XSElementDeclaration) geomTerm;
                         // min occurs check should be done, in regards to the xlinking.
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
@@ -912,27 +923,27 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                                                              CoordinateDimension.DIM_2_OR_3, BOTH );
                         }
                     }
-                    case XSConstants.WILDCARD: {
+                    case WILDCARD: {
                         LOG.debug( "Unhandled particle: WILDCARD" );
                         break;
                     }
-                    case XSConstants.MODEL_GROUP: {
+                    case MODEL_GROUP: {
                         // more then one kind of geometries allowed
                         XSModelGroup geomModelGroup = (XSModelGroup) geomTerm;
                         switch ( geomModelGroup.getType() ) {
-                        case XSModelGroup.COMPOSITOR_ALL: {
+                        case COMPOSITOR_ALL: {
                             // all geometries?, lets make it a custom property
                             LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                             break;
                         }
-                        case XSModelGroup.COMPOSITOR_CHOICE: {
+                        case COMPOSITOR_CHOICE: {
                             XSObjectList geomChoice = geomModelGroup.getParticles();
                             int length = geomChoice.getLength();
                             Set<GeometryType> allowedTypes = new HashSet<GeometryType>();
                             for ( int i = 0; i < length; ++i ) {
                                 XSParticle geomChoiceParticle = (XSParticle) sequence.item( i );
                                 XSTerm geomChoiceTerm = geomChoiceParticle.getTerm();
-                                if ( geomChoiceTerm.getType() == XSConstants.ELEMENT_DECLARATION ) {
+                                if ( geomChoiceTerm.getType() == ELEMENT_DECLARATION ) {
                                     // other types are not supported
                                     XSElementDeclaration geomChoiceElement = (XSElementDeclaration) geomChoiceTerm;
                                     // min occurs check should be done, in regards to the xlinking.
@@ -963,7 +974,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                             }
                             break;
                         }
-                        case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                        case COMPOSITOR_SEQUENCE: {
                             // sequence of geometries?, lets make it a custom property
                             LOG.debug( "Unhandled model group: COMPOSITOR_SEQUENCE" );
                             break;
@@ -981,11 +992,11 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                 }
                 break;
             }
-            case XSConstants.WILDCARD: {
+            case WILDCARD: {
                 LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
-            case XSConstants.ELEMENT_DECLARATION: {
+            case ELEMENT_DECLARATION: {
                 LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }

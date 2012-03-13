@@ -485,11 +485,11 @@ public class GMLAppSchemaReader {
 
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.warn( "Encountered 'All' compositor in feature type model definition -- treating as sequence." );
+            LOG.debug( "Encountered 'All' compositor in object type model -- treating as sequence." );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
-            LOG.warn( "Encountered 'Choice' compositor in feature type model definition -- treating as sequence." );
+            LOG.debug( "Encountered 'Choice' compositor in object type model -- treating as sequence." );
             break;
         }
         }

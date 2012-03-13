@@ -40,7 +40,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 
@@ -57,7 +56,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
  * Tests that check the correct extraction of {@link GMLObjectType}s from various GML application schemas.
@@ -68,8 +66,6 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 public class GMLAppSchemaReaderTest {
-
-    private static final Logger LOG = getLogger( GMLAppSchemaReaderTest.class );
 
     @Test
     public void testParsingPhilosopher()
@@ -147,12 +143,6 @@ public class GMLAppSchemaReaderTest {
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
         Assert.assertEquals( 5, fts.length );
-        for ( FeatureType ft : fts ) {
-            LOG.debug( "\nFt: " + ft.getName() );
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                LOG.debug( "" + pt );
-            }
-        }
     }
 
     @Test
@@ -163,11 +153,7 @@ public class GMLAppSchemaReaderTest {
         String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf2.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         FeatureType[] fts = adapter.extractAppSchema().getFeatureTypes();
-        for ( int i = 0; i < fts.length; i++ ) {
-            LOG.debug( "" + fts[i] );
-        }
-
-        // TODO do more thorough testing
+        Assert.assertEquals( 6, fts.length );
     }
 
     @Test
@@ -190,14 +176,8 @@ public class GMLAppSchemaReaderTest {
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
         FeatureCollectionType ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/gml}_FeatureCollection" ) );
-        System.out.println( ft );
         ft = (FeatureCollectionType) schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/cite/geometry}GeometryFeatureCollection" ) );
-        System.out.println( ft );
         List<PropertyType> newPropertyDecls = schema.getNewPropertyDecls( ft );
-        System.out.println( newPropertyDecls.size() );
-        for ( PropertyType pt : newPropertyDecls ) {
-            System.out.println( pt );
-        }
     }
 
     @Test
@@ -341,7 +321,7 @@ public class GMLAppSchemaReaderTest {
         assertPropertyType( gt, 4, new QName( GML3_2_NS, "name" ), 0, -1 );
         // gml:pos/gml:coordinates are actually part of a choice (that's why minOccurs is 1)
         assertPropertyType( gt, 5, new QName( GML3_2_NS, "pos" ), 1, 1 );
-        assertPropertyType( gt, 6, new QName( GML3_2_NS, "coordinates" ), 1, 1 );       
+        assertPropertyType( gt, 6, new QName( GML3_2_NS, "coordinates" ), 1, 1 );
         assertPropertyType( gt, 7, new QName( aixmNs, "horizontalAccuracy" ), 0, 1 );
         assertPropertyType( gt, 8, new QName( aixmNs, "annotation" ), 0, -1 );
 
@@ -392,7 +372,7 @@ public class GMLAppSchemaReaderTest {
         assertPropertyType( gt, 10, new QName( aixmNs, "verticalDatum" ), 0, 1 );
         assertPropertyType( gt, 11, new QName( aixmNs, "verticalAccuracy" ), 0, 1 );
         assertPropertyType( gt, 12, new QName( aixmNs, "extension" ), 0, -1 );
-        
+
         // {http://www.aixm.aero/schema/5.1}Surface
         gt = schema.getGeometryType( new QName( aixmNs, "Surface" ) );
         Assert.assertEquals( 8, gt.getPropertyDeclarations().size() );
@@ -420,7 +400,7 @@ public class GMLAppSchemaReaderTest {
         assertPropertyType( gt, 9, new QName( aixmNs, "geoidUndulation" ), 0, 1 );
         assertPropertyType( gt, 10, new QName( aixmNs, "verticalDatum" ), 0, 1 );
         assertPropertyType( gt, 11, new QName( aixmNs, "verticalAccuracy" ), 0, 1 );
-        assertPropertyType( gt, 12, new QName( aixmNs, "extension" ), 0, -1 );                
+        assertPropertyType( gt, 12, new QName( aixmNs, "extension" ), 0, -1 );
     }
 
     private void assertPropertyType( GMLObjectType geometryDecl, int propDeclIdx, QName propName, int minOccurs,

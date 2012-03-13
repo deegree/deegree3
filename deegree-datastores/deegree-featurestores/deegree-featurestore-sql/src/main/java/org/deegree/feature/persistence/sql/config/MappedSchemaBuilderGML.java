@@ -390,6 +390,13 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             throw new RuntimeException( "Error in mapping of table '" + currentTable + "': " + e );
         }
 
+        if ( config.getType() != null ) {
+            PrimitiveType forcedType = new PrimitiveType( getPrimitiveType( config.getType() ) );
+            LOG.debug( "Overriding schema-derived primitive type '" + pt.getFirst() + "'. Forcing '" + forcedType
+                       + "'." );
+            pt.first = forcedType;
+        }
+
         MappingExpression me = parseMappingExpression( config.getMapping() );
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
@@ -413,11 +420,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         QName ptName = new QName( elDecl.first.getNamespace(), elDecl.getFirst().getName() );
         ObjectPropertyType pt = gmlSchema.getGMLSchema().getGMLPropertyDecl( elDecl.first, ptName, 1, 1, null );
         GeometryType type = GeometryType.GEOMETRY;
-        if ( !( pt instanceof GeometryPropertyType ) ) {
-            String msg = "Mapping '" + path.getAsText() + "' (in context of table '" + currentTable
-                         + "') does not target the container element of a GML geometry element.";
-            LOG.warn( msg );
-        } else {
+        if ( pt instanceof GeometryPropertyType ) {
             type = ( (GeometryPropertyType) pt ).getGeometryType();
         }
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
