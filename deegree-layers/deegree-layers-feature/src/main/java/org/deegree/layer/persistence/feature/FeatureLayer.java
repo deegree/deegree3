@@ -300,7 +300,7 @@ public class FeatureLayer extends AbstractLayer {
                     final String min = formatDateTime( (Date) iv.min );
                     final String max = formatDateTime( (Date) iv.max );
                     os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
-                                                     new Literal<PrimitiveValue>( max ), false, null );
+                                                     new Literal<PrimitiveValue>( max ), true, null );
                 } else if ( o.toString().equalsIgnoreCase( "current" ) ) {
                     if ( !time.getCurrent() ) {
                         String msg = "The value 'current' for TIME was invalid.";
@@ -397,7 +397,7 @@ public class FeatureLayer extends AbstractLayer {
                         max = ( (Number) iv.max ).toString();
                     }
                     os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
-                                                     new Literal<PrimitiveValue>( max ), false, null );
+                                                     new Literal<PrimitiveValue>( max ), true, null );
                 } else {
                     if ( dim.getNearestValue() ) {
                         Object nearest = dim.getNearestValue( o );
@@ -411,7 +411,7 @@ public class FeatureLayer extends AbstractLayer {
                         }
                     }
                     os[i++] = new PropertyIsEqualTo( new ValueReference( dim.getPropertyName() ),
-                                                     new Literal<PrimitiveValue>( o.toString() ), false, null );
+                                                     new Literal<PrimitiveValue>( o.toString() ), null, null );
                 }
             }
             if ( os.length > 1 ) {
