@@ -807,7 +807,18 @@ public class MapService {
             }
         }
         List<LayerData> list = new ArrayList<LayerData>();
-        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, gm.getFilters(),
+        // workaround for older WMS versions (layer vs. theme problem)
+        HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
+        Map<String, OperatorFilter> reqFilters = gm.getFilters();
+        for ( LayerRef lr : gm.getLayers() ) {
+            OperatorFilter f = reqFilters.get( lr.getName() );
+            if ( f != null ) {
+                for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                    filters.put( l.getMetadata().getName(), f );
+                }
+            }
+        }
+        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, filters,
                                            gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize() / 1000, options );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
