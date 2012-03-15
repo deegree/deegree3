@@ -160,6 +160,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
     private void writeCapability( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( "Capability" );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
 
         writeRequest( writer );
         writer.writeStartElement( "Exception" );
@@ -497,7 +498,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "height", "" + legendSize.second );
             writeElement( writer, "Format", "image/png" );
             writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             if ( style.getLegendURL() == null || style.prefersGetLegendGraphicUrl() ) {
                 String styleName = style.getName() == null ? "" : ( "&style=" + style.getName() );
@@ -520,7 +520,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( get ) {
             writer.writeStartElement( "Get" );
             writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", getUrl + "?" );
             writer.writeEndElement();
@@ -529,7 +528,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         if ( post ) {
             writer.writeStartElement( "Post" );
             writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", postUrl );
             writer.writeEndElement();
@@ -583,6 +581,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
     private void writeService( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( "Service" );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
 
         writeElement( writer, "Name", "OGC:WMS" );
 
@@ -616,7 +615,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
         }
         writer.writeStartElement( "OnlineResource" );
-        writer.writeNamespace( XLINK_PREFIX, XLNNS );
         writer.writeAttribute( XLNNS, "type", "simple" );
         writer.writeAttribute( XLNNS, "href", url );
         writer.writeEndElement();
