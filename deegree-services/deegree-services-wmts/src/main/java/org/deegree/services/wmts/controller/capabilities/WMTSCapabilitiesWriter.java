@@ -99,10 +99,9 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeNamespace( OWS_PREFIX, OWS110_NS );
         writer.writeNamespace( "xlink", XLN_NS );
         writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( "service", "WPS" );
         writer.writeAttribute( "version", "1.0.0" );
         writer.writeAttribute( XSINS, "schemaLocation",
-                               "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd" );
+                               "http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" );
 
         exportServiceIdentification( writer, identification );
         exportServiceProvider110New( writer, provider );
@@ -165,27 +164,36 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         }
         writer.writeStartElement( WMTSNS, "Themes" );
         for ( Theme t : themes ) {
-            writer.writeStartElement( WMTSNS, "Theme" );
-            exportMetadata( writer, t.getMetadata() );
-
-            exportThemes( writer, t.getThemes() );
-            exportLayers( writer, t.getLayers() );
-
-            writer.writeEndElement();
+            exportTheme( writer, t );
         }
         writer.writeEndElement();
     }
 
-    private static void exportMetadata( XMLStreamWriter writer, LayerMetadata md )
+    private static void exportTheme( XMLStreamWriter writer, Theme t )
+                            throws XMLStreamException {
+        writer.writeStartElement( WMTSNS, "Theme" );
+        exportMetadata( writer, t.getMetadata(), false );
+
+        for ( Theme t2 : t.getThemes() ) {
+            exportTheme( writer, t2 );
+        }
+        exportLayers( writer, t.getLayers() );
+
+        writer.writeEndElement();
+    }
+
+    private static void exportMetadata( XMLStreamWriter writer, LayerMetadata md, boolean idOnly )
                             throws XMLStreamException {
         Description desc = md.getDescription();
-        writeElement( writer, OWS110_NS, "Identifier", md.getName() );
-        writeElement( writer, OWS110_NS, "Title", desc.getTitle( null ).getString() );
-        LanguageString abs = desc.getAbstract( null );
-        if ( abs != null ) {
-            writeElement( writer, OWS110_NS, "Abstract", abs.getString() );
+        if ( !idOnly ) {
+            writeElement( writer, OWS110_NS, "Title", desc.getTitle( null ).getString() );
+            LanguageString abs = desc.getAbstract( null );
+            if ( abs != null ) {
+                writeElement( writer, OWS110_NS, "Abstract", abs.getString() );
+            }
+            exportKeyWords110New( writer, desc.getKeywords() );
         }
-        exportKeyWords110New( writer, desc.getKeywords() );
+        writeElement( writer, OWS110_NS, "Identifier", md.getName() );
     }
 
     private static void exportLayers( XMLStreamWriter writer, List<Layer> layers )
@@ -211,8 +219,11 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
                     writer.writeStartElement( WMTSNS, "Layer" );
 
-                    exportMetadata( writer, md );
+                    exportMetadata( writer, md, true );
                     TileMatrixSetMetadata metadata = ts.getTileMatrixSet().getMetadata();
+                    writer.writeStartElement( WMTSNS, "Style" );
+                    writeElement( writer, OWS110_NS, "Identifier", "default" );
+                    writer.writeEndElement();
                     writeElement( writer, WMTSNS, "Format", metadata.getFormat() );
                     writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
                     writeElement( writer, WMTSNS, "TileMatrixSet", md.getName() );
@@ -233,7 +244,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
                     writer.writeStartElement( WMTSNS, "TileMatrixSet" );
 
-                    exportMetadata( writer, md );
+                    exportMetadata( writer, md, true );
                     TileMatrixSetMetadata metadata = ts.getTileMatrixSet().getMetadata();
                     writeElement( writer, OWS110_NS, "SupportedCRS", metadata.getCrs().getAlias() );
 
