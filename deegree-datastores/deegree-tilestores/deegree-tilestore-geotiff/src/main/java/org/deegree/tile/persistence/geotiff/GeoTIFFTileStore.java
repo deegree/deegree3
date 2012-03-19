@@ -72,6 +72,7 @@ import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
 import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
 
@@ -151,7 +152,8 @@ public class GeoTIFFTileStore implements TileStore {
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
-            tileMatrixSet = new DefaultTileMatrixSet( matrices );
+            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "image/png", envelope.getCoordinateSystem() );
+            tileMatrixSet = new DefaultTileMatrixSet( matrices, metadata );
 
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );

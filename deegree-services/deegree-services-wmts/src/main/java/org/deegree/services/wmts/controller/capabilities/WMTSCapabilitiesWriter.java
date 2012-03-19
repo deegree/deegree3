@@ -38,7 +38,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package capabilities;
+package org.deegree.services.wmts.controller.capabilities;
+
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,8 +54,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.geometry.Envelope;
+import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
+import org.deegree.layer.persistence.tile.TileLayer;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
@@ -64,6 +68,11 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.theme.Theme;
+import org.deegree.theme.Themes;
+import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileMatrixSetMetadata;
+import org.deegree.tile.persistence.TileStore;
 
 /**
  * <code>WMTSCapabilitiesWriter</code>
@@ -99,8 +108,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         exportServiceProvider110New( writer, provider );
         exportOperationsMetadata( writer );
 
-        // export contents
-        // exportProcessOfferings( writer, processes );
+        exportContents( writer, themes );
 
         exportThemes( writer, themes );
 
@@ -158,17 +166,99 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeStartElement( WMTSNS, "Themes" );
         for ( Theme t : themes ) {
             writer.writeStartElement( WMTSNS, "Theme" );
-            LayerMetadata md = t.getMetadata();
-            Description desc = md.getDescription();
-            writeElement( writer, OWS110_NS, "Identifier", md.getName() );
-            writeElement( writer, OWS110_NS, "Title", desc.getTitle( null ).getString() );
-            LanguageString abs = desc.getAbstract( null );
-            if ( abs != null ) {
-                writeElement( writer, OWS110_NS, "Abstract", abs.getString() );
-            }
-            exportKeyWords110New( writer, desc.getKeywords() );
+            exportMetadata( writer, t.getMetadata() );
+
+            exportThemes( writer, t.getThemes() );
+            exportLayers( writer, t.getLayers() );
+
             writer.writeEndElement();
         }
+        writer.writeEndElement();
+    }
+
+    private static void exportMetadata( XMLStreamWriter writer, LayerMetadata md )
+                            throws XMLStreamException {
+        Description desc = md.getDescription();
+        writeElement( writer, OWS110_NS, "Identifier", md.getName() );
+        writeElement( writer, OWS110_NS, "Title", desc.getTitle( null ).getString() );
+        LanguageString abs = desc.getAbstract( null );
+        if ( abs != null ) {
+            writeElement( writer, OWS110_NS, "Abstract", abs.getString() );
+        }
+        exportKeyWords110New( writer, desc.getKeywords() );
+    }
+
+    private static void exportLayers( XMLStreamWriter writer, List<Layer> layers )
+                            throws XMLStreamException {
+        for ( Layer l : layers ) {
+            if ( l instanceof TileLayer ) {
+                writeElement( writer, WMTSNS, "LayerRef", l.getMetadata().getName() );
+            }
+        }
+    }
+
+    private static void exportContents( XMLStreamWriter writer, List<Theme> themes )
+                            throws XMLStreamException {
+        writer.writeStartElement( WMTSNS, "Contents" );
+
+        // layers
+        for ( Theme t : themes ) {
+            for ( Layer l : Themes.getAllLayers( t ) ) {
+                if ( l instanceof TileLayer ) {
+                    TileLayer tl = (TileLayer) l;
+                    LayerMetadata md = tl.getMetadata();
+                    TileStore ts = tl.getTileStore();
+
+                    writer.writeStartElement( WMTSNS, "Layer" );
+
+                    exportMetadata( writer, md );
+                    TileMatrixSetMetadata metadata = ts.getTileMatrixSet().getMetadata();
+                    writeElement( writer, WMTSNS, "Format", metadata.getFormat() );
+                    writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
+                    writeElement( writer, WMTSNS, "TileMatrixSet", md.getName() );
+                    writer.writeEndElement();
+
+                    writer.writeEndElement();
+                }
+            }
+        }
+
+        // tile matrices
+        for ( Theme t : themes ) {
+            for ( Layer l : Themes.getAllLayers( t ) ) {
+                if ( l instanceof TileLayer ) {
+                    TileLayer tl = (TileLayer) l;
+                    LayerMetadata md = tl.getMetadata();
+                    TileStore ts = tl.getTileStore();
+
+                    writer.writeStartElement( WMTSNS, "TileMatrixSet" );
+
+                    exportMetadata( writer, md );
+                    TileMatrixSetMetadata metadata = ts.getTileMatrixSet().getMetadata();
+                    writeElement( writer, OWS110_NS, "SupportedCRS", metadata.getCrs().getAlias() );
+
+                    for ( TileMatrix tm : ts.getTileMatrixSet().getTileMatrices() ) {
+                        TileMatrixMetadata tmmd = tm.getMetadata();
+                        writer.writeStartElement( WMTSNS, "TileMatrix" );
+                        double scale = tmmd.getResolution() / DEFAULT_PIXEL_SIZE;
+                        writeElement( writer, OWS110_NS, "Identifier", scale + "" );
+                        writeElement( writer, WMTSNS, "ScaleDenominator", scale + "" );
+                        Envelope env = tmmd.getSpatialMetadata().getEnvelope();
+                        // TODO verify this
+                        writeElement( writer, WMTSNS, "TopLeftCorner", env.getMin().get0() + " " + env.getMax().get1() );
+                        writeElement( writer, WMTSNS, "TileWidth", Integer.toString( tmmd.getTileSize().first ) );
+                        writeElement( writer, WMTSNS, "TileHeight", Integer.toString( tmmd.getTileSize().second ) );
+                        writeElement( writer, WMTSNS, "MatrixWidth", Integer.toString( tmmd.getNumTilesX() ) );
+                        writeElement( writer, WMTSNS, "MatrixHeight", Integer.toString( tmmd.getNumTilesY() ) );
+
+                        writer.writeEndElement();
+                    }
+
+                    writer.writeEndElement();
+                }
+            }
+        }
+
         writer.writeEndElement();
     }
 

@@ -75,12 +75,12 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.wmts.controller.capabilities.WMTSCapabilitiesWriter;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeManager;
 import org.slf4j.Logger;
 
-import capabilities.WMTSCapabilitiesWriter;
 
 /**
  * <code>WMTSController</code>

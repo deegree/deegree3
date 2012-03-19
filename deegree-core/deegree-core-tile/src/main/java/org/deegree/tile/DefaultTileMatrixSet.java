@@ -66,8 +66,11 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
 
     private final List<TileMatrix> matrices;
 
-    public DefaultTileMatrixSet( List<TileMatrix> matrices ) {
+    private TileMatrixSetMetadata metadata;
+
+    public DefaultTileMatrixSet( List<TileMatrix> matrices, TileMatrixSetMetadata metadata ) {
         this.matrices = matrices;
+        this.metadata = metadata;
     }
 
     @Override
@@ -154,6 +157,11 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
     @Override
     public List<TileMatrix> getTileMatrices() {
         return matrices;
+    }
+
+    @Override
+    public TileMatrixSetMetadata getMetadata() {
+        return metadata;
     }
 
 }

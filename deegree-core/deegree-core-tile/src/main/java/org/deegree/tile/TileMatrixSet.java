@@ -74,4 +74,11 @@ public interface TileMatrixSet {
      */
     List<TileMatrix> getTileMatrices();
 
+    /**
+     * Returns the metadata about this matrix set.
+     * 
+     * @return never null.
+     */
+    TileMatrixSetMetadata getMetadata();
+
 }
