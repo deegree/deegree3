@@ -41,6 +41,7 @@
 package org.deegree.tile;
 
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
 import org.deegree.geometry.Envelope;
 
@@ -64,6 +65,14 @@ public interface Tile {
      * @return the tile as image, never null.
      */
     BufferedImage getAsImage();
+
+    /**
+     * This method provides direct access to the tile data. Must be able to generate a new stream each time this method
+     * is called. Stream must be closed by user.
+     * 
+     * @return the tile as stream, never null.
+     */
+    InputStream getAsStream();
 
     /**
      * Returns the envelope of the tile data, specified from the outer bounds of the border pixels.

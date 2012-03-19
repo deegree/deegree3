@@ -90,4 +90,14 @@ public interface TileStore extends Resource {
      */
     Iterator<Tile> getTiles( Envelope envelope, double resolution );
 
+    /**
+     * Query a single tile from a specific matrix.
+     * 
+     * @param tileMatrix
+     * @param x
+     * @param y
+     * @return the tile or null, if no such tile
+     */
+    Tile getTile( String tileMatrix, int x, int y );
+
 }

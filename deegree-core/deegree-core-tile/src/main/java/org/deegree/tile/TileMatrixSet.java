@@ -81,4 +81,12 @@ public interface TileMatrixSet {
      */
     TileMatrixSetMetadata getMetadata();
 
+    /**
+     * Returns a single tile matrix identified by the identifier.
+     * 
+     * @param identifier
+     * @return null, if no such matrix
+     */
+    TileMatrix getTileMatrix( String identifier );
+
 }

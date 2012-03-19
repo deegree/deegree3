@@ -42,9 +42,12 @@ package org.deegree.tile;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
@@ -64,19 +67,22 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
 
     private static final Logger LOG = getLogger( DefaultTileMatrixSet.class );
 
-    private final List<TileMatrix> matrices;
+    private final Map<String, TileMatrix> matrices;
 
     private TileMatrixSetMetadata metadata;
 
     public DefaultTileMatrixSet( List<TileMatrix> matrices, TileMatrixSetMetadata metadata ) {
-        this.matrices = matrices;
+        this.matrices = new LinkedHashMap<String, TileMatrix>();
+        for ( TileMatrix m : matrices ) {
+            this.matrices.put( m.getMetadata().getIdentifier(), m );
+        }
         this.metadata = metadata;
     }
 
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         // select correct matrix
-        Iterator<TileMatrix> iter = matrices.iterator();
+        Iterator<TileMatrix> iter = matrices.values().iterator();
         TileMatrix matrix = iter.next();
         TileMatrix next = matrix;
         while ( next.getMetadata().getResolution() <= resolution && iter.hasNext() ) {
@@ -156,12 +162,17 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
 
     @Override
     public List<TileMatrix> getTileMatrices() {
-        return matrices;
+        return new ArrayList<TileMatrix>( matrices.values() );
     }
 
     @Override
     public TileMatrixSetMetadata getMetadata() {
         return metadata;
+    }
+
+    @Override
+    public TileMatrix getTileMatrix( String identifier ) {
+        return matrices.get( identifier );
     }
 
 }

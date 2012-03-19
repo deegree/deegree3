@@ -55,6 +55,8 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 
 public class TileMatrixMetadata {
 
+    private String identifier;
+
     private SpatialMetadata spatialMetadata;
 
     private int numTilesX, numTilesY;
@@ -66,6 +68,8 @@ public class TileMatrixMetadata {
     /**
      * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
      * 
+     * @param identifier
+     *            to identify the tile matrix
      * @param spatialMetadata
      *            the envelope and coordinate system, never null
      * @param tileSize
@@ -77,8 +81,9 @@ public class TileMatrixMetadata {
      * @param numTilesY
      *            the number of tiles in y direction
      */
-    public TileMatrixMetadata( SpatialMetadata spatialMetadata, Pair<Integer, Integer> tileSize, double resolution,
-                               int numTilesX, int numTilesY ) {
+    public TileMatrixMetadata( String identifier, SpatialMetadata spatialMetadata, Pair<Integer, Integer> tileSize,
+                               double resolution, int numTilesX, int numTilesY ) {
+        this.identifier = identifier;
         this.spatialMetadata = spatialMetadata;
         this.tileSize = tileSize;
         this.resolution = resolution;
@@ -135,6 +140,13 @@ public class TileMatrixMetadata {
      */
     public double getTileHeight() {
         return tileHeight;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
     }
 
 }

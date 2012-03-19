@@ -252,7 +252,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
                         TileMatrixMetadata tmmd = tm.getMetadata();
                         writer.writeStartElement( WMTSNS, "TileMatrix" );
                         double scale = tmmd.getResolution() / DEFAULT_PIXEL_SIZE;
-                        writeElement( writer, OWS110_NS, "Identifier", scale + "" );
+                        writeElement( writer, OWS110_NS, "Identifier", tm.getMetadata().getIdentifier() );
                         writeElement( writer, WMTSNS, "ScaleDenominator", scale + "" );
                         Envelope env = tmmd.getSpatialMetadata().getEnvelope();
                         // TODO verify this

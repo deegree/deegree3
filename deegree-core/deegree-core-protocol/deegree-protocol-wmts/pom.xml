@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-commons</artifactId>
+      <artifactId>deegree-core-base</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

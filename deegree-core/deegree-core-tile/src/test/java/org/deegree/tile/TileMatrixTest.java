@@ -82,7 +82,7 @@ public class TileMatrixTest extends TestCase {
         ICRS crs = CRSManager.lookup( "EPSG:4326" );
         Envelope env = fac.createEnvelope( -10, -10, 10, 10, crs );
         SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-        TileMatrixMetadata md = new TileMatrixMetadata( smd, new Pair<Integer, Integer>( 256, 256 ), 1, 1, 1 );
+        TileMatrixMetadata md = new TileMatrixMetadata( "someid", smd, new Pair<Integer, Integer>( 256, 256 ), 1, 1, 1 );
         TileMatrix tm = mock( TileMatrix.class );
         Tile t = mock( Tile.class );
         tm.getMetadata();

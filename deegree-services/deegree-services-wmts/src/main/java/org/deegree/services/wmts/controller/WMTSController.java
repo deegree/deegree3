@@ -41,6 +41,7 @@
 package org.deegree.services.wmts.controller;
 
 import static org.deegree.commons.tom.ows.Version.parseVersion;
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
@@ -50,24 +51,27 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.layer.Layer;
+import org.deegree.layer.persistence.tile.TileLayer;
 import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
+import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -78,9 +82,11 @@ import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.wmts.controller.capabilities.WMTSCapabilitiesWriter;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.theme.Theme;
+import org.deegree.theme.Themes;
 import org.deegree.theme.persistence.ThemeManager;
+import org.deegree.tile.Tile;
+import org.deegree.tile.persistence.TileStore;
 import org.slf4j.Logger;
-
 
 /**
  * <code>WMTSController</code>
@@ -103,6 +109,8 @@ public class WMTSController extends AbstractOWS {
     private ServiceProvider provider;
 
     private List<Theme> themes = new ArrayList<Theme>();
+
+    private Map<String, TileStore> stores = new HashMap<String, TileStore>();
 
     /**
      * @param configURL
@@ -132,6 +140,13 @@ public class WMTSController extends AbstractOWS {
                 continue;
             }
             themes.add( t );
+
+            for ( Layer l : Themes.getAllLayers( t ) ) {
+                if ( l instanceof TileLayer ) {
+                    stores.put( l.getMetadata().getName(), ( (TileLayer) l ).getTileStore() );
+                }
+            }
+
         }
     }
 
@@ -188,7 +203,8 @@ public class WMTSController extends AbstractOWS {
                             throws OWSException {
         switch ( req ) {
         case GetCapabilities:
-            GetCapabilities gc = GetCapabilitiesKVPParser.parse( map );
+            // GetCapabilities gc =
+            GetCapabilitiesKVPParser.parse( map );
             try {
                 WMTSCapabilitiesWriter.export100( response.getXMLWriter(), identification, provider, themes );
             } catch ( Throwable e ) {
@@ -199,7 +215,34 @@ public class WMTSController extends AbstractOWS {
         case GetFeatureInfo:
             throw new OWSException( "The GetFeatureInfo operation is not supported yet.", OPERATION_NOT_SUPPORTED );
         case GetTile:
+            GetTile op = new GetTile( map );
+            getTile( op, response );
             break;
+        }
+    }
+
+    private void getTile( GetTile op, HttpResponseBuffer response )
+                            throws OWSException {
+        TileStore store = stores.get( op.getLayer() );
+        if ( store == null ) {
+            throw new OWSException( "Unknown layer: " + op.getLayer(), INVALID_PARAMETER_VALUE );
+        }
+
+        String format = op.getFormat();
+        if ( !store.getTileMatrixSet().getMetadata().getFormat().equals( format ) ) {
+            throw new OWSException( "Unknown format: " + format, INVALID_PARAMETER_VALUE );
+        }
+
+        Tile t = store.getTile( op.getTileMatrix(), op.getTileCol(), op.getTileRow() );
+        if ( t == null ) {
+            // exception or empty tile?
+        }
+
+        try {
+            IOUtils.copy( t.getAsStream(), response.getOutputStream() );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 

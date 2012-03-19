@@ -44,8 +44,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Hashtable;
 
+import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -126,6 +130,24 @@ public class GeoTIFFTile implements Tile {
     @Override
     public Envelope getEnvelope() {
         return envelope;
+    }
+
+    @Override
+    public InputStream getAsStream() {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write( getAsImage(), "png", bos );
+            return new ByteArrayInputStream( bos.toByteArray() );
+        } catch ( Throwable e ) {
+            LOG.warn( "Tile from GeoTIFFTileStore could not be converted to stream: {}", e.getLocalizedMessage(), e );
+        } finally {
+            try {
+                bos.close();
+            } catch ( Throwable e ) {
+                // it's a byte array output stream
+            }
+        }
+        return null;
     }
 
 }

@@ -1,0 +1,160 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2010 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+ http://www.occamlabs.de/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+
+package org.deegree.protocol.wmts.ops;
+
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+
+import java.util.Map;
+
+import org.deegree.protocol.ows.exception.OWSException;
+
+/**
+ * <code>GetTile</code>
+ * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: mschneider $
+ * 
+ * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
+ */
+
+public class GetTile {
+
+    private String layer;
+
+    private String style;
+
+    private String format;
+
+    private String tileMatrixSet;
+
+    private String tileMatrix;
+
+    private int tileRow;
+
+    private int tileCol;
+
+    /**
+     * Convenience constructor for WMTS.
+     * 
+     * @param map
+     * @throws OWSException
+     *             if TILEROW/COL are missing or not integers.
+     */
+    public GetTile( Map<String, String> map ) throws OWSException {
+        this.layer = map.get( "LAYER" );
+        this.style = map.get( "STYLE" );
+        this.format = map.get( "FORMAT" );
+        this.tileMatrixSet = map.get( "TILEMATRIXSET" );
+        this.tileMatrix = map.get( "TILEMATRIX" );
+        String row = map.get( "TILEROW" );
+        if ( row == null ) {
+            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "GetTile" );
+        }
+        try {
+            this.tileRow = Integer.parseInt( row );
+        } catch ( NumberFormatException e ) {
+            throw new OWSException( "The TILEROW parameter value of '" + row + "' is not a valid index.",
+                                    INVALID_PARAMETER_VALUE, "GetTile" );
+        }
+        String col = map.get( "TILECOL" );
+        if ( col == null ) {
+            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "GetTile" );
+        }
+        try {
+            this.tileCol = Integer.parseInt( col );
+        } catch ( NumberFormatException e ) {
+            throw new OWSException( "The TILECOL parameter value of '" + col + "' is not a valid index.",
+                                    INVALID_PARAMETER_VALUE, "GetTile" );
+        }
+    }
+
+    /**
+     * @return the layer
+     */
+    public String getLayer() {
+        return layer;
+    }
+
+    /**
+     * @return the style
+     */
+    public String getStyle() {
+        return style;
+    }
+
+    /**
+     * @return the format
+     */
+    public String getFormat() {
+        return format;
+    }
+
+    /**
+     * @return the tileMatrixSet
+     */
+    public String getTileMatrixSet() {
+        return tileMatrixSet;
+    }
+
+    /**
+     * @return the tileMatrix
+     */
+    public String getTileMatrix() {
+        return tileMatrix;
+    }
+
+    /**
+     * @return the tileRow
+     */
+    public int getTileRow() {
+        return tileRow;
+    }
+
+    /**
+     * @return the tileCol
+     */
+    public int getTileCol() {
+        return tileCol;
+    }
+
+}

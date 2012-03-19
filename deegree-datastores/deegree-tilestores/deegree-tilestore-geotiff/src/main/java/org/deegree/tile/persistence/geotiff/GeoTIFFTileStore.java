@@ -43,6 +43,7 @@ package org.deegree.tile.persistence.geotiff;
 import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.createImageInputStream;
 import static javax.imageio.ImageIO.getImageReadersBySuffix;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -145,8 +146,9 @@ public class GeoTIFFTileStore implements TileStore {
                 int numx = (int) Math.ceil( (double) width / (double) tw );
                 int numy = (int) Math.ceil( (double) height / (double) th );
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
-                TileMatrixMetadata tmd = new TileMatrixMetadata( smd, new Pair<Integer, Integer>( tw, th ), res, numx,
-                                                                 numy );
+                String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
+                TileMatrixMetadata tmd = new TileMatrixMetadata( id, smd, new Pair<Integer, Integer>( tw, th ), res,
+                                                                 numx, numy );
                 GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, file, i );
                 matrices.add( matrix );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
@@ -239,6 +241,15 @@ public class GeoTIFFTileStore implements TileStore {
     @Override
     public TileMatrixSet getTileMatrixSet() {
         return tileMatrixSet;
+    }
+
+    @Override
+    public Tile getTile( String tileMatrix, int x, int y ) {
+        TileMatrix tm = tileMatrixSet.getTileMatrix( tileMatrix );
+        if ( tm == null ) {
+            return null;
+        }
+        return tm.getTile( x, y );
     }
 
 }
