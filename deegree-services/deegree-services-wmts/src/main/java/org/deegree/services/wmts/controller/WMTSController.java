@@ -200,7 +200,7 @@ public class WMTSController extends AbstractOWS {
 
     private void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map,
                                 Version version )
-                            throws OWSException {
+                            throws OWSException, ServletException {
         switch ( req ) {
         case GetCapabilities:
             // GetCapabilities gc =
@@ -222,7 +222,7 @@ public class WMTSController extends AbstractOWS {
     }
 
     private void getTile( GetTile op, HttpResponseBuffer response )
-                            throws OWSException {
+                            throws OWSException, ServletException {
         TileStore store = stores.get( op.getLayer() );
         if ( store == null ) {
             throw new OWSException( "Unknown layer: " + op.getLayer(), INVALID_PARAMETER_VALUE );
@@ -236,13 +236,13 @@ public class WMTSController extends AbstractOWS {
         Tile t = store.getTile( op.getTileMatrix(), op.getTileCol(), op.getTileRow() );
         if ( t == null ) {
             // exception or empty tile?
+            throw new OWSException( "No such tile found.", INVALID_PARAMETER_VALUE );
         }
 
         try {
             IOUtils.copy( t.getAsStream(), response.getOutputStream() );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch ( Throwable e ) {
+            throw new ServletException( e );
         }
     }
 
