@@ -94,7 +94,7 @@ public class DefaultRenderContext implements RenderContext {
                                          info.getBgColor() );
         graphics = image.createGraphics();
         renderer = new Java2DRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(),
-                                       info.getPixelSize() );
+                                       info.getPixelSize() * 1000 );
         textRenderer = new Java2DTextRenderer( renderer );
         rasterRenderer = new Java2DRasterRenderer( graphics );
         tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope() );

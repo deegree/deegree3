@@ -142,7 +142,7 @@ public class GetMap {
 
     private double scale;
 
-    private double pixelSize = 0.28;
+    private double pixelSize = 0.00028;
 
     private double resolution;
 
@@ -752,7 +752,7 @@ public class GetMap {
     }
 
     /**
-     * @return the value of the pixel size parameter (default is 0.28 mm).
+     * @return the value of the pixel size parameter (default is 0.00028 m).
      */
     public double getPixelSize() {
         return pixelSize;

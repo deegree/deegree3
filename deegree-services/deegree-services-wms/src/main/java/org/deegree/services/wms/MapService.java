@@ -803,9 +803,16 @@ public class MapService {
                 insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
                                       defaultLayerOptions );
                 mapOptions.add( options.get( l.getMetadata().getName() ) );
-                styles.put( l.getMetadata().getName(), style );
+                StyleRef ref;
+                if ( style.getStyle() != null ) {
+                    ref = new StyleRef( style.getStyle() );
+                } else {
+                    ref = new StyleRef( style.getName() );
+                }
+                styles.put( l.getMetadata().getName(), ref );
             }
         }
+
         List<LayerData> list = new ArrayList<LayerData>();
         // workaround for older WMS versions (layer vs. theme problem)
         HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
@@ -822,7 +829,7 @@ public class MapService {
         double scale = gm.getScale();
 
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, filters,
-                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize() / 1000, options );
+                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
                 if ( l.getMetadata().getScaleDenominators().first > scale
