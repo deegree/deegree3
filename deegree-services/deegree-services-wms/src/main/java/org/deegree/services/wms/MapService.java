@@ -818,10 +818,17 @@ public class MapService {
                 }
             }
         }
+
+        double scale = gm.getScale();
+
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, filters,
                                            gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize() / 1000, options );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                if ( l.getMetadata().getScaleDenominators().first > scale
+                     || l.getMetadata().getScaleDenominators().second < scale ) {
+                    continue;
+                }
                 list.add( l.mapQuery( query, headers ) );
             }
         }
@@ -890,8 +897,16 @@ public class MapService {
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
                                            gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(), styles,
                                            gfi.getParameterMap(), new HashMap<String, List<?>>(), new MapOptionsMaps() );
+
+        double scale = calcScaleWMS130( gfi.getWidth(), gfi.getHeight(), gfi.getEnvelope(), gfi.getCoordinateSystem(),
+                                        DEFAULT_PIXEL_SIZE );
+
         for ( LayerRef n : gfi.getQueryLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
+                if ( l.getMetadata().getScaleDenominators().first > scale
+                     || l.getMetadata().getScaleDenominators().second < scale ) {
+                    continue;
+                }
                 list.add( l.infoQuery( query, headers ) );
             }
         }
