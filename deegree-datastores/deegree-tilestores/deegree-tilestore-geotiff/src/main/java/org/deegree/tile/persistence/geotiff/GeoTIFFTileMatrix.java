@@ -82,6 +82,9 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     @Override
     public GeoTIFFTile getTile( int x, int y ) {
+        if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
+            return null;
+        }
         double width = metadata.getTileWidth();
         double height = metadata.getTileHeight();
         Envelope env = metadata.getSpatialMetadata().getEnvelope();
