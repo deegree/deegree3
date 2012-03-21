@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<RemoteWMSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewms http://schemas.deegree.org/datasource/tile/remotewms/3.2.0/remotewms.xsd"
+  configVersion="3.2.0">
+
+  <!-- [1]: Id of the remote OWS instance to connect to (must be a WMS)-->
+  <RemoteWMSId>wms1</RemoteWMSId>
+
+  <!-- [1]: CRS for querying the remote service and the tiles -->
+  <md:CRS>EPSG:4326</md:CRS>
+
+  <!-- [0..1]: Envelope of the area -->
+  <md:Envelope>
+    <md:LowerCorner>0 0</md:LowerCorner>
+    <md:UpperCorner>47 11</md:UpperCorner>
+  </md:Envelope>
+
+  <Pyramid>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <NumLevels>10</NumLevels>
+    <StartScale>1000</StartScale>
+  </Pyramid>
+
+</RemoteWMSTileStore>
