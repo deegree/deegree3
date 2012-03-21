@@ -4,6 +4,7 @@
   <artifactId>deegree-tilestore-remotewms</artifactId>
   <name>deegree-tilestore-remotewms</name>
   <packaging>jar</packaging>
+  <description>TileStore implementation that accesses remote WMS instances</description>
 
   <parent>
     <groupId>org.deegree</groupId>
