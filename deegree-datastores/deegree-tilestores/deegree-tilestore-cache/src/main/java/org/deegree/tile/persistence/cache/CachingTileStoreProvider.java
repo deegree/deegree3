@@ -108,7 +108,13 @@ public class CachingTileStoreProvider implements TileStoreProvider {
 
     @Override
     public List<File> getTileStoreDependencies( File config ) {
-        // TODO
+        try {
+            CachingTileStore p = (CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb", SCHEMA,
+                                                                config.toURI().toURL(), workspace );
+            return Collections.<File> singletonList( new File( config.getParentFile(), p.getTileStoreId() + ".xml" ) );
+        } catch ( Throwable e ) {
+            // ignore here, will be parsed again anyway
+        }
         return Collections.<File> emptyList();
     }
 

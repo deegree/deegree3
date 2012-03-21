@@ -40,10 +40,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -52,6 +57,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
+import org.slf4j.Logger;
 
 /**
  * The <code>TileStoreManager</code> is <code>ResourceManager</code> that manages <code>TileStore</code> resources.
@@ -68,7 +74,7 @@ import org.deegree.cs.persistence.CRSManager;
  */
 public class TileStoreManager extends AbstractResourceManager<TileStore> {
 
-    // private static final Logger LOG = getLogger( TileStoreManager.class );
+    private static final Logger LOG = getLogger( TileStoreManager.class );
 
     private TileStoreManagerMetadata metadata;
 
@@ -103,13 +109,41 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
     public List<File> getFiles() {
         List<File> files = super.getFiles();
 
+        List<File> result = new ArrayList<File>();
+
         Map<File, List<File>> deps = new HashMap<File, List<File>>();
         for ( File f : files ) {
             TileStoreProvider p = (TileStoreProvider) this.getProvider( f );
             deps.put( f, p.getTileStoreDependencies( f ) );
         }
 
-        return files;
+        for ( Entry<File, List<File>> e : deps.entrySet() ) {
+            if ( e.getValue().isEmpty() ) {
+                result.add( e.getKey() );
+                files.remove( e.getKey() );
+            }
+        }
+
+        boolean changed = false;
+        while ( !files.isEmpty() ) {
+            changed = false;
+            ListIterator<File> iter = files.listIterator();
+            while ( iter.hasNext() ) {
+                File f = iter.next();
+                List<File> list = deps.get( f );
+                if ( result.containsAll( list ) ) {
+                    changed = true;
+                    result.add( f );
+                    iter.remove();
+                }
+            }
+            if ( !changed ) {
+                LOG.warn( "Circular or broken dependencies within tile stores, not all tile stores will be started up!" );
+                break;
+            }
+        }
+
+        return result;
     }
 
 }
