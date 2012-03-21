@@ -148,6 +148,15 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         nsToProvider.clear();
     }
 
+    /**
+     * Override this if you need a custom order when starting up.
+     * 
+     * @return the list of files to process upon startup
+     */
+    public List<File> getFiles() {
+        return FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
+    }
+
     @Override
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
@@ -170,7 +179,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
             LOG.info( "Setting up {}.", name );
             LOG.info( "--------------------------------------------------------------------------------" );
 
-            List<File> files = FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
+            List<File> files = getFiles();
 
             for ( File configFile : files ) {
                 try {
