@@ -41,13 +41,17 @@
 
 package org.deegree.tile.persistence.cache;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 
@@ -64,6 +68,8 @@ public class CachingTileStore implements TileStore {
 
     private TileStore tileStore;
 
+    private DefaultTileMatrixSet tileMatrixSet;
+
     public CachingTileStore( TileStore tileStore ) {
         this.tileStore = tileStore;
     }
@@ -71,6 +77,12 @@ public class CachingTileStore implements TileStore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+        TileMatrixSet tms = tileStore.getTileMatrixSet();
+        List<TileMatrix> list = new ArrayList<TileMatrix>();
+        for ( TileMatrix tm : tms.getTileMatrices() ) {
+            list.add( new CachingTileMatrix( tm ) );
+        }
+        this.tileMatrixSet = new DefaultTileMatrixSet( list, tms.getMetadata() );
         // TODO init cache properly
     }
 
@@ -86,17 +98,21 @@ public class CachingTileStore implements TileStore {
 
     @Override
     public TileMatrixSet getTileMatrixSet() {
-        return tileStore.getTileMatrixSet();
+        return tileMatrixSet;
     }
 
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        return tileStore.getTiles( envelope, resolution );
+        return tileMatrixSet.getTiles( envelope, resolution );
     }
 
     @Override
     public Tile getTile( String tileMatrix, int x, int y ) {
-        return tileStore.getTile( tileMatrix, x, y );
+        TileMatrix tm = tileMatrixSet.getTileMatrix( tileMatrix );
+        if ( tm == null ) {
+            return null;
+        }
+        return tm.getTile( x, y );
     }
 
 }
