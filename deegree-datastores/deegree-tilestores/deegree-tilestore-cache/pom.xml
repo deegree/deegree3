@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-tilestores</artifactId>
-  <packaging>pom</packaging>
-  <name>deegree-tilestores</name>
+  <artifactId>deegree-tilestore-cache</artifactId>
+  <name>deegree-tilestore-cache</name>
+  <packaging>jar</packaging>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-datastores</artifactId>
+    <artifactId>deegree-tilestores</artifactId>
     <version>3.2-pre5-SNAPSHOT</version>
   </parent>
 
@@ -24,11 +24,20 @@
     </repository>
   </repositories>
 
-  <modules>
-    <module>deegree-tilestore-commons</module>
-    <module>deegree-tilestore-geotiff</module>
-    <module>deegree-tilestore-remotewms</module>
-    <module>deegree-tilestore-cache</module>
-  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
