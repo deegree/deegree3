@@ -42,7 +42,10 @@ package org.deegree.tile.persistence.remotewms;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
+import java.io.File;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -114,4 +117,10 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
     public URL getConfigSchema() {
         return CONFIG_SCHEMA;
     }
+
+    @Override
+    public List<File> getTileStoreDependencies( File config ) {
+        return Collections.<File> emptyList();
+    }
+
 }

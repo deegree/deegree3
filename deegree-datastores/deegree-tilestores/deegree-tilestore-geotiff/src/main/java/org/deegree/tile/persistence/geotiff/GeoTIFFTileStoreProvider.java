@@ -46,7 +46,9 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.imageio.ImageReader;
 
@@ -58,7 +60,8 @@ import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.geotiff.jaxb.Pyramid;
 
 /**
- * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled BIGTIFF).
+ * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
+ * BIGTIFF).
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -115,6 +118,11 @@ public class GeoTIFFTileStoreProvider implements TileStoreProvider {
     @Override
     public URL getConfigSchema() {
         return SCHEMA;
+    }
+
+    @Override
+    public List<File> getTileStoreDependencies( File config ) {
+        return Collections.<File> emptyList();
     }
 
 }

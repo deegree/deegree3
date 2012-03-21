@@ -40,6 +40,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
@@ -92,6 +97,19 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
     @Override
     public void shutdown() {
         // nothing to do
+    }
+
+    @Override
+    public List<File> getFiles() {
+        List<File> files = super.getFiles();
+
+        Map<File, List<File>> deps = new HashMap<File, List<File>>();
+        for ( File f : files ) {
+            TileStoreProvider p = (TileStoreProvider) this.getProvider( f );
+            deps.put( f, p.getTileStoreDependencies( f ) );
+        }
+
+        return files;
     }
 
 }

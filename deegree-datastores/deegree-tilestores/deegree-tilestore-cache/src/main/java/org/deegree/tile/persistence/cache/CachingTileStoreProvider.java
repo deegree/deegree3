@@ -42,7 +42,10 @@ package org.deegree.tile.persistence.cache;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
+import java.io.File;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -101,6 +104,12 @@ public class CachingTileStoreProvider implements TileStoreProvider {
     @Override
     public URL getConfigSchema() {
         return SCHEMA;
+    }
+
+    @Override
+    public List<File> getTileStoreDependencies( File config ) {
+        // TODO
+        return Collections.<File> emptyList();
     }
 
 }

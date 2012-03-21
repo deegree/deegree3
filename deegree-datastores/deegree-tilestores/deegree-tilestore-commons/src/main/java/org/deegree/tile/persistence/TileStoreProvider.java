@@ -40,6 +40,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import java.io.File;
+import java.util.List;
+
 import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
@@ -53,6 +56,10 @@ import org.deegree.commons.config.ExtendedResourceProvider;
 
 public interface TileStoreProvider extends ExtendedResourceProvider<TileStore> {
 
-    // specifies type parameter
+    /**
+     * @param id
+     * @return a list of tile store config files the instance with the given config file depends on, never null.
+     */
+    List<File> getTileStoreDependencies( File config );
 
 }
