@@ -51,8 +51,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.persistence.TileStoreManager;
 import org.deegree.tile.persistence.TileStoreProvider;
-import org.deegree.tile.persistence.cache.jaxb.CachingTileStore;
 
 /**
  * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
@@ -76,15 +76,20 @@ public class CachingTileStoreProvider implements TileStoreProvider {
     }
 
     @Override
-    public TileStore create( URL configUrl )
+    public CachingTileStore create( URL configUrl )
                             throws ResourceInitException {
         try {
-            CachingTileStore p = (CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb", SCHEMA,
-                                                                configUrl, workspace );
+            org.deegree.tile.persistence.cache.jaxb.CachingTileStore p;
+            p = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
+                                                                                       SCHEMA, configUrl, workspace );
 
-            System.out.println( p );
+            TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
+            TileStore ts = mgr.get( p.getTileStoreId() );
+            if ( ts == null ) {
+                throw new ResourceInitException( "The tile store with id " + p.getTileStoreId() + " is not available." );
+            }
 
-            return null;
+            return new CachingTileStore( ts );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
         }
@@ -109,8 +114,10 @@ public class CachingTileStoreProvider implements TileStoreProvider {
     @Override
     public List<File> getTileStoreDependencies( File config ) {
         try {
-            CachingTileStore p = (CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb", SCHEMA,
-                                                                config.toURI().toURL(), workspace );
+            org.deegree.tile.persistence.cache.jaxb.CachingTileStore p;
+            p = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
+                                                                                       SCHEMA, config.toURI().toURL(),
+                                                                                       workspace );
             return Collections.<File> singletonList( new File( config.getParentFile(), p.getTileStoreId() + ".xml" ) );
         } catch ( Throwable e ) {
             // ignore here, will be parsed again anyway

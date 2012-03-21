@@ -81,7 +81,7 @@ public class GeoTIFFTileStoreProvider implements TileStoreProvider {
     }
 
     @Override
-    public TileStore create( URL configUrl )
+    public GeoTIFFTileStore create( URL configUrl )
                             throws ResourceInitException {
         try {
             Pyramid p = (Pyramid) unmarshall( "org.deegree.tile.persistence.geotiff.jaxb", SCHEMA, configUrl, workspace );
