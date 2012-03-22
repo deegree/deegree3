@@ -626,6 +626,24 @@ public class ISORecord implements MetadataRecord {
         return path;
     }
 
+    /**
+     * Returns whether the record is a service metadata record.
+     * <ul>
+     * <li>Data Metadata: /gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue='dataset' (or missing) or 'series' or
+     * 'application'</li>
+     * <li>Service Metadata: /gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue='service'</li>
+     * </ul>
+     * 
+     * @return <code>true</code>, if the record is a service metadata record, <code>false</code> otherwise (implies data
+     *         metadata record)
+     */
+    public boolean isServiceRecord() {
+        XPath xpath = new XPath( "gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue", ns );
+        String scopeCode = getStringFromXPath( xpath );
+        // TODO should this check be more fail safe?
+        return scopeCode != null && scopeCode.equals( "service" );
+    }
+
     @Override
     public String toString() {
         return getIdentifier();
