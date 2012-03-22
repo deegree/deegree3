@@ -43,12 +43,10 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.protocol.wms.ops.SLDParser.parse;
 import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasGetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasSetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationGetter;
@@ -58,25 +56,19 @@ import static org.deegree.rendering.r2d.context.MapOptions.getQualitySetter;
 import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
 import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
 import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
-import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.io.StringReader;
-import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import java_cup.runtime.Symbol;
-
-import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
@@ -84,11 +76,6 @@ import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.filter.Filter;
-import org.deegree.filter.Filters;
-import org.deegree.filter.Operator;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.logical.And;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.LayerRef;
@@ -104,7 +91,6 @@ import org.deegree.rendering.r2d.context.MapOptions.MapOptionsSetter;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;
-import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -114,7 +100,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetMap {
+public class GetMap extends RequestBase {
 
     private static final Logger LOG = getLogger( GetMap.class );
 
@@ -124,12 +110,6 @@ public class GetMap {
 
     private Envelope bbox;
 
-    private LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
-
-    private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
-
-    private HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
-
     private String format;
 
     private int width, height;
@@ -137,8 +117,6 @@ public class GetMap {
     private boolean transparent;
 
     private Color bgcolor = white;
-
-    private HashMap<String, List<?>> dimensions = new HashMap<String, List<?>>();
 
     private double scale;
 
@@ -493,81 +471,6 @@ public class GetMap {
         }
     }
 
-    private void handleSLD( String sld, String sldBody, LinkedList<LayerRef> layers )
-                            throws OWSException {
-        XMLInputFactory xmlfac = XMLInputFactory.newInstance();
-        Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> pair = null;
-        if ( sld != null ) {
-            try {
-                pair = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), this );
-            } catch ( ParseException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "The embedded dimension value in the SLD parameter value was invalid: "
-                                        + e.getMessage(), "InvalidDimensionValue", "sld" );
-            } catch ( Throwable e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld" );
-            }
-        }
-        if ( sldBody != null ) {
-            try {
-                pair = parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), this );
-            } catch ( ParseException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "The embedded dimension value in the SLD_BODY parameter value was invalid: "
-                                        + e.getMessage(), "InvalidDimensionValue", "sld_body" );
-            } catch ( Throwable e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( "Error when parsing the SLD_BODY parameter: " + e.getMessage(),
-                                        "InvalidParameterValue", "sld_body" );
-            }
-        }
-
-        // if layers are referenced, clear the other layers out, else leave all in
-        if ( pair != null && !layers.isEmpty() ) {
-            // it might be in SLD that a layer has multiple styles, so we need to map to a list here
-            HashMap<String, LinkedList<Pair<LayerRef, StyleRef>>> lays = new HashMap<String, LinkedList<Pair<LayerRef, StyleRef>>>();
-
-            ListIterator<LayerRef> it = pair.first.listIterator();
-            ListIterator<StyleRef> st = pair.second.listIterator();
-            while ( it.hasNext() ) {
-                LayerRef l = it.next();
-                StyleRef s = st.next();
-                String name = l.getName();
-                if ( !layers.contains( name ) ) {
-                    it.remove();
-                    st.remove();
-                } else {
-                    LinkedList<Pair<LayerRef, StyleRef>> list = lays.get( name );
-                    if ( list == null ) {
-                        list = new LinkedList<Pair<LayerRef, StyleRef>>();
-                        lays.put( name, list );
-                    }
-
-                    list.add( new Pair<LayerRef, StyleRef>( l, s ) );
-                }
-            }
-
-            // to get the order right, in case it's different from the SLD order
-            for ( LayerRef name : layers ) {
-                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( name );
-                if ( l == null ) {
-                    throw new OWSException( "The SLD NamedLayer " + name + " is invalid.", "InvalidParameterValue",
-                                            "layers" );
-                }
-                Pair<ArrayList<LayerRef>, ArrayList<StyleRef>> p = unzipPair( l );
-                this.layers.addAll( p.first );
-                styles.addAll( p.second );
-            }
-        } else {
-            if ( pair != null ) {
-                this.layers = pair.first;
-                styles = pair.second;
-            }
-        }
-    }
-
     static HashMap<String, List<?>> parseDimensionValues( Map<String, String> map )
                             throws OWSException {
         HashMap<String, List<?>> dims = new HashMap<String, List<?>>();
@@ -722,31 +625,9 @@ public class GetMap {
     }
 
     /**
-     * @return returns a map with the requested dimension values
-     */
-    public HashMap<String, List<?>> getDimensions() {
-        return dimensions;
-    }
-
-    /**
-     * @param layer
-     * @param filter
-     */
-    public void addFilter( String layer, OperatorFilter filter ) {
-        filters.put( layer, Filters.and( filter, filters.get( layer ) ) );
-    }
-
-    /**
-     * @param name
-     * @param values
-     */
-    public void addDimensionValue( String name, List<?> values ) {
-        dimensions.put( name, values );
-    }
-
-    /**
      * @return the scale as WMS 1.3.0/SLD scale
      */
+    @Override
     public double getScale() {
         return scale;
     }
@@ -816,40 +697,6 @@ public class GetMap {
                                                          factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
         }
         return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], CRSManager.getCRSRef( crs ) );
-    }
-
-    /**
-     * @param name
-     * @param filter
-     * @param style
-     * @return a new filter for the layer, fulfilling the filter parameter as well
-     */
-    public Filter getFilterForLayer( String name, Filter filter, Style style ) {
-        Filter sldFilter = getStyleFilters( style, getScale() );
-
-        Filter extra = filters.get( name );
-        if ( extra == null ) {
-            extra = sldFilter;
-        } else {
-            if ( sldFilter != null ) {
-                Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
-                Operator op2 = ( (OperatorFilter) extra ).getOperator();
-                extra = new OperatorFilter( new And( op1, op2 ) );
-            }
-        }
-        if ( filter != null ) {
-            if ( extra != null ) {
-                Operator op = ( (OperatorFilter) extra ).getOperator();
-                Operator op2 = ( (OperatorFilter) filter ).getOperator();
-                return new OperatorFilter( new And( op, op2 ) );
-            }
-            return filter;
-        }
-        return extra;
-    }
-
-    public Map<String, OperatorFilter> getFilters() {
-        return filters;
     }
 
 }

@@ -85,7 +85,7 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
-    public static Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> parse( XMLStreamReader in, GetMap gm )
+    public static Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> parse( XMLStreamReader in, RequestBase gm )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {

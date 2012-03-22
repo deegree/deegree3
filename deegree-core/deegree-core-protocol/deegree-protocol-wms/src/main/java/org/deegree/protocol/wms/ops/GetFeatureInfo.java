@@ -40,6 +40,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_POINT;
@@ -60,6 +61,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.LayerRef;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 
@@ -71,7 +73,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31400 $, $Date: 2011-08-02 10:11:48 +0200 (Tue, 02 Aug 2011) $
  */
-public class GetFeatureInfo {
+public class GetFeatureInfo extends RequestBase {
 
     private static final Logger LOG = getLogger( GetFeatureInfo.class );
 
@@ -80,10 +82,6 @@ public class GetFeatureInfo {
     private ICRS crs;
 
     private Envelope bbox;
-
-    private LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
-
-    private LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
     private int width;
 
@@ -103,6 +101,8 @@ public class GetFeatureInfo {
 
     private HashMap<String, String> parameterMap = new HashMap<String, String>();
 
+    private double scale;
+
     /**
      * @param map
      * @param version
@@ -117,6 +117,7 @@ public class GetFeatureInfo {
             parse130( map );
         }
         parameterMap.putAll( map );
+        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
     }
 
     public GetFeatureInfo( List<String> layers, int width, int height, int x, int y, Envelope envelope, ICRS crs,
@@ -129,6 +130,7 @@ public class GetFeatureInfo {
         this.bbox = envelope;
         this.crs = crs;
         this.featureCount = featureCount;
+        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
     }
 
     private void parse111( Map<String, String> map )
@@ -204,6 +206,9 @@ public class GetFeatureInfo {
     // returns the bbox
     private double[] handleCommon( Map<String, String> map )
                             throws OWSException {
+        String sld = map.get( "SLD" );
+        String sldBody = map.get( "SLD_BODY" );
+
         String box = map.get( "BBOX" );
         if ( box == null || box.trim().isEmpty() ) {
             throw new OWSException( "The BBOX parameter is missing.", MISSING_PARAMETER_VALUE );
@@ -226,7 +231,7 @@ public class GetFeatureInfo {
             throw new OWSException( "The QUERY_LAYERS parameter is missing.", MISSING_PARAMETER_VALUE );
         }
         String ls = map.get( "LAYERS" );
-        if ( ls == null || ls.trim().isEmpty() ) {
+        if ( ( ls == null || ls.trim().isEmpty() ) && sld == null && sldBody == null ) {
             throw new OWSException( "The LAYERS parameter is missing.", MISSING_PARAMETER_VALUE );
         }
         String ss = map.get( "STYLES" );
@@ -235,9 +240,19 @@ public class GetFeatureInfo {
             ss = "";
         }
 
-        this.layers = new LinkedList<LayerRef>( map( ls.split( "," ), FROM_NAMES ) );
+        this.layers = ls == null ? new LinkedList<LayerRef>() : new LinkedList<LayerRef>( map( ls.split( "," ),
+                                                                                               FROM_NAMES ) );
+        if ( layers.size() == 1 && layers.get( 0 ).getName().isEmpty() ) {
+            layers.clear();
+        }
         LinkedList<String> qlayers = new LinkedList<String>( asList( qls.split( "," ) ) );
-        this.styles = GetMap.handleKVPStyles( ss, layers.size() );
+
+        if ( sld == null && sldBody == null ) {
+            this.styles = GetMap.handleKVPStyles( ss, layers.size() );
+        } else {
+            // TODO think about whether STYLES has to be handled here as well
+            handleSLD( sld, sldBody, layers );
+        }
 
         ListIterator<LayerRef> lays = this.layers.listIterator();
         ListIterator<StyleRef> stys = this.styles.listIterator();
@@ -391,6 +406,11 @@ public class GetFeatureInfo {
      */
     public Map<String, String> getParameterMap() {
         return parameterMap;
+    }
+
+    @Override
+    public double getScale() {
+        return scale;
     }
 
 }
