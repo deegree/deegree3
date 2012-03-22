@@ -40,28 +40,32 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.client.AbstractDiscoveryRequest;
 
 /**
- * TODO add class documentation here
+ * Represents a <code>GetRecords</code> request to a CSW.
+ * <p>
+ * Supported versions:
+ * <ul>
+ * <li>CSW 2.0.2</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetRecords {
+public class GetRecords extends AbstractDiscoveryRequest {
 
     private int startPosition = 1;
 
     private int maxRecords = 10;
-
-    private String outputFormat = "application/xml";
-
-    private String outputSchema = "http://www.opengis.net/cat/csw/2.0.2.";
 
     private ResultType resultType = ResultType.hits;
 
@@ -69,8 +73,6 @@ public class GetRecords {
                                                                           CSWConstants.CSW_202_PREFIX ) );
 
     private final Filter constraint;
-
-    private final ReturnableElement elementSetName;
 
     /**
      * @param startPosition
@@ -81,23 +83,27 @@ public class GetRecords {
      * @param resultType
      * @param constraint
      */
-    public GetRecords( int startPosition, int maxRecords, String outputFormat, String outputSchema,
+    public GetRecords( Version version, int startPosition, int maxRecords, String outputFormat, String outputSchema,
                        List<QName> typeNames, ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
-        this( resultType, elementSetName, constraint );
+        super( version, elementSetName, outputFormat, outputSchema );
+        if ( startPosition <= 0 ) {
+            throw new IllegalArgumentException( "StartPosition mus be greater than or equal to 1!" );
+        }
         this.startPosition = startPosition;
         this.maxRecords = maxRecords;
-        this.outputFormat = outputFormat;
-        this.outputSchema = outputSchema;
         this.typeNames = typeNames;
+        this.resultType = resultType;
+        this.constraint = constraint;
     }
 
     /**
-     * @param resultType2
+     * @param version
+     * @param resultType
      * @param elementSetName
-     * @param constraint2
+     * @param constraint
      */
-    public GetRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
-        this.elementSetName = elementSetName;
+    public GetRecords( Version version, ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
+        super( version, elementSetName, "application/xml", "http://www.opengis.net/cat/csw/2.0.2." );
         this.resultType = resultType;
         this.constraint = constraint;
     }
@@ -114,20 +120,6 @@ public class GetRecords {
      */
     public int getMaxRecords() {
         return maxRecords;
-    }
-
-    /**
-     * @return the outputFormat
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
-
-    /**
-     * @return the outputSchema
-     */
-    public String getOutputSchema() {
-        return outputSchema;
     }
 
     /**
@@ -149,14 +141,6 @@ public class GetRecords {
      */
     public Filter getConstraint() {
         return constraint;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public ReturnableElement getElementSetName() {
-        return elementSetName;
     }
 
 }

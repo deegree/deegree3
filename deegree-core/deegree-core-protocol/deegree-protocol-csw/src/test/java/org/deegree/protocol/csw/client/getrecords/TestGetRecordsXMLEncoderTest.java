@@ -55,6 +55,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -78,7 +79,8 @@ public class TestGetRecordsXMLEncoderTest {
     public void testExportMin()
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
-        GetRecords getRecords = new GetRecords( ResultType.results, ReturnableElement.full, null );
+        GetRecords getRecords = new GetRecords( new Version( 2, 0, 2 ), ResultType.results, ReturnableElement.full,
+                                                null );
         validateGetRecordsRequest( getRecords );
         assertTrue( true );
     }
@@ -88,6 +90,7 @@ public class TestGetRecordsXMLEncoderTest {
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
         GetRecords getRecords = new GetRecords(
+                                                new Version( 2, 0, 2 ),
                                                 10,
                                                 15,
                                                 "application/xml",

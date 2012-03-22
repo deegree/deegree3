@@ -39,6 +39,7 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PREFIX;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -47,11 +48,13 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 
 /**
- * TODO add class documentation here
+ * Represents a <code>GetRecords</code> response of a CSW.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -76,6 +79,17 @@ public class GetRecordsResponse extends XMLAdapter {
         return response;
     }
 
+    public List<MetadataRecord> getRecords() {
+        List<MetadataRecord> records = new ArrayList<MetadataRecord>();
+        for ( OMElement element : getElements( getRootElement(),
+                                               new XPath( "/csw:GetRecordsResponse/csw:SearchResults/child::*",
+                                                          nsContext ) ) ) {
+            records.add( MetadataRecordFactory.create( element ) );
+        }
+        return records;
+    }
+
+    @Deprecated
     public List<OMElement> getElements( XPath xpath ) {
         return getElements( getRootElement(), xpath );
     }

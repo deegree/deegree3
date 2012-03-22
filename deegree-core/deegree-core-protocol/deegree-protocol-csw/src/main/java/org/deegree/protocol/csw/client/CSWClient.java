@@ -52,6 +52,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -143,6 +144,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     public GetRecordsResponse getIsoRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
         GetRecords getRecords = new GetRecords(
+                                                new Version( 2, 0, 2 ),
                                                 10,
                                                 15,
                                                 "application/xml",
@@ -159,6 +161,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
                                              ReturnableElement elementSetName, Filter constraint )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
         GetRecords getRecords = new GetRecords(
+                                                new Version( 2, 0, 2 ),
                                                 startPosition,
                                                 maxRecords,
                                                 "application/xml",
@@ -175,8 +178,8 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
                                           List<QName> typeNames, ResultType resultType,
                                           ReturnableElement elementSetName, Filter constraint )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
-        GetRecords getRecords = new GetRecords( startPosition, maxRecords, outputFormat, outputSchema, typeNames,
-                                                resultType, elementSetName, constraint );
+        GetRecords getRecords = new GetRecords( new Version( 2, 0, 2 ), startPosition, maxRecords, outputFormat,
+                                                outputSchema, typeNames, resultType, elementSetName, constraint );
         return getRecords( getRecords );
     }
 
