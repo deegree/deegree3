@@ -114,6 +114,7 @@ import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
+import org.deegree.protocol.wms.ops.RequestBase;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.context.MapOptions;
@@ -791,6 +792,20 @@ public class MapService {
         return themeMap.get( name ) != null;
     }
 
+    private HashMap<String, OperatorFilter> extractFilters( RequestBase gm ) {
+        HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
+        Map<String, OperatorFilter> reqFilters = gm.getFilters();
+        for ( LayerRef lr : gm.getLayers() ) {
+            OperatorFilter f = reqFilters.get( lr.getName() );
+            if ( f != null ) {
+                for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                    filters.put( l.getMetadata().getName(), f );
+                }
+            }
+        }
+        return filters;
+    }
+
     public void getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers, RenderContext ctx )
                             throws OWSException {
         Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
@@ -814,22 +829,12 @@ public class MapService {
         }
 
         List<LayerData> list = new ArrayList<LayerData>();
-        // workaround for older WMS versions (layer vs. theme problem)
-        HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
-        Map<String, OperatorFilter> reqFilters = gm.getFilters();
-        for ( LayerRef lr : gm.getLayers() ) {
-            OperatorFilter f = reqFilters.get( lr.getName() );
-            if ( f != null ) {
-                for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                    filters.put( l.getMetadata().getName(), f );
-                }
-            }
-        }
 
         double scale = gm.getScale();
 
-        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles, filters,
-                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options );
+        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles,
+                                           extractFilters( gm ), gm.getParameterMap(), gm.getDimensions(),
+                                           gm.getPixelSize(), options );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
                 if ( l.getMetadata().getScaleDenominators().first > scale
@@ -902,8 +907,8 @@ public class MapService {
         }
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
-                                           gfi.getFeatureCount(), new HashMap<String, OperatorFilter>(), styles,
-                                           gfi.getParameterMap(), new HashMap<String, List<?>>(), new MapOptionsMaps() );
+                                           gfi.getFeatureCount(), extractFilters( gfi ), styles, gfi.getParameterMap(),
+                                           gfi.getDimensions(), new MapOptionsMaps() );
 
         double scale = calcScaleWMS130( gfi.getWidth(), gfi.getHeight(), gfi.getEnvelope(), gfi.getCoordinateSystem(),
                                         DEFAULT_PIXEL_SIZE );
