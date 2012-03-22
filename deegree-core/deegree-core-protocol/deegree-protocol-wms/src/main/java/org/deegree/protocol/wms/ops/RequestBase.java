@@ -85,6 +85,8 @@ public abstract class RequestBase {
 
     public abstract double getScale();
 
+    public abstract List<LayerRef> getLayers();
+    
     public void addFilter( String layer, OperatorFilter filter ) {
         filters.put( layer, Filters.and( filter, filters.get( layer ) ) );
     }

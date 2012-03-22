@@ -413,4 +413,9 @@ public class GetFeatureInfo extends RequestBase {
         return scale;
     }
 
+    @Override
+    public List<LayerRef> getLayers() {
+        return layers;
+    }
+
 }

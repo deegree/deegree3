@@ -570,6 +570,7 @@ public class GetMap extends RequestBase {
     /**
      * @return a copy of the layers list
      */
+    @Override
     public LinkedList<LayerRef> getLayers() {
         return new LinkedList<LayerRef>( layers );
     }
