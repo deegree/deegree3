@@ -1,0 +1,12 @@
+<ehcache name="tilestorecache">
+<cache name="tilestorecache"
+   maxElementsInMemory="10000"
+   eternal="false"
+   timeToIdleSeconds="300"
+   timeToLiveSeconds="600"
+   overflowToDisk="false"
+   diskPersistent="false"
+   diskExpiryThreadIntervalSeconds="1"
+   >
+</cache>
+</ehcache>
