@@ -95,7 +95,7 @@ public class CachingTileStoreProvider implements TileStoreProvider {
             String cache = cfg.getCacheConfiguration();
             File f = new File( cache );
             if ( !f.isAbsolute() ) {
-                f = new File( new File( configUrl.toURI() ), cache );
+                f = new File( new File( configUrl.toURI() ).getParentFile(), cache );
             }
             CacheManager cmgr = new CacheManager( f.toURI().toURL() );
 
