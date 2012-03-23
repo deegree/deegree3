@@ -41,16 +41,20 @@
 
 package org.deegree.tile.persistence.cache;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import org.apache.commons.io.IOUtils;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+
+import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
+import org.slf4j.Logger;
 
 /**
- * <code>CachingTileMatrix</code>
+ * <code>CachedTile</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -58,41 +62,37 @@ import org.deegree.tile.TileMatrixMetadata;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class CachingTileMatrix implements TileMatrix {
+public class CachedTile implements Tile {
 
-    private TileMatrix tileMatrix;
+    private static final Logger LOG = getLogger( CachedTile.class );
 
-    private Cache cache;
+    private byte[] bs;
 
-    private String identifier;
+    private Envelope envelope;
 
-    public CachingTileMatrix( TileMatrix tileMatrix, Cache cache ) {
-        this.tileMatrix = tileMatrix;
-        this.cache = cache;
-        this.identifier = tileMatrix.getMetadata().getIdentifier();
+    public CachedTile( byte[] bs, Envelope envelope ) {
+        this.bs = bs;
+        this.envelope = envelope;
     }
 
     @Override
-    public TileMatrixMetadata getMetadata() {
-        return tileMatrix.getMetadata();
-    }
-
-    @Override
-    public Tile getTile( int x, int y ) {
-        Tile tile = tileMatrix.getTile( x, y );
-        String key = identifier + "_" + x + "_" + y;
-        Element elem = cache.get( key );
-        byte[] bs = elem == null ? null : (byte[]) elem.getValue();
-        if ( bs != null ) {
-            return new CachedTile( bs, tile.getEnvelope() );
-        }
+    public BufferedImage getAsImage() {
         try {
-            bs = IOUtils.toByteArray( tile.getAsStream() );
-            cache.put( new Element( key, bs ) );
-            return new CachedTile( bs, tile.getEnvelope() );
+            return ImageIO.read( new ByteArrayInputStream( bs ) );
         } catch ( Throwable e ) {
-            return tile;
+            LOG.warn( "Could not read cached tile as image." );
         }
+        return null;
+    }
+
+    @Override
+    public InputStream getAsStream() {
+        return new ByteArrayInputStream( bs );
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        return envelope;
     }
 
 }

@@ -17,6 +17,8 @@
 		<complexType>
 			<sequence>
 				<element name="TileStoreId" type="string" />
+				<element name="CacheConfiguration" type="string" />
+				<element name="CacheName" type="string" />
 			</sequence>
 			<attribute name="configVersion" use="required" fixed="3.2.0" />
 		</complexType>

@@ -47,6 +47,8 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.ehcache.CacheManager;
+
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
@@ -79,17 +81,25 @@ public class CachingTileStoreProvider implements TileStoreProvider {
     public CachingTileStore create( URL configUrl )
                             throws ResourceInitException {
         try {
-            org.deegree.tile.persistence.cache.jaxb.CachingTileStore p;
-            p = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
-                                                                                       SCHEMA, configUrl, workspace );
+            org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
+            cfg = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
+                                                                                         SCHEMA, configUrl, workspace );
 
             TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-            TileStore ts = mgr.get( p.getTileStoreId() );
+            TileStore ts = mgr.get( cfg.getTileStoreId() );
             if ( ts == null ) {
-                throw new ResourceInitException( "The tile store with id " + p.getTileStoreId() + " is not available." );
+                throw new ResourceInitException( "The tile store with id " + cfg.getTileStoreId()
+                                                 + " is not available." );
             }
 
-            return new CachingTileStore( ts );
+            String cache = cfg.getCacheConfiguration();
+            File f = new File( cache );
+            if ( !f.isAbsolute() ) {
+                f = new File( new File( configUrl.toURI() ), cache );
+            }
+            CacheManager cmgr = new CacheManager( f.toURI().toURL() );
+
+            return new CachingTileStore( ts, cmgr, cfg.getCacheName() );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
         }

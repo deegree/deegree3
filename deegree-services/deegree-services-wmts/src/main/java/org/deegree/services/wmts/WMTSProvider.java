@@ -90,7 +90,7 @@ public class WMTSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
+    public WMTSController create( URL configURL ) {
         return new WMTSController( configURL, getImplementationMetadata() );
     }
 

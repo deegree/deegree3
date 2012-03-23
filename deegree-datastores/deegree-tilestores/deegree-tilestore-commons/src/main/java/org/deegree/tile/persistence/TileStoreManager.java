@@ -101,11 +101,6 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
     }
 
     @Override
-    public void shutdown() {
-        // nothing to do
-    }
-
-    @Override
     public List<File> getFiles() {
         List<File> files = super.getFiles();
 

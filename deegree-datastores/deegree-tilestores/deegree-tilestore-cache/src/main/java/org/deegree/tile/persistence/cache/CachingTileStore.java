@@ -45,6 +45,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
@@ -70,8 +73,14 @@ public class CachingTileStore implements TileStore {
 
     private DefaultTileMatrixSet tileMatrixSet;
 
-    public CachingTileStore( TileStore tileStore ) {
+    private final CacheManager cacheManager;
+
+    private Cache cache;
+
+    public CachingTileStore( TileStore tileStore, CacheManager cacheManager, String cacheName ) {
         this.tileStore = tileStore;
+        this.cacheManager = cacheManager;
+        this.cache = cacheManager.getCache( cacheName );
     }
 
     @Override
@@ -80,15 +89,14 @@ public class CachingTileStore implements TileStore {
         TileMatrixSet tms = tileStore.getTileMatrixSet();
         List<TileMatrix> list = new ArrayList<TileMatrix>();
         for ( TileMatrix tm : tms.getTileMatrices() ) {
-            list.add( new CachingTileMatrix( tm ) );
+            list.add( new CachingTileMatrix( tm, cache ) );
         }
         this.tileMatrixSet = new DefaultTileMatrixSet( list, tms.getMetadata() );
-        // TODO init cache properly
     }
 
     @Override
     public void destroy() {
-        // TODO shut down cache properly
+        cacheManager.shutdown();
     }
 
     @Override
