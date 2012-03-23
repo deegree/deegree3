@@ -35,19 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.csw.client.getrecords;
 
+import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_PREFIX;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.protocol.ows.client.OWSResponse;
@@ -61,54 +62,91 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetRecordsResponse extends XMLAdapter {
+public class GetRecordsResponse {
 
     private final OWSResponse response;
 
-    static {
-        nsContext.addNamespace( CSW_202_PREFIX, CSW_202_NS );
-    }
+    private int numberOfRecordsReturned;
+
+    private int numberOfRecordsMatched;
+
+    private int nextRecord;
+
+    private XMLStreamReader xmlStream;
+
+    protected String recordElementName;
 
     public GetRecordsResponse( OWSResponse response ) throws XMLProcessingException, OWSExceptionReport,
                             XMLStreamException {
         this.response = response;
-        this.load( response.getAsXMLStream() );
+        xmlStream = response.getAsXMLStream();
+        XMLStreamUtils.skipStartDocument( xmlStream );
+        XMLStreamUtils.moveReaderToFirstMatch( xmlStream, new QName( CSW_202_NS, "SearchResults" ) );
+        String noOfRecM = XMLStreamUtils.getAttributeValue( xmlStream, "numberOfRecordsMatched" );
+        numberOfRecordsMatched = noOfRecM != null ? Integer.parseInt( noOfRecM ) : 0;
+
+        String noOfRecR = XMLStreamUtils.getAttributeValue( xmlStream, "numberOfRecordsReturned" );
+        numberOfRecordsReturned = noOfRecR != null ? Integer.parseInt( noOfRecR ) : 0;
+
+        String nextRec = XMLStreamUtils.getAttributeValue( xmlStream, "nextRecord" );
+        nextRecord = nextRec != null ? Integer.parseInt( nextRec ) : 0;
+
+        xmlStream.next();
+        while ( xmlStream.getEventType() != END_DOCUMENT && !xmlStream.isStartElement() && !xmlStream.isEndElement() ) {
+            xmlStream.next();
+        }
+        if ( xmlStream.getEventType() != END_DOCUMENT ) {
+            recordElementName = xmlStream.getLocalName();
+        }
     }
 
     public OWSResponse getResponse() {
         return response;
     }
 
-    public List<MetadataRecord> getRecords() {
-        List<MetadataRecord> records = new ArrayList<MetadataRecord>();
-        for ( OMElement element : getElements( getRootElement(),
-                                               new XPath( "/csw:GetRecordsResponse/csw:SearchResults/child::*",
-                                                          nsContext ) ) ) {
-            records.add( MetadataRecordFactory.create( element ) );
-        }
-        return records;
-    }
+    public Iterator<MetadataRecord> getRecords() {
+        return new Iterator<MetadataRecord>() {
 
-    @Deprecated
-    public List<OMElement> getElements( XPath xpath ) {
-        return getElements( getRootElement(), xpath );
+            @Override
+            public boolean hasNext() {
+                System.out.println( recordElementName );
+                System.out.println( xmlStream.isStartElement() );
+                System.out.println( xmlStream.getLocalName() );
+                return recordElementName != null && xmlStream.isStartElement()
+                       && recordElementName.equals( xmlStream.getLocalName() );
+            }
+
+            @Override
+            public MetadataRecord next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                MetadataRecord record = MetadataRecordFactory.create( xmlStream );
+                try {
+                    xmlStream.nextTag();
+                } catch ( XMLStreamException e ) {
+                    throw new XMLParsingException( xmlStream, e.getMessage() );
+                }
+                return record;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
     public int getNumberOfRecordsMatched() {
-        return getNodeAsInt( getRootElement(), getXPath( "numberOfRecordsMatched" ), 0 );
+        return numberOfRecordsMatched;
     }
 
     public int getNumberOfRecordsReturned() {
-        return getNodeAsInt( getRootElement(), getXPath( "numberOfRecordsReturned" ), 0 );
+        return numberOfRecordsReturned;
     }
 
     public int getNextRecord() {
-        return getNodeAsInt( getRootElement(), getXPath( "nextRecord" ), 0 );
-    }
-
-    private XPath getXPath( String attribute ) {
-        return new XPath( "//" + CSW_202_PREFIX + ":GetRecordsResponse/" + CSW_202_PREFIX + ":SearchResults/@"
-                          + attribute, nsContext );
+        return nextRecord;
     }
 
     public void close()

@@ -39,17 +39,29 @@ import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
 import static org.deegree.metadata.ebrim.RegistryObject.RIM_NS;
 import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.metadata.ebrim.Association;
 import org.deegree.metadata.ebrim.Classification;
 import org.deegree.metadata.ebrim.ClassificationNode;
 import org.deegree.metadata.ebrim.ExtrinsicObject;
-import org.deegree.metadata.ebrim.RegistryObject;
 import org.deegree.metadata.ebrim.RIMType;
+import org.deegree.metadata.ebrim.RegistryObject;
 import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.iso.ISORecord;
 import org.slf4j.Logger;
@@ -69,6 +81,62 @@ import org.slf4j.LoggerFactory;
 public class MetadataRecordFactory {
 
     private static Logger LOG = LoggerFactory.getLogger( MetadataRecordFactory.class );
+
+    /**
+     * Creates a {@link MetadataRecord} instance out a {@link XMLStreamReader}. The reader must point to the
+     * START_ELEMENT of the record. After reading the record the stream points to the END_ELEMENT of the record.
+     * 
+     * @param xmlStream
+     *            xmlStream must point to the START_ELEMENT of the record
+     * @return a {@link MetadataRecord} instance
+     */
+    public static MetadataRecord create( XMLStreamReader xmlStream ) {
+        if ( !xmlStream.isStartElement() ) {
+            throw new XMLParsingException( xmlStream, "XMLStreamReader does not point to a START_ELEMENT." );
+        }
+        String ns = xmlStream.getNamespaceURI();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        XMLStreamWriter writer = null;
+        XMLStreamReader recordAsXmlStream;
+        InputStream in = null;
+        try {
+            writer = XMLOutputFactory.newInstance().createXMLStreamWriter( out );
+
+            writer.writeStartDocument();
+            XMLAdapter.writeElement( writer, xmlStream );
+            writer.writeEndDocument();
+
+            in = new ByteArrayInputStream( out.toByteArray() );
+            recordAsXmlStream = XMLInputFactory.newInstance().createXMLStreamReader( in );
+        } catch ( XMLStreamException e ) {
+            throw new XMLParsingException( xmlStream, e.getMessage() );
+        } catch ( FactoryConfigurationError e ) {
+            throw new XMLParsingException( xmlStream, e.getMessage() );
+        } finally {
+            if ( writer != null ) {
+                try {
+                    writer.close();
+                } catch ( XMLStreamException e ) {
+                    LOG.info( "Could not close writer: {}", e.getMessage() );
+                }
+            }
+            IOUtils.closeQuietly( in );
+            IOUtils.closeQuietly( out );
+        }
+        if ( ISO_RECORD_NS.equals( ns ) ) {
+            return new ISORecord( recordAsXmlStream );
+        }
+        if ( RIM_NS.equals( ns ) ) {
+            throw new UnsupportedOperationException(
+                                                     "Creating ebRIM records from XMLStreamReader is not implemented yet." );
+        }
+        if ( DC_RECORD_NS.equals( ns ) ) {
+            throw new UnsupportedOperationException( "Creating DC records from XMLStreamReader is not implemented yet." );
+        }
+        throw new IllegalArgumentException( "Unknown / unsuppported metadata namespace '" + ns + "'." );
+
+    }
 
     /**
      * Creates a new {@link MetadataRecord} from the given element.
