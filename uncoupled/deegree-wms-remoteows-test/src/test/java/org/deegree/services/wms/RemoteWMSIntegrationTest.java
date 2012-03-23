@@ -46,16 +46,10 @@ import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
