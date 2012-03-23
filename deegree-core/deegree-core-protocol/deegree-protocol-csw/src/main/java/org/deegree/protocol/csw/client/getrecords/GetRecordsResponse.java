@@ -118,13 +118,16 @@ public class GetRecordsResponse {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                MetadataRecord record = MetadataRecordFactory.create( xmlStream );
                 try {
-                    xmlStream.nextTag();
-                } catch ( XMLStreamException e ) {
-                    throw new XMLParsingException( xmlStream, e.getMessage() );
+                    MetadataRecord record = MetadataRecordFactory.create( xmlStream );
+                    return record;
+                } finally {
+                    try {
+                        xmlStream.nextTag();
+                    } catch ( XMLStreamException e ) {
+                        throw new XMLParsingException( xmlStream, e.getMessage() );
+                    }
                 }
-                return record;
             }
 
             @Override
