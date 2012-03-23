@@ -88,7 +88,7 @@ public class RemoteWMSIntegrationTest {
     public void testSimilarity()
                             throws IOException {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
-        base += "/deegree-wms-remoteows-test/services" + request;
+        base += "/deegree-wms-remoteows-tests/services" + request;
         InputStream in = retrieve( STREAM, base );
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
         Assert.assertEquals( "Images are not similar enough.", 1.0, sim, 0.01 );
