@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/themes/remotewms" xmlns:l="http://www.deegree.org/themes/remotewms"
-  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:md="http://www.deegree.org/metadata/description"
+  jaxb:version="2.1">
+
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
 
   <annotation>
     <appinfo>
