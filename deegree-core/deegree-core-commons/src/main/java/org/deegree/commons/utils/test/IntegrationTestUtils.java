@@ -62,14 +62,11 @@ import org.apache.commons.io.IOUtils;
 
 public class IntegrationTestUtils {
 
-    /**
-     * Scans the System.getProperty("requestdir") directories' contents for .kvp/.xml request files.
-     * 
-     * @return the .kvp/.xml and .response contents as triples (boolean wasXml, String and byte[])
-     */
-    public static Collection<Object[]> getTestRequests() {
-        File[] fs = new File( System.getProperty( "requestdir" ) ).listFiles();
-        List<Object[]> list = new ArrayList<Object[]>();
+    private static void collect( List<Object[]> list, File dir ) {
+        File[] fs = dir.listFiles();
+        if ( fs == null ) {
+            return;
+        }
         for ( File f : fs ) {
             String name = f.getName();
             if ( name.endsWith( ".kvp" ) || name.endsWith( ".xml" ) ) {
@@ -87,8 +84,21 @@ public class IntegrationTestUtils {
                     e.printStackTrace();
                 }
             }
+            if ( f.isDirectory() ) {
+                collect( list, f );
+            }
         }
+    }
 
+    /**
+     * Scans the System.getProperty("requestdir") directories' contents for .kvp/.xml request files.
+     * 
+     * @return the .kvp/.xml and .response contents as triples (boolean wasXml, String and byte[])
+     */
+    public static Collection<Object[]> getTestRequests() {
+        File dir = new File( System.getProperty( "requestdir" ) );
+        List<Object[]> list = new ArrayList<Object[]>();
+        collect( list, dir );
         return list;
     }
 
