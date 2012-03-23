@@ -48,7 +48,6 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -82,14 +81,14 @@ public class TileMatrixTest extends TestCase {
         ICRS crs = CRSManager.lookup( "EPSG:4326" );
         Envelope env = fac.createEnvelope( -10, -10, 10, 10, crs );
         SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-        TileMatrixMetadata md = new TileMatrixMetadata( "someid", smd, new Pair<Integer, Integer>( 256, 256 ), 1, 1, 1 );
+        TileMatrixMetadata md = new TileMatrixMetadata( "someid", smd, 256, 256, 1, 1, 1 );
         TileMatrix tm = mock( TileMatrix.class );
         Tile t = mock( Tile.class );
         tm.getMetadata();
         tm.getTile( 0, 0 );
         when( tm.getMetadata() ).thenReturn( md );
         when( tm.getTile( 0, 0 ) ).thenReturn( t );
-        assertEquals( 256, tm.getMetadata().getTileSize().first.intValue() );
+        assertEquals( 256, tm.getMetadata().getTilePixelsX() );
         verify( tm ).getTile( 0, 0 );
     }
 

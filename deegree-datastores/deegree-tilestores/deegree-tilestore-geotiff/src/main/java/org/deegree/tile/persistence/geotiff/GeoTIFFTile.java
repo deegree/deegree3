@@ -76,18 +76,19 @@ public class GeoTIFFTile implements Tile {
 
     private final Envelope envelope;
 
-    private final Pair<Integer, Integer> size;
+    private final int sizeX, sizeY;
 
     private final GenericObjectPool readerPool;
 
-    public GeoTIFFTile( GenericObjectPool readerPool, int imageIndex, int x, int y, Envelope envelope,
-                        Pair<Integer, Integer> size ) {
+    public GeoTIFFTile( GenericObjectPool readerPool, int imageIndex, int x, int y, Envelope envelope, int sizeX,
+                        int sizeY ) {
         this.readerPool = readerPool;
         this.imageIndex = imageIndex;
         this.x = x;
         this.y = y;
         this.envelope = envelope;
-        this.size = size;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
     }
 
     @Override
@@ -96,7 +97,7 @@ public class GeoTIFFTile implements Tile {
         try {
             reader = (ImageReader) readerPool.borrowObject();
             BufferedImage img = reader.readTile( imageIndex, x, y );
-            if ( img.getWidth() != size.first || img.getHeight() != size.second ) {
+            if ( img.getWidth() != sizeX || img.getHeight() != sizeY ) {
                 Hashtable table = new Hashtable();
                 String[] props = img.getPropertyNames();
                 if ( props != null ) {
@@ -105,8 +106,7 @@ public class GeoTIFFTile implements Tile {
                     }
                 }
                 BufferedImage img2 = new BufferedImage( img.getColorModel(),
-                                                        img.getData().createCompatibleWritableRaster( size.first,
-                                                                                                      size.second ),
+                                                        img.getData().createCompatibleWritableRaster( sizeX, sizeY ),
                                                         img.isAlphaPremultiplied(), table );
                 Graphics2D g = img2.createGraphics();
                 g.drawImage( img, 0, 0, null );

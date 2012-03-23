@@ -91,7 +91,7 @@ public class GeoTIFFTileMatrix implements TileMatrix {
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
         Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
-        return new GeoTIFFTile( readerPool, imageIndex, x, y, envelope, metadata.getTileSize() );
+        return new GeoTIFFTile( readerPool, imageIndex, x, y, envelope, metadata.getTilePixelsX(), metadata.getTilePixelsY() );
     }
 
 }

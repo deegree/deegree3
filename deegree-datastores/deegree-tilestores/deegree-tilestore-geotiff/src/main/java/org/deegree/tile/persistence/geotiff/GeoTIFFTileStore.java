@@ -147,8 +147,7 @@ public class GeoTIFFTileStore implements TileStore {
                 int numy = (int) Math.ceil( (double) height / (double) th );
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
                 String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
-                TileMatrixMetadata tmd = new TileMatrixMetadata( id, smd, new Pair<Integer, Integer>( tw, th ), res,
-                                                                 numx, numy );
+                TileMatrixMetadata tmd = new TileMatrixMetadata( id, smd, tw, th, res, numx, numy );
                 GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, file, i );
                 matrices.add( matrix );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,

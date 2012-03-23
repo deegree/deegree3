@@ -40,7 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
@@ -52,7 +51,6 @@ import org.deegree.geometry.metadata.SpatialMetadata;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class TileMatrixMetadata {
 
     private String identifier;
@@ -61,7 +59,7 @@ public class TileMatrixMetadata {
 
     private int numTilesX, numTilesY;
 
-    private Pair<Integer, Integer> tileSize;
+    private int tileSizeX, tileSizeY;
 
     private double resolution, tileWidth, tileHeight;
 
@@ -72,8 +70,10 @@ public class TileMatrixMetadata {
      *            to identify the tile matrix
      * @param spatialMetadata
      *            the envelope and coordinate system, never null
-     * @param tileSize
-     *            the pixel width/height of a tile
+     * @param tileSizeX
+     *            the width of a tile in pixels
+     * @param tileSizeY
+     *            the height of a tile in pixels
      * @param resolution
      *            the resolution of a pixel in world coordinates
      * @param numTilesX
@@ -81,16 +81,17 @@ public class TileMatrixMetadata {
      * @param numTilesY
      *            the number of tiles in y direction
      */
-    public TileMatrixMetadata( String identifier, SpatialMetadata spatialMetadata, Pair<Integer, Integer> tileSize,
+    public TileMatrixMetadata( String identifier, SpatialMetadata spatialMetadata, int tileSizeX, int tileSizeY,
                                double resolution, int numTilesX, int numTilesY ) {
         this.identifier = identifier;
         this.spatialMetadata = spatialMetadata;
-        this.tileSize = tileSize;
+        this.tileSizeX = tileSizeX;
+        this.tileSizeY = tileSizeY;
         this.resolution = resolution;
         this.numTilesX = numTilesX;
         this.numTilesY = numTilesY;
-        this.tileWidth = tileSize.first * resolution;
-        this.tileHeight = tileSize.second * resolution;
+        this.tileWidth = tileSizeX * resolution;
+        this.tileHeight = tileSizeY * resolution;
     }
 
     /**
@@ -101,10 +102,17 @@ public class TileMatrixMetadata {
     }
 
     /**
-     * @return the width/height of a tile
+     * @return the width of a tile in pixels
      */
-    public Pair<Integer, Integer> getTileSize() {
-        return tileSize;
+    public int getTilePixelsX() {
+        return tileSizeX;
+    }
+
+    /**
+     * @return the height of a tile in pixels
+     */
+    public int getTilePixelsY() {
+        return tileSizeY;
     }
 
     /**
@@ -148,5 +156,4 @@ public class TileMatrixMetadata {
     public String getIdentifier() {
         return identifier;
     }
-
 }
