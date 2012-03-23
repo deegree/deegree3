@@ -110,51 +110,10 @@ OpenLayers.DOTS_PER_INCH = 90.72;
 
                                     allOverlays: true
                                   } )
-console.log(map)
-var caps = new OpenLayers.Format.WMTSCapabilities().read(capabilities)
+    var caps = new OpenLayers.Format.WMTSCapabilities().read(capabilities)
 
-//    var osmLayer = new OpenLayers.Layer.OSM("OpenStreetMap")
-//    map.addLayer(osmLayer)
-    
-//    var matrixIds = [
-//    '7142.857142857143',
-//    '14285.714285714286',
-//    '28571.428571428572',
-//    '57142.857142857145',
-//    '114285.71428571429'
-//    ]
-//    var matrixIds = [
-//    '114285.71428571429',
-//    '57142.857142857145',
-//    '28571.428571428572',
-//    '14285.714285714286',
-//    '7142.857142857143'
-//    ]
-
-//    var l = new OpenLayers.Layer.WMTS({
-//      name: 'test',
-//      url: 'http://localhost:8080/deegree-webservices/services',
-//      layer: 'pyramid',
-//      matrixSet: 'pyramid',
-//      format: 'image/png',
-//      style: 'default',
-//      opacity: 1,
-//      isBaseLayer: false
-//    });
-map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {layer: 'pyramid', matrixSet: 'pyramid', format: 'image/png'}));
-
-      var layer = new OpenLayers.Layer.WMS( 'pyramid', loc, {layers: 'pyramid', transparent: true}, {singleTile: true})
-      layer.setName('pyramid')
-      layer.setVisibility(false)
-      map.addLayer(layer)
-    for(var i in layers){
-      var layer = new OpenLayers.Layer.WMS( layers[i], loc, {layers: layers[i], transparent: true}, {singleTile: true})
-      layer.setName(layers[i])
-      layer.setVisibility(false)
-      map.addLayer(layer)
-    }
-
-
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'nocache', layer: 'pyramid', matrixSet: 'pyramid', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'cache', layer: 'cache', matrixSet: 'cache', format: 'image/png'}));
 
     map.setCenter(new OpenLayers.LonLat(0, 0), 0)
     map.addControl(new OpenLayers.Control.LayerSwitcher())
