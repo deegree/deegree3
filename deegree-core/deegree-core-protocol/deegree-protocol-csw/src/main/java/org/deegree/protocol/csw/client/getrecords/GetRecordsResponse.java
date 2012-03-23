@@ -109,9 +109,6 @@ public class GetRecordsResponse {
 
             @Override
             public boolean hasNext() {
-                System.out.println( recordElementName );
-                System.out.println( xmlStream.isStartElement() );
-                System.out.println( xmlStream.getLocalName() );
                 return recordElementName != null && xmlStream.isStartElement()
                        && recordElementName.equals( xmlStream.getLocalName() );
             }
