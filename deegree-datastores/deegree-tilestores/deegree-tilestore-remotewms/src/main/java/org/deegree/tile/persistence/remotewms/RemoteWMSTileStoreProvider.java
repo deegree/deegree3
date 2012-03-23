@@ -50,9 +50,7 @@ import java.util.List;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
-import org.deegree.remoteows.wms.RemoteWMS;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
@@ -85,18 +83,10 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
                             throws ResourceInitException {
         try {
 
-            RemoteWMSTileStoreJAXB p = (RemoteWMSTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA, configUrl,
-                                                                            workspace );
-            String id = p.getRemoteWMSId();
+            RemoteWMSTileStoreJAXB config = (RemoteWMSTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA,
+                                                                                 configUrl, workspace );
 
-            RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-            RemoteOWS store = mgr.get( id );
-            if ( !( store instanceof RemoteWMS ) ) {
-                throw new ResourceInitException( "The remote WMS with id " + id
-                                                 + " is not available or not of type WMS." );
-            }
-
-            return new RemoteWMSTileStore();
+            return new RemoteWMSTileStore( config );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create RemoteWMSTileStore: " + e.getMessage(), e );
         }
@@ -122,5 +112,4 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
     public List<File> getTileStoreDependencies( File config ) {
         return Collections.<File> emptyList();
     }
-
 }

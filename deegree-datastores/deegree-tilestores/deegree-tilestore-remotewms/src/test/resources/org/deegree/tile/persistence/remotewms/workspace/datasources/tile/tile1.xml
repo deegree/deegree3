@@ -5,16 +5,10 @@
   configVersion="3.2.0">
 
   <!-- [1]: Id of the remote OWS to connect to (must be a WMS instance) -->
-  <RemoteWMSId>wms1</RemoteWMSId>
+  <RemoteWMSId>utah-wms</RemoteWMSId>
 
   <!-- [1]: CRS for querying the remote service as well as the resulting tiles -->
   <md:CRS>EPSG:4326</md:CRS>
-
-  <!-- [0..1]: Envelope of the tiled area, if omitted, the bounding box reported for the WMS layers will be used -->
-  <md:Envelope>
-    <md:LowerCorner>0 0</md:LowerCorner>
-    <md:UpperCorner>47 11</md:UpperCorner>
-  </md:Envelope>
 
   <!-- [1]: WMS request parameters -->
   <RequestParams>

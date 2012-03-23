@@ -40,6 +40,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewms;
 
+import static junit.framework.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import junit.framework.Assert;
+
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.tile.persistence.TileStoreManager;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 /**
  * <code>GeoTIFFTileStoreTest</code>
  * 
@@ -50,4 +68,33 @@ package org.deegree.tile.persistence.remotewms;
  */
 public class RemoteWMSTileStoreTest {
 
+    private DeegreeWorkspace ws;
+
+    @Before
+    public void setup()
+                            throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
+
+        URL wsUrl = RemoteWMSTileStoreTest.class.getResource( "workspace" );
+        ws = DeegreeWorkspace.getInstance( "remotewmstilestoretest", new File( wsUrl.toURI() ) );
+        ws.initAll();
+    }
+
+    @After
+    public void tearDown() {
+        ws.destroyAll();
+    }
+
+    @Test
+    public void testGetMetdata() {
+        RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tile1" );
+        SpatialMetadata metadata = store.getMetadata();
+        assertEquals( 1, metadata.getCoordinateSystems().size() );
+        assertEquals( "EPSG:4326", metadata.getCoordinateSystems().get( 0 ).getAlias() );
+        assertEquals( -114.2766, metadata.getEnvelope().getMin().get0(), 0.0001 );
+        assertEquals( 36.96, metadata.getEnvelope().getMin().get1(), 0.0001 );
+        assertEquals( -108.8986, metadata.getEnvelope().getMax().get0(), 0.0001 );
+        assertEquals( 42.0343, metadata.getEnvelope().getMax().get1(), 0.0001 );        
+    }
+
+    
 }
