@@ -187,12 +187,18 @@ public class ISORecord implements MetadataRecord {
 
     public ISORecord( XMLStreamReader xmlStream ) {
         this.root = new XMLAdapter( xmlStream ).getRootElement();
-        this.pElem = new ISOQPParsing().parseAPISO( root );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
     }
 
     public ISORecord( OMElement root ) {
         this( root.getXMLStreamReader() );
+    }
+
+    private ParsedProfileElement getParsedProfileElement() {
+        if ( pElem == null ) {
+            pElem = new ISOQPParsing().parseAPISO( root );
+        }
+        return pElem;
     }
 
     @Override
@@ -208,7 +214,7 @@ public class ISORecord implements MetadataRecord {
     @Override
     public String[] getAbstract() {
 
-        List<String> l = pElem.getQueryableProperties().get_abstract();
+        List<String> l = getParsedProfileElement().getQueryableProperties().get_abstract();
         String[] s = new String[l.size()];
         int counter = 0;
         for ( String st : l ) {
@@ -221,20 +227,20 @@ public class ISORecord implements MetadataRecord {
     @Override
     public Envelope[] getBoundingBox() {
 
-        List<BoundingBox> bboxList = pElem.getQueryableProperties().getBoundingBox();
-        if ( pElem.getQueryableProperties().getCrs().isEmpty() ) {
+        List<BoundingBox> bboxList = getParsedProfileElement().getQueryableProperties().getBoundingBox();
+        if ( getParsedProfileElement().getQueryableProperties().getCrs().isEmpty() ) {
             List<CRS> newCRSList = new LinkedList<CRS>();
             for ( BoundingBox b : bboxList ) {
                 newCRSList.add( new CRS( "4326", "EPSG", null ) );
             }
 
-            pElem.getQueryableProperties().setCrs( newCRSList );
+            getParsedProfileElement().getQueryableProperties().setCrs( newCRSList );
         }
 
         Envelope[] env = new Envelope[bboxList.size()];
         int counter = 0;
         for ( BoundingBox box : bboxList ) {
-            CRS bboxCRS = pElem.getQueryableProperties().getCrs().get( counter );
+            CRS bboxCRS = getParsedProfileElement().getQueryableProperties().getCrs().get( counter );
             // convert to the deegree CRSCodeType - this is not nice!
             CRSCodeType crsCT;
             if ( bboxCRS.getAuthority() != null )
@@ -252,7 +258,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String[] getFormat() {
-        List<Format> formats = pElem.getQueryableProperties().getFormat();
+        List<Format> formats = getParsedProfileElement().getQueryableProperties().getFormat();
         String[] format = new String[formats.size()];
         int counter = 0;
         for ( Format f : formats ) {
@@ -263,17 +269,17 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String getIdentifier() {
-        return pElem.getQueryableProperties().getIdentifier();
+        return getParsedProfileElement().getQueryableProperties().getIdentifier();
     }
 
     @Override
     public Date getModified() {
-        return pElem.getQueryableProperties().getModified();
+        return getParsedProfileElement().getQueryableProperties().getModified();
     }
 
     @Override
     public String[] getRelation() {
-        List<String> l = pElem.getReturnableProperties().getRelation();
+        List<String> l = getParsedProfileElement().getReturnableProperties().getRelation();
         String[] s = new String[l.size()];
         int counter = 0;
         for ( String st : l ) {
@@ -291,7 +297,7 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String[] getTitle() {
-        List<String> l = pElem.getQueryableProperties().getTitle();
+        List<String> l = getParsedProfileElement().getQueryableProperties().getTitle();
         String[] s = new String[l.size()];
         int counter = 0;
         for ( String st : l ) {
@@ -303,20 +309,20 @@ public class ISORecord implements MetadataRecord {
     @Override
     public String getType() {
 
-        return pElem.getQueryableProperties().getType();
+        return getParsedProfileElement().getQueryableProperties().getType();
     }
 
     @Override
     public String[] getSubject() {
 
-        List<Keyword> keywords = pElem.getQueryableProperties().getKeywords();
+        List<Keyword> keywords = getParsedProfileElement().getQueryableProperties().getKeywords();
         int keywordSizeCount = 0;
         for ( Keyword k : keywords ) {
 
             keywordSizeCount += k.getKeywords().size();
 
         }
-        List<String> topicCategories = pElem.getQueryableProperties().getTopicCategory();
+        List<String> topicCategories = getParsedProfileElement().getQueryableProperties().getTopicCategory();
 
         String[] subjects = new String[keywordSizeCount + topicCategories.size()];
         int counter = 0;
@@ -412,24 +418,24 @@ public class ISORecord implements MetadataRecord {
 
     public boolean isHasSecurityConstraints() {
 
-        return pElem.getQueryableProperties().isHasSecurityConstraints();
+        return getParsedProfileElement().getQueryableProperties().isHasSecurityConstraints();
     }
 
     @Override
     public String getContributor() {
 
-        return pElem.getReturnableProperties().getContributor();
+        return getParsedProfileElement().getReturnableProperties().getContributor();
     }
 
     @Override
     public String getPublisher() {
 
-        return pElem.getReturnableProperties().getPublisher();
+        return getParsedProfileElement().getReturnableProperties().getPublisher();
     }
 
     @Override
     public String[] getRights() {
-        List<String> l = pElem.getReturnableProperties().getRights();
+        List<String> l = getParsedProfileElement().getReturnableProperties().getRights();
         String[] s = new String[l.size()];
         int counter = 0;
         for ( String st : l ) {
@@ -441,26 +447,26 @@ public class ISORecord implements MetadataRecord {
 
     @Override
     public String getSource() {
-        return pElem.getReturnableProperties().getSource();
+        return getParsedProfileElement().getReturnableProperties().getSource();
     }
 
     @Override
     public String getCreator() {
 
-        return pElem.getReturnableProperties().getCreator();
+        return getParsedProfileElement().getReturnableProperties().getCreator();
     }
 
     public String getLanguage() {
-        return pElem.getQueryableProperties().getLanguage();
+        return getParsedProfileElement().getQueryableProperties().getLanguage();
     }
 
     public String getParentIdentifier() {
-        return pElem.getQueryableProperties().getParentIdentifier();
+        return getParsedProfileElement().getQueryableProperties().getParentIdentifier();
 
     }
 
     public ParsedProfileElement getParsedElement() {
-        return pElem;
+        return getParsedProfileElement();
     }
 
     public String getStringFromXPath( XPath xpath ) {

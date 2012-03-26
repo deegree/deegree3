@@ -104,6 +104,7 @@ public class MetadataRecordFactory {
             writer = XMLOutputFactory.newInstance().createXMLStreamWriter( out );
 
             writer.writeStartDocument();
+            
             XMLAdapter.writeElement( writer, xmlStream );
             writer.writeEndDocument();
 
