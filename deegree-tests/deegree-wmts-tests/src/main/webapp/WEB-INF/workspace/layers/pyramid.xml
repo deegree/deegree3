@@ -12,4 +12,9 @@
     <l:Name>cache</l:Name>
     <d:Title>IT tile layer cached</d:Title>
   </TileLayer>
+  <TileLayer>
+    <TileStoreId>remotewms</TileStoreId>
+    <l:Name>remotewms</l:Name>
+    <d:Title>IT tile layer remotewms</d:Title>
+  </TileLayer>
 </TileLayers>

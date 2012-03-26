@@ -18,6 +18,11 @@
       <d:Title>IT test layer cached</d:Title>
       <Layer>cache</Layer>
     </Theme>
+    <Theme>
+      <Identifier>remotewms</Identifier>
+      <d:Title>IT test layer remotewms</d:Title>
+      <Layer>remotewms</Layer>
+    </Theme>
   </Theme>
 
 </Themes>

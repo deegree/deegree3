@@ -32,9 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewms;
 
+import java.util.List;
+
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
@@ -49,13 +54,29 @@ import org.deegree.tile.TileMatrixMetadata;
  */
 class RemoteWMSTileMatrix implements TileMatrix {
 
-    private final TileMatrixMetadata metadata;
-    
-    private final RemoteWMSTileStore store;
-    
-    RemoteWMSTileMatrix (TileMatrixMetadata metadata, RemoteWMSTileStore store ) {
+    private static final GeometryFactory fac = new GeometryFactory();
+
+    private TileMatrixMetadata metadata;
+
+    private RemoteWMSTileStore store;
+
+    private int tileSizeX, tileSizeY;
+
+    private String format;
+
+    private List<String> layers;
+
+    private List<String> styles;
+
+    RemoteWMSTileMatrix( TileMatrixMetadata metadata, RemoteWMSTileStore store, String format, List<String> layers,
+                         List<String> styles ) {
         this.metadata = metadata;
         this.store = store;
+        this.format = format;
+        this.layers = layers;
+        this.styles = styles;
+        this.tileSizeX = metadata.getTilePixelsX();
+        this.tileSizeY = metadata.getTilePixelsY();
     }
 
     @Override
@@ -65,7 +86,17 @@ class RemoteWMSTileMatrix implements TileMatrix {
 
     @Override
     public Tile getTile( int x, int y ) {
-        // TODO Auto-generated method stub
-        return null;
+        if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
+            return null;
+        }
+        double width = metadata.getTileWidth();
+        double height = metadata.getTileHeight();
+        Envelope env = metadata.getSpatialMetadata().getEnvelope();
+        double minx = width * x + env.getMin().get0();
+        double miny = env.getMax().get1() - height * y;
+        Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
+        GetMap gm = new GetMap( layers, styles, tileSizeX, tileSizeY, envelope, envelope.getCoordinateSystem(), format,
+                                true );
+        return new RemoteWMSTile( store.getClient(), gm );
     }
 }

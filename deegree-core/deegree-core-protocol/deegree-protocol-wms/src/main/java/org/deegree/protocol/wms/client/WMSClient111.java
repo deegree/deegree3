@@ -68,6 +68,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -1049,5 +1050,44 @@ public class WMSClient111 implements WMSClient {
         tree.value = extractMetadata( lay );
         buildLayerTree( tree, lay );
         return tree;
+    }
+
+    @Override
+    public InputStream getMap( GetMap getMap )
+                            throws IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put( "request", "GetMap" );
+        map.put( "version", "1.1.1" );
+        map.put( "service", "WMS" );
+        map.put( "layers", join( ",", getMap.getLayers() ) );
+        map.put( "styles", "" );
+        if ( getMap.getStyles().size() > 0 ) {
+            map.put( "styles", join( ",", getMap.getStyles() ) );
+        }
+        map.put( "width", Integer.toString( getMap.getWidth() ) );
+        map.put( "height", Integer.toString( getMap.getHeight() ) );
+        Envelope bbox = getMap.getBoundingBox();
+        map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
+                         + bbox.getMax().get1() );
+        map.put( "srs", getMap.getCoordinateSystem().getAlias() );
+        map.put( "format", getMap.getFormat() );
+
+        String url = getAddress( GetMap, true );
+        if ( url == null ) {
+            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
+            return null;
+        }
+        url += toQueryString( map );
+
+        URL theUrl = new URL( url );
+        LOG.debug( "Connecting to URL " + theUrl );
+        URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
+                                                           getHttpProxyPassword( true ), httpBasicUser, httpBasicPass );
+        conn.setConnectTimeout( connectionTimeout * 1000 );
+        conn.setReadTimeout( requestTimeout * 1000 );
+        conn.connect();
+        LOG.debug( "Connected." );
+
+        return conn.getInputStream();
     }
 }

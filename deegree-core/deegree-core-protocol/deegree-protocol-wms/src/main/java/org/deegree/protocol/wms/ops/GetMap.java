@@ -198,6 +198,12 @@ public class GetMap extends RequestBase {
         this.transparent = transparent;
     }
 
+    public GetMap( List<String> layers, List<String> styles, int width, int height, Envelope envelope, ICRS crs,
+                   String format, boolean transparent ) {
+        this( layers, width, height, envelope, crs, format, transparent );
+        this.styles = map( styles, StyleRef.FROM_NAMES );
+    }
+
     public GetMap( List<Pair<String, String>> layers, int width, int height, Envelope boundingBox, String format,
                    boolean transparent ) throws OWSException {
         for ( Pair<String, String> layer : layers ) {
