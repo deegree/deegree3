@@ -92,60 +92,32 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
         if ( next.getMetadata().getResolution() <= resolution ) {
             matrix = next;
         }
-        TileMatrixMetadata md = matrix.getMetadata();
-        final TileMatrix fmatrix = matrix;
 
-        // calc tile indices
-        Envelope menvelope = md.getSpatialMetadata().getEnvelope();
-        if ( !menvelope.intersects( envelope ) ) {
+        final int[] idxs = Tiles.getTileIndexRange( matrix, envelope );
+
+        if ( idxs == null ) {
             return Collections.<Tile> emptyList().iterator();
         }
-        double mminx = menvelope.getMin().get0();
-        double mminy = menvelope.getMin().get1();
-        double minx = envelope.getMin().get0();
-        double miny = envelope.getMin().get1();
-        double maxx = envelope.getMax().get0();
-        double maxy = envelope.getMax().get1();
 
-        int tileminx = (int) Math.floor( ( minx - mminx ) / md.getTileWidth() );
-        int tileminy = (int) Math.floor( ( miny - mminy ) / md.getTileHeight() );
-        int tilemaxx = (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() );
-        int tilemaxy = (int) Math.ceil( ( maxy - mminy ) / md.getTileHeight() );
+        final TileMatrix fmatrix = matrix;
 
-        // sanitize values
-        tileminx = Math.max( 0, tileminx );
-        tileminy = Math.max( 0, tileminy );
-        tilemaxx = Math.max( 0, tilemaxx );
-        tilemaxy = Math.max( 0, tilemaxy );
-        tileminx = Math.min( md.getNumTilesX() - 1, tileminx );
-        tileminy = Math.min( md.getNumTilesY() - 1, tileminy );
-        tilemaxx = Math.min( md.getNumTilesX() - 1, tilemaxx );
-        tilemaxy = Math.min( md.getNumTilesY() - 1, tilemaxy );
-
-        int h = tileminy;
-        tileminy = md.getNumTilesY() - tilemaxy - 1;
-        tilemaxy = md.getNumTilesY() - h - 1;
-
-        LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.", new Object[] { md.getResolution(),
-                                                                                                  tileminx, tileminy,
-                                                                                                  tilemaxx, tilemaxy } );
-
-        final int fminx = tileminx, fminy = tileminy, fmaxx = tilemaxx, fmaxy = tilemaxy;
+        LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.",
+                   new Object[] { matrix.getMetadata().getResolution(), idxs[0], idxs[1], idxs[2], idxs[3] } );
 
         // fetch tiles lazily
         return new Iterator<Tile>() {
-            int x = fminx, y = fminy;
+            int x = idxs[0], y = idxs[1];
 
             @Override
             public boolean hasNext() {
-                return x <= fmaxx;
+                return x <= idxs[2];
             }
 
             @Override
             public Tile next() {
                 Tile t = fmatrix.getTile( x, y );
-                if ( y == fmaxy ) {
-                    y = fminy;
+                if ( y == idxs[3] ) {
+                    y = idxs[1];
                     ++x;
                 } else {
                     ++y;

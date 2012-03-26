@@ -56,6 +56,7 @@ import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.Tiles;
 import org.deegree.tile.persistence.TileStore;
 
 /**
@@ -121,6 +122,35 @@ public class CachingTileStore implements TileStore {
             return null;
         }
         return tm.getTile( x, y );
+    }
+
+    /**
+     * Removes matching objects from cache.
+     * 
+     * @param envelope
+     *            may be null, in which case all objects will be removed from the cache
+     */
+    public int invalidateCache( Envelope envelope ) {
+        if ( envelope == null ) {
+            int size = cache.getSize();
+            cache.removeAll();
+            return size;
+        }
+        int cnt = 0;
+        for ( TileMatrix tm : tileMatrixSet.getTileMatrices() ) {
+            int[] ts = Tiles.getTileIndexRange( tm, envelope );
+            if ( ts != null ) {
+                String id = tm.getMetadata().getIdentifier();
+                for ( int x = ts[0]; x <= ts[2]; ++x ) {
+                    for ( int y = ts[1]; y <= ts[3]; ++y ) {
+                        if ( cache.remove( id + "_" + x + "_" + y ) ) {
+                            ++cnt;
+                        }
+                    }
+                }
+            }
+        }
+        return cnt;
     }
 
 }
