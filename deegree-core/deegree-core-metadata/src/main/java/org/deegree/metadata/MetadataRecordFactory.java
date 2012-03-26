@@ -35,6 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.stream.XMLStreamConstants.CDATA;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
 import static org.deegree.metadata.ebrim.RegistryObject.RIM_NS;
 import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
@@ -44,9 +50,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -87,8 +95,8 @@ public class MetadataRecordFactory {
      * START_ELEMENT of the record. After reading the record the stream points to the END_ELEMENT of the record.
      * 
      * @param xmlStream
-     *            xmlStream must point to the START_ELEMENT of the record
-     * @return a {@link MetadataRecord} instance
+     *            xmlStream must point to the START_ELEMENT of the record, must not be <code>null</code>
+     * @return a {@link MetadataRecord} instance, never <code>null</code>
      */
     public static MetadataRecord create( XMLStreamReader xmlStream ) {
         if ( !xmlStream.isStartElement() ) {
@@ -104,7 +112,6 @@ public class MetadataRecordFactory {
             writer = XMLOutputFactory.newInstance().createXMLStreamWriter( out );
 
             writer.writeStartDocument();
-            
             XMLAdapter.writeElement( writer, xmlStream );
             writer.writeEndDocument();
 

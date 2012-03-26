@@ -576,7 +576,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     beginXPath.append( GML_PREFIX ).append( ":TimeInstant/" ).append( GML_PREFIX ).append( ":timePosition" ).append( " | " );
                     beginXPath.append( baseXPath ).append( GML3_2_PREFIX ).append( ":TimePeriod/" ).append( GML3_2_PREFIX ).append( ":begin/" );
                     beginXPath.append( GML3_2_PREFIX ).append( ":TimeInstant/" ).append( GML3_2_PREFIX ).append( ":timePosition" );
-                    
+
                     String temporalExtentBegin = getNodeAsString( extentElem, new XPath( beginXPath.toString(),
                                                                                          nsContextParseII ), null );
 
@@ -598,8 +598,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                             tempEnd = parseDate( temporalExtentEnd );
                         }
                     } catch ( Exception e ) {
-                        LOG.info( "Could not parse temporalExtent : Begin - '{}'; END -'{}' -- with error message: {}. TemporalExtent is not stored as search property!",
-                                  new Object[] { temporalExtentBegin, temporalExtentEnd, e.getMessage() } );
+                        LOG.debug( "Could not parse temporalExtent : Begin - '{}'; END -'{}' -- with error message: {}. TemporalExtent is not stored as search property!",
+                                   new Object[] { temporalExtentBegin, temporalExtentEnd, e.getMessage() } );
                         // don't be so strict: there are differnt kinds of dates allowed!
                         // throw new IllegalArgumentException( msg );
                     }

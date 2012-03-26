@@ -36,6 +36,7 @@
 package org.deegree.protocol.csw.client.getrecords;
 
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 
 import java.io.IOException;
@@ -123,7 +124,7 @@ public class GetRecordsResponse {
                     return record;
                 } finally {
                     try {
-                        xmlStream.nextTag();
+                        nextElement( xmlStream );
                     } catch ( XMLStreamException e ) {
                         throw new XMLParsingException( xmlStream, e.getMessage() );
                     }

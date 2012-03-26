@@ -71,8 +71,8 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.filter.XPathElementFilter;
-import org.deegree.metadata.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.iso.parsing.ParsedProfileElement;
+import org.deegree.metadata.iso.parsing.RecordPropertyParser;
 import org.deegree.metadata.iso.types.BoundingBox;
 import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Format;
@@ -185,6 +185,12 @@ public class ISORecord implements MetadataRecord {
 
     private static List<XPath> briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
 
+    /**
+     * Creates a new {@link ISORecord} instance from the given XML stream.
+     * 
+     * @param xmlStream
+     *            xml stream, must not be <code>null</code> and point to the record's root element
+     */
     public ISORecord( XMLStreamReader xmlStream ) {
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
@@ -196,7 +202,7 @@ public class ISORecord implements MetadataRecord {
 
     private synchronized ParsedProfileElement getParsedProfileElement() {
         if ( pElem == null ) {
-            pElem = new ISOQPParsing().parseAPISO( root );
+            pElem = new RecordPropertyParser( root ).parse();
         }
         return pElem;
     }

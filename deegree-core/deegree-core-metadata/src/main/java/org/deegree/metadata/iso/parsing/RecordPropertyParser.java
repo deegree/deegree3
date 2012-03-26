@@ -36,6 +36,8 @@
 package org.deegree.metadata.iso.parsing;
 
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.protocol.csw.CSWConstants.SRV_NS;
+import static org.deegree.protocol.csw.CSWConstants.SRV_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -54,7 +56,6 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Format;
-import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
@@ -70,23 +71,23 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
-public final class ISOQPParsing extends XMLAdapter {
+public final class RecordPropertyParser extends XMLAdapter {
 
-    private static final Logger LOG = getLogger( ISOQPParsing.class );
+    private static final Logger LOG = getLogger( RecordPropertyParser.class );
 
-    private static NamespaceBindings nsContextISOParsing = new NamespaceBindings(
-                                                                                  (NamespaceBindings) XMLAdapter.nsContext );
+    private static NamespaceBindings nsContext = new NamespaceBindings( XMLAdapter.nsContext );
 
+    // TODO Check if the distinction between QueryableProperties and ReturnableProperties makes sense.
     private QueryableProperties qp;
 
     private ReturnableProperties rp;
 
     static {
-        nsContextISOParsing.addNamespace( CSWConstants.SRV_PREFIX, CSWConstants.SRV_NS );
+        nsContext.addNamespace( SRV_PREFIX, SRV_NS );
     }
 
-    public ISOQPParsing() {
-
+    public RecordPropertyParser( OMElement element ) {
+        setRootElement( element );
     }
 
     /**
@@ -101,15 +102,9 @@ public final class ISOQPParsing extends XMLAdapter {
      * @return {@link ParsedProfileElement}
      * @throws IOException
      */
-    public ParsedProfileElement parseAPISO( OMElement element ) {
+    public ParsedProfileElement parse() {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
-
-        setRootElement( element );
-        if ( element.getDefaultNamespace() != null ) {
-            nsContextISOParsing.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
-                                              rootElement.getDefaultNamespace().getNamespaceURI() );
-        }
 
         qp = new QueryableProperties();
 
@@ -119,17 +114,10 @@ public final class ISOQPParsing extends XMLAdapter {
         // throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
         // }
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * (default) Language
-         * 
-         * 
-         *---------------------------------------------------------------*/
         String language = getNodeAsString( rootElement,
                                            new XPath(
                                                       "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue",
-                                                      nsContextISOParsing ), null );
+                                                      nsContext ), null );
 
         // Locale locale = new Locale(
         // getNodeAsString(
@@ -141,36 +129,13 @@ public final class ISOQPParsing extends XMLAdapter {
         qp.setLanguage( language );
         // LOG.debug( getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) ).toString() );
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * CharacterSet
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * ParentIdentifier
-         * 
-         * 
-         *---------------------------------------------------------------*/
         String parentId = getNodeAsString( rootElement, new XPath( "./gmd:parentIdentifier/gco:CharacterString",
-                                                                   nsContextISOParsing ), null );
+                                                                   nsContext ), null );
         if ( parentId != null ) {
             parentId = parentId.trim();
         }
         qp.setParentIdentifier( parentId );
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * Type
-         * HierarchieLevel
-         * 
-         * is handled by an inspector
-         *---------------------------------------------------------------*/
         /**
          * if provided data is a dataset: type = dataset (default)
          * <p>
@@ -184,37 +149,14 @@ public final class ISOQPParsing extends XMLAdapter {
                                                                nsContext ), "dataset" );
         qp.setType( type );
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * HierarchieLevelName
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * Contact
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * DateStamp
-         * Modified
-         * 
-         * 
-         *---------------------------------------------------------------*/
         String[] dateString = getNodesAsStrings( rootElement,
                                                  new XPath( "./gmd:dateStamp/gco:Date | ./gmd:dateStamp/gco:DateTime",
-                                                            nsContextISOParsing ) );
+                                                            nsContext ) );
         try {
             if ( dateString != null ) {
                 for ( String ds : dateString ) {
                     if ( ds != null && ds.length() > 0 ) {
-                        qp.setModified( parseDate( ds ) );
+                        qp.setModified( parseDate( ds.trim() ) );
                         break;
                     }
                 }
@@ -222,205 +164,49 @@ public final class ISOQPParsing extends XMLAdapter {
         } catch ( Exception e ) {
             String msg = Messages.getMessage( "ERROR_PARSING", dateString[0], e.getMessage() );
             LOG.debug( msg );
-            throw new IllegalArgumentException( msg );
         }
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * MetadataStandardName
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * MetadataStandardVersion
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * DataSetURI
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * Locale (for multilinguarity)
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * SpatialRepresentationInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * ReferenceSystemInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
         List<OMElement> crsElements = getElements( rootElement,
                                                    new XPath(
                                                               "./gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
-                                                              nsContextISOParsing ) );
+                                                              nsContext ) );
 
         List<CRS> crsList = new LinkedList<CRS>();
         for ( OMElement crsElement : crsElements ) {
-            String nilReasonCRS = getNodeAsString( crsElement, new XPath( "./gmd:code/@gco:nilReason",
-                                                                          nsContextISOParsing ), null );
+            String nilReasonCRS = getNodeAsString( crsElement, new XPath( "./gmd:code/@gco:nilReason", nsContext ),
+                                                   null );
 
-            String nilReasonAuth = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/@gco:nilReason",
-                                                                           nsContextISOParsing ), null );
+            String nilReasonAuth = getNodeAsString( crsElement,
+                                                    new XPath( "./gmd:codeSpace/@gco:nilReason", nsContext ), null );
 
             if ( nilReasonCRS == null && nilReasonAuth == null ) {
-                String crs = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
-                                                                     nsContextISOParsing ), null );
+                String crs = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString", nsContext ),
+                                              null );
                 String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
-                                                                              nsContextISOParsing ), null );
+                                                                              nsContext ), null );
                 String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
-                                                                            nsContextISOParsing ), null );
+                                                                            nsContext ), null );
                 crsList.add( new CRS( crs, crsAuthority, crsVersion ) );
             }
         }
         qp.setCrs( crsList );
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * MetadataExtensionInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
+        List<OMElement> identificationInfo = getElements( rootElement,
+                                                          new XPath( "./gmd:identificationInfo", nsContext ) );
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * IdentificationInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
-        List<OMElement> identificationInfo = getElements( rootElement, new XPath( "./gmd:identificationInfo",
-                                                                                  nsContextISOParsing ) );
-
-        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, nsContextISOParsing );
+        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, nsContext );
         pI.parseIdentificationInfo( identificationInfo, qp, rp );
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * FileIdentifier
-         * 
-         * 
-         *---------------------------------------------------------------*/
+
         String fileIdentifierString = getNodeAsString( rootElement,
-                                                       new XPath( "./gmd:fileIdentifier/gco:CharacterString",
-                                                                  nsContextISOParsing ), null );
+                                                       new XPath( "./gmd:fileIdentifier/gco:CharacterString", nsContext ),
+                                                       null );
         qp.setIdentifier( fileIdentifierString );
-
-        // TODO
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * ContentInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
 
         parseDistributionInfo();
 
         parseDataQualityInfo();
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * PortrayalCatalogueInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * MetadataConstraints
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * ApplicationSchemaInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * MetadataMaintenance
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * Series
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * Describes
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * PropertyType
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * FeatureType
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * FeatureAttribute
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        /*
-         * sets the properties that are needed for building DC records
-         */
-
-        return new ParsedProfileElement( qp, rp, element );
-
+        return new ParsedProfileElement( qp, rp, getRootElement() );
     }
 
     /**
@@ -433,12 +219,12 @@ public final class ISOQPParsing extends XMLAdapter {
         formats.addAll( getElements( rootElement,
                                      new XPath(
                                                 "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
-                                                nsContextISOParsing ) ) );
+                                                nsContext ) ) );
 
         formats.addAll( getElements( rootElement,
                                      new XPath(
                                                 "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
-                                                nsContextISOParsing ) ) );
+                                                nsContext ) ) );
 
         // String onlineResource = getNodeAsString(
         // rootElement,
@@ -449,11 +235,11 @@ public final class ISOQPParsing extends XMLAdapter {
         List<Format> listOfFormats = new ArrayList<Format>();
         for ( OMElement md_format : formats ) {
 
-            String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString",
-                                                                       nsContextISOParsing ), null );
+            String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString", nsContext ),
+                                                 null );
 
             String formatVersion = getNodeAsString( md_format, new XPath( "./gmd:version/gco:CharacterString",
-                                                                          nsContextISOParsing ), null );
+                                                                          nsContext ), null );
 
             Format formatClass = new Format( formatName, formatVersion );
             listOfFormats.add( formatClass );
@@ -474,16 +260,15 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> lineageElems = getElements( rootElement,
                                                     new XPath(
                                                                "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement",
-                                                               nsContextISOParsing ) );
+                                                               nsContext ) );
         List<String> lineages = new ArrayList<String>();
         for ( OMElement lineageElem : lineageElems ) {
-            String[] lineageList = getNodesAsStrings( lineageElem, new XPath( "./gco:CharacterString",
-                                                                              nsContextISOParsing ) );
+            String[] lineageList = getNodesAsStrings( lineageElem, new XPath( "./gco:CharacterString", nsContext ) );
 
             lineages.addAll( Arrays.asList( lineageList ) );
             lineageList = getNodesAsStrings( lineageElem,
                                              new XPath( "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                        nsContextISOParsing ) );
+                                                        nsContext ) );
             lineages.addAll( Arrays.asList( lineageList ) );
         }
 
@@ -493,20 +278,20 @@ public final class ISOQPParsing extends XMLAdapter {
         qp.setDegree( getNodeAsBoolean( rootElement,
                                         new XPath(
                                                    "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean",
-                                                   nsContextISOParsing ), false ) );
+                                                   nsContext ), false ) );
 
         List<OMElement> titleElems = getElements( rootElement,
                                                   new XPath(
                                                              "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title",
-                                                             nsContextISOParsing ) );
+                                                             nsContext ) );
 
         List<String> titleStringList = new ArrayList<String>();
         for ( OMElement titleElem : titleElems ) {
-            String title = getNodeAsString( titleElem, new XPath( "./gco:CharacterString", nsContextISOParsing ), null );
+            String title = getNodeAsString( titleElem, new XPath( "./gco:CharacterString", nsContext ), null );
             String[] titleList = getNodesAsStrings( titleElem,
                                                     new XPath(
                                                                "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                               nsContextISOParsing ) );
+                                                               nsContext ) );
             if ( title != null ) {
                 if ( !title.equals( "" ) ) {
                     titleStringList.add( title );
@@ -522,14 +307,14 @@ public final class ISOQPParsing extends XMLAdapter {
         String specDateType = getNodeAsString( rootElement,
                                                new XPath(
                                                           "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
-                                                          nsContextISOParsing ), null );
+                                                          nsContext ), null );
         if ( specDateType != null ) {
             qp.setSpecificationDateType( specDateType );
         }
         String specificationDateString = getNodeAsString( rootElement,
                                                           new XPath(
                                                                      "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date",
-                                                                     nsContextISOParsing ), null );
+                                                                     nsContext ), null );
         Date dateSpecificationDate = null;
 
         try {
