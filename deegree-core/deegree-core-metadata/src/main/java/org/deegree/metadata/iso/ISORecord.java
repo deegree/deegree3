@@ -181,16 +181,14 @@ public class ISORecord implements MetadataRecord {
         briefSummaryLocalParts[22] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
     }
 
-    private static List<XPath> summaryFilterElementsXPath;
+    private static List<XPath> summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
 
-    private static List<XPath> briefFilterElementsXPath;
+    private static List<XPath> briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
 
     public ISORecord( XMLStreamReader xmlStream ) {
         this.root = new XMLAdapter( xmlStream ).getRootElement();
         this.pElem = new ISOQPParsing().parseAPISO( root );
         root.declareDefaultNamespace( "http://www.isotc211.org/2005/gmd" );
-        summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
-        briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
     }
 
     public ISORecord( OMElement root ) {
@@ -505,15 +503,12 @@ public class ISORecord implements MetadataRecord {
 
     }
 
-    private List<XPath> removeElementsXPath( String[] xpathExpr ) {
+    private static List<XPath> removeElementsXPath( String[] xpathExpr ) {
         List<XPath> removeElements = new ArrayList<XPath>();
         for ( String l : xpathExpr ) {
-
             removeElements.add( new XPath( l, ns ) );
         }
-
         return removeElements;
-
     }
 
     private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
