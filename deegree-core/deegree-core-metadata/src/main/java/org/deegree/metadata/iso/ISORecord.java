@@ -194,7 +194,7 @@ public class ISORecord implements MetadataRecord {
         this( root.getXMLStreamReader() );
     }
 
-    private ParsedProfileElement getParsedProfileElement() {
+    private synchronized ParsedProfileElement getParsedProfileElement() {
         if ( pElem == null ) {
             pElem = new ISOQPParsing().parseAPISO( root );
         }
