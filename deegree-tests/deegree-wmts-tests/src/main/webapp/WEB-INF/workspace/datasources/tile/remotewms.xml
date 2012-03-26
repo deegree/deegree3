@@ -19,7 +19,7 @@
   <!-- [1]: WMS request parameters -->
   <RequestParams>
     <!-- [1] Comma-separated list of layer names -->
-    <Layers>ZipCodes,CountyNames</Layers>
+    <Layers>SatelliteProvo,DominantVegetation</Layers>
     <!-- [0..1] Comma-separated list of styles -->
     <Styles>default,default</Styles>
     <!-- [1] Image format -->
