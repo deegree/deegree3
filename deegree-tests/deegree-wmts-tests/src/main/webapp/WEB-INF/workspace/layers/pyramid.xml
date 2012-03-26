@@ -17,4 +17,9 @@
     <l:Name>remotewms</l:Name>
     <d:Title>IT tile layer remotewms</d:Title>
   </TileLayer>
+  <TileLayer>
+    <TileStoreId>remotewms_cache</TileStoreId>
+    <l:Name>remotewms_cache</l:Name>
+    <d:Title>IT tile layer remotewms cached</d:Title>
+  </TileLayer>
 </TileLayers>

@@ -23,6 +23,11 @@
       <d:Title>IT test layer remotewms</d:Title>
       <Layer>remotewms</Layer>
     </Theme>
+    <Theme>
+      <Identifier>remotewms_cache</Identifier>
+      <d:Title>IT test layer remotewms cached</d:Title>
+      <Layer>remotewms_cache</Layer>
+    </Theme>
   </Theme>
 
 </Themes>

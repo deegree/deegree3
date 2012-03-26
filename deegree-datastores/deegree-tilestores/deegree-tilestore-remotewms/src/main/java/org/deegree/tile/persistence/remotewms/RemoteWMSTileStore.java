@@ -118,7 +118,6 @@ public class RemoteWMSTileStore implements TileStore {
         double minScaleDenominator = pyramidConfig.getMinScaleDenominator();
         int levels = pyramidConfig.getNumLevels().intValue();
         spatialMetadata = SpatialMetadataConverter.fromJaxb( config.getEnvelope(), config.getCRS() );
-        System.out.println( spatialMetadata.getEnvelope() );
         tileMatrixSet = buildTileMatrixSet( spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels );
     }
 
