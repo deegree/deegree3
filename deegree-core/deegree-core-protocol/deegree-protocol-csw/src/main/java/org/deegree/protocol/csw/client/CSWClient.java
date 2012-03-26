@@ -53,6 +53,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -68,6 +69,13 @@ import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
+import org.deegree.protocol.ows.metadata.domain.AllowedValues;
+import org.deegree.protocol.ows.metadata.domain.Domain;
+import org.deegree.protocol.ows.metadata.domain.PossibleValues;
+import org.deegree.protocol.ows.metadata.domain.Value;
+import org.deegree.protocol.ows.metadata.domain.Values;
+import org.deegree.protocol.ows.metadata.operation.DCP;
+import org.deegree.protocol.ows.metadata.operation.Operation;
 
 /**
  * API-level client for accessing servers that implement the <a
@@ -185,7 +193,8 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     public GetRecordsResponse getRecords( GetRecords getRecords )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
-        URL endPoint = getPostUrl( GetRecords.name() );
+
+        URL endPoint = getXMLPostUrl();
 
         StreamBufferStore request = new StreamBufferStore();
         try {
@@ -257,6 +266,54 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
         HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
         return initHttpClient;
+    }
+
+    /**
+     * Cope with <code>OperationMetadata</code> sections that specify separate SOAP and XML endpoints.
+     * 
+     * <pre>
+     *  &lt;ows:Operation name="GetRecords"&gt;
+     *    &lt;ows:DCP&gt;
+     *      &lt;ows:HTTP&gt;
+     *        &lt;ows:Post xlink:href="http://www..."&gt;
+     *          &lt;ows:Constraint name="PostEncoding"&gt;
+     *          &lt;ows:Value&gt;SOAP&lt;/ows:Value&gt;
+     *        &lt;/ows:Constraint&gt;
+     *      &lt;/ows:Post&gt;
+     *    &lt;/ows:HTTP&gt;
+     *  &lt;/ows:DCP&gt;
+     *  &lt;ows:DCP&gt;
+     *    &lt;ows:HTTP&gt;
+     *      &lt;ows:Post xlink:href="http://www..."&gt;
+     *        &lt;ows:Constraint name="PostEncoding"&gt;
+     *        &lt;ows:Value&gt;XML&lt;/ows:Value&gt;
+     *      &lt;/ows:Constraint&gt;
+     *    &lt;/ows:HTTP&gt;
+     *  &lt;/ows:DCP&gt;
+     * </pre>
+     * 
+     * @return endpoint URL for XML post requests, never <code>null</code>
+     */
+    private URL getXMLPostUrl() {
+        Operation operation = getOperations().getOperation( GetRecords.name() );
+        for ( DCP dcp : operation.getDCPs() ) {
+            for ( Pair<URL, List<Domain>> pe : dcp.getPostEndpoints() ) {
+                for ( Domain d : pe.second ) {
+                    if ( "PostEncoding".equals( d.getName() ) ) {
+                        PossibleValues pv = d.getPossibleValues();
+                        if ( pv instanceof AllowedValues ) {
+                            AllowedValues av = (AllowedValues) pv;
+                            for ( Values value : av.getValues() ) {
+                                if ( value instanceof Value && "XML".equalsIgnoreCase( ( (Value) value ).getValue() ) ) {
+                                    return pe.first;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return getPostUrl( GetRecords.name() );
     }
 
 }
