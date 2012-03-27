@@ -46,6 +46,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
@@ -53,7 +54,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.slf4j.Logger;
@@ -92,7 +92,8 @@ public class GeoTIFFTile implements Tile {
     }
 
     @Override
-    public BufferedImage getAsImage() {
+    public BufferedImage getAsImage()
+                            throws IOException {
         ImageReader reader = null;
         try {
             reader = (ImageReader) readerPool.borrowObject();
@@ -114,10 +115,10 @@ public class GeoTIFFTile implements Tile {
                 img = img2;
             }
             return img;
-        } catch ( Throwable e ) {
-            LOG.error( "Could not read GeoTIFF tile: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace: ", e );
-            return null;
+        } catch ( IOException e ) {
+            throw e;
+        } catch ( Exception e ) {
+            throw new IOException( "Error retrieving image: " + e.getMessage(), e );
         } finally {
             try {
                 readerPool.returnObject( reader );
@@ -128,26 +129,15 @@ public class GeoTIFFTile implements Tile {
     }
 
     @Override
-    public Envelope getEnvelope() {
-        return envelope;
+    public InputStream getAsStream()
+                            throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageIO.write( getAsImage(), "png", bos );
+        return new ByteArrayInputStream( bos.toByteArray() );
     }
 
     @Override
-    public InputStream getAsStream() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write( getAsImage(), "png", bos );
-            return new ByteArrayInputStream( bos.toByteArray() );
-        } catch ( Throwable e ) {
-            LOG.warn( "Tile from GeoTIFFTileStore could not be converted to stream: {}", e.getLocalizedMessage(), e );
-        } finally {
-            try {
-                bos.close();
-            } catch ( Throwable e ) {
-                // it's a byte array output stream
-            }
-        }
-        return null;
+    public Envelope getEnvelope() {
+        return envelope;
     }
-
 }

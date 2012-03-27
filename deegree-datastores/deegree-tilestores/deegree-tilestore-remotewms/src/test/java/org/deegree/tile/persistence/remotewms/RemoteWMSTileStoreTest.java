@@ -47,19 +47,25 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import junit.framework.Assert;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStoreManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * <code>GeoTIFFTileStoreTest</code>
+ * Basic test cases for the {@link RemoteWMSTileStore}.
+ * <p>
+ * These tests only check the correct extraction of metadata and the generation of the {@link TileMatrixSet}. Actual
+ * fetching of tile data is realized as integration tests (module deegree-wmts-tests).
+ * </p>
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -73,7 +79,6 @@ public class RemoteWMSTileStoreTest {
     @Before
     public void setup()
                             throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
-
         URL wsUrl = RemoteWMSTileStoreTest.class.getResource( "workspace" );
         ws = DeegreeWorkspace.getInstance( "remotewmstilestoretest", new File( wsUrl.toURI() ) );
         ws.initAll();
@@ -85,16 +90,34 @@ public class RemoteWMSTileStoreTest {
     }
 
     @Test
-    public void testGetMetdata() {
-        RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tile1" );
+    public void testGetMetdataEPSG26912() {
+        RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
         SpatialMetadata metadata = store.getMetadata();
         assertEquals( 1, metadata.getCoordinateSystems().size() );
-        assertEquals( "EPSG:4326", metadata.getCoordinateSystems().get( 0 ).getAlias() );
-        assertEquals( -114.2766, metadata.getEnvelope().getMin().get0(), 0.0001 );
-        assertEquals( 36.96, metadata.getEnvelope().getMin().get1(), 0.0001 );
-        assertEquals( -108.8986, metadata.getEnvelope().getMax().get0(), 0.0001 );
-        assertEquals( 42.0343, metadata.getEnvelope().getMax().get1(), 0.0001 );        
+        assertEquals( "urn:opengis:def:crs:epsg::26912", metadata.getCoordinateSystems().get( 0 ).getId() );
+        assertEquals( 228563.303, metadata.getEnvelope().getMin().get0(), 0.001 );
+        assertEquals( 4094785.05, metadata.getEnvelope().getMin().get1(), 0.001 );
+        assertEquals( 673991.803, metadata.getEnvelope().getMax().get0(), 0.001 );
+        assertEquals( 4653591.55, metadata.getEnvelope().getMax().get1(), 0.001 );
     }
 
-    
+    @Test
+    public void testGetTileMatrixSetEPSG26912() {
+        RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
+        TileMatrixSet matrixSet = store.getTileMatrixSet();
+        assertEquals( "image/png", matrixSet.getMetadata().getFormat() );
+
+        assertEquals( 10, matrixSet.getTileMatrices().size() );
+        double scale = 1000.0;
+        double resolution = MapUtils.DEFAULT_PIXEL_SIZE * scale;
+        for ( TileMatrix matrix : matrixSet.getTileMatrices() ) {
+            TileMatrixMetadata md = matrix.getMetadata();
+            assertEquals( Double.toString( scale ), md.getIdentifier() );
+            assertEquals( resolution, md.getResolution(), 0.001 );
+            assertEquals( resolution * md.getTilePixelsX(), md.getTileWidth(), 0.001 );
+            assertEquals( resolution * md.getTilePixelsY(), md.getTileHeight(), 0.001 );
+            scale *= 2.0;
+            resolution *= 2.0;
+        }
+    }
 }

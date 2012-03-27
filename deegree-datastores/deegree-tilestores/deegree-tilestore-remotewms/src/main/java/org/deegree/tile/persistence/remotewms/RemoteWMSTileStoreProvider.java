@@ -41,6 +41,7 @@
 package org.deegree.tile.persistence.remotewms;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.URL;
@@ -54,6 +55,7 @@ import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
+import org.slf4j.Logger;
 
 /**
  * {@link TileStoreProvider} for the {@link RemoteWMSTileStore}.
@@ -64,6 +66,8 @@ import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
  * @version $Revision$
  */
 public class RemoteWMSTileStoreProvider implements TileStoreProvider {
+
+    private static final Logger LOG = getLogger( RemoteWMSTileStoreProvider.class );
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/remotewms";
 
@@ -88,6 +92,8 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
 
             return new RemoteWMSTileStore( config );
         } catch ( Throwable e ) {
+            String msg = "Unable to create RemoteWMSTileStore: " + e.getMessage();
+            LOG.error( msg, e );
             throw new ResourceInitException( "Unable to create RemoteWMSTileStore: " + e.getMessage(), e );
         }
     }

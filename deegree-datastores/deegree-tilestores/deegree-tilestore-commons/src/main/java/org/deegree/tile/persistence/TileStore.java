@@ -99,5 +99,4 @@ public interface TileStore extends Resource {
      * @return the tile or null, if no such tile
      */
     Tile getTile( String tileMatrix, int x, int y );
-
 }

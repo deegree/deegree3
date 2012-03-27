@@ -45,6 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
@@ -76,13 +77,8 @@ public class CachedTile implements Tile {
     }
 
     @Override
-    public BufferedImage getAsImage() {
-        try {
-            return ImageIO.read( new ByteArrayInputStream( bs ) );
-        } catch ( Throwable e ) {
-            LOG.warn( "Could not read cached tile as image." );
-        }
-        return null;
+    public BufferedImage getAsImage() throws IOException {
+        return ImageIO.read( new ByteArrayInputStream( bs ) );
     }
 
     @Override
@@ -94,5 +90,4 @@ public class CachedTile implements Tile {
     public Envelope getEnvelope() {
         return envelope;
     }
-
 }

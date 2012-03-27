@@ -40,13 +40,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
+import static java.awt.Color.RED;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
+import org.slf4j.Logger;
 
 /**
  * <code>Java2DTileRenderer</code>
@@ -58,6 +63,8 @@ import org.deegree.tile.Tile;
  */
 
 public class Java2DTileRenderer implements TileRenderer {
+
+    private static final Logger LOG = getLogger( Java2DTileRenderer.class );
 
     private Graphics2D graphics;
 
@@ -86,7 +93,12 @@ public class Java2DTileRenderer implements TileRenderer {
                                                       null );
         maxx = MathUtils.round( p.x );
         maxy = MathUtils.round( p.y );
-        graphics.drawImage( tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null );
+        try {
+            graphics.drawImage( tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null );
+        } catch ( IOException e ) {
+            LOG.debug( "Error retrieving tile image: " + e.getMessage() );
+            graphics.setColor( RED );
+            graphics.fillRect( minx, miny, maxx - minx, maxy - miny );
+        }
     }
-
 }

@@ -56,27 +56,41 @@ class RemoteWMSTileMatrix implements TileMatrix {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
-    private TileMatrixMetadata metadata;
+    private final TileMatrixMetadata metadata;
 
-    private RemoteWMSTileStore store;
+    private final RemoteWMSTileStore store;
 
-    private int tileSizeX, tileSizeY;
+    private final int tileSizeX, tileSizeY;
 
-    private String format;
+    private final String format;
 
-    private List<String> layers;
+    private final List<String> layers;
 
-    private List<String> styles;
+    private final List<String> styles;
 
-    RemoteWMSTileMatrix( TileMatrixMetadata metadata, RemoteWMSTileStore store, String format, List<String> layers,
+    /**
+     * Creates a new {@link RemoteWMSTileMatrix} instance.
+     * 
+     * @param tileMd
+     *            matrix metadata, must not be <code>null</code>
+     * @param store
+     *            store that backs the tile data, must not be <code>null</code>
+     * @param format
+     *            format to request tile images, must not be <code>null</code>
+     * @param layers
+     *            WMS layers to request, must not be <code>null</code>
+     * @param styles
+     *            WMS styles to request, must not be <code>null</code>
+     */
+    RemoteWMSTileMatrix( TileMatrixMetadata tileMd, RemoteWMSTileStore store, String format, List<String> layers,
                          List<String> styles ) {
-        this.metadata = metadata;
+        this.metadata = tileMd;
         this.store = store;
         this.format = format;
         this.layers = layers;
         this.styles = styles;
-        this.tileSizeX = metadata.getTilePixelsX();
-        this.tileSizeY = metadata.getTilePixelsY();
+        this.tileSizeX = tileMd.getTilePixelsX();
+        this.tileSizeY = tileMd.getTilePixelsY();
     }
 
     @Override

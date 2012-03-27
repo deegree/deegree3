@@ -41,9 +41,8 @@
 
 package org.deegree.tile.persistence.remotewms;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
@@ -52,55 +51,48 @@ import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
-import org.slf4j.Logger;
 
 /**
- * <code>RemoteWMSTile</code>
+ * {@link Tile} implementation used by the {@link RemoteWMSTileStore}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
-public class RemoteWMSTile implements Tile {
-
-    private static final Logger LOG = getLogger( RemoteWMSTile.class );
+class RemoteWMSTile implements Tile {
 
     private WMSClient client;
 
     private GetMap gm;
 
-    public RemoteWMSTile( WMSClient client, GetMap gm ) {
+    /**
+     * Creates a new {@link RemoteWMSTile} instance.
+     * 
+     * @param client
+     *            client to use for performing the {@link GetMap} request, never <code>null</code>
+     * @param gm
+     *            request for retrieving the tile image, never <code>null</code>
+     */
+    RemoteWMSTile( WMSClient client, GetMap gm ) {
         this.client = client;
         this.gm = gm;
     }
 
     @Override
-    public BufferedImage getAsImage() {
-        try {
-            return ImageIO.read( getAsStream() );
-        } catch ( Throwable e ) {
-            LOG.error( "Unable to fetch tile from remote WMS: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
+    public BufferedImage getAsImage()
+                            throws IOException {
+        return ImageIO.read( getAsStream() );
     }
 
     @Override
-    public InputStream getAsStream() {
-        try {
-            return client.getMap( gm );
-        } catch ( Throwable e ) {
-            LOG.error( "Unable to fetch tile from remote WMS: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
+    public InputStream getAsStream()
+                            throws IOException {
+        return client.getMap( gm );
     }
 
     @Override
     public Envelope getEnvelope() {
         return gm.getBoundingBox();
     }
-
 }

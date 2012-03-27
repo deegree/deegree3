@@ -45,6 +45,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.deegree.commons.config.ResourceInitException;
@@ -68,7 +69,7 @@ public class GeoTIFFTileStoreTest {
 
     @Test
     public void testGetTiles()
-                            throws ResourceInitException {
+                            throws ResourceInitException, IOException {
         File file = new File( "/stick/merged.tif" );
         assumeTrue( file.exists() );
         TileStore ts = new GeoTIFFTileStore( file, null );

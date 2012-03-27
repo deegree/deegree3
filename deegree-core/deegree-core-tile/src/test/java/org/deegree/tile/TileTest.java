@@ -42,6 +42,9 @@ package org.deegree.tile;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -64,10 +67,9 @@ public class TileTest extends TestCase {
     }
 
     @Test
-    public void testGetAsImage() {
+    public void testGetAsImage() throws IOException {
         Tile t = mock( Tile.class );
         t.getAsImage();
         verify( t ).getAsImage();
     }
-
 }

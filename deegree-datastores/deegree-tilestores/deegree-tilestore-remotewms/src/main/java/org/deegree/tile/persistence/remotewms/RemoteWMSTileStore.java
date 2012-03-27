@@ -42,7 +42,10 @@ package org.deegree.tile.persistence.remotewms;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
+import static org.deegree.cs.components.Unit.METRE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,7 +55,12 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.math.MathUtils;
+import org.deegree.cs.components.IAxis;
+import org.deegree.cs.components.IUnit;
+import org.deegree.cs.components.Unit;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
@@ -70,6 +78,7 @@ import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.RequestParams;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TilePyramid;
+import org.slf4j.Logger;
 
 /**
  * {@link TileStore} that is backed by a remote WMS instance.
@@ -84,7 +93,9 @@ import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TilePy
  */
 public class RemoteWMSTileStore implements TileStore {
 
-    // private static final Logger LOG = getLogger( RemoteWMSTileStore.class );
+    private static final Logger LOG = getLogger( RemoteWMSTileStore.class );
+
+    private final RemoteWMSTileStoreJAXB config;
 
     private final String remoteWmsId;
 
@@ -94,31 +105,31 @@ public class RemoteWMSTileStore implements TileStore {
 
     private final String format;
 
-    private final TileMatrixSet tileMatrixSet;
-
     private WMSClient client;
+
+    private TileMatrixSet tileMatrixSet;
 
     private SpatialMetadata spatialMetadata;
 
+    /**
+     * Creates a new {@link RemoteWMSTileStore} instance.
+     * 
+     * @param config
+     *            configuration, must not be <code>null</code>
+     * @throws UnknownCRSException
+     */
     public RemoteWMSTileStore( RemoteWMSTileStoreJAXB config ) throws UnknownCRSException {
+        this.config = config;
         this.remoteWmsId = config.getRemoteWMSId();
         RequestParams requestParams = config.getRequestParams();
         layers = splitNullSafe( requestParams.getLayers() );
         styles = splitNullSafe( requestParams.getStyles() );
         format = requestParams.getFormat();
-        // LOG.info( "remote WMS id: " + remoteWmsId );
-        // LOG.info( "crs: " + crs );
-        // LOG.info( "request layers: " + layers );
-        // LOG.info( "request styles: " + styles );
-        // LOG.info( "request format: " + format );
-
-        TilePyramid pyramidConfig = config.getTilePyramid();
-        int tileWidth = pyramidConfig.getTileWidth().intValue();
-        int tileHeight = pyramidConfig.getTileHeight().intValue();
-        double minScaleDenominator = pyramidConfig.getMinScaleDenominator();
-        int levels = pyramidConfig.getNumLevels().intValue();
-        spatialMetadata = SpatialMetadataConverter.fromJaxb( config.getEnvelope(), config.getCRS() );
-        tileMatrixSet = buildTileMatrixSet( spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels );
+        LOG.debug( "remote WMS id: " + remoteWmsId );
+        LOG.debug( "crs: " + config.getCRS() );
+        LOG.debug( "request layers: " + layers );
+        LOG.debug( "request styles: " + styles );
+        LOG.debug( "request format: " + format );
     }
 
     private List<String> splitNullSafe( String csv ) {
@@ -127,29 +138,6 @@ public class RemoteWMSTileStore implements TileStore {
         }
         String[] tokens = StringUtils.split( csv, "," );
         return asList( tokens );
-    }
-
-    private TileMatrixSet buildTileMatrixSet( SpatialMetadata smd, int tileWidth, int tileHeight, double scale,
-                                              int levels ) {
-        List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
-        double span0 = smd.getEnvelope().getSpan0();
-        double span1 = smd.getEnvelope().getSpan1();
-
-        for ( int i = 0; i < levels; i++ ) {
-            String id = Double.toString( scale );
-            double res = scale * DEFAULT_PIXEL_SIZE;
-            int numx = MathUtils.round( Math.ceil( span0 / ( res * tileWidth ) ) );
-            int numy = MathUtils.round( Math.ceil( span1 / ( res * tileHeight ) ) );
-
-            TileMatrixMetadata md = new TileMatrixMetadata( id, smd, tileWidth, tileHeight, res, numx, numy );
-
-            TileMatrix m = new RemoteWMSTileMatrix( md, this, format, layers, styles );
-            matrices.add( m );
-
-            scale *= 2;
-        }
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( format,
-                                                                              smd.getEnvelope().getCoordinateSystem() ) );
     }
 
     @Override
@@ -164,10 +152,86 @@ public class RemoteWMSTileStore implements TileStore {
         }
 
         client = ( (RemoteWMS) store ).getClient();
-        // List<LayerMetadata> reportedLayers = client.getLayerTree().flattenDepthFirst();
-        // for ( LayerMetadata layerMd : reportedLayers ) {
-        // LOG.info( layerMd.getName() );
-        // }
+
+        ICRS crs = null;
+        try {
+            crs = CRSManager.lookup( config.getCRS() );
+        } catch ( UnknownCRSException e ) {
+            throw new ResourceInitException( "Configured CRS ('" + config.getCRS() + "') is not known." );
+        }
+
+        tileMatrixSet = buildTileMatrixSet( crs, config );
+    }
+
+    private TileMatrixSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB config ) {
+        TilePyramid pyramidConfig = config.getTilePyramid();
+        int tileWidth = pyramidConfig.getTileWidth().intValue();
+        int tileHeight = pyramidConfig.getTileHeight().intValue();
+        double minScaleDenominator = pyramidConfig.getMinScaleDenominator();
+        int levels = pyramidConfig.getNumLevels().intValue();
+        if ( config.getEnvelope() == null ) {
+            Envelope bbox = client.getBoundingBox( config.getCRS(), layers );
+            spatialMetadata = new SpatialMetadata( bbox, singletonList( crs ) );
+        } else {
+            spatialMetadata = SpatialMetadataConverter.fromJaxb( config.getEnvelope(), config.getCRS() );
+        }
+        return buildTileMatrixSet( spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels );
+    }
+
+    private TileMatrixSet buildTileMatrixSet( SpatialMetadata smd, int tileWidth, int tileHeight,
+                                              double scaleDenominator, int levels ) {
+
+        List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
+        Envelope bbox = smd.getEnvelope();
+        double span0 = bbox.getSpan0();
+        double span1 = bbox.getSpan1();
+
+        for ( int i = 0; i < levels; i++ ) {
+            String id = Double.toString( scaleDenominator );
+            double res = calcWorldResolution( scaleDenominator, bbox );
+            int numX = MathUtils.round( Math.ceil( span0 / ( res * tileWidth ) ) );
+            int numY = MathUtils.round( Math.ceil( span1 / ( res * tileHeight ) ) );
+
+            TileMatrixMetadata md = new TileMatrixMetadata( id, smd, tileWidth, tileHeight, res, numX, numY );
+
+            TileMatrix m = new RemoteWMSTileMatrix( md, this, format, layers, styles );
+            matrices.add( m );
+
+            scaleDenominator *= 2;
+        }
+        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( format, bbox.getCoordinateSystem() ) );
+    }
+
+    /**
+     * Calculates the resolution (side length of a pixel in world coordinates).
+     * 
+     * @param scaleDenominator
+     *            (factor for transforming a screen to a world length)
+     * @return resolution of a pixel in world coordinates
+     */
+    private double calcWorldResolution( double scaleDenominator, Envelope bbox ) {
+        ICRS crs = bbox.getCoordinateSystem();
+        IUnit unit = null;
+        for ( IAxis axis : crs.getAxis() ) {
+            IUnit axisUnit = axis.getUnits();
+            if ( unit != null && !unit.equals( axisUnit ) ) {
+                String msg = "Unable to calculate world resolution. CRS (" + crs.getAlias()
+                             + ") uses axes with different UOMs.";
+                throw new IllegalArgumentException( msg );
+            }
+            unit = axisUnit;
+        }
+        if ( unit == null ) {
+            String msg = "Unable to calculate world resolution. CRS (" + crs.getAlias() + ") has no axes!?";
+            throw new IllegalArgumentException( msg );
+        }
+        if ( unit.getBaseType().equals( METRE ) ) {
+            double factor = unit.convert( 1.0, Unit.METRE );
+            return factor * scaleDenominator * DEFAULT_PIXEL_SIZE;
+        }
+        String msg = "Unable to calculate world resolution. Cannot convert units of CRS (" + crs.getAlias()
+                     + ") to meters.";
+        throw new IllegalArgumentException( msg );
     }
 
     @Override
@@ -177,9 +241,7 @@ public class RemoteWMSTileStore implements TileStore {
 
     @Override
     public SpatialMetadata getMetadata() {
-        // Envelope bbox = client.getBoundingBox( crs, layers );
         return spatialMetadata;
-        // new SpatialMetadata( bbox, singletonList( bbox.getCoordinateSystem() ) );
     }
 
     @Override
@@ -201,8 +263,12 @@ public class RemoteWMSTileStore implements TileStore {
         return m.getTile( x, y );
     }
 
+    /**
+     * Returns a {@link WMSClient} instance for accessing the remote WMS instance.
+     * 
+     * @return WMS client, never <code>null</code>
+     */
     WMSClient getClient() {
         return client;
     }
-
 }
