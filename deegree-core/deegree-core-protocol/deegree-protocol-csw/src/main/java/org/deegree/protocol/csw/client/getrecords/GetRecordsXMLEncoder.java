@@ -99,9 +99,13 @@ public class GetRecordsXMLEncoder {
         writer.writeAttribute( "typeNames", typeNames );
         writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "ElementSetName", CSW_202_NS );
         writer.writeCharacters( getRecords.getElementSetName().toString() );
-
+        writer.writeEndElement();
+        
         if ( getRecords.getConstraint() != null ) {
+            writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "Constraint", CSW_202_NS );
+            writer.writeAttribute( "version", "1.1.0" );
             Filter110XMLEncoder.export( getRecords.getConstraint(), writer );
+            writer.writeEndElement();    
         }
     }
 

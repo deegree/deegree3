@@ -36,6 +36,9 @@
 package org.deegree.protocol.csw.client.getrecords;
 
 import static junit.framework.Assert.assertTrue;
+import static org.deegree.commons.xml.CommonNamespaces.APISO;
+import static org.deegree.commons.xml.CommonNamespaces.APISO_PREFIX;
+import static org.deegree.filter.MatchAction.ANY;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -56,9 +59,17 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.filter.Expression;
+import org.deegree.filter.Filter;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Assume;
@@ -104,6 +115,29 @@ public class TestGetRecordsXMLEncoderTest {
         assertTrue( true );
     }
 
+    @Test
+    public void testExportFilter()
+                            throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
+                            TransformationException, IOException, SAXException {
+        Expression param1 = new ValueReference( new QName( APISO, "Identifier", APISO_PREFIX ) );
+        Expression param2 = new Literal<PrimitiveValue>( "3528635identifer18745" );
+        Operator rootOperator = new PropertyIsEqualTo( param1, param2, true, ANY );
+        Filter filter = new OperatorFilter( rootOperator );
+        
+        GetRecords getRecords = new GetRecords(
+                                                new Version( 2, 0, 2 ),
+                                                10,
+                                                15,
+                                                "application/xml",
+                                                "http://www.isotc211.org/2005/gmd",
+                                                Collections.singletonList( new QName(
+                                                                                      CommonNamespaces.ISOAP10GMDNS,
+                                                                                      "MD_Metadata",
+                                                                                      CommonNamespaces.ISOAP10GMD_PREFIX ) ),
+                                                ResultType.results, ReturnableElement.full, filter );
+        validateGetRecordsRequest( getRecords );
+        assertTrue( true );
+    }
     private void validateGetRecordsRequest( GetRecords getRecords )
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
