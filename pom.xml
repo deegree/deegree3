@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
@@ -124,7 +125,7 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-            <plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <version>1.0</version>
@@ -169,6 +170,22 @@
       </plugin>
     </plugins>
   </build>
+
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.9.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -224,11 +241,11 @@
               </reportPlugins>
             </configuration>
             <dependencies>
-		      <dependency>
-		        <groupId>org.apache.maven.wagon</groupId>
-		        <artifactId>wagon-ssh</artifactId>
-		        <version>1.0</version>
-		    </dependency>
+              <dependency>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0</version>
+              </dependency>
             </dependencies>
           </plugin>
         </plugins>
@@ -263,7 +280,7 @@
     <system>Trac</system>
     <url>http://tracker.deegree.org/deegree-services/</url>
   </issueManagement>
-  
+
   <developers>
     <developer>
       <name>Markus Schneider</name>
@@ -278,7 +295,7 @@
       <email>buesching@lat-lon.de</email>
     </developer>
   </developers>
-  
+
   <mailingLists>
     <mailingList>
       <name>deegree users mailing list</name>
@@ -301,9 +318,9 @@
       <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=deegree-announce</archive>
     </mailingList>
   </mailingLists>
-  
+
   <description>
     deegree 3 is the new generation of the deegree Java framework for geospatial applications and OGC service implementations.
   </description>
-  
+
 </project>
