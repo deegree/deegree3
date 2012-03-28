@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -31,58 +31,30 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+ http://www.occamlabs.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+
 package org.deegree.tile.persistence;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.tile.Tile;
 
 /**
- * TODO add class documentation here
+ * <code>AbstractTileStoreTransaction</code>
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public interface TileStoreTransaction {
 
-    /**
-     * Update or add a specific tile.
-     * 
-     * @param tileMatrix
-     *            the tile matrix id
-     * @param tile
-     *            the tile
-     * @param x
-     *            column index
-     * @param y
-     *            row index
-     */
-    void put( String tileMatrix, Tile tile, int x, int y );
+public abstract class AbstractTileStoreTransaction implements TileStoreTransaction {
 
-    /**
-     * Delete a specific tile.
-     * 
-     * @param tileMatrix
-     *            the tile matrix id
-     * @param x
-     *            column index
-     * @param y
-     *            row index
-     */
-    void delete( String tileMatrix, int x, int y );
-
-    /**
-     * Delete all tiles intersecting with the given envelope. If tileMatrix is null, tiles will be deleted from all tile
-     * matrices.
-     * 
-     * @param tileMatrix
-     *            the tile matrix id
-     * @param envelope
-     *            the envelope
-     */
-    void delete( String tileMatrix, Envelope envelope );
+    public void delete( String tileMatrix, Envelope envelope ) {
+    }
 
 }

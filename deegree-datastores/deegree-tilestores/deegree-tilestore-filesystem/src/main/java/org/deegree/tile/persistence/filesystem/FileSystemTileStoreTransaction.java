@@ -35,21 +35,35 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
+import org.deegree.tile.Tile;
+import org.deegree.tile.persistence.AbstractTileStoreTransaction;
 import org.deegree.tile.persistence.TileStoreTransaction;
 
 /**
  * {@link TileStoreTransaction} for the {@link FileSystemTileStore}.
- *
+ * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FileSystemTileStoreTransaction implements TileStoreTransaction {
+public class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
     public FileSystemTileStoreTransaction( FileSystemTileStore fileSystemTileStore ) {
         // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public void put( String tileMatrix, Tile tile, int x, int y ) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void delete( String tileMatrix, int x, int y ) {
+        // TODO Auto-generated method stub
+
     }
 
 }
