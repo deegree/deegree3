@@ -50,7 +50,7 @@ import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
 import org.slf4j.Logger;
 
 /**
- * {@link TileStore} that is backed by a directory hierarchy of image tiles.
+ * {@link TileStore} that is backed by image files on the file system.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>

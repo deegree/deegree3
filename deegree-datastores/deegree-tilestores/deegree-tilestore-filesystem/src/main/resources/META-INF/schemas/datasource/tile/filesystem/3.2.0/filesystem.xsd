@@ -13,8 +13,7 @@
 
   <element name="FileSystemTileStore">
     <annotation>
-      <documentation>TileStore that is backed by a directory hierarchy of image tiles.
-      </documentation>
+      <documentation>TileStore that is backed by a image files on the file system.</documentation>
       <appinfo>
         <jaxb:class name="FileSystemTileStoreJAXB" />
       </appinfo>
@@ -52,7 +51,8 @@
         <element name="TileCacheDiskLayout">
           <annotation>
             <documentation>Points to a hierarchy of tile file directories as used by TileCache
-              (http://www.tilecache.org)</documentation>
+              (http://www.tilecache.org)
+            </documentation>
           </annotation>
           <complexType>
             <sequence>
