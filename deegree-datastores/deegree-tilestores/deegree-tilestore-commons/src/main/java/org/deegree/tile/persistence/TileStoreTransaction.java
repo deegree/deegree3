@@ -39,9 +39,10 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 
 /**
- * TODO add class documentation here
+ * Provides transactional access to a {@link TileStore}.
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -49,7 +50,7 @@ import org.deegree.tile.Tile;
 public interface TileStoreTransaction {
 
     /**
-     * Update or add a specific tile.
+     * Updates or adds a specific tile.
      * 
      * @param tileMatrix
      *            the tile matrix id
@@ -63,7 +64,7 @@ public interface TileStoreTransaction {
     void put( String tileMatrix, Tile tile, int x, int y );
 
     /**
-     * Delete a specific tile.
+     * Deletes a specific tile.
      * 
      * @param tileMatrix
      *            the tile matrix id
@@ -75,7 +76,7 @@ public interface TileStoreTransaction {
     void delete( String tileMatrix, int x, int y );
 
     /**
-     * Delete all tiles intersecting with the given envelope. If tileMatrix is null, tiles will be deleted from all tile
+     * Deletes all tiles intersecting with the given envelope. If tileMatrix is null, tiles will be deleted from all tile
      * matrices.
      * 
      * @param tileMatrix
@@ -84,5 +85,4 @@ public interface TileStoreTransaction {
      *            the envelope
      */
     void delete( String tileMatrix, Envelope envelope );
-
 }

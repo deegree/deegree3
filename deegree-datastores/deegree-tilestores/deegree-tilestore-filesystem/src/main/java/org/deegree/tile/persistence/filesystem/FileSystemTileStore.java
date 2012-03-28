@@ -41,7 +41,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
@@ -64,11 +63,17 @@ public class FileSystemTileStore implements TileStore {
     private static final Logger LOG = getLogger( FileSystemTileStore.class );
 
     private final FileSystemTileStoreJAXB config;
-    
-    private DefaultTileMatrixSet tileMatrixSet;
+
+    private TileMatrixSet tileMatrixSet;
 
     private SpatialMetadata spatialMetadata;
 
+    /**
+     * Creates a new {@link FileSystemTileStore} instance.
+     * 
+     * @param config
+     *            JAXB configuration, must not be <code>null</code>
+     */
     public FileSystemTileStore( FileSystemTileStoreJAXB config ) {
         this.config = config;
     }
@@ -110,6 +115,6 @@ public class FileSystemTileStore implements TileStore {
 
     @Override
     public TileStoreTransaction acquireTransaction() {
-        return new FileSystemTileStoreTransaction(this);
+        return new FileSystemTileStoreTransaction( this );
     }
 }

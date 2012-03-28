@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,38 +35,68 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+
+import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
-import org.deegree.tile.persistence.AbstractTileStoreTransaction;
-import org.deegree.tile.persistence.TileStoreTransaction;
+import org.deegree.tile.TileIOException;
 
 /**
- * {@link TileStoreTransaction} for the {@link FileSystemTileStore}.
+ * A {@link Tile} that is backed by an image file on the file system.
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
+class FileSystemTile implements Tile {
+
+    private final Envelope bbox;
+
+    private final File file;
 
     /**
-     * Creates a new {@link FileSystemTileStoreTransaction}.
+     * Creates a new {@link FileSystemTile} instance.
      * 
-     * @param store
-     *            tile store, must not be <code>null</code>
+     * @param bbox
+     *            envelope of the tile, must not be <code>null</code>
+     * @param file
+     *            image file, must not be <code>null</code> and point to an existing image file
      */
-    FileSystemTileStoreTransaction( FileSystemTileStore store ) {
-        super( store );
+    FileSystemTile( Envelope bbox, File file ) {
+        this.bbox = bbox;
+        this.file = file;
     }
 
     @Override
-    public void put( String tileMatrix, Tile tile, int x, int y ) {
-        // TODO Auto-generated method stub
+    public BufferedImage getAsImage()
+                            throws TileIOException {
+        try {
+            return ImageIO.read( getAsStream() );
+        } catch ( IOException e ) {
+            throw new TileIOException( "Error decoding tile from file '" + file + "'" + e.getMessage(), e );
+        }
     }
 
     @Override
-    public void delete( String tileMatrix, int x, int y ) {
-        // TODO Auto-generated method stub
+    public InputStream getAsStream()
+                            throws TileIOException {
+        try {
+            return new FileInputStream( file );
+        } catch ( FileNotFoundException e ) {
+            throw new TileIOException( "Tile file '" + file + "' does not exist." );
+        }
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        return bbox;
     }
 }

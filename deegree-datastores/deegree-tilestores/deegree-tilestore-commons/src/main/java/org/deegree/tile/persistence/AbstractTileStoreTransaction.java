@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -42,19 +42,54 @@
 package org.deegree.tile.persistence;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.tile.TileMatrix;
+import org.deegree.tile.Tiles;
 
 /**
- * <code>AbstractTileStoreTransaction</code>
+ * Provides base functionality for implementations of {@link TileStoreTransaction}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public abstract class AbstractTileStoreTransaction implements TileStoreTransaction {
 
-    public void delete( String tileMatrix, Envelope envelope ) {
+    protected final TileStore store;
+
+    /**
+     * Creates a new {@link AbstractTileStoreTransaction} instance.
+     * 
+     * @param store
+     *            associated tile store, must not be <code>null</code>
+     */
+    protected AbstractTileStoreTransaction( TileStore store ) {
+        this.store = store;
     }
 
+    @Override
+    public void delete( String tileMatrixId, Envelope env ) {
+        if ( tileMatrixId == null ) {
+            for ( TileMatrix matrix : store.getTileMatrixSet().getTileMatrices() ) {
+                delete( matrix, env );
+            }
+        } else {
+            TileMatrix matrix = store.getTileMatrixSet().getTileMatrix( tileMatrixId );
+            delete( matrix, env );
+        }
+    }
+
+    private void delete( TileMatrix matrix, Envelope env ) {
+        int[] tileIndexRange = Tiles.getTileIndexRange( matrix, env );
+        int minX = tileIndexRange[0];
+        int minY = tileIndexRange[1];
+        int maxX = tileIndexRange[2];
+        int maxY = tileIndexRange[3];
+        for ( int x = minX; x <= maxX; x++ ) {
+            for ( int y = minY; y <= maxY; y++ ) {
+                delete( matrix.getMetadata().getIdentifier(), x, y );
+            }
+        }
+    }
 }
