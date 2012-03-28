@@ -51,6 +51,7 @@ import java.util.Iterator;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
@@ -69,7 +70,7 @@ public class GeoTIFFTileStoreTest {
 
     @Test
     public void testGetTiles()
-                            throws ResourceInitException, IOException {
+                            throws ResourceInitException, IOException, TileIOException {
         File file = new File( "/stick/merged.tif" );
         assumeTrue( file.exists() );
         TileStore ts = new GeoTIFFTileStore( file, null );

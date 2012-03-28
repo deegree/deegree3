@@ -46,11 +46,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.io.IOException;
 
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 import org.slf4j.Logger;
 
 /**
@@ -95,7 +95,7 @@ public class Java2DTileRenderer implements TileRenderer {
         maxy = MathUtils.round( p.y );
         try {
             graphics.drawImage( tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null );
-        } catch ( IOException e ) {
+        } catch ( TileIOException e ) {
             LOG.debug( "Error retrieving tile image: " + e.getMessage() );
             graphics.setColor( RED );
             graphics.fillRect( minx, miny, maxx - minx, maxy - miny );

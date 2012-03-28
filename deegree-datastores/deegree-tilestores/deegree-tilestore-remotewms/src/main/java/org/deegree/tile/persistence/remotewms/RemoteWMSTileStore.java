@@ -75,6 +75,7 @@ import org.deegree.tile.TileMatrixMetadata;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.RequestParams;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TilePyramid;
@@ -270,5 +271,10 @@ public class RemoteWMSTileStore implements TileStore {
      */
     WMSClient getClient() {
         return client;
+    }
+
+    @Override
+    public TileStoreTransaction acquireTransaction() {
+        throw new UnsupportedOperationException( "RemoteWMSTileStore does not support transactions." );
     }
 }

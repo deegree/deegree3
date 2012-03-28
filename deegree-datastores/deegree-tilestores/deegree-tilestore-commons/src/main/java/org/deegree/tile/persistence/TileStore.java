@@ -99,4 +99,13 @@ public interface TileStore extends Resource {
      * @return the tile or null, if no such tile
      */
     Tile getTile( String tileMatrix, int x, int y );
+
+    /**
+     * Acquires transactional access to the tile store.
+     * 
+     * @return transaction object that allows to perform transactions operations on the store, never <code>null</code>
+     * @throws FeatureStoreException
+     *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
+     */
+    TileStoreTransaction acquireTransaction();
 }

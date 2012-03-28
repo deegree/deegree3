@@ -56,6 +56,7 @@ import javax.imageio.ImageReader;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 import org.slf4j.Logger;
 
 /**
@@ -93,7 +94,7 @@ public class GeoTIFFTile implements Tile {
 
     @Override
     public BufferedImage getAsImage()
-                            throws IOException {
+                            throws TileIOException {
         ImageReader reader = null;
         try {
             reader = (ImageReader) readerPool.borrowObject();
@@ -115,10 +116,8 @@ public class GeoTIFFTile implements Tile {
                 img = img2;
             }
             return img;
-        } catch ( IOException e ) {
-            throw e;
         } catch ( Exception e ) {
-            throw new IOException( "Error retrieving image: " + e.getMessage(), e );
+            throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
         } finally {
             try {
                 readerPool.returnObject( reader );
@@ -130,9 +129,13 @@ public class GeoTIFFTile implements Tile {
 
     @Override
     public InputStream getAsStream()
-                            throws IOException {
+                            throws TileIOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write( getAsImage(), "png", bos );
+        try {
+            ImageIO.write( getAsImage(), "png", bos );
+        } catch ( IOException e ) {
+            throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
+        }
         return new ByteArrayInputStream( bos.toByteArray() );
     }
 

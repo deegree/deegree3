@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -31,45 +31,55 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs UG (haftungsbeschränkt)
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-
-import junit.framework.TestCase;
-
-import org.junit.Test;
+package org.deegree.tile.persistence;
 
 /**
- * <code>TestTile</code>
+ * Indicates an exception that occured in the tile persistence layer.
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
+ * @version $Revision$, $Date$
  */
-public class TileTest extends TestCase {
+public class TileStoreException extends RuntimeException {
 
-    @Test
-    public void testGetEnvelope() {
-        Tile t = mock( Tile.class );
-        t.getEnvelope();
-        verify( t ).getEnvelope();
+    private static final long serialVersionUID = -336113433539622673L;
+
+    /**
+     * Creates a new {@link FeatureStoreException} without detail message.
+     */
+    public TileStoreException() {
+        super();
     }
 
-    @Test
-    public void testGetAsImage() throws TileIOException {
-        Tile t = mock( Tile.class );
-        t.getAsImage();
-        verify( t ).getAsImage();
+    /**
+     * Creates a new {@link TileStoreException} with detail message.
+     * 
+     * @param message
+     *            detail message
+     */
+    public TileStoreException( String message ) {
+        super( message );
+    }
+
+    /**
+     * Creates a new {@link TileStoreException} which wraps the causing exception.
+     * 
+     * @param cause
+     */
+    public TileStoreException( Throwable cause ) {
+        super( cause );
+    }
+
+    /**
+     * Creates a new {@link TileStoreException} which wraps the causing exception and provides a detail message.
+     * 
+     * @param message
+     * @param cause
+     */
+    public TileStoreException( String message, Throwable cause ) {
+        super( message, cause );
     }
 }

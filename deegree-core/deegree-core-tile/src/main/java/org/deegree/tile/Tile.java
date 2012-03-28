@@ -41,7 +41,6 @@
 package org.deegree.tile;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.deegree.geometry.Envelope;
@@ -62,23 +61,23 @@ public interface Tile {
      * This method must generate the image only upon request. It should not hold a reference to the data after creating
      * it, caching is done on a different level.
      * 
-     * @throws IOException
+     * @throws TileIOException
      *             if generation of the image failed
      * @return the tile as image, never <code>null</code>
      */
     BufferedImage getAsImage()
-                            throws IOException;
+                            throws TileIOException;
 
     /**
      * This method provides direct access to the encoded tile image. Must be able to generate a new stream each time
      * this method is called. Stream must be closed by user.
      * 
-     * @throws IOException
+     * @throws TileIOException
      *             if accessing the encoded tile image failed
      * @return the tile as stream, never <code>null</code>
      */
     InputStream getAsStream()
-                            throws IOException;
+                            throws TileIOException;
 
     /**
      * Returns the envelope of the tile data, specified from the outer bounds of the border pixels.

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -31,45 +31,20 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs UG (haftungsbeschränkt)
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.tile;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-
-import junit.framework.TestCase;
-
-import org.junit.Test;
+----------------------------------------------------------------------------*/
+package org.deegree.tile.persistence;
 
 /**
- * <code>TestTile</code>
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
+ * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
+ * @version $Revision$, $Date$
  */
-public class TileTest extends TestCase {
+public interface TileStoreTransaction {
 
-    @Test
-    public void testGetEnvelope() {
-        Tile t = mock( Tile.class );
-        t.getEnvelope();
-        verify( t ).getEnvelope();
-    }
-
-    @Test
-    public void testGetAsImage() throws TileIOException {
-        Tile t = mock( Tile.class );
-        t.getAsImage();
-        verify( t ).getAsImage();
-    }
+    
+    
 }

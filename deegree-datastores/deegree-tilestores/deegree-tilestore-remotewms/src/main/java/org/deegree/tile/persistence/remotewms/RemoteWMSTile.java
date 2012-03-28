@@ -51,6 +51,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 
 /**
  * {@link Tile} implementation used by the {@link RemoteWMSTileStore}.
@@ -62,9 +63,9 @@ import org.deegree.tile.Tile;
  */
 class RemoteWMSTile implements Tile {
 
-    private WMSClient client;
+    private final WMSClient client;
 
-    private GetMap gm;
+    private final GetMap gm;
 
     /**
      * Creates a new {@link RemoteWMSTile} instance.
@@ -81,14 +82,22 @@ class RemoteWMSTile implements Tile {
 
     @Override
     public BufferedImage getAsImage()
-                            throws IOException {
-        return ImageIO.read( getAsStream() );
+                            throws TileIOException {
+        try {
+            return ImageIO.read( getAsStream() );
+        } catch ( IOException e ) {
+            throw new TileIOException( "Error decoding image : " + e.getMessage(), e );
+        }
     }
 
     @Override
     public InputStream getAsStream()
-                            throws IOException {
-        return client.getMap( gm );
+                            throws TileIOException {
+        try {
+            return client.getMap( gm );
+        } catch ( IOException e ) {
+            throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
+        }
     }
 
     @Override

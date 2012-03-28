@@ -52,6 +52,7 @@ import javax.imageio.ImageIO;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 import org.slf4j.Logger;
 
 /**
@@ -77,8 +78,16 @@ public class CachedTile implements Tile {
     }
 
     @Override
-    public BufferedImage getAsImage() throws IOException {
-        return ImageIO.read( new ByteArrayInputStream( bs ) );
+    public BufferedImage getAsImage()
+                            throws TileIOException {
+        try {
+            return ImageIO.read( new ByteArrayInputStream( bs ) );
+        } catch ( IOException e ) {
+            String msg = "Error decoding image from byte array: " + e.getMessage();
+            LOG.debug (msg);
+            LOG.trace( msg, e ); 
+            throw new TileIOException( e.getMessage(), e );
+        }
     }
 
     @Override

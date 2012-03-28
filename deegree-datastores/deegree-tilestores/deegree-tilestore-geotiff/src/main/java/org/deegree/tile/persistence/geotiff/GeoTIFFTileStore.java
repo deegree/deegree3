@@ -75,6 +75,7 @@ import org.deegree.tile.TileMatrixMetadata;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.persistence.TileStoreTransaction;
 import org.slf4j.Logger;
 
 /**
@@ -251,4 +252,8 @@ public class GeoTIFFTileStore implements TileStore {
         return tm.getTile( x, y );
     }
 
+    @Override
+    public TileStoreTransaction acquireTransaction() {
+        throw new UnsupportedOperationException( "GeoTIFFTileStore does not support transactions." );
+    }
 }

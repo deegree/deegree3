@@ -58,6 +58,7 @@ import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.Tiles;
 import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.persistence.TileStoreTransaction;
 
 /**
  * <code>CachingTileStore</code>
@@ -151,6 +152,11 @@ public class CachingTileStore implements TileStore {
             }
         }
         return cnt;
+    }
+
+    @Override
+    public TileStoreTransaction acquireTransaction() {
+        throw new UnsupportedOperationException( "CachingTileStore does not support transactions." );
     }
 
 }
