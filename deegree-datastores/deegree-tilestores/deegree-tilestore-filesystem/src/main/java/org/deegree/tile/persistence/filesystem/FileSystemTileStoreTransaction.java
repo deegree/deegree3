@@ -40,7 +40,7 @@ import org.deegree.tile.persistence.TileStoreTransaction;
 /**
  * {@link TileStoreTransaction} for the {@link FileSystemTileStore}.
  *
- * @author <a href="mailto:sch,mitzr@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
