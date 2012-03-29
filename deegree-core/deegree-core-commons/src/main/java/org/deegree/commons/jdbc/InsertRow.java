@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
+import static org.deegree.commons.utils.JDBCUtils.close;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,6 +46,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.deegree.commons.tom.sql.ParticleConversion;
+import org.deegree.commons.utils.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,40 +136,44 @@ public class InsertRow extends TransactionRow {
             // @Andreas: autogenColumn.toUpperCase () breaks on PostgreSQL
             stmt = conn.prepareStatement( sql, new String[] { autogenColumn.toString() } );
         }
-        int columnId = 1;
-        for ( Entry<SQLIdentifier, Object> entry : columnToObject.entrySet() ) {
-            if ( entry.getValue() != null ) {
-                LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
-                           + entry.getValue().getClass() + ")" );
-                if ( entry.getValue() instanceof ParticleConversion<?> ) {
-                    ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
-                    conversion.setParticle( stmt, columnId++ );
+        try {
+            int columnId = 1;
+            for ( Entry<SQLIdentifier, Object> entry : columnToObject.entrySet() ) {
+                if ( entry.getValue() != null ) {
+                    LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
+                               + entry.getValue().getClass() + ")" );
+                    if ( entry.getValue() instanceof ParticleConversion<?> ) {
+                        ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
+                        conversion.setParticle( stmt, columnId++ );
+                    } else {
+                        stmt.setObject( columnId++, entry.getValue() );
+                    }
                 } else {
-                    stmt.setObject( columnId++, entry.getValue() );
+                    LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
+                    stmt.setObject( columnId++, null );
                 }
-            } else {
-                LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
-                stmt.setObject( columnId++, null );
             }
-        }
-        stmt.execute();
+            stmt.execute();
 
-        if ( autogenColumn != null ) {
-            ResultSet rs = null;
-            try {
-                rs = stmt.getGeneratedKeys();
-                if ( rs.next() ) {
-                    Object key = rs.getObject( 1 );
-                    columnToAutoKey.put( autogenColumn, key );
-                    LOG.debug( "Retrieved auto generated key: " + autogenColumn + "=" + key );
-                }
-            } finally {
-                if ( rs != null ) {
-                    rs.close();
+            if ( autogenColumn != null ) {
+                ResultSet rs = null;
+                try {
+                    rs = stmt.getGeneratedKeys();
+                    if ( rs.next() ) {
+                        Object key = rs.getObject( 1 );
+                        columnToAutoKey.put( autogenColumn, key );
+                        LOG.debug( "Retrieved auto generated key: " + autogenColumn + "=" + key );
+                    }
+                } finally {
+                    if ( rs != null ) {
+                        rs.close();
+                    }
                 }
             }
+        } finally {
+            close( stmt );
         }
-        stmt.close();
+
         return columnToAutoKey;
     }
 
