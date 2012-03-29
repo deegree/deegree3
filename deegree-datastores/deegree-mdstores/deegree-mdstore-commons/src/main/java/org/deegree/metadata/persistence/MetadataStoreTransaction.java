@@ -45,7 +45,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
 /**
  * Provides transactional access to a {@link MetadataStore}.
  * <p>
- * Please note that a transaction must always be ended by calling either {@link #commit()} or {@link #rollback()}.
+ * NOTE: a transaction must always be ended by calling either {@link #commit()} or {@link #rollback()}
  * </p>
  * 
  * @see MetadataStore#acquireTransaction()

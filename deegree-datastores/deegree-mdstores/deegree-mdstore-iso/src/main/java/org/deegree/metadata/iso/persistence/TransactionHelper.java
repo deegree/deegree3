@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
+import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.StringWriter;
@@ -42,6 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +130,7 @@ class TransactionHelper extends SqlHelper {
             ir.addPreparedArgument( "version", null );
             ir.addPreparedArgument( "status", null );
 
-            appendValues( rec, ir, conn );
+            appendValues( rec, ir );
 
             LOG.debug( ir.getSql() );
             ir.performInsert( conn );
@@ -150,28 +152,28 @@ class TransactionHelper extends SqlHelper {
     public int executeDelete( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
-        PreparedStatement preparedStatement = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Integer> deletableDatasets;
         int deleted = 0;
         try {
             StringBuilder header = getPreparedStatementDatasetIDs( builder );
             getPSBody( builder, header );
-            preparedStatement = connection.prepareStatement( header.toString() );
+            stmt = connection.prepareStatement( header.toString() );
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
-                    o.setArgument( preparedStatement, i++ );
+                    o.setArgument( stmt, i++ );
                 }
             }
             if ( builder.getOrderBy() != null ) {
                 for ( SQLArgument o : builder.getOrderBy().getArguments() ) {
-                    o.setArgument( preparedStatement, i++ );
+                    o.setArgument( stmt, i++ );
                 }
             }
-            LOG.debug( Messages.getMessage( "INFO_TA_DELETE_FIND", preparedStatement.toString() ) );
+            LOG.debug( Messages.getMessage( "INFO_TA_DELETE_FIND", stmt.toString() ) );
 
-            rs = preparedStatement.executeQuery();
+            rs = stmt.executeQuery();
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append( "DELETE FROM " );
@@ -185,20 +187,20 @@ class TransactionHelper extends SqlHelper {
                     deletableDatasets.add( rs.getInt( 1 ) );
                 }
                 rs.close();
+                close( stmt );
+                stmt = connection.prepareStatement( stringBuilder.toString() );
                 for ( int d : deletableDatasets ) {
-                    preparedStatement = connection.prepareStatement( stringBuilder.toString() );
-                    preparedStatement.setInt( 1, d );
-
-                    LOG.debug( Messages.getMessage( "INFO_TA_DELETE_DEL", preparedStatement.toString() ) );
-                    deleted = deleted + preparedStatement.executeUpdate();
+                    stmt.setInt( 1, d );
+                    LOG.debug( Messages.getMessage( "INFO_TA_DELETE_DEL", stmt.toString() ) );
+                    deleted = deleted + stmt.executeUpdate();
                 }
             }
         } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
+            String msg = Messages.getMessage( "ERROR_SQL", stmt.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
+            close( rs, stmt, null, LOG );
         }
         return deleted;
     }
@@ -218,7 +220,7 @@ class TransactionHelper extends SqlHelper {
      */
     int executeUpdate( Connection conn, ISORecord rec, String fileIdentifier )
                             throws MetadataStoreException {
-        PreparedStatement stm = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
 
         StringWriter s = new StringWriter( 150 );
@@ -231,9 +233,9 @@ class TransactionHelper extends SqlHelper {
             s.append( " WHERE " ).append( fileIdColumn ).append( " = ?" );
             LOG.debug( s.toString() );
 
-            stm = conn.prepareStatement( s.toString() );
-            stm.setObject( 1, idToUpdate );
-            rs = stm.executeQuery();
+            stmt = conn.prepareStatement( s.toString() );
+            stmt.setObject( 1, idToUpdate );
+            rs = stmt.executeQuery();
 
             while ( rs.next() ) {
                 requestedId = rs.getInt( 1 );
@@ -246,10 +248,10 @@ class TransactionHelper extends SqlHelper {
                 ur.addPreparedArgument( "status", null );
                 ur.addPreparedArgument( recordColumn, rec.getAsByteArray() );
 
-                appendValues( rec, ur, conn );
+                appendValues( rec, ur );
 
                 ur.setWhereClause( idColumn + " = " + Integer.toString( requestedId ) );
-                LOG.debug( stm.toString() );
+                LOG.debug( stmt.toString() );
                 ur.performUpdate( conn );
 
                 QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
@@ -266,12 +268,12 @@ class TransactionHelper extends SqlHelper {
             LOG.debug( "error: " + e.getMessage(), e );
             throw new MetadataStoreException( e.getMessage() );
         } finally {
-            JDBCUtils.close( rs );
+            JDBCUtils.close( rs, stmt, null, LOG );
         }
         return requestedId;
     }
 
-    private void appendValues( ISORecord rec, TransactionRow tr, Connection conn )
+    private void appendValues( ISORecord rec, TransactionRow tr )
                             throws SQLException {
         tr.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
         tr.addPreparedArgument( "anytext", AnyTextHelper.getAnyText( rec, anyTextConfig ) );
@@ -401,31 +403,31 @@ class TransactionHelper extends SqlHelper {
                             throws MetadataStoreException {
         List<Constraint> constraintss = qp.getConstraints();
         if ( constraintss != null && constraintss.size() > 0 ) {
-            PreparedStatement stm = null;
-            StringWriter sw = null;
-            try {
-                for ( Constraint constraint : constraintss ) {
-                    sw = new StringWriter( 300 );
-                    sw.append( "INSERT INTO " ).append( constraintTable );
-                    sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
-                    sw.append( "VALUES( ?,?,?,?,?,? )" );
+            final StringWriter sw = new StringWriter( 300 );
+            sw.append( "INSERT INTO " ).append( constraintTable );
+            sw.append( '(' ).append( idColumn ).append( ',' ).append( fk_main ).append( ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
+            sw.append( "VALUES( ?,?,?,?,?,? )" );
+            PreparedStatement stmt = null;
 
+            try {
+                stmt = connection.prepareStatement( sw.toString() );
+                stmt.setInt( 2, operatesOnId );
+                for ( Constraint constraint : constraintss ) {
                     int localId = updateTable( isUpdate, connection, operatesOnId, constraintTable );
-                    stm = connection.prepareStatement( sw.toString() );
-                    stm.setInt( 1, localId );
-                    stm.setInt( 2, operatesOnId );
-                    stm.setString( 3, concatenate( constraint.getLimitations() ) );
-                    stm.setString( 4, concatenate( constraint.getAccessConstraints() ) );
-                    stm.setString( 5, concatenate( constraint.getOtherConstraints() ) );
-                    stm.setString( 6, constraint.getClassification() );
-                    stm.executeUpdate();
+                    stmt.setInt( 1, localId );
+                    stmt.setString( 3, concatenate( constraint.getLimitations() ) );
+                    stmt.setString( 4, concatenate( constraint.getAccessConstraints() ) );
+                    stmt.setString( 5, concatenate( constraint.getOtherConstraints() ) );
+                    stmt.setString( 6, constraint.getClassification() );
+                    stmt.executeUpdate();
                 }
             } catch ( SQLException e ) {
                 String msg = Messages.getMessage( "ERROR_SQL", sw, e.getMessage() );
                 LOG.debug( msg );
                 throw new MetadataStoreException( msg );
+            } finally {
+                close( null, stmt, null, LOG );
             }
-            closeStm( stm );
         }
     }
 
@@ -503,35 +505,27 @@ class TransactionHelper extends SqlHelper {
         }
     }
 
-    private void closeStm( PreparedStatement stm ) {
-        if ( stm != null )
-            try {
-                stm.close();
-            } catch ( SQLException e ) {
-                LOG.warn( "Could not close stm: ", e.getMessage() );
-            }
-    }
-
     private int updateTable( boolean isUpdate, Connection connection, int operatesOnId, String databaseTable )
                             throws MetadataStoreException {
         StringWriter sqlStatement = new StringWriter( 500 );
-        PreparedStatement stm = null;
+        PreparedStatement stmt = null;
         int localId = 0;
         try {
             localId = getLastDatasetId( connection, databaseTable );
             localId++;
             if ( isUpdate == true ) {
                 sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_main + " = ?" );
-                stm = connection.prepareStatement( sqlStatement.toString() );
-                stm.setInt( 1, operatesOnId );
-                LOG.debug( stm.toString() );
-                stm.executeUpdate();
+                stmt = connection.prepareStatement( sqlStatement.toString() );
+                stmt.setInt( 1, operatesOnId );
+                LOG.debug( stmt.toString() );
+                stmt.executeUpdate();
             }
-            closeStm( stm );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            close( null, stmt, null, LOG );
         }
         return localId;
     }
@@ -561,14 +555,18 @@ class TransactionHelper extends SqlHelper {
             String inner = "SELECT " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC";
             selectIDRows = "SELECT * FROM (" + inner + ") WHERE rownum = 1";
         }
-        ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
-
-        while ( rsBrief.next() ) {
-
-            result = rsBrief.getInt( 1 );
-
+        Statement stmt = null;
+        ResultSet rsBrief = null;
+        try {
+            stmt = conn.createStatement();
+            rsBrief = stmt.executeQuery( selectIDRows );
+            while ( rsBrief.next() ) {
+                result = rsBrief.getInt( 1 );
+            }
+        } finally {
+            close( rsBrief, stmt, null, LOG );
         }
-        rsBrief.close();
+
         return result;
 
     }

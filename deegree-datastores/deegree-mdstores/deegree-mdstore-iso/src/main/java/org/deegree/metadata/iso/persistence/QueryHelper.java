@@ -192,15 +192,15 @@ class QueryHelper extends SqlHelper {
             rs = preparedStatement.executeQuery();
             return new ISOMetadataResultSet( rs, conn, preparedStatement );
         } catch ( SQLException e ) {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-        } catch ( Throwable t ) {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
+        } catch ( Throwable t ) {            
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            JDBCUtils.close( rs, preparedStatement, null, LOG );
         }
     }
 
@@ -270,11 +270,12 @@ class QueryHelper extends SqlHelper {
                 i++;
             }
             rs = stmt.executeQuery();
-        } catch ( Throwable t ) {
-            JDBCUtils.close( rs, stmt, conn, LOG );
+        } catch ( Throwable t ) {            
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            JDBCUtils.close( rs, stmt, null, LOG );
         }
         return new ISOMetadataResultSet( rs, conn, stmt );
     }
