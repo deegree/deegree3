@@ -61,7 +61,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -1397,20 +1396,16 @@ public class XMLAdapter {
             case START_ELEMENT: {
                 String prefix = inStream.getPrefix();
                 String namespaceURI = inStream.getNamespaceURI();
-                if ( namespaceURI == NULL_NS_URI && ( prefix == DEFAULT_NS_PREFIX || prefix == null ) ) {
+                if ( NULL_NS_URI.equals( namespaceURI ) && ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix ) ) ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
-                    if ( prefix != null && writer.getNamespaceContext().getPrefix( prefix ) == XMLConstants.NULL_NS_URI ) {
-                        // TODO handle special cases for prefix binding, see
-                        // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
-                        writer.setPrefix( prefix, namespaceURI );
-                    }
-                    if ( prefix == null ) {
-                        writer.writeStartElement( XMLConstants.NULL_NS_URI, inStream.getLocalName(), namespaceURI );
+                    if ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix )) {
+                        writer.writeStartElement( DEFAULT_NS_PREFIX, inStream.getLocalName(), namespaceURI );
                     } else {
                         writer.writeStartElement( prefix, inStream.getLocalName(), namespaceURI );
                     }
                 }
+
                 // copy all namespace bindings
                 for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
                     String nsPrefix = inStream.getNamespacePrefix( i );
@@ -1418,9 +1413,11 @@ public class XMLAdapter {
                     if ( nsPrefix != null && nsURI != null ) {
                         writer.writeNamespace( nsPrefix, nsURI );
                     } else if ( nsPrefix == null ) {
-                        writer.writeDefaultNamespace(  nsURI );
+                        writer.writeDefaultNamespace( nsURI );
                     }
                 }
+
+                ensureBinding( writer, prefix, namespaceURI );
 
                 // copy all attributes
                 for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
@@ -1431,6 +1428,7 @@ public class XMLAdapter {
                     if ( nsURI == null ) {
                         writer.writeAttribute( localName, value );
                     } else {
+                        ensureBinding( writer, nsPrefix, nsURI );
                         writer.writeAttribute( nsPrefix, nsURI, localName, value );
                     }
                 }
@@ -1445,6 +1443,16 @@ public class XMLAdapter {
             if ( openElements > 0 ) {
                 inStream.next();
             }
+        }
+    }
+
+    private static void ensureBinding( XMLStreamWriter writer, String prefix, String namespaceURI )
+                            throws XMLStreamException {
+        String boundPrefix = writer.getPrefix( namespaceURI );
+        if ( prefix == null && !NULL_NS_URI.equals( boundPrefix ) ) {
+            writer.writeDefaultNamespace( namespaceURI );
+        } else if ( !prefix.equals( writer.getPrefix( namespaceURI ) ) ) {
+            writer.writeNamespace( prefix, namespaceURI );
         }
     }
 

@@ -115,7 +115,7 @@ public class NamespaceNormalizingXMLStreamWriterTest {
 
         XMLAdapter.writeElement( writer, reader );
         writer.close();
-        assertEquals( "<app:a xmlns:app=\"http://www.deegree.org/app\"><app:b xmlns:app=\"http://www.deegree.org/app\" app:attr=\"attribute\">Hello</app:b></app:a>",
+        assertEquals( "<app:a xmlns:app=\"http://www.deegree.org/app\"><app:b app:attr=\"attribute\">Hello</app:b></app:a>",
                       output.toString() );
     }
 }
