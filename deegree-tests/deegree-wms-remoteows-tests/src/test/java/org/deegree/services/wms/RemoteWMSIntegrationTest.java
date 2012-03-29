@@ -44,6 +44,7 @@ package org.deegree.services.wms;
 import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -56,6 +57,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.slf4j.Logger;
 
 /**
  * <code>RemoteWMSIntegrationTest</code>
@@ -69,14 +71,16 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class RemoteWMSIntegrationTest {
 
+    private static final Logger LOG = getLogger( RemoteWMSIntegrationTest.class );
+
     private String request;
 
     private byte[] response;
 
     public RemoteWMSIntegrationTest( Object wasXml, String request, byte[] response ) {
         // we only use .kvp for WMS
-        this.request = (String) request;
-        this.response = (byte[]) response;
+        this.request = request;
+        this.response = response;
     }
 
     @Parameters
@@ -89,6 +93,7 @@ public class RemoteWMSIntegrationTest {
                             throws IOException {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-remoteows-tests/services" + request;
+        LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
         Assert.assertEquals( "Images are not similar enough.", 1.0, sim, 0.01 );
