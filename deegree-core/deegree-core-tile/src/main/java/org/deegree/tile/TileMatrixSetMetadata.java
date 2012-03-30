@@ -44,7 +44,7 @@ package org.deegree.tile;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
- * <code>TileMatrixSetMetadata</code>
+ * Metadata on a {@link TileMatrixSet}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -53,47 +53,52 @@ import org.deegree.cs.coordinatesystems.ICRS;
  */
 public class TileMatrixSetMetadata {
 
-    private String format;
+    private final String identifier;
 
-    private ICRS crs;
+    private final String format;
+
+    private final ICRS crs;
 
     /**
-     * @param format
+     * Creates a new {@link TileMatrixSetMetadata} instance.
+     * 
+     * @param identifier
+     *            identifier for the {@link TileMatrixSet}, must not be <code>null</code>
+     * @param nativeFormat
+     *            image format of the tiles, can be <code>null</code>
      * @param crs
+     *            reference system used by the tiles, must not be <code>null</code>
      */
-    public TileMatrixSetMetadata( String format, ICRS crs ) {
-        this.setFormat( format );
-        this.setCrs( crs );
+    public TileMatrixSetMetadata( String identifier, String nativeFormat, ICRS crs ) {
+        this.identifier = identifier;
+        this.format = nativeFormat;
+        this.crs = crs;
     }
 
     /**
-     * @return the format
+     * Returns the identifier for the {@link TileMatrixSet}.
+     * 
+     * @return identifier, never <code>null</code>
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * Returns the image format of the tiles.
+     * 
+     * @return format, never <code>null</code>
      */
     public String getFormat() {
         return format;
     }
 
     /**
-     * @param format
-     *            the format to set
-     */
-    public void setFormat( String format ) {
-        this.format = format;
-    }
-
-    /**
-     * @return the crs
+     * Returns the reference system used by the tiles.
+     * 
+     * @return reference system, never <code>null</code>
      */
     public ICRS getCrs() {
         return crs;
     }
-
-    /**
-     * @param crs
-     *            the crs to set
-     */
-    public void setCrs( ICRS crs ) {
-        this.crs = crs;
-    }
-
 }

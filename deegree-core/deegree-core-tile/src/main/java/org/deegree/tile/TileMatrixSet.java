@@ -62,7 +62,7 @@ public interface TileMatrixSet {
      * @param envelope
      *            all tiles intersecting with this envelope will be returned.
      * @param resolution
-     *            the selection of the tile matrix used is determined by the resolution.
+     *            selects the tile matrix, the smallest tile matrix with a sufficient resolution will be used
      * @return an iterator of tiles, never null.
      */
     Iterator<Tile> getTiles( Envelope envelope, double resolution );

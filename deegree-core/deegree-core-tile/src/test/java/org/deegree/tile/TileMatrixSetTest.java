@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
+import static org.deegree.cs.persistence.CRSManager.getCRSRef;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +49,6 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -90,7 +90,7 @@ public class TileMatrixSetTest extends TestCase {
             when( tm.getMetadata() ).thenReturn( md );
             when( tm.getTile( 0, 0 ) ).thenReturn( t );
 
-            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "image/png", CRSManager.getCRSRef( "EPSG:4326" ) );
+            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "default", "image/png", getCRSRef( "EPSG:4326" ) );
             tms = new DefaultTileMatrixSet( Collections.singletonList( tm ), metadata );
         } catch ( UnknownCRSException e ) {
             throw new RuntimeException( e );
