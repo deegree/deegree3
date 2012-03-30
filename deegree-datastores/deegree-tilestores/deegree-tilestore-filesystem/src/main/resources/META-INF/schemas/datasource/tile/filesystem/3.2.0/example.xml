@@ -1,7 +1,16 @@
 <?xml version="1.0"?>
-<FileSystemTileStore xmlns="http://www.deegree.org/datasource/tile/filesystem" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/filesystem http://schemas.deegree.org/datasource/tile/filesystem/3.2.0/filesystem.xsd"
+<FileSystemTileStore xmlns="http://www.deegree.org/datasource/tile/filesystem" xmlns:md="http://www.deegree.org/metadata/spatial"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/filesystem filesystem.xsd"
   configVersion="3.2.0">
+
+  <!-- [1]: CRS of the tiles -->
+  <md:CRS>EPSG:4326</md:CRS>
+
+  <!-- [1]: Envelope of the tiled area -->
+  <md:Envelope>
+    <md:LowerCorner>0 0</md:LowerCorner>
+    <md:UpperCorner>47 11</md:UpperCorner>
+  </md:Envelope>  
 
   <!-- [1]: Geometry of the tile pyramid -->
   <TilePyramid>
@@ -17,6 +26,7 @@
 
   <TileCacheDiskLayout>
     <Directory>../../data/tiles/layer1</Directory>
+    <FileType>png</FileType>
   </TileCacheDiskLayout>
 
 </FileSystemTileStore>
