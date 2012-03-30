@@ -102,11 +102,11 @@ public class TileCacheDiskLayout implements DiskLayout {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder( set.getMetadata().getIdentifier() );
+        StringBuilder sb = new StringBuilder();
+        DecimalFormat formatter = new DecimalFormat( "00" );
+        sb.append( formatter.format( set.getTileMatrices().indexOf( tileMatrix ) + 1 ) );
         sb.append( separatorChar );
-        sb.append( matrixId );
-        sb.append( separatorChar );
-        DecimalFormat formatter = new DecimalFormat( "000" );
+        formatter = new DecimalFormat( "000" );
         sb.append( formatter.format( x / 1000000 ) );
         sb.append( separatorChar );
         sb.append( formatter.format( x / 1000 % 1000 ) );

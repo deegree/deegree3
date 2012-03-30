@@ -82,9 +82,9 @@ public class FileSystemTileStore implements TileStore {
     private final FileSystemTileStoreJAXB config;
 
     private final String layerName;
-    
+
     private final TileCacheDiskLayout layout;
-    
+
     private TileMatrixSet tileMatrixSet;
 
     private SpatialMetadata spatialMetadata;
@@ -104,7 +104,7 @@ public class FileSystemTileStore implements TileStore {
         layout = new TileCacheDiskLayout( baseDir, config.getTileCacheDiskLayout().getFileType() );
 
         tileMatrixSet = buildTileMatrixSet( crs, config );
-        layout.setTileMatrixSet( tileMatrixSet );        
+        layout.setTileMatrixSet( tileMatrixSet );
     }
 
     private TileMatrixSet buildTileMatrixSet( ICRS crs, FileSystemTileStoreJAXB config ) {
@@ -138,7 +138,11 @@ public class FileSystemTileStore implements TileStore {
 
             scaleDenominator *= 2;
         }
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( layerName, config.getTileCacheDiskLayout().getFileType(),
+        String format = config.getTileCacheDiskLayout().getFileType();
+        if ( !format.startsWith( "image" ) ) {
+            format = "image/" + format;
+        }
+        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( layerName, format,
                                                                               bbox.getCoordinateSystem() ) );
     }
 

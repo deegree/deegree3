@@ -35,12 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 import org.deegree.tile.persistence.AbstractTileStoreTransaction;
@@ -73,11 +74,18 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
     @Override
     public void put( String matrixId, Tile tile, int x, int y )
                             throws TileIOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FileOutputStream fos = null;
         try {
-            ImageIO.write( tile.getAsImage(), layout.getFileType(), bos );
+            File file = layout.resolve( matrixId, x, y );
+            if ( !file.getParentFile().exists() && !file.getParentFile().mkdirs() ) {
+                throw new TileIOException( "Unable to create parent directories for " + file );
+            }
+            fos = new FileOutputStream( file );
+            ImageIO.write( tile.getAsImage(), layout.getFileType(), fos );
         } catch ( IOException e ) {
             throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
+        } finally {
+            IOUtils.closeQuietly( fos );
         }
     }
 

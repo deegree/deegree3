@@ -109,7 +109,9 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
         Map<File, List<File>> deps = new HashMap<File, List<File>>();
         for ( File f : files ) {
             TileStoreProvider p = (TileStoreProvider) this.getProvider( f );
-            deps.put( f, p.getTileStoreDependencies( f ) );
+            if ( p != null ) {
+                deps.put( f, p.getTileStoreDependencies( f ) );
+            }
         }
 
         for ( Entry<File, List<File>> e : deps.entrySet() ) {
@@ -126,7 +128,7 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
             while ( iter.hasNext() ) {
                 File f = iter.next();
                 List<File> list = deps.get( f );
-                if ( result.containsAll( list ) ) {
+                if ( list == null || result.containsAll( list ) ) {
                     changed = true;
                     result.add( f );
                     iter.remove();

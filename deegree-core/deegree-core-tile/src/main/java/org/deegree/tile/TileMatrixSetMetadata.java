@@ -55,7 +55,7 @@ public class TileMatrixSetMetadata {
 
     private final String identifier;
 
-    private final String format;
+    private final String mimeType;
 
     private final ICRS crs;
 
@@ -64,14 +64,14 @@ public class TileMatrixSetMetadata {
      * 
      * @param identifier
      *            identifier for the {@link TileMatrixSet}, must not be <code>null</code>
-     * @param nativeFormat
-     *            image format of the tiles, can be <code>null</code>
+     * @param mimeType
+     *            mime type of the tiles, must not be <code>null</code>
      * @param crs
      *            reference system used by the tiles, must not be <code>null</code>
      */
-    public TileMatrixSetMetadata( String identifier, String nativeFormat, ICRS crs ) {
+    public TileMatrixSetMetadata( String identifier, String mimeType, ICRS crs ) {
         this.identifier = identifier;
-        this.format = nativeFormat;
+        this.mimeType = mimeType;
         this.crs = crs;
     }
 
@@ -87,10 +87,10 @@ public class TileMatrixSetMetadata {
     /**
      * Returns the image format of the tiles.
      * 
-     * @return format, never <code>null</code>
+     * @return the mime type, never <code>null</code>
      */
-    public String getFormat() {
-        return format;
+    public String getMimeType() {
+        return mimeType;
     }
 
     /**

@@ -105,7 +105,7 @@ public class RemoteWMSTileStoreTest {
     public void testGetTileMatrixSetEPSG26912() {
         RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
         TileMatrixSet matrixSet = store.getTileMatrixSet();
-        assertEquals( "image/png", matrixSet.getMetadata().getFormat() );
+        assertEquals( "image/png", matrixSet.getMetadata().getMimeType() );
 
         assertEquals( 10, matrixSet.getTileMatrices().size() );
         double scale = 1000.0;

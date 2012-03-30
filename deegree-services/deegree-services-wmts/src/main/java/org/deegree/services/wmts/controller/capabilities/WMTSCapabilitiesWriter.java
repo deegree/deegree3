@@ -224,7 +224,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
                     writer.writeStartElement( WMTSNS, "Style" );
                     writeElement( writer, OWS110_NS, "Identifier", "default" );
                     writer.writeEndElement();
-                    writeElement( writer, WMTSNS, "Format", metadata.getFormat() );
+                    writeElement( writer, WMTSNS, "Format", metadata.getMimeType() );
                     writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
                     writeElement( writer, WMTSNS, "TileMatrixSet", md.getName() );
                     writer.writeEndElement();
