@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:md="http://www.deegree.org/metadata/spatial"
   targetNamespace="http://www.deegree.org/datasource/tile/filesystem" xmlns:t="http://www.deegree.org/datasource/tile/filesystem"
   elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
 
   <annotation>
     <appinfo>
@@ -13,13 +15,23 @@
 
   <element name="FileSystemTileStore">
     <annotation>
-      <documentation>TileStore that is backed by a image files on the file system.</documentation>
+      <documentation>TileStore that is backed by a directory of image files on the file system.</documentation>
       <appinfo>
         <jaxb:class name="FileSystemTileStoreJAXB" />
       </appinfo>
     </annotation>
     <complexType>
       <sequence>
+        <element ref="md:CRS">
+          <annotation>
+            <documentation>CRS of the tiles</documentation>
+          </annotation>
+        </element>
+        <element ref="md:Envelope">
+          <annotation>
+            <documentation>Envelope of the tiled area</documentation>
+          </annotation>
+        </element>
         <element name="TilePyramid">
           <complexType>
             <sequence>
@@ -50,13 +62,12 @@
         </element>
         <element name="TileCacheDiskLayout">
           <annotation>
-            <documentation>Points to a hierarchy of tile file directories as used by TileCache
-              (http://www.tilecache.org)
-            </documentation>
+            <documentation>Use disk layout as defined by TileCache (http://www.tilecache.org)</documentation>
           </annotation>
           <complexType>
             <sequence>
-              <element name="Directory" type="string" />
+              <element name="LayerDirectory" type="string" />
+              <element name="FileType" type="string" />
             </sequence>
           </complexType>
         </element>

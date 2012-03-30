@@ -60,7 +60,6 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -79,14 +78,13 @@ import org.deegree.tile.persistence.TileStoreTransaction;
 import org.slf4j.Logger;
 
 /**
- * The <code>GeoTIFFTileStore</code> is the GeoTIFF/BigTIFF implementation of a tile store.
+ * {@link TileStore} backed by a GeoTIFF/BigTIFF file.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class GeoTIFFTileStore implements TileStore {
 
     private static final Logger LOG = getLogger( GeoTIFFTileStore.class );
@@ -95,6 +93,8 @@ public class GeoTIFFTileStore implements TileStore {
 
     private final String crs;
 
+    private final String id;
+
     private DefaultTileMatrixSet tileMatrixSet;
 
     private SpatialMetadata spatialMetadata;
@@ -102,6 +102,13 @@ public class GeoTIFFTileStore implements TileStore {
     public GeoTIFFTileStore( File file, String crs ) {
         this.file = file;
         this.crs = crs;
+        String fileName = file.getName();
+        int pos = fileName.lastIndexOf( '.' );
+        if ( pos != -1 ) {
+            id = fileName.substring( 0, pos );
+        } else {
+            id = fileName;
+        }
     }
 
     @Override
@@ -154,7 +161,7 @@ public class GeoTIFFTileStore implements TileStore {
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );
             }
-            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "image/png", envelope.getCoordinateSystem() );
+            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( id, "image/png", envelope.getCoordinateSystem() );
             tileMatrixSet = new DefaultTileMatrixSet( matrices, metadata );
 
         } catch ( Throwable e ) {

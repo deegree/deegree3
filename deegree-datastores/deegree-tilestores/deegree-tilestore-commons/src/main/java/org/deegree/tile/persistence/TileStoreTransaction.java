@@ -37,6 +37,7 @@ package org.deegree.tile.persistence;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 
 /**
  * Provides transactional access to a {@link TileStore}.
@@ -60,8 +61,9 @@ public interface TileStoreTransaction {
      *            column index
      * @param y
      *            row index
+     * @throws TileIOException 
      */
-    void put( String tileMatrix, Tile tile, int x, int y );
+    void put( String tileMatrix, Tile tile, int x, int y ) throws TileIOException;
 
     /**
      * Deletes a specific tile.

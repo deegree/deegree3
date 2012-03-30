@@ -35,61 +35,41 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
-import static java.io.File.separatorChar;
-
 import java.io.File;
-import java.text.DecimalFormat;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixMetadata;
 
 /**
- * {@link TileMatrix} implementation that is based on the directory layout of the disk cache used by <a
- * href="http://tilecache.org/">TileCache</a>. <h4>Disk layout</h4> TileCache uses a hierarchy of 7 directories to
- * organize tiles.
- * <p>
- * Example: <code>layername/01/018/782/353/786/347/862.filetype</code>.
- * </p>
- * <nl>
- * <li>1st directory: <i>layername</i></li>
- * <li>2nd directory: <i>zoomlevel</i> (in 2 digits eg. 01)</li>
- * <li>3rd-5th directory: <i>column number (x)</i>, split into thousands: x = 018782353 results in 018/782/353</li>
- * <li>6rd-7th directory + filename: <i>row number (y)</i>, split into thousands: y = 786347862 results in 786/347/862</li>
- * <li>filename suffix: <i>filetype</i>
- * <p>
- * TODO verify if this is the only layout used by TileCache
- * </p>
+ * {@link TileMatrix} implementation for the {@link FileSystemTileStore}.
+ * 
+ * @see DiskLayout
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class TileCacheMatrix implements TileMatrix {
+class FileSystemTileMatrix implements TileMatrix {
+
+    private final SimpleGeometryFactory fac = new SimpleGeometryFactory();
 
     private final TileMatrixMetadata metadata;
 
-    private final File zoomLevelDir;
-
-    private final String suffix;
-
-    private static final GeometryFactory fac = new GeometryFactory();
-
-    private static final DecimalFormat FORMAT_XXX = new DecimalFormat( "000" );
+    private final DiskLayout layout;
 
     /**
+     * Creates a new {@link FileSystemTileMatrix} instance.
      * 
      * @param metadata
-     * @param zoomLevelDir
-     * @param suffix
+     * @param layout
      */
-    TileCacheMatrix( TileMatrixMetadata metadata, File zoomLevelDir, String suffix ) {
+    FileSystemTileMatrix( TileMatrixMetadata metadata, DiskLayout layout ) {
         this.metadata = metadata;
-        this.zoomLevelDir = zoomLevelDir;
-        this.suffix = suffix;
+        this.layout = layout;
     }
 
     @Override
@@ -103,27 +83,8 @@ class TileCacheMatrix implements TileMatrix {
             return null;
         }
         Envelope bbox = calcEnvelope( x, y );
-        File file = determineFile( x, y );
+        File file = layout.resolve( metadata.getIdentifier(), x, y );
         return new FileSystemTile( bbox, file );
-    }
-
-    private File determineFile( int x, int y ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( FORMAT_XXX.format( x / 1000000 ) );
-        sb.append( separatorChar );
-        sb.append( FORMAT_XXX.format( x / 1000 % 1000 ) );
-        sb.append( separatorChar );
-        sb.append( FORMAT_XXX.format( x % 1000 ) );
-        sb.append( separatorChar );
-        sb.append( FORMAT_XXX.format( y / 1000000 ) );
-        sb.append( separatorChar );
-        sb.append( FORMAT_XXX.format( y / 1000 % 1000 ) );
-        sb.append( separatorChar );
-        sb.append( FORMAT_XXX.format( y % 1000 ) );
-        sb.append( '.' );
-        sb.append( suffix );
-        File file = new File( zoomLevelDir, sb.toString() );
-        return file;
     }
 
     private Envelope calcEnvelope( int x, int y ) {

@@ -200,7 +200,8 @@ public class RemoteWMSTileStore implements TileStore {
 
             scaleDenominator *= 2;
         }
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( format, bbox.getCoordinateSystem() ) );
+        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( remoteWmsId, format,
+                                                                              bbox.getCoordinateSystem() ) );
     }
 
     /**

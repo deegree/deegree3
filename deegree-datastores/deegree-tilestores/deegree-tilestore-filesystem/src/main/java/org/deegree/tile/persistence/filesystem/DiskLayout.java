@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,57 +35,39 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-import org.deegree.tile.Tile;
-import org.deegree.tile.TileIOException;
-import org.deegree.tile.persistence.AbstractTileStoreTransaction;
-import org.deegree.tile.persistence.TileStoreTransaction;
+import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileMatrixSet;
 
 /**
- * {@link TileStoreTransaction} for the {@link FileSystemTileStore}.
+ * Implementations define how the {@link FileSystemTileStore} maps between the {@link TileMatrix} instances in a
+ * {@link TileMatrixSet} and image files on the file system.
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
-
-    private final DiskLayout layout;
+public interface DiskLayout {
 
     /**
-     * Creates a new {@link FileSystemTileStoreTransaction}.
+     * Returns the image file for the specified {@link TileMatrix} and tile indexes.
      * 
-     * @param store
-     *            tile store, must not be <code>null</code>
+     * @param matrixId
+     *            identifier of the matrix in the matrix set, must not be <code>null</code>
+     * @param x
+     *            column index of the tile (starting at 0)
+     * @param y
+     *            row index of the tile (starting at 0)
+     * @return tile file or <code>null</code> if the tile matrix does not exist (or indexes are out of range)
      */
-    FileSystemTileStoreTransaction( FileSystemTileStore store, DiskLayout layout ) {
-        super( store );
-        this.layout = layout;
-    }
+    File resolve( String matrixId, int x, int y );
 
-    @Override
-    public void put( String matrixId, Tile tile, int x, int y )
-                            throws TileIOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write( tile.getAsImage(), layout.getFileType(), bos );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
-        }
-    }
-
-    @Override
-    public void delete( String matrixId, int x, int y ) {
-        File file = layout.resolve( matrixId, x, y );
-        if ( file.exists() ) {
-            file.delete();
-        }
-    }
+    /**
+     * Returns the suffix of the tile files (without '.').
+     * 
+     * @return suffix of the tile files, never <code>null</code>
+     */
+    String getFileType();
 }
