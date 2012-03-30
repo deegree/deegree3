@@ -70,4 +70,12 @@ public interface DiskLayout {
      * @return suffix of the tile files, never <code>null</code>
      */
     String getFileType();
+
+    /**
+     * Assigns the given {@link TileMatrixSet}.
+     * 
+     * @param set
+     *            tile matrix to assign, must not be <code>null</code>
+     */
+    void setTileMatrixSet( TileMatrixSet set );
 }

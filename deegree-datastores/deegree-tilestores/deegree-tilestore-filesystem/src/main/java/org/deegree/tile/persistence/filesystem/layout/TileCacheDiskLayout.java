@@ -86,6 +86,7 @@ public class TileCacheDiskLayout implements DiskLayout {
         this.fileType = fileType;
     }
 
+    @Override
     public void setTileMatrixSet( TileMatrixSet set ) {
         this.set = set;
     }

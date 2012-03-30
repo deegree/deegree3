@@ -4,7 +4,7 @@
   configVersion="3.2.0">
 
   <!-- [1]: CRS of the tiles -->
-  <md:CRS>EPSG:4326</md:CRS>
+  <md:CRS>EPSG:31466</md:CRS>
 
   <!-- [1]: Envelope of the tiled area -->
   <md:Envelope>
