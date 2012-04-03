@@ -14,6 +14,7 @@
   <LayerStoreId>parameters</LayerStoreId>
   <LayerStoreId>parametersext</LayerStoreId>
   <LayerStoreId>transformedgif</LayerStoreId>
+  <LayerStoreId>umn</LayerStoreId>
 
   <Theme>
     <d:Title>root</d:Title>
@@ -75,6 +76,11 @@
       <Identifier>transformedgif</Identifier>
       <d:Title>transformedgif</d:Title>
       <Layer layerStore='transformedgif'>ZipCodes</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>umn</Identifier>
+      <d:Title>umn</d:Title>
+      <Layer layerStore='umn'>nsg</Layer>
     </Theme>
   </Theme>
 
