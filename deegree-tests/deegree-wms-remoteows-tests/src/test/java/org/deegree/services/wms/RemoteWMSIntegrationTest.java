@@ -96,7 +96,7 @@ public class RemoteWMSIntegrationTest {
         LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
-        Assert.assertEquals( "Images are not similar enough.", 1.0, sim, 0.01 );
+        Assert.assertEquals( "Images are not similar enough (" + base + ").", 1.0, sim, 0.01 );
     }
 
 }
