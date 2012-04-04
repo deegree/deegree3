@@ -811,7 +811,7 @@ public class XMLAdapter {
     }
 
     // TODO Should we consider changing OMElement in OMNode for getNode* methods?
-    public Object getNode( OMElement context, XPath xpath )
+    public synchronized Object getNode( OMElement context, XPath xpath )
                             throws XMLParsingException {
         Object node;
         try {
@@ -947,8 +947,7 @@ public class XMLAdapter {
 
     }
 
-    @SuppressWarnings("unchecked")
-    public List getNodes( OMElement context, XPath xpath )
+    public synchronized List getNodes( OMElement context, XPath xpath )
                             throws XMLParsingException {
         List<?> nodes;
         try {
@@ -1399,7 +1398,7 @@ public class XMLAdapter {
                 if ( NULL_NS_URI.equals( namespaceURI ) && ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix ) ) ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
-                    if ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix )) {
+                    if ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix ) ) {
                         writer.writeStartElement( DEFAULT_NS_PREFIX, inStream.getLocalName(), namespaceURI );
                     } else {
                         writer.writeStartElement( prefix, inStream.getLocalName(), namespaceURI );
