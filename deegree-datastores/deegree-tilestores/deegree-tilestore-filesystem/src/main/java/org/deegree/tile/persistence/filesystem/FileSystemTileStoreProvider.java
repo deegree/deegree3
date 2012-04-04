@@ -81,7 +81,7 @@ public class FileSystemTileStoreProvider implements TileStoreProvider {
             FileSystemTileStoreJAXB config = (FileSystemTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA,
                                                                                    configUrl, workspace );
 
-            return new FileSystemTileStore( config );
+            return new FileSystemTileStore( config, configUrl );
         } catch ( Throwable e ) {
             String msg = "Unable to create FileSystemTileStore: " + e.getMessage();
             LOG.error( msg, e );

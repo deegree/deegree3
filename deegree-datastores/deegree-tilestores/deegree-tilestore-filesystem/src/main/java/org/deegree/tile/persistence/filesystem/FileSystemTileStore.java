@@ -36,9 +36,9 @@ package org.deegree.tile.persistence.filesystem;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.cs.components.Unit.METRE;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +64,6 @@ import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB.TilePyramid;
 import org.deegree.tile.persistence.filesystem.layout.TileCacheDiskLayout;
-import org.slf4j.Logger;
 
 /**
  * {@link TileStore} that is backed by image files on the file system.
@@ -77,13 +76,13 @@ import org.slf4j.Logger;
  */
 public class FileSystemTileStore implements TileStore {
 
-    private static final Logger LOG = getLogger( FileSystemTileStore.class );
+    // private static final Logger LOG = getLogger( FileSystemTileStore.class );
 
-    private final FileSystemTileStoreJAXB config;
+    private FileSystemTileStoreJAXB config;
 
-    private final String layerName;
+    private String layerName;
 
-    private final TileCacheDiskLayout layout;
+    private TileCacheDiskLayout layout;
 
     private TileMatrixSet tileMatrixSet;
 
@@ -94,17 +93,28 @@ public class FileSystemTileStore implements TileStore {
      * 
      * @param config
      *            JAXB configuration, must not be <code>null</code>
+     * @param configUrl
+     * @throws ResourceInitException
      */
-    public FileSystemTileStore( FileSystemTileStoreJAXB config ) {
+    public FileSystemTileStore( FileSystemTileStoreJAXB config, URL configUrl ) throws ResourceInitException {
         this.config = config;
         ICRS crs = CRSManager.getCRSRef( config.getCRS() );
 
-        File baseDir = new File( config.getTileCacheDiskLayout().getLayerDirectory() );
-        layerName = baseDir.getName();
-        layout = new TileCacheDiskLayout( baseDir, config.getTileCacheDiskLayout().getFileType() );
+        File parent = null;
+        try {
+            parent = new File( configUrl.toURI() ).getParentFile();
+            File baseDir = new File( config.getTileCacheDiskLayout().getLayerDirectory() );
+            if ( !baseDir.isAbsolute() ) {
+                baseDir = new File( parent, config.getTileCacheDiskLayout().getLayerDirectory() );
+            }
+            layerName = baseDir.getName();
+            layout = new TileCacheDiskLayout( baseDir, config.getTileCacheDiskLayout().getFileType() );
 
-        tileMatrixSet = buildTileMatrixSet( crs, config );
-        layout.setTileMatrixSet( tileMatrixSet );
+            tileMatrixSet = buildTileMatrixSet( crs, config );
+            layout.setTileMatrixSet( tileMatrixSet );
+        } catch ( Throwable e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
     private TileMatrixSet buildTileMatrixSet( ICRS crs, FileSystemTileStoreJAXB config ) {
