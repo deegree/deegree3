@@ -28,6 +28,11 @@
       <d:Title>IT test layer remotewms cached</d:Title>
       <Layer>remotewms_cache</Layer>
     </Theme>
+    <Theme>
+      <Identifier>filesystem</Identifier>
+      <d:Title>IT test layer filesystem</d:Title>
+      <Layer>filesystem</Layer>
+    </Theme>
   </Theme>
 
 </Themes>

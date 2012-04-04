@@ -79,12 +79,21 @@
         <configuration>
 	      <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
-          <includes>
-            <include>**/*IntegrationTest.java</include>
-          </includes>
           <argLine>-Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
         </configuration>
         <executions>
+          <execution>
+            <id>normal-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <exclude>**/*IntegrationTest.java</exclude>
+              </excludes>
+              <skip>false</skip>
+            </configuration>
+          </execution>
           <execution>
             <id>integration-test</id>
             <phase>integration-test</phase>
@@ -92,6 +101,9 @@
               <goal>test</goal>
             </goals>
             <configuration>
+              <includes>
+                <include>**/*IntegrationTest.java</include>
+              </includes>
               <skip>false</skip>
             </configuration>
           </execution>
@@ -114,6 +126,11 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tilestore-remotewms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-filesystem</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
