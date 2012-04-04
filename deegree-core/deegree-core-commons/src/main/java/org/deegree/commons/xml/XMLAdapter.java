@@ -1450,7 +1450,7 @@ public class XMLAdapter {
         String boundPrefix = writer.getPrefix( namespaceURI );
         if ( prefix == null && !NULL_NS_URI.equals( boundPrefix ) ) {
             writer.writeDefaultNamespace( namespaceURI );
-        } else if ( !prefix.equals( writer.getPrefix( namespaceURI ) ) ) {
+        } else if ( prefix != null && !prefix.equals( writer.getPrefix( namespaceURI ) ) ) {
             writer.writeNamespace( prefix, namespaceURI );
         }
     }
