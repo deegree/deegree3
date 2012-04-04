@@ -100,7 +100,7 @@ public class FileSystemTileStoreTest {
 
         TileStoreTransaction ta = dest.acquireTransaction();
 
-        ExecutorService exec = Executors.newFixedThreadPool( 32 );
+        ExecutorService exec = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
 
         Iterator<TileMatrix> iter = dest.getTileMatrixSet().getTileMatrices().iterator();
         for ( TileMatrix tm : src.getTileMatrixSet().getTileMatrices() ) {
