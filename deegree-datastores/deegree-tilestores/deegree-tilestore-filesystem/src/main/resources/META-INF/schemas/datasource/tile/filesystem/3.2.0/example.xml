@@ -25,7 +25,7 @@
   </TilePyramid>
 
   <TileCacheDiskLayout>
-    <Directory>../../data/tiles/layer1</Directory>
+    <LayerDirectory>../../data/tiles/layer1</LayerDirectory>
     <FileType>png</FileType>
   </TileCacheDiskLayout>
 
