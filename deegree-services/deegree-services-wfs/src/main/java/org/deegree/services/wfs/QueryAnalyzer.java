@@ -424,9 +424,12 @@ public class QueryAnalyzer {
                     if ( typeNames.length == 1 ) {
                         FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
                         if ( ft.getPropertyDeclaration( name ) == null ) {
-                            String msg = "Specified PropertyName '" + propName.getAsText() + "' (='" + name
-                                         + "') does not exist for feature type '" + ft.getName() + "'.";
-                            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+                            // gml:boundedBy currently requires special treatment
+                            if ( !name.getLocalPart().equals( "boundedBy" ) ) {
+                                String msg = "Specified PropertyName '" + propName.getAsText() + "' (='" + name
+                                             + "') does not exist for feature type '" + ft.getName() + "'.";
+                                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+                            }
                         }
                     }
                     // TODO really skip this check for join queries?

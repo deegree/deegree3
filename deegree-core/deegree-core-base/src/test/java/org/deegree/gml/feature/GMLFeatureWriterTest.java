@@ -36,20 +36,27 @@
 
 package org.deegree.gml.feature;
 
+import static junit.framework.Assert.assertEquals;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
@@ -212,5 +219,66 @@ public class GMLFeatureWriterTest {
         gmlwriter.setNamespaceBindings( reader.getAppSchema().getNamespaceBindings() );
         gmlwriter.write( fc );
         gmlwriter.close();
+    }
+
+    @Test
+    public void testExportWithoutBoundedBy()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
+                            TransformationException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../cite/feature/dataset-sf0.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+        for ( Feature f : fc ) {
+            f.setEnvelope( null );
+        }
+
+        XMLOutputFactory outfac = XMLOutputFactory.newInstance();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        XMLStreamWriter writer = outfac.createXMLStreamWriter( os );
+        GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_31, writer );
+        gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
+        gmlwriter.write( fc );
+        gmlwriter.close();
+
+        XMLAdapter writtenDoc = new XMLAdapter( new ByteArrayInputStream( os.toByteArray() ), null );
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "gml", GML_31.getNamespace() );
+        XPath xpath = new XPath( "gml:featureMember/*/gml:boundedBy", nsContext );
+        List<OMElement> boundedBys = writtenDoc.getElements( writtenDoc.getRootElement(), xpath );
+        assertEquals( 0, boundedBys.size() );
+    }
+
+    @Test
+    public void testExportWithBoundedBy()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
+                            TransformationException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../cite/feature/dataset-sf0.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+        for ( Feature f : fc ) {
+            f.setEnvelope( null );
+        }
+
+        XMLOutputFactory outfac = XMLOutputFactory.newInstance();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        XMLStreamWriter writer = outfac.createXMLStreamWriter( os );
+        GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_31, writer );
+        gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
+        gmlwriter.setExportBoundedByForFeatures( true );
+        gmlwriter.write( fc );
+        gmlwriter.close();
+
+        XMLAdapter writtenDoc = new XMLAdapter( new ByteArrayInputStream( os.toByteArray() ), null );
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "gml", GML_31.getNamespace() );
+        XPath xpath = new XPath( "gml:featureMember/*/gml:boundedBy", nsContext );
+        List<OMElement> boundedBys = writtenDoc.getElements( writtenDoc.getRootElement(), xpath );
+        assertEquals( 15, boundedBys.size() );
     }
 }

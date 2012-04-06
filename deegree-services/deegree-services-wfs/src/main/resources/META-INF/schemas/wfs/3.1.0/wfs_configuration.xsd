@@ -86,6 +86,7 @@
                     </complexType>
                   </element>
                   <element name="DisableStreaming" type="boolean" minOccurs="0" default="false" />
+                  <element name="ExportBoundedByForMembers" type="boolean" minOccurs="0" default="false" />
                 </sequence>
               </complexType>
             </element>

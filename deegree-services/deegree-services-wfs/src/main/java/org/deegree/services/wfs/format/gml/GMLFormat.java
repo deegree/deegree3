@@ -170,6 +170,8 @@ public class GMLFormat implements Format {
 
     private boolean disableStreaming;
 
+    private boolean exportBoundedByForMembers;
+
     private final WebFeatureService master;
 
     private final WFSFeatureStoreManager service;
@@ -223,6 +225,9 @@ public class GMLFormat implements Format {
                 if ( appSchemaBaseURL != null && appSchemaBaseURL.isEmpty() ) {
                     appSchemaBaseURL = null;
                 }
+            }
+            if ( responseConfig.isExportBoundedByForMembers() != null ) {
+                exportBoundedByForMembers = responseConfig.isExportBoundedByForMembers();
             }
         }
 
@@ -336,6 +341,7 @@ public class GMLFormat implements Format {
         gmlStream.setXLinkDepth( resolveDepth );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
+        gmlStream.setExportBoundedByForFeatures( exportBoundedByForMembers );        
         try {
             gmlStream.write( o );
         } catch ( UnknownCRSException e ) {
@@ -396,6 +402,7 @@ public class GMLFormat implements Format {
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
+        gmlStream.setExportBoundedByForFeatures( exportBoundedByForMembers );
         Map<String, String> prefixToNs = new HashMap<String, String>( service.getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( xmlStream, analyzer.getFeatureTypes() ) );
         gmlStream.setNamespaceBindings( prefixToNs );
@@ -569,6 +576,7 @@ public class GMLFormat implements Format {
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
+        gmlStream.setExportBoundedByForFeatures( exportBoundedByForMembers );        
         Map<String, String> prefixToNs = new HashMap<String, String>( service.getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( xmlStream, analyzer.getFeatureTypes() ) );
         gmlStream.setNamespaceBindings( prefixToNs );

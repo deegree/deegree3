@@ -117,9 +117,11 @@ public class GMLStreamWriter {
 
     private GMLForwardReferenceHandler additionalObjectHandler;
 
-    private boolean exportExtraProps = false;
+    private boolean exportExtraProps;
 
     private boolean outputGeometries = true;
+
+    private boolean exportBoundedByForFeatures;
 
     private final Set<String> exportedIds = new HashSet<String>();
 
@@ -325,6 +327,26 @@ public class GMLStreamWriter {
      */
     public void setExportExtraProps( boolean exportExtraProps ) {
         this.exportExtraProps = exportExtraProps;
+    }
+
+    /**
+     * Returns whether <code>gml:boundedBy</code> properties should be exported for written {@link Feature} instances.
+     * 
+     * @return <code>true</code>, if <code>gml:boundedBy</code> shall be exported (if envelope information is
+     *         available), <code>false</code> otherwise
+     */
+    public boolean getExportBoundedByForFeatures() {
+        return exportBoundedByForFeatures;
+    }
+
+    /**
+     * Controls whether <code>gml:boundedBy</code> properties should be exported for written {@link Feature} instances.
+     * 
+     * @param exportBoundedBy
+     *            <code>true</code>, if <code>gml:boundedBy</code> should be exported, <code>false</code> otherwise
+     */
+    public void setExportBoundedByForFeatures( boolean exportBoundedBy ) {
+        this.exportBoundedByForFeatures = exportBoundedBy;
     }
 
     /**

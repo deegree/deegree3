@@ -48,6 +48,8 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -74,6 +76,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.ExtraProps;
+import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -93,7 +96,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based GML writer for features and feature collections.
+ * Stream-based GML writer for {@link Feature} and {@link FeatureCollection} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -123,6 +126,10 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private final boolean exportExtraProps;
 
+    private final boolean exportBoundedBy;
+
+    private final PropertyType boundedByPt;
+    
     private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
     /**
@@ -159,6 +166,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         this.exportSf = false;
         this.additionalObjectHandler = gmlStreamWriter.getAdditionalObjectHandler();
         this.exportExtraProps = gmlStreamWriter.getExportExtraProps();
+        this.boundedByPt = new EnvelopePropertyType( new QName( gmlNs, "boundedBy" ), 0, 1, null, null );
+        this.exportBoundedBy = gmlStreamWriter.getExportBoundedByForFeatures();
     }
 
     /**
@@ -231,22 +240,30 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeAttribute( XSINS, "schemaLocation", locs );
         }
 
-        writer.writeStartElement( gmlNs, "boundedBy" );
-        Envelope fcEnv = fc.getEnvelope();
-        if ( fcEnv != null ) {
-            gmlStreamWriter.getGeometryWriter().exportEnvelope( fc.getEnvelope() );
-        } else {
-            writer.writeStartElement( gmlNs, gmlNull );
-            writer.writeCharacters( "missing" );
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
+        exportBoundedBy( fc.getEnvelope(), true );
+
         for ( Feature f : fc ) {
             writer.writeStartElement( gmlNs, "featureMember" );
             export( f );
             writer.writeEndElement();
         }
         writer.writeEndElement();
+    }
+
+    private void exportBoundedBy( Envelope env, boolean indicateMissing )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        if ( env != null || indicateMissing ) {
+            writer.writeStartElement( gmlNs, "boundedBy" );
+            if ( env != null ) {
+                gmlStreamWriter.getGeometryWriter().exportEnvelope( env );
+            } else {
+                writer.writeStartElement( gmlNs, gmlNull );
+                writer.writeCharacters( "missing" );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
     }
 
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
@@ -265,6 +282,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
                 }
             }
+            exportBoundedBy( feature.getEnvelope(), false );
             for ( Feature member : ( (FeatureCollection) feature ) ) {
                 String memberFid = member.getId();
                 writeStartElementWithNS( gmlNs, "featureMember" );
@@ -282,6 +300,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             String namespaceURI = featureName.getNamespaceURI();
             String localName = featureName.getLocalPart();
             writeStartElementWithNS( namespaceURI, localName );
+
             if ( feature.getId() != null ) {
                 if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
@@ -289,12 +308,19 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
                 }
             }
-            for ( Property prop : feature.getProperties() ) {
+
+            List<Property> props = feature.getProperties();
+            if ( exportBoundedBy ) {
+                props = augmentBoundedBy( feature );
+            }
+
+            for ( Property prop : props ) {
                 if ( currentLevel == 0 ) {
                     maxInlineLevels = getInlineLevels( prop );
                 }
                 export( prop, currentLevel, maxInlineLevels );
             }
+
             if ( exportExtraProps ) {
                 ExtraProps extraProps = feature.getExtraProperties();
                 if ( extraProps != null ) {
@@ -306,6 +332,36 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
             writer.writeEndElement();
         }
+    }
+
+    private List<Property> augmentBoundedBy( Feature f ) {
+        LinkedList<Property> props = new LinkedList<Property>( f.getProperties() );
+        for ( int i = 0; i < props.size(); i++ ) {
+            QName name = props.get( i ).getName();
+            if ( !gmlNs.equals( name.getNamespaceURI() ) || name.getLocalPart().equals( "location" ) ) {
+                // not a GML property or gml:location -> gml:boundedBy must be included right before it
+                Property boundedBy = getBoundedBy( f );
+                if ( boundedBy != null ) {
+                    props.add( i, boundedBy );
+                }
+                break;
+            } else if ( name.getLocalPart().equals( "boundedBy" ) ) {
+                // already present -> don't include it
+                break;
+            }
+        }
+        return props;
+    }
+
+    private Property getBoundedBy( Feature f ) {
+        Envelope env = f.getEnvelope();
+        if ( env == null ) {
+            env = f.calcEnvelope();
+        }
+        if ( env == null ) {
+            return null;
+        }
+        return new GenericProperty( boundedByPt, env );
     }
 
     private int getInlineLevels( Property prop ) {
