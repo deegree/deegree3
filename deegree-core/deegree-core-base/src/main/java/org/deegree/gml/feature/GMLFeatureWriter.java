@@ -167,7 +167,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         this.additionalObjectHandler = gmlStreamWriter.getAdditionalObjectHandler();
         this.exportExtraProps = gmlStreamWriter.getExportExtraProps();
         this.boundedByPt = new EnvelopePropertyType( new QName( gmlNs, "boundedBy" ), 0, 1, null, null );
-        this.exportBoundedBy = gmlStreamWriter.getExportBoundedByForFeatures();
+        this.exportBoundedBy = gmlStreamWriter.getGenerateBoundedByForFeatures();
     }
 
     /**

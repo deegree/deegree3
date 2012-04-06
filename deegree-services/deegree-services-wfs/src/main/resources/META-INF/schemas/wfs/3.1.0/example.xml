@@ -1,5 +1,6 @@
 <deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/wfs/3.1.0/wfs_configuration.xsd">
+  configVersion="3.1.0"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.1.0/wfs_configuration.xsd">
 
   <!-- [0...1] Activated OGC protocol versions, default: activate all implemented versions -->
   <SupportedVersions>
@@ -10,8 +11,8 @@
   <!-- [0...1] Enable transactions (WFS-T operations), default: disabled -->
   <EnableTransactions>true</EnableTransactions>
 
-  <!-- [0...1] Disable response buffering (allows rollback for generating clean exception reports, but hinders streaming), 
-    default: true -->
+  <!-- [0...1] Disable response buffering (setting to false allows rollback for generating clean exception reports, but hinders 
+    streaming), default: true -->
   <DisableResponseBuffering>true</DisableResponseBuffering>
 
   <!-- [0...n] Announced CRS, default: EPSG:4326 -->
@@ -22,10 +23,14 @@
   <!-- [0...n] Output / input format configuration, if omitted GML 2.1, 3.0, 3.1, 3.2 are available -->
   <GMLFormat gmlVersion="GML_32">
 
-    <!-- [1...n] Mime type handled by this format (and announced in GetCapabilities)-->
+    <!-- [1...n] Mime type handled by this format (and announced in GetCapabilities) -->
     <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
 
-    <!-- [0...1] Customization for GetFeature responses -->
+    <!-- [0...1] Generate gml:boundedBy property for features, if not already present (default: false). NOTE: This does not 
+      affect gml:boundedBy for response feature collections (see DisableStreaming for that). -->
+    <GenerateBoundedByForFeatures>false</GenerateBoundedByForFeatures>
+
+    <!-- [0...1] Customization of GetFeature responses -->
     <GetFeatureResponse xmlns:gml="http://www.opengis.net/gml/3.2">
 
       <!-- [0...1] Qualified root element name -->
@@ -38,11 +43,8 @@
       <AdditionalSchemaLocation>>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
       </AdditionalSchemaLocation>
 
-      <!-- [0...1] Disable output streaming, include numberOfFeature attribute / gml:boundedBy -->
+      <!-- [0...1] Disable output streaming, include numberOfFeature information / gml:boundedBy -->
       <DisableStreaming>false</DisableStreaming>
-
-      <!-- [0...1] Output gml:boundedBy for member features (default: false) -->
-      <IncludeBoundedBy>false</IncludeBoundedBy>
 
     </GetFeatureResponse>
 

@@ -170,7 +170,7 @@ public class GMLFormat implements Format {
 
     private boolean disableStreaming;
 
-    private boolean exportBoundedByForMembers;
+    private boolean generateBoundedByForFeatures;
 
     private final WebFeatureService master;
 
@@ -202,6 +202,10 @@ public class GMLFormat implements Format {
         this.master = master;
         this.service = master.getStoreManager();
 
+        if ( formatDef.isGenerateBoundedByForFeatures() != null ) {
+            generateBoundedByForFeatures = formatDef.isGenerateBoundedByForFeatures();
+        }
+
         GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
         if ( responseConfig != null ) {
             if ( responseConfig.isDisableStreaming() != null ) {
@@ -225,9 +229,6 @@ public class GMLFormat implements Format {
                 if ( appSchemaBaseURL != null && appSchemaBaseURL.isEmpty() ) {
                     appSchemaBaseURL = null;
                 }
-            }
-            if ( responseConfig.isExportBoundedByForMembers() != null ) {
-                exportBoundedByForMembers = responseConfig.isExportBoundedByForMembers();
             }
         }
 
@@ -341,7 +342,7 @@ public class GMLFormat implements Format {
         gmlStream.setXLinkDepth( resolveDepth );
         gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setNamespaceBindings( service.getPrefixToNs() );
-        gmlStream.setExportBoundedByForFeatures( exportBoundedByForMembers );        
+        gmlStream.setGenerateBoundedByForFeatures( generateBoundedByForFeatures );
         try {
             gmlStream.write( o );
         } catch ( UnknownCRSException e ) {
@@ -402,7 +403,7 @@ public class GMLFormat implements Format {
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
-        gmlStream.setExportBoundedByForFeatures( exportBoundedByForMembers );
+        gmlStream.setGenerateBoundedByForFeatures( generateBoundedByForFeatures );
         Map<String, String> prefixToNs = new HashMap<String, String>( service.getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( xmlStream, analyzer.getFeatureTypes() ) );
         gmlStream.setNamespaceBindings( prefixToNs );
@@ -576,7 +577,7 @@ public class GMLFormat implements Format {
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( formatter );
-        gmlStream.setExportBoundedByForFeatures( exportBoundedByForMembers );        
+        gmlStream.setGenerateBoundedByForFeatures( generateBoundedByForFeatures );
         Map<String, String> prefixToNs = new HashMap<String, String>( service.getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( xmlStream, analyzer.getFeatureTypes() ) );
         gmlStream.setNamespaceBindings( prefixToNs );

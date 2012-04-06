@@ -70,6 +70,7 @@
       <complexContent>
         <extension base="wfs:AbstractFormatType">
           <sequence>
+            <element name="GenerateBoundedByForFeatures" type="boolean" minOccurs="0" default="false" />            
             <element name="GetFeatureResponse" minOccurs="0">
               <complexType>
                 <sequence>
@@ -86,11 +87,10 @@
                     </complexType>
                   </element>
                   <element name="DisableStreaming" type="boolean" minOccurs="0" default="false" />
-                  <element name="ExportBoundedByForMembers" type="boolean" minOccurs="0" default="false" />
                 </sequence>
               </complexType>
             </element>
-            <element ref="wfs:AbstractCoordinateFormatter" minOccurs="0" />
+            <element ref="wfs:AbstractCoordinateFormatter" minOccurs="0" />          
           </sequence>
           <attribute name="gmlVersion" type="wfs:GMLVersionType" use="required" />
         </extension>

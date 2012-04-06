@@ -320,32 +320,31 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Controls whether {@link ExtraProps} associated with feature objects should be exported as property elements.
+     * Controls whether {@link ExtraProps} associated with feature objects should be generated as property elements.
      * 
      * @param exportExtraProps
-     *            <code>true</code>, if extra props should be exported, <code>false</code> otherwise
+     *            <code>true</code>, if extra props should be calculated, <code>false</code> otherwise
      */
     public void setExportExtraProps( boolean exportExtraProps ) {
         this.exportExtraProps = exportExtraProps;
     }
 
     /**
-     * Returns whether <code>gml:boundedBy</code> properties should be exported for written {@link Feature} instances.
+     * Returns whether <code>gml:boundedBy</code> properties should be generated for written {@link Feature} instances.
      * 
-     * @return <code>true</code>, if <code>gml:boundedBy</code> shall be exported (if envelope information is
-     *         available), <code>false</code> otherwise
+     * @return <code>true</code>, if <code>gml:boundedBy</code> shall be calculated, <code>false</code> otherwise
      */
-    public boolean getExportBoundedByForFeatures() {
+    public boolean getGenerateBoundedByForFeatures() {
         return exportBoundedByForFeatures;
     }
 
     /**
-     * Controls whether <code>gml:boundedBy</code> properties should be exported for written {@link Feature} instances.
+     * Controls whether <code>gml:boundedBy</code> properties should be generated for written {@link Feature} instances.
      * 
      * @param exportBoundedBy
      *            <code>true</code>, if <code>gml:boundedBy</code> should be exported, <code>false</code> otherwise
      */
-    public void setExportBoundedByForFeatures( boolean exportBoundedBy ) {
+    public void setGenerateBoundedByForFeatures( boolean exportBoundedBy ) {
         this.exportBoundedByForFeatures = exportBoundedBy;
     }
 

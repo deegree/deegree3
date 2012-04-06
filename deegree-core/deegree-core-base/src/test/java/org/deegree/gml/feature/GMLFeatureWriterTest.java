@@ -270,7 +270,7 @@ public class GMLFeatureWriterTest {
         XMLStreamWriter writer = outfac.createXMLStreamWriter( os );
         GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_31, writer );
         gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
-        gmlwriter.setExportBoundedByForFeatures( true );
+        gmlwriter.setGenerateBoundedByForFeatures( true );
         gmlwriter.write( fc );
         gmlwriter.close();
 
