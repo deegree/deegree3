@@ -15,13 +15,13 @@ deegree webservices work on any platform with a compatible `Java <http://www.jav
 * Mac OS X
 * Solaris
 
-In order to run deegree webservices on your machine, you will need **Java 6 JDK, Update 4** or better. We recommend using the latest Java 6 update from Oracle. Java 7 or non-Oracle versions may also work, but are not officially supported by the deegree development team at the moment.
+In order to run deegree webservices on your machine, we recommend OpenJDK 7. Alternatively, using Java 6 (Update 4 or better) or Java 7 from Oracle is also supported. Other Java versions may work, but are not officially supported by the deegree development team.
 
 -----------
 Downloading
 -----------
 
-deegree webservices 3.1 downloads are available on the `deegree download page <http://wiki.deegree.org/deegreeWiki/DownloadPage>`_. You have the choice of two flavors:
+deegree webservices 3.2 downloads are available on the `deegree download page <http://wiki.deegree.org/deegreeWiki/DownloadPage>`_. You have the choice of two flavors:
 
 * *ZIP*: Multi-operating system package bundles with Apache Tomcat
 * *WAR*: Plain Java Web Archive for deployment in an existing servlet container [#f1]_
