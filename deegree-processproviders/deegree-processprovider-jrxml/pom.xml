@@ -3,6 +3,7 @@
   <artifactId>deegree-processprovider-jrxml</artifactId>
   <packaging>jar</packaging>
   <name>deegree-processprovider-jrxml</name>
+  <description>???</description>
 
   <parent>
     <groupId>org.deegree</groupId>

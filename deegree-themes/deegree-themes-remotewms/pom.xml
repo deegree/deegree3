@@ -5,6 +5,7 @@
   <packaging>jar</packaging>
   <version>3.2-pre6-SNAPSHOT</version>
   <name>deegree-themes-remotewms</name>
+  <description>Map layer theme implementation for remote Web Map Services</description>
 
   <parent>
     <groupId>org.deegree</groupId>

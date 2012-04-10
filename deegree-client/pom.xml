@@ -4,6 +4,7 @@
   <artifactId>deegree-client</artifactId>
   <packaging>pom</packaging>
   <name>deegree-client</name>
+  <description>Web clients</description>
 
   <parent>
     <groupId>org.deegree</groupId>

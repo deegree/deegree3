@@ -3,6 +3,7 @@
   <artifactId>deegree-processprovider-style</artifactId>
   <packaging>jar</packaging>
   <name>deegree-processprovider-style</name>
+  <description>???</description>
 
   <parent>
     <groupId>org.deegree</groupId>

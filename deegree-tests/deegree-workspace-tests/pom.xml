@@ -3,6 +3,7 @@
   <artifactId>deegree-workspace-tests</artifactId>
   <packaging>war</packaging>
   <name>deegree-workspace-tests</name>
+  <description>Basic tests that start up deegree example workspaces</description>
 
   <parent>
     <groupId>org.deegree</groupId>

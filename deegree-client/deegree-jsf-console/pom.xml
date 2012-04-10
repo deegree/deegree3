@@ -3,6 +3,7 @@
   <artifactId>deegree-jsf-console</artifactId>
   <packaging>jar</packaging>
   <name>deegree-jsf-console</name>
+  <description>Administration console for deegree Web Services</description>
 
   <parent>
     <groupId>org.deegree</groupId>

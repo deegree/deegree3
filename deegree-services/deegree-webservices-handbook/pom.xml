@@ -4,7 +4,7 @@
   <artifactId>deegree-webservices-handbook</artifactId>
   <packaging>pom</packaging>
   <name>deegree-webservices-handbook</name>
-  <description>Documentation for using and configuring deegree webservices</description>
+  <description>Documentation for using and configuring deegree Web Services</description>
 
   <parent>
     <groupId>org.deegree</groupId>

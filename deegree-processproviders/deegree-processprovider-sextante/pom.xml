@@ -3,6 +3,7 @@
   <artifactId>deegree-processprovider-sextante</artifactId>
   <packaging>jar</packaging>
   <name>deegree-processprovider-sextante</name>
+  <description>Process provider for Sextante (http://www.sextantegis.com)</description>
 
   <parent>
     <groupId>org.deegree</groupId>

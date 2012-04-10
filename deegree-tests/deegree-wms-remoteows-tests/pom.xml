@@ -3,6 +3,7 @@
   <artifactId>deegree-wms-remoteows-tests</artifactId>
   <packaging>war</packaging>
   <name>deegree-wms-remoteows-tests</name>
+  <description>Integration tests for accessing remote WMS instances</description>
 
   <parent>
     <groupId>org.deegree</groupId>

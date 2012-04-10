@@ -3,6 +3,7 @@
   <artifactId>deegree-sos-demo</artifactId>
   <packaging>war</packaging>
   <name>deegree-sos-demo</name>
+  <description>???</description>
 
   <parent>
     <groupId>org.deegree</groupId>

@@ -4,6 +4,7 @@
   <artifactId>deegree-wfs-cite110-postgis-relational</artifactId>
   <packaging>war</packaging>
   <name>deegree-wfs-cite110-postgis-relational</name>
+  <description>???</description>
 
   <parent>
     <groupId>org.deegree</groupId>

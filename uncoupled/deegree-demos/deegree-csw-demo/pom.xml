@@ -6,6 +6,8 @@
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
     <name>deegree 3 CSW Demo</name>
+    <description>???</description>
+
     <url>http://maven.apache.org</url>
     <scm>
         <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-demos/deegree-csw-demo</developerConnection>

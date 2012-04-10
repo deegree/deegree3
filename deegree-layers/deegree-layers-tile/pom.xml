@@ -4,6 +4,7 @@
   <artifactId>deegree-layers-tile</artifactId>
   <packaging>jar</packaging>
   <name>deegree-layers-tile</name>
+  <description>Layer implementation for layers based on tile stores</description>
 
   <parent>
     <groupId>org.deegree</groupId>

@@ -3,6 +3,7 @@
   <artifactId>deegree-processprovider-example</artifactId>
   <packaging>war</packaging>
   <name>deegree-processprovider-example</name>
+  <description>Example process provider implementation</description>
 
   <parent>
     <groupId>org.deegree</groupId>

@@ -4,6 +4,7 @@
   <artifactId>deegree-wps-webclient</artifactId>
   <packaging>war</packaging>
   <name>deegree-wps-webclient</name>
+  <description>Web client for accessing Web Processing Services</description>
 
   <parent>
     <groupId>org.deegree</groupId>

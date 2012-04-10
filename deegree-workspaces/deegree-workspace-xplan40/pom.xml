@@ -3,7 +3,7 @@
   <artifactId>deegree-workspace-xplan40</artifactId>
   <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-xplan40</name>
-  <description>Rudimentary example configuration for deploying XPlan GML 4.0 via deegree WFS and WMS</description>
+  <description>Example configuration for deploying XPlan GML 4.0 via deegree WFS and WMS</description>
 
   <parent>
     <groupId>org.deegree</groupId>

@@ -4,6 +4,7 @@
   <artifactId>deegree-wpsprinter-webclient</artifactId>
   <packaging>war</packaging>
   <name>deegree-wpsprinter-webclient</name>
+  <description>???</description>
 
   <parent>
     <groupId>org.deegree</groupId>

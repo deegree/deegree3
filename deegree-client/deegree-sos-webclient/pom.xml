@@ -3,6 +3,7 @@
   <artifactId>deegree-sos-webclient</artifactId>
   <packaging>jar</packaging>
   <name>deegree-sos-webclient</name>
+  <description>Web client for accessing Sensor Observation Services</description>
 
   <parent>
     <groupId>org.deegree</groupId>

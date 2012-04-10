@@ -3,7 +3,7 @@
   <artifactId>deegree-core-geometry</artifactId>
   <name>deegree-core-geometry</name>
   <packaging>jar</packaging>
-  <description>Data model for geometries (ISO 19107-compliant)</description>
+  <description>Data model and utilities for vector geometries</description>
 
   <parent>
     <groupId>org.deegree</groupId>

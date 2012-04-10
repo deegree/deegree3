@@ -3,7 +3,7 @@
   <artifactId>deegree-workspace-utah</artifactId>
   <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-utah</name>
-  <description>Example configuration for a standard web mapping setup using deegree WMS and WFS</description>
+  <description>Example configuration for a web mapping setup using deegree WMS and WFS</description>
 
   <parent>
     <groupId>org.deegree</groupId>

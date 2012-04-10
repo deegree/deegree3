@@ -4,6 +4,7 @@
   <artifactId>deegree-csw-bkg</artifactId>
   <packaging>war</packaging>
   <name>deegree-csw-bkg</name>
+  <description>Integration tests</description>
 
   <properties>
     <cswUrl>http://localhost:${portnumber}/deegree-csw-bkg/services</cswUrl>

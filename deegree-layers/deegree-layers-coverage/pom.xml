@@ -4,6 +4,7 @@
   <artifactId>deegree-layers-coverage</artifactId>
   <packaging>jar</packaging>
   <name>deegree-layers-coverage</name>
+  <description>Layers implementation for layers created from coverage stores</description>
 
   <parent>
     <groupId>org.deegree</groupId>

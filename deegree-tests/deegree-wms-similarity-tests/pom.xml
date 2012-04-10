@@ -3,6 +3,7 @@
   <artifactId>deegree-wms-similarity-tests</artifactId>
   <packaging>war</packaging>
   <name>deegree-wms-similarity-tests</name>
+  <description>Integration tests for deegree Web Map Service</description>
 
   <parent>
     <groupId>org.deegree</groupId>

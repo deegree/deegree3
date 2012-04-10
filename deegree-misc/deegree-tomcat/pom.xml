@@ -1,7 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-tomcat</artifactId>
   <name>deegree-tomcat</name>
+  <description>Apache Tomcat with customized start scripts</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -61,11 +63,11 @@
   <profiles>
     <profile>
       <id>activate-dependency-plugin</id>
-        <activation>
-          <property>
-            <name>!deactivateDependencyPlugin</name>
-          </property>
-        </activation>
+      <activation>
+        <property>
+          <name>!deactivateDependencyPlugin</name>
+        </property>
+      </activation>
       <build>
         <plugins>
           <plugin>

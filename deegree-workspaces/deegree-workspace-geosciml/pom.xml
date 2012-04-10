@@ -3,7 +3,7 @@
   <artifactId>deegree-workspace-geosciml</artifactId>
   <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-geosciml</name>
-  <description>Rudimentary example configuration for deploying GeoSciML via deegree WFS and WMS</description>
+  <description>Example configuration for deploying GeoSciML via deegree WFS and WMS</description>
 
   <parent>
     <groupId>org.deegree</groupId>
