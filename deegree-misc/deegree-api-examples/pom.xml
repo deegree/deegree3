@@ -6,6 +6,10 @@
   <name>deegree-api-examples</name>
   <description>Example code snippets for working with the deegree API</description>
 
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>

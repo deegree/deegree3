@@ -6,6 +6,10 @@
   <name>deegree-layers-tile</name>
   <description>Layer implementation for layers based on tile stores</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-layers</artifactId>

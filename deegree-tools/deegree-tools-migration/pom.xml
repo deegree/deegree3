@@ -1,9 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-tools-migration</artifactId>
   <packaging>jar</packaging>
   <name>deegree-tools-migration</name>
   <description>Command line tools ???</description>
+
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+    <toolboxname>d3toolbox-migration</toolboxname>
+  </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -23,10 +29,6 @@
       </snapshots>
     </repository>
   </repositories>
-
-  <properties>
-    <toolboxname>d3toolbox-migration</toolboxname>
-  </properties>
 
   <dependencies>
     <dependency>

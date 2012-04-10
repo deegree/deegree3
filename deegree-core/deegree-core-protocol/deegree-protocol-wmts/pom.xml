@@ -6,6 +6,10 @@
   <packaging>jar</packaging>
   <description>Client for accessing remote Web Map Tiling Services</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-protocol</artifactId>

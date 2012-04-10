@@ -5,6 +5,10 @@
   <name>deegree-workspace-csw</name>
   <description>Example configuration for deploying a deegree CSW that serves ISO metadata</description>
 
+  <properties>
+    <deegree.module.status>ok</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>

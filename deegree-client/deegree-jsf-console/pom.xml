@@ -5,6 +5,10 @@
   <name>deegree-jsf-console</name>
   <description>Administration console for deegree Web Services</description>
 
+  <properties>
+    <deegree.module.status>rework</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>

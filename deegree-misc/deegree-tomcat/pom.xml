@@ -5,6 +5,10 @@
   <name>deegree-tomcat</name>
   <description>Apache Tomcat with customized start scripts</description>
 
+  <properties>
+    <deegree.module.status>rework</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>

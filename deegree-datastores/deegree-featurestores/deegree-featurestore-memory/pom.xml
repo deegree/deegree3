@@ -6,6 +6,10 @@
   <name>deegree-featurestore-memory</name>
   <description>Feature store implementation that keeps features in memory</description>
 
+  <properties>
+    <deegree.module.status>ok</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>

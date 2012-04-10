@@ -5,6 +5,10 @@
   <packaging>jar</packaging>
   <description>Data model for sensor data</description>
 
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>

@@ -5,6 +5,10 @@
   <name>deegree-workspace-csw-tests</name>
   <description>Configuration for running the BKG CSW test suite</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>

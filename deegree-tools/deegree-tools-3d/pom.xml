@@ -3,7 +3,12 @@
   <artifactId>deegree-tools-3d</artifactId>
   <packaging>jar</packaging>
   <name>deegree-tools-3d</name>
-  <description>Command line tools for WPVS/3D related tasks</description>
+  <description>Command line tools for 3D related tasks</description>
+
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+    <toolboxname>d3toolbox-3d</toolboxname>
+  </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -23,10 +28,6 @@
       </snapshots>
     </repository>
   </repositories>
-
-  <properties>
-    <toolboxname>d3toolbox-3d</toolboxname>
-  </properties>
 
   <dependencies>
     <dependency>

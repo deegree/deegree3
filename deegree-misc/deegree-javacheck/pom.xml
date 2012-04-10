@@ -5,6 +5,10 @@
   <name>deegree-javacheck</name>
   <description>Check for Java versions compatible with deegree</description>
 
+  <properties>
+    <deegree.module.status>ok</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>

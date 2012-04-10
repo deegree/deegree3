@@ -1,9 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-tilestore-remotewms</artifactId>
   <name>deegree-tilestore-remotewms</name>
   <packaging>jar</packaging>
   <description>Tile store implementation that accesses remote Web Map Service instances</description>
+
+  <properties>
+    <deegree.module.status>ok</deegree.module.status>
+  </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -35,7 +40,7 @@
             <artifactId>deegree-core-geometry</artifactId>
             <version>${project.version}</version>
           </dependency>
-        </dependencies>        
+        </dependencies>
       </plugin>
     </plugins>
   </build>

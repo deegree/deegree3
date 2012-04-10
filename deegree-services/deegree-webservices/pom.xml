@@ -5,6 +5,10 @@
   <name>deegree-webservices</name>
   <description>Webapp that includes deegree WMS, WFS, CSW, WPS, common datastore modules and service administration console</description>
 
+  <properties>
+    <deegree.module.status>ok</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

@@ -5,6 +5,10 @@
   <name>deegree-coveragestore-remotewms</name>
   <description>Coverage store implementation that accesses remote Web Map Services</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-coveragestores</artifactId>

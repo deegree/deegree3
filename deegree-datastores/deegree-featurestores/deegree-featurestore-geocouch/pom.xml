@@ -5,6 +5,10 @@
   <name>deegree-featurestore-geocouch</name>
   <description>Feature store implementation for accessing features stored in GeoCouch DB</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>

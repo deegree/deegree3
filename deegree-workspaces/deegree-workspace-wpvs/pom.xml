@@ -5,6 +5,10 @@
   <name>deegree-workspace-wpvs</name>
   <description>Example configuration for setting up a deegree WPVS</description>
 
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>

@@ -5,6 +5,10 @@
   <name>deegree-services-sos</name>
   <description>OGC Sensor Observation Service (SOS) implementation - Querying and retrieval of sensor data</description>
 
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

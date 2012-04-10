@@ -5,15 +5,16 @@
   <name>deegree-tools-alkis</name>
   <description>Command line tools for ALKIS-related tasks</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+    <toolboxname>d3alkis</toolboxname>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools</artifactId>
     <version>3.2-pre6-SNAPSHOT</version>
   </parent>
-
-  <properties>
-    <toolboxname>d3alkis</toolboxname>
-  </properties>
 
   <repositories>
     <repository>

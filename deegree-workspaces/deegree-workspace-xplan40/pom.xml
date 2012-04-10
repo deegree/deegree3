@@ -5,6 +5,10 @@
   <name>deegree-workspace-xplan40</name>
   <description>Example configuration for deploying XPlan GML 4.0 via deegree WFS and WMS</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>

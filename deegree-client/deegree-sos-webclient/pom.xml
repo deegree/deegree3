@@ -5,6 +5,10 @@
   <name>deegree-sos-webclient</name>
   <description>Web client for accessing Sensor Observation Services</description>
 
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>

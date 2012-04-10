@@ -5,6 +5,10 @@
   <name>deegree-workspace-wps</name>
   <description>Example configuration for deploying processes using a deegree WPS</description>
 
+  <properties>
+    <deegree.module.status>ok</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>

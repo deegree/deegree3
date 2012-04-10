@@ -6,6 +6,10 @@
   <packaging>jar</packaging>
   <description>Remote OGC Web Feature Services as deegree workspace resources</description>
 
+  <properties>
+    <deegree.module.status>check</deegree.module.status>
+  </properties>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-remoteows</artifactId>
