@@ -3,6 +3,7 @@
   <artifactId>deegree-workspace-wps</artifactId>
   <packaging>jar</packaging>
   <name>deegree-workspace-wps</name>
+  <description>Example configuration for deploying processes using a deegree WPS</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -185,3 +186,4 @@
   </dependencies>
 
 </project>
+

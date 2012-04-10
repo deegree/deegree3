@@ -3,6 +3,7 @@
   <artifactId>deegree-workspace-compliance-tests</artifactId>
   <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-compliance-tests</name>
+  <description>Configuration for the OGC CITE test suites</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -67,3 +68,4 @@
     </dependency>
   </dependencies>
 </project>
+

@@ -33,15 +33,20 @@ The WFS config file format is defined by schema file http://schemas.deegree.org/
 
 The root element has to be ``deegreeWFS`` and the config attribute must be ``3.1.0``. The only mandatory element is:
 
-* ``QueryCRS``: Default coordinate reference system for geometries
+* ``QueryCRS [1...n]``: Default coordinate reference system for geometries
 
-The above configuration will create a deegree WFS with the feature types from all configured feature stores in the workspace and use ``urn:ogc:def:crs:EPSG::4258`` as the default coordinate system for GML responses/inputs. It will support WFS 1.0.0, 1.1.0 and 2.0.0 requests. Transactions are activated (as far as they are supported by the active feature stores).
+The above configuration will create a deegree WFS with the feature types from all configured feature stores in the workspace and use ``urn:ogc:def:crs:EPSG::4258`` as the default coordinate system for GML responses/inputs. Note that the ``QueryCRS`` element can be specified multiple times to activate more than one query CRS. The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 
-By default, a deegree WFS supports all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0). In order to control the supported WFS protocol versions, use configuration element ``SupportedVersions``:
+.. topic:: WFS config example 2: Supporting multiple query CRS
 
-* ``SupportedVersions``: Control offered WFS protocol versions
+   .. literalinclude:: xml/wfs_multiple_crs.xml
+      :language: xml
 
-.. topic:: WFS config example 2: Restricting Protocol versions
+By default, a deegree WFS supports all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0). In order to control active WFS protocol versions, specify the optional configuration element ``SupportedVersions``:
+
+* ``SupportedVersions [0...1]``: Control offered WFS protocol versions
+
+.. topic:: WFS config example 3: Restricting protocol versions
 
    .. literalinclude:: xml/wfs_versions.xml
       :language: xml
@@ -50,7 +55,7 @@ This configuration restricts the offered protocol versions to 1.1.0 and 2.0.0. I
 
 By default, a deegree WFS will use all active feature stores for serving feature types. In some cases, this may not be what you want, e.g. because you have two different WFS instances running in the same workspace, or you don't want all feature types used in the WMS for rendering to be available via the WFS. Use the ``FeatureStoreId`` to explicitly set the feature stores that this WFS should use:
 
-* ``FeatureStoreId``: Set feature stores to use
+* ``FeatureStoreId [0...n]``: Limit feature stores to use
 
 .. topic:: WFS config example 3: Restricting feature stores
 
@@ -58,9 +63,31 @@ By default, a deegree WFS will use all active feature stores for serving feature
       :language: xml
 
 * ``EnableTransactions``: Boolean-valued element (``true`` or ``false``). Set to ``false`` in order to disable transactions (Insert, Update, Delete). Default is ``true``.
-* ``QueryCRS``: Coordinate systems announced in the GetCapabilities response (WFS 1.1.0 and 2.0.0). Element can be used multiple times.
+
 * ``QueryMaxFeatures``: Limits the maximum number of features that the WFS will return for a single ``GetFeature`` request. Default is 15000. Set to ``-1`` for unlimited.
-* ``GMLFormat``:
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Customizing output formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* ``GMLFormat [0...n]``:
+
+.. topic:: WFS config example snippet: Customizing GML output
+
+   .. literalinclude:: xml/wfs_gmlformat.xml
+      :language: xml
+
+```GMLFormat``` has the following child elements:
+
+* ``MimeType [1...n]``: Mime type handled by this format (and announced in GetCapabilities)
+* ``GenerateBoundedByForFeatures [0...1]``: Generate gml:boundedBy property for features, if not already present (default: false). NOTE: This does not affect gml:boundedBy for response feature collections (see DisableStreaming for that).
+* ``GetFeatureResponse [0...1]``: Options for controlling GetFeature responses
+* ``ContainerElement [0...1]``: Qualified root element name
+* ``FeatureMemberElement [0...1]``: Qualified feature member element name
+* ``AdditionalSchemaLocation [0...1]``: Added to xsi:schemaLocation attribute (to declare non-standard container elements)
+* ``DisableStreaming [0...1]``: Disable output streaming, include numberOfFeature information / gml:boundedBy
+
+* ``CustomFormat [0...n]``:
 
 ^^^^^^^^^^^^^^^^^^^^
 Controlling Metadata
@@ -70,10 +97,6 @@ Controlling Metadata
 * ``FeatureTypeMetadata``:  
 * ``ExtendedCapabilities``:  
 
-.. topic:: WFS config example 3: Restricting Feature stores
-
-   .. literalinclude:: xml/wfs_featurestores.xml
-      :language: xml
 
 ^^^^^^^^^^^^^^^^^^^^^
 Additional parameters

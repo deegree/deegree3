@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-featurestore-memory</artifactId>
   <packaging>jar</packaging>
   <name>deegree-featurestore-memory</name>
+  <description>Feature store implementation that keeps features in memory</description>
+
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
     <version>3.2-pre5-SNAPSHOT</version>
   </parent>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -21,6 +23,7 @@
       </snapshots>
     </repository>
   </repositories>
+
   <build>
     <plugins>
       <plugin>
@@ -29,6 +32,7 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
@@ -38,8 +42,9 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>
+

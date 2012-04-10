@@ -3,6 +3,7 @@
   <artifactId>deegree-workspace-wpvs</artifactId>
   <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-wpvs</name>
+  <description>Rudimentary example configuration for setting up a deegree WPVS</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -33,3 +34,4 @@
   </dependencies>
 
 </project>
+

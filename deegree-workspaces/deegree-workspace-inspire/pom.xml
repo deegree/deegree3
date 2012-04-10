@@ -3,6 +3,7 @@
   <artifactId>deegree-workspace-inspire</artifactId>
   <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-inspire</name>
+  <description>Example configuration for setting up INSPIRE View and Download Services using deegree WFS and WMS</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -33,3 +34,4 @@
   </dependencies>
 
 </project>
+

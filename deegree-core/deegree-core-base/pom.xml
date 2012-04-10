@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-core-base</artifactId>
   <name>deegree-core-base</name>
   <packaging>jar</packaging>
-
+  <description>Needs splitting: Data model for feature data, Data model and evaluation for filter expressions, GML readers and writers, OGC protocol layer parts, Remote OWS, temporal model</description>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
@@ -74,3 +74,4 @@
     </dependency>
   </dependencies>
 </project>
+

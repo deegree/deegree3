@@ -4,6 +4,7 @@
   <artifactId>deegree-datastores</artifactId>
   <packaging>pom</packaging>
   <name>deegree-datastores</name>
+  <description>Abstraction layers for geospatial data persistence and backend implementations</description>
 
   <parent>
     <groupId>org.deegree</groupId>

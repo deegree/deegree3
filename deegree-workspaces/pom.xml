@@ -1,8 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-workspaces</artifactId>
   <packaging>pom</packaging>
   <name>deegree-workspaces</name>
+  <description>Example configurations for deegree web services</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -37,7 +39,9 @@
     <module>deegree-workspace-aixm</module>
     <module>deegree-workspace-alkis</module>
     <module>deegree-workspace-base</module>
+    <module>deegree-workspace-compliance-tests</module>    
     <module>deegree-workspace-csw</module>
+    <module>deegree-workspace-csw-tests</module>    
     <module>deegree-workspace-geosciml</module>
     <module>deegree-workspace-inspire</module>
     <module>deegree-workspace-utah</module>
@@ -45,8 +49,7 @@
     <module>deegree-workspace-wps</module>
     <module>deegree-workspace-wpvs</module>
     <module>deegree-workspace-xplan40</module>
-    <module>deegree-workspace-compliance-tests</module>
-    <module>deegree-workspace-csw-tests</module>
   </modules>
 
 </project>
+

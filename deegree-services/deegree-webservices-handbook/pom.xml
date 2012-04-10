@@ -4,6 +4,7 @@
   <artifactId>deegree-webservices-handbook</artifactId>
   <packaging>pom</packaging>
   <name>deegree-webservices-handbook</name>
+  <description>Documentation for using and configuring deegree webservices</description>
 
   <parent>
     <groupId>org.deegree</groupId>
@@ -60,7 +61,7 @@
                 </exec>
               </tasks>
             </configuration>
-          </execution>          
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -111,3 +112,4 @@
   </build>
 
 </project>
+
