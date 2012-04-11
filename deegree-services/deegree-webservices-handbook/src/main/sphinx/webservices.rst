@@ -31,11 +31,43 @@ The WFS config file format is defined by schema file http://schemas.deegree.org/
    .. literalinclude:: xml/wfs_basic.xml
       :language: xml
 
-The root element has to be ``deegreeWFS`` and the config attribute must be ``3.1.0``. The only mandatory element is:
+The root element has to be ``deegreeWFS`` and the config attribute must be ``3.1.0``. The following options are available:
+
+.. table:: Options for ``deegreeWFS``
+
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| Option                   | Multiplicity | Value     | Description                                                                  |
++==========================+==============+==========================================================================================+
+| SupportedVersions        | 0..1         | Structure | Limit active OGC protocol versions                                           |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| FeatureStoreId           | 0..n         | String    | Limit feature stores to use                                                  |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| EnableTransactions       | 0..1         | Boolean   | Enable transactions (WFS-T operations)                                       |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| DisableResponseBuffering | 0..1         | Boolean   | Disable response buffering                                                   |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| QueryCRS                 | 1..n         | String    | Announced CRS, first element is the default CRS                              |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| QueryMaxFeatures         | 0..1         | Integer   | Limits maximum number of features returned by a GetFeature request           |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| QueryCheckAreaOfUse      | 0..1         | Boolean   | Very high                                                                    |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| GMLFormat                | 0..n         | Structure | GML output / input format configuration                                      |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| CustomFormat             | 0..n         | Structure | Custom output / input format configuration                                   |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| MetadataURLTemplate      | 0..1         | String    | Very high                                                                    |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| FeatureTypeMetadata      | 0..n         | Structure | Metadata for feature types reported in GetCapabilities response              |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+| ExtendedCapabilities     | 0..n         | Structure | Extended Metadata reported in GetCapabilities response                       |
++--------------------------+--------------+------------------------------------------------------------------------------------------+
+
+The only mandatory element is:
 
 * ``QueryCRS [1...n]``: Default coordinate reference system for geometries
 
-The above configuration will create a deegree WFS with the feature types from all configured feature stores in the workspace and use ``urn:ogc:def:crs:EPSG::4258`` as the default coordinate system for GML responses/inputs. Note that the ``QueryCRS`` element can be specified multiple times to activate more than one query CRS. The first element always specifies the default CRS (used when no CRS parameter is present in a request).
+The minimal configuration will create a deegree WFS with the feature types from all configured feature stores in the workspace and use ``urn:ogc:def:crs:EPSG::4258`` as the default coordinate system for GML responses/inputs. Note that the ``QueryCRS`` element can be specified multiple times to activate more than one query CRS. The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 
 .. topic:: WFS config example 2: Supporting multiple query CRS
 
@@ -111,7 +143,7 @@ Additional parameters
 Web Map Service (WMS)
 ---------------------
 
-In deegree terminology, a deegree WMS renders maps from data stored in feature and coverage stores. Available layers are configured in the WMS configuration file, while rendering of layers is controlled by style files. Supported style languages are StyledLayerDescriptor (SLD) and Symbology Encoding (SE).
+In deegree terminology, a deegree WMS renders maps from data stored in feature, coverage and tile stores. Available layers are configured in the WMS configuration file, while rendering of layers is controlled by style files. Supported style languages are StyledLayerDescriptor (SLD) and Symbology Encoding (SE).
 
 .. figure:: images/workspace-wms.png
    :figwidth: 90%
