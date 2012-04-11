@@ -14,8 +14,8 @@
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-parent</artifactId>
-    <version>3.1-pre8</version>
+    <artifactId>deegree</artifactId>
+    <version>3.1.2</version>
     <relativePath />
   </parent>
 
@@ -68,7 +68,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1-pre8</version>
+      <version>3.1.2</version>
     </dependency>
   </dependencies>
 
