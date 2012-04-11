@@ -56,6 +56,8 @@ public class MapUtils {
     /** The Value of a PixelSize */
     public static final double DEFAULT_PIXEL_SIZE = 0.00028;
 
+    public static final double WMTS_METERS_PER_DEGREE = 111319.490793273;
+
     /**
      * calculates the distance in meters between two points in EPSG:4326 coodinates. this is a convenience method
      * assuming the world is a ball
@@ -75,6 +77,17 @@ public class MapUtils {
 
         // * 0.835 is just an heuristic correction factor
         return dist * 1000 * 0.835;
+    }
+
+    /**
+     * Calculates the scale denominator for a given resolution in degree units, according to the informative annexes of
+     * the WMTS 1.0.0 specs.
+     * 
+     * @param res
+     * @return the scale denominator
+     */
+    public static final double calcScaleFromDegrees( final double res ) {
+        return ( res * WMTS_METERS_PER_DEGREE ) / DEFAULT_PIXEL_SIZE;
     }
 
 }

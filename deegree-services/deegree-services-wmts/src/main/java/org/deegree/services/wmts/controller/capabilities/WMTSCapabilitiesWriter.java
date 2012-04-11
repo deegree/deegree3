@@ -54,6 +54,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.utils.MapUtils;
+import org.deegree.cs.components.Unit;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -251,11 +253,15 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
                     for ( TileMatrix tm : ts.getTileMatrixSet().getTileMatrices() ) {
                         TileMatrixMetadata tmmd = tm.getMetadata();
                         writer.writeStartElement( WMTSNS, "TileMatrix" );
-                        double scale = tmmd.getResolution() / DEFAULT_PIXEL_SIZE;
+                        double scale;
+                        if ( metadata.getCrs().getUnits()[0].equals( Unit.DEGREE ) ) {
+                            scale = MapUtils.calcScaleFromDegrees( tmmd.getResolution() );
+                        } else {
+                            scale = tmmd.getResolution() / DEFAULT_PIXEL_SIZE;
+                        }
                         writeElement( writer, OWS110_NS, "Identifier", tm.getMetadata().getIdentifier() );
                         writeElement( writer, WMTSNS, "ScaleDenominator", scale + "" );
                         Envelope env = tmmd.getSpatialMetadata().getEnvelope();
-                        // TODO verify this
                         writeElement( writer, WMTSNS, "TopLeftCorner", env.getMin().get0() + " " + env.getMax().get1() );
                         writeElement( writer, WMTSNS, "TileWidth", Integer.toString( tmmd.getTilePixelsX() ) );
                         writeElement( writer, WMTSNS, "TileHeight", Integer.toString( tmmd.getTilePixelsY() ) );
