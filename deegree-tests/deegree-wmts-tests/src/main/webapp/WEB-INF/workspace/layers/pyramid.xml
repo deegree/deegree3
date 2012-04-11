@@ -27,4 +27,9 @@
     <l:Name>filesystem</l:Name>
     <d:Title>IT tile layer filesystem</d:Title>
   </TileLayer>
+  <TileLayer>
+    <TileStoreId>utah4326</TileStoreId>
+    <l:Name>utah4326</l:Name>
+    <d:Title>IT tile layer utah4326</d:Title>
+  </TileLayer>
 </TileLayers>

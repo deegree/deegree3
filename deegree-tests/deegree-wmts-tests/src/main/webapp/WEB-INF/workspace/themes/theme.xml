@@ -33,6 +33,11 @@
       <d:Title>IT test layer filesystem</d:Title>
       <Layer>filesystem</Layer>
     </Theme>
+    <Theme>
+      <Identifier>utah4326</Identifier>
+      <d:Title>IT test layer utah4326</d:Title>
+      <Layer>utah4326</Layer>
+    </Theme>
   </Theme>
 
 </Themes>
