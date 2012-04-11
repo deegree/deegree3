@@ -4,10 +4,10 @@
   <artifactId>deegree-tools-base</artifactId>
   <packaging>jar</packaging>
   <name>deegree-tools-base</name>
-  <description>Command line tools ???</description>
+  <description>Command line tools for most subsystems (feature, crs, coverage, metadata). Needs splitting</description>
 
   <properties>
-    <deegree.module.status>check</deegree.module.status>
+    <deegree.module.status>rework</deegree.module.status>
     <toolboxname>d3toolbox</toolboxname>
   </properties>
 

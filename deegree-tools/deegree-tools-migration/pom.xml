@@ -4,7 +4,7 @@
   <artifactId>deegree-tools-migration</artifactId>
   <packaging>jar</packaging>
   <name>deegree-tools-migration</name>
-  <description>Command line tools ???</description>
+  <description>Command line tools for migrating a deegree 3.0/3.1 map layer configuration to a 3.2-style one</description>
 
   <properties>
     <deegree.module.status>check</deegree.module.status>
