@@ -60,7 +60,7 @@ import org.deegree.tile.persistence.filesystem.DiskLayout;
  * <li>6rd-7th directory + filename: <i>row number (y)</i>, split into thousands: y = 786347862 results in 786/347/862</li>
  * <li>filename suffix: <i>filetype</i>
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
