@@ -275,6 +275,7 @@ public class MapService {
      */
     public MapService( DeegreeWorkspace workspace ) {
         this.registry = new StyleRegistry( workspace );
+        this.defaultLayerOptions = new MapOptions( Quality.NORMAL, Interpolation.NEARESTNEIGHBOR, Antialias.BOTH, -1, 3 );
         layers = new HashMap<String, Layer>();
         root = new EmptyLayer( this, null, "Root Layer", null );
     }
