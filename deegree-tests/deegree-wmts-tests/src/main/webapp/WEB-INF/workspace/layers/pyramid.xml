@@ -32,4 +32,9 @@
     <l:Name>utah4326</l:Name>
     <d:Title>IT tile layer utah4326</d:Title>
   </TileLayer>
+  <TileLayer>
+    <TileStoreId>remotewms4326</TileStoreId>
+    <l:Name>remotewms4326</l:Name>
+    <d:Title>IT tile layer remotewms4326</d:Title>
+  </TileLayer>
 </TileLayers>
