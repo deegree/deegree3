@@ -81,13 +81,23 @@ public class MapUtils {
 
     /**
      * Calculates the scale denominator for a given resolution in degree units, according to the informative annexes of
-     * the WMTS 1.0.0 specs.
+     * the WMTS 1.0.0 spec.
      * 
      * @param res
      * @return the scale denominator
      */
     public static final double calcScaleFromDegrees( final double res ) {
         return ( res * WMTS_METERS_PER_DEGREE ) / DEFAULT_PIXEL_SIZE;
+    }
+
+    /**
+     * Calculates the pixel resolution for a given scale, according to the informative annexes of the WMTS 1.0.0 spec.
+     * 
+     * @param scale
+     * @return the pixel resolution
+     */
+    public static final double calcResFromScale( final double scale ) {
+        return ( scale * DEFAULT_PIXEL_SIZE ) / WMTS_METERS_PER_DEGREE;
     }
 
 }

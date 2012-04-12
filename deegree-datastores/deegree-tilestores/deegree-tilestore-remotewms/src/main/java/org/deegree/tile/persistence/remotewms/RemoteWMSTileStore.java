@@ -53,6 +53,7 @@ import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.cs.components.IAxis;
@@ -189,7 +190,7 @@ public class RemoteWMSTileStore implements TileStore {
 
         for ( int i = 0; i < levels; i++ ) {
             String id = Double.toString( scaleDenominator );
-            double res = calcWorldResolution( scaleDenominator, bbox );
+            double res = calcResolution( scaleDenominator, bbox );
             int numX = MathUtils.round( Math.ceil( span0 / ( res * tileWidth ) ) );
             int numY = MathUtils.round( Math.ceil( span1 / ( res * tileHeight ) ) );
 
@@ -211,7 +212,7 @@ public class RemoteWMSTileStore implements TileStore {
      *            (factor for transforming a screen to a world length)
      * @return resolution of a pixel in world coordinates
      */
-    private double calcWorldResolution( double scaleDenominator, Envelope bbox ) {
+    private double calcResolution( double scaleDenominator, Envelope bbox ) {
         ICRS crs = bbox.getCoordinateSystem();
         IUnit unit = null;
         for ( IAxis axis : crs.getAxis() ) {
@@ -231,6 +232,10 @@ public class RemoteWMSTileStore implements TileStore {
             double factor = unit.convert( 1.0, Unit.METRE );
             return factor * scaleDenominator * DEFAULT_PIXEL_SIZE;
         }
+        if ( unit.equals( Unit.DEGREE ) ) {
+            return MapUtils.calcResFromScale( scaleDenominator );
+        }
+
         String msg = "Unable to calculate world resolution. Cannot convert units of CRS (" + crs.getAlias()
                      + ") to meters.";
         throw new IllegalArgumentException( msg );

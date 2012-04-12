@@ -45,6 +45,7 @@ import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IUnit;
@@ -183,6 +184,10 @@ public class FileSystemTileStore implements TileStore {
             double factor = unit.convert( 1.0, Unit.METRE );
             return factor * scaleDenominator * DEFAULT_PIXEL_SIZE;
         }
+        if ( unit.equals( Unit.DEGREE ) ) {
+            return MapUtils.calcResFromScale( scaleDenominator );
+        }
+
         String msg = "Unable to calculate world resolution. Cannot convert units of CRS (" + crs.getAlias()
                      + ") to meters.";
         throw new IllegalArgumentException( msg );
