@@ -170,7 +170,7 @@
       </dependencies>
     </profile>
     <profile>
-      <id>oracle</id>
+      <id>ojdbc6-provided</id>
       <dependencies>
         <dependency>
           <groupId>org.deegree</groupId>
