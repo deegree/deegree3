@@ -201,7 +201,7 @@ These settings affect the metadata returned in the GetCapabilities response.
 Web Map Service (WMS)
 ---------------------
 
-In deegree terminology, a deegree WMS renders maps from data stored in feature, coverage and tile stores. Available layers are configured in the WMS configuration file, while rendering of layers is controlled by style files. Supported style languages are StyledLayerDescriptor (SLD) and Symbology Encoding (SE).
+In deegree terminology, a deegree WMS renders maps from data stored in feature, coverage and tile stores. The WMS is configured using a layer structure, called a *theme*. A theme can be thought of as a collection of layers, organized in a tree structure. *What* the layers show is configured in a layer configuration, and *how* it is shown is configured in a style file. Supported style languages are StyledLayerDescriptor (SLD) and Symbology Encoding (SE).
 
 .. figure:: images/workspace-wms.png
    :figwidth: 90%
@@ -212,6 +212,54 @@ In deegree terminology, a deegree WMS renders maps from data stored in feature, 
 
 .. tip::
   In order to fully understand deegree WMS configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-renderstyles` describes the creation of layers and styling rules. Chapter :ref:`anchor-configuration-featurestore` describes the configuration of vector data access and chapter :ref:`anchor-configuration-coveragestore` describes the configuration of raster data access.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A word on layers and themes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Readers familiar with the WMS protocol might be wondering why layers can not be configured directly in the WMS configuration file. Inspired by WMTS 1.0.0 we found the idea to separate structure and content very appealing. Thinking of a layer store that just offers a set of layers is an easy concept. Thinking of a theme as a structure that may contain layers at certain points also makes sense. But when thinking of WMS the terms begin clashing. We suggest to avoid confusion as much as possible by using the same name for each corresponding theme, layer and possibly even tile/feature/coverage data sources. We believe that once you work a little with the concept of themes, and seeing them exported as WMS layer trees, the concepts fit well enough so you can appreciate the clean cut.
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
+
+The configuration can be split up in six sections. Readers familiar with other deegree service configurations may recognize some similarities, but we'll describe the options anyway, because there may be subtle differences. The following table shows what top level options are available.
+
+.. table:: Options for ``deegreeWMS``
+
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| Option                   | Cardinality  | Value   | Description                                                                  |
++==========================+==============+=========+==============================================================================+
+| SupportedVersions        | 0..1         | Complex | Limits active OGC protocol versions                                          |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| MetadataStoreId          | 0..1         | String  | Configures a metadata store to check if metadata ids for layers exist        |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| MetadataURLTemplate      | 0..1         | String  | Template for generating URLs to feature type metadata                        |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| ServiceConfiguration     | 1            | Complex | Configures service content                                                   |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| FeatureInfoFormats       | 0..1         | Complex | Configures additional feature info output formats                            |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+
+^^^^^^^^^^^^^
+Basic options
+^^^^^^^^^^^^^
+
+* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.1.1 and 1.3.0) are activated. You can control offered WMS protocol versions using the element ``SupportedVersions``. This element allows any of the child elements ``<Version>1.1.1</Version>`` and ``<Version>1.3.0</Version>``.
+* ``MetadataStoreId``: If set to a valid metadata store, the store is queried upon startup with all configured layer metadata set ids. If a metadata set does not exist in the metadata store, it will not be exported as metadata URL in the capabilties. This is a useful option if you want to automatically check for configuration errors/typos. By default, no checking is done.
+* ``MetadataURLTemplate``: By default, no metadata URLs are generated for layers in the capabilities. You can set this option either to a unique URL, which will be exported as is, or to a template with a placeholder. In any case, a metadata URL will only be exported if the layer has a metadata set id set. A template looks like this: 
+* ``EnableTransactions``: By default, WFS-T requests will be rejected. Setting this element to ``true`` will enable support for transactions in the WFS. Note that not all feature store implementations implement transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
+* ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
+* ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
+* ``QueryCheckAreaOfUse``: By default, spatial query constraints are not checked with regard to the area of validity of the CRS. Set this option to ``true`` to enforce this check.
+
+
+You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme.
+
+deegree WMS supports the WMS 1.1.1 and 1.3.0 protocol versions.
+
 
 .. _anchor-configuration-csw:
 
