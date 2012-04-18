@@ -291,4 +291,36 @@ In deegree terminology, a deegree WPS allows the execution of (usually geospatia
 
    Workspace components involved in a deegree WPS configuration
 
+----------------------
+Metadata configuration
+----------------------
 
+This section describes the configuration for the different types of metadata that a service reports in the ``GetCapabilities`` response. These options don't affect the data that the service offers or the behaviour of the service. It merely changes the descriptive metadata that the service reports.
+
+^^^^^^^^^^^^^^^^
+Service metadata
+^^^^^^^^^^^^^^^^
+
+In order to configure the service identification and service provider information that web services return in ``GetCapabilities`` responses, you have two options:
+
+* Create a global ``metadata.xml`` file in the ``services`` directory of the workspace (options apply for all configured web services)
+* Create an instance specific ``xyz_metadata.xml`` file (options apply only for web service with configuration file name ``xyz.xml``)
+
+If both files are present, the instance specific file takes precedence. The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.0.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.0.0``.
+
+.. topic:: Example for ``metadata.xml``
+
+   .. literalinclude:: xml/service_metadata.xml
+      :language: xml
+
+^^^^^^^^^^^^^^^^
+Dataset metadata
+^^^^^^^^^^^^^^^^
+
+This type of metadata is attached to the datasets that a service offers (e.g. layers for the WMS or feature types for the WFS). Please have a look at the service specific section for configuring this type of metadata.
+
+^^^^^^^^^^^^^^^^^^^^^
+Extended capabilities
+^^^^^^^^^^^^^^^^^^^^^
+
+Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. It is not defined by the OGC specifications, but by extensions, such as the INSPIRE service specifications. deegree treats this section as a generic XML element and does not validate it. Please have a look at the service specific section for configuring this type of metadata. 
