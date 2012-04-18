@@ -2,10 +2,11 @@
 Introduction
 ============
 
-deegree webservices are implementations of the geospatial webservice specifications of the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org>`_. deegree webservices 3.1 includes the following services:
+deegree webservices are implementations of the geospatial webservice specifications of the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org>`_ and the `INSPIRE Network Services <http://inspire.jrc.ec.europa.eu>`_. deegree webservices 3.2 includes the following services:
 
-* `Web Map Service (WMS) <http://www.opengeospatial.org/standards/wms>`_: Serves maps rendered from geospatial data
 * `Web Feature Service (WFS) <http://www.opengeospatial.org/standards/wfs>`_: Provides access to raw geospatial vector data
+* `Web Map Service (WMS) <http://www.opengeospatial.org/standards/wms>`_: Serves maps rendered from geospatial data
+* `Web Map Tile Service (WMTS) <http://www.opengeospatial.org/standards/wmts>`_: Serves pre-rendered map tiles
 * `Catalogue Service for the Web (CSW) <http://www.opengeospatial.org/standards/cat>`_: Performs searches for geospatial datasets and services
 * `Web Processing Service (WPS) <http://www.opengeospatial.org/standards/wps>`_: Executes geospatial processes
 
@@ -53,6 +54,20 @@ deegree WMS is an implementation of the `OGC Web Map Service specification <http
 
 .. tip::
   In order to learn about configuring a deegree-based WMS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WMS setups. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wms`.
+
+-------------------------------
+Characteristics of deegree WMTS
+-------------------------------
+
+deegree WMTS is an implementation of the `OGC Web Map Tile Service specification <http://www.opengeospatial.org/standards/wmts>`_. Notable features:
+
+* Implements Basic WMTS standard 1.0.0 (KVP)
+* High performance and excellent scalability
+* Supports different backends, such as GeoTIFF, remote WMS or file system tile image hierarchies
+* Supports on-the-fly caching (using EHCache)
+
+.. tip::
+  In order to learn about configuring a deegree-based WMTS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. TODO: provide example workspace for WMTS. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wmts`.
 
 ------------------------------
 Characteristics of deegree CSW
