@@ -249,17 +249,33 @@ Basic options
 
 * ``SupportedVersions``: By default, all implemented WFS protocol versions (1.1.1 and 1.3.0) are activated. You can control offered WMS protocol versions using the element ``SupportedVersions``. This element allows any of the child elements ``<Version>1.1.1</Version>`` and ``<Version>1.3.0</Version>``.
 * ``MetadataStoreId``: If set to a valid metadata store, the store is queried upon startup with all configured layer metadata set ids. If a metadata set does not exist in the metadata store, it will not be exported as metadata URL in the capabilties. This is a useful option if you want to automatically check for configuration errors/typos. By default, no checking is done.
-* ``MetadataURLTemplate``: By default, no metadata URLs are generated for layers in the capabilities. You can set this option either to a unique URL, which will be exported as is, or to a template with a placeholder. In any case, a metadata URL will only be exported if the layer has a metadata set id set. A template looks like this: 
-* ``EnableTransactions``: By default, WFS-T requests will be rejected. Setting this element to ``true`` will enable support for transactions in the WFS. Note that not all feature store implementations implement transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
-* ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
-* ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
-* ``QueryCheckAreaOfUse``: By default, spatial query constraints are not checked with regard to the area of validity of the CRS. Set this option to ``true`` to enforce this check.
+* ``MetadataURLTemplate``: By default, no metadata URLs are generated for layers in the capabilities. You can set this option either to a unique URL, which will be exported as is, or to a template with a placeholder. In any case, a metadata URL will only be exported if the layer has a metadata set id set. A template looks like this: http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full. Please note that you'll need to escape the & symbols with &amp; as shown in the example. The ${metadataSetId} will be replaced with the metadata set id from each layer.
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Service content configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme.
+It is possible to configure the behaviour of layers using the ``DefaultLayerOptions`` element.
 
-deegree WMS supports the WMS 1.1.1 and 1.3.0 protocol versions.
+Have a look at the layer options and their values:
 
+.. table:: Layer options
+
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+| Option                 | Cardinality       | String    | Description                                                                                       |
++========================+===================+===========+===================================================================================================+
+| Antialiasing           | 0..1              | String    | Whether to antialias TEXT, IMAGE or BOTH, default is BOTH                                         |
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+| RenderingQuality       | 0..1              | String    | Whether to render LOW, NORMAL or HIGH quality, default is HIGH                                    |
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+| Interpolation          | 0..1              | String    | Whether to use BILINEAR, NEAREST_NEIGHBOUR or BICUBIC interpolation, default is NEAREST_NEIGHBOUR |
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+| MaxFeatures            | 0..1              | Integer   | Maximum number of features to render at once, default is 10000                                    |
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+| FeatureInfoRadius      | 0..1              | Integer   | Number of pixels to consider when doing GetFeatureInfo, default is 3                              |
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+
+You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme. The used themes are configured using the ``ThemeId`` element.
 
 .. _anchor-configuration-csw:
 
