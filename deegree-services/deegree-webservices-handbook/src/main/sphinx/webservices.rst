@@ -223,7 +223,14 @@ Readers familiar with the WMS protocol might be wondering why layers can not be 
 Configuration overview
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The configuration can be split up in six sections. Readers familiar with other deegree service configurations may recognize some similarities, but we'll describe the options anyway, because there may be subtle differences. The following table shows what top level options are available.
+The configuration can be split up in six sections. Readers familiar with other deegree service configurations may recognize some similarities, but we'll describe the options anyway, because there may be subtle differences. A document template looks like this::
+
+  <?xml version='1.0'?>
+  <deegreeWMS xmlns='http://www.deegree.org/services/wms'>
+    <!-- actual configuration goes here -->
+  </deegreeWMS>
+
+The following table shows what top level options are available.
 
 .. table:: Options for ``deegreeWMS``
 
@@ -251,11 +258,19 @@ Basic options
 * ``MetadataStoreId``: If set to a valid metadata store, the store is queried upon startup with all configured layer metadata set ids. If a metadata set does not exist in the metadata store, it will not be exported as metadata URL in the capabilties. This is a useful option if you want to automatically check for configuration errors/typos. By default, no checking is done.
 * ``MetadataURLTemplate``: By default, no metadata URLs are generated for layers in the capabilities. You can set this option either to a unique URL, which will be exported as is, or to a template with a placeholder. In any case, a metadata URL will only be exported if the layer has a metadata set id set. A template looks like this: http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full. Please note that you'll need to escape the & symbols with &amp; as shown in the example. The ${metadataSetId} will be replaced with the metadata set id from each layer.
 
+Here is a snippet for quick copy & paste::
+
+  <SupportedVersions>
+    <SupportedVersion>1.1.1</SupportedVersion>
+  </SupportedVersions>
+  <MetadataStoreId>mdstore</MetadataStoreId>
+  <MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Service content configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is possible to configure the behaviour of layers using the ``DefaultLayerOptions`` element.
+You can configure the behaviour of layers using the ``DefaultLayerOptions`` element.
 
 Have a look at the layer options and their values:
 
@@ -272,10 +287,64 @@ Have a look at the layer options and their values:
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
 | MaxFeatures            | 0..1              | Integer   | Maximum number of features to render at once, default is 10000                                    |
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
-| FeatureInfoRadius      | 0..1              | Integer   | Number of pixels to consider when doing GetFeatureInfo, default is 3                              |
+| FeatureInfoRadius      | 0..1              | Integer   | Number of pixels to consider when doing GetFeatureInfo, default is 1                              |
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
 
-You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme. The used themes are configured using the ``ThemeId`` element.
+You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme. The themes are configured using the ``ThemeId`` element.
+
+Here is an example snippet of the content section::
+
+  <ServiceConfiguration>
+
+    <DefaultLayerOptions>
+      <Antialiasing>NONE</Antialiasing>
+    </DefaultLayerOptions>
+
+    <ThemeId>mytheme</ThemeId>
+
+  </ServiceConfiguration>
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Custom feature info formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Any mime type can be configured to be available as response format for GetFeatureInfo requests, although the most commonly used is probably ``text/html``. There are two alternative ways of controlling how the output is generated (besides using the default HTML output). One involves a deegree specific templating mechanism, the other involves writing an XSLT script. The deegree specific mechanism has the advantage of being considerably less verbose, making common use cases very easy, while the XSLT approach gives you all the freedom.
+
+This is how the configuration section looks like for configuring a deegree templating based format::
+
+  <FeatureInfoFormats>
+    <GetFeatureInfoFormat>
+      <File>../customformat.gfi</File>
+      <Format>text/html</Format>
+    </GetFeatureInfoFormat>
+  </FeatureInfoFormats>
+
+The configuration for the XSLT approach looks like this::
+
+  <FeatureInfoFormats>
+    <GetFeatureInfoFormat>
+      <XSLTFile>../customformat.xsl</XSLTFile>
+      <Format>text/html</Format>
+    </GetFeatureInfoFormat>
+  </FeatureInfoFormats>
+
+Of course it is possible to define as many custom formats as you want, as long as you use a different mime type for each (just duplicate the ``GetFeatureInfoFormat`` element). If you use one of the default formats, the default output will be overridden with your configuration.
+
+In order to write your XSLT script, it is best to develop it against a GetFeatureInfo output in GML 2 format, that's the input the XSLT script will get. It is not possible yet to receive a different format for XSLT input.
+
+If you want to learn more about the templating format, http://wiki.deegree.org/deegreeWiki/deegree3/WMSConfiguration#GetFeatureInfoHTML is a starting point. (TODO describe properly)
+
+^^^^^^^^^^^^^^^^^^^^^
+Extended capabilities
+^^^^^^^^^^^^^^^^^^^^^
+
+Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS' capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration::
+
+  <ExtendedCapabilities>
+    <MyCustomOutput xmlns="http://www.custom.org/output">
+      ...
+    </MyCustomOutput>
+  </ExtendedCapabilities>
 
 .. _anchor-configuration-csw:
 
