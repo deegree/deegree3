@@ -281,3 +281,45 @@ In most cases, a configuration like the following is sufficient::
 
 Just repeat the ``TileLayer`` element once for each layer you wish to configure.
 
+---------------
+Coverage layers
+---------------
+
+Coverage layers are based on coverages out of coverage stores. Similar to feature layers, you can choose between an automatic layer setup and a manual configuration.
+
+~~~~~~~~~~~
+Auto layers
+~~~~~~~~~~~
+
+All you need to configure is the coverage store and an optional style store::
+
+  <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
+                  xmlns:d="http://www.deegree.org/metadata/description"
+                  xmlns:l="http://www.deegree.org/layers/base"
+                  configVersion="3.2.0">
+    <AutoLayers>
+      <CoverageStoreId>dem</CoverageStoreId>
+      <StyleStoreId>heightmap</StyleStoreId>
+    </AutoLayers>
+  </CoverageLayers>
+
+In theory this would add one layer for each coverage in the coverage store, but since only one coverage is supported per coverage store at the moment, only one layer will be the result. If a style store is specified, all styles matching the layer name (the coverage store id) will be available for the layer.
+
+~~~~~~~~~~~~~~~~~~~~
+Manual configuration
+~~~~~~~~~~~~~~~~~~~~
+
+The manual configuration requires the definition of a coverage store, and one or many coverage layer definitions::
+
+  <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
+                  xmlns:d="http://www.deegree.org/metadata/description"
+                  xmlns:l="http://www.deegree.org/layers/base"
+                  configVersion="3.2.0">
+    <CoverageStoreId>dem</CoverageStoreId>
+    <CoverageLayer>
+    <!-- standard layer options -->
+    </CoverageLayer>
+  </CoverageLayers>
+
+Within the ``CoverageLayer`` element you can only define the common_ layer options. While only one coverage is supported per coverage store, it might still be desirable to define multiple layers based on the store, for example one layer per style.
+
