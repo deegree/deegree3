@@ -2,11 +2,9 @@
 Webservice configuration
 ========================
 
-.. _anchor-configuration-wfs:
+This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the ``web services`` link in the administration console. The configuration files have to be created or edited in the ``services/`` directory of the deegree workspace.
 
------------------------------------
-Managing web service configurations
------------------------------------
+.. _anchor-configuration-wfs:
 
 -------------------------
 Web Feature Service (WFS)

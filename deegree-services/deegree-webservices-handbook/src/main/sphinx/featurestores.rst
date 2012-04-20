@@ -9,11 +9,47 @@ Feature stores are data sources that provide access to stored features. The two 
 * Accessing via WFS
 * Provides data for vector layers in the WMS
 
+The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking on the ``feature stores`` link in the administration console. The configuration files have to be created or edited in the ``datasources/feature/`` directory of the deegree workspace.
+
 -----------------------------------------------
 Features, feature types and application schemas
 -----------------------------------------------
 
-TBD
+Features are abstractions of real-world objects, such as rivers, buildings, streets or state boundaries. They are the geo objects of a particular application domain.
+
+Feature types define classes of features. For example, a feature type ``River`` could define a class of river features that all have the same properties
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Simple vs. complex feature types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some feature type are much more complex than others. Traditionally, GIS software only copes with "simple" feature types:
+
+* Every property is either simple (string, number, date, etc.) or a geometry
+* Only a single property with one name is allowed
+
+Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, complex feature types additionally allow the following:
+
+* Multiple properties with the same name
+* Properties that contain other features
+* Properties that reference other features
+* Properties that contain GML core datatypes which are not geometries (e.g. code types or units of measure)
+* Properties that contain generic XML
+
+All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support complex feature types.
+
+^^^^^^^^^^^^^^^^^^^
+Application schemas
+^^^^^^^^^^^^^^^^^^^
+
+An application schema defines a hierarchy of (usually complex) feature types for a particular domain. When referring to an application schema, one usually means a GML application schema that defines a hierarchy of complex feature types. The following diagram shows a part of the INSPIRE Annex I application schema:
+
+.. figure:: images/address_schema.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/address_schema.png
+
+This kinds of application schemas can be served using the SQL feature store or the memory feature store.
 
 -------------------
 Shape feature store
