@@ -18,6 +18,7 @@ deegree Webservices
    featurestores
    coveragestores
    renderstyles
+   layers
    metadatastores
    processproviders
    glossary
