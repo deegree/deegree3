@@ -18,7 +18,6 @@
     <sequence>
       <group ref="l:LayerInfo" />
     </sequence>
-    <attribute name="configVersion" type="f:ConfigVersionType" />
   </complexType>
 
   <element name="CoverageLayers">
