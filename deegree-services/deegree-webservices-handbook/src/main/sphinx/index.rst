@@ -19,6 +19,7 @@ deegree Webservices
    coveragestores
    renderstyles
    layers
+   themes
    metadatastores
    processproviders
    glossary
