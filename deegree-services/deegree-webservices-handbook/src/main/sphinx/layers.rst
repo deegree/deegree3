@@ -258,3 +258,26 @@ A feature layer configuration has two optional elements besides the common eleme
 
 After that the standard options follow, as outlined in the common_ section.
 
+-----------
+Tile layers
+-----------
+
+Tile layers are based on a tile pyramid of a tile store. You can configure an unlimited number of tile layers each based on a different tile store within one configuration file.
+
+As you might have guessed, most of the common parameters are ignored for this layer type. Most notably, the style and dimension configuration is ignored.
+
+In most cases, a configuration like the following is sufficient::
+
+  <TileLayers xmlns="http://www.deegree.org/layers/tile"
+              xmlns:d="http://www.deegree.org/metadata/description" 
+              xmlns:l="http://www.deegree.org/layers/base"
+              configVersion="3.2.0">
+    <TileLayer>
+      <TileStoreId>pyramid</TileStoreId>
+      <l:Name>example</l:Name>
+      <d:Title>Example INSPIRE layer</d:Title>
+    </TileLayer>
+  </TileLayers>
+
+Just repeat the ``TileLayer`` element once for each layer you wish to configure.
+
