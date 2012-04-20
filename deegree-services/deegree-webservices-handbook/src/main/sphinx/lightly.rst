@@ -1,8 +1,8 @@
 .. _anchor-lightly:
 
-=================
-Once over lightly
-=================
+===============
+Getting started
+===============
 
 In the previous chapter, we learned how to install and start deegree webservices. In this chapter, we will introduce the service console and learn how to perform basic tasks such as downloading and activating example configurations.
 
