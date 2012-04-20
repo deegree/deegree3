@@ -323,3 +323,88 @@ The manual configuration requires the definition of a coverage store, and one or
 
 Within the ``CoverageLayer`` element you can only define the common_ layer options. While only one coverage is supported per coverage store, it might still be desirable to define multiple layers based on the store, for example one layer per style.
 
+-----------------
+Remote WMS layers
+-----------------
+
+Remote WMS layers are based on layers requested from another WMS on the network. In its simplest mode, the remote WMS layer store will provide all layers that the other WMS offers, but you can pick out and restrict the configuration to single layers if you want. The common_ style and dimension options are not used in this layer configuration.
+
+The remote WMS layer configuration is always based on a single ``RemoteWMS`` resource, so the most basic configuration which cascades all available layers looks like this::
+
+  <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" configVersion="3.2.0">
+    <RemoteWMSId>d3</RemoteWMSId>
+    <!-- more detailed options would follow here -->
+  </RemoteWMSLayers>
+
+In many cases that's already sufficient, but if you wish to control the way the requests are being sent, you can specify the ``RequestOptions``. If you want to limit/restrict the layers, you can specify any amount of ``Layer`` elements.
+
+~~~~~~~~~~~~~~~
+Request options
+~~~~~~~~~~~~~~~
+
+Use the ``ImageFormat`` element to indicate which format should be requested from the remote WMS. Set the attribute ``transparent`` to ``false`` if you don't want to request transparent images. Default is to request transparent ``image/png`` maps::
+
+  <RequestOptions>
+    <ImageFormat transparent='false'>image/gif</ImageFormat>
+  </RequestOptions>
+
+The ``DefaultCRS`` element can be used to specify the CRS to request. If the ``useAlways`` attribute is true, maps are always requested in this format, and transformed if necessary. If set to false (the default), the requested CRS will be requested from the remote service if available. If a requested CRS is not available from the remote service, the value of this option is used, and the resulting image transformed.
+
+The ``Parameter`` element can be used (multiple times) to add and/or fix KVP parameter values used in requests to the remote service. The ``name`` attribute (which is required) configures which parameter you're talking about, and the content specifies a default or fixed value. The ``use`` and ``scope`` attributes can be used to specify how to handle parameters. Have a look at the following table for default and possible values of these attributes:
+
+.. table:: Parameter attributes
+
++--------------+-----------------+-----------------------------+
+| Name         | Default         | Possible values             |
++--------------+-----------------+-----------------------------+
+| use          | allowOverride   | allowOverride, fixed        |
++--------------+-----------------+-----------------------------+
+| scope        | All             | GetMap, GetFeatureInfo, All |
++--------------+-----------------+-----------------------------+
+
+Let's have a look at a couple of examples::
+
+  <RequestOptions>
+    <Parameter name='BGCOLOR'>#00ff00</Parameter>
+  <RequestOptions>
+
+This means that all maps are requested with a background color of green, unless the request overrides it. GetFeatureInfo requests will also have the BGCOLOR parameter set, although it makes no difference there.
+
+Another example::
+
+  <RequestOptions>
+    <Parameter name='USERNAME'>SEC_ADMIN</Parameter>
+    <Parameter name='PASSWORD'>JOSE67</Parameter>
+  </RequestOptions>
+
+In this case all requests will have USERNAME and PASSWORD set to these values. Users can still override these values in requests.
+
+A last example::
+
+  <RequestOptions>
+    <Parameter scope='GetMap' name='BGCOLOR'>#00ff00</Parameter>
+    <Parameter use='fixed' name='USERNAME'>SEC_ADMIN</Parameter>
+    <Parameter use='fixed' name='PASSWORD'>JOSE67</Parameter>
+  </RequestOptions>
+
+Now all GetMap requests will have the USERNAME and PASSWORD parameters hard coded to the configured values, with the BGCOLOR parameter set to green by default, but with the possibility of override by the user. GetFeatureInfo requests will only have the USERNAME and PASSWORD parameters fixed to the configured values.
+
+~~~~~~~~~~~~~~~~~~~
+Layer configuration
+~~~~~~~~~~~~~~~~~~~
+
+The manual configuration allows you to pick out a layer, rename it, and optionally override the _common description and spatial metadata. What you don't override, will be copied from the source. Let's look at an example::
+
+  <RemoteWMSLayers ...>
+    ...
+    <Layer>
+      <OriginalName>cite:BasicPolygons</OriginalName>
+      <Name>basic_polygons</Name>
+      <!-- optionally override description (title, abstract, keywords)
+      <!-- optionally override envelope, crs -->
+      <!-- optionally set layer options -->
+    </Layer>
+  </RemoteWMSLayers>
+
+Please note that once you specify one layer, you'll need to specify each layer you want to make available. If you want all layers to be available, don't specify a ``Layer`` element. Of course, you can specify as many ``Layer`` elements as you like.
+
