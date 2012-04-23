@@ -69,7 +69,7 @@ public class ISORecordTest {
     @Test
     public void testInstantiationFromXMLStreamOfBrokenRecord()
                             throws XMLStreamException, FactoryConfigurationError {
-        InputStream is = ISORecordTest.class.getResourceAsStream( "datasetRecord_invalidDate.xml" );
+        InputStream is = ISORecordTest.class.getResourceAsStream( "datasetRecord_invalidDate.invalid" );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
         ISORecord record = new ISORecord( xmlStream );
         boolean exception = false;
