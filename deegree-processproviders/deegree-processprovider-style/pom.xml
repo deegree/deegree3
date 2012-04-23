@@ -4,7 +4,7 @@
   <artifactId>deegree-processprovider-style</artifactId>
   <packaging>jar</packaging>
   <name>deegree-processprovider-style</name>
-  <description>???</description>
+  <description>Process provider for creating legends out of SLD</description>
 
   <properties>
     <deegree.module.status>check</deegree.module.status>

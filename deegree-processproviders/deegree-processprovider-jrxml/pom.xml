@@ -3,7 +3,7 @@
   <artifactId>deegree-processprovider-jrxml</artifactId>
   <packaging>jar</packaging>
   <name>deegree-processprovider-jrxml</name>
-  <description>???</description>
+  <description>Process provider for creating PDFs based on jasper report templates</description>
 
   <properties>
     <deegree.module.status>check</deegree.module.status>

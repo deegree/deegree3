@@ -4,7 +4,7 @@
   <artifactId>deegree-wpsprinter-webclient</artifactId>
   <packaging>war</packaging>
   <name>deegree-wpsprinter-webclient</name>
-  <description>???</description>
+  <description>Web client for accessing a Web Processing Service configured for using the process provider creating PDFs</description>
 
   <properties>
     <deegree.module.status>check</deegree.module.status>
