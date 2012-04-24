@@ -47,7 +47,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -93,7 +92,7 @@ public class FileSystemTileStoreTest {
 
     @Test
     public void testTileStoreCopy()
-                            throws InterruptedException, ExecutionException {
+                            throws InterruptedException {
         TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
         TileStore src = mgr.get( "pyramid" );
         TileStore dest = mgr.get( "filesystem" );
