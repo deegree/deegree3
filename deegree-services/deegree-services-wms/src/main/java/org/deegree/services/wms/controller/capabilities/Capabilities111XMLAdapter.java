@@ -254,6 +254,23 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writeStyle( writer, e.getKey(), e.getKey(), p, md.getName(), e.getValue() );
         }
 
+        DoublePair hint = md.getScaleDenominators();
+        // use layers' settings only if not set for theme
+        if ( hint.first.isInfinite() && hint.second.isInfinite() ) {
+            hint = new DoublePair( hint.second, hint.first );
+            for ( org.deegree.layer.Layer l : theme.getLayers() ) {
+                hint.first = Math.min( l.getMetadata().getScaleDenominators().first, hint.first );
+                hint.second = Math.max( l.getMetadata().getScaleDenominators().second, hint.second );
+            }
+        }
+        if ( !hint.first.isInfinite() || !hint.second.isInfinite() ) {
+            double fac = 0.00028;
+            writer.writeStartElement( "ScaleHint" );
+            writer.writeAttribute( "min", Double.toString( hint.first.isInfinite() ? MIN_VALUE : hint.first * fac ) );
+            writer.writeAttribute( "max", Double.toString( hint.second.isInfinite() ? MAX_VALUE : hint.second * fac ) );
+            writer.writeEndElement();
+        }
+
         for ( Theme t : theme.getThemes() ) {
             writeTheme( writer, t );
         }
