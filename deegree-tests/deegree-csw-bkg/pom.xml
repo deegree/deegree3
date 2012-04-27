@@ -176,111 +176,72 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.0.1</version>
     </dependency>
     <dependency>
      <groupId>org.deegree</groupId>
      <artifactId>deegree-workspace-csw-tests</artifactId>
       <version>${project.version}</version>
       <type>deegree-workspace</type>
-      <!-- 
-      <exclusions>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-      </exclusions>
-       -->
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine</artifactId>
-      <version>deegreeversion</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-cite1</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-classes</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-CiteFunctions</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-citeXpathFunction</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-jaxen-full</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-jing</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-joda-time</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon9</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon9-dom</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon9-s9api</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxon6</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-saxpath</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine-transformers</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
