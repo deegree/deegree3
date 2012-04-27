@@ -46,7 +46,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
-import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.wmts.controller.WMTSController;
