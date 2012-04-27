@@ -46,27 +46,22 @@
     <dependency>
       <groupId>jai</groupId>
       <artifactId>jai-codec</artifactId>
-      <version>1.1.3</version>
     </dependency>
     <dependency>
       <groupId>jai</groupId>
       <artifactId>jai-imageio</artifactId>
-      <version>1.1.3</version>
     </dependency>
     <dependency>
       <groupId>jai</groupId>
       <artifactId>jai-mlibwrapper</artifactId>
-      <version>1.1.3</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

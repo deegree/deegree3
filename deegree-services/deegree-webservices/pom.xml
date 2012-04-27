@@ -136,8 +136,6 @@
         <dependency>
           <groupId>com.sun.jersey</groupId>
           <artifactId>jersey-server</artifactId>
-          <version>1.5</version>
-          <scope>provided</scope>
         </dependency>
       </dependencies>
     </profile>
@@ -147,14 +145,10 @@
         <dependency>
           <groupId>com.sun.faces</groupId>
           <artifactId>jsf-api</artifactId>
-          <version>2.0.6</version>
-          <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>com.sun.faces</groupId>
           <artifactId>jsf-impl</artifactId>
-          <version>2.0.6</version>
-          <scope>provided</scope>
         </dependency>
       </dependencies>
     </profile>
@@ -164,8 +158,6 @@
         <dependency>
           <groupId>javax.servlet</groupId>
           <artifactId>jstl</artifactId>
-          <version>1.2</version>
-          <scope>provided</scope>
         </dependency>
       </dependencies>
     </profile>
@@ -203,26 +195,18 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
-      <version>2.1</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.4</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
-      <version>1.1</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
