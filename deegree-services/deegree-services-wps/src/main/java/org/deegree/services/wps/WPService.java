@@ -390,7 +390,7 @@ public class WPService extends AbstractOWS {
                             throws OWSException {
         WPSRequestType requestType = null;
         try {
-            requestType = (WPSRequestType) serviceInfo.getRequestTypeByName( requestName );
+            requestType = (WPSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
         }
