@@ -455,7 +455,7 @@ public class WMSController extends AbstractOWS {
 
         WMSRequestType req;
         try {
-            req = (WMSRequestType) serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
