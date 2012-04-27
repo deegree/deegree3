@@ -37,86 +37,54 @@
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-bridge</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-dom</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-gvt</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-svg-dom</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-awt-util</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-css</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-ext</artifactId>
-      <version>1.6-1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-parser</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-transcoder</artifactId>
-      <version>1.6-1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>fop</artifactId>
-          <groupId>fop</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-script</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-util</artifactId>
-      <version>1.6-1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>batik</groupId>
-          <artifactId>batik-gui-util</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-xml</artifactId>
-      <version>1.6-1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
