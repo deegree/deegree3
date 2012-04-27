@@ -80,7 +80,7 @@ public class WMTSProvider implements OWSProvider {
 
     @Override
     public URL getConfigSchema() {
-        return WMTSProvider.class.getResource( "/META-INF/schemas/wmts/3.2.0/wmts.xsd" );
+        return WMTSProvider.class.getResource( "/META-INF/schemas/services/wmts/3.2.0/wmts.xsd" );
     }
 
     @Override
