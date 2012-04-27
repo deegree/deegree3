@@ -132,12 +132,12 @@
       <version>${project.version}</version>
       <type>deegree-workspace</type>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-csw</artifactId>
       <version>${project.version}</version>
       <type>deegree-workspace</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-workspace-aixm</artifactId>
