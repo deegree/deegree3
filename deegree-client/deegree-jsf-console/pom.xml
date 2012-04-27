@@ -129,6 +129,11 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-filesystem</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-tilestore-remotewms</artifactId>
       <version>${project.version}</version>
     </dependency>
