@@ -514,7 +514,7 @@ public class CSWController extends AbstractOWS {
                             throws OWSException {
         CSWRequestType requestType = null;
         try {
-            requestType = (CSWRequestType) serviceInfo.getRequestTypeByName( requestName );
+            requestType = (CSWRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OWSException.OPERATION_NOT_SUPPORTED );
         }

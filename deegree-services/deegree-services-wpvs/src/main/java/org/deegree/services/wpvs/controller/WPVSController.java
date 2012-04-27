@@ -225,7 +225,7 @@ public class WPVSController extends AbstractOWS {
             sendServiceException( new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE ), response );
             return;
         }
-        mappedRequest = (WPVSRequestType) serviceInfo.getRequestTypeByName( requestName );
+        mappedRequest = (WPVSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
 
         if ( mappedRequest == null ) {
             sendServiceException( new OWSException( "Unknown request: " + requestName + " is not known to the WPVS.",
