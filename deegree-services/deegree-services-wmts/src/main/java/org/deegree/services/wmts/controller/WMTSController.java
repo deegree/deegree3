@@ -159,7 +159,7 @@ public class WMTSController extends AbstractOWS {
 
         WMTSRequestType req;
         try {
-            req = (WMTSRequestType) serviceInfo.getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMTSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             sendException( new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS operation.",
                                              OWSException.OPERATION_NOT_SUPPORTED ), response );
