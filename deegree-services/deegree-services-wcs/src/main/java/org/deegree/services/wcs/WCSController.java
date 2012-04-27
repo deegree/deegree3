@@ -498,7 +498,8 @@ public class WCSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new ServiceException120XMLAdapter(), ex, response );
+        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new ServiceException120XMLAdapter(), ex,
+                       response );
     }
 
     private void checkRequiredKeys( Map<String, String> param )
@@ -515,7 +516,7 @@ public class WCSController extends AbstractOWS {
                                         OWSException.OPERATION_NOT_SUPPORTED, "REQUEST" );
             }
             String version;
-            if ( serviceInfo.getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
+            if ( ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
                 // no version required
                 version = KVPUtils.getRequired( param, "VERSION" );
                 if ( version != null && !offeredVersions.contains( Version.parseVersion( version ) ) ) {
