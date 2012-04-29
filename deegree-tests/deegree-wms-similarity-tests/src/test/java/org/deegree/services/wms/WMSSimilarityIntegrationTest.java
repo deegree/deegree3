@@ -45,11 +45,16 @@ import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -93,6 +98,24 @@ public class WMSSimilarityIntegrationTest {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-similarity-tests/services" + request;
         InputStream in = retrieve( STREAM, base );
+
+        try {
+            BufferedImage img2 = ImageIO.read( new ByteArrayInputStream( response ) );
+            byte[] bs = IOUtils.toByteArray( in );
+            BufferedImage img1 = ImageIO.read( new ByteArrayInputStream( bs ) );
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write( img1, "tif", bos );
+            bos.close();
+            in = new ByteArrayInputStream( bos.toByteArray() );
+            bos = new ByteArrayOutputStream();
+            bos.close();
+            ImageIO.write( img2, "tif", bos );
+            this.response = bos.toByteArray();
+        } catch ( Throwable t ) {
+            t.printStackTrace();
+            // just compare initial byte arrays
+        }
+
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
         Assert.assertEquals( "Images are not similar enough.", 1.0, sim, 0.01 );
     }
