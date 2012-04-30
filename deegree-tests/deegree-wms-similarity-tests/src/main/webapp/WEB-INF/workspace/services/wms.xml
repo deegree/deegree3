@@ -3,6 +3,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
   xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/3.0.0/wms_configuration.xsd">
   <ServiceConfiguration>
+    <DefaultLayerOptions>
+      <AntiAliasing>NONE</AntiAliasing>
+    </DefaultLayerOptions>
     <ThemeId>theme</ThemeId>
   </ServiceConfiguration>
 </deegreeWMS>
