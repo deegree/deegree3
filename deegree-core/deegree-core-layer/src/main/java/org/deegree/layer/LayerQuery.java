@@ -182,7 +182,7 @@ public class LayerQuery {
         double dw = envelope.getSpan0() / width;
         double dh = envelope.getSpan1() / height;
         int r2 = radius / 2;
-        r2 = r2 == 0 ? 1 : r2;
+        r2 = r2 <= 0 ? 1 : r2;
         return fac.createEnvelope( new double[] { envelope.getMin().get0() + ( x - r2 ) * dw,
                                                  envelope.getMax().get1() - ( y + r2 ) * dh },
                                    new double[] { envelope.getMin().get0() + ( x + r2 ) * dw,
