@@ -1424,7 +1424,7 @@ public class XMLAdapter {
                     String nsPrefix = inStream.getAttributePrefix( i );
                     String value = inStream.getAttributeValue( i );
                     String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null ) {
+                    if ( nsURI == null || "".equals( nsURI )) {
                         writer.writeAttribute( localName, value );
                     } else {
                         ensureBinding( writer, nsPrefix, nsURI );
