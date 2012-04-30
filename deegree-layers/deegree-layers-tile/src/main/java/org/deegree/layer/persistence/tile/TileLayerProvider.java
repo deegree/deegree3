@@ -51,12 +51,14 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
 import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayers;
 import org.deegree.protocol.ows.metadata.Description;
@@ -100,6 +102,11 @@ public class TileLayerProvider implements LayerStoreProvider {
         Description desc = fromJaxb( cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords() );
         LayerMetadata md = new LayerMetadata( cfg.getName(), desc, smd );
         md.setMapOptions( ConfigUtils.parseLayerOptions( cfg.getLayerOptions() ) );
+        ScaleDenominatorsType sd = cfg.getScaleDenominators();
+        if ( sd != null ) {
+            DoublePair p = new DoublePair( sd.getMin(), sd.getMax() );
+            md.setScaleDenominators( p );
+        }
         md.setMetadataId( cfg.getMetadataSetId() );
         return new TileLayer( md, store );
     }
