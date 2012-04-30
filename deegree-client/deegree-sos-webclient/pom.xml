@@ -52,7 +52,6 @@
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-5</version>
         <configuration>
           <descriptors>
             <descriptor>sos-webclient-template.xml</descriptor>

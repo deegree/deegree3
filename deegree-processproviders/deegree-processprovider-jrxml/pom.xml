@@ -81,7 +81,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.3</version>
             <executions>
               <execution>
                 <id>copy-dependencies</id>
@@ -94,32 +93,22 @@
                     <artifactItem>
                       <groupId>net.sf.jasperreports</groupId>
                       <artifactId>jasperreports</artifactId>
-                      <version>4.0.1</version>
-                      <type>jar</type>
                     </artifactItem>
                     <artifactItem>
                       <groupId>commons-digester</groupId>
                       <artifactId>commons-digester</artifactId>
-                      <version>1.7</version>
-                      <type>jar</type>
                     </artifactItem>
                     <artifactItem>
                       <groupId>commons-collections</groupId>
                       <artifactId>commons-collections</artifactId>
-                      <version>2.1</version>
-                      <type>jar</type>
                     </artifactItem>
                     <artifactItem>
                       <groupId>commons-beanutils</groupId>
                       <artifactId>commons-beanutils</artifactId>
-                      <version>1.8.0</version>
-                      <type>jar</type>
                     </artifactItem>
                     <artifactItem>
                       <groupId>com.lowagie</groupId>
                       <artifactId>itext</artifactId>
-                      <version>2.1.7</version>
-                      <type>jar</type>
                     </artifactItem>
                   </artifactItems>
                   <outputDirectory>${project.build.directory}/required</outputDirectory>

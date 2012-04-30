@@ -45,7 +45,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -88,7 +87,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
           <descriptors>
             <descriptor>assembly.xml</descriptor>
