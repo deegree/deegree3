@@ -97,12 +97,12 @@ public class FileSystemTileStoreTest {
         TileStore src = mgr.get( "pyramid" );
         TileStore dest = mgr.get( "filesystem" );
 
-        TileStoreTransaction ta = dest.acquireTransaction();
+        TileStoreTransaction ta = dest.acquireTransaction( "filesystem" );
 
         ExecutorService exec = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
 
-        Iterator<TileMatrix> iter = dest.getTileMatrixSet().getTileMatrices().iterator();
-        for ( TileMatrix tm : src.getTileMatrixSet().getTileMatrices() ) {
+        Iterator<TileMatrix> iter = dest.getTileMatrixSet( "filesystem" ).getTileMatrices().iterator();
+        for ( TileMatrix tm : src.getTileMatrixSet( "utah" ).getTileMatrices() ) {
             String id = iter.next().getMetadata().getIdentifier();
 
             int maxx = tm.getMetadata().getNumTilesX();

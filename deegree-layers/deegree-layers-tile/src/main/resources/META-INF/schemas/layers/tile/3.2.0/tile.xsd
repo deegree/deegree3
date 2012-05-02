@@ -15,7 +15,15 @@
 
   <complexType name="TileLayerType">
     <sequence>
-      <element name="TileStoreId" type="string" />
+      <element name="TileStoreId">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="tileMatrixSet" type="string" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
       <group ref="l:LayerInfo" />
     </sequence>
   </complexType>

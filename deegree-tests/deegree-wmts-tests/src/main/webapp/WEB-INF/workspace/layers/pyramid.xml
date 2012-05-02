@@ -3,37 +3,37 @@
   xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd"
   configVersion="3.2.0">
   <TileLayer>
-    <TileStoreId>pyramid</TileStoreId>
+    <TileStoreId tileMatrixSet="utah">pyramid</TileStoreId>
     <l:Name>pyramid</l:Name>
     <d:Title>IT tile layer uncached</d:Title>
   </TileLayer>
   <TileLayer>
-    <TileStoreId>cache</TileStoreId>
+    <TileStoreId tileMatrixSet="utah">cache</TileStoreId>
     <l:Name>cache</l:Name>
     <d:Title>IT tile layer cached</d:Title>
   </TileLayer>
   <TileLayer>
-    <TileStoreId>remotewms</TileStoreId>
+    <TileStoreId tileMatrixSet="remotewms">remotewms</TileStoreId>
     <l:Name>remotewms</l:Name>
     <d:Title>IT tile layer remotewms</d:Title>
   </TileLayer>
   <TileLayer>
-    <TileStoreId>remotewms_cache</TileStoreId>
+    <TileStoreId tileMatrixSet="remotewms">remotewms_cache</TileStoreId>
     <l:Name>remotewms_cache</l:Name>
     <d:Title>IT tile layer remotewms cached</d:Title>
   </TileLayer>
   <TileLayer>
-    <TileStoreId>filesystem</TileStoreId>
+    <TileStoreId tileMatrixSet="filesystem">filesystem</TileStoreId>
     <l:Name>filesystem</l:Name>
     <d:Title>IT tile layer filesystem</d:Title>
   </TileLayer>
   <TileLayer>
-    <TileStoreId>utah4326</TileStoreId>
+    <TileStoreId tileMatrixSet="utah4326">utah4326</TileStoreId>
     <l:Name>utah4326</l:Name>
     <d:Title>IT tile layer utah4326</d:Title>
   </TileLayer>
   <TileLayer>
-    <TileStoreId>remotewms4326</TileStoreId>
+    <TileStoreId tileMatrixSet="remotewms4326">remotewms4326</TileStoreId>
     <l:Name>remotewms4326</l:Name>
     <d:Title>IT tile layer remotewms4326</d:Title>
   </TileLayer>

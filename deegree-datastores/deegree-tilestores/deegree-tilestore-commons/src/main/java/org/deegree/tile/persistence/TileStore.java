@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.deegree.commons.config.Resource;
@@ -68,44 +69,61 @@ public interface TileStore extends Resource {
      * Returns the spatial extent of this tile store. Once instantiated, the extent of a tile store must not change,
      * even when it's transactional.
      * 
+     * @param tileMatrixSet
+     *            the id of the tile matrix set
      * @return the envelope and crs of this tile store, never null.
      */
-    SpatialMetadata getMetadata();
+    SpatialMetadata getMetadata( String tileMatrixSet );
 
     /**
      * Returns the set of available tile matrices that this store serves.
      * 
+     * @param tileMatrixSet
+     *            the id of the tile matrix set
      * @return the tile matrix set.
      */
-    TileMatrixSet getTileMatrixSet();
+    TileMatrixSet getTileMatrixSet( String tileMatrixSet );
+
+    /**
+     * Returns the tile matrix set ids that this tile store serves.
+     * 
+     * @return the ids
+     */
+    Collection<String> getTileMatrixSetIds();
 
     /**
      * Creates tile stream according to the parameters.
      * 
+     * @param tileMatrixSet
+     *            the id of the tile matrix set
      * @param envelope
      *            the extent of tiles needed, never null
      * @param resolution
      *            the desired minimum resolution of tiles, must be positive
      * @return an iterator of tiles for the given envelope and resolution, never null.
      */
-    Iterator<Tile> getTiles( Envelope envelope, double resolution );
+    Iterator<Tile> getTiles( String tileMatrixSet, Envelope envelope, double resolution );
 
     /**
      * Query a single tile from a specific matrix.
      * 
+     * @param tileMatrixSet
+     *            the id of the tile matrix set
      * @param tileMatrix
      * @param x
      * @param y
      * @return the tile or null, if no such tile
      */
-    Tile getTile( String tileMatrix, int x, int y );
+    Tile getTile( String tileMatrixSet, String tileMatrix, int x, int y );
 
     /**
      * Acquires transactional access to the tile store.
      * 
+     * @param tileMatrixSet
+     *            the id of the tile matrix set
      * @return transaction object that allows to perform transactions operations on the store, never <code>null</code>
      * @throws FeatureStoreException
      *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
      */
-    TileStoreTransaction acquireTransaction();
+    TileStoreTransaction acquireTransaction( String tileMatrixSet );
 }

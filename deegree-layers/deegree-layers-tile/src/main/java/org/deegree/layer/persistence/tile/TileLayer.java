@@ -64,15 +64,18 @@ public class TileLayer extends AbstractLayer {
 
     private final TileStore tileStore;
 
-    public TileLayer( LayerMetadata md, TileStore tileStore ) {
+    private final String tmsid;
+
+    public TileLayer( LayerMetadata md, TileStore tileStore, String tmsid ) {
         super( md );
         this.tileStore = tileStore;
+        this.tmsid = tmsid;
     }
 
     @Override
     public TileLayerData mapQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
-        Iterator<Tile> tiles = tileStore.getTiles( query.getEnvelope(), query.getResolution() );
+        Iterator<Tile> tiles = tileStore.getTiles( tmsid, query.getEnvelope(), query.getResolution() );
         return new TileLayerData( tiles );
     }
 

@@ -42,8 +42,11 @@
 package org.deegree.tile.persistence.cache;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -73,7 +76,7 @@ public class CachingTileStore implements TileStore {
 
     private TileStore tileStore;
 
-    private DefaultTileMatrixSet tileMatrixSet;
+    private Map<String, DefaultTileMatrixSet> tileMatrixSets;
 
     private final CacheManager cacheManager;
 
@@ -88,12 +91,21 @@ public class CachingTileStore implements TileStore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        TileMatrixSet tms = tileStore.getTileMatrixSet();
-        List<TileMatrix> list = new ArrayList<TileMatrix>();
-        for ( TileMatrix tm : tms.getTileMatrices() ) {
-            list.add( new CachingTileMatrix( tm, cache ) );
+        Collection<String> ids = tileStore.getTileMatrixSetIds();
+        tileMatrixSets = new HashMap<String, DefaultTileMatrixSet>();
+        for ( String id : ids ) {
+            TileMatrixSet tms = tileStore.getTileMatrixSet( id );
+            List<TileMatrix> list = new ArrayList<TileMatrix>();
+            for ( TileMatrix tm : tms.getTileMatrices() ) {
+                list.add( new CachingTileMatrix( tm, cache ) );
+            }
+            this.tileMatrixSets.put( id, new DefaultTileMatrixSet( list, tms.getMetadata() ) );
         }
-        this.tileMatrixSet = new DefaultTileMatrixSet( list, tms.getMetadata() );
+    }
+
+    @Override
+    public Collection<String> getTileMatrixSetIds() {
+        return tileMatrixSets.keySet();
     }
 
     @Override
@@ -102,23 +114,23 @@ public class CachingTileStore implements TileStore {
     }
 
     @Override
-    public SpatialMetadata getMetadata() {
-        return tileStore.getMetadata();
+    public SpatialMetadata getMetadata( String id ) {
+        return tileStore.getMetadata( id );
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet() {
-        return tileMatrixSet;
+    public TileMatrixSet getTileMatrixSet( String id ) {
+        return tileMatrixSets.get( id );
     }
 
     @Override
-    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        return tileMatrixSet.getTiles( envelope, resolution );
+    public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
+        return tileMatrixSets.get( id ).getTiles( envelope, resolution );
     }
 
     @Override
-    public Tile getTile( String tileMatrix, int x, int y ) {
-        TileMatrix tm = tileMatrixSet.getTileMatrix( tileMatrix );
+    public Tile getTile( String tileMatrixSet, String tileMatrix, int x, int y ) {
+        TileMatrix tm = tileMatrixSets.get( tileMatrixSet ).getTileMatrix( tileMatrix );
         if ( tm == null ) {
             return null;
         }
@@ -128,17 +140,19 @@ public class CachingTileStore implements TileStore {
     /**
      * Removes matching objects from cache.
      * 
+     * @param tileMatrixSet
+     *            the id of the tile matrix set
      * @param envelope
      *            may be null, in which case all objects will be removed from the cache
      */
-    public int invalidateCache( Envelope envelope ) {
+    public int invalidateCache( String tileMatrixSet, Envelope envelope ) {
         if ( envelope == null ) {
             int size = cache.getSize();
             cache.removeAll();
             return size;
         }
         int cnt = 0;
-        for ( TileMatrix tm : tileMatrixSet.getTileMatrices() ) {
+        for ( TileMatrix tm : tileMatrixSets.get( tileMatrixSet ).getTileMatrices() ) {
             int[] ts = Tiles.getTileIndexRange( tm, envelope );
             if ( ts != null ) {
                 String id = tm.getMetadata().getIdentifier();
@@ -155,7 +169,7 @@ public class CachingTileStore implements TileStore {
     }
 
     @Override
-    public TileStoreTransaction acquireTransaction() {
+    public TileStoreTransaction acquireTransaction( String id ) {
         throw new UnsupportedOperationException( "CachingTileStore does not support transactions." );
     }
 

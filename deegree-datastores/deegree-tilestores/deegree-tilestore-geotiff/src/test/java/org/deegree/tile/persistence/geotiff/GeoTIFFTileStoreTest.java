@@ -46,9 +46,11 @@ import static org.junit.Assume.assumeTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
@@ -73,16 +75,16 @@ public class GeoTIFFTileStoreTest {
                             throws ResourceInitException, IOException, TileIOException {
         File file = new File( "/stick/merged.tif" );
         assumeTrue( file.exists() );
-        TileStore ts = new GeoTIFFTileStore( file, null );
+        TileStore ts = new GeoTIFFTileStore( Collections.singletonList( new Pair<File, String>( file, null ) ) );
         ts.init( null );
-        Envelope envelope = ts.getMetadata().getEnvelope();
-        TileMatrixSet set = ts.getTileMatrixSet();
+        Envelope envelope = ts.getMetadata( "merged" ).getEnvelope();
+        TileMatrixSet set = ts.getTileMatrixSet( "merged" );
         double res = 0;
         for ( TileMatrix tm : set.getTileMatrices() ) {
             res = Math.max( tm.getMetadata().getResolution(), res );
         }
 
-        Iterator<Tile> i = ts.getTiles( envelope, res );
+        Iterator<Tile> i = ts.getTiles( "merged", envelope, res );
         int cnt = 0;
         long t1 = System.currentTimeMillis();
         while ( i.hasNext() ) {

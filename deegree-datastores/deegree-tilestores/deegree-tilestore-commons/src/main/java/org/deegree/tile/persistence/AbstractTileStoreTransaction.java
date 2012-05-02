@@ -58,24 +58,29 @@ public abstract class AbstractTileStoreTransaction implements TileStoreTransacti
 
     protected final TileStore store;
 
+    protected final String tileMatrixSet;
+
     /**
      * Creates a new {@link AbstractTileStoreTransaction} instance.
      * 
      * @param store
      *            associated tile store, must not be <code>null</code>
+     * @param tileMatrixSet
+     *            the id of the tile matrix set, must not be <code>null</code>
      */
-    protected AbstractTileStoreTransaction( TileStore store ) {
+    protected AbstractTileStoreTransaction( TileStore store, String tileMatrixSet ) {
         this.store = store;
+        this.tileMatrixSet = tileMatrixSet;
     }
 
     @Override
     public void delete( String tileMatrixId, Envelope env ) {
         if ( tileMatrixId == null ) {
-            for ( TileMatrix matrix : store.getTileMatrixSet().getTileMatrices() ) {
+            for ( TileMatrix matrix : store.getTileMatrixSet( tileMatrixSet ).getTileMatrices() ) {
                 delete( matrix, env );
             }
         } else {
-            TileMatrix matrix = store.getTileMatrixSet().getTileMatrix( tileMatrixId );
+            TileMatrix matrix = store.getTileMatrixSet( tileMatrixSet ).getTileMatrix( tileMatrixId );
             delete( matrix, env );
         }
     }

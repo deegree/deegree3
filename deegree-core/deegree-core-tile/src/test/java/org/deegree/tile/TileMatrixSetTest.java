@@ -40,7 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
-import static org.deegree.cs.persistence.CRSManager.getCRSRef;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -90,7 +89,7 @@ public class TileMatrixSetTest extends TestCase {
             when( tm.getMetadata() ).thenReturn( md );
             when( tm.getTile( 0, 0 ) ).thenReturn( t );
 
-            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "default", "image/png", getCRSRef( "EPSG:4326" ) );
+            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "default", "image/png", smd );
             tms = new DefaultTileMatrixSet( Collections.singletonList( tm ), metadata );
         } catch ( UnknownCRSException e ) {
             throw new RuntimeException( e );

@@ -40,8 +40,11 @@ import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -51,9 +54,9 @@ import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.geometry.metadata.jaxb.EnvelopeType;
 import org.deegree.tile.DefaultTileMatrixSet;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
@@ -79,15 +82,7 @@ public class FileSystemTileStore implements TileStore {
 
     // private static final Logger LOG = getLogger( FileSystemTileStore.class );
 
-    private FileSystemTileStoreJAXB config;
-
-    private String layerName;
-
-    private TileCacheDiskLayout layout;
-
-    private TileMatrixSet tileMatrixSet;
-
-    private SpatialMetadata spatialMetadata;
+    private Map<String, TileMatrixSet> tileMatrixSets;
 
     /**
      * Creates a new {@link FileSystemTileStore} instance.
@@ -98,38 +93,51 @@ public class FileSystemTileStore implements TileStore {
      * @throws ResourceInitException
      */
     public FileSystemTileStore( FileSystemTileStoreJAXB config, URL configUrl ) throws ResourceInitException {
-        this.config = config;
-        ICRS crs = CRSManager.getCRSRef( config.getCRS() );
+        tileMatrixSets = new HashMap<String, TileMatrixSet>();
+        Iterator<Object> iter = config.getCRSAndEnvelopeAndTilePyramid().iterator();
+        while ( iter.hasNext() ) {
+            String crss = (String) iter.next();
+            EnvelopeType env = (EnvelopeType) iter.next();
+            TilePyramid p = (TilePyramid) iter.next();
+            org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB.TileCacheDiskLayout lay;
+            lay = (org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB.TileCacheDiskLayout) iter.next();
 
-        File parent = null;
-        try {
-            parent = new File( configUrl.toURI() ).getParentFile();
-            File baseDir = new File( config.getTileCacheDiskLayout().getLayerDirectory() );
-            if ( !baseDir.isAbsolute() ) {
-                baseDir = new File( parent, config.getTileCacheDiskLayout().getLayerDirectory() );
+            File parent = null;
+            try {
+                parent = new File( configUrl.toURI() ).getParentFile();
+                File baseDir = new File( lay.getLayerDirectory() );
+                if ( !baseDir.isAbsolute() ) {
+                    baseDir = new File( parent, lay.getLayerDirectory() );
+                }
+                String layerName = baseDir.getName();
+                TileCacheDiskLayout layout = new TileCacheDiskLayout( baseDir, lay.getFileType() );
+
+                TileMatrixSet tms = buildTileMatrixSet( layerName, p, env, crss, layout );
+                tileMatrixSets.put( layerName, tms );
+                layout.setTileMatrixSet( tms );
+            } catch ( Throwable e ) {
+                throw new ResourceInitException( e.getLocalizedMessage(), e );
             }
-            layerName = baseDir.getName();
-            layout = new TileCacheDiskLayout( baseDir, config.getTileCacheDiskLayout().getFileType() );
-
-            tileMatrixSet = buildTileMatrixSet( crs, config );
-            layout.setTileMatrixSet( tileMatrixSet );
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
     }
 
-    private TileMatrixSet buildTileMatrixSet( ICRS crs, FileSystemTileStoreJAXB config ) {
-        TilePyramid pyramidConfig = config.getTilePyramid();
+    @Override
+    public Collection<String> getTileMatrixSetIds() {
+        return tileMatrixSets.keySet();
+    }
+
+    private TileMatrixSet buildTileMatrixSet( String id, TilePyramid pyramidConfig, EnvelopeType envelope, String crs,
+                                              DiskLayout layout ) {
         int tileWidth = pyramidConfig.getTileWidth().intValue();
         int tileHeight = pyramidConfig.getTileHeight().intValue();
         double minScaleDenominator = pyramidConfig.getMinScaleDenominator();
         int levels = pyramidConfig.getNumLevels().intValue();
-        spatialMetadata = fromJaxb( config.getEnvelope(), config.getCRS() );
-        return buildTileMatrixSet( spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels );
+        SpatialMetadata spatialMetadata = fromJaxb( envelope, crs );
+        return buildTileMatrixSet( id, spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels, layout );
     }
 
-    private TileMatrixSet buildTileMatrixSet( SpatialMetadata smd, int tileWidth, int tileHeight,
-                                              double scaleDenominator, int levels ) {
+    private TileMatrixSet buildTileMatrixSet( String layerName, SpatialMetadata smd, int tileWidth, int tileHeight,
+                                              double scaleDenominator, int levels, DiskLayout layout ) {
 
         List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
         Envelope bbox = smd.getEnvelope();
@@ -149,12 +157,11 @@ public class FileSystemTileStore implements TileStore {
 
             scaleDenominator *= 2;
         }
-        String format = config.getTileCacheDiskLayout().getFileType();
+        String format = layout.getFileType();
         if ( !format.startsWith( "image" ) ) {
             format = "image/" + format;
         }
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( layerName, format,
-                                                                              bbox.getCoordinateSystem() ) );
+        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( layerName, format, smd ) );
     }
 
     /**
@@ -205,23 +212,23 @@ public class FileSystemTileStore implements TileStore {
     }
 
     @Override
-    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        return tileMatrixSet.getTiles( envelope, resolution );
+    public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
+        return tileMatrixSets.get( id ).getTiles( envelope, resolution );
     }
 
     @Override
-    public SpatialMetadata getMetadata() {
-        return spatialMetadata;
+    public SpatialMetadata getMetadata( String id ) {
+        return tileMatrixSets.get( id ).getMetadata().getSpatialMetadata();
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet() {
-        return tileMatrixSet;
+    public TileMatrixSet getTileMatrixSet( String id ) {
+        return tileMatrixSets.get( id );
     }
 
     @Override
-    public Tile getTile( String tileMatrix, int x, int y ) {
-        TileMatrix tm = tileMatrixSet.getTileMatrix( tileMatrix );
+    public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
+        TileMatrix tm = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
         if ( tm == null ) {
             return null;
         }
@@ -229,7 +236,7 @@ public class FileSystemTileStore implements TileStore {
     }
 
     @Override
-    public TileStoreTransaction acquireTransaction() {
-        return new FileSystemTileStoreTransaction( this, layout );
+    public TileStoreTransaction acquireTransaction( String id ) {
+        return new FileSystemTileStoreTransaction( id, this );
     }
 }

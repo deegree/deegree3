@@ -21,7 +21,7 @@
       </appinfo>
     </annotation>
     <complexType>
-      <sequence>
+      <sequence maxOccurs="unbounded">
         <element ref="md:CRS">
           <annotation>
             <documentation>CRS of the tiles</documentation>

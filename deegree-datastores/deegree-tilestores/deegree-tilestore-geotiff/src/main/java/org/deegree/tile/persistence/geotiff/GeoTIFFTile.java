@@ -40,8 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -57,7 +55,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
-import org.slf4j.Logger;
 
 /**
  * <code>GeoTIFFTile</code> is a Tile implementation that reads from a GeoTIFF/BigTIFF file, through
@@ -71,7 +68,7 @@ import org.slf4j.Logger;
 
 public class GeoTIFFTile implements Tile {
 
-    private static final Logger LOG = getLogger( GeoTIFFTile.class );
+    // private static final Logger LOG = getLogger( GeoTIFFTile.class );
 
     private final int imageIndex, x, y;
 

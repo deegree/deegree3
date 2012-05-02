@@ -229,11 +229,11 @@ public class WMTSController extends AbstractOWS {
         }
 
         String format = op.getFormat();
-        if ( !store.getTileMatrixSet().getMetadata().getMimeType().equals( format ) ) {
+        if ( !store.getTileMatrixSet( op.getTileMatrixSet() ).getMetadata().getMimeType().equals( format ) ) {
             throw new OWSException( "Unknown format: " + format, INVALID_PARAMETER_VALUE );
         }
 
-        Tile t = store.getTile( op.getTileMatrix(), op.getTileCol(), op.getTileRow() );
+        Tile t = store.getTile( op.getTileMatrixSet(), op.getTileMatrix(), op.getTileCol(), op.getTileRow() );
         if ( t == null ) {
             // exception or empty tile?
             throw new OWSException( "No such tile found.", INVALID_PARAMETER_VALUE );

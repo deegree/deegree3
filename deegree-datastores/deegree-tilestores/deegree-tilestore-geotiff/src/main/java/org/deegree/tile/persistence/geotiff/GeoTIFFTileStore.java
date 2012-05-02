@@ -51,8 +51,11 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
@@ -60,6 +63,7 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -89,26 +93,13 @@ public class GeoTIFFTileStore implements TileStore {
 
     private static final Logger LOG = getLogger( GeoTIFFTileStore.class );
 
-    private final File file;
+    private final List<Pair<File, String>> files;
 
-    private final String crs;
+    private Map<String, TileMatrixSet> tileMatrixSets;
 
-    private final String id;
-
-    private DefaultTileMatrixSet tileMatrixSet;
-
-    private SpatialMetadata spatialMetadata;
-
-    public GeoTIFFTileStore( File file, String crs ) {
-        this.file = file;
-        this.crs = crs;
-        String fileName = file.getName();
-        int pos = fileName.lastIndexOf( '.' );
-        if ( pos != -1 ) {
-            id = fileName.substring( 0, pos );
-        } else {
-            id = fileName;
-        }
+    public GeoTIFFTileStore( List<Pair<File, String>> files ) {
+        this.files = files;
+        this.tileMatrixSets = new LinkedHashMap<String, TileMatrixSet>();
     }
 
     @Override
@@ -117,53 +108,64 @@ public class GeoTIFFTileStore implements TileStore {
         ImageReader reader = null;
         ImageInputStream iis = null;
         try {
-            ICRS crs = null;
-            if ( this.crs != null ) {
-                crs = CRSManager.getCRSRef( this.crs );
+            for ( Pair<File, String> file : files ) {
+
+                String fileName = file.first.getName();
+                int pos = fileName.lastIndexOf( '.' );
+                String tmsId;
+                if ( pos != -1 ) {
+                    tmsId = fileName.substring( 0, pos );
+                } else {
+                    tmsId = fileName;
+                }
+
+                ICRS crs = null;
+                if ( file.second != null ) {
+                    crs = CRSManager.getCRSRef( file.second );
+                }
+
+                Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
+                while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
+                    reader = readers.next();
+                }
+                iis = createImageInputStream( file.first );
+                // this is already checked in provider
+                reader.setInput( iis, false, true );
+                int num = reader.getNumImages( true );
+                IIOMetadata md = reader.getImageMetadata( 0 );
+                Envelope envelope = getEnvelope( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
+
+                if ( envelope == null ) {
+                    throw new ResourceInitException( "No envelope information could be read from GeoTIFF. "
+                                                     + "Please add one to the GeoTIFF." );
+                }
+
+                LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
+
+                SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
+
+                List<TileMatrix> matrices = new ArrayList<TileMatrix>( num );
+
+                for ( int i = 0; i < num; ++i ) {
+                    int tw = reader.getTileWidth( i );
+                    int th = reader.getTileHeight( i );
+                    int width = reader.getWidth( i );
+                    int height = reader.getHeight( i );
+                    int numx = (int) Math.ceil( (double) width / (double) tw );
+                    int numy = (int) Math.ceil( (double) height / (double) th );
+                    double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
+                    String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
+                    TileMatrixMetadata tmd = new TileMatrixMetadata( id, smd, tw, th, res, numx, numy );
+                    GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, file.first, i );
+                    matrices.add( matrix );
+                    LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx,
+                                                                                                           numy, tw,
+                                                                                                           th, res } );
+                }
+                TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( tmsId, "image/png", smd );
+                TileMatrixSet tileMatrixSet = new DefaultTileMatrixSet( matrices, metadata );
+                tileMatrixSets.put( tmsId, tileMatrixSet );
             }
-
-            Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
-            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
-                reader = readers.next();
-            }
-            iis = createImageInputStream( file );
-            // this is already checked in provider
-            reader.setInput( iis, false, true );
-            int num = reader.getNumImages( true );
-            IIOMetadata md = reader.getImageMetadata( 0 );
-            Envelope envelope = getEnvelope( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
-
-            if ( envelope == null ) {
-                throw new ResourceInitException( "No envelope information could be read from GeoTIFF, "
-                                                 + "and none was configured. Please configure an"
-                                                 + " envelope or add one to the GeoTIFF." );
-            }
-
-            LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
-
-            SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
-            this.spatialMetadata = smd;
-
-            List<TileMatrix> matrices = new ArrayList<TileMatrix>( num );
-
-            for ( int i = 0; i < num; ++i ) {
-                int tw = reader.getTileWidth( i );
-                int th = reader.getTileHeight( i );
-                int width = reader.getWidth( i );
-                int height = reader.getHeight( i );
-                int numx = (int) Math.ceil( (double) width / (double) tw );
-                int numy = (int) Math.ceil( (double) height / (double) th );
-                double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
-                String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
-                TileMatrixMetadata tmd = new TileMatrixMetadata( id, smd, tw, th, res, numx, numy );
-                GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, file, i );
-                matrices.add( matrix );
-                LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
-                                                                                                       tw, th, res } );
-            }
-            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( id, "image/png", envelope.getCoordinateSystem() );
-            tileMatrixSet = new DefaultTileMatrixSet( matrices, metadata );
-
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
         } finally {
@@ -181,13 +183,18 @@ public class GeoTIFFTileStore implements TileStore {
     }
 
     @Override
+    public Collection<String> getTileMatrixSetIds() {
+        return tileMatrixSets.keySet();
+    }
+
+    @Override
     public void destroy() {
         // nothing to destroy
     }
 
     @Override
-    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        return tileMatrixSet.getTiles( envelope, resolution );
+    public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
+        return tileMatrixSets.get( id ).getTiles( envelope, resolution );
     }
 
     private static Envelope getEnvelope( IIOMetadata metaData, int width, int height, ICRS crs )
@@ -241,18 +248,18 @@ public class GeoTIFFTileStore implements TileStore {
     }
 
     @Override
-    public SpatialMetadata getMetadata() {
-        return spatialMetadata;
+    public SpatialMetadata getMetadata( String id ) {
+        return tileMatrixSets.get( id ).getMetadata().getSpatialMetadata();
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet() {
-        return tileMatrixSet;
+    public TileMatrixSet getTileMatrixSet( String id ) {
+        return tileMatrixSets.get( id );
     }
 
     @Override
-    public Tile getTile( String tileMatrix, int x, int y ) {
-        TileMatrix tm = tileMatrixSet.getTileMatrix( tileMatrix );
+    public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
+        TileMatrix tm = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
         if ( tm == null ) {
             return null;
         }
@@ -260,7 +267,7 @@ public class GeoTIFFTileStore implements TileStore {
     }
 
     @Override
-    public TileStoreTransaction acquireTransaction() {
+    public TileStoreTransaction acquireTransaction( String id ) {
         throw new UnsupportedOperationException( "GeoTIFFTileStore does not support transactions." );
     }
 }

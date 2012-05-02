@@ -45,11 +45,13 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.cs.components.Unit.METRE;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -78,9 +80,8 @@ import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
-import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.RequestParams;
-import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TilePyramid;
-import org.slf4j.Logger;
+import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileMatrixSet.RequestParams;
+import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileMatrixSet.TilePyramid;
 
 /**
  * {@link TileStore} that is backed by a remote WMS instance.
@@ -95,23 +96,11 @@ import org.slf4j.Logger;
  */
 public class RemoteWMSTileStore implements TileStore {
 
-    private static final Logger LOG = getLogger( RemoteWMSTileStore.class );
+    // private static final Logger LOG = getLogger( RemoteWMSTileStore.class );
 
     private final RemoteWMSTileStoreJAXB config;
 
-    private final String remoteWmsId;
-
-    private final List<String> layers;
-
-    private final List<String> styles;
-
-    private final String format;
-
-    private WMSClient client;
-
-    private TileMatrixSet tileMatrixSet;
-
-    private SpatialMetadata spatialMetadata;
+    private Map<String, TileMatrixSet> tileMatrixSets;
 
     /**
      * Creates a new {@link RemoteWMSTileStore} instance.
@@ -122,16 +111,7 @@ public class RemoteWMSTileStore implements TileStore {
      */
     public RemoteWMSTileStore( RemoteWMSTileStoreJAXB config ) throws UnknownCRSException {
         this.config = config;
-        this.remoteWmsId = config.getRemoteWMSId();
-        RequestParams requestParams = config.getRequestParams();
-        layers = splitNullSafe( requestParams.getLayers() );
-        styles = splitNullSafe( requestParams.getStyles() );
-        format = requestParams.getFormat();
-        LOG.debug( "remote WMS id: " + remoteWmsId );
-        LOG.debug( "crs: " + config.getCRS() );
-        LOG.debug( "request layers: " + layers );
-        LOG.debug( "request styles: " + styles );
-        LOG.debug( "request format: " + format );
+        tileMatrixSets = new HashMap<String, TileMatrixSet>();
     }
 
     private List<String> splitNullSafe( String csv ) {
@@ -146,42 +126,60 @@ public class RemoteWMSTileStore implements TileStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
 
-        RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-        RemoteOWS store = mgr.get( remoteWmsId );
-        if ( !( store instanceof RemoteWMS ) ) {
-            String msg = "The remote WMS with id " + remoteWmsId + " is not available or not of type WMS.";
-            throw new ResourceInitException( msg );
+        for ( RemoteWMSTileStoreJAXB.TileMatrixSet config : this.config.getTileMatrixSet() ) {
+
+            String remoteWmsId = config.getRemoteWMSId();
+
+            RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
+            RemoteOWS store = mgr.get( remoteWmsId );
+            if ( !( store instanceof RemoteWMS ) ) {
+                String msg = "The remote WMS with id " + remoteWmsId + " is not available or not of type WMS.";
+                throw new ResourceInitException( msg );
+            }
+
+            WMSClient client = ( (RemoteWMS) store ).getClient();
+
+            ICRS crs = null;
+            try {
+                crs = CRSManager.lookup( config.getCRS() );
+            } catch ( UnknownCRSException e ) {
+                throw new ResourceInitException( "Configured CRS ('" + config.getCRS() + "') is not known." );
+            }
+
+            TileMatrixSet tileMatrixSet = buildTileMatrixSet( crs, config, client );
+            tileMatrixSets.put( tileMatrixSet.getMetadata().getIdentifier(), tileMatrixSet );
         }
-
-        client = ( (RemoteWMS) store ).getClient();
-
-        ICRS crs = null;
-        try {
-            crs = CRSManager.lookup( config.getCRS() );
-        } catch ( UnknownCRSException e ) {
-            throw new ResourceInitException( "Configured CRS ('" + config.getCRS() + "') is not known." );
-        }
-
-        tileMatrixSet = buildTileMatrixSet( crs, config );
     }
 
-    private TileMatrixSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB config ) {
+    @Override
+    public Collection<String> getTileMatrixSetIds() {
+        return tileMatrixSets.keySet();
+    }
+
+    private TileMatrixSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB.TileMatrixSet config, WMSClient client ) {
+        RequestParams requestParams = config.getRequestParams();
+        List<String> layers = splitNullSafe( requestParams.getLayers() );
+        List<String> styles = splitNullSafe( requestParams.getStyles() );
+        String format = requestParams.getFormat();
         TilePyramid pyramidConfig = config.getTilePyramid();
         int tileWidth = pyramidConfig.getTileWidth().intValue();
         int tileHeight = pyramidConfig.getTileHeight().intValue();
         double minScaleDenominator = pyramidConfig.getMinScaleDenominator();
         int levels = pyramidConfig.getNumLevels().intValue();
+        SpatialMetadata spatialMetadata;
         if ( config.getEnvelope() == null ) {
             Envelope bbox = client.getBoundingBox( config.getCRS(), layers );
             spatialMetadata = new SpatialMetadata( bbox, singletonList( crs ) );
         } else {
             spatialMetadata = SpatialMetadataConverter.fromJaxb( config.getEnvelope(), config.getCRS() );
         }
-        return buildTileMatrixSet( spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels );
+        return buildTileMatrixSet( pyramidConfig.getIdentifier(), spatialMetadata, tileWidth, tileHeight,
+                                   minScaleDenominator, levels, layers, styles, format, config.getRemoteWMSId(), client );
     }
 
-    private TileMatrixSet buildTileMatrixSet( SpatialMetadata smd, int tileWidth, int tileHeight,
-                                              double scaleDenominator, int levels ) {
+    private TileMatrixSet buildTileMatrixSet( String tmsId, SpatialMetadata smd, int tileWidth, int tileHeight,
+                                              double scaleDenominator, int levels, List<String> layers,
+                                              List<String> styles, String format, String remoteWmsId, WMSClient client ) {
 
         List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
         Envelope bbox = smd.getEnvelope();
@@ -196,13 +194,12 @@ public class RemoteWMSTileStore implements TileStore {
 
             TileMatrixMetadata md = new TileMatrixMetadata( id, smd, tileWidth, tileHeight, res, numX, numY );
 
-            TileMatrix m = new RemoteWMSTileMatrix( md, this, format, layers, styles );
+            TileMatrix m = new RemoteWMSTileMatrix( md, format, layers, styles, client );
             matrices.add( m );
 
             scaleDenominator *= 2;
         }
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( remoteWmsId, format,
-                                                                              bbox.getCoordinateSystem() ) );
+        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( tmsId, format, smd ) );
     }
 
     /**
@@ -247,40 +244,31 @@ public class RemoteWMSTileStore implements TileStore {
     }
 
     @Override
-    public SpatialMetadata getMetadata() {
-        return spatialMetadata;
+    public SpatialMetadata getMetadata( String id ) {
+        return tileMatrixSets.get( id ).getMetadata().getSpatialMetadata();
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet() {
-        return tileMatrixSet;
+    public TileMatrixSet getTileMatrixSet( String id ) {
+        return tileMatrixSets.get( id );
     }
 
     @Override
-    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        return tileMatrixSet.getTiles( envelope, resolution );
+    public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
+        return tileMatrixSets.get( id ).getTiles( envelope, resolution );
     }
 
     @Override
-    public Tile getTile( String tileMatrix, int x, int y ) {
-        TileMatrix m = tileMatrixSet.getTileMatrix( tileMatrix );
+    public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
+        TileMatrix m = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
         if ( m == null ) {
             return null;
         }
         return m.getTile( x, y );
     }
 
-    /**
-     * Returns a {@link WMSClient} instance for accessing the remote WMS instance.
-     * 
-     * @return WMS client, never <code>null</code>
-     */
-    WMSClient getClient() {
-        return client;
-    }
-
     @Override
-    public TileStoreTransaction acquireTransaction() {
+    public TileStoreTransaction acquireTransaction( String id ) {
         throw new UnsupportedOperationException( "RemoteWMSTileStore does not support transactions." );
     }
 }

@@ -92,7 +92,7 @@ public class RemoteWMSTileStoreTest {
     @Test
     public void testGetMetdataEPSG26912() {
         RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
-        SpatialMetadata metadata = store.getMetadata();
+        SpatialMetadata metadata = store.getMetadata( "tiles26912" );
         assertEquals( 1, metadata.getCoordinateSystems().size() );
         assertEquals( "urn:opengis:def:crs:epsg::26912", metadata.getCoordinateSystems().get( 0 ).getId() );
         assertEquals( 228563.303, metadata.getEnvelope().getMin().get0(), 0.001 );
@@ -104,7 +104,7 @@ public class RemoteWMSTileStoreTest {
     @Test
     public void testGetTileMatrixSetEPSG26912() {
         RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
-        TileMatrixSet matrixSet = store.getTileMatrixSet();
+        TileMatrixSet matrixSet = store.getTileMatrixSet( "tiles26912" );
         assertEquals( "image/png", matrixSet.getMetadata().getMimeType() );
 
         assertEquals( 10, matrixSet.getTileMatrices().size() );

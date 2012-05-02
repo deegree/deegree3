@@ -75,7 +75,8 @@ public class Invalidate {
 
         resp.setContentType( "text/plain" );
 
-        String id = path;
+        String id = path.split( "/" )[0];
+        String tmsid = path.split( "/" )[1];
         Envelope bbox = null;
         if ( qstring != null && qstring.toLowerCase().startsWith( "bbox=" ) ) {
             String s = qstring.substring( 5 );
@@ -104,10 +105,10 @@ public class Invalidate {
         }
 
         if ( bbox != null ) {
-            bbox.setCoordinateSystem( ts.getMetadata().getCoordinateSystems().get( 0 ) );
+            bbox.setCoordinateSystem( ts.getMetadata( tmsid ).getCoordinateSystems().get( 0 ) );
         }
 
-        int num = ( (CachingTileStore) ts ).invalidateCache( bbox );
+        int num = ( (CachingTileStore) ts ).invalidateCache( tmsid, bbox );
         IOUtils.write( "Removed " + num + " elements from the cache.\n", resp.getOutputStream() );
     }
 

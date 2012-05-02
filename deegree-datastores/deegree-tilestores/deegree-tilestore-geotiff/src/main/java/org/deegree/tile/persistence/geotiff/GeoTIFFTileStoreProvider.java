@@ -46,18 +46,20 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageReader;
+import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.tile.persistence.TileStore;
+import org.deegree.commons.utils.Pair;
 import org.deegree.tile.persistence.TileStoreProvider;
-import org.deegree.tile.persistence.geotiff.jaxb.Pyramid;
+import org.deegree.tile.persistence.geotiff.jaxb.Pyramids;
 
 /**
  * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
@@ -84,7 +86,8 @@ public class GeoTIFFTileStoreProvider implements TileStoreProvider {
     public GeoTIFFTileStore create( URL configUrl )
                             throws ResourceInitException {
         try {
-            Pyramid p = (Pyramid) unmarshall( "org.deegree.tile.persistence.geotiff.jaxb", SCHEMA, configUrl, workspace );
+            Pyramids p = (Pyramids) unmarshall( "org.deegree.tile.persistence.geotiff.jaxb", SCHEMA, configUrl,
+                                                workspace );
             Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
             ImageReader reader = null;
             while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
@@ -95,10 +98,31 @@ public class GeoTIFFTileStoreProvider implements TileStoreProvider {
                 throw new ResourceInitException( "No TIFF reader was found for imageio." );
             }
 
-            String file = p.getPyramidFile();
-            File resolved = new File( configUrl.toURI().resolve( file ) );
+            List<Pair<File, String>> list = new ArrayList<Pair<File, String>>();
 
-            return new GeoTIFFTileStore( resolved, p.getCRS() );
+            Iterator<JAXBElement<String>> iter = p.getPyramidFileAndCRS().iterator();
+            JAXBElement<String> cur = null;
+            while ( iter.hasNext() ) {
+                String file;
+                if ( cur != null ) {
+                    file = cur.getValue();
+                } else {
+                    file = iter.next().getValue();
+                }
+                String crs = null;
+                if ( iter.hasNext() ) {
+                    cur = iter.next();
+                    if ( cur.getName().getLocalPart().equals( "CRS" ) ) {
+                        crs = cur.getValue();
+                        cur = null;
+                    }
+                }
+
+                File resolved = new File( configUrl.toURI().resolve( file ) );
+                list.add( new Pair<File, String>( resolved, crs ) );
+            }
+
+            return new GeoTIFFTileStore( list );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );
         }

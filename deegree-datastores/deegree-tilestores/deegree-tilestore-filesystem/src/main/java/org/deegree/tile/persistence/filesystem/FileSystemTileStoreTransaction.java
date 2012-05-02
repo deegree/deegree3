@@ -58,22 +58,20 @@ import org.deegree.tile.persistence.TileStoreTransaction;
  */
 class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
-    private final DiskLayout layout;
-
     /**
      * Creates a new {@link FileSystemTileStoreTransaction}.
      * 
      * @param store
      *            tile store, must not be <code>null</code>
      */
-    FileSystemTileStoreTransaction( FileSystemTileStore store, DiskLayout layout ) {
-        super( store );
-        this.layout = layout;
+    FileSystemTileStoreTransaction( String id, FileSystemTileStore store ) {
+        super( store, id );
     }
 
     @Override
     public void put( String matrixId, Tile tile, int x, int y )
                             throws TileIOException {
+        DiskLayout layout = ( (FileSystemTileMatrix) this.store.getTileMatrixSet( this.tileMatrixSet ).getTileMatrix( matrixId ) ).getLayout();
         FileOutputStream fos = null;
         try {
             File file = layout.resolve( matrixId, x, y );
@@ -91,6 +89,7 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
     @Override
     public void delete( String matrixId, int x, int y ) {
+        DiskLayout layout = ( (FileSystemTileMatrix) this.store.getTileMatrixSet( this.tileMatrixSet ).getTileMatrix( matrixId ) ).getLayout();
         File file = layout.resolve( matrixId, x, y );
         if ( file.exists() ) {
             file.delete();

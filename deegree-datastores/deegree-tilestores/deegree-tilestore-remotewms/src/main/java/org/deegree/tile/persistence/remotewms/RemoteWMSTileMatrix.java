@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileMatrix;
@@ -58,8 +59,6 @@ class RemoteWMSTileMatrix implements TileMatrix {
 
     private final TileMatrixMetadata metadata;
 
-    private final RemoteWMSTileStore store;
-
     private final int tileSizeX, tileSizeY;
 
     private final String format;
@@ -68,29 +67,31 @@ class RemoteWMSTileMatrix implements TileMatrix {
 
     private final List<String> styles;
 
+    private WMSClient client;
+
     /**
      * Creates a new {@link RemoteWMSTileMatrix} instance.
      * 
      * @param tileMd
      *            matrix metadata, must not be <code>null</code>
-     * @param store
-     *            store that backs the tile data, must not be <code>null</code>
      * @param format
      *            format to request tile images, must not be <code>null</code>
      * @param layers
      *            WMS layers to request, must not be <code>null</code>
      * @param styles
      *            WMS styles to request, must not be <code>null</code>
+     * @param client
+     *            the WMS client to use, must not be <code>null</code>
      */
-    RemoteWMSTileMatrix( TileMatrixMetadata tileMd, RemoteWMSTileStore store, String format, List<String> layers,
-                         List<String> styles ) {
+    RemoteWMSTileMatrix( TileMatrixMetadata tileMd, String format, List<String> layers, List<String> styles,
+                         WMSClient client ) {
         this.metadata = tileMd;
-        this.store = store;
         this.format = format;
         this.layers = layers;
         this.styles = styles;
         this.tileSizeX = tileMd.getTilePixelsX();
         this.tileSizeY = tileMd.getTilePixelsY();
+        this.client = client;
     }
 
     @Override
@@ -111,6 +112,6 @@ class RemoteWMSTileMatrix implements TileMatrix {
         Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
         GetMap gm = new GetMap( layers, styles, tileSizeX, tileSizeY, envelope, envelope.getCoordinateSystem(), format,
                                 true );
-        return new RemoteWMSTile( store.getClient(), gm );
+        return new RemoteWMSTile( client, gm );
     }
 }

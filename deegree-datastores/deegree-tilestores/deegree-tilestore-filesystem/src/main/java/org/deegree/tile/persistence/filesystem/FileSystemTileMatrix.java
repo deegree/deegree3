@@ -95,4 +95,9 @@ class FileSystemTileMatrix implements TileMatrix {
         double miny = env.getMax().get1() - height * y;
         return fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
     }
+
+    public DiskLayout getLayout() {
+        return layout;
+    }
+
 }

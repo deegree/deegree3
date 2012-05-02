@@ -41,7 +41,7 @@
 
 package org.deegree.tile;
 
-import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
  * Metadata on a {@link TileMatrixSet}.
@@ -57,7 +57,7 @@ public class TileMatrixSetMetadata {
 
     private final String mimeType;
 
-    private final ICRS crs;
+    private final SpatialMetadata spatialMetadata;
 
     /**
      * Creates a new {@link TileMatrixSetMetadata} instance.
@@ -66,13 +66,13 @@ public class TileMatrixSetMetadata {
      *            identifier for the {@link TileMatrixSet}, must not be <code>null</code>
      * @param mimeType
      *            mime type of the tiles, must not be <code>null</code>
-     * @param crs
-     *            reference system used by the tiles, must not be <code>null</code>
+     * @param spatialMetadata
+     *            envelope and reference system used by the tiles, must not be <code>null</code>
      */
-    public TileMatrixSetMetadata( String identifier, String mimeType, ICRS crs ) {
+    public TileMatrixSetMetadata( String identifier, String mimeType, SpatialMetadata spatialMetadata ) {
         this.identifier = identifier;
         this.mimeType = mimeType;
-        this.crs = crs;
+        this.spatialMetadata = spatialMetadata;
     }
 
     /**
@@ -94,11 +94,11 @@ public class TileMatrixSetMetadata {
     }
 
     /**
-     * Returns the reference system used by the tiles.
+     * Returns the envelope and reference system used by the tiles.
      * 
-     * @return reference system, never <code>null</code>
+     * @return envelope and reference system, never <code>null</code>
      */
-    public ICRS getCrs() {
-        return crs;
+    public SpatialMetadata getSpatialMetadata() {
+        return spatialMetadata;
     }
 }

@@ -60,6 +60,7 @@ import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
+import org.deegree.layer.persistence.tile.jaxb.TileLayerType.TileStoreId;
 import org.deegree.layer.persistence.tile.jaxb.TileLayers;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.tile.persistence.TileStore;
@@ -88,16 +89,17 @@ public class TileLayerProvider implements LayerStoreProvider {
     private TileLayer createLayer( TileLayerType cfg )
                             throws ResourceInitException {
         TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-        TileStore store = mgr.get( cfg.getTileStoreId() );
+        TileStoreId id = cfg.getTileStoreId();
+        TileStore store = mgr.get( id.getValue() );
         if ( store == null ) {
             throw new ResourceInitException( "Tile store with id " + cfg.getTileStoreId() + " was not available." );
         }
         SpatialMetadata smd = fromJaxb( cfg.getEnvelope(), cfg.getCRS() );
         if ( smd.getEnvelope() == null ) {
-            smd.setEnvelope( store.getMetadata().getEnvelope() );
+            smd.setEnvelope( store.getMetadata( id.getTileMatrixSet() ).getEnvelope() );
         }
         if ( smd.getCoordinateSystems().isEmpty() ) {
-            smd.getCoordinateSystems().addAll( store.getMetadata().getCoordinateSystems() );
+            smd.getCoordinateSystems().addAll( store.getMetadata( id.getTileMatrixSet() ).getCoordinateSystems() );
         }
         Description desc = fromJaxb( cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords() );
         LayerMetadata md = new LayerMetadata( cfg.getName(), desc, smd );
@@ -108,7 +110,7 @@ public class TileLayerProvider implements LayerStoreProvider {
             md.setScaleDenominators( p );
         }
         md.setMetadataId( cfg.getMetadataSetId() );
-        return new TileLayer( md, store );
+        return new TileLayer( md, store, id.getTileMatrixSet() );
     }
 
     @Override
