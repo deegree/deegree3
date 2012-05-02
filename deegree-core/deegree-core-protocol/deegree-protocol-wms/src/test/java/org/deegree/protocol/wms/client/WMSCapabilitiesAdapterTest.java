@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.client;
 
-import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.DescribeLayer;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -56,9 +54,6 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
@@ -100,15 +95,6 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesCoordinateSystem()
-                            throws XMLStreamException {
-        WMSCapabilitiesAdapter capabilities = createCapabilities();
-
-        LinkedList<String> coordinateSystems = capabilities.getCoordinateSystems( "cite:NamedPlaces" );
-        assertEquals( 2, coordinateSystems.size() );
-    }
-
-    @Test
     public void testWMS130CapabilitiesOperationUnsupported()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
@@ -120,26 +106,6 @@ public abstract class WMSCapabilitiesAdapterTest {
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         assertTrue( capabilities.isOperationSupported( GetMap ) );
-    }
-
-    @Test
-    public void testWMS130CapabilitiesgetBoundingBox()
-                            throws XMLStreamException, UnknownCRSException {
-        WMSCapabilitiesAdapter capabilities = createCapabilities();
-        Envelope boundingBox = capabilities.getBoundingBox( "EPSG:4326", "citelayers" );
-        assertNotNull( boundingBox );
-        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -90, -180, 90, 180, CRSManager.lookup( "EPSG:4326" ) );
-        assertTrue( boundingBox.equals( bbox ) );
-    }
-
-    @Test
-    public void testWMS130CapabilitiesgetLatLonBoundingBox()
-                            throws XMLStreamException, UnknownCRSException {
-        WMSCapabilitiesAdapter capabilities = createCapabilities();
-        Envelope boundingBox = capabilities.getLatLonBoundingBox( "citelayers" );
-        assertNotNull( boundingBox );
-        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -180, -90, 180, 90, CRSManager.getCRSRef( WGS84 ) );
-        assertTrue( boundingBox.equals( bbox ) );
     }
 
     @Test
@@ -222,7 +188,6 @@ public abstract class WMSCapabilitiesAdapterTest {
         assertEquals( getServiceVersion(), serviceIdentification.getServiceTypeVersion().get( 0 ) );
     }
 
-
     @Ignore
     @Test
     public void testWMS130CapabilitiesServiceProvider()
@@ -297,12 +262,11 @@ public abstract class WMSCapabilitiesAdapterTest {
     protected abstract int getNoOfChildrenOfRootLayer();
 
     protected abstract Version getServiceVersion();
-    
+
     /**
      * @return the {@link WMSCapabilitiesAdapter} to test
      */
     protected abstract WMSCapabilitiesAdapter createCapabilities()
                             throws XMLStreamException;
-
 
 }
