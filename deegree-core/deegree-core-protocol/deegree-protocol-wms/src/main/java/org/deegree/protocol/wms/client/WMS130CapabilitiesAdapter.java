@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/protocol/wms/client/WMSClient111.java $
+//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2012 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -38,10 +38,6 @@ package org.deegree.protocol.wms.client;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.i18n.Messages.get;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
@@ -52,26 +48,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link WMS111CapabilitiesAdapter} for documents that comply to the <a
- * href="http://www.opengeospatial.org/standards/wms>WMS 1.1.1</a> specification.
+ * {@link WMS130CapabilitiesAdapter} for documents that comply to the <a
+ * href="http://www.opengeospatial.org/standards/wms>WMS 1.3.0</a> specification.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lgoltz $
+ * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: 31860 $, $Date: 2011-09-13 15:11:47 +0200 (Di, 13. Sep 2011) $
+ * @version $Revision: $, $Date: $
  */
-public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
+public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMS111CapabilitiesAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( WMS130CapabilitiesAdapter.class );
+    
+    static {
+        nsContext.addNamespace( "wms", "http://www.opengis.net/wms" );
+    }
 
     /**
-     * Create a new {@link WMS111CapabilitiesAdapter} from the passed root element.
+     * Create a new {@link WMS130CapabilitiesAdapter} from the passed root element.
      * 
      * @param root
      *            the capabilies doument, must not be <code>null</code> throws {@link IllegalArgumentException} if root
      *            is null
      */
-    public WMS111CapabilitiesAdapter( OMElement root ) {
+    public WMS130CapabilitiesAdapter( OMElement root ) {
         if ( root == null )
             throw new IllegalArgumentException( "Capablities root element must not be null!" );
         setRootElement( root );
@@ -82,18 +82,18 @@ public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
         double[] min = new double[2];
         double[] max = new double[2];
 
-        OMElement elem = getElement( getRootElement(), new XPath( "//Layer[Name = '" + layer + "']", null ) );
+        OMElement elem = getLayer( layer );
         if ( elem == null ) {
             LOG.warn( "Could not get a layer with name: " + layer );
         } else {
             while ( elem.getLocalName().equals( "Layer" ) ) {
-                OMElement bbox = getElement( elem, new XPath( "LatLonBoundingBox", null ) );
+                OMElement bbox = getElement( elem, new XPath( "wms:EX_GeographicBoundingBox", nsContext ) );
                 if ( bbox != null ) {
                     try {
-                        min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                        min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                        max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                        max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
+                        min[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:westBoundLongitude", nsContext ) );
+                        min[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:southBoundLatitude", nsContext ) );
+                        max[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:eastBoundLongitude", nsContext ) );
+                        max[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:northBoundLatitude", nsContext ) );
                         return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
                     } catch ( NumberFormatException nfe ) {
                         LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
@@ -103,38 +103,22 @@ public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
                 }
             }
         }
-
         return null;
     }
 
     @Override
-    public Envelope getLatLonBoundingBox( List<String> layers ) {
-        Envelope res = null;
-
-        for ( String name : layers ) {
-            if ( res == null ) {
-                res = getLatLonBoundingBox( name );
-            } else {
-                res = res.merge( getLatLonBoundingBox( name ) );
-            }
-        }
-
-        return res;
-    }
-
-    @Override
     protected String getPrefix() {
-        return "";
+        return "wms:";
     }
 
     @Override
     protected String getLayerCRSElementName() {
-        return "SRS";
+        return "CRS";
     }
 
     @Override
     protected Version getServiceVersion() {
-        return new Version( 1, 1, 1 );
+        return new Version( 1, 3, 0 );
     }
 
 }

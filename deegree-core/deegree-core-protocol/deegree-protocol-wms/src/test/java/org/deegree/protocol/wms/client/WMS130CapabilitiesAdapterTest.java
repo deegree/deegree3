@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/protocol/wms/client/WMSClient111.java $
+//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2012 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.client;
 
+import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -54,30 +55,20 @@ import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
 
 /**
- * Test cases for {@link WMS111CapabilitiesAdapter}
+ * Test cases for {@link WMS130CapabilitiesAdapter}
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lgoltz $
+ * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: 31860 $, $Date: 2011-09-13 15:11:47 +0200 (Di, 13. Sep 2011) $
+ * @version $Revision: $, $Date: $
  */
-public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
+public class WMS130CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 
-    private static final String GETMAP_URL = "http://demo.deegree.org:80/deegree-wms/services?";
+    private static final String GETMAP_URL = "http://demo.deegree.org/deegree-wms-ri-130/services?";
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNullWMS111Capabilities() {
-        new WMS111CapabilitiesAdapter( null );
-    }
-
-    @Override
-    protected WMSCapabilitiesAdapter createCapabilities()
-                            throws XMLStreamException {
-        InputStream is = WMS111CapabilitiesAdapterTest.class.getResourceAsStream( "wms111.xml" );
-        StAXOMBuilder builder = new StAXOMBuilder( is );
-        OMElement capabilities = builder.getDocumentElement();
-        WMSCapabilitiesAdapter adapter = new WMS111CapabilitiesAdapter( capabilities );
-        return adapter;
+    public void testNullWMS130Capabilities() {
+        new WMS130CapabilitiesAdapter( null );
     }
 
     @Test
@@ -86,7 +77,7 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
         LinkedList<String> coordinateSystems = capabilities.getCoordinateSystems( "cite:NamedPlaces" );
-        assertEquals( 7, coordinateSystems.size() );
+        assertEquals( 2, coordinateSystems.size() );
     }
 
     @Test
@@ -95,7 +86,7 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         Envelope boundingBox = capabilities.getBoundingBox( "EPSG:4326", "citelayers" );
         assertNotNull( boundingBox );
-        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -1, -1, 1, 1, CRSManager.lookup( "EPSG:4326" ) );
+        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -90, -180, 90, 180, CRSManager.lookup( "EPSG:4326" ) );
         assertTrue( boundingBox.equals( bbox ) );
     }
 
@@ -105,8 +96,18 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         Envelope boundingBox = capabilities.getLatLonBoundingBox( "citelayers" );
         assertNotNull( boundingBox );
-        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -1, -1, 1, 1, CRSManager.lookup( "EPSG:4326" ) );
+        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -180, -90, 180, 90, CRSManager.getCRSRef( WGS84 ) );
         assertTrue( boundingBox.equals( bbox ) );
+    }
+
+    @Override
+    protected WMSCapabilitiesAdapter createCapabilities()
+                            throws XMLStreamException {
+        InputStream is = WMS130CapabilitiesAdapterTest.class.getResourceAsStream( "wms130.xml" );
+        StAXOMBuilder builder = new StAXOMBuilder( is );
+        OMElement capabilities = builder.getDocumentElement();
+        WMSCapabilitiesAdapter adapter = new WMS130CapabilitiesAdapter( capabilities );
+        return adapter;
     }
 
     @Override
@@ -121,11 +122,11 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 
     @Override
     protected int getNoOfChildrenOfRootLayer() {
-        return 2;
+        return 1;
     }
 
     @Override
     protected Version getServiceVersion() {
-        return new Version( 1, 1, 1 );
+        return new Version( 1, 3, 0 );
     }
 }
