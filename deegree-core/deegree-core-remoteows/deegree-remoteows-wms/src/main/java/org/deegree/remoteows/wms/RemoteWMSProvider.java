@@ -38,11 +38,8 @@ package org.deegree.remoteows.wms;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
@@ -113,15 +110,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
 
             return new org.deegree.remoteows.wms.RemoteWMS( client );
-        } catch ( JAXBException e ) {
-            e.printStackTrace();
-            LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( ClassCastException e ) {
-            e.printStackTrace();
-            LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( MalformedURLException e ) {
+        } catch ( Exception e ) {
             e.printStackTrace();
             LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

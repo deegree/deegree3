@@ -42,6 +42,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -52,8 +54,9 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,10 +107,13 @@ public class WMSTextureTileProvider implements TextureTileProvider {
      *            maximum map height (in pixels) that the WMS allows or -1 if unconstrained
      * @param requestTimeout
      *            maximum number of seconds to wait for a WMS response or -1 if unconstrained
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
      */
     public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, ICRS requestCRS,
                                    String requestFormat, boolean transparent, double res, int maxWidth, int maxHeight,
-                                   int requestTimeout ) {
+                                   int requestTimeout ) throws OWSExceptionReport, XMLStreamException, IOException {
         this.client = new WMSClient111( capabilitiesURL );
         this.client.setMaxMapDimensions( maxWidth, maxHeight );
         this.layers = Arrays.asList( requestedLayers );

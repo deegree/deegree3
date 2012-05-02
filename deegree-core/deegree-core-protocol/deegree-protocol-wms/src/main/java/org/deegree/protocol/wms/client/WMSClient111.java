@@ -38,8 +38,6 @@ package org.deegree.protocol.wms.client;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.abs;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
@@ -48,13 +46,11 @@ import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
-import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
-import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.i18n.Messages.get;
@@ -92,13 +88,10 @@ import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -116,11 +109,11 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.layer.LayerRef;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.protocol.ows.client.AbstractOWSClient;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
@@ -138,9 +131,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31298 $, $Date: 2011-07-17 15:33:07 +0200 (Sun, 17 Jul 2011) $
  */
-public class WMSClient111 implements WMSClient {
-
-    private static final NamespaceBindings nsContext = getNamespaceContext();
+public class WMSClient111 extends AbstractOWSClient<WMS111CapabilitiesAdapter> implements WMSClient {
 
     // needed in the worker
     static final Logger LOG = getLogger( WMSClient111.class );
@@ -151,16 +142,9 @@ public class WMSClient111 implements WMSClient {
     // needed in the worker
     int maxMapHeight = -1;
 
-    // needed in the worker
-    XMLAdapter capabilities;
-
     int connectionTimeout = 5;
 
     int requestTimeout = 60;
-
-    String httpBasicUser;
-
-    String httpBasicPass;
 
     /**
      * @param url
@@ -172,25 +156,16 @@ public class WMSClient111 implements WMSClient {
      *            http basic username
      * @param pass
      *            http basic password
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
+     * @throws IOException
      */
-    public WMSClient111( URL url, int connectionTimeout, int requestTimeout, String user, String pass ) {
+    public WMSClient111( URL url, int connectionTimeout, int requestTimeout, String user, String pass )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        super( url, user, pass );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
-        this.httpBasicUser = user;
-        this.httpBasicPass = pass;
-        try {
-            if ( httpBasicUser != null ) {
-                capabilities = new XMLAdapter();
-                capabilities.load( url, httpBasicUser, httpBasicPass );
-            } else {
-                capabilities = new XMLAdapter( url );
-            }
-        } catch ( Exception e ) {
-            LOG.error( e.getLocalizedMessage(), e );
-            throw new NullPointerException( "Could not read from URL: " + url + " error was: "
-                                            + e.getLocalizedMessage() );
-        }
-        checkCapabilities( this.capabilities );
+        checkCapabilities();
     }
 
     /**
@@ -199,8 +174,12 @@ public class WMSClient111 implements WMSClient {
      *            default is 5 seconds
      * @param requestTimeout
      *            default is 60 seconds
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
      */
-    public WMSClient111( URL url, int connectionTimeout, int requestTimeout ) {
+    public WMSClient111( URL url, int connectionTimeout, int requestTimeout ) throws OWSExceptionReport,
+                            XMLStreamException, IOException {
         this( url );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
@@ -208,31 +187,22 @@ public class WMSClient111 implements WMSClient {
 
     /**
      * @param url
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
      */
-    public WMSClient111( URL url ) {
-        try {
-            capabilities = new XMLAdapter( url );
-        } catch ( Exception e ) {
-            LOG.error( e.getLocalizedMessage(), e );
-            throw new NullPointerException( "Could not read from URL: " + url + " error was: "
-                                            + e.getLocalizedMessage() );
-        }
-        checkCapabilities( this.capabilities );
+    public WMSClient111( URL url ) throws OWSExceptionReport, XMLStreamException, IOException {
+        super( url );
+        checkCapabilities();
     }
 
     /**
      * @param capabilities
+     * @throws IOException
      */
-    public WMSClient111( XMLAdapter capabilities ) {
-        checkCapabilities( capabilities );
-        this.capabilities = capabilities;
-    }
-
-    /**
-     * @return the system id of the capabilities document.
-     */
-    public String getSystemId() {
-        return this.capabilities.getSystemId();
+    public WMSClient111( XMLAdapter capabilities ) throws IOException {
+        super( capabilities );
+        checkCapabilities();
     }
 
     /**
@@ -249,16 +219,15 @@ public class WMSClient111 implements WMSClient {
         maxMapHeight = maxHeight;
     }
 
-    private static void checkCapabilities( XMLAdapter capabilities ) {
-        OMElement root = capabilities.getRootElement();
-        String version = root.getAttributeValue( new QName( "version" ) );
-        if ( !"1.1.1".equals( version ) ) {
-            throw new IllegalArgumentException( get( "WMSCLIENT.WRONG_VERSION_CAPABILITIES", version, "1.1.1" ) );
+    private void checkCapabilities() {
+        final Version expectedVersion = new Version( 1, 1, 1 );
+        List<Version> supportedVersions = getIdentification().getServiceTypeVersion();
+        for ( Version version : supportedVersions ) {
+            if ( expectedVersion.equals( version ) ) {
+                return;
+            }
         }
-        if ( !root.getLocalName().equals( "WMT_MS_Capabilities" ) ) {
-            throw new IllegalArgumentException( get( "WMSCLIENT.NO_WMS_CAPABILITIES", root.getLocalName(),
-                                                     "WMT_MS_Capabilities" ) );
-        }
+        throw new IllegalArgumentException( get( "WMSCLIENT.WRONG_VERSION_CAPABILITIES", supportedVersions, "1.1.1" ) );
     }
 
     /**
@@ -279,187 +248,13 @@ public class WMSClient111 implements WMSClient {
             } else {
                 adapter = new XMLAdapter( new URL( url ) );
             }
-            checkCapabilities( adapter );
-            capabilities = adapter;
+            initCapabilities( adapter );
+            checkCapabilities();
         } catch ( MalformedURLException e ) {
             LOG.debug( "Malformed capabilities URL?", e );
+        } catch ( IOException e ) {
+            LOG.debug( "Malformed capabilities URL?", e );
         }
-    }
-
-    /**
-     * @param request
-     * @return true, if an according section was found in the capabilities
-     */
-    @Override
-    public boolean isOperationSupported( WMSRequestType request ) {
-        XPath xp = new XPath( "//" + request, null );
-        return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
-    }
-
-    /**
-     * @param request
-     * @return the image formats defined for the request, or null, if request is not supported
-     */
-    @Override
-    public LinkedList<String> getFormats( WMSRequestType request ) {
-        if ( !isOperationSupported( request ) ) {
-            return null;
-        }
-        XPath xp = new XPath( "//" + request + "/Format", null );
-        LinkedList<String> list = new LinkedList<String>();
-        Object res = capabilities.evaluateXPath( xp, capabilities.getRootElement() );
-        if ( res instanceof List<?> ) {
-            for ( Object o : (List<?>) res ) {
-                list.add( ( (OMElement) o ).getText() );
-            }
-        }
-        return list;
-    }
-
-    /**
-     * @param request
-     * @param get
-     *            true means HTTP GET, false means HTTP POST
-     * @return the address, or null, if not defined or request unavailable
-     */
-    @Override
-    public String getAddress( WMSRequestType request, boolean get ) {
-
-        if ( !isOperationSupported( request ) ) {
-            return null;
-        }
-        return capabilities.getNodeAsString( capabilities.getRootElement(), new XPath( "//" + request
-                                                                                       + "/DCPType/HTTP/"
-                                                                                       + ( get ? "Get" : "Post" )
-                                                                                       + "/OnlineResource/@xlink:href",
-                                                                                       nsContext ), null );
-    }
-
-    /**
-     * @param name
-     * @return true, if the WMS advertises a layer with that name
-     */
-    @Override
-    public boolean hasLayer( String name ) {
-        return capabilities.getNode( capabilities.getRootElement(), new XPath( "//Layer[Name = '" + name + "']", null ) ) != null;
-    }
-
-    /**
-     * @param name
-     * @return all coordinate system names, also inherited ones
-     */
-    @Override
-    public LinkedList<String> getCoordinateSystems( String name ) {
-        LinkedList<String> list = new LinkedList<String>();
-        if ( !hasLayer( name ) ) {
-            return list;
-        }
-        OMElement elem = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Layer[Name = '" + name
-                                                                                            + "']", null ) );
-        List<OMElement> es = capabilities.getElements( elem, new XPath( "SRS", null ) );
-        while ( ( elem = (OMElement) elem.getParent() ).getLocalName().equals( "Layer" ) ) {
-            es.addAll( capabilities.getElements( elem, new XPath( "SRS", null ) ) );
-        }
-        for ( OMElement e : es ) {
-            if ( !list.contains( e.getText() ) ) {
-                list.add( e.getText() );
-            }
-        }
-        return list;
-    }
-
-    /**
-     * @param layer
-     * @return the envelope, or null, if none was found
-     */
-    @Override
-    public Envelope getLatLonBoundingBox( String layer ) {
-        double[] min = new double[2];
-        double[] max = new double[2];
-
-        OMElement elem = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Layer[Name = '" + layer
-                                                                                            + "']", null ) );
-        if ( elem == null ) {
-            LOG.warn( "Could not get a layer with name: " + layer );
-        } else {
-            while ( elem.getLocalName().equals( "Layer" ) ) {
-                OMElement bbox = capabilities.getElement( elem, new XPath( "LatLonBoundingBox", null ) );
-                if ( bbox != null ) {
-                    try {
-                        min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                        min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                        max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                        max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                        return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
-                    } catch ( NumberFormatException nfe ) {
-                        LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                    }
-                } else {
-                    elem = (OMElement) elem.getParent();
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param layers
-     * @return a merged envelope of all the layer's envelopes
-     */
-    @Override
-    public Envelope getLatLonBoundingBox( List<String> layers ) {
-        Envelope res = null;
-
-        for ( String name : layers ) {
-            if ( res == null ) {
-                res = getLatLonBoundingBox( name );
-            } else {
-                res = res.merge( getLatLonBoundingBox( name ) );
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * @param srs
-     * @param layer
-     * @return the envelope, or null, if none was found
-     */
-    @Override
-    public Envelope getBoundingBox( String srs, String layer ) {
-        double[] min = new double[2];
-        double[] max = new double[2];
-
-        OMElement elem = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Layer[Name = '" + layer
-                                                                                            + "']", null ) );
-        while ( elem != null && elem.getLocalName().equals( "Layer" ) ) {
-            OMElement bbox = capabilities.getElement( elem, new XPath( "BoundingBox[@SRS = '" + srs + "']", null ) );
-            if ( bbox != null ) {
-                try {
-                    min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                    min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                    max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                    max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( srs ) );
-                } catch ( NumberFormatException nfe ) {
-                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                }
-            } else {
-                elem = (OMElement) elem.getParent();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return the names of all layers that have a name
-     */
-    @Override
-    public List<String> getNamedLayers() {
-        return asList( capabilities.getNodesAsStrings( capabilities.getRootElement(), new XPath( "//Layer/Name", null ) ) );
     }
 
     /**
@@ -531,7 +326,7 @@ public class WMSClient111 implements WMSClient {
                             throws IOException {
         String url = getAddress( GetFeatureInfo, true );
         if ( url == null ) {
-            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
+            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
             return null;
         }
         if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
@@ -595,8 +390,8 @@ public class WMSClient111 implements WMSClient {
             }
             // UMN workaround
             if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
-                 && xmlReader.getLocalName().equals( "msGMLOutput" ) )  {
-                 return readUMNCollection( xmlReader );
+                 && xmlReader.getLocalName().equals( "msGMLOutput" ) ) {
+                return readUMNCollection( xmlReader );
             }
             GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
             return reader.readFeatureCollection();
@@ -677,35 +472,35 @@ public class WMSClient111 implements WMSClient {
 
         return col;
     }
-    
+
     private static FeatureCollection readUMNCollection( XMLStreamReader reader )
                             throws NoSuchElementException, XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
 
         nextElement( reader );
-        
+
         String ftName = reader.getLocalName();
         String singleFeatureTagName = ftName.split( "_" )[0] + "_feature";
-        
+
         while ( reader.isStartElement() && reader.getLocalName().equals( ftName ) ) {
-            
+
             int count = 0;
             nextElement( reader );
-            
-            while ( reader.isStartElement() && reader.getLocalName().equals( singleFeatureTagName )) {
+
+            while ( reader.isStartElement() && reader.getLocalName().equals( singleFeatureTagName ) ) {
 
                 List<PropertyType> props = new ArrayList<PropertyType>();
                 List<Property> propValues = new ArrayList<Property>();
 
                 nextElement( reader );
                 while ( !( reader.isEndElement() && reader.getLocalName().equals( singleFeatureTagName ) ) ) {
-                    
+
                     // Skip boundedBy
-                    if (reader.isStartElement() && reader.getLocalName().equals( "boundedBy" )) {
+                    if ( reader.isStartElement() && reader.getLocalName().equals( "boundedBy" ) ) {
                         XMLStreamUtils.skipElement( reader );
                         nextElement( reader );
                     }
-                    
+
                     String name = reader.getLocalName();
                     String value = reader.getElementText();
                     SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
@@ -820,7 +615,7 @@ public class WMSClient111 implements WMSClient {
 
                 String url = getAddress( GetMap, true );
                 if ( url == null ) {
-                    LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
+                    LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
                     return null;
                 }
                 if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
@@ -1030,80 +825,6 @@ public class WMSClient111 implements WMSClient {
         }
     }
 
-    private LayerMetadata extractMetadata( OMElement lay ) {
-        String name = capabilities.getNodeAsString( lay, new XPath( "Name" ), null );
-        String title = capabilities.getNodeAsString( lay, new XPath( "Title" ), null );
-        String abstract_ = capabilities.getNodeAsString( lay, new XPath( "Abstract" ), null );
-        List<Pair<List<LanguageString>, CodeType>> keywords = null;
-        OMElement kwlist = capabilities.getElement( lay, new XPath( "KeywordList" ) );
-        if ( kwlist != null ) {
-            keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-            Pair<List<LanguageString>, CodeType> p = new Pair<List<LanguageString>, CodeType>();
-            p.first = new ArrayList<LanguageString>();
-            keywords.add( p );
-            String[] kws = capabilities.getNodesAsStrings( kwlist, new XPath( "Keyword" ) );
-            for ( String kw : kws ) {
-                p.first.add( new LanguageString( kw, null ) );
-            }
-        }
-
-        Description desc = new Description( null, null, null, null );
-        desc.setTitles( singletonList( new LanguageString( title, null ) ) );
-        if ( abstract_ != null ) {
-            desc.setAbstracts( singletonList( new LanguageString( abstract_, null ) ) );
-        }
-        desc.setKeywords( keywords );
-
-        // use first envelope that we can find
-        Envelope envelope = null;
-        List<ICRS> crsList = new ArrayList<ICRS>();
-        if ( name != null ) {
-            envelope = getLatLonBoundingBox( name );
-            for ( String crs : getCoordinateSystems( name ) ) {
-                if ( envelope != null ) {
-                    break;
-                }
-                envelope = getBoundingBox( crs, name );
-            }
-            for ( String crs : getCoordinateSystems( name ) ) {
-                crsList.add( CRSManager.getCRSRef( crs, true ) );
-            }
-        }
-
-        SpatialMetadata smd = new SpatialMetadata( envelope, crsList );
-        LayerMetadata md = new LayerMetadata( name, desc, smd );
-
-        String casc = lay.getAttributeValue( new QName( "cascaded" ) );
-        if ( casc != null ) {
-            try {
-                md.setCascaded( Integer.parseInt( casc ) );
-            } catch ( NumberFormatException nfe ) {
-                md.setCascaded( 1 );
-            }
-        }
-        md.setQueryable( capabilities.getNodeAsBoolean( lay, new XPath( "@queryable" ), false ) );
-
-        return md;
-    }
-
-    private void buildLayerTree( Tree<LayerMetadata> node, OMElement lay ) {
-        for ( OMElement l : capabilities.getElements( lay, new XPath( "Layer" ) ) ) {
-            Tree<LayerMetadata> child = new Tree<LayerMetadata>();
-            child.value = extractMetadata( l );
-            node.children.add( child );
-            buildLayerTree( child, l );
-        }
-    }
-
-    @Override
-    public Tree<LayerMetadata> getLayerTree() {
-        Tree<LayerMetadata> tree = new Tree<LayerMetadata>();
-        OMElement lay = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Capability/Layer" ) );
-        tree.value = extractMetadata( lay );
-        buildLayerTree( tree, lay );
-        return tree;
-    }
-
     @Override
     public InputStream getMap( GetMap getMap )
                             throws IOException {
@@ -1126,7 +847,7 @@ public class WMSClient111 implements WMSClient {
 
         String url = getAddress( GetMap, true );
         if ( url == null ) {
-            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
+            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
             return null;
         }
         url += toQueryString( map );
@@ -1141,5 +862,61 @@ public class WMSClient111 implements WMSClient {
         LOG.debug( "Connected." );
 
         return conn.getInputStream();
+    }
+
+    @Override
+    protected WMS111CapabilitiesAdapter getCapabilitiesAdapter( OMElement root, String version )
+                            throws IOException {
+        return new WMS111CapabilitiesAdapter( root );
+    }
+
+    @Override
+    public boolean isOperationSupported( WMSRequestType request ) {
+        return capaDoc.isOperationSupported( request );
+    }
+
+    @Override
+    public LinkedList<String> getFormats( WMSRequestType request ) {
+        return capaDoc.getFormats( request );
+    }
+
+    @Override
+    public String getAddress( WMSRequestType request, boolean get ) {
+        return capaDoc.getAddress( request, get );
+    }
+
+    @Override
+    public boolean hasLayer( String name ) {
+        return capaDoc.hasLayer( name );
+    }
+
+    @Override
+    public LinkedList<String> getCoordinateSystems( String name ) {
+        return capaDoc.getCoordinateSystems( name );
+    }
+
+    @Override
+    public Envelope getLatLonBoundingBox( String layer ) {
+        return capaDoc.getLatLonBoundingBox( layer );
+    }
+
+    @Override
+    public Envelope getLatLonBoundingBox( List<String> layers ) {
+        return capaDoc.getLatLonBoundingBox( layers );
+    }
+
+    @Override
+    public Envelope getBoundingBox( String srs, String layer ) {
+        return capaDoc.getBoundingBox( srs, layer );
+    }
+
+    @Override
+    public List<String> getNamedLayers() {
+        return capaDoc.getNamedLayers();
+    }
+
+    @Override
+    public Tree<LayerMetadata> getLayerTree() {
+        return capaDoc.getLayerTree();
     }
 }

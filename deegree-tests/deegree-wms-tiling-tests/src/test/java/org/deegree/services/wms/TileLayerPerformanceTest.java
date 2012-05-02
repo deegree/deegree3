@@ -53,8 +53,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.io.IOUtils;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.junit.Assert;
@@ -73,7 +76,7 @@ public class TileLayerPerformanceTest {
 
     @Test
     public void testPerformance()
-                            throws IOException, InterruptedException {
+                            throws IOException, InterruptedException, OWSExceptionReport, XMLStreamException {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-tiling-tests/services";
         WMSClient client = new WMSClient111( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );

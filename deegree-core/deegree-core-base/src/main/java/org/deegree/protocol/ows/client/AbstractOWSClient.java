@@ -81,7 +81,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     private final HttpClient httpClient;
 
-    protected final T capaDoc;
+    protected T capaDoc;
 
     private ServiceIdentification identification;
 
@@ -91,6 +91,10 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     // service endpoint derived from capabilities URL (may be null)
     private URL capaBaseUrl;
+
+    protected String httpBasicUser;
+
+    protected String httpBasicPass;
 
     /**
      * Creates a new {@link AbstractOWSClient} instance.
@@ -105,35 +109,27 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
      *             if a communication/network problem occured
      */
     protected AbstractOWSClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
+        this( capaUrl, null, null );
+    }
 
+    protected AbstractOWSClient( URL capaUrl, String user, String pass ) throws IOException, OWSExceptionReport,
+                            XMLStreamException {
         if ( capaUrl == null ) {
             throw new NullPointerException( "Capabilities URL must not be null." );
         }
-
+        httpBasicUser = user;
+        httpBasicPass = pass;
         httpClient = initHttpClient();
         OWSResponse response = doGet( capaUrl, null, null );
         try {
-            XMLAdapter xmlAdapter = new XMLAdapter( response.getAsXMLStream() );
-
-            OMElement rootEl = xmlAdapter.getRootElement();
-            String version = rootEl.getAttributeValue( new QName( "version" ) );
-            capaDoc = getCapabilitiesAdapter( xmlAdapter.getRootElement(), version );
-
-            try {
-                identification = capaDoc.parseServiceIdentification();
-            } catch ( Throwable t ) {
-                LOG.warn( "Error parsing service identification section: " + t.getMessage() );
+            XMLAdapter xmlAdapter;
+            if ( httpBasicUser != null ) {
+                xmlAdapter = new XMLAdapter();
+                xmlAdapter.load( capaUrl, httpBasicUser, httpBasicPass );
+            } else {
+                xmlAdapter = new XMLAdapter( response.getAsXMLStream() );
             }
-            try {
-                provider = capaDoc.parseServiceProvider();
-            } catch ( Throwable t ) {
-                LOG.warn( "Error parsing service provider section: " + t.getMessage() );
-            }
-            try {
-                metadata = capaDoc.parseOperationsMetadata();
-            } catch ( Throwable t ) {
-                LOG.warn( "Error parsing metadata section: " + t.getMessage() );
-            }
+            initCapabilities( xmlAdapter );
         } finally {
             response.close();
         }
@@ -150,8 +146,37 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         }
     }
 
+    protected AbstractOWSClient( XMLAdapter capabilities ) throws IOException {
+        initCapabilities( capabilities );
+        httpClient = initHttpClient();
+        capaBaseUrl = getGetUrl( "GetCapabilities" );
+    }
+
+    protected void initCapabilities( XMLAdapter xmlAdapter )
+                            throws IOException {
+        OMElement rootEl = xmlAdapter.getRootElement();
+        String version = rootEl.getAttributeValue( new QName( "version" ) );
+        capaDoc = getCapabilitiesAdapter( xmlAdapter.getRootElement(), version );
+
+        try {
+            identification = capaDoc.parseServiceIdentification();
+        } catch ( Throwable t ) {
+            LOG.warn( "Error parsing service identification section: " + t.getMessage() );
+        }
+        try {
+            provider = capaDoc.parseServiceProvider();
+        } catch ( Throwable t ) {
+            LOG.warn( "Error parsing service provider section: " + t.getMessage() );
+        }
+        try {
+            metadata = capaDoc.parseOperationsMetadata();
+        } catch ( Throwable t ) {
+            LOG.warn( "Error parsing metadata section: " + t.getMessage() );
+        }
+    }
+
     /**
-     * Called in the contructor, can be overwritten to set special parameters (e.g. a connection timeout). 
+     * Called in the contructor, can be overwritten to set special parameters (e.g. a connection timeout).
      * 
      * @return the initialised {@link HttpClient}.
      */
