@@ -53,12 +53,14 @@ import org.deegree.tile.persistence.filesystem.DiskLayout;
  * <br/>
  * Example: <code>layername/01/018/782/353/786/347/862.filetype</code>
  * </p>
- * <nl>
+ * <ul>
  * <li>1st directory: <i>layername</i></li>
- * <li>2nd directory: <i>zoomlevel</i> (in 2 digits eg. 01)</li>
+ * <li>2nd directory: <i>zoomlevel</i> (using 2 digits eg. 01, counting starts with 0)</li>
  * <li>3rd-5th directory: <i>column number (x)</i>, split into thousands: x = 018782353 results in 018/782/353</li>
- * <li>6rd-7th directory + filename: <i>row number (y)</i>, split into thousands: y = 786347862 results in 786/347/862</li>
- * <li>filename suffix: <i>filetype</i>
+ * <li>6rd-7th directory + filename: <b>inverted</b> <i>row number (y)</i>, split into thousands: y = 786347862 results
+ * in 786/347/862</li>
+ * <li>filename suffix: <i>filetype</i></li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -104,24 +106,54 @@ public class TileCacheDiskLayout implements DiskLayout {
         }
 
         StringBuilder sb = new StringBuilder();
-        DecimalFormat formatter = new DecimalFormat( "00" );
-        sb.append( formatter.format( set.getTileMatrices().indexOf( tileMatrix ) + 1 ) );
+        String levelDirectory = getLevelDirectory( tileMatrix );
+        String columnFileNamePart = getColumnFileNamePart( x );
+        String rowFileNamePart = getRowFileNamePart( y, tileMatrix );
+
+        sb.append( levelDirectory );
         sb.append( separatorChar );
-        formatter = new DecimalFormat( "000" );
+        sb.append( columnFileNamePart );
+        sb.append( separatorChar );
+        sb.append( rowFileNamePart );
+
+        return new File( layerDir, sb.toString() );
+    }
+
+    private String getLevelDirectory( TileMatrix tileMatrix ) {
+        DecimalFormat formatter = new DecimalFormat( "00" );
+        int tileMatrixIndex = set.getTileMatrices().indexOf( tileMatrix );
+        return formatter.format( tileMatrixIndex );
+    }
+
+    private String getColumnFileNamePart( int x ) {
+        StringBuilder sb = new StringBuilder();
+        DecimalFormat formatter = new DecimalFormat( "000" );
         sb.append( formatter.format( x / 1000000 ) );
         sb.append( separatorChar );
         sb.append( formatter.format( x / 1000 % 1000 ) );
         sb.append( separatorChar );
         sb.append( formatter.format( x % 1000 ) );
         sb.append( separatorChar );
-        sb.append( formatter.format( y / 1000000 ) );
+        return sb.toString();
+    }
+
+    private String getRowFileNamePart( int y, TileMatrix tileMatrix ) {
+        int tileCacheY = getTileCacheYIndex( tileMatrix, y );
+        StringBuilder sb = new StringBuilder();
+        DecimalFormat formatter = new DecimalFormat( "000" );
+        sb.append( formatter.format( tileCacheY / 1000000 ) );
         sb.append( separatorChar );
-        sb.append( formatter.format( y / 1000 % 1000 ) );
+        sb.append( formatter.format( tileCacheY / 1000 % 1000 ) );
         sb.append( separatorChar );
-        sb.append( formatter.format( y % 1000 ) );
+        sb.append( formatter.format( tileCacheY % 1000 ) );
         sb.append( '.' );
         sb.append( fileType );
-        return new File( layerDir, sb.toString() );
+        return sb.toString();
+    }
+
+    private int getTileCacheYIndex( TileMatrix tileMatrix, int y ) {
+        // TileCache's y-axis is inverted
+        return tileMatrix.getMetadata().getNumTilesY() - 1 - y;
     }
 
     @Override

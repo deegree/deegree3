@@ -161,7 +161,18 @@ public class FileSystemTileStore implements TileStore {
         if ( !format.startsWith( "image" ) ) {
             format = "image/" + format;
         }
+
+        matrices = sortCoarsestLevelFirst( matrices );
+
         return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( layerName, format, smd ) );
+    }
+
+    private List<TileMatrix> sortCoarsestLevelFirst( List<TileMatrix> matrices ) {
+        List<TileMatrix> inverted = new ArrayList<TileMatrix>();
+        for ( int i = matrices.size() - 1; i >= 0; i-- ) {
+            inverted.add( matrices.get( i ) );
+        }
+        return inverted;
     }
 
     /**

@@ -38,6 +38,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -71,12 +72,12 @@ public class TileCacheDiskLayoutTest {
         double[] max = new double[] { 1000.0, 1000.0 };
         Envelope env = fac.createEnvelope( min, max, crs );
         SpatialMetadata spatialMetadata = new SpatialMetadata( env, singletonList( crs ) );
-        TileMatrixMetadata md = new TileMatrixMetadata( "00", spatialMetadata, 128, 128, 0.001, 1000000000,
-                                                        1000000000 );
+        TileMatrixMetadata md = new TileMatrixMetadata( "00", spatialMetadata, 128, 128, 0.001, 1000000000, 1000000000 );
         TileMatrix mockedMatrix = Mockito.mock( TileMatrix.class );
         when( mockedMatrix.getMetadata() ).thenReturn( md );
         TileMatrixSet mockedMatrixSet = Mockito.mock( TileMatrixSet.class );
         when( mockedMatrixSet.getTileMatrix( "00" ) ).thenReturn( mockedMatrix );
+        when( mockedMatrixSet.getTileMatrices() ).thenReturn( Collections.singletonList( mockedMatrix ) );
 
         layout = new TileCacheDiskLayout( new File( "default" ), "png" );
         layout.setTileMatrixSet( mockedMatrixSet );
@@ -87,14 +88,14 @@ public class TileCacheDiskLayoutTest {
         File file = layout.resolve( "00", 18782353, 786347862 );
         String path = file.getPath();
         String replaced = path.replace( File.separatorChar, '/' );
-        assertEquals ("default/00/018/782/353/786/347/862.png", replaced);
+        assertEquals( "default/00/018/782/353/213/652/137.png", replaced );
     }
-    
+
     @Test
     public void testResolveTinyIndexes() {
         File file = layout.resolve( "00", 31, 41 );
         String path = file.getPath();
         String replaced = path.replace( File.separatorChar, '/' );
-        assertEquals ("default/00/000/000/031/000/000/041.png", replaced);
+        assertEquals( "default/00/000/000/031/999/999/958.png", replaced );
     }
 }
