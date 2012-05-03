@@ -79,7 +79,7 @@ import org.junit.Test;
 public abstract class WMSCapabilitiesAdapterTest {
 
     @Test
-    public void testWMS130CapabilitiesHasLayerUnknown()
+    public void testWMSCapabilitiesHasLayerUnknown()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
@@ -87,7 +87,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesHasLayer()
+    public void testWMSCapabilitiesHasLayer()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
@@ -95,21 +95,21 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesOperationUnsupported()
+    public void testWMSCapabilitiesOperationUnsupported()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         assertFalse( capabilities.isOperationSupported( DescribeLayer ) );
     }
 
     @Test
-    public void testWMS130CapabilitiesOperationSupported()
+    public void testWMSCapabilitiesOperationSupported()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         assertTrue( capabilities.isOperationSupported( GetMap ) );
     }
 
     @Test
-    public void testWMS130CapabilitiesNamesLayers()
+    public void testWMSCapabilitiesNamesLayers()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
@@ -119,7 +119,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesLayerTree()
+    public void testWMSCapabilitiesLayerTree()
                             throws XMLStreamException, UnknownCRSException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         Tree<LayerMetadata> layerTree = capabilities.getLayerTree();
@@ -133,7 +133,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesFormatUnknownRequest()
+    public void testWMSCapabilitiesFormatUnknownRequest()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
@@ -153,7 +153,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesAddresses()
+    public void testWMSCapabilitiesAddresses()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         assertEquals( getGetGetMapUrl(), capabilities.getAddress( GetMap, true ) );
@@ -162,14 +162,14 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesAddressesUnknownRequest()
+    public void testWMSCapabilitiesAddressesUnknownRequest()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         assertNull( capabilities.getAddress( DescribeLayer, true ) );
     }
 
     @Test
-    public void testWMS130CapabilitiesServiceIdentification()
+    public void testWMSCapabilitiesServiceIdentification()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         ServiceIdentification serviceIdentification = capabilities.parseServiceIdentification();
@@ -190,7 +190,7 @@ public abstract class WMSCapabilitiesAdapterTest {
 
     @Ignore
     @Test
-    public void testWMS130CapabilitiesServiceProvider()
+    public void testWMSCapabilitiesServiceProvider()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         ServiceProvider serviceProvider = capabilities.parseServiceProvider();
@@ -217,7 +217,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesLanguages()
+    public void testWMSCapabilitiesLanguages()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         List<String> languages = capabilities.parseLanguages();
@@ -225,7 +225,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesOperationsMetadata()
+    public void testWMSCapabilitiesOperationsMetadata()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         OperationsMetadata operationsMetadata = capabilities.parseOperationsMetadata();
