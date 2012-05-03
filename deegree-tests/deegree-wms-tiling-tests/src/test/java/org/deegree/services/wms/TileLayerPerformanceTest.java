@@ -59,7 +59,6 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wms.client.WMSClient;
-import org.deegree.protocol.wms.client.WMSClient111;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class TileLayerPerformanceTest {
                             throws IOException, InterruptedException, OWSExceptionReport, XMLStreamException {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-tiling-tests/services";
-        WMSClient client = new WMSClient111( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );
+        WMSClient client = new WMSClient( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );
         String crs = client.getCoordinateSystems( "performance" ).getFirst();
 
         // skip test if performance layer has no native coordinate system added
