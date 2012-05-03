@@ -81,7 +81,7 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesCoordinateSystem()
+    public void testWMS111CapabilitiesCoordinateSystem()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
@@ -90,7 +90,7 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesgetBoundingBox()
+    public void testWMS111CapabilitiesgetBoundingBox()
                             throws XMLStreamException, UnknownCRSException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         Envelope boundingBox = capabilities.getBoundingBox( "EPSG:4326", "citelayers" );
@@ -100,7 +100,7 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS130CapabilitiesgetLatLonBoundingBox()
+    public void testWMS111CapabilitiesgetLatLonBoundingBox()
                             throws XMLStreamException, UnknownCRSException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         Envelope boundingBox = capabilities.getLatLonBoundingBox( "citelayers" );
