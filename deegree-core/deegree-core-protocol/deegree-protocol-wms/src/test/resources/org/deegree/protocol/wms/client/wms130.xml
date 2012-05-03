@@ -126,6 +126,10 @@
         resy="-1.0" />
       <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
         resy="-1.0" />
+      <wms:MetadataURL type="TC211">
+        <wms:Format>text/html</wms:Format>
+        <wms:OnlineResource xlink:href="http://www.deegree.org" xlink:type="simple" />
+      </wms:MetadataURL>
       <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
       <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
       <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">

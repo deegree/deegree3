@@ -124,6 +124,11 @@
       <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
       <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
         resy="-1.0" />
+      <MetadataURL type="TC211">
+        <Format>text/html</Format>
+        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.deegree.org"
+          xlink:type="simple" />
+      </MetadataURL>
       <ScaleHint max="1.0E7" min="0.0" />
       <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
         <Name>citelayers</Name>

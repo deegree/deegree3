@@ -39,6 +39,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.deegree.protocol.i18n.Messages.get;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -61,6 +62,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.metadata.MetadataUrl;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
@@ -234,7 +236,6 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         return tree;
     }
 
-    
     private void buildLayerTree( Tree<LayerMetadata> node, OMElement lay ) {
         for ( OMElement l : getElements( lay, new XPath( getPrefix() + "Layer", nsContext ) ) ) {
             Tree<LayerMetadata> child = new Tree<LayerMetadata>();
@@ -297,14 +298,33 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         }
         md.setQueryable( getNodeAsBoolean( lay, new XPath( "@queryable" ), false ) );
 
+        md.setMetadataUrls( parseMetadataUrls( lay ) );
+
         return md;
+    }
+
+    private List<MetadataUrl> parseMetadataUrls( OMElement lay ) {
+        List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+        List<OMElement> mdUrlEls = getElements( lay, new XPath( getPrefix() + "MetadataURL", nsContext ) );
+        for ( OMElement mdUrlEl : mdUrlEls ) {
+            String type = getRequiredNodeAsString( mdUrlEl, new XPath( "@type", nsContext ) );
+            String format = getRequiredNodeAsString( mdUrlEl, new XPath( getPrefix() + "Format", nsContext ) );
+            String url = getRequiredNodeAsString( mdUrlEl, new XPath( getPrefix() + "OnlineResource/@xlink:href",
+                                                                      nsContext ) );
+            try {
+                metadataUrls.add( new MetadataUrl( format, type, new URL( url ) ) );
+            } catch ( MalformedURLException e ) {
+                LOG.info( "Could not parse MetadataUrl {}", url );
+            }
+        }
+        return metadataUrls;
     }
 
     protected OMElement getLayer( String layer ) {
         return getElement( getRootElement(), new XPath( "//" + getPrefix() + "Layer[" + getPrefix() + "Name = '"
                                                         + layer + "']", nsContext ) );
     }
-    
+
     /**
      * @param request
      * @return true, if an according section was found in the capabilities
@@ -445,7 +465,6 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
         return new DCP( getEndpoints, postEndpoints );
     }
-
 
     protected abstract Version getServiceVersion();
 

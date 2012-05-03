@@ -83,6 +83,8 @@ public class LayerMetadata {
 
     private MapOptions mapOptions;
 
+    private List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
         this.description = description;
@@ -295,6 +297,21 @@ public class LayerMetadata {
      */
     public void setMetadataId( String metadataId ) {
         this.metadataId = metadataId;
+    }
+
+    /**
+     * @param metadataUrls
+     *            the metadataUrls to set
+     */
+    public void setMetadataUrls( List<MetadataUrl> metadataUrls ) {
+        this.metadataUrls = metadataUrls;
+    }
+
+    /**
+     * @return the metadataUrls
+     */
+    public List<MetadataUrl> getMetadataUrls() {
+        return metadataUrls;
     }
 
 }

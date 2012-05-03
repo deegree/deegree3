@@ -55,6 +55,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.metadata.MetadataUrl;
 import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
@@ -142,7 +143,7 @@ public abstract class WMSCapabilitiesAdapterTest {
     }
 
     @Test
-    public void testWMS111CapabilitiesFormats()
+    public void testWMSCapabilitiesFormats()
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
 
@@ -253,6 +254,20 @@ public abstract class WMSCapabilitiesAdapterTest {
         List<Pair<URL, List<Domain>>> postEndpoints = dcp.getPostEndpoints();
         assertEquals( 1, postEndpoints.size() );
         assertEquals( getPostGetMapUrl(), postEndpoints.get( 0 ).getFirst().toExternalForm() );
+    }
+
+    @Test
+    public void testWMSCapabilitiesLayerMetadataUrl()
+                            throws XMLStreamException {
+        WMSCapabilitiesAdapter capabilities = createCapabilities();
+        LayerMetadata rootLayer = capabilities.getLayerTree().value;
+        List<MetadataUrl> metadataUrls = rootLayer.getMetadataUrls();
+        assertEquals( 1, metadataUrls.size() );
+        MetadataUrl metadataUrl = metadataUrls.get( 0 );
+        assertEquals( "http://www.deegree.org", metadataUrl.getOnlineResource().toExternalForm() );
+        assertEquals( "TC211", metadataUrl.getType() );
+        assertEquals( "text/html", metadataUrl.getFormat() );
+
     }
 
     protected abstract String getGetGetMapUrl();
