@@ -37,9 +37,14 @@ package org.deegree.protocol.wms.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.junit.Test;
 
 /**
@@ -50,13 +55,29 @@ import org.junit.Test;
  * @version $Revision: 31860 $, $Date: 2011-09-13 15:11:47 +0200 (Di, 13. Sep 2011) $
  */
 
-public class WMSClient111Test {
+public class WMSClientTest {
 
     @Test
-    public void testInstantiationWithXMLAdapter()
+    public void testWMS111InstantiationWithXMLAdapter()
                             throws XMLProcessingException, IOException {
-        InputStream is = WMSClient111Test.class.getResourceAsStream( "wms111.xml" );
-        new WMSClient111( new XMLAdapter( is ) );
+        InputStream is = WMSClientTest.class.getResourceAsStream( "wms111.xml" );
+        new WMSClient( new XMLAdapter( is ) );
+    }
+
+    @Test
+    public void testWMS130InstantiationWithXMLAdapter()
+                            throws XMLProcessingException, IOException {
+        InputStream is = WMSClientTest.class.getResourceAsStream( "wms130.xml" );
+        new WMSClient( new XMLAdapter( is ) );
+    }
+
+    @Test
+    public void testWMS111InstantiationFromUrl()
+                            throws OWSExceptionReport, XMLStreamException, MalformedURLException, IOException {
+        URL capaUrl = new URL(
+                               "http://deegree3-demo.deegree.org:80/utah-workspace/services?request=GetCapabilities&service=WMS&version=1.1.1" );
+        // TODO: check if demo WMS available
+        new WMSClient( capaUrl );
     }
 
 }

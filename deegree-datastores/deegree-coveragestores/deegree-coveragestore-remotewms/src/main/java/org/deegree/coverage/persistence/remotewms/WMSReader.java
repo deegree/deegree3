@@ -71,7 +71,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.ops.GetMap;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.client.WMSClient;
 import org.slf4j.Logger;
 
 /**
@@ -127,7 +127,7 @@ public class WMSReader implements RasterReader {
         WMS_111;
     }
 
-    private WMSClient111 client;
+    private WMSClient client;
 
     private RasterGeoReference geoRef;
 
@@ -229,7 +229,7 @@ public class WMSReader implements RasterReader {
         capabilities.setSystemId( sysId );
 
         try {
-            this.client = new WMSClient111( capabilities );
+            this.client = new WMSClient( capabilities );
         } catch ( Exception e ) {
             throw new IOException( "The given stream with system id( " + sysId
                                    + ") does not access a WMS Capabilities document." );
@@ -497,7 +497,7 @@ public class WMSReader implements RasterReader {
     /**
      * @return the wms client
      */
-    public WMSClient111 getClient() {
+    public WMSClient getClient() {
         return client;
     }
 

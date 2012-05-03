@@ -55,7 +55,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     private static GeometryFactory fac = new GeometryFactory();
 
-    private final WMSClient111 client;
+    private final WMSClient client;
 
     private final List<String> layers;
 
@@ -114,7 +114,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
     public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, ICRS requestCRS,
                                    String requestFormat, boolean transparent, double res, int maxWidth, int maxHeight,
                                    int requestTimeout ) throws OWSExceptionReport, XMLStreamException, IOException {
-        this.client = new WMSClient111( capabilitiesURL );
+        this.client = new WMSClient( capabilitiesURL );
         this.client.setMaxMapDimensions( maxWidth, maxHeight );
         this.layers = Arrays.asList( requestedLayers );
         this.requestedFormat = requestFormat;
@@ -123,7 +123,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         this.requestTimeout = requestTimeout;
     }
 
-    private static Pair<SimpleRaster, String> getMapAsSimpleRaster( WMSClient111 client, List<String> layers,
+    private static Pair<SimpleRaster, String> getMapAsSimpleRaster( WMSClient client, List<String> layers,
                                                                     int width, int height, Envelope bbox, ICRS srs,
                                                                     String format, boolean transparent,
                                                                     boolean errorsInImage, int timeout )

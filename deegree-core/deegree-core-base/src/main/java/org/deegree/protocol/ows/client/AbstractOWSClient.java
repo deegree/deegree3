@@ -127,7 +127,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
                 xmlAdapter = new XMLAdapter();
                 xmlAdapter.load( capaUrl, httpBasicUser, httpBasicPass );
             } else {
-                xmlAdapter = new XMLAdapter( response.getAsXMLStream() );
+                xmlAdapter = new XMLAdapter( capaUrl );
             }
             initCapabilities( xmlAdapter );
         } finally {

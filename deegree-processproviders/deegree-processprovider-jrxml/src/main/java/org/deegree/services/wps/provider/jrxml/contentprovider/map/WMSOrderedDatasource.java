@@ -56,7 +56,7 @@ import javax.media.jai.RenderedOp;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
@@ -105,7 +105,7 @@ public class WMSOrderedDatasource extends OrderedDatasource<WMSDatasource> {
                                                + " is not yet supported. Supported values are: 1.1.1" );
             }
             String capUrl = datasource.getUrl() + "?request=GetCapabilities&service=WMS&version=1.1.1";
-            WMSClient111 wmsClient = new WMSClient111( new URL( capUrl ), 5, 60, user, passw );
+            WMSClient wmsClient = new WMSClient( new URL( capUrl ), 5, 60, user, passw );
             List<Pair<String, String>> layerToStyle = new ArrayList<Pair<String, String>>();
             for ( Layer l : layers ) {
                 String style = l.getStyle() != null ? l.getStyle().getNamedStyle() : null;

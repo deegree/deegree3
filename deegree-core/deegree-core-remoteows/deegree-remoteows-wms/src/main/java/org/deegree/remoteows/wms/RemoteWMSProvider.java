@@ -45,7 +45,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.wms_new.jaxb.AuthenticationType;
@@ -97,7 +97,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
             int connTimeout = cfg.getConnectionTimeout() == null ? 5 : cfg.getConnectionTimeout();
             int reqTimeout = cfg.getRequestTimeout() == null ? 60 : cfg.getRequestTimeout();
 
-            WMSClient111 client;
+            WMSClient client;
 
             AuthenticationType type = cfg.getAuthentication() == null ? null : cfg.getAuthentication().getValue();
             String user = null;
@@ -107,7 +107,7 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
                 user = basic.getUsername();
                 pass = basic.getPassword();
             }
-            client = new WMSClient111( capas, connTimeout, reqTimeout, user, pass );
+            client = new WMSClient( capas, connTimeout, reqTimeout, user, pass );
 
             return new org.deegree.remoteows.wms.RemoteWMS( client );
         } catch ( Exception e ) {
