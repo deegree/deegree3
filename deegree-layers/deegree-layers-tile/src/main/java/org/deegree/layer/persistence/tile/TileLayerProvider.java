@@ -94,6 +94,11 @@ public class TileLayerProvider implements LayerStoreProvider {
         if ( store == null ) {
             throw new ResourceInitException( "Tile store with id " + cfg.getTileStoreId() + " was not available." );
         }
+        if ( store.getTileMatrixSet( id.getTileMatrixSet() ) == null ) {
+            throw new ResourceInitException( "Tile store with id " + cfg.getTileStoreId()
+                                             + " does not provide a tile matrix set with id " + id.getTileMatrixSet()
+                                             + "." );
+        }
         SpatialMetadata smd = fromJaxb( cfg.getEnvelope(), cfg.getCRS() );
         if ( smd.getEnvelope() == null ) {
             smd.setEnvelope( store.getMetadata( id.getTileMatrixSet() ).getEnvelope() );
