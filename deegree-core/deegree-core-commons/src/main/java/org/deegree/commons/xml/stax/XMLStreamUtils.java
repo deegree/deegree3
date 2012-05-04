@@ -210,10 +210,19 @@ public class XMLStreamUtils {
         return result;
     }
 
+    /**
+     * Skips the current event, if it is a START_DOCUMENT event, so that the <code>XMLStreamReader</code> cursor points
+     * at the first <code>START_ELEMENT</code> event. If the current event is not a START_DOCUMENT event, nothing
+     * happens.
+     * 
+     * @param xmlStream
+     *            may not be <code>null</code>
+     * @throws XMLStreamException
+     */
     public static void skipStartDocument( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         if ( xmlStream.getEventType() == START_DOCUMENT ) {
-            xmlStream.nextTag();
+            nextElement( xmlStream );
         }
     }
 
