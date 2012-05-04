@@ -5,7 +5,7 @@
 ]>
 <WMT_MS_Capabilities updateSequence="1.1.0" version="1.1.1">
   <Service>
-    <Name>OGC:WMS</Name>
+    <Name>WMS</Name>
     <Title>deegree wms</Title>
     <Abstract>wms reference implementation</Abstract>
     <KeywordList>

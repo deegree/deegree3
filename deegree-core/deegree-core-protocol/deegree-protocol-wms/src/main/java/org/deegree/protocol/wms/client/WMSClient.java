@@ -169,6 +169,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         super( url, user, pass );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
+        capaDoc.parseWMSSpecificCapabilities(getOperations());
         checkCapabilities();
     }
 
@@ -184,9 +185,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public WMSClient( URL url, int connectionTimeout, int requestTimeout ) throws OWSExceptionReport,
                             XMLStreamException, IOException {
-        this( url );
-        this.connectionTimeout = connectionTimeout;
-        this.requestTimeout = requestTimeout;
+        this( url, connectionTimeout, requestTimeout, null, null );
     }
 
     /**
@@ -197,6 +196,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public WMSClient( URL url ) throws OWSExceptionReport, XMLStreamException, IOException {
         super( url );
+        capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
     }
 
@@ -206,6 +206,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public WMSClient( XMLAdapter capabilities ) throws IOException {
         super( capabilities );
+        capaDoc.parseWMSSpecificCapabilities(getOperations());
         checkCapabilities();
     }
 

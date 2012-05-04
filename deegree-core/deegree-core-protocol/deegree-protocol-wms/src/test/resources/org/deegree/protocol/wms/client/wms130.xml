@@ -4,7 +4,7 @@
   version="1.3.0"
   xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd">
   <Service>
-    <Name>OGC:WMS</Name>
+    <Name>WMS</Name>
     <Title>deegree wms</Title>
     <wms:Abstract xmlns:wms="http://www.opengis.net/wms">wms reference implementation</wms:Abstract>
     <wms:KeywordList xmlns:wms="http://www.opengis.net/wms">

@@ -77,6 +77,7 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
         StAXOMBuilder builder = new StAXOMBuilder( is );
         OMElement capabilities = builder.getDocumentElement();
         WMSCapabilitiesAdapter adapter = new WMS111CapabilitiesAdapter( capabilities );
+        adapter.parseWMSSpecificCapabilities( adapter.parseOperationsMetadata() );
         return adapter;
     }
 

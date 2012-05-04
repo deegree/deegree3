@@ -38,8 +38,6 @@ package org.deegree.protocol.wms.client;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.i18n.Messages.get;
 
-import java.util.List;
-
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -78,48 +76,27 @@ public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
     }
 
     @Override
-    public Envelope getLatLonBoundingBox( String layer ) {
+    protected Envelope parseLatLonBoundingBox( OMElement elem ) {
         double[] min = new double[2];
         double[] max = new double[2];
 
-        OMElement elem = getElement( getRootElement(), new XPath( "//Layer[Name = '" + layer + "']", null ) );
-        if ( elem == null ) {
-            LOG.warn( "Could not get a layer with name: " + layer );
-        } else {
-            while ( elem.getLocalName().equals( "Layer" ) ) {
-                OMElement bbox = getElement( elem, new XPath( "LatLonBoundingBox", null ) );
-                if ( bbox != null ) {
-                    try {
-                        min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                        min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                        max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                        max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                        return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
-                    } catch ( NumberFormatException nfe ) {
-                        LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                    }
-                } else {
-                    elem = (OMElement) elem.getParent();
+        while ( elem.getLocalName().equals( "Layer" ) ) {
+            OMElement bbox = getElement( elem, new XPath( "LatLonBoundingBox", null ) );
+            if ( bbox != null ) {
+                try {
+                    min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
+                    min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
+                    max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
+                    max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
+                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
+                } catch ( NumberFormatException nfe ) {
+                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public Envelope getLatLonBoundingBox( List<String> layers ) {
-        Envelope res = null;
-
-        for ( String name : layers ) {
-            if ( res == null ) {
-                res = getLatLonBoundingBox( name );
             } else {
-                res = res.merge( getLatLonBoundingBox( name ) );
+                elem = (OMElement) elem.getParent();
             }
         }
-
-        return res;
+        return null;
     }
 
     @Override

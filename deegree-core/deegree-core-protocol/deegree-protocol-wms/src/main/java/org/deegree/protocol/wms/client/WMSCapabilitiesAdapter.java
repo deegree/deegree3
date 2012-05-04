@@ -42,8 +42,10 @@ import static org.deegree.protocol.i18n.Messages.get;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -87,6 +89,18 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
     private static final Logger LOG = LoggerFactory.getLogger( WMSCapabilitiesAdapter.class );
 
+    private Tree<LayerMetadata> layerTree;
+
+    private List<String> namedLayers;
+
+    private Map<WMSRequestType, LinkedList<String>> operationToFormats = new HashMap<WMSRequestType, LinkedList<String>>();
+
+    private Map<String, Envelope> layerNameToLatLonBoundingBox = new HashMap<String, Envelope>();
+
+    private Map<String, Map<String, Envelope>> layerNameToCRSToBoundingBox = new HashMap<String, Map<String, Envelope>>();
+
+    private Map<String, LinkedList<String>> layerToCRS = new HashMap<String, LinkedList<String>>();
+
     /**
      * @param request
      * @return the image formats defined for the request, or null, if request is not supported
@@ -95,15 +109,24 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         if ( !isOperationSupported( request ) ) {
             return null;
         }
-        XPath xp = new XPath( "//" + getPrefix() + request + "/" + getPrefix() + "Format", nsContext );
-        LinkedList<String> list = new LinkedList<String>();
-        Object res = evaluateXPath( xp, getRootElement() );
-        if ( res instanceof List<?> ) {
-            for ( Object o : (List<?>) res ) {
-                list.add( ( (OMElement) o ).getText() );
+        return operationToFormats.get( request );
+    }
+
+    private Map<WMSRequestType, LinkedList<String>> parseFormats( OperationsMetadata operationsMetadata ) {
+        Map<WMSRequestType, LinkedList<String>> opToFormats = new HashMap<WMSRequestType, LinkedList<String>>();
+        for ( Operation operation : operationsMetadata.getOperation() ) {
+            String operationName = operation.getName();
+            XPath xp = new XPath( "//" + getPrefix() + operationName + "/" + getPrefix() + "Format", nsContext );
+            LinkedList<String> formats = new LinkedList<String>();
+            Object res = evaluateXPath( xp, getRootElement() );
+            if ( res instanceof List<?> ) {
+                for ( Object o : (List<?>) res ) {
+                    formats.add( ( (OMElement) o ).getText() );
+                }
             }
+            opToFormats.put( WMSRequestType.valueOf( operationName ), formats );
         }
-        return list;
+        return opToFormats;
     }
 
     /**
@@ -130,72 +153,125 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
     /**
      * @param srs
+     *            the name of the CRS, must not be <code>null</code>
      * @param layer
+     *            the layer name, must not be <code>null</code>
      * @return the envelope, or null, if none was found
      */
     public Envelope getBoundingBox( String srs, String layer ) {
-        double[] min = new double[2];
-        double[] max = new double[2];
-
-        OMElement elem = getLayer( layer );
-        while ( elem != null && elem.getLocalName().equals( "Layer" ) ) {
-            OMElement bbox = getElement( elem, new XPath( getPrefix() + "BoundingBox[@" + getLayerCRSElementName()
-                                                          + " = '" + srs + "']", nsContext ) );
-            if ( bbox != null ) {
-                try {
-                    min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                    min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                    max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                    max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( srs ) );
-                } catch ( NumberFormatException nfe ) {
-                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                }
-            } else {
-                elem = (OMElement) elem.getParent();
-            }
+        Map<String, Envelope> crsToBBox = layerNameToCRSToBoundingBox.get( layer );
+        if ( crsToBBox != null ) {
+            return crsToBBox.get( srs );
         }
-
         return null;
+    }
+
+    private Map<String, Map<String, Envelope>> parseBoundingBoxes() {
+        Map<String, Map<String, Envelope>> layerToCRSToBBox = new HashMap<String, Map<String, Envelope>>(
+                                                                                                          namedLayers.size() );
+        for ( String layer : namedLayers ) {
+            layerToCRSToBBox.put( layer, parseBoundingBoxes( layer ) );
+        }
+        return layerToCRSToBBox;
+    }
+
+    private Map<String, Envelope> parseBoundingBoxes( String layer ) {
+        Map<String, Envelope> crsToBBox = new HashMap<String, Envelope>();
+
+        OMElement elem = getLayerElement( layer );
+        while ( elem != null && elem.getLocalName().equals( "Layer" ) ) {
+            List<OMElement> bboxes = getElements( elem, new XPath( getPrefix() + "BoundingBox", nsContext ) );
+            for ( OMElement bbox : bboxes ) {
+                String crs = getNodeAsString( bbox, new XPath( "@" + getLayerCRSElementName(), nsContext ), null );
+                if ( crs != null && !crsToBBox.containsKey( crs ) ) {
+                    try {
+                        double minx = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
+                        double miny = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
+                        double maxx = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
+                        double maxy = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
+                        crsToBBox.put( crs,
+                                       new GeometryFactory().createEnvelope( minx, miny, maxx, maxy,
+                                                                             CRSManager.getCRSRef( crs ) ) );
+                    } catch ( NumberFormatException nfe ) {
+                        LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
+                    }
+                }
+            }
+            elem = (OMElement) elem.getParent();
+        }
+        return crsToBBox;
     }
 
     /**
      * @return the names of all layers that have a name
      */
     public List<String> getNamedLayers() {
+        return namedLayers;
+    }
+
+    private List<String> parseNamedLayers() {
         return asList( getNodesAsStrings( getRootElement(), new XPath( "//" + getPrefix() + "Layer/" + getPrefix()
                                                                        + "Name", nsContext ) ) );
     }
 
     /**
-     * @param layer
+     * @param name
+     *            the layer name, must not be <code>null</code>
      * @return true, if the WMS advertises a layer with that name
      */
-    public boolean hasLayer( String layer ) {
-        return getLayer( layer ) != null;
+    public boolean hasLayer( String name ) {
+        return getLayer( name ) != null;
+    }
+
+    /**
+     * @param layer
+     *            the layer name, must not be <code>null</code>
+     * @return all coordinate system names, also inherited ones
+     */
+    public LinkedList<String> getCoordinateSystems( String layer ) {
+        return layerToCRS.get( layer );
+    }
+
+    private Map<String, LinkedList<String>> parseCoordinateSystems() {
+        Map<String, LinkedList<String>> layerTorCRS = new HashMap<String, LinkedList<String>>();
+        for ( String layer : namedLayers ) {
+            LinkedList<String> crss = new LinkedList<String>();
+            OMElement elem = getLayerElement( layer );
+            String crsElementName = getPrefix() + getLayerCRSElementName();
+            List<OMElement> es = getElements( elem, new XPath( crsElementName, nsContext ) );
+            while ( ( elem = (OMElement) elem.getParent() ).getLocalName().equals( "Layer" ) ) {
+                es.addAll( getElements( elem, new XPath( crsElementName, nsContext ) ) );
+            }
+            for ( OMElement e : es ) {
+                if ( !crss.contains( e.getText() ) ) {
+                    crss.add( e.getText() );
+                }
+            }
+            layerTorCRS.put( layer, crss );
+        }
+        return layerTorCRS;
     }
 
     /**
      * @param name
-     * @return all coordinate system names, also inherited ones
+     *            the name of the layer, must not be <code>null</code>
+     * @return the {@link LayerMetadata} of the layer with the given name or null, if no layer with this name exists
      */
-    public LinkedList<String> getCoordinateSystems( String layer ) {
-        LinkedList<String> list = new LinkedList<String>();
-        if ( !hasLayer( layer ) ) {
-            return list;
+    public LayerMetadata getLayer( String name ) {
+        return getLayer( name, layerTree );
+    }
+
+    private LayerMetadata getLayer( String name, Tree<LayerMetadata> layerTree ) {
+        if ( name.equals( layerTree.value.getName() ) ) {
+            return layerTree.value;
         }
-        OMElement elem = getLayer( layer );
-        String crsElementName = getPrefix() + getLayerCRSElementName();
-        List<OMElement> es = getElements( elem, new XPath( crsElementName, nsContext ) );
-        while ( ( elem = (OMElement) elem.getParent() ).getLocalName().equals( "Layer" ) ) {
-            es.addAll( getElements( elem, new XPath( crsElementName, nsContext ) ) );
-        }
-        for ( OMElement e : es ) {
-            if ( !list.contains( e.getText() ) ) {
-                list.add( e.getText() );
+        for ( Tree<LayerMetadata> tree : layerTree.children ) {
+            LayerMetadata result = getLayer( name, tree );
+            if ( result != null ) {
+                return result;
             }
         }
-        return list;
+        return null;
     }
 
     /**
@@ -205,9 +281,14 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
     /**
      * @param layer
+     *            the layer name, must not be <code>null</code>
      * @return the envelope, or null, if none was found
      */
-    public abstract Envelope getLatLonBoundingBox( String layer );
+    public Envelope getLatLonBoundingBox( String layer ) {
+        return layerNameToLatLonBoundingBox.get( layer );
+    }
+
+    protected abstract Envelope parseLatLonBoundingBox( OMElement elem );
 
     /**
      * @param layers
@@ -227,7 +308,19 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         return res;
     }
 
+    private Map<String, Envelope> parseLatLonBoxes() {
+        Map<String, Envelope> layerToLLBBox = new HashMap<String, Envelope>();
+        for ( String layer : namedLayers ) {
+            layerToLLBBox.put( layer, parseLatLonBoundingBox( getLayerElement( layer ) ) );
+        }
+        return layerToLLBBox;
+    }
+
     public Tree<LayerMetadata> getLayerTree() {
+        return layerTree;
+    }
+
+    private Tree<LayerMetadata> parseLayers() {
         Tree<LayerMetadata> tree = new Tree<LayerMetadata>();
         OMElement lay = getElement( getRootElement(), new XPath( "//" + getPrefix() + "Capability/" + getPrefix()
                                                                  + "Layer", nsContext ) );
@@ -320,7 +413,7 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         return metadataUrls;
     }
 
-    protected OMElement getLayer( String layer ) {
+    protected OMElement getLayerElement( String layer ) {
         return getElement( getRootElement(), new XPath( "//" + getPrefix() + "Layer[" + getPrefix() + "Name = '"
                                                         + layer + "']", nsContext ) );
     }
@@ -330,16 +423,8 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
      * @return true, if an according section was found in the capabilities
      */
     public boolean isOperationSupported( WMSRequestType request ) {
-        XPath xp = new XPath( "//" + getPrefix() + request, nsContext );
-        return getElement( getRootElement(), xp ) != null;
+        return operationToFormats.containsKey( request );
     }
-
-    // /**
-    // * @return the system id of the capabilities document.
-    // */
-    // public String getSystemId() {
-    // return getSystemId();
-    // }
 
     @Override
     public List<String> parseLanguages()
@@ -470,4 +555,12 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
     protected abstract String getPrefix();
 
+    public void parseWMSSpecificCapabilities( OperationsMetadata operationsMetadata ) {
+        namedLayers = parseNamedLayers();
+        operationToFormats = parseFormats( operationsMetadata );
+        layerToCRS = parseCoordinateSystems();
+        layerNameToCRSToBoundingBox = parseBoundingBoxes();
+        layerNameToLatLonBoundingBox = parseLatLonBoxes();
+        layerTree = parseLayers();
+    }
 }

@@ -175,7 +175,7 @@ public abstract class WMSCapabilitiesAdapterTest {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         ServiceIdentification serviceIdentification = capabilities.parseServiceIdentification();
 
-        assertEquals( "OGC:WMS", serviceIdentification.getName() );
+        assertEquals( "WMS", serviceIdentification.getName() );
         assertEquals( "wms reference implementation", serviceIdentification.getAbstract( null ).getString() );
         assertEquals( "WMS", serviceIdentification.getServiceType().getCode() );
         Pair<List<LanguageString>, CodeType> keywords = serviceIdentification.getKeywords().get( 0 );

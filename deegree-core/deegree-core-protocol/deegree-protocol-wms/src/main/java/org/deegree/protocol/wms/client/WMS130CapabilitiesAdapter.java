@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( WMS130CapabilitiesAdapter.class );
-    
+
     static {
         nsContext.addNamespace( "wms", "http://www.opengis.net/wms" );
     }
@@ -78,29 +78,23 @@ public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
     }
 
     @Override
-    public Envelope getLatLonBoundingBox( String layer ) {
+    protected Envelope parseLatLonBoundingBox( OMElement elem ) {
         double[] min = new double[2];
         double[] max = new double[2];
-
-        OMElement elem = getLayer( layer );
-        if ( elem == null ) {
-            LOG.warn( "Could not get a layer with name: " + layer );
-        } else {
-            while ( elem.getLocalName().equals( "Layer" ) ) {
-                OMElement bbox = getElement( elem, new XPath( "wms:EX_GeographicBoundingBox", nsContext ) );
-                if ( bbox != null ) {
-                    try {
-                        min[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:westBoundLongitude", nsContext ) );
-                        min[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:southBoundLatitude", nsContext ) );
-                        max[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:eastBoundLongitude", nsContext ) );
-                        max[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:northBoundLatitude", nsContext ) );
-                        return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
-                    } catch ( NumberFormatException nfe ) {
-                        LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                    }
-                } else {
-                    elem = (OMElement) elem.getParent();
+        while ( elem.getLocalName().equals( "Layer" ) ) {
+            OMElement bbox = getElement( elem, new XPath( "wms:EX_GeographicBoundingBox", nsContext ) );
+            if ( bbox != null ) {
+                try {
+                    min[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:westBoundLongitude", nsContext ) );
+                    min[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:southBoundLatitude", nsContext ) );
+                    max[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:eastBoundLongitude", nsContext ) );
+                    max[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:northBoundLatitude", nsContext ) );
+                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
+                } catch ( NumberFormatException nfe ) {
+                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
+            } else {
+                elem = (OMElement) elem.getParent();
             }
         }
         return null;
