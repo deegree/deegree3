@@ -261,8 +261,8 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     @Override
-    protected HttpClient initHttpClient() {
-        HttpClient initHttpClient = super.initHttpClient();
+    protected DefaultHttpClient initHttpClient() {
+        DefaultHttpClient initHttpClient = super.initHttpClient();
         DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
         HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
         return initHttpClient;

@@ -46,9 +46,12 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -79,7 +82,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSClient.class );
 
-    private final HttpClient httpClient;
+    private final DefaultHttpClient httpClient;
 
     protected T capaDoc;
 
@@ -120,17 +123,14 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         httpBasicUser = user;
         httpBasicPass = pass;
         httpClient = initHttpClient();
+
         OWSResponse response = doGet( capaUrl, null, null );
+        XMLStreamReader responseAsXMLStream = response.getAsXMLStream();
         try {
-            XMLAdapter xmlAdapter;
-            if ( httpBasicUser != null ) {
-                xmlAdapter = new XMLAdapter();
-                xmlAdapter.load( capaUrl, httpBasicUser, httpBasicPass );
-            } else {
-                xmlAdapter = new XMLAdapter( capaUrl );
-            }
+            XMLAdapter xmlAdapter = new XMLAdapter( responseAsXMLStream );
             initCapabilities( xmlAdapter );
         } finally {
+            responseAsXMLStream.close();
             response.close();
         }
 
@@ -180,7 +180,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
      * 
      * @return the initialised {@link HttpClient}.
      */
-    protected HttpClient initHttpClient() {
+    protected DefaultHttpClient initHttpClient() {
         ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager();
         return new DefaultHttpClient( connManager );
     }
@@ -323,6 +323,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             }
 
             uri = new URI( sb.toString() );
+            setCredentials( endPoint );
             HttpGet httpGet = new HttpGet( uri );
             LOG.debug( "Performing GET request: " + uri );
             HttpResponse httpResponse = httpClient.execute( httpGet );
@@ -360,6 +361,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             InputStreamEntity entity = new InputStreamEntity( body.getInputStream(), (long) body.size() );
             entity.setContentType( contentType );
             httpPost.setEntity( entity );
+            setCredentials( endPoint );
             HttpResponse httpResponse = httpClient.execute( httpPost );
             response = new OWSResponse( endPoint.toURI(), httpResponse );
         } catch ( Throwable e ) {
@@ -367,5 +369,13 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             throw new IOException( msg );
         }
         return response;
+    }
+
+    private void setCredentials( URL url ) {
+        if ( httpBasicUser != null ) {
+            httpClient.getCredentialsProvider().setCredentials( new AuthScope( url.getHost(), url.getPort() ),
+                                                                new UsernamePasswordCredentials( httpBasicUser,
+                                                                                                 httpBasicPass ) );
+        }
     }
 }
