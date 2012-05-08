@@ -35,12 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
 import static org.deegree.metadata.ebrim.RegistryObject.RIM_NS;
 import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
@@ -50,11 +44,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -115,6 +107,7 @@ public class MetadataRecordFactory {
             XMLAdapter.writeElement( writer, xmlStream );
             writer.writeEndDocument();
 
+            writer.close();
             in = new ByteArrayInputStream( out.toByteArray() );
             recordAsXmlStream = XMLInputFactory.newInstance().createXMLStreamReader( in );
         } catch ( XMLStreamException e ) {
@@ -122,13 +115,6 @@ public class MetadataRecordFactory {
         } catch ( FactoryConfigurationError e ) {
             throw new XMLParsingException( xmlStream, e.getMessage() );
         } finally {
-            if ( writer != null ) {
-                try {
-                    writer.close();
-                } catch ( XMLStreamException e ) {
-                    LOG.info( "Could not close writer: {}", e.getMessage() );
-                }
-            }
             IOUtils.closeQuietly( in );
             IOUtils.closeQuietly( out );
         }
