@@ -91,7 +91,7 @@ public class WMSConstants {
         /** Retrieve a XSD application schema for given layers. deegree specific request. */
         GetFeatureInfoSchema, /***/
         GetLegendGraphic, /** Invented request to output the WMS 1.1.1 DTD. */
-        DTD
+        DTD, GetStyles, PutStyles
 
     }
 }
