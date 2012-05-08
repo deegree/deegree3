@@ -198,7 +198,7 @@ public class GetFeatureInfo extends RequestBase {
             throw new OWSException( "The value " + ys + " is not valid for J.", INVALID_PARAMETER_VALUE );
         }
 
-        if ( x > width || y > height || x < 1 || y < 1 ) {
+        if ( x >= width || y >= height || x < 0 || y < 0 ) {
             throw new OWSException( "The I/J parameters do not fit in the image dimensions.", INVALID_POINT );
         }
     }
