@@ -74,6 +74,7 @@ import org.deegree.protocol.ows.metadata.domain.Domain;
 import org.deegree.protocol.ows.metadata.operation.DCP;
 import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -393,7 +394,27 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
         md.setMetadataUrls( parseMetadataUrls( lay ) );
 
+        Map<String, Style> styles = new HashMap<String, Style>();
+        List<OMElement> styleEls = getElements( lay, new XPath( getPrefix() + "Style", nsContext ) );
+        for ( OMElement styleEl : styleEls ) {
+            String styleName = getRequiredNodeAsString( styleEl, new XPath( getPrefix() + "Name", nsContext ) );
+            try {
+                styles.put( styleName, parseStyle( styleName, styleEl ) );
+            } catch ( MalformedURLException e ) {
+                LOG.info( "Could not parse style with name {} from layer {}", styleName, name );
+            }
+        }
+        md.setStyles( styles );
         return md;
+    }
+
+    private Style parseStyle( String styleName, OMElement styleEl )
+                            throws MalformedURLException {
+        String url = getRequiredNodeAsString( styleEl, new XPath( getPrefix() + "LegendURL/" + getPrefix()
+                                                                  + "OnlineResource/@xlink:href", nsContext ) );
+        Style style = new Style();
+        style.setLegendURL( new URL( url ) );
+        return style;
     }
 
     private List<MetadataUrl> parseMetadataUrls( OMElement lay ) {

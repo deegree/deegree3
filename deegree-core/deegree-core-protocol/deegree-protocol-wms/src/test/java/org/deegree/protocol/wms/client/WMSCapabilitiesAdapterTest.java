@@ -45,6 +45,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -66,6 +67,7 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.protocol.ows.metadata.party.Address;
 import org.deegree.protocol.ows.metadata.party.ContactInfo;
 import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+import org.deegree.style.se.unevaluated.Style;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -268,6 +270,16 @@ public abstract class WMSCapabilitiesAdapterTest {
         assertEquals( "TC211", metadataUrl.getType() );
         assertEquals( "text/html", metadataUrl.getFormat() );
 
+    }
+
+    @Test
+    public void testWMSCapabilitiesStyles()
+                            throws XMLStreamException, UnknownCRSException {
+        WMSCapabilitiesAdapter capabilities = createCapabilities();
+        LayerMetadata layer = capabilities.getLayer( "cite:BasicPolygons" );
+        Map<String, Style> styles = layer.getStyles();
+        assertEquals( 1, styles.size() );
+        assertTrue( styles.containsKey( "default" ) );
     }
 
     protected abstract String getGetGetMapUrl();
