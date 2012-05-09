@@ -92,10 +92,10 @@ public class TileLayerProvider implements LayerStoreProvider {
         TileStoreId id = cfg.getTileStoreId();
         TileStore store = mgr.get( id.getValue() );
         if ( store == null ) {
-            throw new ResourceInitException( "Tile store with id " + cfg.getTileStoreId() + " was not available." );
+            throw new ResourceInitException( "Tile store with id " + id.getValue() + " was not available." );
         }
         if ( store.getTileMatrixSet( id.getTileMatrixSet() ) == null ) {
-            throw new ResourceInitException( "Tile store with id " + cfg.getTileStoreId()
+            throw new ResourceInitException( "Tile store with id " + id.getValue()
                                              + " does not provide a tile matrix set with id " + id.getTileMatrixSet()
                                              + "." );
         }
