@@ -400,7 +400,7 @@ The manual configuration allows you to pick out a layer, rename it, and optional
     <Layer>
       <OriginalName>cite:BasicPolygons</OriginalName>
       <Name>basic_polygons</Name>
-      <!-- optionally override description (title, abstract, keywords)
+      <!-- optionally override description (title, abstract, keywords) -->
       <!-- optionally override envelope, crs -->
       <!-- optionally set layer options -->
     </Layer>
