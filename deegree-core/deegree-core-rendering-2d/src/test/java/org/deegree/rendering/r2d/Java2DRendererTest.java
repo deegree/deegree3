@@ -73,10 +73,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -92,6 +91,7 @@ import org.deegree.style.styling.components.LinePlacement;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -103,7 +103,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class Java2DRendererTest extends TestCase {
+public class Java2DRendererTest {
 
     private static final Logger LOG = getLogger( Java2DRendererTest.class );
 
@@ -674,6 +674,36 @@ public class Java2DRendererTest extends TestCase {
         texts.add( "second line: renders the same text directly above the gray line (perpendicular offset)" );
         texts.add( "third line: renders with initial gap of 20" );
         texts.add( "fourth line: renders with initial gap of 20 and gap of 10 (with text size 12)" );
+        writeTestImage( img, texts, time2 - time );
+    }
+
+    @Ignore
+    @Test(timeout = 2500)
+    public void testPolygonStylingSmallClipping()
+                            throws IOException {
+        BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 50d, 50d }, mapcs ) );
+        Envelope envelope = new GeometryFactory().createEnvelope( 0, 0, 100000000, 100000000, null );
+
+        PolygonStyling styling = new PolygonStyling();
+        styling.stroke = new Stroke();
+        styling.stroke.color = green;
+        styling.stroke.width = 5;
+        styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
+        styling.fill = new Fill();
+        styling.fill.color = red;
+
+        r.render( styling, envelope );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "line: default style line dashed with pattern 15, 15, 17, 5" );
         writeTestImage( img, texts, time2 - time );
     }
 
