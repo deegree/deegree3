@@ -77,9 +77,12 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
@@ -91,7 +94,6 @@ import org.deegree.style.styling.components.LinePlacement;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -677,7 +679,6 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
-    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingSmallClipping()
                             throws IOException {
@@ -692,11 +693,11 @@ public class Java2DRendererTest {
 
         PolygonStyling styling = new PolygonStyling();
         styling.stroke = new Stroke();
-        styling.stroke.color = green;
+        styling.stroke.color = red;
         styling.stroke.width = 5;
         styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
         styling.fill = new Fill();
-        styling.fill.color = red;
+        styling.fill.color = white;
 
         r.render( styling, envelope );
 
@@ -704,6 +705,35 @@ public class Java2DRendererTest {
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "line: default style line dashed with pattern 15, 15, 17, 5" );
+        writeTestImage( img, texts, time2 - time );
+    }
+
+    @Test(timeout = 2500)
+    public void testLineStylingSmallClipping()
+                            throws IOException {
+        BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 50d, 50d }, mapcs ) );
+        Point p1 = geomFac.createPoint( "testP1", 0, 0, null );
+        Point p2 = geomFac.createPoint( "testP1", 10000000, 100000000, null );
+        Points points = new PointsArray( p1, p2 );
+        LineString lineString = geomFac.createLineString( "testLineString", null, points );
+
+        LineStyling styling = new LineStyling();
+        styling.stroke.color = red;
+        styling.stroke.width = 5;
+        styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
+
+        r.render( styling, lineString );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "line: default style line dashed with pattern 15, 15, 25, 5" );
         writeTestImage( img, texts, time2 - time );
     }
 

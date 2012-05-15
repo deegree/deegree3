@@ -78,6 +78,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -92,6 +93,7 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -150,6 +152,8 @@ public class Java2DRenderer implements Renderer {
     private double pixelSize = 0.28;
 
     private double res;
+
+    private Envelope bbox;
 
     private static final GeometryLinearizer linearizer = new GeometryLinearizer();
 
@@ -213,6 +217,7 @@ public class Java2DRenderer implements Renderer {
                 if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
                     transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
                 }
+                this.bbox = bbox;
             } catch ( Throwable e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
@@ -535,6 +540,7 @@ public class Java2DRenderer implements Renderer {
             geom = transform( geom );
             render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
         }
+        geom = clipGeometry( geom );
         // TODO properly convert'em
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
@@ -615,6 +621,7 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with line styling." );
         }
+        geom = clipGeometry( geom );
         if ( geom instanceof Curve ) {
             geom = transform( geom );
 
@@ -687,6 +694,7 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
         }
+        geom = clipGeometry( geom );
         if ( geom instanceof Envelope ) {
             geom = envelopeToPolygon( (Envelope) geom );
         }
@@ -701,6 +709,22 @@ public class Java2DRenderer implements Renderer {
                 render( styling, g );
             }
         }
+    }
+
+    /**
+     * Clips the passed geometry with the drawing area if the drawing area does not contain the passed geometry
+     * completely.
+     * 
+     * @param geom
+     *            the geometry to clip, must not be <code>null</code>
+     * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
+     */
+    private Geometry clipGeometry( Geometry geom ) {
+        if ( bbox != null && bbox.intersects( geom ) ) {
+            Geometry buffer = bbox.getBuffer( new Measure( BigDecimal.TEN, "unity" ) );
+            return buffer.getIntersection( geom );
+        }
+        return geom;
     }
 
     @Override
