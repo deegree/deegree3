@@ -18,7 +18,9 @@ Standard themes
 
 The standard theme configuration is used to manually configure themes. One configuration can contain one or more themes. A theme configuration makes use of the common :ref:`description` and :ref:`spatial` elements described in the layer chapter. If the metadata is not specified, it will be copied from layers within the same node.
 
-In order to reference layers, the theme configuration needs to know layer stores. That's why the first thing you need to specify are the layer stores you intend to use::
+In order to reference layers, the theme configuration needs to know layer stores. That's why the first thing you need to specify are the layer stores you intend to use:
+
+.. code-block:: xml
 
   <Themes configVersion="3.2.0" xmlns="http://www.deegree.org/themes/standard"
                                 xmlns:d="http://www.deegree.org/metadata/description"
@@ -32,7 +34,9 @@ In order to reference layers, the theme configuration needs to know layer stores
     ...
   </Themes>
 
-Let's have a look at the actual theme configuration. First, you have the choice to give the theme an identifier or not. Then you can specify the description and spatial metadata (only the ``Title`` element is mandatory here). If it does not have an identifier, it will not be requestable in the service configuration::
+Let's have a look at the actual theme configuration. First, you have the choice to give the theme an identifier or not. Then you can specify the description and spatial metadata (only the ``Title`` element is mandatory here). If it does not have an identifier, it will not be requestable in the service configuration:
+
+.. code-block:: xml
 
   <Theme>
     <Identifier>roads</Identifier>
@@ -41,7 +45,9 @@ Let's have a look at the actual theme configuration. First, you have the choice 
     ...
   </Theme>
 
-After that, you can add layers and subthemes as required to the theme::
+After that, you can add layers and subthemes as required to the theme:
+
+.. code-block:: xml
 
   <Theme>
     ...
@@ -65,7 +71,9 @@ Remote WMS themes
 
 The remote WMS theme configuration can be used to extract a theme from a remote WMS resource's layer tree. This is most commonly used when trying to cascade a whole WMS.
 
-The configuration is very simple, you only need to specify the remote WMS resource you want to use, and the layer store from which layers should be extracted::
+The configuration is very simple, you only need to specify the remote WMS resource you want to use, and the layer store from which layers should be extracted:
+
+.. code-block:: xml
 
   <RemoteWMSThemes xmlns="http://www.deegree.org/themes/remotewms" configVersion="3.1.0">
     <RemoteWMSId>d3</RemoteWMSId>

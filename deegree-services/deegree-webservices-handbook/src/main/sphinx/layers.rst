@@ -21,7 +21,9 @@ Description metadata
 
 The description section is used to describe textual metadata which occurs in almost all objects. This includes elements such as title, abstract and so on. The format which is being described here is capable of multilingualism, but processing multilingual strings is not supported yet (you can still define it, though).
 
-The commonly used prefix for these elements is ``d``. Let's have a look at an example::
+The commonly used prefix for these elements is ``d``. Let's have a look at an example:
+
+.. code-block:: xml
 
   <d:Title>My Roads Layer</d:Title>
   <d:Abstract>This is my roads layer, which I configured myself. I had no help but the deegree webservices handbook.</d:Abstract>
@@ -39,7 +41,9 @@ All elements support the ``lang`` attribute to specify the language, and all ele
 Spatial metadata
 ~~~~~~~~~~~~~~~~
 
-The spatial metadata is used to describe coordinate systems and envelopes. Typically, the layers can retrieve the native coordinate system and envelope from the data source, but sometimes it may be desirable to define a special extent, or add more coordinate systems. In the example configurations, the prefix ``s`` is used for spatial metadata elements, so it is used here as well::
+The spatial metadata is used to describe coordinate systems and envelopes. Typically, the layers can retrieve the native coordinate system and envelope from the data source, but sometimes it may be desirable to define a special extent, or add more coordinate systems. In the example configurations, the prefix ``s`` is used for spatial metadata elements, so it is used here as well:
+
+.. code-block:: xml
 
   <s:Envelope crs='EPSG:25832'>
     <s:LowerCorner>204485 5204122</s:LowerCorner>
@@ -63,7 +67,7 @@ The namespace for the elements (newly) defined in this section is commonly bound
 
 +-----------------------+---------------+--------------------+-----------------------------------------------------+
 | Option                | Cardinality   | Value              | Description                                         |
-+-----------------------+---------------+--------------------+-----------------------------------------------------+
++=======================+===============+====================+=====================================================+
 | Name                  | 1             | String             | The unique identifier of the layer                  |
 +-----------------------+---------------+--------------------+-----------------------------------------------------+
 | *Description*         | 0..1          | Several            | The description_ elements described above           |
@@ -95,7 +99,7 @@ The WMS specification supports extra dimensions (besides the spatial extent) for
 
 +-----------------------+---------------+--------------------+---------------------------------------------------------------------+
 | Option                | Cardinality   | Value              | Description                                                         |
-+-----------------------+---------------+--------------------+---------------------------------------------------------------------+
++=======================+===============+====================+=====================================================================+
 | Name                  | 0..1          | String             | The dimension name, if not elevation or time                        |
 +-----------------------+---------------+--------------------+---------------------------------------------------------------------+
 | Source                | 1             | String/QName       | The data source of the dimension                                    |
@@ -123,13 +127,17 @@ To understand how the omission or specification of the various optional elements
 Layer styles
 ^^^^^^^^^^^^
 
-You can configure any number of ``StyleRef`` elements. Each corresponds to exactly one style store configuration, specified by the subelement ``StyleStoreId``. The only other allowed subelement is the ``Style`` element, which can be used to extract/rename specific styles from the style store. If omitted, all styles matching the layers' name are used. Let's have a look at an example snippet::
+You can configure any number of ``StyleRef`` elements. Each corresponds to exactly one style store configuration, specified by the subelement ``StyleStoreId``. The only other allowed subelement is the ``Style`` element, which can be used to extract/rename specific styles from the style store. If omitted, all styles matching the layers' name are used. Let's have a look at an example snippet:
+
+.. code-block:: xml
 
   <l:StyleRef>
     <l:StyleStoreId>roads_style</l:StyleStoreId>
   </l:StyleRef>
 
-Here's a snippet with ``Style`` elements::
+Here's a snippet with ``Style`` elements:
+
+.. code-block:: xml
 
   <l:StyleRef>
     <l:StyleStoreId>road_styles</l:StyleStoreId>
@@ -141,7 +149,9 @@ Here's a snippet with ``Style`` elements::
     </l:Style>
   </l:StyleRef>
 
-If a ``Style`` element is specified, you must first specify what style you want extracted::
+If a ``Style`` element is specified, you must first specify what style you want extracted:
+
+.. code-block:: xml
 
   <l:Style>
     <l:StyleName>highways</l:StyleName>
@@ -152,7 +162,9 @@ If a ``Style`` element is specified, you must first specify what style you want 
 
 The ``StyleName`` specifies the name under which the style will be known in the WMS. The ``LayerNameRef`` and ``StyleNameRef`` are used to extract the style from the style store.
 
-The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic (which is unfortunately not supported yet). Referencing a different legend style is straightforward::
+The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic (which is unfortunately not supported yet). Referencing a different legend style is straightforward:
+
+.. code-block:: xml
 
   <l:Style>
   ...
@@ -182,7 +194,9 @@ The rendering options are basically the same as the WMS layer options. Here's a 
 | FeatureInfoRadius      | 0..1              | Integer   | Number of pixels to consider when doing GetFeatureInfo, default is 1                              |
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
 
-Here is an example snippet::
+Here is an example snippet:
+
+.. code-block:: xml
 
   <l:LayerOptions>
     <l:AntiAliasing>TEXT</l:AntiAliasing>
@@ -201,7 +215,9 @@ You have two choices to configure feature layers. One option is to try to have d
 Auto layers
 ~~~~~~~~~~~
 
-This configuration only involves to specify what feature store to use, and optionally, what styles. Let's have a look at an example::
+This configuration only involves to specify what feature store to use, and optionally, what styles. Let's have a look at an example:
+
+.. code-block:: xml
 
   <FeatureLayers xmlns='http://www.deegree.org/layers/feature' 
                  xmlns:d='http://www.deegree.org/metadata/description'
@@ -223,7 +239,9 @@ This will create one layer for each (concrete) feature type in the feature store
 Manual configuration
 ~~~~~~~~~~~~~~~~~~~~
 
-The basic structure of a manual configuration looks like this::
+The basic structure of a manual configuration looks like this:
+
+.. code-block:: xml
 
   <FeatureLayers xmlns='http://www.deegree.org/layers/feature' 
                  xmlns:d='http://www.deegree.org/metadata/description'
@@ -241,7 +259,9 @@ The basic structure of a manual configuration looks like this::
 
 As you can see, the first thing to do is to bind the configuration to a feature store. After that, you can define one or more feature layers.
 
-A feature layer configuration has two optional elements besides the common elements. The ``FeatureTypeName`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within)::
+A feature layer configuration has two optional elements besides the common elements. The ``FeatureTypeName`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
+
+.. code-block:: xml
 
   <FeatureLayer>
     <FeatureTypeName xmlns:app='http://www.deegree.org/app'>app:Roads</FeatureTypeName>
@@ -266,7 +286,9 @@ Tile layers are based on a tile pyramid of a tile store. You can configure an un
 
 As you might have guessed, most of the common parameters are ignored for this layer type. Most notably, the style and dimension configuration is ignored.
 
-In most cases, a configuration like the following is sufficient::
+In most cases, a configuration like the following is sufficient:
+
+.. code-block:: xml
 
   <TileLayers xmlns="http://www.deegree.org/layers/tile"
               xmlns:d="http://www.deegree.org/metadata/description" 
@@ -291,7 +313,9 @@ Coverage layers are based on coverages out of coverage stores. Similar to featur
 Auto layers
 ~~~~~~~~~~~
 
-All you need to configure is the coverage store and an optional style store::
+All you need to configure is the coverage store and an optional style store:
+
+.. code-block:: xml
 
   <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                   xmlns:d="http://www.deegree.org/metadata/description"
@@ -309,7 +333,9 @@ In theory this would add one layer for each coverage in the coverage store, but 
 Manual configuration
 ~~~~~~~~~~~~~~~~~~~~
 
-The manual configuration requires the definition of a coverage store, and one or many coverage layer definitions::
+The manual configuration requires the definition of a coverage store, and one or many coverage layer definitions:
+
+.. code-block:: xml
 
   <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                   xmlns:d="http://www.deegree.org/metadata/description"
@@ -329,7 +355,9 @@ Remote WMS layers
 
 Remote WMS layers are based on layers requested from another WMS on the network. In its simplest mode, the remote WMS layer store will provide all layers that the other WMS offers, but you can pick out and restrict the configuration to single layers if you want. The common_ style and dimension options are not used in this layer configuration.
 
-The remote WMS layer configuration is always based on a single ``RemoteWMS`` resource, so the most basic configuration which cascades all available layers looks like this::
+The remote WMS layer configuration is always based on a single ``RemoteWMS`` resource, so the most basic configuration which cascades all available layers looks like this:
+
+.. code-block:: xml
 
   <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" configVersion="3.2.0">
     <RemoteWMSId>d3</RemoteWMSId>
@@ -342,7 +370,9 @@ In many cases that's already sufficient, but if you wish to control the way the 
 Request options
 ~~~~~~~~~~~~~~~
 
-Use the ``ImageFormat`` element to indicate which format should be requested from the remote WMS. Set the attribute ``transparent`` to ``false`` if you don't want to request transparent images. Default is to request transparent ``image/png`` maps::
+Use the ``ImageFormat`` element to indicate which format should be requested from the remote WMS. Set the attribute ``transparent`` to ``false`` if you don't want to request transparent images. Default is to request transparent ``image/png`` maps:
+
+.. code-block:: xml
 
   <RequestOptions>
     <ImageFormat transparent='false'>image/gif</ImageFormat>
@@ -356,13 +386,15 @@ The ``Parameter`` element can be used (multiple times) to add and/or fix KVP par
 
 +--------------+-----------------+-----------------------------+
 | Name         | Default         | Possible values             |
-+--------------+-----------------+-----------------------------+
++==============+=================+=============================+
 | use          | allowOverride   | allowOverride, fixed        |
 +--------------+-----------------+-----------------------------+
 | scope        | All             | GetMap, GetFeatureInfo, All |
 +--------------+-----------------+-----------------------------+
 
-Let's have a look at a couple of examples::
+Let's have a look at a couple of examples:
+
+.. code-block:: xml
 
   <RequestOptions>
     <Parameter name='BGCOLOR'>#00ff00</Parameter>
@@ -370,7 +402,9 @@ Let's have a look at a couple of examples::
 
 This means that all maps are requested with a background color of green, unless the request overrides it. GetFeatureInfo requests will also have the BGCOLOR parameter set, although it makes no difference there.
 
-Another example::
+Another example:
+
+.. code-block:: xml
 
   <RequestOptions>
     <Parameter name='USERNAME'>SEC_ADMIN</Parameter>
@@ -379,7 +413,9 @@ Another example::
 
 In this case all requests will have USERNAME and PASSWORD set to these values. Users can still override these values in requests.
 
-A last example::
+A last example:
+
+.. code-block:: xml
 
   <RequestOptions>
     <Parameter scope='GetMap' name='BGCOLOR'>#00ff00</Parameter>
@@ -393,7 +429,10 @@ Now all GetMap requests will have the USERNAME and PASSWORD parameters hard code
 Layer configuration
 ~~~~~~~~~~~~~~~~~~~
 
-The manual configuration allows you to pick out a layer, rename it, and optionally override the _common description and spatial metadata. What you don't override, will be copied from the source. Let's look at an example::
+The manual configuration allows you to pick out a layer, rename it, and optionally override the _common description and spatial metadata. What you don't override, will be copied from the source. Let's look at an example:
+
+.. code-block:: xml
+
 
   <RemoteWMSLayers ...>
     ...
