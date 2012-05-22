@@ -155,6 +155,8 @@ public class Java2DRenderer implements Renderer {
 
     private Envelope bbox;
 
+    private int width;
+
     private static final GeometryLinearizer linearizer = new GeometryLinearizer();
 
     /**
@@ -178,6 +180,7 @@ public class Java2DRenderer implements Renderer {
      */
     public Java2DRenderer( Graphics2D graphics, int width, int height, Envelope bbox ) {
         this.graphics = graphics;
+        this.width = width;
 
         if ( bbox != null ) {
             Pair<Envelope, DoublePair> p = RenderHelper.getWorldToScreenTransform( worldToScreen, bbox, width, height );
@@ -724,7 +727,8 @@ public class Java2DRenderer implements Renderer {
      */
     private Geometry clipGeometry( Geometry geom ) {
         if ( bbox != null && bbox.intersects( geom ) ) {
-            Geometry buffer = bbox.getBuffer( new Measure( new BigDecimal( 100 ), "unity" ) );
+            double resolution = bbox.getSpan0() / width;
+            Geometry buffer = bbox.getBuffer( new Measure( new BigDecimal( resolution * 100 ), "unity" ) );
             return buffer.getIntersection( geom );
         }
         return geom;
