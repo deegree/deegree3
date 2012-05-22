@@ -92,6 +92,7 @@ import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Halo;
 import org.deegree.style.styling.components.LinePlacement;
 import org.deegree.style.styling.components.Mark;
+import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.junit.Test;
@@ -737,4 +738,66 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
+    @Test(timeout = 2500)
+    public void testPolygonStylingWithCirclesSmallClipping()
+                            throws Exception {
+        BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 600d, 600d }, mapcs ) );
+        Envelope envelope = geomFac.createEnvelope( 10, 10, 100000000, 100000000, null );
+
+        PolygonStyling styling = new PolygonStyling();
+        styling.stroke = new Stroke();
+        styling.stroke.strokeGap = 7;
+        styling.stroke.width = 1;
+
+        styling.stroke.stroke = new Graphic();
+        styling.stroke.stroke.size = 5;
+        styling.stroke.stroke.mark.fill.color = red;
+        styling.stroke.stroke.mark.wellKnown = SimpleMark.CIRCLE;
+        styling.stroke.stroke.mark.stroke.color = red;
+        styling.stroke.stroke.mark.stroke.width = 0;
+
+        styling.fill = new Fill();
+        styling.fill.color = white;
+
+        r.render( styling, envelope );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "polygon: black line with circles stroke vertical on the left and horizontal on the bottom" );
+        writeTestImage( img, texts, time2 - time );
+    }
+
+    @Test(timeout = 2500)
+    public void testPolygonStylingWithStrokeWithoutSize()
+                            throws IOException {
+        BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 100d, 100d }, mapcs ) );
+        Envelope envelope = geomFac.createEnvelope( 10, 10, 90, 90, null );
+
+        PolygonStyling styling = new PolygonStyling();
+        styling.stroke = new Stroke();
+
+        styling.stroke.stroke = new Graphic();
+        styling.fill.color = white;
+
+        r.render( styling, envelope );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "polygon: default style line with circles stroke" );
+        writeTestImage( img, texts, time2 - time );
+    }
 }

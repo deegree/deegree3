@@ -320,10 +320,13 @@ public class Java2DRenderer implements Renderer {
                 if ( !isZero( poff ) ) {
                     transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
                 }
-                Shape shape = getShapeFromMark( stroke.stroke.mark,
-                                                stroke.stroke.size <= 0 ? 6 : considerUOM( stroke.stroke.size, uom ),
+                double sz = stroke.stroke.size;
+                Shape shape = getShapeFromMark( stroke.stroke.mark, sz <= 0 ? 6 : considerUOM( sz, uom ),
                                                 stroke.stroke.rotation );
-                ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
+                if ( sz <= 0 ) {
+                    sz = 6;
+                }
+                ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + sz, uom ),
                                                  stroke.positionPercentage, stroke.strokeInitialGap );
                 transed = s.createStrokedShape( transed );
                 if ( stroke.stroke.mark.fill != null ) {
@@ -721,7 +724,7 @@ public class Java2DRenderer implements Renderer {
      */
     private Geometry clipGeometry( Geometry geom ) {
         if ( bbox != null && bbox.intersects( geom ) ) {
-            Geometry buffer = bbox.getBuffer( new Measure( BigDecimal.TEN, "unity" ) );
+            Geometry buffer = bbox.getBuffer( new Measure( new BigDecimal( 100 ), "unity" ) );
             return buffer.getIntersection( geom );
         }
         return geom;
