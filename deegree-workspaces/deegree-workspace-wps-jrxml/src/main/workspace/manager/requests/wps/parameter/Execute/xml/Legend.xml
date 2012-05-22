@@ -15,14 +15,10 @@
               </sld:MaxScaleDenominator>
               <sld:LineSymbolizer>
                 <sld:Stroke>
-                  <sld:CssParameter name="stroke">#FFA812
-                  </sld:CssParameter>
-                  <sld:CssParameter name="stroke-opacity">1.0
-                  </sld:CssParameter>
-                  <sld:CssParameter name="stroke-width">1.0
-                  </sld:CssParameter>
-                  <sld:CssParameter name="stroke-dasharray">1
-                  </sld:CssParameter>
+                  <sld:CssParameter name="stroke">#FFA812</sld:CssParameter>
+                  <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+                  <sld:CssParameter name="stroke-width">1.0</sld:CssParameter>
+                  <sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
                 </sld:Stroke>
               </sld:LineSymbolizer>
             </sld:Rule>
