@@ -117,7 +117,7 @@ public class WMSSimilarityIntegrationTest {
         }
 
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
-        Assert.assertEquals( "Images are not similar enough.", 1.0, sim, 0.01 );
+        Assert.assertEquals( "Images are not similar enough. Request: " + request, 1.0, sim, 0.01 );
     }
 
 }
