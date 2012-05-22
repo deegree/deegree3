@@ -28,6 +28,33 @@
 
   <build>
     <plugins>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/sphinx-filtered</directory>
+                  <filtering>true</filtering>
+                </resource>
+                <resource>
+                  <directory>src/main/sphinx</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -40,7 +67,7 @@
             <configuration>
               <tasks>
                 <exec dir="${basedir}" executable="sphinx-build" failonerror="true">
-                  <arg line="-b html -d target/doctrees src/main/sphinx target/html" />
+                  <arg line="-b html -d target/doctrees target/generated-sources target/html" />
                 </exec>
               </tasks>
             </configuration>
@@ -54,7 +81,7 @@
             <configuration>
               <tasks>
                 <exec dir="${basedir}" executable="sphinx-build" failonerror="true">
-                  <arg line="-b latex -d target/doctrees -D latex_paper_size=a4 src/main/sphinx target/latex" />
+                  <arg line="-b latex -d target/doctrees -D latex_paper_size=a4 target/generated-sources target/latex" />
                 </exec>
                 <exec dir="${basedir}" executable="make" failonerror="true">
                   <arg line="-C target/latex all-pdf" />
