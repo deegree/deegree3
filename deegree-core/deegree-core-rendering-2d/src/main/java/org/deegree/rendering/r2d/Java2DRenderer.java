@@ -729,7 +729,12 @@ public class Java2DRenderer implements Renderer {
         if ( bbox != null && bbox.intersects( geom ) ) {
             double resolution = bbox.getSpan0() / width;
             Geometry buffer = bbox.getBuffer( new Measure( new BigDecimal( resolution * 100 ), "unity" ) );
-            return buffer.getIntersection( geom );
+            try {
+                return buffer.getIntersection( geom );
+            } catch ( UnsupportedOperationException e ) {
+                // use original geometry if intersection not supported by JTS
+                return geom;
+            }
         }
         return geom;
     }
