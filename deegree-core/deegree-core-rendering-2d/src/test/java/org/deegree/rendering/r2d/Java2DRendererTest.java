@@ -788,8 +788,8 @@ public class Java2DRendererTest {
 
         PolygonStyling styling = new PolygonStyling();
         styling.stroke = new Stroke();
-
         styling.stroke.stroke = new Graphic();
+        styling.fill = new Fill();
         styling.fill.color = white;
 
         r.render( styling, envelope );
