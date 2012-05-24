@@ -413,12 +413,12 @@
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
-        <version>1.2.9-deegreeversion</version>
+        <version>1.2.13</version>
       </dependency>
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-api</artifactId>
-        <version>1.2.9-deegreeversion</version>
+        <version>1.2.13</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>

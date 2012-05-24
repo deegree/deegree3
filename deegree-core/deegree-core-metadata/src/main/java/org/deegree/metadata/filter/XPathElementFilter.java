@@ -35,16 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.filter;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.sax.SAXSource;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMContainer;
@@ -55,6 +59,7 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.OMXMLParserWrapper;
+import org.apache.axiom.om.OMXMLStreamReaderConfiguration;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -417,9 +422,9 @@ public class XPathElementFilter implements OMElement {
         input.setBuilder( arg0 );
     }
 
-    public void setFirstChild( OMNode arg0 ) {
-        input.setFirstChild( arg0 );
-    }
+//    public void setFirstChild( OMNode arg0 ) {
+//        input.setFirstChild( arg0 );
+//    }
 
     public void setLineNumber( int arg0 ) {
         input.setLineNumber( arg0 );
@@ -454,4 +459,66 @@ public class XPathElementFilter implements OMElement {
         return input.toStringWithConsume();
     }
 
+    @Override
+    public void serialize( XMLStreamWriter xmlWriter, boolean cache )
+                            throws XMLStreamException {
+        // TODO Auto-generated method stub
+        input.serialize( xmlWriter, cache );
+    }
+
+    @Override
+    public Iterator getDescendants( boolean includeSelf ) {
+        return input.getDescendants( includeSelf );
+    }
+
+    @Override
+    public XMLStreamReader getXMLStreamReader( boolean cache ) {
+        return input.getXMLStreamReader( cache );
+    }
+
+    @Override
+    public XMLStreamReader getXMLStreamReader( boolean cache, OMXMLStreamReaderConfiguration configuration ) {
+        return input.getXMLStreamReader( cache, configuration );
+    }
+
+    @Override
+    public SAXSource getSAXSource( boolean cache ) {
+        return input.getSAXSource( cache );
+    }
+
+    @Override
+    public String getPrefix() {
+        return input.getPrefix();
+    }
+
+    @Override
+    public String getNamespaceURI() {
+        return input.getNamespaceURI();
+    }
+
+    @Override
+    public void undeclarePrefix( String prefix ) {
+        input.undeclarePrefix( prefix );        
+    }
+
+    @Override
+    public Iterator getNamespacesInScope() {
+        return input.getNamespacesInScope();
+    }
+
+    @Override
+    public NamespaceContext getNamespaceContext( boolean detached ) {
+        return input.getNamespaceContext( detached );
+    }
+
+    @Override
+    public Reader getTextAsStream( boolean cache ) {
+        return input.getTextAsStream( cache );
+    }
+
+    @Override
+    public void writeTextTo( Writer out, boolean cache )
+                            throws IOException {
+        input.writeTextTo( out, cache );
+    }
 }
