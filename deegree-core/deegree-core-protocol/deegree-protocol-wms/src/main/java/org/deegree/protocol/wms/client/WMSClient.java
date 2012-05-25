@@ -47,6 +47,7 @@ import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
@@ -169,7 +170,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         super( url, user, pass );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
-        capaDoc.parseWMSSpecificCapabilities(getOperations());
+        capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
     }
 
@@ -206,7 +207,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public WMSClient( XMLAdapter capabilities ) throws IOException {
         super( capabilities );
-        capaDoc.parseWMSSpecificCapabilities(getOperations());
+        capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
     }
 
@@ -483,7 +484,6 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     private static FeatureCollection readUMNCollection( XMLStreamReader reader )
                             throws NoSuchElementException, XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
-
         nextElement( reader );
 
         String ftName = reader.getLocalName();
@@ -494,8 +494,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             int count = 0;
             nextElement( reader );
 
-            while ( reader.isStartElement() && reader.getLocalName().equals( singleFeatureTagName ) ) {
+            // gml:name seems to be an optional element
+            if ( reader.getLocalName().equals( "name" ) ) {
+                skipElement( reader );
+                reader.nextTag();
+            }
 
+            while ( reader.isStartElement() && reader.getLocalName().equals( singleFeatureTagName ) ) {
                 List<PropertyType> props = new ArrayList<PropertyType>();
                 List<Property> propValues = new ArrayList<Property>();
 
