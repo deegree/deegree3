@@ -726,7 +726,7 @@ public class Java2DRenderer implements Renderer {
      * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
      */
     private Geometry clipGeometry( Geometry geom ) {
-        if ( bbox != null && bbox.intersects( geom ) ) {
+        if ( bbox != null && !bbox.contains( geom ) ) {
             double resolution = bbox.getSpan0() / width;
             Geometry buffer = bbox.getBuffer( new Measure( new BigDecimal( resolution * 100 ), "unity" ) );
             try {
