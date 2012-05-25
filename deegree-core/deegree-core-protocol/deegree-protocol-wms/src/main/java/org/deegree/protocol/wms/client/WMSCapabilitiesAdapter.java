@@ -410,10 +410,12 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
     private Style parseStyle( String styleName, OMElement styleEl )
                             throws MalformedURLException {
-        String url = getRequiredNodeAsString( styleEl, new XPath( getPrefix() + "LegendURL/" + getPrefix()
-                                                                  + "OnlineResource/@xlink:href", nsContext ) );
+        String url = getNodeAsString( styleEl, new XPath( getPrefix() + "LegendURL/" + getPrefix()
+                                                          + "OnlineResource/@xlink:href", nsContext ), null );
         Style style = new Style();
-        style.setLegendURL( new URL( url ) );
+        if ( url != null ) {
+            style.setLegendURL( new URL( url ) );
+        }
         return style;
     }
 
