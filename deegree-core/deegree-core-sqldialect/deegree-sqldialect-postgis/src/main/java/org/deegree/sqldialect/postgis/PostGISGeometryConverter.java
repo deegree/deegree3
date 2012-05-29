@@ -117,7 +117,7 @@ public class PostGISGeometryConverter implements GeometryParticleConverter {
         if ( useLegacyPredicates ) {
             sb.append( "SetSRID(GeomFromWKB(?)," );
         } else {
-            sb.append( "SetSRID(ST_GeomFromWKB(?)," );
+            sb.append( "ST_SetSRID(ST_GeomFromWKB(?)," );
         }
         sb.append( srid == null ? "-1" : srid );
         sb.append( ")" );
