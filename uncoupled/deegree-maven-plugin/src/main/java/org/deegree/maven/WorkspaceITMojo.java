@@ -103,8 +103,8 @@ public class WorkspaceITMojo extends AbstractMojo {
             File file = a.getFile();
             try {
                 DefaultHttpClient client = new DefaultHttpClient();
-                HttpConnectionParams.setConnectionTimeout( client.getParams(), 10000 );
-                HttpConnectionParams.setSoTimeout( client.getParams(), 300000 );
+                HttpConnectionParams.setConnectionTimeout( client.getParams(), 30000 );
+                HttpConnectionParams.setSoTimeout( client.getParams(), 1200000 );
                 client.getCredentialsProvider().setCredentials( AuthScope.ANY,
                                                                 new UsernamePasswordCredentials( "deegree", "deegree" ) );
                 // preemptive authentication used to be easier in pre-4.x httpclient
