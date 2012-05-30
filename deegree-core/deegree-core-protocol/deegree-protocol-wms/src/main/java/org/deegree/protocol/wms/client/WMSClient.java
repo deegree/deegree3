@@ -87,6 +87,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.gml.property.Property;
@@ -209,6 +211,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         super( capabilities );
         capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
+    }
+    
+    @Override
+    protected DefaultHttpClient initHttpClient() {DefaultHttpClient initHttpClient = super.initHttpClient();
+    DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
+    HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
+    return initHttpClient;
     }
 
     /**
