@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.13-SNAPSHOT</version>
+  <version>1.13</version>
   <name>deegree-maven-plugin</name>
   <description>Maven plugin for tasks related to building deegree</description>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/deegree-maven-plugin-1.13</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/deegree-maven-plugin-1.13</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/deegree-maven-plugin-1.13</url>
   </scm>
 
   <parent>
