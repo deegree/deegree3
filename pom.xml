@@ -89,7 +89,7 @@
           <plugin>
             <groupId>org.deegree</groupId>
             <artifactId>deegree-maven-plugin</artifactId>
-            <version>1.12</version>
+            <version>1.13</version>
           </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
