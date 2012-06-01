@@ -212,12 +212,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
     }
-    
+
     @Override
-    protected DefaultHttpClient initHttpClient() {DefaultHttpClient initHttpClient = super.initHttpClient();
-    DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
-    HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
-    return initHttpClient;
+    protected DefaultHttpClient initHttpClient() {
+        DefaultHttpClient initHttpClient = super.initHttpClient();
+        DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
+        HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
+        return initHttpClient;
     }
 
     /**
