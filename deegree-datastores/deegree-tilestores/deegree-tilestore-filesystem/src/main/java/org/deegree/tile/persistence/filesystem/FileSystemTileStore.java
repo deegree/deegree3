@@ -110,6 +110,9 @@ public class FileSystemTileStore implements TileStore {
                     baseDir = new File( parent, lay.getLayerDirectory() );
                 }
                 String layerName = baseDir.getName();
+                if ( p.getIdentifier() != null ) {
+                    layerName = p.getIdentifier();
+                }
                 TileCacheDiskLayout layout = new TileCacheDiskLayout( baseDir, lay.getFileType() );
 
                 TileMatrixSet tms = buildTileMatrixSet( layerName, p, env, crss, layout );
