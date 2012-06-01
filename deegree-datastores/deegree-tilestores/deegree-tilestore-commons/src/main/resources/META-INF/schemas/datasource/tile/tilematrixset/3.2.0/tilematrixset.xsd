@@ -1,0 +1,42 @@
+<schema xmlns:tms="http://www.deegree.org/datasource/tile/tilematrixset" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/tile/tilematrixset" elementFormDefault="qualified"
+  xmlns:md="http://www.deegree.org/metadata/spatial" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.tile.tilematrixset.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
+
+  <element name="TileMatrixSet">
+    <complexType>
+      <sequence>
+        <!-- only one CRS may be specified -->
+        <element ref="md:CRS" />
+        <element name="TileMatrix" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <!-- default identifier is the scale -->
+              <element name="Identifier" type="string" minOccurs="0" />
+              <element name="ScaleDenominator" type="double" />
+              <element name="TopLeftCorner">
+                <simpleType>
+                  <list itemType="double" />
+                </simpleType>
+              </element>
+              <element name="TileWidth" type="int" />
+              <element name="TileHeight" type="int" />
+              <element name="MatrixWidth" type="int" />
+              <element name="MatrixHeight" type="int" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+</schema>
