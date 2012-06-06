@@ -6,5 +6,6 @@
     <TileStoreId tileMatrixSet="utah">pyramid</TileStoreId>
     <l:Name>example</l:Name>
     <d:Title>Example INSPIRE layer</d:Title>
+    <l:MetadataSetId>some_(uu)id</l:MetadataSetId>
   </TileLayer>
 </TileLayers>
