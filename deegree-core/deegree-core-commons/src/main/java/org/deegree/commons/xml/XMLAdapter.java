@@ -1416,7 +1416,9 @@ public class XMLAdapter {
                     }
                 }
 
-                ensureBinding( writer, prefix, namespaceURI );
+                if ( namespaceURI != null ) {
+                    ensureBinding( writer, prefix, namespaceURI );
+                }
 
                 // copy all attributes
                 for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
@@ -1424,7 +1426,7 @@ public class XMLAdapter {
                     String nsPrefix = inStream.getAttributePrefix( i );
                     String value = inStream.getAttributeValue( i );
                     String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null || "".equals( nsURI )) {
+                    if ( nsURI == null || "".equals( nsURI ) ) {
                         writer.writeAttribute( localName, value );
                     } else {
                         ensureBinding( writer, nsPrefix, nsURI );
