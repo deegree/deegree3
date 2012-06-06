@@ -861,6 +861,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         }
         map.put( "width", Integer.toString( getMap.getWidth() ) );
         map.put( "height", Integer.toString( getMap.getHeight() ) );
+        map.put( "transparent", "true" );
         Envelope bbox = getMap.getBoundingBox();
         if ( wmsVersion.equals( VERSION_111 )
              || getMap.getCoordinateSystem().getAxis()[0].getOrientation() == Axis.AO_EAST ) {

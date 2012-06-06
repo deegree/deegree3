@@ -251,4 +251,11 @@ public class WMTSController extends AbstractOWS {
         }
     }
 
+    /**
+     * @return null, if no template is configured
+     */
+    public String getMetadataUrlTemplate() {
+        return metadataUrlTemplate;
+    }
+
 }

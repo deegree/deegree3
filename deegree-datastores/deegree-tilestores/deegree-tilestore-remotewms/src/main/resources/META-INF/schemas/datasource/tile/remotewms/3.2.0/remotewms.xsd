@@ -98,6 +98,12 @@
                         <documentation>Number of scale levels</documentation>
                       </annotation>
                     </element>
+                    <element name="ImageFormat" type="string" minOccurs="0">
+                      <annotation>
+                        <documentation>Output image format. Default is the format from the WMS (it's more performant).
+                        </documentation>
+                      </annotation>
+                    </element>
                   </sequence>
                 </complexType>
               </element>

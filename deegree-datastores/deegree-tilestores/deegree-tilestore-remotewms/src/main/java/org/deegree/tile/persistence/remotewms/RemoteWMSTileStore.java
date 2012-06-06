@@ -107,14 +107,13 @@ public class RemoteWMSTileStore implements TileStore {
      * 
      * @param config
      *            configuration, must not be <code>null</code>
-     * @throws UnknownCRSException
      */
-    public RemoteWMSTileStore( RemoteWMSTileStoreJAXB config ) throws UnknownCRSException {
+    public RemoteWMSTileStore( RemoteWMSTileStoreJAXB config ) {
         this.config = config;
         tileMatrixSets = new HashMap<String, TileMatrixSet>();
     }
 
-    private List<String> splitNullSafe( String csv ) {
+    private static List<String> splitNullSafe( String csv ) {
         if ( csv == null ) {
             return emptyList();
         }
@@ -156,12 +155,14 @@ public class RemoteWMSTileStore implements TileStore {
         return tileMatrixSets.keySet();
     }
 
-    private TileMatrixSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB.TileMatrixSet config, WMSClient client ) {
+    private static TileMatrixSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB.TileMatrixSet config,
+                                                     WMSClient client ) {
         RequestParams requestParams = config.getRequestParams();
         List<String> layers = splitNullSafe( requestParams.getLayers() );
         List<String> styles = splitNullSafe( requestParams.getStyles() );
         String format = requestParams.getFormat();
         TilePyramid pyramidConfig = config.getTilePyramid();
+        String outputFormat = pyramidConfig.getImageFormat();
         int tileWidth = pyramidConfig.getTileWidth().intValue();
         int tileHeight = pyramidConfig.getTileHeight().intValue();
         double minScaleDenominator = pyramidConfig.getMinScaleDenominator();
@@ -174,12 +175,17 @@ public class RemoteWMSTileStore implements TileStore {
             spatialMetadata = SpatialMetadataConverter.fromJaxb( config.getEnvelope(), config.getCRS() );
         }
         return buildTileMatrixSet( pyramidConfig.getIdentifier(), spatialMetadata, tileWidth, tileHeight,
-                                   minScaleDenominator, levels, layers, styles, format, config.getRemoteWMSId(), client );
+                                   minScaleDenominator, levels, layers, styles, format, client, outputFormat );
     }
 
-    private TileMatrixSet buildTileMatrixSet( String tmsId, SpatialMetadata smd, int tileWidth, int tileHeight,
-                                              double scaleDenominator, int levels, List<String> layers,
-                                              List<String> styles, String format, String remoteWmsId, WMSClient client ) {
+    private static TileMatrixSet buildTileMatrixSet( String tmsId, SpatialMetadata smd, int tileWidth, int tileHeight,
+                                                     double scaleDenominator, int levels, List<String> layers,
+                                                     List<String> styles, String format, WMSClient client,
+                                                     String outputFormat ) {
+
+        if ( outputFormat != null && outputFormat.startsWith( "image/" ) ) {
+            outputFormat = outputFormat.substring( 6 );
+        }
 
         List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
         Envelope bbox = smd.getEnvelope();
@@ -194,12 +200,13 @@ public class RemoteWMSTileStore implements TileStore {
 
             TileMatrixMetadata md = new TileMatrixMetadata( id, smd, tileWidth, tileHeight, res, numX, numY );
 
-            TileMatrix m = new RemoteWMSTileMatrix( md, format, layers, styles, client );
+            TileMatrix m = new RemoteWMSTileMatrix( md, format, layers, styles, client, outputFormat );
             matrices.add( m );
 
             scaleDenominator *= 2;
         }
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( tmsId, format, smd ) );
+        String f = outputFormat != null ? "image/" + outputFormat : format;
+        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( tmsId, f, smd ) );
     }
 
     /**
@@ -209,7 +216,7 @@ public class RemoteWMSTileStore implements TileStore {
      *            (factor for transforming a screen to a world length)
      * @return resolution of a pixel in world coordinates
      */
-    private double calcResolution( double scaleDenominator, Envelope bbox ) {
+    private static double calcResolution( double scaleDenominator, Envelope bbox ) {
         ICRS crs = bbox.getCoordinateSystem();
         IUnit unit = null;
         for ( IAxis axis : crs.getAxis() ) {
