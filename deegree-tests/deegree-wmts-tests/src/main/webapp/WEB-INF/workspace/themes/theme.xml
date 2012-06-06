@@ -22,6 +22,11 @@
       <Layer>remotewms</Layer>
     </Theme>
     <Theme>
+      <Identifier>remotewms_jpeg</Identifier>
+      <d:Title>IT test layer remotewms JPEG</d:Title>
+      <Layer>remotewms_jpeg</Layer>
+    </Theme>
+    <Theme>
       <Identifier>remotewms130</Identifier>
       <d:Title>IT test layer remotewms WMS 1.3.0</d:Title>
       <Layer>remotewms130</Layer>
