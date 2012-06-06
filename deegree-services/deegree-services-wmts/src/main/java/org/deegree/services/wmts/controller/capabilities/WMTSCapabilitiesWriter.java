@@ -223,14 +223,6 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         }
         if ( otherid == null ) {
             writeElement( writer, OWS110_NS, "Identifier", md.getName() );
-            if ( mdurltemplate == null || mdurltemplate.isEmpty() ) {
-                mdurltemplate = OGCFrontController.getHttpGetURL();
-                if ( !( mdurltemplate.endsWith( "?" ) || mdurltemplate.endsWith( "&" ) ) ) {
-                    mdurltemplate += "?";
-                }
-                mdurltemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
-            }
-
             if ( md.getMetadataId() != null ) {
                 writer.writeStartElement( OWS110_NS, "Metadata" );
                 writer.writeAttribute( XLN_NS, "href", mdurltemplate.replace( "${metadataSetId}", md.getMetadataId() ) );
@@ -239,7 +231,6 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         } else {
             writeElement( writer, OWS110_NS, "Identifier", otherid );
         }
-
     }
 
     private void exportLayers( List<Layer> layers )
