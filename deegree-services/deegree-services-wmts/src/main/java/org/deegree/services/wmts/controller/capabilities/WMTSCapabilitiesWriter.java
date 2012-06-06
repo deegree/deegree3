@@ -91,8 +91,33 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
 
-    public static void export100( XMLStreamWriter writer, ServiceIdentification identification,
-                                  ServiceProvider provider, List<Theme> themes )
+    private final XMLStreamWriter writer;
+
+    private final ServiceIdentification identification;
+
+    private final ServiceProvider provider;
+
+    private final List<Theme> themes;
+
+    private String mdurltemplate;
+
+    public WMTSCapabilitiesWriter( XMLStreamWriter writer, ServiceIdentification identification,
+                                   ServiceProvider provider, List<Theme> themes, String mdurltemplate ) {
+        this.writer = writer;
+        this.identification = identification;
+        this.provider = provider;
+        this.themes = themes;
+        if ( mdurltemplate == null || mdurltemplate.isEmpty() ) {
+            mdurltemplate = OGCFrontController.getHttpGetURL();
+            if ( !( mdurltemplate.endsWith( "?" ) || mdurltemplate.endsWith( "&" ) ) ) {
+                mdurltemplate += "?";
+            }
+            mdurltemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+        }
+        this.mdurltemplate = mdurltemplate;
+    }
+
+    public void export100()
                             throws XMLStreamException {
 
         writer.setDefaultNamespace( WMTSNS );
@@ -106,27 +131,27 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeAttribute( XSINS, "schemaLocation",
                                "http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" );
 
-        exportServiceIdentification( writer, identification );
+        exportServiceIdentification();
         exportServiceProvider110New( writer, provider );
-        exportOperationsMetadata( writer );
+        exportOperationsMetadata();
 
-        exportContents( writer, themes );
+        exportContents( themes );
 
-        exportThemes( writer, themes );
+        exportThemes( themes );
 
         writer.writeEndElement(); // Capabilities
     }
 
-    private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentification ident )
+    private void exportServiceIdentification()
                             throws XMLStreamException {
         writer.writeStartElement( OWS110_NS, "ServiceIdentification" );
-        if ( ident == null ) {
+        if ( identification == null ) {
             writeElement( writer, OWS110_NS, "Title", "deegree 3 WMTS" );
             writeElement( writer, OWS110_NS, "Abstract", "deegree 3 WMTS implementation" );
         } else {
-            LanguageString title = ident.getTitle( null );
+            LanguageString title = identification.getTitle( null );
             writeElement( writer, OWS110_NS, "Title", title == null ? "deegree 3 WMTS" : title.getString() );
-            LanguageString _abstract = ident.getAbstract( null );
+            LanguageString _abstract = identification.getAbstract( null );
             writeElement( writer, OWS110_NS, "Abstract", _abstract == null ? "deegree 3 WMTS implementation"
                                                                           : _abstract.getString() );
         }
@@ -135,7 +160,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-    private static void exportOperationsMetadata( XMLStreamWriter writer )
+    private void exportOperationsMetadata()
                             throws XMLStreamException {
 
         List<Operation> operations = new LinkedList<Operation>();
@@ -160,32 +185,32 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         exportOperationsMetadata110( writer, operationsMd );
     }
 
-    private static void exportThemes( XMLStreamWriter writer, List<Theme> themes )
+    private void exportThemes( List<Theme> themes )
                             throws XMLStreamException {
         if ( themes.isEmpty() ) {
             return;
         }
         writer.writeStartElement( WMTSNS, "Themes" );
         for ( Theme t : themes ) {
-            exportTheme( writer, t );
+            exportTheme( t );
         }
         writer.writeEndElement();
     }
 
-    private static void exportTheme( XMLStreamWriter writer, Theme t )
+    private void exportTheme( Theme t )
                             throws XMLStreamException {
         writer.writeStartElement( WMTSNS, "Theme" );
-        exportMetadata( writer, t.getMetadata(), false, null );
+        exportMetadata( t.getMetadata(), false, null );
 
         for ( Theme t2 : t.getThemes() ) {
-            exportTheme( writer, t2 );
+            exportTheme( t2 );
         }
-        exportLayers( writer, t.getLayers() );
+        exportLayers( t.getLayers() );
 
         writer.writeEndElement();
     }
 
-    private static void exportMetadata( XMLStreamWriter writer, LayerMetadata md, boolean idOnly, String otherid )
+    private void exportMetadata( LayerMetadata md, boolean idOnly, String otherid )
                             throws XMLStreamException {
         Description desc = md.getDescription();
         if ( !idOnly ) {
@@ -198,12 +223,26 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         }
         if ( otherid == null ) {
             writeElement( writer, OWS110_NS, "Identifier", md.getName() );
+            if ( mdurltemplate == null || mdurltemplate.isEmpty() ) {
+                mdurltemplate = OGCFrontController.getHttpGetURL();
+                if ( !( mdurltemplate.endsWith( "?" ) || mdurltemplate.endsWith( "&" ) ) ) {
+                    mdurltemplate += "?";
+                }
+                mdurltemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+            }
+
+            if ( md.getMetadataId() != null ) {
+                writer.writeStartElement( OWS110_NS, "Metadata" );
+                writer.writeAttribute( XLN_NS, "href", mdurltemplate.replace( "${metadataSetId}", md.getMetadataId() ) );
+                writer.writeEndElement();
+            }
         } else {
             writeElement( writer, OWS110_NS, "Identifier", otherid );
         }
+
     }
 
-    private static void exportLayers( XMLStreamWriter writer, List<Layer> layers )
+    private void exportLayers( List<Layer> layers )
                             throws XMLStreamException {
         for ( Layer l : layers ) {
             if ( l instanceof TileLayer ) {
@@ -212,7 +251,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         }
     }
 
-    private static void exportContents( XMLStreamWriter writer, List<Theme> themes )
+    private void exportContents( List<Theme> themes )
                             throws XMLStreamException {
         writer.writeStartElement( WMTSNS, "Contents" );
 
@@ -226,7 +265,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
                     writer.writeStartElement( WMTSNS, "Layer" );
 
-                    exportMetadata( writer, md, true, null );
+                    exportMetadata( md, true, null );
                     writer.writeStartElement( WMTSNS, "Style" );
                     writeElement( writer, OWS110_NS, "Identifier", "default" );
                     writer.writeEndElement();
@@ -262,7 +301,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
                     for ( String id : ts.getTileMatrixSetIds() ) {
                         writer.writeStartElement( WMTSNS, "TileMatrixSet" );
 
-                        exportMetadata( writer, md, true, id );
+                        exportMetadata( md, true, id );
                         TileMatrixSetMetadata metadata = ts.getTileMatrixSet( id ).getMetadata();
                         ICRS cs = metadata.getSpatialMetadata().getCoordinateSystems().get( 0 );
                         writeElement( writer, OWS110_NS, "SupportedCRS", cs.getAlias() );
