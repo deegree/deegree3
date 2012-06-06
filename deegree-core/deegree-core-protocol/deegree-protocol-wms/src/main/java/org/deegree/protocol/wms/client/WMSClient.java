@@ -103,6 +103,7 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
@@ -849,44 +850,50 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
     public InputStream getMap( GetMap getMap )
                             throws IOException {
-        if ( VERSION_111.equals( wmsVersion ) ) {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put( "request", "GetMap" );
-            map.put( "version", "1.1.1" );
-            map.put( "service", "WMS" );
-            map.put( "layers", join( ",", getMap.getLayers() ) );
-            map.put( "styles", "" );
-            if ( getMap.getStyles().size() > 0 ) {
-                map.put( "styles", join( ",", getMap.getStyles() ) );
-            }
-            map.put( "width", Integer.toString( getMap.getWidth() ) );
-            map.put( "height", Integer.toString( getMap.getHeight() ) );
-            Envelope bbox = getMap.getBoundingBox();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put( "request", "GetMap" );
+        map.put( "version", wmsVersion.toString() );
+        map.put( "service", "WMS" );
+        map.put( "layers", join( ",", getMap.getLayers() ) );
+        map.put( "styles", "" );
+        if ( getMap.getStyles().size() > 0 ) {
+            map.put( "styles", join( ",", getMap.getStyles() ) );
+        }
+        map.put( "width", Integer.toString( getMap.getWidth() ) );
+        map.put( "height", Integer.toString( getMap.getHeight() ) );
+        Envelope bbox = getMap.getBoundingBox();
+        if ( wmsVersion.equals( VERSION_111 )
+             || getMap.getCoordinateSystem().getAxis()[0].getOrientation() == Axis.AO_EAST ) {
             map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
                              + bbox.getMax().get1() );
-            map.put( "srs", getMap.getCoordinateSystem().getAlias() );
-            map.put( "format", getMap.getFormat() );
-
-            String url = getAddress( GetMap, true );
-            if ( url == null ) {
-                LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
-                return null;
-            }
-            url += toQueryString( map );
-
-            URL theUrl = new URL( url );
-            LOG.debug( "Connecting to URL " + theUrl );
-            URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
-                                                               getHttpProxyPassword( true ), httpBasicUser,
-                                                               httpBasicPass );
-            conn.setConnectTimeout( connectionTimeout * 1000 );
-            conn.setReadTimeout( requestTimeout * 1000 );
-            conn.connect();
-            LOG.debug( "Connected." );
-
-            return conn.getInputStream();
+        } else {
+            map.put( "bbox", bbox.getMin().get1() + "," + bbox.getMin().get0() + "," + bbox.getMax().get1() + ","
+                             + bbox.getMax().get0() );
         }
-        throw new IllegalArgumentException( "GetMap request for other versions than 1.1.1 are not supported yet." );
+        if ( wmsVersion.equals( VERSION_111 ) ) {
+            map.put( "srs", getMap.getCoordinateSystem().getAlias() );
+        } else {
+            map.put( "crs", getMap.getCoordinateSystem().getAlias() );
+        }
+        map.put( "format", getMap.getFormat() );
+
+        String url = getAddress( GetMap, true );
+        if ( url == null ) {
+            LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
+            return null;
+        }
+        url += toQueryString( map );
+
+        URL theUrl = new URL( url );
+        LOG.debug( "Connecting to URL " + theUrl );
+        URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
+                                                           getHttpProxyPassword( true ), httpBasicUser, httpBasicPass );
+        conn.setConnectTimeout( connectionTimeout * 1000 );
+        conn.setReadTimeout( requestTimeout * 1000 );
+        conn.connect();
+        LOG.debug( "Connected." );
+
+        return conn.getInputStream();
     }
 
     protected WMSCapabilitiesAdapter getCapabilitiesAdapter( OMElement root, String version )

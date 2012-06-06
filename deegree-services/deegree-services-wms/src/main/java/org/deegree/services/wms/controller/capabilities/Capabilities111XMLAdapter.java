@@ -227,7 +227,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
                     mdurlTemplate += "?";
                 }
-                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
             }
 
             writer.writeStartElement( "MetadataURL" );

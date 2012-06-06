@@ -112,6 +112,8 @@ public class WMTSController extends AbstractOWS {
 
     private Map<String, TileStore> stores = new HashMap<String, TileStore>();
 
+    private String metadataUrlTemplate;
+
     /**
      * @param configURL
      * @param serviceInfo
@@ -131,6 +133,8 @@ public class WMTSController extends AbstractOWS {
 
         DeegreeWMTS conf = (DeegreeWMTS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
         ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
+
+        this.metadataUrlTemplate = conf.getMetadataURLTemplate();
 
         List<String> ids = conf.getServiceConfiguration().getThemeId();
         for ( String id : ids ) {
@@ -206,7 +210,8 @@ public class WMTSController extends AbstractOWS {
             // GetCapabilities gc =
             GetCapabilitiesKVPParser.parse( map );
             try {
-                WMTSCapabilitiesWriter.export100( response.getXMLWriter(), identification, provider, themes );
+                new WMTSCapabilitiesWriter( response.getXMLWriter(), identification, provider, themes,
+                                            metadataUrlTemplate ).export100();
             } catch ( Throwable e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
