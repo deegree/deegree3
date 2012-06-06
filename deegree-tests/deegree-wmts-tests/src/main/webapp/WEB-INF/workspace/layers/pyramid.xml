@@ -1,4 +1,4 @@
-<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd" configVersion="3.2.0">
+<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd" configVersion="3.2.0">
   <TileLayer>
     <TileStoreId tileMatrixSet="utah">pyramid</TileStoreId>
     <l:Name>pyramid</l:Name>
@@ -19,6 +19,11 @@
     <TileStoreId tileMatrixSet="remotewms130">remotewms130</TileStoreId>
     <l:Name>remotewms130</l:Name>
     <d:Title>IT tile layer remotewms WMS 1.3.0</d:Title>
+  </TileLayer>
+  <TileLayer>
+    <TileStoreId tileMatrixSet="remotewms4326_130">remotewms4326_130</TileStoreId>
+    <l:Name>remotewms4326_130</l:Name>
+    <d:Title>IT tile layer remotewms WMS 1.3.0, EPSG:4326</d:Title>
   </TileLayer>
   <TileLayer>
     <TileStoreId tileMatrixSet="remotewms">remotewms_cache</TileStoreId>
