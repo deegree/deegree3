@@ -16,6 +16,11 @@
     <d:Title>IT tile layer remotewms</d:Title>
   </TileLayer>
   <TileLayer>
+    <TileStoreId tileMatrixSet="remotewms130">remotewms130</TileStoreId>
+    <l:Name>remotewms130</l:Name>
+    <d:Title>IT tile layer remotewms WMS 1.3.0</d:Title>
+  </TileLayer>
+  <TileLayer>
     <TileStoreId tileMatrixSet="remotewms">remotewms_cache</TileStoreId>
     <l:Name>remotewms_cache</l:Name>
     <d:Title>IT tile layer remotewms cached</d:Title>
