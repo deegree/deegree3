@@ -69,6 +69,8 @@ class RemoteWMSTileMatrix implements TileMatrix {
 
     private WMSClient client;
 
+    private final String outputFormat;
+
     /**
      * Creates a new {@link RemoteWMSTileMatrix} instance.
      * 
@@ -82,13 +84,16 @@ class RemoteWMSTileMatrix implements TileMatrix {
      *            WMS styles to request, must not be <code>null</code>
      * @param client
      *            the WMS client to use, must not be <code>null</code>
+     * @param outputFormat
+     *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      */
     RemoteWMSTileMatrix( TileMatrixMetadata tileMd, String format, List<String> layers, List<String> styles,
-                         WMSClient client ) {
+                         WMSClient client, String outputFormat ) {
         this.metadata = tileMd;
         this.format = format;
         this.layers = layers;
         this.styles = styles;
+        this.outputFormat = outputFormat;
         this.tileSizeX = tileMd.getTilePixelsX();
         this.tileSizeY = tileMd.getTilePixelsY();
         this.client = client;
@@ -112,6 +117,6 @@ class RemoteWMSTileMatrix implements TileMatrix {
         Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
         GetMap gm = new GetMap( layers, styles, tileSizeX, tileSizeY, envelope, envelope.getCoordinateSystem(), format,
                                 true );
-        return new RemoteWMSTile( client, gm );
+        return new RemoteWMSTile( client, gm, outputFormat );
     }
 }

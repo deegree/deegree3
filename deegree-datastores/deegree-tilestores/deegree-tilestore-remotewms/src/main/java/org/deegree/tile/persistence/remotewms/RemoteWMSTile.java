@@ -42,6 +42,8 @@
 package org.deegree.tile.persistence.remotewms;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -67,6 +69,8 @@ class RemoteWMSTile implements Tile {
 
     private final GetMap gm;
 
+    private final String outputFormat;
+
     /**
      * Creates a new {@link RemoteWMSTile} instance.
      * 
@@ -74,10 +78,13 @@ class RemoteWMSTile implements Tile {
      *            client to use for performing the {@link GetMap} request, never <code>null</code>
      * @param gm
      *            request for retrieving the tile image, never <code>null</code>
+     * @param outputFormat
+     *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      */
-    RemoteWMSTile( WMSClient client, GetMap gm ) {
+    RemoteWMSTile( WMSClient client, GetMap gm, String outputFormat ) {
         this.client = client;
         this.gm = gm;
+        this.outputFormat = outputFormat;
     }
 
     @Override
@@ -94,6 +101,13 @@ class RemoteWMSTile implements Tile {
     public InputStream getAsStream()
                             throws TileIOException {
         try {
+            if ( outputFormat != null ) {
+                BufferedImage img = ImageIO.read( client.getMap( gm ) );
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ImageIO.write( img, outputFormat, out );
+                out.close();
+                return new ByteArrayInputStream( out.toByteArray() );
+            }
             return client.getMap( gm );
         } catch ( IOException e ) {
             throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
