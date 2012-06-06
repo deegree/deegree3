@@ -22,9 +22,9 @@
       <Layer>remotewms</Layer>
     </Theme>
     <Theme>
-      <Identifier>remotewms_jpeg</Identifier>
-      <d:Title>IT test layer remotewms JPEG</d:Title>
-      <Layer>remotewms_jpeg</Layer>
+      <Identifier>remotewms_gif</Identifier>
+      <d:Title>IT test layer remotewms GIF -> PNG recoded</d:Title>
+      <Layer>remotewms_gif</Layer>
     </Theme>
     <Theme>
       <Identifier>remotewms130</Identifier>
