@@ -129,7 +129,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     private final boolean exportBoundedBy;
 
     private final PropertyType boundedByPt;
-    
+
     private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
     /**
@@ -659,6 +659,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     public void export( TypedObjectNode node, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+
         if ( node instanceof GMLObject ) {
             if ( node instanceof Feature ) {
                 export( (Feature) node, currentLevel, maxInlineLevels );
@@ -667,21 +668,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             } else {
                 throw new UnsupportedOperationException();
             }
+        } else if ( node instanceof PrimitiveValue ) {
+            writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
+        } else if ( node instanceof Property ) {
+            export( (Property) node, currentLevel, maxInlineLevels );
         } else if ( node instanceof ElementNode ) {
             ElementNode xmlContent = (ElementNode) node;
-            QName elName = xmlContent.getName();
-            writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
-            if ( xmlContent.getAttributes() != null ) {
-                for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
-                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getAsText() );
-                }
-            }
-            if ( xmlContent.getChildren() != null ) {
-                for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
-                    export( childNode, currentLevel, maxInlineLevels );
-                }
-            }
-            writer.writeEndElement();
+            exportGenericXmlElement( xmlContent, currentLevel, maxInlineLevels );
         } else if ( node instanceof PrimitiveValue ) {
             writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
         } else if ( node instanceof TypedObjectNodeArray<?> ) {
@@ -693,6 +686,26 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else {
             throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
         }
+    }
+
+    private void exportGenericXmlElement( ElementNode xmlContent, int currentLevel, int maxInlineLevels )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        QName elName = xmlContent.getName();
+        writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
+
+        if ( xmlContent.getAttributes() != null ) {
+            for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
+                writeAttributeWithNS( attr.getKey().getNamespaceURI(), attr.getKey().getLocalPart(),
+                                      attr.getValue().getAsText() );
+            }
+        }
+        if ( xmlContent.getChildren() != null ) {
+            for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
+                export( childNode, currentLevel, maxInlineLevels );
+            }
+        }
+        writer.writeEndElement();
     }
 
     private boolean isPropertyRequested( QName propName ) {

@@ -37,9 +37,11 @@
 package org.deegree.gml.feature;
 
 import static junit.framework.Assert.assertEquals;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,6 +55,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -70,6 +73,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
@@ -280,5 +284,26 @@ public class GMLFeatureWriterTest {
         XPath xpath = new XPath( "gml:featureMember/*/gml:boundedBy", nsContext );
         List<OMElement> boundedBys = writtenDoc.getElements( writtenDoc.getRootElement(), xpath );
         assertEquals( 15, boundedBys.size() );
+    }
+
+    @Test
+    public void testAIXM51RouteSegmentWithUrnXlink()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException,
+                            TransformationException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../aixm/feature/AIXM51_RouteSegment.gml" );
+        GMLStreamReader gmlReader = createGMLStreamReader( GML_32, docURL );
+        Feature f = gmlReader.readFeature();
+
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
+        GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_32, writer );
+        gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
+        gmlwriter.write( f );
+        gmlwriter.close();
+
+        URL schemaUrl = GMLFeatureReaderTest.class.getResource( "../aixm/schema/AIXM_Features.xsd" );
+        XMLAssert.assertValidity( memoryWriter.getReader(), schemaUrl.toString() );
     }
 }

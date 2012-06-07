@@ -159,6 +159,9 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
         GMLObject object = null;
         if ( uri.startsWith( "#" ) ) {
             object = idToObject.get( uri.substring( 1 ) );
+        } else if ( uri.startsWith( "urn:" ) ) {
+            LOG.warn( "Unable to resolve external object reference: " + uri
+                      + ". Resolving of urn references is not implemented yet." );
         } else {
             try {
                 URL resolvedURL = null;
