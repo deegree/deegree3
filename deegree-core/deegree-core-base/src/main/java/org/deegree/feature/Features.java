@@ -46,6 +46,7 @@ import java.util.TreeSet;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.Reference;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.gml.property.Property;
@@ -214,9 +215,20 @@ public class Features {
                 findFeaturesAndGeometries( child, geometries, features, fids, gids );
             }
         } else if ( node instanceof org.deegree.commons.tom.Object ) {
-            if ( node instanceof Reference<?> && ( (Reference<?>) node ).isResolved() ) {
-                node = ( (Reference<?>) node ).getReferencedObject();
+            if ( node instanceof Reference<?> ) {
+                Reference<?> ref = (Reference<?>) node;
+                if ( ref.isResolved() ) {
+                    node = ( (Reference<?>) node ).getReferencedObject();
+                } else if ( node instanceof Reference<?> ) {
+                    try {
+                        node = ( (Reference<?>) node ).getReferencedObject();
+                    } catch ( ReferenceResolvingException e ) {
+                        LOG.warn( "Unable to resolve external reference '" + ref.getURI() + ". Ignoring." );
+                        return;
+                    }
+                }
             }
+
             if ( node instanceof Geometry ) {
                 Geometry geometry = (Geometry) node;
                 if ( geometry.getId() == null || !( gids.contains( geometry.getId() ) ) ) {
