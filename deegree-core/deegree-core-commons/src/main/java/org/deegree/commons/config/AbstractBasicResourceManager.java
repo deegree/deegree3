@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +77,7 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
         this.dir = resourceDir;
     }
 
-    protected abstract ResourceProvider getProvider( File file );
+    protected abstract ResourceProvider getProvider( URL url );
 
     protected abstract void remove( String id );
 
@@ -120,7 +121,7 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
         try {
             os = new FileOutputStream( file );
             IOUtils.copy( is, os );
-            state = new ResourceState( id, file, getProvider( file ), deactivated, null, null );
+            state = new ResourceState( id, file, getProvider( file.toURI().toURL() ), deactivated, null, null );
         } catch ( Throwable t ) {
             String msg = "Cannot create config file for resource '" + id + "' (" + this.getClass().getSimpleName()
                          + "): " + t.getMessage();

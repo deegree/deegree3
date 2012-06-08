@@ -43,6 +43,7 @@ package org.deegree.tile.persistence;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,9 +109,13 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
 
         Map<File, List<File>> deps = new HashMap<File, List<File>>();
         for ( File f : files ) {
-            TileStoreProvider p = (TileStoreProvider) this.getProvider( f );
-            if ( p != null ) {
-                deps.put( f, p.getTileStoreDependencies( f ) );
+            try {
+                TileStoreProvider p = (TileStoreProvider) this.getProvider( f.toURI().toURL() );
+                if ( p != null ) {
+                    deps.put( f, p.getTileStoreDependencies( f ) );
+                }
+            } catch ( MalformedURLException e ) {
+                // ignore
             }
         }
 

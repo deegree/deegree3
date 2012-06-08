@@ -385,7 +385,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ResourceProvider getProvider( URL file ) {
         return this;
     }
 }

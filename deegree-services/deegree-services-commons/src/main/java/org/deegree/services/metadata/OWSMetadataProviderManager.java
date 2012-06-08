@@ -48,6 +48,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,8 +83,8 @@ public class OWSMetadataProviderManager extends AbstractResourceManager<OWSMetad
     private static final Pattern filenamePattern = Pattern.compile( "(.*)_metadata\\.(xml|ignored)" );
 
     @Override
-    protected ExtendedResourceProvider<OWSMetadataProvider> getProvider( File file ) {
-        Matcher m = filenamePattern.matcher( file.getName() );
+    protected ExtendedResourceProvider<OWSMetadataProvider> getProvider( URL file ) {
+        Matcher m = filenamePattern.matcher( file.toExternalForm() );
         if ( m.find() ) {
             return super.getProvider( file );
         }
@@ -116,7 +117,7 @@ public class OWSMetadataProviderManager extends AbstractResourceManager<OWSMetad
         String dirName = dir.getCanonicalPath();
         String fileName = configFile.getCanonicalPath().substring( dirName.length() );
 
-        ResourceProvider provider = getProvider( configFile );
+        ResourceProvider provider = getProvider( configFile.toURI().toURL() );
 
         if ( fileName.startsWith( File.separator ) ) {
             fileName = fileName.substring( 1 );

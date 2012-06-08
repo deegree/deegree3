@@ -480,7 +480,7 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ResourceProvider getProvider( URL file ) {
         // TODO Auto-generated method stub
         return null;
     }

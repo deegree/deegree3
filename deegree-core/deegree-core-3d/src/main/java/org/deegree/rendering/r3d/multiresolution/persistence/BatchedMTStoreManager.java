@@ -256,7 +256,7 @@ public class BatchedMTStoreManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ResourceProvider getProvider( URL file ) {
         throw new UnsupportedOperationException( "Needs implementation." );
     }
 

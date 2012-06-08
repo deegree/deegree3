@@ -41,6 +41,9 @@
 
 package org.deegree.tile;
 
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.Resource;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
@@ -51,7 +54,7 @@ import org.deegree.geometry.metadata.SpatialMetadata;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class TileMatrixSetMetadata {
+public class TileMatrixSetMetadata implements Resource {
 
     private final String identifier;
 
@@ -100,5 +103,16 @@ public class TileMatrixSetMetadata {
      */
     public SpatialMetadata getSpatialMetadata() {
         return spatialMetadata;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 }

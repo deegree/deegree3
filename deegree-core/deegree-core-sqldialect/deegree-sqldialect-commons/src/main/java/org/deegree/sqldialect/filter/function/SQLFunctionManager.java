@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter.function;
 
-import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -158,7 +158,7 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ResourceProvider getProvider( URL file ) {
         // TODO Auto-generated method stub
         return null;
     }

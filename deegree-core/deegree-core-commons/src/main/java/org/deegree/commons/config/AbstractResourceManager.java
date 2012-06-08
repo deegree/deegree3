@@ -43,8 +43,8 @@ import static org.deegree.commons.config.ResourceState.StateType.init_ok;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
@@ -55,6 +55,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.slf4j.Logger;
 
@@ -105,13 +106,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
                                              + this.getClass().getName() + " available." );
         }
 
-        ExtendedResourceProvider<T> provider;
-        try {
-            provider = getProvider( new File( configUrl.toURI() ) );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-            throw new ResourceInitException( e.getMessage() );
-        }
+        ExtendedResourceProvider<T> provider = getProvider( configUrl );
         if ( provider == null ) {
             String msg = "No {} provider for file: '{}' found. Skipping it.";
             LOG.error( msg, new Object[] { md.getName(), configUrl } );
@@ -206,11 +201,11 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
     }
 
     @Override
-    protected ExtendedResourceProvider<T> getProvider( File file ) {
+    protected ExtendedResourceProvider<T> getProvider( URL file ) {
         String namespace = null;
-        FileInputStream is = null;
+        InputStream is = null;
         try {
-            is = new FileInputStream( file );
+            is = new DURL( file.toExternalForm() ).openStream();
             XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
@@ -253,7 +248,7 @@ public abstract class AbstractResourceManager<T extends Resource> extends Abstra
         String dirName = dir.getCanonicalPath();
         String fileName = configFile.getCanonicalPath().substring( dirName.length() );
 
-        ResourceProvider provider = getProvider( configFile );
+        ResourceProvider provider = getProvider( configFile.toURI().toURL() );
 
         if ( fileName.startsWith( File.separator ) ) {
             fileName = fileName.substring( 1 );

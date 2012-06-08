@@ -790,7 +790,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ResourceProvider getProvider( URL file ) {
         // TODO Auto-generated method stub
         return null;
     }

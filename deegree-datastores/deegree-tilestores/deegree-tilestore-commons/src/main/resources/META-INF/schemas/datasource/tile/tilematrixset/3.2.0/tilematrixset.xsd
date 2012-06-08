@@ -13,6 +13,11 @@
   <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
 
   <element name="TileMatrixSet">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="TileMatrixSetConfig" />
+      </appinfo>
+    </annotation>
     <complexType>
       <sequence>
         <!-- only one CRS may be specified -->

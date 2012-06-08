@@ -43,6 +43,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ServiceLoader;
@@ -211,7 +212,7 @@ public class SecurityConfiguration extends AbstractBasicResourceManager implemen
     }
 
     @Override
-    protected ResourceProvider getProvider( File file ) {
+    protected ResourceProvider getProvider( URL file ) {
         // TODO Auto-generated method stub
         return null;
     }
