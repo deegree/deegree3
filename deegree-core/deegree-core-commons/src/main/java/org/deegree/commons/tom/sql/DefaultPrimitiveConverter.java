@@ -35,11 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.sql;
 
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseTime;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.deegree.commons.tom.datetime.Date;
@@ -123,6 +128,32 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         throw new UnsupportedOperationException();
     }
 
+    public PrimitiveValue toParticle( Object sqlValue )
+                            throws SQLException {
+        if ( sqlValue == null ) {
+            return null;
+        }
+        switch ( bt ) {
+        case BOOLEAN:
+            return toBooleanParticle( sqlValue );
+        case DATE:
+            return toDateParticle( sqlValue );
+        case DATE_TIME:
+            return toDateTimeParticle( sqlValue );
+        case DECIMAL:
+            return toDecimalParticle( sqlValue );
+        case DOUBLE:
+            return toDoubleParticle( sqlValue );
+        case INTEGER:
+            return toIntegerParticle( sqlValue );
+        case STRING:
+            return toStringParticle( sqlValue );
+        case TIME:
+            return toTimeParticle( sqlValue );
+        }
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public PrimitiveType getType() {
         return pt;
@@ -139,8 +170,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
             } else if ( "0".equals( s ) || "false".equalsIgnoreCase( s ) ) {
                 value = Boolean.FALSE;
             } else {
-                throw new IllegalArgumentException( "Unable to convert sql result value of type '"
-                                                    + sqlValue.getClass() + "' to Boolean object." );
+                throw new IllegalArgumentException( "Unable to convert SQL result value of type '"
+                                                    + sqlValue.getClass() + "' to Boolean particle." );
             }
         }
         return new PrimitiveValue( value, pt );
@@ -153,8 +184,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
             cal.setTime( (java.util.Date) sqlValue );
             value = new Date( cal, true );
         } else if ( sqlValue != null ) {
-            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
-                                                + "' to Date object." );
+            throw new IllegalArgumentException( "Unable to convert SQL result value of type '" + sqlValue.getClass()
+                                                + "' to Date particle." );
         }
         return new PrimitiveValue( value, pt );
     }
@@ -166,8 +197,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
             cal.setTime( (java.util.Date) sqlValue );
             value = new DateTime( cal, true );
         } else if ( sqlValue != null ) {
-            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
-                                                + "' to DateTime object." );
+            throw new IllegalArgumentException( "Unable to convert SQL result value of type '" + sqlValue.getClass()
+                                                + "' to DateTime particle." );
         }
         return new PrimitiveValue( value, pt );
     }
@@ -179,8 +210,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
             cal.setTime( (java.util.Date) sqlValue );
             value = new Time( cal, true );
         } else if ( sqlValue != null ) {
-            throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
-                                                + "' to Time object." );
+            throw new IllegalArgumentException( "Unable to convert SQL result value of type '" + sqlValue.getClass()
+                                                + "' to Time particle." );
         }
         return new PrimitiveValue( value, pt );
     }
@@ -225,9 +256,160 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     @Override
     public void setParticle( PreparedStatement stmt, PrimitiveValue particle, int colIndex )
                             throws SQLException {
-        // TODO rework this
-        Object sqlValue = SQLValueMangler.internalToSQL( particle );
-        stmt.setObject( colIndex, sqlValue );
+        Object value = particle.getValue();
+        if ( value != null ) {
+            value = toSqlValue( value );
+        }
+        stmt.setObject( colIndex, value );
+    }
+
+    public Object toSqlValue( Object input ) {
+        switch ( bt ) {
+        case BOOLEAN:
+            return toBoolean( input );
+        case DATE:
+            return toSqlDate( input );
+        case DATE_TIME:
+            return toSqlTimestamp( input );
+        case DECIMAL:
+            return toDecimal( input );
+        case DOUBLE:
+            return toDouble( input );
+        case INTEGER:
+            return toInteger( input );
+        case STRING:
+            return toString( input );
+        case TIME:
+            return toSqlTime( input );
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    protected Boolean toBoolean( Object input ) {
+        if ( input instanceof Boolean ) {
+            return (Boolean) input;
+        }
+        Boolean value = null;
+        String s = "" + input;
+        if ( "1".equals( s ) || "true".equalsIgnoreCase( s ) ) {
+            value = Boolean.TRUE;
+        } else if ( "0".equals( s ) || "false".equalsIgnoreCase( s ) ) {
+            value = Boolean.FALSE;
+        } else {
+            String msg = "Unable to convert primitive value ('" + s + "'), type '" + input.getClass()
+                         + "' to Boolean object.";
+            throw new IllegalArgumentException( msg );
+        }
+        return value;
+    }
+
+    /**
+     * TODO handling of SQL timezone
+     * 
+     * @param input
+     * @return
+     */
+    protected java.sql.Date toSqlDate( Object input ) {
+        if ( input instanceof java.sql.Date ) {
+            return (java.sql.Date) input;
+        }
+        java.sql.Date value = null;
+        if ( input instanceof java.util.Date ) {
+            java.util.Date date = (java.util.Date) input;
+            value = new java.sql.Date( date.getTime() );
+        } else if ( input instanceof TimeInstant ) {
+            TimeInstant timeInstant = (TimeInstant) input;
+            value = new java.sql.Date( timeInstant.getTimeInMilliseconds() );
+        } else {
+            String s = input.toString();
+            Date timeInstant = parseDate( s );
+            value = toSqlDate( timeInstant );
+        }
+        return value;
+    }
+
+    /**
+     * TODO handling of SQL timezone
+     * 
+     * @param input
+     * @return
+     */
+    protected Timestamp toSqlTimestamp( Object input ) {
+        if ( input instanceof Timestamp ) {
+            return (Timestamp) input;
+        }
+        Timestamp value = null;
+        if ( input instanceof java.util.Date ) {
+            java.util.Date date = (java.util.Date) input;
+            value = new Timestamp( date.getTime() );
+        } else if ( input instanceof TimeInstant ) {
+            TimeInstant timeInstant = (TimeInstant) input;
+            value = new Timestamp( timeInstant.getTimeInMilliseconds() );
+        } else {
+            String s = input.toString();
+            DateTime timeInstant = parseDateTime( s );
+            value = toSqlTimestamp( timeInstant );
+        }
+        return value;
+    }
+
+    private Object toDecimal( Object input ) {
+        // TODO is this the correct SQL representation
+        return toDouble( input );
+    }
+
+    private Double toDouble( Object input ) {
+        if ( input instanceof Double ) {
+            return (Double) input;
+        }
+        if ( input instanceof Number ) {
+            return ( (Number) input ).doubleValue();
+        }
+        return Double.parseDouble( input.toString() );
+    }
+
+    private Object toInteger( Object input ) {
+        if ( input instanceof Integer ) {
+            return (Integer) input;
+        }
+        if ( input instanceof Number ) {
+            return ( (Number) input ).intValue();
+        }
+        try {
+            return Integer.parseInt( input.toString() );
+        } catch ( NumberFormatException e ) {
+            // let the DB try to convert it
+        }
+        return input.toString();
+    }
+
+    private String toString( Object input ) {
+        return input.toString();
+    }
+
+    /**
+     * TODO handling of SQL timezone
+     * 
+     * @param input
+     * @return
+     */
+    private java.sql.Time toSqlTime( Object input ) {
+        if ( input instanceof java.sql.Time ) {
+            return (java.sql.Time) input;
+        }
+        java.sql.Time value = null;
+        if ( input instanceof java.util.Date ) {
+            java.util.Date date = (java.util.Date) input;
+            value = new java.sql.Time( date.getTime() );
+        } else if ( input instanceof TimeInstant ) {
+            TimeInstant timeInstant = (TimeInstant) input;
+            value = new java.sql.Time( timeInstant.getTimeInMilliseconds() );
+        } else {
+            String s = input.toString();
+            Time timeInstant = parseTime( s );
+            value = toSqlTime( timeInstant );
+        }
+        return value;
     }
 
     @Override

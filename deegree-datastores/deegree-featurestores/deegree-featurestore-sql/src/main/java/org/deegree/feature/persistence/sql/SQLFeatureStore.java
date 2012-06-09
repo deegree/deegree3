@@ -169,7 +169,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private String jdbcConnId;
 
-    private final Map<Mapping, ParticleConverter<?>> particeMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
+    private final Map<Mapping, ParticleConverter<?>> particleMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
 
     private final FeatureStoreCache cache;
 
@@ -291,11 +291,11 @@ public class SQLFeatureStore implements FeatureStore {
                 converter = instantiateConverter( pm.getConverter() );
                 ( (CustomParticleConverter<TypedObjectNode>) converter ).init( particleMapping, this );
             }
-            particeMappingToConverter.put( particleMapping, converter );
+            particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
             GeometryMapping gm = (GeometryMapping) particleMapping;
             ParticleConverter<?> converter = getGeometryConverter( gm );
-            particeMappingToConverter.put( particleMapping, converter );
+            particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) particleMapping;
             SQLIdentifier fkColumn = null;
@@ -313,7 +313,7 @@ public class SQLFeatureStore implements FeatureStore {
             }
             ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(),
                                                                            valueFt, schema );
-            particeMappingToConverter.put( particleMapping, converter );
+            particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
             for ( Mapping childMapping : cm.getParticles() ) {
@@ -387,7 +387,7 @@ public class SQLFeatureStore implements FeatureStore {
      * @return particle converter, never <code>null</code>
      */
     public ParticleConverter<?> getConverter( Mapping mapping ) {
-        return particeMappingToConverter.get( mapping );
+        return particleMappingToConverter.get( mapping );
     }
 
     @Override

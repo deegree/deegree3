@@ -63,56 +63,6 @@ public class SQLValueMangler {
      * @param value
      * @return
      */
-    public static Object internalToSQL( Object value ) {
-        Object sqlValue = null;
-        if ( value != null ) {
-            BaseType pt = BaseType.valueOf( value );
-            switch ( pt ) {
-            case BOOLEAN:
-                sqlValue = value;
-                break;
-            case DATE:
-                // TODO handling of SQL timezone
-                sqlValue = new java.sql.Date( ( (TimeInstant) value ).getTimeInMilliseconds() );
-                break;
-            case DATE_TIME:
-                // TODO handling of SQL timezone                
-                sqlValue = new Timestamp( ( (TimeInstant) value ).getTimeInMilliseconds() );
-                break;
-            case TIME:
-                // TODO handling of SQL timezone                
-                sqlValue = new Time( ( (TimeInstant) value ).getTimeInMilliseconds() );
-                break;
-            case DECIMAL:
-                sqlValue = ( (BigDecimal) value ).doubleValue();
-                break;
-            case DOUBLE:
-                sqlValue = value;
-                break;
-            case INTEGER:
-                try {
-                    sqlValue = Integer.parseInt( value.toString() );
-                } catch ( NumberFormatException e ) {
-                    LOG.debug( "Setting {} as string in sql as it does not fit into an integer.", value );
-                    sqlValue = value.toString();
-                }
-                break;
-            case STRING:
-                sqlValue = value;
-                break;
-            default:
-                throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
-            }
-        }
-        return sqlValue;
-    }
-
-    /**
-     * Converts the given {@link PrimitiveValue} value to the corresponding SQL object type.
-     * 
-     * @param value
-     * @return
-     */
     public static Object internalToSQL( PrimitiveValue pv ) {
         Object sqlValue = null;
         Object value = pv.getValue();

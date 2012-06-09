@@ -55,7 +55,6 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
-import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -254,7 +253,7 @@ public class InsertRowManager {
             }
         }
 
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
         TypedObjectNode[] values = evaluator.eval( particle, mapping.getPath() );
         int childIdx = 1;
         for ( TypedObjectNode value : values ) {
@@ -300,8 +299,7 @@ public class InsertRowManager {
                             LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );
                         } else {
                             String column = ( (DBField) me ).getColumn();
-                            Object sqlValue = SQLValueMangler.internalToSQL( href );
-                            row.addPreparedArgument( column, sqlValue );
+                            row.addPreparedArgument( column, href );
                         }
                     }
                 } else if ( feature != null ) {
