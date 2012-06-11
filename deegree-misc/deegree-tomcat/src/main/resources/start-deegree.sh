@@ -24,10 +24,16 @@ bin/catalina.sh run &
 
 # TODO proper browser startup after Tomcat started
 sleep 5
-if(test -x $(which firefox)) then
-  firefox http://localhost:8080
+URL="http://localhost:8080"
+if (test -x $(which open)) then
+  echo "open $URL"
+  open $URL
+elif(test -x $(which firefox)) then
+  echo "firefox $URL"
+  firefox $URL
 elif(test -x $(which $BROWSER)) then
-  $BROWSER http://localhost:8080
+  echo "$BROWSER $URL"
+  $BROWSER $URL
 fi
 
 # Wait forever
