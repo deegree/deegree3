@@ -251,7 +251,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -466,6 +466,16 @@
         <artifactId>staxon</artifactId>
         <version>1.0</version>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.jettison</groupId>
+        <artifactId>jettison</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.netty</groupId>
+        <artifactId>netty</artifactId>
+        <version>3.2.0.Final</version>
+      </dependency>
       <!-- JAI -->
       <dependency>
         <groupId>jai</groupId>
@@ -486,6 +496,17 @@
         <groupId>jai</groupId>
         <artifactId>jai-mlibwrapper</artifactId>
         <version>1.1.3</version>
+      </dependency>
+      <!-- couchbase -->
+      <dependency>
+        <groupId>couchbase-client</groupId>
+        <artifactId>couchbase-client</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>spymemcached</groupId>
+        <artifactId>spymemcached</artifactId>
+        <version>2.8.0</version>
       </dependency>
       <!-- PostgreSQL -->
       <dependency>

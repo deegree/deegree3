@@ -40,6 +40,7 @@ import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,6 +93,7 @@ import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 
 import com.google.gson.JsonObject;
@@ -127,11 +129,11 @@ public class GeoCouchFeatureStore implements FeatureStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         try {
-            JsonObject obj = HttpUtils.get( HttpUtils.JSON, couchUrl + "_design/main", null ).getAsJsonObject();
+            JsonObject obj = HttpUtils.get( HttpUtils.JSON, couchUrl + "/couchBase/default", null ).getAsJsonObject();
             if ( obj.get( "spatial" ) == null ) {
                 // set up index
                 HttpClient client = new DefaultHttpClient();
-                HttpPut put = new HttpPut( couchUrl + "_design/main" );
+                HttpPut put = new HttpPut( couchUrl + "/couchBase/default/_design/main" );
 
                 JsonObject spatial = new JsonObject();
                 JsonObject indexes = new JsonObject();
@@ -139,8 +141,8 @@ public class GeoCouchFeatureStore implements FeatureStore {
                 for ( FeatureType type : schema.getFeatureTypes() ) {
                     String name = type.getName().toString();
                     String indexFunc = "function(doc){" + "if(doc.bbox && doc.feature_type == '" + name + "'){"
-                                       + "emit({" + "type: \'Point\'," + "bbox: doc.bbox," + "coordinates: [0, 0]"
-                                       + "}, doc._id);" + "}};";
+                                       + "emit({" + "type: \'Point\', bbox: doc.bbox, coordinates: [0, 0]"
+                                       + "}, doc.blob);" + "}};";
                     indexes.addProperty( name, indexFunc );
                 }
 
@@ -223,13 +225,13 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
         FeatureInputStream result = null;
         BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), Compression.NONE );
-        try {
-            result = new IteratorFeatureInputStream( new IDIterator( filter.getMatchingIds().iterator(), codec ) );
-        } catch ( Throwable e ) {
-            String msg = "Error performing id query: " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
+//        try {
+//            result = new IteratorFeatureInputStream( new IDIterator( filter.getMatchingIds().iterator(), codec ) );
+//        } catch ( Throwable e ) {
+//            String msg = "Error performing id query: " + e.getMessage();
+//            LOG.debug( msg, e );
+//            throw new FeatureStoreException( msg, e );
+//        }
 
         // sort features
         if ( sortCrit.length > 0 ) {
@@ -246,28 +248,36 @@ public class GeoCouchFeatureStore implements FeatureStore {
         try {
             if ( query.getPrefilterBBoxEnvelope() != null ) {
                 List<String> ids = new ArrayList<String>();
+                List<String> blobs = new ArrayList<String>();
                 Envelope box = query.getPrefilterBBoxEnvelope();
                 Point min = box.getMin();
                 Point max = box.getMax();
 
                 Pattern p = Pattern.compile( "\"id\"[:]\"([^\"]*)" );
+                Pattern blob = Pattern.compile( "\"value\"[:]\"([^\"]*)" );
                 Matcher m = p.matcher( "nix" );
+                Matcher blobm = blob.matcher( "nix" );
 
                 for ( TypeName name : query.getTypeNames() ) {
                     String idxname = name.getFeatureTypeName().toString();
-                    String url = couchUrl + "_design/main/_spatial/" + URLEncoder.encode( idxname, "UTF-8" ) + "?bbox=";
+                    String url = couchUrl + "/couchBase/default/_design/main/_spatial/"
+                                 + URLEncoder.encode( idxname, "UTF-8" ) + "?bbox=";
                     url += min.get0() + "," + min.get1() + "," + max.get0() + "," + max.get1();
                     List<String> lines = readLines( HttpUtils.get( STREAM, url, null ) );
                     for ( String line : lines ) {
                         m.reset( line );
+                        blobm.reset( line );
                         if ( m.find() ) {
                             ids.add( m.group( 1 ) );
+                        }
+                        if ( blobm.find() ) {
+                            blobs.add( blobm.group( 1 ) );
                         }
                     }
                 }
 
                 BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), Compression.NONE );
-                result = new IteratorFeatureInputStream( new IDIterator( ids.iterator(), codec ) );
+                result = new IteratorFeatureInputStream( new IDIterator( ids.iterator(), blobs.iterator(), codec ) );
 
                 // mangle filter to exclude bbox
                 if ( filter != null && filter.getOperator() instanceof BBOX ) {
@@ -415,8 +425,11 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
         private final BlobCodec codec;
 
-        IDIterator( Iterator<String> ids, BlobCodec codec ) {
+        private final Iterator<String> blobs;
+
+        IDIterator( Iterator<String> ids, Iterator<String> blobs, BlobCodec codec ) {
             this.ids = ids;
+            this.blobs = blobs;
             this.codec = codec;
         }
 
@@ -440,21 +453,17 @@ public class GeoCouchFeatureStore implements FeatureStore {
 
         @Override
         public boolean hasNext() {
-            return ids.hasNext();
+            return blobs.hasNext();
         }
 
         @Override
         public Feature next() {
-            HttpClient client = new DefaultHttpClient();
+            byte[] bs = Base64.decode(blobs.next() );
             try {
-                HttpGet get = new HttpGet( couchUrl + ids.next() + "/feature" );
-                HttpResponse resp = client.execute( get );
-                return (Feature) codec.decode( resp.getEntity().getContent(), schema.getNamespaceBindings(), schema,
+                return (Feature) codec.decode( new ByteArrayInputStream(bs), schema.getNamespaceBindings(), schema,
                                                crs, null );
             } catch ( Throwable e ) {
                 e.printStackTrace();
-            } finally {
-                client.getConnectionManager().shutdown();
             }
             return null;
         }

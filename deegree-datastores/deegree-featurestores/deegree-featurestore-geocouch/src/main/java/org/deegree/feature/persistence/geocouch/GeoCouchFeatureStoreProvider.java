@@ -38,8 +38,6 @@ package org.deegree.feature.persistence.geocouch;
 import java.net.URL;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
