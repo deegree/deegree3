@@ -38,19 +38,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
-package org.deegree.tile.persistence.cache;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
-
-import org.apache.commons.io.IOUtils;
-import org.deegree.tile.Tile;
-import org.deegree.tile.TileDataLevel;
-import org.deegree.tile.TileMatrix;
+package org.deegree.tile;
 
 /**
- * <code>CachingTileMatrix</code>
+ * A <code>TileMatrix</code> is a grid of tiles. Tile indices are counted from 0.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -58,41 +49,22 @@ import org.deegree.tile.TileMatrix;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class CachingTileMatrix implements TileDataLevel {
+public interface TileDataLevel {
 
-    private TileDataLevel tileMatrix;
+    /**
+     * Returns the tile matrix metadata, which describes the extent of data, size of tiles etc.
+     * 
+     * @return the metadata, never null.
+     */
+    TileMatrix getMetadata();
 
-    private Cache cache;
-
-    private String identifier;
-
-    public CachingTileMatrix( TileDataLevel tileMatrix, Cache cache ) {
-        this.tileMatrix = tileMatrix;
-        this.cache = cache;
-        this.identifier = tileMatrix.getMetadata().getIdentifier();
-    }
-
-    @Override
-    public TileMatrix getMetadata() {
-        return tileMatrix.getMetadata();
-    }
-
-    @Override
-    public Tile getTile( int x, int y ) {
-        Tile tile = tileMatrix.getTile( x, y );
-        String key = identifier + "_" + x + "_" + y;
-        Element elem = cache.get( key );
-        byte[] bs = elem == null ? null : (byte[]) elem.getValue();
-        if ( bs != null ) {
-            return new CachedTile( bs, tile.getEnvelope() );
-        }
-        try {
-            bs = IOUtils.toByteArray( tile.getAsStream() );
-            cache.put( new Element( key, bs ) );
-            return new CachedTile( bs, tile.getEnvelope() );
-        } catch ( Throwable e ) {
-            return tile;
-        }
-    }
+    /**
+     * Retrieve a single tile.
+     * 
+     * @param x
+     * @param y
+     * @return the tile at x/y. May return null if there is no such tile.
+     */
+    Tile getTile( int x, int y );
 
 }

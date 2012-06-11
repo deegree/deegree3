@@ -67,7 +67,7 @@ import org.junit.Test;
  */
 public class TileMatrixSetTest extends TestCase {
 
-    private TileMatrixSet tms;
+    private TileDataSet tms;
 
     private Envelope env;
 
@@ -80,8 +80,8 @@ public class TileMatrixSetTest extends TestCase {
             crs = CRSManager.lookup( "EPSG:4326" );
             env = fac.createEnvelope( -10, -10, 10, 10, crs );
             SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-            TileMatrixMetadata md = new TileMatrixMetadata( "someid", smd, 256, 256, 1, 1, 1 );
-            TileMatrix tm = mock( TileMatrix.class );
+            TileMatrix md = new TileMatrix( "someid", smd, 256, 256, 1, 1, 1 );
+            TileDataLevel tm = mock( TileDataLevel.class );
             Tile t = mock( Tile.class );
 
             tm.getMetadata();
@@ -89,15 +89,15 @@ public class TileMatrixSetTest extends TestCase {
             when( tm.getMetadata() ).thenReturn( md );
             when( tm.getTile( 0, 0 ) ).thenReturn( t );
 
-            TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( "default", "image/png", smd );
-            tms = new DefaultTileMatrixSet( Collections.singletonList( tm ), metadata );
+            TileMatrixSet metadata = new TileMatrixSet( "default", "image/png", smd );
+            tms = new DefaultTileDataSet( Collections.singletonList( tm ), metadata );
         } catch ( UnknownCRSException e ) {
             throw new RuntimeException( e );
         }
     }
 
     /**
-     * Test method for {@link org.deegree.tile.TileMatrixSet#getTiles(org.deegree.geometry.Envelope, double)}.
+     * Test method for {@link org.deegree.tile.TileDataSet#getTiles(org.deegree.geometry.Envelope, double)}.
      */
     @Test
     public void testGetTiles() {
@@ -106,7 +106,7 @@ public class TileMatrixSetTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.deegree.tile.TileMatrixSet#getTileMatrices()}.
+     * Test method for {@link org.deegree.tile.TileDataSet#getTileMatrices()}.
      */
     @Test
     public void testGetTileMatrices() {

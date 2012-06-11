@@ -45,8 +45,8 @@ import java.io.File;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
 
 /**
  * The <code>GeoTIFFTileMatrix</code> is a tile matrix handing out GeoTIFFTile tiles. It uses an object pool shared
@@ -58,9 +58,9 @@ import org.deegree.tile.TileMatrixMetadata;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class GeoTIFFTileMatrix implements TileMatrix {
+public class GeoTIFFTileMatrix implements TileDataLevel {
 
-    private final TileMatrixMetadata metadata;
+    private final TileMatrix metadata;
 
     private final int imageIndex;
 
@@ -68,7 +68,7 @@ public class GeoTIFFTileMatrix implements TileMatrix {
 
     private GenericObjectPool readerPool;
 
-    public GeoTIFFTileMatrix( TileMatrixMetadata metadata, File file, int imageIndex ) {
+    public GeoTIFFTileMatrix( TileMatrix metadata, File file, int imageIndex ) {
         this.metadata = metadata;
         this.imageIndex = imageIndex;
         ImageReaderFactory fac = new ImageReaderFactory( file );
@@ -76,7 +76,7 @@ public class GeoTIFFTileMatrix implements TileMatrix {
     }
 
     @Override
-    public TileMatrixMetadata getMetadata() {
+    public TileMatrix getMetadata() {
         return metadata;
     }
 

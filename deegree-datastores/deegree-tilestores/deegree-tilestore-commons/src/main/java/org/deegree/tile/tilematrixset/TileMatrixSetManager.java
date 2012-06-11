@@ -55,7 +55,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.tile.TileMatrixSetMetadata;
+import org.deegree.tile.TileMatrixSet;
 import org.slf4j.Logger;
 
 /**
@@ -67,7 +67,7 @@ import org.slf4j.Logger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSetMetadata> {
+public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet> {
 
     private static final Logger LOG = getLogger( TileMatrixSetManager.class );
 
@@ -103,12 +103,12 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSetM
         LOG.info( "Adding standard tile matrix set {}.", name );
         URL url = TileMatrixSetManager.class.getResource( name + ".xml" );
         ResourceProvider provider = nsToProvider.get( "http://www.deegree.org/datasource/tile/tilematrixset" );
-        ResourceState<TileMatrixSetMetadata> state = null;
+        ResourceState<TileMatrixSet> state = null;
         try {
-            TileMatrixSetMetadata resource = create( name, url );
-            state = new ResourceState<TileMatrixSetMetadata>( name, null, provider, created, resource, null );
+            TileMatrixSet resource = create( name, url );
+            state = new ResourceState<TileMatrixSet>( name, null, provider, created, resource, null );
             resource.init( workspace );
-            state = new ResourceState<TileMatrixSetMetadata>( name, null, provider, init_ok, resource, null );
+            state = new ResourceState<TileMatrixSet>( name, null, provider, init_ok, resource, null );
             add( resource );
         } catch ( ResourceInitException e ) {
             LOG.error( "Could not create resource {}: {}", name, e.getLocalizedMessage() );
@@ -116,20 +116,20 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSetM
                 LOG.error( "Cause was: {}", e.getCause().getLocalizedMessage() );
             }
             LOG.trace( "Stack trace:", e );
-            state = new ResourceState<TileMatrixSetMetadata>( name, null, provider, init_error, null, e );
+            state = new ResourceState<TileMatrixSet>( name, null, provider, init_error, null, e );
         } catch ( Throwable t ) {
             LOG.error( "Could not create resource {}: {}", name, t.getLocalizedMessage() );
             if ( t.getCause() != null ) {
                 LOG.error( "Cause was: {}", t.getCause().getLocalizedMessage() );
             }
             LOG.trace( "Stack trace:", t );
-            state = new ResourceState<TileMatrixSetMetadata>( name, null, provider, init_error, null,
+            state = new ResourceState<TileMatrixSet>( name, null, provider, init_error, null,
                                                               new ResourceInitException( t.getMessage(), t ) );
         }
         idToState.put( state.getId(), state );
     }
 
-    static class TileMatrixSetManagerMetadata extends DefaultResourceManagerMetadata<TileMatrixSetMetadata> {
+    static class TileMatrixSetManagerMetadata extends DefaultResourceManagerMetadata<TileMatrixSet> {
         TileMatrixSetManagerMetadata( DeegreeWorkspace workspace ) {
             super( "tile matrix sets", "datasources/tile/tilematrixset", TileMatrixSetProvider.class, workspace );
         }

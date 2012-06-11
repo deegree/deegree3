@@ -40,8 +40,8 @@ import static java.io.File.separatorChar;
 import java.io.File;
 import java.text.DecimalFormat;
 
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataLevel;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.filesystem.DiskLayout;
 
 /**
@@ -73,7 +73,7 @@ public class TileCacheDiskLayout implements DiskLayout {
 
     private final String fileType;
 
-    private TileMatrixSet set;
+    private TileDataSet set;
 
     /**
      * Creates a new {@link TileCacheDiskLayout} instance.
@@ -89,14 +89,14 @@ public class TileCacheDiskLayout implements DiskLayout {
     }
 
     @Override
-    public void setTileMatrixSet( TileMatrixSet set ) {
+    public void setTileMatrixSet( TileDataSet set ) {
         this.set = set;
     }
 
     @Override
     public File resolve( String matrixId, int x, int y ) {
 
-        TileMatrix tileMatrix = set.getTileMatrix( matrixId );
+        TileDataLevel tileMatrix = set.getTileMatrix( matrixId );
         if ( tileMatrix == null ) {
             return null;
         }
@@ -119,7 +119,7 @@ public class TileCacheDiskLayout implements DiskLayout {
         return new File( layerDir, sb.toString() );
     }
 
-    private String getLevelDirectory( TileMatrix tileMatrix ) {
+    private String getLevelDirectory( TileDataLevel tileMatrix ) {
         DecimalFormat formatter = new DecimalFormat( "00" );
         int num = set.getTileMatrices().size();
         int tileMatrixIndex = num - 1 - set.getTileMatrices().indexOf( tileMatrix );
@@ -138,7 +138,7 @@ public class TileCacheDiskLayout implements DiskLayout {
         return sb.toString();
     }
 
-    private String getRowFileNamePart( int y, TileMatrix tileMatrix ) {
+    private String getRowFileNamePart( int y, TileDataLevel tileMatrix ) {
         int tileCacheY = getTileCacheYIndex( tileMatrix, y );
         StringBuilder sb = new StringBuilder();
         DecimalFormat formatter = new DecimalFormat( "000" );
@@ -152,7 +152,7 @@ public class TileCacheDiskLayout implements DiskLayout {
         return sb.toString();
     }
 
-    private int getTileCacheYIndex( TileMatrix tileMatrix, int y ) {
+    private int getTileCacheYIndex( TileDataLevel tileMatrix, int y ) {
         // TileCache's y-axis is inverted
         return tileMatrix.getMetadata().getNumTilesY() - 1 - y;
     }

@@ -47,7 +47,7 @@ import org.deegree.commons.config.Resource;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataSet;
 
 /**
  * The <code>TileStore</code> interface defines a deegree resource that can be used to read tiles. It's planned to
@@ -82,7 +82,7 @@ public interface TileStore extends Resource {
      *            the id of the tile matrix set
      * @return the tile matrix set.
      */
-    TileMatrixSet getTileMatrixSet( String tileMatrixSet );
+    TileDataSet getTileMatrixSet( String tileMatrixSet );
 
     /**
      * Returns the tile matrix set ids that this tile store serves.

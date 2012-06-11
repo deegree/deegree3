@@ -40,31 +40,120 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
+import org.deegree.geometry.metadata.SpatialMetadata;
+
 /**
- * A <code>TileMatrix</code> is a grid of tiles. Tile indices are counted from 0.
+ * The <code>TileMatrixMetadata</code> describes the properties of a tile matrix. It can be used to determine which
+ * tiles to request from the matrix.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
+public class TileMatrix {
 
-public interface TileMatrix {
+    private String identifier;
+
+    private SpatialMetadata spatialMetadata;
+
+    private int numTilesX, numTilesY;
+
+    private int tileSizeX, tileSizeY;
+
+    private double resolution, tileWidth, tileHeight;
 
     /**
-     * Returns the tile matrix metadata, which describes the extent of data, size of tiles etc.
+     * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
      * 
-     * @return the metadata, never null.
+     * @param identifier
+     *            to identify the tile matrix
+     * @param spatialMetadata
+     *            the envelope and coordinate system, never null
+     * @param tileSizeX
+     *            the width of a tile in pixels
+     * @param tileSizeY
+     *            the height of a tile in pixels
+     * @param resolution
+     *            the resolution of a pixel in world coordinates
+     * @param numTilesX
+     *            the number of tiles in x direction
+     * @param numTilesY
+     *            the number of tiles in y direction
      */
-    TileMatrixMetadata getMetadata();
+    public TileMatrix( String identifier, SpatialMetadata spatialMetadata, int tileSizeX, int tileSizeY,
+                               double resolution, int numTilesX, int numTilesY ) {
+        this.identifier = identifier;
+        this.spatialMetadata = spatialMetadata;
+        this.tileSizeX = tileSizeX;
+        this.tileSizeY = tileSizeY;
+        this.resolution = resolution;
+        this.numTilesX = numTilesX;
+        this.numTilesY = numTilesY;
+        this.tileWidth = tileSizeX * resolution;
+        this.tileHeight = tileSizeY * resolution;
+    }
 
     /**
-     * Retrieve a single tile.
-     * 
-     * @param x
-     * @param y
-     * @return the tile at x/y. May return null if there is no such tile.
+     * @return the envelope and crs, never null
      */
-    Tile getTile( int x, int y );
+    public SpatialMetadata getSpatialMetadata() {
+        return spatialMetadata;
+    }
 
+    /**
+     * @return the width of a tile in pixels
+     */
+    public int getTilePixelsX() {
+        return tileSizeX;
+    }
+
+    /**
+     * @return the height of a tile in pixels
+     */
+    public int getTilePixelsY() {
+        return tileSizeY;
+    }
+
+    /**
+     * @return the resolution of a pixel in world coordinates
+     */
+    public double getResolution() {
+        return resolution;
+    }
+
+    /**
+     * @return the number of tiles in x direction
+     */
+    public int getNumTilesX() {
+        return numTilesX;
+    }
+
+    /**
+     * @return the number of tiles in y direction
+     */
+    public int getNumTilesY() {
+        return numTilesY;
+    }
+
+    /**
+     * @return the width of a tile in world coordinates (outer edges)
+     */
+    public double getTileWidth() {
+        return tileWidth;
+    }
+
+    /**
+     * @return the height of a tile in world coordinates (outer edges)
+     */
+    public double getTileHeight() {
+        return tileHeight;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
 }

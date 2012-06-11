@@ -54,8 +54,8 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataLevel;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
 import org.junit.Test;
 
@@ -78,9 +78,9 @@ public class GeoTIFFTileStoreTest {
         TileStore ts = new GeoTIFFTileStore( Collections.singletonList( new Pair<File, String>( file, null ) ) );
         ts.init( null );
         Envelope envelope = ts.getMetadata( "merged" ).getEnvelope();
-        TileMatrixSet set = ts.getTileMatrixSet( "merged" );
+        TileDataSet set = ts.getTileMatrixSet( "merged" );
         double res = 0;
-        for ( TileMatrix tm : set.getTileMatrices() ) {
+        for ( TileDataLevel tm : set.getTileMatrices() ) {
             res = Math.max( tm.getMetadata().getResolution(), res );
         }
 

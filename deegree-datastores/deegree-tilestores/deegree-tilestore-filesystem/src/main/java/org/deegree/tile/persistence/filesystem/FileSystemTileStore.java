@@ -57,12 +57,12 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.jaxb.EnvelopeType;
-import org.deegree.tile.DefaultTileMatrixSet;
+import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrixSet;
-import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
@@ -82,7 +82,7 @@ public class FileSystemTileStore implements TileStore {
 
     // private static final Logger LOG = getLogger( FileSystemTileStore.class );
 
-    private Map<String, TileMatrixSet> tileMatrixSets;
+    private Map<String, TileDataSet> tileMatrixSets;
 
     /**
      * Creates a new {@link FileSystemTileStore} instance.
@@ -93,7 +93,7 @@ public class FileSystemTileStore implements TileStore {
      * @throws ResourceInitException
      */
     public FileSystemTileStore( FileSystemTileStoreJAXB config, URL configUrl ) throws ResourceInitException {
-        tileMatrixSets = new HashMap<String, TileMatrixSet>();
+        tileMatrixSets = new HashMap<String, TileDataSet>();
         Iterator<Object> iter = config.getCRSAndEnvelopeAndTilePyramid().iterator();
         while ( iter.hasNext() ) {
             String crss = (String) iter.next();
@@ -115,7 +115,7 @@ public class FileSystemTileStore implements TileStore {
                 }
                 TileCacheDiskLayout layout = new TileCacheDiskLayout( baseDir, lay.getFileType() );
 
-                TileMatrixSet tms = buildTileMatrixSet( layerName, p, env, crss, layout );
+                TileDataSet tms = buildTileMatrixSet( layerName, p, env, crss, layout );
                 tileMatrixSets.put( layerName, tms );
                 layout.setTileMatrixSet( tms );
             } catch ( Throwable e ) {
@@ -129,7 +129,7 @@ public class FileSystemTileStore implements TileStore {
         return tileMatrixSets.keySet();
     }
 
-    private TileMatrixSet buildTileMatrixSet( String id, TilePyramid pyramidConfig, EnvelopeType envelope, String crs,
+    private TileDataSet buildTileMatrixSet( String id, TilePyramid pyramidConfig, EnvelopeType envelope, String crs,
                                               DiskLayout layout ) {
         int tileWidth = pyramidConfig.getTileWidth().intValue();
         int tileHeight = pyramidConfig.getTileHeight().intValue();
@@ -139,10 +139,10 @@ public class FileSystemTileStore implements TileStore {
         return buildTileMatrixSet( id, spatialMetadata, tileWidth, tileHeight, minScaleDenominator, levels, layout );
     }
 
-    private TileMatrixSet buildTileMatrixSet( String layerName, SpatialMetadata smd, int tileWidth, int tileHeight,
+    private TileDataSet buildTileMatrixSet( String layerName, SpatialMetadata smd, int tileWidth, int tileHeight,
                                               double scaleDenominator, int levels, DiskLayout layout ) {
 
-        List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
+        List<TileDataLevel> matrices = new ArrayList<TileDataLevel>( levels );
         Envelope bbox = smd.getEnvelope();
         double span0 = bbox.getSpan0();
         double span1 = bbox.getSpan1();
@@ -153,9 +153,9 @@ public class FileSystemTileStore implements TileStore {
             int numX = MathUtils.round( Math.ceil( span0 / ( res * tileWidth ) ) );
             int numY = MathUtils.round( Math.ceil( span1 / ( res * tileHeight ) ) );
 
-            TileMatrixMetadata md = new TileMatrixMetadata( id, smd, tileWidth, tileHeight, res, numX, numY );
+            TileMatrix md = new TileMatrix( id, smd, tileWidth, tileHeight, res, numX, numY );
 
-            TileMatrix m = new FileSystemTileMatrix( md, layout );
+            TileDataLevel m = new FileSystemTileMatrix( md, layout );
             matrices.add( m );
 
             scaleDenominator *= 2;
@@ -165,7 +165,7 @@ public class FileSystemTileStore implements TileStore {
             format = "image/" + format;
         }
 
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( layerName, format, smd ) );
+        return new DefaultTileDataSet( matrices, new TileMatrixSet( layerName, format, smd ) );
     }
 
     /**
@@ -226,13 +226,13 @@ public class FileSystemTileStore implements TileStore {
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet( String id ) {
+    public TileDataSet getTileMatrixSet( String id ) {
         return tileMatrixSets.get( id );
     }
 
     @Override
     public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
-        TileMatrix tm = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
+        TileDataLevel tm = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
         if ( tm == null ) {
             return null;
         }

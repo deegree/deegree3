@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.tile.Tile;
-import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreManager;
 import org.deegree.tile.persistence.TileStoreTransaction;
@@ -101,8 +101,8 @@ public class FileSystemTileStoreTest {
 
         ExecutorService exec = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
 
-        Iterator<TileMatrix> iter = dest.getTileMatrixSet( "filesystem" ).getTileMatrices().iterator();
-        for ( TileMatrix tm : src.getTileMatrixSet( "utah" ).getTileMatrices() ) {
+        Iterator<TileDataLevel> iter = dest.getTileMatrixSet( "filesystem" ).getTileMatrices().iterator();
+        for ( TileDataLevel tm : src.getTileMatrixSet( "utah" ).getTileMatrices() ) {
             String id = iter.next().getMetadata().getIdentifier();
 
             int maxx = tm.getMetadata().getNumTilesX();
@@ -123,13 +123,13 @@ public class FileSystemTileStoreTest {
 
         private final int maxy;
 
-        private final TileMatrix src;
+        private final TileDataLevel src;
 
         private final TileStoreTransaction dest;
 
         private final String destId;
 
-        Worker( int x, int maxy, TileMatrix src, TileStoreTransaction dest, String destId ) {
+        Worker( int x, int maxy, TileDataLevel src, TileStoreTransaction dest, String destId ) {
             this.x = x;
             this.maxy = maxy;
             this.src = src;

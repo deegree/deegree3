@@ -71,12 +71,12 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.tile.DefaultTileMatrixSet;
+import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrixSet;
-import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.slf4j.Logger;
@@ -95,11 +95,11 @@ public class GeoTIFFTileStore implements TileStore {
 
     private final List<Pair<File, String>> files;
 
-    private Map<String, TileMatrixSet> tileMatrixSets;
+    private Map<String, TileDataSet> tileMatrixSets;
 
     public GeoTIFFTileStore( List<Pair<File, String>> files ) {
         this.files = files;
-        this.tileMatrixSets = new LinkedHashMap<String, TileMatrixSet>();
+        this.tileMatrixSets = new LinkedHashMap<String, TileDataSet>();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class GeoTIFFTileStore implements TileStore {
 
                 SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
 
-                List<TileMatrix> matrices = new ArrayList<TileMatrix>( num );
+                List<TileDataLevel> matrices = new ArrayList<TileDataLevel>( num );
 
                 for ( int i = 0; i < num; ++i ) {
                     int tw = reader.getTileWidth( i );
@@ -155,15 +155,15 @@ public class GeoTIFFTileStore implements TileStore {
                     int numy = (int) Math.ceil( (double) height / (double) th );
                     double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
                     String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
-                    TileMatrixMetadata tmd = new TileMatrixMetadata( id, smd, tw, th, res, numx, numy );
+                    TileMatrix tmd = new TileMatrix( id, smd, tw, th, res, numx, numy );
                     GeoTIFFTileMatrix matrix = new GeoTIFFTileMatrix( tmd, file.first, i );
                     matrices.add( matrix );
                     LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx,
                                                                                                            numy, tw,
                                                                                                            th, res } );
                 }
-                TileMatrixSetMetadata metadata = new TileMatrixSetMetadata( tmsId, "image/png", smd );
-                TileMatrixSet tileMatrixSet = new DefaultTileMatrixSet( matrices, metadata );
+                TileMatrixSet metadata = new TileMatrixSet( tmsId, "image/png", smd );
+                TileDataSet tileMatrixSet = new DefaultTileDataSet( matrices, metadata );
                 tileMatrixSets.put( tmsId, tileMatrixSet );
             }
         } catch ( Throwable e ) {
@@ -253,13 +253,13 @@ public class GeoTIFFTileStore implements TileStore {
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet( String id ) {
+    public TileDataSet getTileMatrixSet( String id ) {
         return tileMatrixSets.get( id );
     }
 
     @Override
     public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
-        TileMatrix tm = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
+        TileDataLevel tm = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
         if ( tm == null ) {
             return null;
         }

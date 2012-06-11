@@ -61,8 +61,8 @@ public class Tiles {
      * @param envelope
      * @return null, if envelopes do not intersect
      */
-    public static int[] getTileIndexRange( TileMatrix matrix, Envelope envelope ) {
-        TileMatrixMetadata md = matrix.getMetadata();
+    public static int[] getTileIndexRange( TileDataLevel matrix, Envelope envelope ) {
+        TileMatrix md = matrix.getMetadata();
 
         // calc tile indices
         Envelope menvelope = md.getSpatialMetadata().getEnvelope();

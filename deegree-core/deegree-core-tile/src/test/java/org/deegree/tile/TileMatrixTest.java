@@ -69,7 +69,7 @@ public class TileMatrixTest extends TestCase {
 
     @Test
     public void testGetMetadata() {
-        TileMatrix tm = mock( TileMatrix.class );
+        TileDataLevel tm = mock( TileDataLevel.class );
         tm.getMetadata();
         verify( tm ).getMetadata();
     }
@@ -81,8 +81,8 @@ public class TileMatrixTest extends TestCase {
         ICRS crs = CRSManager.lookup( "EPSG:4326" );
         Envelope env = fac.createEnvelope( -10, -10, 10, 10, crs );
         SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-        TileMatrixMetadata md = new TileMatrixMetadata( "someid", smd, 256, 256, 1, 1, 1 );
-        TileMatrix tm = mock( TileMatrix.class );
+        TileMatrix md = new TileMatrix( "someid", smd, 256, 256, 1, 1, 1 );
+        TileDataLevel tm = mock( TileDataLevel.class );
         Tile t = mock( Tile.class );
         tm.getMetadata();
         tm.getTile( 0, 0 );

@@ -52,9 +52,9 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStoreManager;
 import org.junit.After;
 import org.junit.Before;
@@ -63,7 +63,7 @@ import org.junit.Test;
 /**
  * Basic test cases for the {@link RemoteWMSTileStore}.
  * <p>
- * These tests only check the correct extraction of metadata and the generation of the {@link TileMatrixSet}. Actual
+ * These tests only check the correct extraction of metadata and the generation of the {@link TileDataSet}. Actual
  * fetching of tile data is realized as integration tests (module deegree-wmts-tests).
  * </p>
  * 
@@ -104,14 +104,14 @@ public class RemoteWMSTileStoreTest {
     @Test
     public void testGetTileMatrixSetEPSG26912() {
         RemoteWMSTileStore store = (RemoteWMSTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
-        TileMatrixSet matrixSet = store.getTileMatrixSet( "tiles26912" );
+        TileDataSet matrixSet = store.getTileMatrixSet( "tiles26912" );
         assertEquals( "image/png", matrixSet.getMetadata().getMimeType() );
 
         assertEquals( 10, matrixSet.getTileMatrices().size() );
         double scale = 1000.0;
         double resolution = MapUtils.DEFAULT_PIXEL_SIZE * scale;
-        for ( TileMatrix matrix : matrixSet.getTileMatrices() ) {
-            TileMatrixMetadata md = matrix.getMetadata();
+        for ( TileDataLevel matrix : matrixSet.getTileMatrices() ) {
+            TileMatrix md = matrix.getMetadata();
             assertEquals( Double.toString( scale ), md.getIdentifier() );
             assertEquals( resolution, md.getResolution(), 0.001 );
             assertEquals( resolution * md.getTilePixelsX(), md.getTileWidth(), 0.001 );

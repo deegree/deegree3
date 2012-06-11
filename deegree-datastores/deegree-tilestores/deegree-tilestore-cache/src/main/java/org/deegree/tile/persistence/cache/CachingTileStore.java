@@ -55,10 +55,10 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.tile.DefaultTileMatrixSet;
+import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataLevel;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.Tiles;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
@@ -76,7 +76,7 @@ public class CachingTileStore implements TileStore {
 
     private TileStore tileStore;
 
-    private Map<String, DefaultTileMatrixSet> tileMatrixSets;
+    private Map<String, DefaultTileDataSet> tileMatrixSets;
 
     private final CacheManager cacheManager;
 
@@ -92,14 +92,14 @@ public class CachingTileStore implements TileStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         Collection<String> ids = tileStore.getTileMatrixSetIds();
-        tileMatrixSets = new HashMap<String, DefaultTileMatrixSet>();
+        tileMatrixSets = new HashMap<String, DefaultTileDataSet>();
         for ( String id : ids ) {
-            TileMatrixSet tms = tileStore.getTileMatrixSet( id );
-            List<TileMatrix> list = new ArrayList<TileMatrix>();
-            for ( TileMatrix tm : tms.getTileMatrices() ) {
+            TileDataSet tms = tileStore.getTileMatrixSet( id );
+            List<TileDataLevel> list = new ArrayList<TileDataLevel>();
+            for ( TileDataLevel tm : tms.getTileMatrices() ) {
                 list.add( new CachingTileMatrix( tm, cache ) );
             }
-            this.tileMatrixSets.put( id, new DefaultTileMatrixSet( list, tms.getMetadata() ) );
+            this.tileMatrixSets.put( id, new DefaultTileDataSet( list, tms.getMetadata() ) );
         }
     }
 
@@ -119,7 +119,7 @@ public class CachingTileStore implements TileStore {
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet( String id ) {
+    public TileDataSet getTileMatrixSet( String id ) {
         return tileMatrixSets.get( id );
     }
 
@@ -130,7 +130,7 @@ public class CachingTileStore implements TileStore {
 
     @Override
     public Tile getTile( String tileMatrixSet, String tileMatrix, int x, int y ) {
-        TileMatrix tm = tileMatrixSets.get( tileMatrixSet ).getTileMatrix( tileMatrix );
+        TileDataLevel tm = tileMatrixSets.get( tileMatrixSet ).getTileMatrix( tileMatrix );
         if ( tm == null ) {
             return null;
         }
@@ -152,7 +152,7 @@ public class CachingTileStore implements TileStore {
             return size;
         }
         int cnt = 0;
-        for ( TileMatrix tm : tileMatrixSets.get( tileMatrixSet ).getTileMatrices() ) {
+        for ( TileDataLevel tm : tileMatrixSets.get( tileMatrixSet ).getTileMatrices() ) {
             int[] ts = Tiles.getTileIndexRange( tm, envelope );
             if ( ts != null ) {
                 String id = tm.getMetadata().getIdentifier();

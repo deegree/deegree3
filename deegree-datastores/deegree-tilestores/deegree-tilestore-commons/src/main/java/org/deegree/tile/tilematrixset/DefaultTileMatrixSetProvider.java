@@ -56,10 +56,9 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.tile.TileMatrixMetadata;
-import org.deegree.tile.TileMatrixSetMetadata;
+import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig;
-import org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig.TileMatrix;
 
 /**
  * <code>DefaultTileMatrixSetProvider</code>
@@ -82,14 +81,14 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
     }
 
     @Override
-    public TileMatrixSetMetadata create( URL configUrl )
+    public TileMatrixSet create( URL configUrl )
                             throws ResourceInitException {
         try {
             TileMatrixSetConfig cfg = (TileMatrixSetConfig) JAXBUtils.unmarshall( "org.deegree.tile.tilematrixset.jaxb",
                                                                                   SCHEMA_URL, configUrl, workspace );
 
             ICRS crs = CRSManager.lookup( cfg.getCRS() );
-            for ( TileMatrix tm : cfg.getTileMatrix() ) {
+            for ( org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
                 double res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
                 double minx = tm.getTopLeftCorner().get( 0 );
                 double maxy = tm.getTopLeftCorner().get( 1 );
@@ -97,12 +96,11 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
                 double miny = maxy - tm.getTileHeight() * tm.getMatrixHeight() * res;
                 Envelope env = new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, crs );
                 SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-                TileMatrixMetadata md = new TileMatrixMetadata( tm.getIdentifier(), null, tm.getTileWidth(),
-                                                                tm.getTileHeight(), res, tm.getMatrixWidth(),
-                                                                tm.getMatrixHeight() );
+                TileMatrix md = new TileMatrix( tm.getIdentifier(), null, tm.getTileWidth(), tm.getTileHeight(), res,
+                                                tm.getMatrixWidth(), tm.getMatrixHeight() );
             }
 
-            return new TileMatrixSetMetadata( new File( configUrl.getPath() ).getName(), null, null );
+            return new TileMatrixSet( new File( configUrl.getPath() ).getName(), null, null );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
         }

@@ -42,7 +42,7 @@
 package org.deegree.tile.persistence;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.Tiles;
 
 /**
@@ -76,16 +76,16 @@ public abstract class AbstractTileStoreTransaction implements TileStoreTransacti
     @Override
     public void delete( String tileMatrixId, Envelope env ) {
         if ( tileMatrixId == null ) {
-            for ( TileMatrix matrix : store.getTileMatrixSet( tileMatrixSet ).getTileMatrices() ) {
+            for ( TileDataLevel matrix : store.getTileMatrixSet( tileMatrixSet ).getTileMatrices() ) {
                 delete( matrix, env );
             }
         } else {
-            TileMatrix matrix = store.getTileMatrixSet( tileMatrixSet ).getTileMatrix( tileMatrixId );
+            TileDataLevel matrix = store.getTileMatrixSet( tileMatrixSet ).getTileMatrix( tileMatrixId );
             delete( matrix, env );
         }
     }
 
-    private void delete( TileMatrix matrix, Envelope env ) {
+    private void delete( TileDataLevel matrix, Envelope env ) {
         int[] tileIndexRange = Tiles.getTileIndexRange( matrix, env );
         int minX = tileIndexRange[0];
         int minY = tileIndexRange[1];

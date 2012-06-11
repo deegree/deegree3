@@ -72,9 +72,9 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
-import org.deegree.tile.TileMatrixSetMetadata;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 
 /**
@@ -293,12 +293,12 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
                         writer.writeStartElement( WMTSNS, "TileMatrixSet" );
 
                         exportMetadata( md, true, id );
-                        TileMatrixSetMetadata metadata = ts.getTileMatrixSet( id ).getMetadata();
+                        TileMatrixSet metadata = ts.getTileMatrixSet( id ).getMetadata();
                         ICRS cs = metadata.getSpatialMetadata().getCoordinateSystems().get( 0 );
                         writeElement( writer, OWS110_NS, "SupportedCRS", cs.getAlias() );
 
-                        for ( TileMatrix tm : ts.getTileMatrixSet( id ).getTileMatrices() ) {
-                            TileMatrixMetadata tmmd = tm.getMetadata();
+                        for ( TileDataLevel tm : ts.getTileMatrixSet( id ).getTileMatrices() ) {
+                            TileMatrix tmmd = tm.getMetadata();
                             writer.writeStartElement( WMTSNS, "TileMatrix" );
                             double scale;
                             if ( cs.getUnits()[0].equals( Unit.DEGREE ) ) {

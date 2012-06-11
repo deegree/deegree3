@@ -45,9 +45,9 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -72,10 +72,10 @@ public class TileCacheDiskLayoutTest {
         double[] max = new double[] { 1000.0, 1000.0 };
         Envelope env = fac.createEnvelope( min, max, crs );
         SpatialMetadata spatialMetadata = new SpatialMetadata( env, singletonList( crs ) );
-        TileMatrixMetadata md = new TileMatrixMetadata( "00", spatialMetadata, 128, 128, 0.001, 1000000000, 1000000000 );
-        TileMatrix mockedMatrix = Mockito.mock( TileMatrix.class );
+        TileMatrix md = new TileMatrix( "00", spatialMetadata, 128, 128, 0.001, 1000000000, 1000000000 );
+        TileDataLevel mockedMatrix = Mockito.mock( TileDataLevel.class );
         when( mockedMatrix.getMetadata() ).thenReturn( md );
-        TileMatrixSet mockedMatrixSet = Mockito.mock( TileMatrixSet.class );
+        TileDataSet mockedMatrixSet = Mockito.mock( TileDataSet.class );
         when( mockedMatrixSet.getTileMatrix( "00" ) ).thenReturn( mockedMatrix );
         when( mockedMatrixSet.getTileMatrices() ).thenReturn( Collections.singletonList( mockedMatrix ) );
 

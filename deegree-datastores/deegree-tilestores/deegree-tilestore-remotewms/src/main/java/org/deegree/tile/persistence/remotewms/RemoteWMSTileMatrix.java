@@ -42,22 +42,22 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
 
 /**
- * {@link TileMatrix} that is backed by a {@link RemoteWMSTileStore}.
+ * {@link TileDataLevel} that is backed by a {@link RemoteWMSTileStore}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class RemoteWMSTileMatrix implements TileMatrix {
+class RemoteWMSTileMatrix implements TileDataLevel {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
-    private final TileMatrixMetadata metadata;
+    private final TileMatrix metadata;
 
     private final int tileSizeX, tileSizeY;
 
@@ -87,7 +87,7 @@ class RemoteWMSTileMatrix implements TileMatrix {
      * @param outputFormat
      *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      */
-    RemoteWMSTileMatrix( TileMatrixMetadata tileMd, String format, List<String> layers, List<String> styles,
+    RemoteWMSTileMatrix( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
                          WMSClient client, String outputFormat ) {
         this.metadata = tileMd;
         this.format = format;
@@ -100,7 +100,7 @@ class RemoteWMSTileMatrix implements TileMatrix {
     }
 
     @Override
-    public TileMatrixMetadata getMetadata() {
+    public TileMatrix getMetadata() {
         return metadata;
     }
 

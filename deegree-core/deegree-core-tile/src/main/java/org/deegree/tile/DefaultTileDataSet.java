@@ -63,17 +63,17 @@ import org.slf4j.Logger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class DefaultTileMatrixSet implements TileMatrixSet {
+public class DefaultTileDataSet implements TileDataSet {
 
-    private static final Logger LOG = getLogger( DefaultTileMatrixSet.class );
+    private static final Logger LOG = getLogger( DefaultTileDataSet.class );
 
-    private final Map<String, TileMatrix> matrices;
+    private final Map<String, TileDataLevel> matrices;
 
-    private TileMatrixSetMetadata metadata;
+    private TileMatrixSet metadata;
 
-    public DefaultTileMatrixSet( List<TileMatrix> matrices, TileMatrixSetMetadata metadata ) {
-        this.matrices = new LinkedHashMap<String, TileMatrix>();
-        for ( TileMatrix m : matrices ) {
+    public DefaultTileDataSet( List<TileDataLevel> matrices, TileMatrixSet metadata ) {
+        this.matrices = new LinkedHashMap<String, TileDataLevel>();
+        for ( TileDataLevel m : matrices ) {
             this.matrices.put( m.getMetadata().getIdentifier(), m );
         }
         this.metadata = metadata;
@@ -82,9 +82,9 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         // select correct matrix
-        Iterator<TileMatrix> iter = matrices.values().iterator();
-        TileMatrix matrix = iter.next();
-        TileMatrix next = matrix;
+        Iterator<TileDataLevel> iter = matrices.values().iterator();
+        TileDataLevel matrix = iter.next();
+        TileDataLevel next = matrix;
         while ( next.getMetadata().getResolution() <= resolution && iter.hasNext() ) {
             matrix = next;
             next = iter.next();
@@ -99,7 +99,7 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
             return Collections.<Tile> emptyList().iterator();
         }
 
-        final TileMatrix fmatrix = matrix;
+        final TileDataLevel fmatrix = matrix;
 
         LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.",
                    new Object[] { matrix.getMetadata().getResolution(), idxs[0], idxs[1], idxs[2], idxs[3] } );
@@ -133,17 +133,17 @@ public class DefaultTileMatrixSet implements TileMatrixSet {
     }
 
     @Override
-    public List<TileMatrix> getTileMatrices() {
-        return new ArrayList<TileMatrix>( matrices.values() );
+    public List<TileDataLevel> getTileMatrices() {
+        return new ArrayList<TileDataLevel>( matrices.values() );
     }
 
     @Override
-    public TileMatrixSetMetadata getMetadata() {
+    public TileMatrixSet getMetadata() {
         return metadata;
     }
 
     @Override
-    public TileMatrix getTileMatrix( String identifier ) {
+    public TileDataLevel getTileMatrix( String identifier ) {
         return matrices.get( identifier );
     }
 

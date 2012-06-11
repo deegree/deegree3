@@ -71,12 +71,12 @@ import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;
-import org.deegree.tile.DefaultTileMatrixSet;
+import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrixSet;
-import org.deegree.tile.TileMatrixSetMetadata;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
@@ -100,7 +100,7 @@ public class RemoteWMSTileStore implements TileStore {
 
     private final RemoteWMSTileStoreJAXB config;
 
-    private Map<String, TileMatrixSet> tileMatrixSets;
+    private Map<String, TileDataSet> tileMatrixSets;
 
     /**
      * Creates a new {@link RemoteWMSTileStore} instance.
@@ -110,7 +110,7 @@ public class RemoteWMSTileStore implements TileStore {
      */
     public RemoteWMSTileStore( RemoteWMSTileStoreJAXB config ) {
         this.config = config;
-        tileMatrixSets = new HashMap<String, TileMatrixSet>();
+        tileMatrixSets = new HashMap<String, TileDataSet>();
     }
 
     private static List<String> splitNullSafe( String csv ) {
@@ -145,7 +145,7 @@ public class RemoteWMSTileStore implements TileStore {
                 throw new ResourceInitException( "Configured CRS ('" + config.getCRS() + "') is not known." );
             }
 
-            TileMatrixSet tileMatrixSet = buildTileMatrixSet( crs, config, client );
+            TileDataSet tileMatrixSet = buildTileMatrixSet( crs, config, client );
             tileMatrixSets.put( tileMatrixSet.getMetadata().getIdentifier(), tileMatrixSet );
         }
     }
@@ -155,7 +155,7 @@ public class RemoteWMSTileStore implements TileStore {
         return tileMatrixSets.keySet();
     }
 
-    private static TileMatrixSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB.TileMatrixSet config,
+    private static TileDataSet buildTileMatrixSet( ICRS crs, RemoteWMSTileStoreJAXB.TileMatrixSet config,
                                                      WMSClient client ) {
         RequestParams requestParams = config.getRequestParams();
         List<String> layers = splitNullSafe( requestParams.getLayers() );
@@ -178,7 +178,7 @@ public class RemoteWMSTileStore implements TileStore {
                                    minScaleDenominator, levels, layers, styles, format, client, outputFormat );
     }
 
-    private static TileMatrixSet buildTileMatrixSet( String tmsId, SpatialMetadata smd, int tileWidth, int tileHeight,
+    private static TileDataSet buildTileMatrixSet( String tmsId, SpatialMetadata smd, int tileWidth, int tileHeight,
                                                      double scaleDenominator, int levels, List<String> layers,
                                                      List<String> styles, String format, WMSClient client,
                                                      String outputFormat ) {
@@ -187,7 +187,7 @@ public class RemoteWMSTileStore implements TileStore {
             outputFormat = outputFormat.substring( 6 );
         }
 
-        List<TileMatrix> matrices = new ArrayList<TileMatrix>( levels );
+        List<TileDataLevel> matrices = new ArrayList<TileDataLevel>( levels );
         Envelope bbox = smd.getEnvelope();
         double span0 = bbox.getSpan0();
         double span1 = bbox.getSpan1();
@@ -198,15 +198,15 @@ public class RemoteWMSTileStore implements TileStore {
             int numX = MathUtils.round( Math.ceil( span0 / ( res * tileWidth ) ) );
             int numY = MathUtils.round( Math.ceil( span1 / ( res * tileHeight ) ) );
 
-            TileMatrixMetadata md = new TileMatrixMetadata( id, smd, tileWidth, tileHeight, res, numX, numY );
+            TileMatrix md = new TileMatrix( id, smd, tileWidth, tileHeight, res, numX, numY );
 
-            TileMatrix m = new RemoteWMSTileMatrix( md, format, layers, styles, client, outputFormat );
+            TileDataLevel m = new RemoteWMSTileMatrix( md, format, layers, styles, client, outputFormat );
             matrices.add( m );
 
             scaleDenominator *= 2;
         }
         String f = outputFormat != null ? "image/" + outputFormat : format;
-        return new DefaultTileMatrixSet( matrices, new TileMatrixSetMetadata( tmsId, f, smd ) );
+        return new DefaultTileDataSet( matrices, new TileMatrixSet( tmsId, f, smd ) );
     }
 
     /**
@@ -256,7 +256,7 @@ public class RemoteWMSTileStore implements TileStore {
     }
 
     @Override
-    public TileMatrixSet getTileMatrixSet( String id ) {
+    public TileDataSet getTileMatrixSet( String id ) {
         return tileMatrixSets.get( id );
     }
 
@@ -267,7 +267,7 @@ public class RemoteWMSTileStore implements TileStore {
 
     @Override
     public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
-        TileMatrix m = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
+        TileDataLevel m = tileMatrixSets.get( tmsId ).getTileMatrix( tileMatrix );
         if ( m == null ) {
             return null;
         }

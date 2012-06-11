@@ -37,12 +37,12 @@ package org.deegree.tile.persistence.filesystem;
 
 import java.io.File;
 
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.TileDataLevel;
+import org.deegree.tile.TileDataSet;
 
 /**
- * Implementations define how the {@link FileSystemTileStore} maps between the {@link TileMatrix} instances in a
- * {@link TileMatrixSet} and image files on the file system.
+ * Implementations define how the {@link FileSystemTileStore} maps between the {@link TileDataLevel} instances in a
+ * {@link TileDataSet} and image files on the file system.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,7 +52,7 @@ import org.deegree.tile.TileMatrixSet;
 public interface DiskLayout {
 
     /**
-     * Returns the image file for the specified {@link TileMatrix} and tile indexes.
+     * Returns the image file for the specified {@link TileDataLevel} and tile indexes.
      * 
      * @param matrixId
      *            identifier of the matrix in the matrix set, must not be <code>null</code>
@@ -72,10 +72,10 @@ public interface DiskLayout {
     String getFileType();
 
     /**
-     * Assigns the given {@link TileMatrixSet}.
+     * Assigns the given {@link TileDataSet}.
      * 
      * @param set
      *            tile matrix to assign, must not be <code>null</code>
      */
-    void setTileMatrixSet( TileMatrixSet set );
+    void setTileMatrixSet( TileDataSet set );
 }

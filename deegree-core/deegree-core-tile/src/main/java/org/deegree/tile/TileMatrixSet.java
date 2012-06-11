@@ -38,55 +38,81 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+
 package org.deegree.tile;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.deegree.geometry.Envelope;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.Resource;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
- * A <code>TileMatrixSet</code> is a collection of tile matrices.
+ * Metadata on a {@link TileDataSet}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
+public class TileMatrixSet implements Resource {
 
-public interface TileMatrixSet {
+    private final String identifier;
 
-    /**
-     * Constructs an iterator of tiles for a resolution and envelope.
-     * 
-     * @param envelope
-     *            all tiles intersecting with this envelope will be returned.
-     * @param resolution
-     *            selects the tile matrix, the smallest tile matrix with a sufficient resolution will be used
-     * @return an iterator of tiles, never null.
-     */
-    Iterator<Tile> getTiles( Envelope envelope, double resolution );
+    private final String mimeType;
+
+    private final SpatialMetadata spatialMetadata;
 
     /**
-     * Returns the tile matrices of this matrix set.
-     * 
-     * @return the list of tile matrices this matrix set contains.
-     */
-    List<TileMatrix> getTileMatrices();
-
-    /**
-     * Returns the metadata about this matrix set.
-     * 
-     * @return never null.
-     */
-    TileMatrixSetMetadata getMetadata();
-
-    /**
-     * Returns a single tile matrix identified by the identifier.
+     * Creates a new {@link TileMatrixSet} instance.
      * 
      * @param identifier
-     * @return null, if no such matrix
+     *            identifier for the {@link TileDataSet}, must not be <code>null</code>
+     * @param mimeType
+     *            mime type of the tiles, must not be <code>null</code>
+     * @param spatialMetadata
+     *            envelope and reference system used by the tiles, must not be <code>null</code>
      */
-    TileMatrix getTileMatrix( String identifier );
+    public TileMatrixSet( String identifier, String mimeType, SpatialMetadata spatialMetadata ) {
+        this.identifier = identifier;
+        this.mimeType = mimeType;
+        this.spatialMetadata = spatialMetadata;
+    }
 
+    /**
+     * Returns the identifier for the {@link TileDataSet}.
+     * 
+     * @return identifier, never <code>null</code>
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * Returns the image format of the tiles.
+     * 
+     * @return the mime type, never <code>null</code>
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    /**
+     * Returns the envelope and reference system used by the tiles.
+     * 
+     * @return envelope and reference system, never <code>null</code>
+     */
+    public SpatialMetadata getSpatialMetadata() {
+        return spatialMetadata;
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to do
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
+    }
 }

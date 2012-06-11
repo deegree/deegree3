@@ -38,19 +38,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+package org.deegree.tile;
 
-package org.deegree.tile.persistence.cache;
+import java.util.Iterator;
+import java.util.List;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
-
-import org.apache.commons.io.IOUtils;
-import org.deegree.tile.Tile;
-import org.deegree.tile.TileDataLevel;
-import org.deegree.tile.TileMatrix;
+import org.deegree.geometry.Envelope;
 
 /**
- * <code>CachingTileMatrix</code>
+ * A <code>TileMatrixSet</code> is a collection of tile matrices.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -58,41 +54,39 @@ import org.deegree.tile.TileMatrix;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class CachingTileMatrix implements TileDataLevel {
+public interface TileDataSet {
 
-    private TileDataLevel tileMatrix;
+    /**
+     * Constructs an iterator of tiles for a resolution and envelope.
+     * 
+     * @param envelope
+     *            all tiles intersecting with this envelope will be returned.
+     * @param resolution
+     *            selects the tile matrix, the smallest tile matrix with a sufficient resolution will be used
+     * @return an iterator of tiles, never null.
+     */
+    Iterator<Tile> getTiles( Envelope envelope, double resolution );
 
-    private Cache cache;
+    /**
+     * Returns the tile matrices of this matrix set.
+     * 
+     * @return the list of tile matrices this matrix set contains.
+     */
+    List<TileDataLevel> getTileMatrices();
 
-    private String identifier;
+    /**
+     * Returns the metadata about this matrix set.
+     * 
+     * @return never null.
+     */
+    TileMatrixSet getMetadata();
 
-    public CachingTileMatrix( TileDataLevel tileMatrix, Cache cache ) {
-        this.tileMatrix = tileMatrix;
-        this.cache = cache;
-        this.identifier = tileMatrix.getMetadata().getIdentifier();
-    }
-
-    @Override
-    public TileMatrix getMetadata() {
-        return tileMatrix.getMetadata();
-    }
-
-    @Override
-    public Tile getTile( int x, int y ) {
-        Tile tile = tileMatrix.getTile( x, y );
-        String key = identifier + "_" + x + "_" + y;
-        Element elem = cache.get( key );
-        byte[] bs = elem == null ? null : (byte[]) elem.getValue();
-        if ( bs != null ) {
-            return new CachedTile( bs, tile.getEnvelope() );
-        }
-        try {
-            bs = IOUtils.toByteArray( tile.getAsStream() );
-            cache.put( new Element( key, bs ) );
-            return new CachedTile( bs, tile.getEnvelope() );
-        } catch ( Throwable e ) {
-            return tile;
-        }
-    }
+    /**
+     * Returns a single tile matrix identified by the identifier.
+     * 
+     * @param identifier
+     * @return null, if no such matrix
+     */
+    TileDataLevel getTileMatrix( String identifier );
 
 }

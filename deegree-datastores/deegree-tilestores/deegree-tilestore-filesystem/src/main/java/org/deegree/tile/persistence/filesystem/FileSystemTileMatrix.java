@@ -40,11 +40,11 @@ import java.io.File;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.tile.Tile;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixMetadata;
 
 /**
- * {@link TileMatrix} implementation for the {@link FileSystemTileStore}.
+ * {@link TileDataLevel} implementation for the {@link FileSystemTileStore}.
  * 
  * @see DiskLayout
  * 
@@ -53,11 +53,11 @@ import org.deegree.tile.TileMatrixMetadata;
  * 
  * @version $Revision$, $Date$
  */
-class FileSystemTileMatrix implements TileMatrix {
+class FileSystemTileMatrix implements TileDataLevel {
 
     private final SimpleGeometryFactory fac = new SimpleGeometryFactory();
 
-    private final TileMatrixMetadata metadata;
+    private final TileMatrix metadata;
 
     private final DiskLayout layout;
 
@@ -67,13 +67,13 @@ class FileSystemTileMatrix implements TileMatrix {
      * @param metadata
      * @param layout
      */
-    FileSystemTileMatrix( TileMatrixMetadata metadata, DiskLayout layout ) {
+    FileSystemTileMatrix( TileMatrix metadata, DiskLayout layout ) {
         this.metadata = metadata;
         this.layout = layout;
     }
 
     @Override
-    public TileMatrixMetadata getMetadata() {
+    public TileMatrix getMetadata() {
         return metadata;
     }
 
