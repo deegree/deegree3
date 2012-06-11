@@ -1,2 +1,3 @@
 name=metadata stores
 start_view=/console/metadatastore/buttons
+category=datastore
