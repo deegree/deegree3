@@ -909,7 +909,7 @@ public class RTree<T> extends SpatialIndex<T> {
     /**
      * @param i
      */
-    private double wfFunction( int i ) {
+    private final double wfFunction( final int i ) {
         double result;
         double miu = ( 1 - 2 * smallm / ( bigM + 1 ) ) * ASYM;
         double xi = 2 * i / ( bigM + 1 ) - 1;
@@ -1030,7 +1030,7 @@ public class RTree<T> extends SpatialIndex<T> {
 
     /**
      * Sort the rectangles by their minimum Y then by their maximum Y
-     * 
+     * TODO: fix the algorithm to use actual rtree* sorting
      * @param entriesOrderY
      */
     private void sortEntriesByY( NodeEntry<T>[] entriesOrderY ) {
@@ -1060,7 +1060,7 @@ public class RTree<T> extends SpatialIndex<T> {
 
     /**
      * Sort the entries' bboxes by their minimum X then by their maximum X
-     * 
+     * TODO: fix the algorithm to use actual rtree* sorting
      * @param entriesOrderX
      */
     private void sortEntriesByX( NodeEntry<T>[] entriesOrderX ) {
