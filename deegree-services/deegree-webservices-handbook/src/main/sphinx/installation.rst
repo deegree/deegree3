@@ -21,7 +21,7 @@ In order to run deegree webservices on your machine, we recommend OpenJDK 7. Alt
 Downloading
 -----------
 
-deegree webservices 3.2 downloads are available on the `deegree download page <http://wiki.deegree.org/deegreeWiki/DownloadPage>`_. You have the choice of two flavors:
+deegree webservices 3.2 downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice of two flavors:
 
 * *ZIP*: Multi-operating system package bundles with Apache Tomcat
 * *WAR*: Plain Java Web Archive for deployment in an existing servlet container [#f1]_

@@ -4,7 +4,7 @@
 Getting started
 ===============
 
-In the previous chapter, we learned how to install and start deegree webservices. In this chapter, we will introduce the service console and learn how to perform basic tasks such as downloading and activating example configurations.
+In the previous chapter, you learned how to install and start deegree webservices. In this chapter, we will introduce the service console and learn how to perform basic tasks such as downloading and activating example configurations. In deegree terminology, a configuration for a deegree instance is called "deegree workspace". A workspace is a well-defined directory of configuration files that defines the different aspects of a deegree instance (active web services, data access, layers, etc). The following chapter describes the inner structure of a deegree workspace, but for the remainder of this chapter, it is sufficient to understand that it is the configuration of a deegree webservice instance.
 
 -------------------------------
 Using deegree's service console
@@ -20,17 +20,17 @@ The service console is a web-based administration interface for configuring your
    deegree webservices console
 
 .. tip::
-  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.1.0. The port number and webapp name depend on your installation/deployment.
+  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2-pre8. The port number and webapp name depend on your installation/deployment.
 
 .. tip::
   You can access the service console from other machines on your network by exchanging *localhost* with the name or IP address of the machine that runs the deegree webservices.
 
 Note that most links are grayed out, except for the following ones:
 
-* Modules: See installed deegree modules and versions
-* send requests: Access a simple user interface for sending raw OGC XML requests to the service (useful for testing). Until you activate some services, this is not be very useful, though.
-* see layers: Shows the layers provided by the WMS in a simple web client. Until you activate the WMS, only an OpenStreetMap base layer is available.
-* deegree Wiki: External link to the deegree wiki with information on deegree (currently a bit outdated, better cling to the handbook)
+* **Modules**: See installed deegree modules and versions
+* **send requests**: Access a simple user interface for sending raw OGC XML requests to the service (useful for testing). Until you activate some services, this is not be very useful, though.
+* **see layers**: Shows the layers provided by the WMS in a simple web client. Until you activate the WMS, only an OpenStreetMap base layer is available.
+* **deegree Wiki**: External link to the deegree wiki with information on deegree (currently a bit outdated, better cling to the handbook)
 
 These links do not allow to change any settings of your deegree installation. In order to gain access to the administration tasks, you need to login first. 
 
@@ -67,6 +67,8 @@ Click on the *workspace* link:
    :target: _images/browser.png
 
    Workspace section
+
+The bottom of the workspace view lists the available example configurations.
 
 .. _anchor-workspace-utah:
 
