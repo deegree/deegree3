@@ -180,13 +180,19 @@ public final class RecordPropertyParser extends XMLAdapter {
                                                     new XPath( "./gmd:codeSpace/@gco:nilReason", nsContext ), null );
 
             if ( nilReasonCRS == null && nilReasonAuth == null ) {
-                String crs = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString", nsContext ),
-                                              null );
-                String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
-                                                                              nsContext ), null );
-                String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
-                                                                            nsContext ), null );
-                crsList.add( new CRS( crs, crsAuthority, crsVersion ) );
+                try {
+                    String crs = getRequiredNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
+                                                                                 nsContext ) );
+                    String crsAuthority = getNodeAsString( crsElement,
+                                                           new XPath( "./gmd:codeSpace/gco:CharacterString", nsContext ),
+                                                           null );
+                    String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
+                                                                                nsContext ), null );
+                    crsList.add( new CRS( crs, crsAuthority, crsVersion ) );
+                } catch ( Exception e ) {
+                    String msg = Messages.getMessage( "ERROR_PARSING", "" + "", e.getMessage() );
+                    LOG.error( msg );
+                }
             }
         }
         qp.setCrs( crsList );
