@@ -62,9 +62,12 @@ public class PropertyIsNil extends ComparisonOperator {
 
     private final Expression propName;
 
+    private final String nilReason;
+
     public PropertyIsNil( Expression propName, String nilReason, MatchAction matchAction ) {
         super( true, matchAction );
         this.propName = propName;
+        this.nilReason = nilReason;
     }
 
     public Expression getPropertyName() {
@@ -109,4 +112,9 @@ public class PropertyIsNil extends ComparisonOperator {
     public Expression[] getParams() {
         return new Expression[] { propName };
     }
+
+    public String getNilReason() {
+        return nilReason;
+    }
+
 }
