@@ -7,40 +7,40 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:dg="http://deegree.org/jsf"
 	xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
-<h:head>
-	<title>deegree 3 services</title>
-</h:head>
+
 <h:body>
 	<ui:composition template="layout.xhtml">
 		<ui:define name="center">
-			<h:outputText styleClass="welcomeText" value="#{labels.welcome}" />
-			<br />
-			<br />
-			<h:panelGroup rendered="#{logBean.loggedIn}">
-				<h:panelGroup styleClass="welcomeText">
-					<br />
-					<h:outputText
-						value="Use the menu on the right to configure this deegree instance:" />
-					<ul>
-						<li>general: Activate example configurations, set proxy
-							settings, display version info</li>
-						<li>web services: Configure OGC web services</li>
-						<li>data stores: Configure access to data sources</li>
-						<li>map layers: Configure map layers and styles</li>
-						<li>server connections: Configure connections to external
-							servers</li>
-						<li>processes: Configure geospatial WPS processes</li>
-						<li>clients: View WMS maps or send raw XML requests</li>
-					</ul>
-				</h:panelGroup>
+			<h:panelGroup>
+				<h:outputText styleClass="welcomeText" value="#{labels.welcome}" />
 				<br />
-				<h:panelGroup styleClass="welcomeText">
-					<h:outputText value="Official documentation is available " />
-					<h:outputLink styleClass="welcomeLink"
-						value="http://www.deegree.org/Documentation">
-						<h:outputText value="here" />
-					</h:outputLink>
-					<h:outputText value="." />
+				<br />
+				<h:panelGroup rendered="#{logBean.loggedIn}">
+					<h:panelGroup styleClass="welcomeText">
+						<br />
+						<h:outputText
+							value="Use the menu on the right to configure this deegree instance:" />
+						<ul>
+							<li>general: Download and activate example configurations,
+								set proxy settings, display version info</li>
+							<li>web services: Configure OGC web services</li>
+							<li>data stores: Configure access to data sources</li>
+							<li>map layers: Configure map layers and styles</li>
+							<li>server connections: Configure connections to external
+								servers</li>
+							<li>processes: Configure geospatial WPS processes</li>
+							<li>clients: View WMS maps or send raw XML requests</li>
+						</ul>
+					</h:panelGroup>
+					<br />
+					<h:panelGroup styleClass="welcomeText">
+						<h:outputText value="Official documentation is available " />
+						<h:outputLink styleClass="welcomeLink"
+							value="http://www.deegree.org/Documentation">
+							<h:outputText value="here" />
+						</h:outputLink>
+						<h:outputText value="." />
+					</h:panelGroup>
 				</h:panelGroup>
 			</h:panelGroup>
 		</ui:define>

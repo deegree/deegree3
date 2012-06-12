@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
@@ -15,7 +14,6 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=8" />
 </h:head>
 <h:body>
-
 	<div id="PLEASEWAIT">
 		<div class="curved">
 			<b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
@@ -30,20 +28,15 @@
 	<div id="PLEASEWAIT_BG"></div>
 
 	<div id="container">
-
 		<div id="header">
 			<div id="logo">
-				<!-- 
-  <pre><h:outputText value="#{applicationBean.logo}" /></pre> 
-  -->
 				<h:panelGroup rendered="#{logBean.loggedIn}">
 					<h:form>
 						<h:commandButton value="#{labels.apply_changes}"
-							styleClass="button" action="#{workspace.applyChanges}"
-							onclick="show();" rendered="#{workspace.pendingChanges}" />
-						<h:commandButton value="#{labels.apply_changes}"
-							styleClass="buttongray" action="#{workspace.applyChanges}"
-							onclick="show();" rendered="#{!workspace.pendingChanges}" />
+							styleClass="#{workspace.pendingChanges ? 'button' : 'buttongray'}">
+							<f:ajax listener="#{workspace.applyChanges}" render="@all"
+								onevent="blockInput" />
+						</h:commandButton>
 						<h:outputText value="#{workspace.lastMessage}"
 							styleClass="attention" rendered="#{workspace.pendingChanges}" />
 						<h:outputText value="#{workspace.lastMessage}"
@@ -59,101 +52,24 @@
 					<ui:include src="/console/jsf/logout.xhtml" />
 				</h:panelGroup>
 			</div>
-			<div class="clear" />
+
 		</div>
 
+
 		<div id="main">
-			<div id="left">
-				<h:form>
-					<h:panelGrid id="menuPG" columns="1">
+			<h:form prependId="false">
+				<ui:include src="menu.xhtml" />
+			</h:form>
 
-						<h:panelGroup rendered="#{logBean.loggedIn}">
-
-							<h:outputText styleClass="navi" value="general" />
-							<tr><td>
-							<h:link styleClass="naviactive" value="workspace"
-								outcome="/console/workspace/workspace.xhtml"
-								disabled="#{!logBean.loggedIn}"
-								rendered="#{facesContext.viewRoot.viewId == '/console/workspace/workspace.xhtml'}" />
-							<h:link styleClass="navi" value="workspace"
-								outcome="/console/workspace/workspace.xhtml"
-								disabled="#{!logBean.loggedIn}"
-								rendered="#{facesContext.viewRoot.viewId != '/console/workspace/workspace.xhtml'}" />
-					        </td></tr>
-							<tr><td>
-							<h:link styleClass="naviactive" value="proxy"
-								outcome="/console/jsf/proxy.xhtml"
-								disabled="#{!logBean.loggedIn}"
-								rendered="#{facesContext.viewRoot.viewId == '/console/jsf/proxy.xhtml'}" />
-							<h:link styleClass="navi" value="proxy"
-								outcome="/console/jsf/proxy.xhtml"
-								disabled="#{!logBean.loggedIn}"
-								rendered="#{facesContext.viewRoot.viewId != '/console/jsf/proxy.xhtml'}" />
-					        </td></tr>
-							<tr><td>
-							<h:link styleClass="naviactive" value="module info"
-								outcome="/console/jsf/modules.xhtml"
-								rendered="#{facesContext.viewRoot.viewId == '/console/jsf/modules.xhtml'}" />
-							<h:link styleClass="navi" value="module info"
-								outcome="/console/jsf/modules.xhtml"
-								rendered="#{facesContext.viewRoot.viewId != '/console/jsf/modules.xhtml'}" />
-					        </td></tr>					        
-							<tr>
-								<td height="5" />
-							</tr>
-
-							<dgc:menuitem items="#{configManager.webserviceManagers}"
-								displayname="web services" />
-							<tr>
-								<td height="5" />
-							</tr>
-							<dgc:menuitem items="#{configManager.datastoreManagers}"
-								displayname="data stores" />
-							<tr>
-								<td height="5" />
-							</tr>
-							<dgc:menuitem items="#{configManager.mapManagers}"
-								displayname="map layers" />
-							<tr>
-								<td height="5" />
-							</tr>
-							<dgc:menuitem items="#{configManager.connectionManagers}"
-								displayname="server connections" />
-							<tr>
-								<td height="5" />
-							</tr>
-							<dgc:menuitem items="#{configManager.processManagers}"
-								displayname="processes" />
-							<tr>
-								<td height="5" />
-							</tr>
-						</h:panelGroup>
-
-						<h:outputText styleClass="navi" value="clients" />
-						<h:link styleClass="naviExtern"
-							outcome="/console/client/client.xhtml"
-							value="#{labels.link_genericClient}" />
-						<h:outputLink styleClass="naviExtern"
-							value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
-							<h:outputText value="#{labels.link_wmsClient}" />
-						</h:outputLink>
-					</h:panelGrid>
-				</h:form>
-			</div>
-
-			<div id="center">
+			<h:panelGroup id="center" layout="block">
 				<ui:insert name="center" />
 				<h:panelGroup>
 					<h:messages errorClass="consoleError" />
 				</h:panelGroup>
-			</div>
-			<!--  
-    <div id="right"><h:panelGrid columns="1">
-    </h:panelGrid></div>
-	-->
+			</h:panelGroup>
+
 			<div class="clear" />
 		</div>
-
 	</div>
 </h:body>
 </html>

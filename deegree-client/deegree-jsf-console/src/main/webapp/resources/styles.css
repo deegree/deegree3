@@ -1,3 +1,8 @@
+.menuitem {
+	margin-left:15px;
+}
+
+
 body {
 	background-color: #ffffff;
 	color: grey;
@@ -47,27 +52,35 @@ body {
 #main {
 	width:860px;
 	height:550px;
+	
 	margin-left:60px;
 	
 }
 
 #left {
-	margin-left: 20 px;
-	float: left;
+	position: absolute;
+	top: 140px;
+	left: 50px;
 	width: 160px;
 }
 
 #center {
-	padding-right:20px;
-	margin-right: 10px;
-	float: right;
+	margin-left: 175px;
 	width: 600px;
 	height: 485px;
+    font-size: small;
+	text-align: left;
+	overflow-x: auto;
+	overflow-y: auto;
+/*	float:right;
+	padding-right:20px;
+	margin-right: 10px;
+
 	font-size: small;
 	text-align: left;
 	overflow-x: auto;
 	overflow-y: auto;
-	
+	*/
 }
 
 #footer {
