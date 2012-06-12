@@ -139,11 +139,31 @@ public class ConfigManager implements Serializable {
         proxyConfig = new Config( proxyLocation, schema, example, "/console/jsf/proxy" );
     }
 
-    public List<ResourceManagerMetadata2> getResourceManagers() {
+    public List<ResourceManagerMetadata2> getWebserviceManagers() {
+        return getResourceManagers( "service" );
+    }
+
+    public List<ResourceManagerMetadata2> getDatastoreManagers() {
+        return getResourceManagers( "datastore" );
+    }
+
+    public List<ResourceManagerMetadata2> getMapManagers() {
+        return getResourceManagers( "map" );
+    }
+
+    public List<ResourceManagerMetadata2> getProcessManagers() {
+        return getResourceManagers( "process" );
+    }
+
+    public List<ResourceManagerMetadata2> getConnectionManagers() {
+        return getResourceManagers( "connection" );
+    }
+    
+    public List<ResourceManagerMetadata2> getResourceManagers( String category ) {
         List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
             ResourceManagerMetadata2 md = ResourceManagerMetadata2.getMetadata( mgr );
-            if ( md != null ) {
+            if ( md != null && category.equals( md.getCategory() ) ) {
                 rmMetadata.add( md );
             }
         }
@@ -197,17 +217,17 @@ public class ConfigManager implements Serializable {
     }
 
     public String startWizard() {
-                            
+
         String nextView = "/console/jsf/wizard";
-        
+
         ResourceProvider provider = currentResourceManager.getProvider( newConfigType );
         if ( provider == null ) {
             provider = currentResourceManager.getProviders().get( 0 );
         }
-        
+
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         nextView = md.getConfigWizardView();
-        
+
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         map.put( "newConfigId", newConfigId );
         map.put( "configManager", this );

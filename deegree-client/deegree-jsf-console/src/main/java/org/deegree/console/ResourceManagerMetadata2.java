@@ -67,7 +67,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
 
     private static Map<Class<? extends ResourceManager>, ResourceManagerMetadata2> rmClassToMd = new HashMap<Class<? extends ResourceManager>, ResourceManagerMetadata2>();
 
-    private String name;
+    private String name, category;
 
     private String startView = "/console/jsf/resources";
 
@@ -105,6 +105,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
                 if ( name != null ) {
                     name = name.trim();
                 }
+                category = props.getProperty( "category" );
                 if ( props.containsKey( "start_view" ) ) {
                     startView = props.getProperty( "start_view" ).trim();
                 }
@@ -136,6 +137,10 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
 
     public String getName() {
         return name;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getStartView() {

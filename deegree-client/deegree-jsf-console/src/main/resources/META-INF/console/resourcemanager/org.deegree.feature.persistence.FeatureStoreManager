@@ -1,3 +1,3 @@
-name=feature stores
+name=feature
 start_view=/console/featurestore/buttons
 category=datastore
