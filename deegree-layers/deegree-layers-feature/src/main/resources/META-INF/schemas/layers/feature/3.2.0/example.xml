@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/feature http://schemas.deegree.org/layers/feature/3.2.0/feature.xsd"
+   xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:g="http://www.deegree.org/metadata/spatial" xsi:schemaLocation="http://www.deegree.org/layers/feature http://schemas.deegree.org/layers/feature/3.2.0/feature.xsd"
   configVersion="3.2.0">
   <FeatureStoreId>inspire</FeatureStoreId>
   <FeatureLayer>
@@ -14,6 +14,9 @@
     </Filter>
     <l:Name>example</l:Name>
     <d:Title>Example INSPIRE layer</d:Title>
+    <!-- 
+    <g:CRS>EPSG:26912 EPSG:4326 EPSG:4258 CRS:84</g:CRS>
+     -->
     <l:StyleRef>
       <l:StyleStoreId>inspire</l:StyleStoreId>
       <l:Style>
