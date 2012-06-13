@@ -1,0 +1,22 @@
+<Themes xmlns="http://www.deegree.org/themes/standard" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
+
+  <LayerStoreId>airports</LayerStoreId>
+
+  <Theme>
+    <d:Title>Root theme</d:Title>
+    <s:CRS>EPSG:26912 EPSG:4326 EPSG:4258 CRS:84</s:CRS>
+    <!-- 
+    <Layer>water</Layer>
+    <Layer>water2</Layer>
+     -->
+    <Theme>
+    <d:Title>Transportation</d:Title>
+      <Theme>
+        <Identifier>airports</Identifier>
+        <d:Title>Airports of Utah</d:Title>
+        <Layer>airports</Layer>
+      </Theme>
+    </Theme>
+  </Theme>
+
+</Themes>
