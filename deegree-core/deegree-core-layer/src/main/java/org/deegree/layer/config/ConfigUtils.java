@@ -95,13 +95,15 @@ public class ConfigUtils {
                 continue;
             }
             if ( srt.getStyle() == null || srt.getStyle().isEmpty() ) {
-                for ( Style s : store.getAll( layerName ) ) {
-                    if ( defaultStyle == null ) {
-                        defaultStyle = s;
-                        defaultLegendStyle = s;
+                if ( store.getAll( layerName ) != null ) {
+                    for ( Style s : store.getAll( layerName ) ) {
+                        if ( defaultStyle == null ) {
+                            defaultStyle = s;
+                            defaultLegendStyle = s;
+                        }
+                        styleMap.put( s.getName(), s );
+                        legendStyleMap.put( s.getName(), s );
                     }
-                    styleMap.put( s.getName(), s );
-                    legendStyleMap.put( s.getName(), s );
                 }
                 continue;
             }
