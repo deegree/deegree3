@@ -67,6 +67,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.types.AppSchemas;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.Expression;
@@ -156,10 +157,12 @@ public class FeatureLayer extends AbstractLayer {
             return null;
         }
 
+        filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), ftName ) );
+
         List<Query> queries = new LinkedList<Query>();
         Integer maxFeats = query.getRenderingOptions().getMaxFeatures( getMetadata().getName() );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
-        if ( featureType == null && featureStore != null ) {
+        if ( ftName == null && featureStore != null ) {
             final Filter filter2 = filter;
             queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
@@ -171,7 +174,7 @@ public class FeatureLayer extends AbstractLayer {
                                      }
                                  } ) );
         } else {
-            Query fquery = new Query( featureType, Filters.addBBoxConstraint( bbox, filter, geomProp ),
+            Query fquery = new Query( ftName, Filters.addBBoxConstraint( bbox, filter, geomProp ),
                                       round( query.getScale() ), maxFeatures, query.getResolution() );
             queries.add( fquery );
         }
@@ -181,7 +184,7 @@ public class FeatureLayer extends AbstractLayer {
             return null;
         }
 
-        return new FeatureLayerData( queries, featureStore, maxFeatures, style );
+        return new FeatureLayerData( queries, featureStore, maxFeatures, style, ftName );
     }
 
     @Override
@@ -202,7 +205,9 @@ public class FeatureLayer extends AbstractLayer {
 
         filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
 
-        QName featureType = style == null ? null : style.getFeatureType();
+        QName featureType = style == null ? this.featureType : style.getFeatureType();
+
+        filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), featureType ) );
 
         LOG.debug( "Querying the feature store(s)..." );
 
@@ -223,7 +228,7 @@ public class FeatureLayer extends AbstractLayer {
 
         LOG.debug( "Finished querying the feature store(s)." );
 
-        return new FeatureLayerData( queries, featureStore, query.getFeatureCount(), style );
+        return new FeatureLayerData( queries, featureStore, query.getFeatureCount(), style, featureType );
     }
 
     static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {

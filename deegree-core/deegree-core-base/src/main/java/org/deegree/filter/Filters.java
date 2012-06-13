@@ -40,6 +40,7 @@ import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -470,6 +471,7 @@ public class Filters {
                               name.getLocalPart() );
                     return e;
                 }
+                LOG.debug( "Repairing namespace binding for property name {}", name.getLocalPart() );
                 return new ValueReference( bindings.get( name.getLocalPart() ) );
             }
             return e;
@@ -614,15 +616,18 @@ public class Filters {
      * Tries to repair broken property name bindings in the filter.
      * 
      * @param filter
-     * @param bindings
-     *            binds local names to qualified names
      * @param validNames
      *            a set of valid qnames
      * @return the repaired filter
      */
-    public static <T extends Filter> T repair( T filter, Map<String, QName> bindings, Set<QName> validNames ) {
+    public static <T extends Filter> T repair( T filter, Set<QName> validNames ) {
         if ( !( filter instanceof OperatorFilter ) ) {
             return filter;
+        }
+
+        Map<String, QName> bindings = new HashMap<String, QName>();
+        for ( QName name : validNames ) {
+            bindings.put( name.getLocalPart(), name );
         }
 
         Operator o = ( (OperatorFilter) filter ).getOperator();

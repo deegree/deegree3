@@ -37,8 +37,13 @@ package org.deegree.layer.persistence.feature;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
@@ -48,6 +53,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
+import org.deegree.feature.types.AppSchemas;
 import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -82,12 +88,17 @@ public class FeatureLayerData implements LayerData {
 
     private final FeatureStore featureStore;
 
-    public FeatureLayerData( List<Query> queries, FeatureStore featureStore, int maxFeatures, Style style ) {
+    public FeatureLayerData( List<Query> queries, FeatureStore featureStore, int maxFeatures, Style style, QName ftName ) {
         this.queries = queries;
         this.featureStore = featureStore;
         this.maxFeatures = maxFeatures;
         this.style = style;
-        evaluator = new GMLObjectXPathEvaluator( );
+        Map<String, QName> bindings = new HashMap<String, QName>();
+        Set<QName> validNames = AppSchemas.collectProperyNames( featureStore.getSchema(), ftName );
+        for ( QName name : validNames ) {
+            bindings.put( name.getLocalPart(), name );
+        }
+        evaluator = new GMLObjectXPathEvaluator( bindings );
     }
 
     @Override

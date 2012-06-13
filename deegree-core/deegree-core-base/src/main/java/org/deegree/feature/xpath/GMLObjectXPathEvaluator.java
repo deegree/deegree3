@@ -57,6 +57,8 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link XPathEvaluator} for {@link GMLObject} objects.
@@ -68,7 +70,23 @@ import org.jaxen.XPath;
  */
 public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
 
+    private static Logger LOG = LoggerFactory.getLogger( GMLObjectXPathEvaluator.class );
+
     private static Map<GMLObject, Map<ValueReference, TypedObjectNode[]>> EVAL_CACHE = null;
+
+    private Map<String, QName> bindings;
+
+    public GMLObjectXPathEvaluator() {
+        // default constructor
+    }
+
+    /**
+     * @param bindings
+     *            a mapping from local name to qname to use for repairing broken filters, may be null
+     */
+    public GMLObjectXPathEvaluator( Map<String, QName> bindings ) {
+        this.bindings = bindings;
+    }
 
     /**
      * temporary hack to have a hook for enabliing caching (don't call this unless you know what you are doing)
@@ -95,6 +113,14 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
 
         // simple property with just a simple element step?
         QName simplePropName = propName.getAsQName();
+        if ( bindings != null
+             && ( simplePropName.getNamespaceURI() == null || simplePropName.getNamespaceURI().isEmpty() ) ) {
+            QName altName = bindings.get( simplePropName.getLocalPart() );
+            if ( altName != null ) {
+                LOG.debug( "Repairing namespace binding for property {}", simplePropName.getLocalPart() );
+                simplePropName = altName;
+            }
+        }
         if ( simplePropName != null ) {
             List<Property> props = context.getProperties( simplePropName );
             TypedObjectNode[] propArray = new TypedObjectNode[props.size()];
