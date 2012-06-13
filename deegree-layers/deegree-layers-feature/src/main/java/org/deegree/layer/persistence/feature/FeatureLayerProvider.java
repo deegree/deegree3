@@ -150,7 +150,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             LayerMetadata md = new LayerMetadata( name, desc, smd );
             md.getFeatureTypes().add( ft );
             Map<String, Style> styles = new LinkedHashMap<String, Style>();
-            if ( sstore != null ) {
+            if ( sstore != null && sstore.getAll( name ) != null ) {
                 for ( Style s : sstore.getAll( name ) ) {
                     styles.put( s.getName(), s );
                     if ( !styles.containsKey( "default" ) ) {
