@@ -75,6 +75,9 @@ public class MetadataJAXBConverter {
     public static final Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType> CODETYPE_MAPPER = new Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType>() {
         @Override
         public CodeType apply( org.deegree.commons.metadata.description.jaxb.CodeType u ) {
+            if ( u == null ) {
+                return null;
+            }
             return new CodeType( u.getValue(), u.getCodeSpace() );
         }
     };
