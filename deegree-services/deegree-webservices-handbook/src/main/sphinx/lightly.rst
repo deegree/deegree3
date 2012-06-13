@@ -4,11 +4,20 @@
 Getting started
 ===============
 
-In the previous chapter, you learned how to install and start deegree webservices. In this chapter, we will introduce the service console and learn how to perform basic tasks such as downloading and activating example configurations. In deegree terminology, a configuration for a deegree instance is called "deegree workspace". A workspace is a well-defined directory of configuration files that defines the different aspects of a deegree instance (active web services, data access, layers, etc). The next chapter describes the inner structure of a deegree workspace, but for the remainder of this chapter, it is sufficient to understand that it is the configuration of a deegree webservice instance.
+In the previous chapter, you learned how to install and start deegree webservices. In this chapter, we will introduce the deegree service console and learn how to perform basic tasks such as downloading and activating example configurations. The service console provides a way to configure the different aspects of a deegree installation (active web services, data access, layers, etc). In deegree terminology, a complete configuration for a deegree instance is called a "deegree workspace":
 
--------------------------------
-Using deegree's service console
--------------------------------
+.. figure:: images/workspace-overview.png
+   :figwidth: 90%
+   :width: 90%
+   :target: _images/workspace-overview.png
+
+   Configuration aspects of a deegree workspace
+
+The next chapter describes the structure and the aspects of deegree workspaces in more detail, but for the remainder of this chapter, it is sufficient to know that it is a complete configuration of a deegree webservice instance.
+
+-----------------------------------
+Accessing deegree's service console
+-----------------------------------
 
 The service console is a web-based administration interface for configuring your deegree webservices installation. If deegree webservices are running on your machine, you can usually access the console from your browser via http://localhost:8080
 
