@@ -800,4 +800,40 @@ public class Java2DRendererTest {
         texts.add( "polygon: default style line with circles stroke" );
         writeTestImage( img, texts, time2 - time );
     }
+
+    @Test
+    public void testPolygonStylingPerpendicularOffset()
+                            throws IOException {
+        BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 100d, 100d }, mapcs ) );
+        PolygonStyling styling = new PolygonStyling();
+        styling.stroke = new Stroke();
+        styling.stroke.strokeGap = 7;
+        styling.stroke.width = 1;
+
+        styling.stroke.stroke = new Graphic();
+        styling.stroke.stroke.size = 5;
+
+        styling.stroke.stroke.mark.fill.color = red;
+        styling.stroke.stroke.mark.wellKnown = SimpleMark.TRIANGLE;
+        styling.stroke.stroke.mark.stroke.color = red;
+        styling.stroke.stroke.mark.stroke.width = 0;
+
+        styling.fill = new Fill();
+        styling.fill.color = white;
+        styling.perpendicularOffset = -4;
+        Envelope envelope = geomFac.createEnvelope( 10, 10, 300, 300, null );
+        r.render( styling, envelope );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "polygon: white rectangle with triangle stroke and perpendicular offest of -4. Expected: triangles points to the INSIDE of the geometry!" );
+        writeTestImage( img, texts, time2 - time );
+    }
 }
