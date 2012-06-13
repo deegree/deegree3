@@ -9,54 +9,47 @@
     <Description>
       <Title>Airports of Utah</Title>
     </Description>
-      <LineSymbolizer>
-        <Stroke>
-          <SvgParameter name="stroke">#000000</SvgParameter>
-          <SvgParameter name="stroke-width">0.5</SvgParameter>
-          <SvgParameter name="stroke-linecap">butt</SvgParameter>
-        </Stroke>
-        <PerpendicularOffset>-2</PerpendicularOffset>
-      </LineSymbolizer>
-      <LineSymbolizer>
-        <Stroke>
-          <SvgParameter name="stroke">#000000</SvgParameter>
-          <SvgParameter name="stroke-width">0.5</SvgParameter>
-          <SvgParameter name="stroke-linecap">butt</SvgParameter>
-        </Stroke>
-        <PerpendicularOffset>2</PerpendicularOffset>
-      </LineSymbolizer>
+      
       <LineSymbolizer>
         <Stroke>
           <SvgParameter name="stroke">#9C9C9C</SvgParameter>
           <SvgParameter name="stroke-width">3</SvgParameter>
-          <SvgParameter name="stroke-linecap">butt</SvgParameter>
+          <!-- stroke-linejoin: mitre|round|bevel -->
+          <SvgParameter name="stroke-linejoin">round</SvgParameter>
+          <!-- stroke-linecap: butt|round|square -->
+          <SvgParameter name="stroke-linecap">round</SvgParameter>
+        </Stroke>
+        <!-- 'PerpendicularOffset' types: Standard|Round|Edged -->
+        <sed:PerpendicularOffset type="Round" substraction="NegativeOffset">2</sed:PerpendicularOffset>
+      </LineSymbolizer>
+      <LineSymbolizer>
+        <Stroke>
+          <SvgParameter name="stroke">#000000</SvgParameter>
+          <SvgParameter name="stroke-width">0.5</SvgParameter>
+          <SvgParameter name="stroke-linejoin">round</SvgParameter>
+          <SvgParameter name="stroke-linecap">round</SvgParameter>
         </Stroke>
       </LineSymbolizer>
   </Rule>
   <Rule>
     <Name>Airports</Name>
     <MaxScaleDenominator>50000</MaxScaleDenominator>
-      <LineSymbolizer uom="Meter">
-        <Stroke>
-          <SvgParameter name="stroke">#000000</SvgParameter>
-          <SvgParameter name="stroke-width">5</SvgParameter>
-          <SvgParameter name="stroke-linecap">butt</SvgParameter>
-        </Stroke>
-        <PerpendicularOffset>-15</PerpendicularOffset>
-      </LineSymbolizer>
-      <LineSymbolizer uom="Meter">
-        <Stroke>
-          <SvgParameter name="stroke">#000000</SvgParameter>
-          <SvgParameter name="stroke-width">5</SvgParameter>
-          <SvgParameter name="stroke-linecap">butt</SvgParameter>
-        </Stroke>
-        <PerpendicularOffset>15</PerpendicularOffset>
-      </LineSymbolizer>
+       
       <LineSymbolizer uom="Meter">
         <Stroke>
           <SvgParameter name="stroke">#9C9C9C</SvgParameter>
           <SvgParameter name="stroke-width">30</SvgParameter>
-          <SvgParameter name="stroke-linecap">butt</SvgParameter>
+          <SvgParameter name="stroke-linejoin">round</SvgParameter>
+          <SvgParameter name="stroke-linecap">round</SvgParameter>
+        </Stroke>
+        <sed:PerpendicularOffset type="Round" substraction="NegativeOffset">15</sed:PerpendicularOffset>
+      </LineSymbolizer>
+      <LineSymbolizer uom="Meter">
+        <Stroke>
+          <SvgParameter name="stroke">#000000</SvgParameter>
+          <SvgParameter name="stroke-width">5</SvgParameter>
+          <SvgParameter name="stroke-linejoin">round</SvgParameter>
+          <SvgParameter name="stroke-linecap">round</SvgParameter>
         </Stroke>
       </LineSymbolizer>
     
