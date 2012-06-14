@@ -181,6 +181,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( "Layer" );
         LayerMetadata md = theme.getMetadata();
+        LayerMetadata lmd = null;
+        if ( theme.getLayers().size() > 0 ) {
+            lmd = theme.getLayers().get( 0 ).getMetadata();
+        }
         if ( md.isQueryable() ) {
             writer.writeAttribute( "queryable", "1" );
         }
@@ -192,10 +196,16 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         }
         writeElement( writer, "Title", md.getDescription().getTitles().get( 0 ).getString() );
         List<LanguageString> abs = md.getDescription().getAbstracts();
+        if ( lmd != null && ( abs == null || abs.isEmpty() ) ) {
+            abs = lmd.getDescription().getAbstracts();
+        }
         if ( abs != null && !abs.isEmpty() ) {
             writeElement( writer, "Abstract", abs.get( 0 ).getString() );
         }
         List<Pair<List<LanguageString>, CodeType>> kws = md.getDescription().getKeywords();
+        if ( lmd != null && ( kws == null || kws.isEmpty() || kws.get( 0 ).first.isEmpty() ) ) {
+            kws = lmd.getDescription().getKeywords();
+        }
         if ( kws != null && !kws.isEmpty() && !kws.get( 0 ).first.isEmpty() ) {
             writer.writeStartElement( "KeywordList" );
             for ( LanguageString ls : kws.get( 0 ).first ) {
