@@ -141,7 +141,7 @@ public class ServiceIntegrationTestHelper {
         if ( !service.equals( "WMS" ) ) {
             return;
         }
-        String address = createBaseURL() + "services?request=GetCapabilities&version=1.1.1&service=" + service;
+        String address = createBaseURL() + "services/wms?request=GetCapabilities&version=1.1.1&service=" + service;
         String currentLayer = null;
         try {
             WMSClient111 client = new WMSClient111( new URL( address ), 360, 360 );
