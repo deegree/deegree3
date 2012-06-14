@@ -7,6 +7,11 @@ body {
 	padding: 5pt;
 }
 
+.menutopic {
+	font-weight: bold;
+	line-height:1.4em;
+}
+
 .menuitem {
 	margin-left:15px;
 	line-height:1.4em;
