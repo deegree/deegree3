@@ -33,10 +33,8 @@
 				<h:panelGroup rendered="#{logBean.loggedIn}">
 					<h:form>
 						<h:commandButton value="#{labels.apply_changes}"
-							styleClass="#{workspace.pendingChanges ? 'button' : 'buttongray'}">
-							<f:ajax listener="#{workspace.applyChanges}" render="@all"
-								onevent="blockInput" />
-						</h:commandButton>
+							styleClass="buttongray" action="#{workspace.applyChanges}"
+							onclick="show();" rendered="#{!workspace.pendingChanges}" />
 						<h:outputText value="#{workspace.lastMessage}"
 							styleClass="attention" rendered="#{workspace.pendingChanges}" />
 						<h:outputText value="#{workspace.lastMessage}"
