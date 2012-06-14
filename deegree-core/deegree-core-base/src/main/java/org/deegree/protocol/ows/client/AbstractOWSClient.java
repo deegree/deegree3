@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
@@ -61,6 +62,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
@@ -125,6 +127,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         httpClient = initHttpClient();
 
         OWSResponse response = doGet( capaUrl, null, null );
+        ckeckStatus( response.getAsHttpResponse().getStatusLine() );
         XMLStreamReader responseAsXMLStream = response.getAsXMLStream();
         try {
             XMLAdapter xmlAdapter = new XMLAdapter( responseAsXMLStream );
@@ -143,6 +146,16 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             } catch ( Throwable t ) {
                 LOG.warn( t.getMessage() );
             }
+        }
+    }
+
+    private void ckeckStatus( StatusLine statusLine )
+                            throws OWSExceptionReport {
+        int statusCode = statusLine.getStatusCode();
+        if ( statusCode != 200 ) {
+            OWSException exception = new OWSException( "Request failed with status " + statusCode + ": "
+                                                       + statusLine.getReasonPhrase(), OWSException.NO_APPLICABLE_CODE );
+            throw new OWSExceptionReport( Collections.singletonList( exception ), null, null );
         }
     }
 
