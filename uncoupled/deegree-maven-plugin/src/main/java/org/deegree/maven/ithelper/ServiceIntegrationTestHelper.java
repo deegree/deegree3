@@ -104,7 +104,8 @@ public class ServiceIntegrationTestHelper {
 
     public void testCapabilities( String service )
                             throws MojoFailureException {
-        String address = createBaseURL() + "services?request=GetCapabilities&service=" + service;
+        String address = createBaseURL() + "services/" + service.toLowerCase() + "?request=GetCapabilities&service="
+                         + service;
         try {
             log.info( "Reading capabilities from " + address );
             String input = IOUtils.toString( new URL( address ).openStream(), "UTF-8" );
