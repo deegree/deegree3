@@ -355,7 +355,7 @@ public class TextStroke implements Stroke {
                 moveY = lastY = points[1];
                 result.moveTo( moveX, moveY );
                 nextAdvance = glyphVector.getGlyphMetrics( currentChar ).getAdvance() * 0.5f;
-                next = nextAdvance;
+                next = nextAdvance + linePlacement.initialGap;
                 break;
 
             case PathIterator.SEG_CLOSE:
