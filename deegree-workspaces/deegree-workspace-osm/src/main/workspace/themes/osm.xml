@@ -42,11 +42,6 @@
       <Layer>roads_gen1</Layer>
     </Theme>
     <Theme>
-      <Identifier>places</Identifier>
-      <d:Title>places</d:Title>
-      <Layer>places</Layer>
-    </Theme>
-    <Theme>
       <Identifier>railways</Identifier>
       <d:Title>railways</d:Title>
       <Layer>railways</Layer>
@@ -70,6 +65,11 @@
       <Identifier>waterways</Identifier>
       <d:Title>waterways</d:Title>
       <Layer>waterways</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>places</Identifier>
+      <d:Title>places</d:Title>
+      <Layer>places</Layer>
     </Theme>
   </Theme>
   
