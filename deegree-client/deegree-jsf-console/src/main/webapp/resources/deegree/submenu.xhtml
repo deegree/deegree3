@@ -20,9 +20,10 @@
 		layout="block">
 		<h:outputText styleClass="menutopic" value="#{cc.attrs.displayname}" />
 		<ui:repeat value="#{cc.attrs.items}" var="resourceManager">
-			<h:panelGroup layout="block" styleClass="navi menuitem">
+			<h:panelGroup layout="block" styleClass="menuitem">
 				<h:commandLink value="#{resourceManager.name}"
-					action="#{configManager.getStartView}">
+					action="#{configManager.getStartView}"
+					styleClass="#{configManager.currentResourceManager == resourceManager ? 'naviactive' : 'navi'}">
 					<f:setPropertyActionListener target="#{actionParams.param1}"
 						value="#{resourceManager}" />
 				</h:commandLink>

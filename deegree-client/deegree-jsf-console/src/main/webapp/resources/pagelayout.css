@@ -1,0 +1,89 @@
+/* Layout classes */
+body {
+	color: grey;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: small;
+	padding: 5pt;
+}
+
+.errorMsg {
+	color: red;
+}
+
+.attention {
+	font:70% Verdana,Arial,Helvetica,sans-serif;
+	color: #FA6666;
+}
+
+.noattention {
+	font:70% Verdana,Arial,Helvetica,sans-serif;
+	color: gray;
+}
+
+.fieldset {
+	border-color: #cccccc;
+	border-style: solid;
+	border-width: 1px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	margin-right: 10px;
+}
+
+#container {
+	position: relative;
+	left: 0px;
+	top: 0px;
+	width: 930px;
+	height: 690px;
+	z-index: 1;
+	background-image: url("#{resource['images:bg.png']}");
+	background-repeat: no-repeat;
+	text-align: justify;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+	text-decoration: none;
+}
+
+#header {
+	position: absolute;
+	top: 50px;
+	left: 50px;
+	width: 830px;
+	height: 90px;
+}
+
+#logo {
+	position: absolute;
+	bottom: 20px;
+	float: left;
+}
+
+#login {
+	position: absolute;
+	bottom: 20px;
+	right: 10px;
+}
+
+#left {
+	position: absolute;
+	top: 140px;
+	left: 50px;
+	width: 160px;
+	height: 500px;
+}
+
+.main {
+	position: absolute;
+	top: 140px;
+	right: 50px;
+	width: 670px;
+	height: 500px;
+	text-align: left;
+	overflow-x: auto;
+	overflow-y: auto;
+}

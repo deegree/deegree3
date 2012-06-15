@@ -8,7 +8,12 @@
 
 <h:head>
 	<title>deegree 3 console</title>
-	<h:outputStylesheet name="styles.css" />
+	<h:outputStylesheet name="pagelayout.css" />
+	<h:outputStylesheet name="pleasewait.css" />
+	<h:outputStylesheet name="links.css" />
+	<h:outputStylesheet name="menu.css" />
+	<h:outputStylesheet name="buttons.css" />
+	<ui:insert name="additionCssInHeader" />
 	<h:outputScript name="console.js" />
 	<meta http-equiv="X-UA-Compatible" content="IE=7" />
 	<meta http-equiv="X-UA-Compatible" content="IE=8" />
@@ -27,7 +32,7 @@
 	</div>
 	<div id="PLEASEWAIT_BG"></div>
 
-	<div id="container">
+	<h:panelGroup id="container" layout="block">
 		<div id="header">
 			<div id="logo">
 				<h:panelGroup rendered="#{logBean.loggedIn}">
@@ -44,30 +49,32 @@
 			</div>
 			<div id="login">
 				<h:panelGroup rendered="#{!logBean.loggedIn}">
-					<ui:include src="/console/jsf/login.xhtml" />
+					<ui:include src="/console/security/login.xhtml" />
 				</h:panelGroup>
 				<h:panelGroup rendered="#{logBean.loggedIn}">
-					<ui:include src="/console/jsf/logout.xhtml" />
+					<ui:include src="/console/security/logout.xhtml" />
 				</h:panelGroup>
 			</div>
-
 		</div>
 
 
-		<div id="main">
+		<h:panelGroup id="left">
 			<h:form prependId="false">
 				<ui:include src="menu.xhtml" />
 			</h:form>
+		</h:panelGroup>
 
-			<h:panelGroup id="center" layout="block">
+		<h:panelGroup id="main" styleClass="main" layout="block">
+			<h:panelGroup rendered="#{logBean.loggedIn}">
 				<ui:insert name="center" />
 				<h:panelGroup>
 					<h:messages errorClass="consoleError" />
 				</h:panelGroup>
 			</h:panelGroup>
-
-			<div class="clear" />
-		</div>
-	</div>
+			<h:panelGroup rendered="#{!logBean.loggedIn}">
+				<ui:include src="/console/jsf/accessForbidden.xhtml" />
+			</h:panelGroup>
+		</h:panelGroup>
+	</h:panelGroup>
 </h:body>
 </html>

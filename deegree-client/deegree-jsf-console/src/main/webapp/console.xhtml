@@ -48,6 +48,14 @@
 						<h:outputText value="." />
 					</h:panelGroup>
 				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!logBean.loggedIn}">
+					<h:panelGroup styleClass="welcomeText">
+						<br />
+						<h:outputText value="You need to log in to access administration options." />
+					</h:panelGroup>
+				</h:panelGroup>
+
 			</h:panelGroup>
 		</ui:define>
 	</ui:composition>

@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.util;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.deegree.console.Navigation.CHANGE_PASSWORD;
+import static org.deegree.console.Navigation.CONSOLE;
+import static org.deegree.console.Navigation.LOGIN_FAILED;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +48,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -66,20 +72,37 @@ public class LogBean implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger( LogBean.class );
 
     // location of password file (relative to workspace root)
-    private static final String PASSWORD_FILE = "manager/password.txt";
+    private static final String PASSWORD_FILE = "../console-pw.txt";
 
     private static final long serialVersionUID = -4865071415988778817L;
 
-    private String password;
-
     private boolean loggedIn = false;
+
+    private String currentPassword;
+
+    private String newPassword;
+
+    private String newPassword2;
 
     public boolean isLoggedIn() {
         return loggedIn;
     }
 
-    public Object logIn() {
-        String correctPw = null;
+    public String logIn() {
+        String storedPassword = getStoredPassword();
+        String view = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+        if ( currentPassword != null && currentPassword.equals( storedPassword ) ) {
+            loggedIn = true;
+            if ( view.indexOf( "Failed" ) == -1 ) {
+                return view;
+            }
+            return CONSOLE;
+        }
+        return LOGIN_FAILED;
+    }
+
+    private String getStoredPassword() {
+        String storedPw = null;
         File pwFile = null;
         try {
             File workspace = OGCFrontController.getServiceWorkspace().getLocation();
@@ -100,7 +123,7 @@ public class LogBean implements Serializable {
                 String line;
                 while ( ( line = in.readLine() ) != null ) {
                     if ( !line.startsWith( "#" ) ) {
-                        correctPw = line.trim();
+                        storedPw = line.trim();
                         break;
                     }
                 }
@@ -110,27 +133,96 @@ public class LogBean implements Serializable {
         } catch ( IOException e ) {
             LOG.warn( "Error reading password from file '{}': {}", pwFile, e.getMessage() );
         }
-        String view = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        if ( password != null && password.equals( correctPw ) ) {
-            loggedIn = true;
-            if ( view.indexOf( "Failed" ) == -1 ) {
-                return view;
-            }
-            return "/console/jsf/welcome";
-        }
-        return "failed";
+        return storedPw;
     }
 
-    public Object logOut() {
+    public String logOut() {
         loggedIn = false;
-        return "/console";
+        return CONSOLE;
     }
 
-    public void setPassword( String password ) {
-        this.password = password;
+    public String changePassword() {
+        if ( !checkCurrentPassword() ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Current password is incorrect.", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return CHANGE_PASSWORD;
+        }
+        if ( !newPasswordsMatch() ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "New passwords don't match.", null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return CHANGE_PASSWORD;
+        }
+
+        try {
+            updatedStoredPassword( newPassword );
+        } catch ( IOException e ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Error updating password: " + e.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return CHANGE_PASSWORD;
+        }
+
+        FacesMessage fm = new FacesMessage( FacesMessage.SEVERITY_INFO, "Password changed successfully.", null );
+        FacesContext.getCurrentInstance().addMessage( null, fm );
+        return CHANGE_PASSWORD;
     }
 
-    public String getPassword() {
-        return password;
+    private void updatedStoredPassword( String newPassword )
+                            throws IOException {
+
+        File pwFile = null;
+        File workspace = OGCFrontController.getServiceWorkspace().getLocation();
+        pwFile = new File( workspace, PASSWORD_FILE );
+
+        if ( pwFile.exists() ) {
+            if ( !pwFile.delete() ) {
+                throw new IOException( "Could not delete password file '" + pwFile + "'." );
+            }
+        }
+
+        if ( !pwFile.getParentFile().exists() ) {
+            pwFile.getParentFile().mkdirs();
+        }
+        PrintWriter writer = new PrintWriter( pwFile );
+        writer.print( newPassword );
+        writer.close();
+    }
+
+    private boolean newPasswordsMatch() {
+        if ( newPassword == null ) {
+            return newPassword2 == null;
+        }
+        return newPassword.equals( newPassword2 );
+    }
+
+    private boolean checkCurrentPassword() {
+        String storedPassword = getStoredPassword();
+        if ( currentPassword != null && currentPassword.equals( storedPassword ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setCurrentPassword( String currentPassword ) {
+        this.currentPassword = currentPassword;
+    }
+
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    public void setNewPassword( String newPassword ) {
+        this.newPassword = newPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword2( String newPassword2 ) {
+        this.newPassword2 = newPassword2;
+    }
+
+    public String getNewPassword2() {
+        return newPassword2;
     }
 }

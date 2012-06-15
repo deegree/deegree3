@@ -11,13 +11,13 @@
 
 <cc:interface>
 	<cc:attribute name="displayname" />
-	<cc:attribute name="target" shortDescription="without .xhtml" />
+	<cc:attribute name="target" />
 </cc:interface>
 
 <cc:implementation>
-	<h:panelGroup layout="block"
-		styleClass="navi menuitem">
-		<h:link value="#{cc.attrs.displayname}" outcome="#{cc.attrs.target}" />
+	<h:panelGroup layout="block" styleClass="menuitem">
+		<h:link value="#{cc.attrs.displayname}" outcome="#{cc.attrs.target}"
+			styleClass="#{facesContext.viewRoot.viewId == cc.attrs.target ? 'naviactive' : 'navi'}" />
 	</h:panelGroup>
 </cc:implementation>
 

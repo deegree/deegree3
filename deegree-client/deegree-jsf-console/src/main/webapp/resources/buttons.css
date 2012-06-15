@@ -1,0 +1,116 @@
+.button {
+	color: red;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttongray {
+	color: gray;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonActivate {
+	color: #409300;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: #62AA2A;
+	border: 1px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.buttonDeactivate {
+	color: grey;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonError {
+	color: #ff0000;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: #62AA2A;
+	border: 1px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.buttonInfo {
+	color: #7279D8;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: blue;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonDelete {
+	color: #FCB32B;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: #BF3030;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonEdit {
+	color: #A6D400;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: #52A529;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonEdit2 {
+	color: #52A529;
+	font: 90% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: #52A529;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonCreateNew {
+	color: #409300;
+	font: 90% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border-color: #62AA2A;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonSave {
+	color: #409300;
+	font: 90% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonCancel {
+	color: #FCB32B;
+	font: 90% Verdana, Arial, Helvetica, sans-serif;
+	background-color: #fcfcfc;
+	border: 1px;
+	cursor: pointer;
+}
+
+.buttonLogin {
+	color: grey;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: white;
+}
+
+.buttonLogout {
+	color: grey;
+	font: 80% Verdana, Arial, Helvetica, sans-serif;
+	background-color: white;
+}

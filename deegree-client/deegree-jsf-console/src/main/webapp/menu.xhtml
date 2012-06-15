@@ -9,39 +9,39 @@
 	xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
 
 <ui:composition>
-	<br />
-	<h:panelGroup id="left">
-		<h:panelGroup layout="block">
-			<h:outputText styleClass="menutopic" value="general" />
-		</h:panelGroup>
-		<h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
-			<dgc:menuitem displayname="workspaces"
-				target="/console/workspace/workspace.xhtml" />
-			<dgc:menuitem displayname="proxy" target="/console/jsf/proxy.xhtml" />
-			<dgc:menuitem displayname="module info"
-				target="/console/jsf/modules.xhtml" />
-		</h:panelGroup>				
-		<h:panelGroup layout="block" style="margin-bottom:20px;">
-			<dgc:menuitem displayname="#{labels.link_genericClient}"
-				target="/console/client/client.xhtml" />
-			<h:outputLink styleClass="naviextern menuitem"
-				value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
-				<h:outputText value="#{labels.link_wmsClient}" />
-			</h:outputLink>
-		</h:panelGroup>
 
-		<h:panelGroup rendered="#{logBean.loggedIn}">
-			<dgc:submenu items="#{configManager.webserviceManagers}"
-				displayname="web services" />
-			<dgc:submenu items="#{configManager.datastoreManagers}"
-				displayname="data stores" />
-			<dgc:submenu items="#{configManager.mapManagers}"
-				displayname="map layers" />
-			<dgc:submenu items="#{configManager.connectionManagers}"
-				displayname="server connections" />
-			<dgc:submenu items="#{configManager.processManagers}"
-				displayname="processes" />
-		</h:panelGroup>
+	<h:panelGroup layout="block">
+		<h:outputText styleClass="menutopic" value="general" />
+	</h:panelGroup>
+	<h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
+		<dgc:menuitem displayname="workspaces"
+			target="/console/workspace/workspace.xhtml" />
+		<dgc:menuitem displayname="proxy" target="/console/jsf/proxy.xhtml" />
+		<dgc:menuitem displayname="password"
+			target="/console/security/password.xhtml" />
+		<dgc:menuitem displayname="module info"
+			target="/console/jsf/modules.xhtml" />
+	</h:panelGroup>
+	<h:panelGroup layout="block" style="margin-bottom:20px;">
+		<dgc:menuitem displayname="#{labels.link_genericClient}"
+			target="/console/client/client.xhtml" />
+		<h:outputLink styleClass="navi menuitem"
+			value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
+			<h:outputText value="#{labels.link_wmsClient}" />
+		</h:outputLink>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{logBean.loggedIn}">
+		<dgc:submenu items="#{configManager.webserviceManagers}"
+			displayname="web services" />
+		<dgc:submenu items="#{configManager.datastoreManagers}"
+			displayname="data stores" />
+		<dgc:submenu items="#{configManager.mapManagers}"
+			displayname="map layers" />
+		<dgc:submenu items="#{configManager.connectionManagers}"
+			displayname="server connections" />
+		<dgc:submenu items="#{configManager.processManagers}"
+			displayname="processes" />
 	</h:panelGroup>
 
 </ui:composition>
