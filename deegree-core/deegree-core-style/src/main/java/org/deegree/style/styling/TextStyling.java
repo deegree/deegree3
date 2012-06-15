@@ -37,6 +37,7 @@
 package org.deegree.style.styling;
 
 import static java.awt.Color.BLACK;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.style.styling.components.UOM.Pixel;
 
 import org.deegree.style.styling.components.Fill;
@@ -59,7 +60,7 @@ public class TextStyling implements Styling<TextStyling> {
      * The unit of measure for all values.
      */
     public UOM uom = Pixel;
-    
+
     /**
      * Default is a font with default settings.
      */
@@ -127,6 +128,11 @@ public class TextStyling implements Styling<TextStyling> {
         copy.halo = halo == null ? null : halo.copy();
         copy.uom = uom;
         return copy;
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
     }
 
 }
