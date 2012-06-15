@@ -43,6 +43,7 @@
     <module>deegree-workspace-csw-tests</module>    
     <module>deegree-workspace-geosciml</module>
     <module>deegree-workspace-inspire</module>
+    <module>deegree-workspace-osm</module>
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
