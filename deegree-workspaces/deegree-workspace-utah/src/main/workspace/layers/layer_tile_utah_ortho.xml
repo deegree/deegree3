@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd" configVersion="3.2.0">
+  <TileLayer>
+    <TileStoreId tileMatrixSet="utah_ortho">utah_ortho</TileStoreId>
+    <l:Name>utah_ortho</l:Name>
+    <d:Title>Utah Orthoimage Tiled</d:Title>
+  </TileLayer>
+</TileLayers>
