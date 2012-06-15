@@ -133,6 +133,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
         for ( FeatureType ft : store.getSchema().getFeatureTypes() ) {
             String name = ft.getName().getLocalPart();
+            LOG.debug( "Adding layer {}.", name );
             List<ICRS> crs = new ArrayList<ICRS>();
             Envelope envelope = null;
             try {
@@ -152,6 +153,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             Map<String, Style> styles = new LinkedHashMap<String, Style>();
             if ( sstore != null && sstore.getAll( name ) != null ) {
                 for ( Style s : sstore.getAll( name ) ) {
+                    LOG.debug( "Adding style with name {}.", s.getName() );
                     styles.put( s.getName(), s );
                     if ( !styles.containsKey( "default" ) ) {
                         styles.put( "default", s );
@@ -159,6 +161,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 }
             }
             if ( !styles.containsKey( "default" ) ) {
+                LOG.debug( "No styles found, using gray default style." );
                 styles.put( "default", new Style() );
             }
             md.setStyles( styles );
