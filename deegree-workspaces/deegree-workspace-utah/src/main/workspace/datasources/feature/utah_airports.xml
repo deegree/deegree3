@@ -7,7 +7,7 @@
 		ShapeFeatureStores for deegree WMS.
 	-->
 	<StorageCRS>EPSG:26912</StorageCRS>
-	<FeatureTypeName>SGID100_Airports</FeatureTypeName>
+	<FeatureTypeName>Airports</FeatureTypeName>
 	<FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
 	<FeatureTypePrefix>app</FeatureTypePrefix>
 	<File>../../data/utah/vector/SGID100_Airports</File>
