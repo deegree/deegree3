@@ -150,6 +150,7 @@ public class SLDParser {
                 in.nextTag();
 
             }
+            in.nextTag();
             map.put( name, styles );
         }
 
