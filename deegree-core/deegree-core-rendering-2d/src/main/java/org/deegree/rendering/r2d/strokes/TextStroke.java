@@ -119,7 +119,7 @@ public class TextStroke implements Stroke {
 
     // the code for this function may benefit from a good refactoring idea
     // I had none that was practical.
-    // the method returnes (true, path) if rendering word wise is possible
+    // the method returns (true, path) if rendering word wise is possible
     // and (false, null) if not
     private Pair<Boolean, GeneralPath> tryWordWise( Shape shape ) {
         // two steps: first a list is prepared that describes what to render where
@@ -389,8 +389,10 @@ public class TextStroke implements Stroke {
                         result.append( t.createTransformedShape( glyph ), false );
                         next += ( advance + nextAdvance );
                         currentChar++;
-                        if ( linePlacement.repeat )
-                            currentChar %= length;
+                        if ( linePlacement.repeat && currentChar >= length ) {
+                            currentChar = 0;
+                            next += linePlacement.gap;
+                        }
                     }
                 }
                 next -= distance;
