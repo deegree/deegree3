@@ -108,7 +108,7 @@
           <Title>DEM 90m Raster of Utah</Title>
           <CoverageStoreId>utah_dem</CoverageStoreId>
           <DirectStyle>
-            <File>../styles/utah_dem.xml</File>
+            <File>../styles/utah_dem90.xml</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
