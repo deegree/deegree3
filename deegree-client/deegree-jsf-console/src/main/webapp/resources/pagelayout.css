@@ -12,12 +12,10 @@ body {
 }
 
 .attention {
-	font:70% Verdana,Arial,Helvetica,sans-serif;
-	color: #FA6666;
+	color: red;
 }
 
 .noattention {
-	font:70% Verdana,Arial,Helvetica,sans-serif;
 	color: gray;
 }
 
