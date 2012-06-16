@@ -10,7 +10,7 @@ deegree webservices are implementations of the geospatial webservice specificati
 * `Catalogue Service for the Web (CSW) <http://www.opengeospatial.org/standards/cat>`_: Performs searches for geospatial datasets and services
 * `Web Processing Service (WPS) <http://www.opengeospatial.org/standards/wps>`_: Executes geospatial processes
 
-With a deegree webservices installation, you can set up one of the above services, all of them or even multiple services of the same type. The remainder of this chapter introduces some notable features of the different service implementations and provides learning trails for learning the configuration concepts behind each service.
+With a deegree webservices installation, you can set up one of the above services, all of them or even multiple services of the same type. The remainder of this chapter introduces some notable features of the different service implementations and provides learning trails for learning the configuration of each service.
 
 ------------------------------
 Characteristics of deegree WFS
@@ -25,14 +25,14 @@ deegree WFS is an implementation of the `OGC Web Feature Service specification <
 * Support for GetGmlObject requests and XLinks
 * High performance and excellent scalability
 * On-the-fly coordinate transformation
-* Designed for complex data models from the bottom up
-* Mapping of GML application schemas to complex relational models
+* Designed for rich data models from the bottom up
+* Mapping of GML application schemas to relational models
 * ISO 19107-compliant geometry model: Complex geometries (e.g. non-linear curves)
-* Complex filter expressions based on XPath 1.0
+* Advanced filter expression support based on XPath 1.0
 * Supports many backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
 
 .. tip::
-  In order to learn about configuring a deegree-based WFS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WFS setups. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wfs`.
+  In order to learn about configuring a deegree-based WFS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WFS configurations. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wfs`.
 
 ------------------------------
 Characteristics of deegree WMS
@@ -53,7 +53,7 @@ deegree WMS is an implementation of the `OGC Web Map Service specification <http
 * Supports many backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
 
 .. tip::
-  In order to learn about configuring a deegree-based WMS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WMS setups. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wms`.
+  In order to learn about configuring a deegree-based WMS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WMS configurations. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wms`.
 
 -------------------------------
 Characteristics of deegree WMTS
@@ -87,7 +87,7 @@ deegree CSW is an implementation of the `OGC Catalogue Service specification <ht
 * Complex filter expressions
 
 .. tip::
-  In order to learn about configuring a deegree-based CSW, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-csw` for an example deegree CSW setup. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-csw`.
+  In order to learn about configuring a deegree-based CSW, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-csw` for an example deegree CSW configuration. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-csw`.
 
 ------------------------------
 Characteristics of deegree WPS
@@ -108,7 +108,7 @@ deegree WPS is an implementation of the `OGC Processing Service specification <h
 * Supports asynchronous execution (with polling of process status)
 
 .. tip::
-  In order to learn about configuring a deegree-based WPS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-wps` for an example deegree WPS setup. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wps`.
+  In order to learn about configuring a deegree-based WPS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-wps` for an example deegree WPS configuration. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wps`.
 
 .. rubric:: Footnotes
 

@@ -101,7 +101,7 @@ You can now activate the downloaded workspace by clicking on "Start". Again, thi
 Example workspace 1: Webmapping for Utah
 ----------------------------------------
 
-This workspace demonstrates a web mapping setup based on data from Utah. It contains a WMS with some raster and vector layers and some nice render styles. Raster data is read from GeoTIFF files, vector data is backed by shapefiles. Additionally, a WFS is configured that allows to access the raw vector data in GML format.
+This workspace contains a web mapping setup based on data from Utah. It contains a WMS with some raster and vector layers and some nice render styles. Raster data is read from GeoTIFF files, vector data is backed by shapefiles. Additionally, a WFS is configured that allows to access the raw vector data in GML format.
 
 After downloading and activating the "deegree utahDemo" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
@@ -160,7 +160,7 @@ You may select example requests from the drop-down menu and click on the "Send" 
 Example workspace 2: INSPIRE in action
 --------------------------------------
 
-This workspace demonstrates a basic INSPIRE View and Discovery Service setup. It contains a transactional WFS configured for Annex I Data Themes and a WMS that is configured to display some of the Data Themes. The workspace is configured to store the INSPIRE features in memory, but can easily be changed to use PostGIS or Oracle as storage backend (TBD describe this).
+This workspace is a basic INSPIRE View and Discovery Service setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers. The workspace is configured to store the INSPIRE features in memory, but can easily be changed to use PostGIS or Oracle as storage backend (TBD describe this).
 
 After downloading and activating the "deegree inspireNode" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
@@ -189,7 +189,7 @@ In order to insert some INSPIRE features, use the "send requests" link in the se
 
    INSPIRE layers are empty
 
-Use the right-most drop-down menu to select an example request. The last entry "blabla.xml" can be used to insert some INSPIRE Address features using a WFS insert request:
+Use the right-most drop-down menu to select an example request. The last entry "blabla.xml" can be used to insert a small number of INSPIRE Address features using a WFS-T insert request:
 
 .. figure:: images/browser.png
    :figwidth: 60%
@@ -198,7 +198,7 @@ Use the right-most drop-down menu to select an example request. The last entry "
 
    Insert request
 
-After successful insertion (click "Send"), the internal storage contains some addresses, and you may move back to the layer overview ("see layers"). After activating the Address layer, you should see some addresses.
+After successful insertion (click "Send"), the internal storage contains some addresses, and you may move back to the layer overview ("see layers"). After activating the Address layer, you should see some addresses painted by the deegree WMS.
 
 The example requests also contain a lot of examples for the query possibilities of the deegree WFS, e.g. the requesting of INSPIRE Addresses by street name:
 
@@ -215,10 +215,62 @@ The example requests also contain a lot of examples for the query possibilities 
 Example config 3: An ISO catalogue setup
 ----------------------------------------
 
+This workspace contains a catalogue service setup that is compliant to the ISO Application Profile. After downloading and starting it, you will have to setup tables in a PostGIS database first (TBD describe Oracle). You will need to have an empty and spatially-enabled PostGIS database handy that can be accessed from the machine that runs the deegree webservices.
+
+As a first step, you will have to create a JDBC connection to your PostGIS database:
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Creating a JDBC connection
+
+Click on "server connections -> jdbc", enter "iso" as the connection id and click on "Create new":
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Creating a JDBC connection
+
+
+You will now be prompted to enter the connection parameters for your database. Make sure to enter the correct connection information (use "Test connection" to check it) and click "OK". You now have a working connection to your database, but we need to create the required database tables as well. Change to the metadata store view ("data stores -> metadata") and click the "Setup tables" link:
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Creating the tables for the ISO catalogue
+
+Click "Create". If all went well, you should now have a working CSW setup. You can connect to the CSW with any compliant client (TBD tested?) or use the "send requests" link to send some raw CSW requests to the service.
+
+Use the right-most drop-down menu to select an example request. The last entry "blabla.xml" can be used to insert some ISO records using a CSW transaction request:
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Insert request
+
+After successful insertion (click "Send"), some records will be inserted into the PostGIS database. You may explore the other example requests as well.
+
 .. _anchor-workspace-wps:
 
 ------------------------------------
 Example config 4: Processing service
 ------------------------------------
 
+This workspace contains a WPS setup with some simple example processes. After downloading and starting it, you can click on "send requests" in order to fire some example requests to the WPS. Use the right-most drop-down menu to select an example request and click "Send" to send it to the WPS:
 
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   WPS example requests
+
+TBD pointers to chapters for adding your own processes

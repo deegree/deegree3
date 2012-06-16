@@ -10,7 +10,7 @@ In the previous chapter, you learned how to access and login to the deegree serv
 What is a deegree workspace?
 ----------------------------
 
-A deegree workspace is a set of configuration files organized in a well-defined directory structure. The files in this directory structure define the different aspects of a deegree configuration:
+A deegree workspace is a set of configuration files that control how a deegree webservices instance behaves. The files are organized in a well-defined directory structure that control the different aspects of the configuration:
 
 .. figure:: images/workspace-overview.png
    :figwidth: 90%
@@ -19,7 +19,7 @@ A deegree workspace is a set of configuration files organized in a well-defined 
 
    Configuration aspects of a deegree workspace
 
-The following table gives an overview of the individual workspace aspects:
+The following table gives an overview of the types of workspace aspects
 
 .. table:: Workspace aspects
 
@@ -53,7 +53,7 @@ The following table gives an overview of the individual workspace aspects:
 Using the service console to manage workspace resources
 -------------------------------------------------------
 
-The service console has a corresponding menu entry for every workspace aspect. For example, if you would like to add/remove/edit a coverage store, you would click on "data stores -> coverage". This opens a view with a list of all configured coverage stores. If you activated the Utah demo, you should see the following list:
+The service console has a corresponding menu entry for every type of workspace resource. For example, if you would like to add/remove/edit a coverage store, you would click on "data stores -> coverage". This opens a view with a list of all configured coverage stores. If you activated the Utah workspace (see :ref:`anchor-workspace-utah`), you should see the following list:
 
 .. figure:: images/browser.png
    :figwidth: 60%
@@ -62,7 +62,7 @@ The service console has a corresponding menu entry for every workspace aspect. F
 
    Configuring coverage stores
 
-As we can see, the Utah demo workspace contains configurations for three coverage stores in total. Each configured coverage store (and every deegree workspace resource in general) has a corresponding XML file, which you can edit by clicking the "Edit" button:
+As you can see, the Utah demo workspace defines three coverage stores in total. Each configured coverage store (and every deegree workspace resource in general) has a corresponding XML file, which you can edit by clicking the "Edit" button:
 
 .. figure:: images/browser.png
    :figwidth: 60%
@@ -71,7 +71,7 @@ As we can see, the Utah demo workspace contains configurations for three coverag
 
    Editing a coverage store configuration
 
-The details of the individual configuration formats are described in the later chapters. The built-in XML editor allows to edit the content of the configuration file, save the changes ("Save") or discard them ("Cancel"). Additionally, you may turn on syntax highlighting and look at the XML schema of the configuration ("Display Schema").
+The details of the individual configuration formats are described in the later chapters. The built-in XML editor allows to edit the contents of the configuration file, which controls the behaviour of th workspace resource. In the example, it describes the raster file that this coverage store accesses. You can save the changes ("Save") or discard them ("Cancel"). Additionally, you may turn on syntax highlighting and look at the XML schema of the configuration ("Display Schema").
 
 Deleting a workspace resource is straight-forward ("Delete"). You can also turn off a workspace resource temporarily ("Deactivate").
 
@@ -79,14 +79,14 @@ Deleting a workspace resource is straight-forward ("Delete"). You can also turn 
 Using the service console to add a new workspace resource
 ---------------------------------------------------------
 
-In order to add a new workspace resource, use the "Create new" link. Note that you have always have to specify an identifier for every new resource. 
+In order to add a new workspace resource, use the "Create new" link. Note that you always have to specify an identifier for every new resource. 
 
 .. figure:: images/browser.png
    :figwidth: 60%
    :width: 50%
    :target: _images/browser.png
 
-   Adding a new WPS with the identifier "mywps"
+   Adding a new WPS with identifier "mywps"
 
 .. attention::  
 
@@ -94,16 +94,43 @@ In order to add a new workspace resource, use the "Create new" link. Note that y
 Managing workspace resources on the file system
 -----------------------------------------------
 
-The service console allows to configure workspace resources without knowing their location. However, in some cases it can be very handy to edit the workspace configuration files directly.
+In some cases it can be very handy to edit the workspace configuration files directly on the filesystem.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Where is the deegree workspace directory?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 File structure of a deegree workspace
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. table:: Workspace directory structure
++------------------------+---------------------------------+
+| Directory              | Configuration aspect            |
++========================+=================================+
+| services/              | Web services                    |
++------------------------+---------------------------------+
+| datasources/coverage/  | Coverage Stores                 |
++------------------------+---------------------------------+
+| datasources/feature/   | Feature Stores                  |
++------------------------+---------------------------------+
+| datasources/metadata/  | Metadata Stores                 |
++------------------------+---------------------------------+
+| datasources/tile/      | Tile Stores                     |
++------------------------+---------------------------------+
+| layers/                | Map Layers (Layer)              |
++----------------------------------------------------------+
+| styles/                | Map Layers (Style)              |
++------------------------+---------------------------------+
+| themes/                | Map Layers (Theme)              |
++------------------------+---------------------------------+
+| processes/             | Processes                       |
++------------------------+---------------------------------+
+| jdbc/                  | Server Connections (JDBC)       |
++------------------------+---------------------------------+
+| datasources/remoteows/ | Server Connections (Remote OWS) |
++------------------------+---------------------------------+
 
 
 
