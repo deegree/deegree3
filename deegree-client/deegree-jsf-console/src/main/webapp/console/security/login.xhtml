@@ -4,7 +4,7 @@
 	<h:panelGroup rendered="#{!logBean.passwordSet}">
 		<h:panelGroup>
 			<h:outputText styleClass="error"
-				value="Security hint: Please set a password." />
+				value="Security hint: No password has been set." />
 		</h:panelGroup>
 	</h:panelGroup>
 	<h:panelGroup rendered="#{logBean.passwordSet and !logBean.loggedIn}">

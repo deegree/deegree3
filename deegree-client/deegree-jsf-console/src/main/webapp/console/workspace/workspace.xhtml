@@ -23,16 +23,10 @@
 						<td />
 						<td style=""><h:outputText value="#{workspace.workspaceRoot}" /></td>
 					</tr>
-					<tr>
-						<td style=""><h:outputText value="#{labels.workspace_name}" /></td>
-						<td />
-						<td style=""><h:outputText
-								value="#{workspace.activeWorkspace.name}" /></td>
-					</tr>
 				</table>
 
 				<br /> <br />
-				<h:outputText styleClass="titel" value="Inactive workspaces" />
+				<h:outputText styleClass="titel" value="Available workspaces" />
 				<table style="margin: 10px 0px; font-size: small" border="0">
 					<ui:repeat var="workspaceName" value="#{workspace.workspaceList}">
 						<h:panelGroup
@@ -40,13 +34,13 @@
 							<h:form>
 								<tr align="left">
 									<td><h:outputText value="#{workspaceName}" /></td>
-									<td><h:commandButton styleClass="buttonInfo"
+									<td><h:commandButton styleClass="buttonActivate"
 											label="#{workspaceName}" value="#{labels.start_workspace}"
 											onclick="show();" action="#{workspace.startWorkspace}">
 											<f:setPropertyActionListener target="#{actionParams.param1}"
 												value="#{workspaceName}" />
 										</h:commandButton></td>
-									<td><h:commandButton styleClass="buttonInfo"
+									<td><h:commandButton styleClass="buttonDelete"
 											label="#{workspaceName}" onclick="return confirmDelete();"
 											value="#{labels.delete_workspace}"
 											action="#{workspace.deleteWorkspace}">
@@ -60,14 +54,14 @@
 				</table>
 
 				<br /> <br />
-				<h:outputText styleClass="titel" value="Import official workspace" />
+				<h:outputText styleClass="titel" value="Import an official workspace" />
 				<table style="margin: 10px 0px; font-size: small" border="0">
 					<ui:repeat var="workspaceName"
 						value="#{workspace.remoteWorkspaces}">
 						<h:form>
 							<tr align="left">
 								<td><h:outputText value="#{workspaceName}" /></td>
-								<td><h:commandButton styleClass="buttonInfo"
+								<td><h:commandButton styleClass="buttonEdit"
 										label="#{workspaceName}" value="Import" onclick="show();"
 										action="#{workspace.downloadWorkspace}">
 										<f:setPropertyActionListener target="#{actionParams.param1}"

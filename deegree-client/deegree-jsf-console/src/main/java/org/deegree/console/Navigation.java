@@ -46,8 +46,6 @@ package org.deegree.console;
 public class Navigation {
 
     public static final String CONSOLE = "/console";
-    
-    public static final String LOGIN_FAILED = "/console/security/loginFailed";
 
     public static final String CHANGE_PASSWORD = "/console/security/password";
 

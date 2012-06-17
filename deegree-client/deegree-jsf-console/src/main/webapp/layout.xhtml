@@ -35,18 +35,18 @@
 	<h:panelGroup id="container" layout="block">
 		<h:panelGroup id="header" layout="block">
 			<h:panelGroup id="logo">
-				<h:panelGroup rendered="#{logBean.loggedIn}">
+				<h:panelGroup styleClass="submenu" layout="block"
+					rendered="#{logBean.loggedIn}">
 					<h:form>
-						<h:outputText value="#{workspace.lastMessage}"
-							styleClass="attention" rendered="#{workspace.pendingChanges}" />
-						<h:outputText value="#{workspace.lastMessage}"
-							styleClass="noattention" rendered="#{!workspace.pendingChanges}" />
+						<h:outputText styleClass="menutopic" value="Active workspace: " />
+						<h:outputText value="#{workspace.activeWorkspace.name}" />
+						&nbsp;
 						<h:commandButton value="#{labels.apply_changes}"
 							styleClass="buttongray" action="#{workspace.applyChanges}"
 							onclick="show();" rendered="#{!workspace.pendingChanges}" />
 						<h:commandButton value="#{labels.apply_changes}"
 							styleClass="buttonError" action="#{workspace.applyChanges}"
-							onclick="show();" rendered="#{workspace.pendingChanges}" />							
+							onclick="show();" rendered="#{workspace.pendingChanges}" />
 					</h:form>
 				</h:panelGroup>
 			</h:panelGroup>
@@ -73,6 +73,7 @@
 				<ui:include src="/console/jsf/accessForbidden.xhtml" />
 			</h:panelGroup>
 		</h:panelGroup>
+
 	</h:panelGroup>
 </h:body>
 </html>
