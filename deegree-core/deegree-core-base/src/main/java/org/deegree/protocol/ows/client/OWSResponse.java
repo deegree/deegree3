@@ -36,12 +36,14 @@
 package org.deegree.protocol.ows.client;
 
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSExceptionReader.isExceptionReport;
 import static org.deegree.protocol.ows.exception.OWSExceptionReader.parseExceptionReport;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -49,6 +51,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +117,36 @@ public class OWSResponse {
         if ( isExceptionReport( xmlStream.getName() ) ) {
             throw parseExceptionReport( xmlStream );
         }
+    }
+
+    /**
+     * Throws an {@link OWSExceptionReport} if the status code of this {@link OWSResponse} is not 200.
+     * 
+     * @throws OWSExceptionReport
+     *             if status code isn't 200
+     */
+    public void assertHttpStatus200()
+                            throws OWSExceptionReport {
+        StatusLine statusLine = httpResponse.getStatusLine();
+        int statusCode = statusLine.getStatusCode();
+        if ( statusCode != 200 ) {
+            try {
+                XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( uri.toString(), is );
+                assertNoExceptionReport( xmlStream );
+            } catch ( OWSExceptionReport e ) {
+                throw e;
+            } catch ( Exception e ) {
+                throwHttpStatusException( statusLine );
+            }
+            throwHttpStatusException( statusLine );
+        }
+    }
+
+    private void throwHttpStatusException( StatusLine statusLine )
+                            throws OWSExceptionReport {
+        OWSException exception = new OWSException( "Request failed with HTTP status " + statusLine.getStatusCode()
+                                                   + ": " + statusLine.getReasonPhrase(), NO_APPLICABLE_CODE );
+        throw new OWSExceptionReport( Collections.singletonList( exception ), null, null );
     }
 
     public void close()

@@ -125,7 +125,9 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         httpClient = initHttpClient();
 
         OWSResponse response = doGet( capaUrl, null, null );
+        response.assertHttpStatus200();
         XMLStreamReader responseAsXMLStream = response.getAsXMLStream();
+
         try {
             XMLAdapter xmlAdapter = new XMLAdapter( responseAsXMLStream );
             initCapabilities( xmlAdapter );
