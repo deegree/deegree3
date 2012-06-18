@@ -37,7 +37,6 @@ package org.deegree.filter;
 
 import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,7 +63,6 @@ import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
-import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.ValueReference;
@@ -446,12 +444,14 @@ public class Filters {
             return new Div( repair( d.getParameter1(), bindings, validNames ), repair( d.getParameter2(), bindings,
                                                                                        validNames ) );
         case FUNCTION:
-            Function f = (Function) e;
-            List<Expression> ps = new ArrayList<Expression>();
-            for ( Expression ex : f.getParameters() ) {
-                ps.add( repair( ex, bindings, validNames ) );
-            }
-            return new Function( f.getName(), ps );
+            // workaround seems to produce errors, so function expressions are not fixed now
+            return e;
+            // Function f = (Function) e;
+            // List<Expression> ps = new ArrayList<Expression>();
+            // for ( Expression ex : f.getParameters() ) {
+            // ps.add( repair( ex, bindings, validNames ) );
+            // }
+            // return new Function( f.getName(), ps );
         case LITERAL:
             return e;
         case MUL:
