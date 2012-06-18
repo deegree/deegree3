@@ -79,5 +79,4 @@ public class WMSClientTest {
         // TODO: check if demo WMS available
         new WMSClient( capaUrl );
     }
-
 }

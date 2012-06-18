@@ -320,7 +320,6 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                 if ( timeout == -1 ) {
                     result = worker.call();
                 } else {
-
                     result = Executor.getInstance().performSynchronously( worker, timeout * 1000 );
                 }
             } catch ( Throwable e ) {
@@ -883,9 +882,11 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
             return null;
         }
-        url += toQueryString( map );
+        URL endpointUrl = new URL( url );
+        endpointUrl = normalizeGetUrl( endpointUrl );
+        String query = endpointUrl + toQueryString( map );
 
-        URL theUrl = new URL( url );
+        URL theUrl = new URL( query );
         LOG.debug( "Connecting to URL " + theUrl );
         URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
                                                            getHttpProxyPassword( true ), httpBasicUser, httpBasicPass );
