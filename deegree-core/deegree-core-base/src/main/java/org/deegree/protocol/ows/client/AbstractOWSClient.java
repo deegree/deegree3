@@ -36,6 +36,7 @@
 package org.deegree.protocol.ows.client;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -303,15 +304,12 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
                             throws IOException {
 
         OWSResponse response = null;
-        URI uri = null;
+        URI query = null;
         try {
-            StringBuilder sb = new StringBuilder( endPoint.toString() );
-
+            URL normalizedEndpointUrl = normalizeGetUrl( endPoint );
+            StringBuilder sb = new StringBuilder( normalizedEndpointUrl.toString() );
             boolean first = true;
             if ( params != null ) {
-                if ( sb.charAt( sb.length() - 1 ) != '?' ) {
-                    sb.append( '?' );
-                }
                 for ( Entry<String, String> param : params.entrySet() ) {
                     if ( !first ) {
                         sb.append( '&' );
@@ -324,15 +322,15 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
                 }
             }
 
-            uri = new URI( sb.toString() );
+            query = new URI( sb.toString() );
             setCredentials( endPoint );
-            HttpGet httpGet = new HttpGet( uri );
-            LOG.debug( "Performing GET request: " + uri );
+            HttpGet httpGet = new HttpGet( query );
+            LOG.debug( "Performing GET request: " + query );
             HttpResponse httpResponse = httpClient.execute( httpGet );
-            response = new OWSResponse( uri, httpResponse );
+            response = new OWSResponse( query, httpResponse );
         } catch ( Throwable e ) {
             e.printStackTrace();
-            String msg = "Error performing GET request on '" + uri + "': " + e.getMessage();
+            String msg = "Error performing GET request on '" + query + "': " + e.getMessage();
             throw new IOException( msg );
         }
         return response;
@@ -379,5 +377,29 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
                                                                 new UsernamePasswordCredentials( httpBasicUser,
                                                                                                  httpBasicPass ) );
         }
+    }
+
+    /**
+     * Returns a "normalized" version of the given {@link URL} that's ready for appending query parameters, i.e. it ends
+     * with <code>?</code> or <code>&</code> (if it does have a query part).
+     * 
+     * @param url
+     *            endpoint URL to be normalized, must not be <code>null</code>
+     * @return normalized URL, never <code>null</code>
+     * @throws MalformedURLException
+     */
+    protected URL normalizeGetUrl( URL url )
+                            throws MalformedURLException {
+        String s = url.toString();
+        if ( url.getQuery() != null ) {
+            if ( !s.endsWith( "&" ) ) {
+                s += "&";
+            }
+        } else {
+            if ( !s.endsWith( "?" ) ) {
+                s += "?";
+            }
+        }
+        return new URL( s );
     }
 }
