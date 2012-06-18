@@ -81,10 +81,10 @@ public class RasterCache {
      */
     public static final File DEFAULT_CACHE_DIR = new File( System.getProperty( "java.io.tmpdir" ) );
 
-    /** A key which can be given to the JVM to define the amount of memory used for caching. */
+    /** A key which can be given to the JVM to define the amount of memory used for caching (e.g. 1024m). */
     public static final String DEF_RASTER_CACHE_MEM_SIZE = "deegree.raster.cache.memsize";
 
-    /** A key which can be given to the JVM to define the amount of memory used for caching. */
+    /** A key which can be given to the JVM to define the amount of disk memory used for caching (e.g. 1024m).  */
     public static final String DEF_RASTER_CACHE_DISK_SIZE = "deegree.raster.cache.disksize";
 
     private static long maxCacheMem;
