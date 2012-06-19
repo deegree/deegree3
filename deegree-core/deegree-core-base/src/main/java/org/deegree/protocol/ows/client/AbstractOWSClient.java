@@ -390,6 +390,7 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
      */
     protected URL normalizeGetUrl( URL url )
                             throws MalformedURLException {
+        // TODO: this method does not work. url.getQuery is the query part not the base url
         String s = url.toString();
         if ( url.getQuery() != null ) {
             if ( !s.endsWith( "&" ) ) {

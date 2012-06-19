@@ -252,9 +252,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public void refreshCapabilities() {
         String url = getAddress( GetCapabilities, true );
-        if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
-            url += url.indexOf( "?" ) == -1 ? "?" : "&";
-        }
+        url = repairGetUrl( url );
         url += "request=GetCapabilities&version=1.1.1&service=WMS";
         try {
             XMLAdapter adapter;
@@ -271,6 +269,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         } catch ( IOException e ) {
             LOG.debug( "Malformed capabilities URL?", e );
         }
+    }
+
+    private String repairGetUrl( String url ) {
+        if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
+            url += url.indexOf( "?" ) == -1 ? "?" : "&";
+        }
+        return url;
     }
 
     /**
@@ -344,9 +349,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                 LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
                 return null;
             }
-            if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
-                url += url.indexOf( "?" ) == -1 ? "?" : "&";
-            }
+            url = repairGetUrl( url );
             String lays = join( ",", gfi.getQueryLayers() );
 
             Map<String, String> map = new HashMap<String, String>();
@@ -882,9 +885,8 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
             return null;
         }
-        URL endpointUrl = new URL( url );
-        endpointUrl = normalizeGetUrl( endpointUrl );
-        String query = endpointUrl + toQueryString( map );
+        url = repairGetUrl( url );
+        String query = url + toQueryString( map );
 
         URL theUrl = new URL( query );
         LOG.debug( "Connecting to URL " + theUrl );
