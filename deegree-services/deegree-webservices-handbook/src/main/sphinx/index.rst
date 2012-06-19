@@ -16,10 +16,11 @@ deegree Webservices
    basics
    webservices
    featurestores
+   tilestores
    coveragestores
-   renderstyles
+   metadatastores
    layers
    themes
-   metadatastores
+   renderstyles
    processproviders
    glossary
