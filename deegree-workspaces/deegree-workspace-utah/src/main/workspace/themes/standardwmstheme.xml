@@ -3,11 +3,13 @@
   <LayerStoreId>layer_feature_utah_airports</LayerStoreId>
   <LayerStoreId>layer_feature_utah_stateboundary</LayerStoreId>
   <LayerStoreId>layer_feature_utah_weatherstations</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_zipcodes</LayerStoreId>
   <LayerStoreId>layer_coverage_utah_ortho</LayerStoreId>
   <LayerStoreId>layer_coverage_utah_dem30</LayerStoreId>
   <LayerStoreId>layer_coverage_utah_dem90</LayerStoreId>
   <LayerStoreId>layer_remotewms_utah_springs</LayerStoreId>
   <LayerStoreId>layer_remotewms_utah_geology</LayerStoreId>
+  <LayerStoreId>layer_tile_utah_ortho</LayerStoreId>
   
   <Theme>
     <d:Title>Root theme</d:Title>
@@ -35,9 +37,19 @@
         <Layer>stateboundary</Layer>
       </Theme>
       <Theme>
+        <Identifier>zipcodes</Identifier>
+        <d:Title>Zip codes of Utah</d:Title>
+        <Layer>zipcodes</Layer>
+      </Theme>
+      <Theme>
         <Identifier>orthophoto</Identifier>
         <d:Title>Orthophoto of Saltlake City</d:Title>
         <Layer>orthophoto</Layer>
+      </Theme>
+      <Theme>
+        <Identifier>orthophototile</Identifier>
+        <d:Title>Orthophoto of Saltlake City tile</d:Title>
+        <Layer>utah_ortho</Layer>
       </Theme>
     </Theme>
     <Theme>
