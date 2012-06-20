@@ -65,8 +65,6 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
 
     private static Logger LOG = LoggerFactory.getLogger( ResourceManagerMetadata2.class );
 
-    private static Map<Class<? extends ResourceManager>, ResourceManagerMetadata2> rmClassToMd = new HashMap<Class<? extends ResourceManager>, ResourceManagerMetadata2>();
-
     private String name, category;
 
     private String startView = "/console/jsf/resources";
@@ -119,20 +117,11 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
     }
 
     public static synchronized ResourceManagerMetadata2 getMetadata( ResourceManager rm ) {
-//        ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
-//        if ( md.name == null ) {
-//            return null;
-//        }
-//        return md;
-        Class<? extends ResourceManager> cl = rm.getClass();
-        if ( !rmClassToMd.containsKey( cl ) ) {
-            ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
-            if ( md.name == null ) {
-                return null;
-            }
-            rmClassToMd.put( cl, new ResourceManagerMetadata2( rm ) );
+        ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
+        if ( md.name == null ) {
+            return null;
         }
-        return rmClassToMd.get( cl );
+        return md;
     }
 
     public String getName() {
