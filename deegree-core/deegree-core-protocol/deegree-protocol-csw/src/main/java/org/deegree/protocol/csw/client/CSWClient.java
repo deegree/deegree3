@@ -105,7 +105,7 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
  */
 public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
-    private int connectionTimeout = 0;
+    private int connectionTimeout = 0, readTimeout = 0;
 
     /**
      * Creates a new {@link CSWClient} instance with infinite timeout.
@@ -137,8 +137,10 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      * @throws IOException
      *             if a communication/network problem occured
      */
-    public CSWClient( URL capaUrl, int connectionTimeout ) throws OWSExceptionReport, XMLStreamException, IOException {
+    public CSWClient( URL capaUrl, int connectionTimeout, int readTimeout ) throws OWSExceptionReport, XMLStreamException, IOException {
         super( capaUrl );
+        this.connectionTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
     }
 
     @Override
@@ -265,6 +267,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         DefaultHttpClient initHttpClient = super.initHttpClient();
         DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
         HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
+        HttpConnectionParams.setSoTimeout( defaultHttpClient.getParams(), readTimeout );
         return initHttpClient;
     }
 
