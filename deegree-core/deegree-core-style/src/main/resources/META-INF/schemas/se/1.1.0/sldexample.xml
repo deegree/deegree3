@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:se="http://www.opengis.net/se"
   version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
-  xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd">
   <NamedLayer>
     <se:Name>Roads</se:Name>
