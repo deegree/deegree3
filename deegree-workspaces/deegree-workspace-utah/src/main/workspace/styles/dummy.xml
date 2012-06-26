@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:se="http://www.opengis.net/se" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:app="http://www.deegree.org/app" xmlns:fo="http://www.w3.org/1999/XSL/Format"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.1.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <!--  This styling file shows the use of SLD styling -->
+    <se:Name>dummy</se:Name>
+
+    <sld:UserStyle>
+      <se:Name>dummy</se:Name>
+      <se:Description>
+        <se:Title>dummy</se:Title>
+      </se:Description>
+      
+      <se:FeatureTypeStyle>
+      <se:Name>dummy</se:Name>
+        <se:Description>
+          <se:Title>dummy</se:Title>
+        </se:Description>
+        <se:Rule>
+          <se:Name>dummy</se:Name>
+          <se:Description>
+            <se:Title>dummy</se:Title>
+          </se:Description>
+          <se:PolygonSymbolizer>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#ffffff</se:SvgParameter>
+              <se:SvgParameter name="stroke-opacity">0.0</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">3</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+          <se:PolygonSymbolizer>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#ffffff</se:SvgParameter>
+              <se:SvgParameter name="stroke-opacity">0.0</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">1.5</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+      </se:FeatureTypeStyle>
+
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>                                   
