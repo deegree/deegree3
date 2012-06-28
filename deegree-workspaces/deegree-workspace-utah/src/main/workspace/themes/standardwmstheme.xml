@@ -3,6 +3,7 @@
   <LayerStoreId>layer_feature_utah_airports</LayerStoreId>
   <LayerStoreId>layer_feature_utah_groundwater</LayerStoreId>
   <LayerStoreId>layer_feature_utah_lakes</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_municipalities</LayerStoreId>
   <LayerStoreId>layer_feature_utah_stateboundary</LayerStoreId>
   <LayerStoreId>layer_feature_utah_weatherstations</LayerStoreId>
   <LayerStoreId>layer_feature_utah_zipcodes</LayerStoreId>
@@ -37,6 +38,11 @@
         <Identifier>stateboundary</Identifier>
         <d:Title>Stateboundary of Utah</d:Title>
         <Layer>stateboundary</Layer>
+      </Theme>
+      <Theme>
+        <Identifier>municipalities</Identifier>
+        <d:Title>Municipalities of Utah</d:Title>
+        <Layer>utah_municipalities</Layer>
       </Theme>
       <Theme>
         <Identifier>zipcodes</Identifier>
