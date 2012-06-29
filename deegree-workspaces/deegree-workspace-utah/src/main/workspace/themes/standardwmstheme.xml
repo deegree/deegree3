@@ -28,6 +28,7 @@
         <Identifier>airports</Identifier>
         <d:Title>Airports of Utah</d:Title>
         <!-- The [1..n] Layer is the 'Name' of a Layer defined in one of the referenced LayerStores (see above 'LayerStoreId') -->
+        <!-- You van also specify the layerstore explicit in the Layer Element such as  '<Layer layerStore="layer_feature_utah_airports">'  -->
         <Layer>airports</Layer>
       </Theme>
     </Theme>
@@ -42,7 +43,7 @@
       <Theme>
         <Identifier>municipalities</Identifier>
         <d:Title>Municipalities of Utah</d:Title>
-        <Layer>utah_municipalities</Layer>
+        <Layer>municipalities</Layer>
       </Theme>
       <Theme>
         <Identifier>zipcodes</Identifier>
@@ -80,12 +81,12 @@
       <Theme>
         <Identifier>Lakes</Identifier>
         <d:Title>Lakes in Utah</d:Title>
-        <Layer>utah_lakes</Layer>
+        <Layer>lakes</Layer>
       </Theme>
       <Theme>
         <Identifier>Groundwater</Identifier>
         <d:Title>Groundwater in Utah</d:Title>
-        <Layer>utah_groundwater</Layer>
+        <Layer>groundwater</Layer>
       </Theme>
     </Theme>
     <Theme>

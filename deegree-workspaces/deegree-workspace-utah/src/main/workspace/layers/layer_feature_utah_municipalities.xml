@@ -3,7 +3,7 @@
   configVersion="3.2.0">
   <FeatureStoreId>utah_municipalities</FeatureStoreId>
   <FeatureLayer>
-    <l:Name>utah_municipalities</l:Name>
+    <l:Name>municipalities</l:Name>
     <d:Title>Municipalities of Utah</d:Title>
     <s:CRS>EPSG:26912 EPSG:4326 EPSG:4258 CRS:84</s:CRS>
     <l:StyleRef>
