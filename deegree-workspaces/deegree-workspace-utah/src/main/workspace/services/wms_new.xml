@@ -4,7 +4,7 @@
     <wms:Version>1.3.0</wms:Version>
   </wms:SupportedVersions>
   <wms:MetadataStoreId>6CF2886F-0124-4A4C-B76B-38CC1D3D0D85</wms:MetadataStoreId>
-  <wms:MetadataURLTemplate>http://deegree3-testing.deegree.org/csw-workspace/services/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</wms:MetadataURLTemplate>
+  <wms:MetadataURLTemplate>http://deegree3-testing.deegree.org/csw-workspace/services/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=${metadataSetId}</wms:MetadataURLTemplate>
 
   <wms:ServiceConfiguration>
     <wms:ThemeId>theme_wms</wms:ThemeId>
