@@ -52,12 +52,12 @@ You should now have a terminal window on your screen with a lot of log messages:
 
 You may minimize this window, but don't close it as long as you want to be able to use the deegree webservices. In order to check if the services are actually running, open http://localhost:8080 in your browser. You should see the following page:
 
-.. figure:: images/browser.png
+.. figure:: images/console_start.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_start.jpg
 
-   deegree webservices start page
+   deegree webservices administration console
 
 To shut the services down, switch back to the terminal window and press ``CTRL+C`` or simply close it. 
 

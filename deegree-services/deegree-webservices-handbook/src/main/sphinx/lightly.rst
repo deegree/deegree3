@@ -21,43 +21,26 @@ Accessing deegree's service console
 
 The service console is a web-based administration interface for configuring your deegree webservices installation. If deegree webservices are running on your machine, you can usually access the console from your browser via http://localhost:8080
 
-.. figure:: images/browser.png
+.. figure:: images/console_start.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_start.jpg
 
-   deegree webservices console
+   deegree webservices administration console
 
 .. tip::
   If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2-pre8. The port number and webapp name depend on your installation/deployment.
 
 .. tip::
-  You can access the service console from other machines on your network by exchanging *localhost* with the name or IP address of the machine that runs the deegree webservices.
+  You can access the service console from other machines on your network by exchanging *localhost* with the name or IP address of the machine that runs deegree webservices.
 
-Before you are logged in, you can only access two links in the menu on the left:
+For the remainder of the chapter, only the **general** section is relevant. The menu items in this section:
 
-* **send requests**: Access a simple user interface for sending raw OGC XML requests to the service (useful for testing). Until you activate some services, this is not very useful, though.
-* **see layers**: Shows the layers provided by the WMS in a simple web client. Until you activate the WMS, only an OpenStreetMap base layer is available.
-
-These links do not allow to change any settings of your deegree installation. In order to gain access to the administration tasks, you need to login first. 
-
-^^^^^^^^^^
-Logging in
-^^^^^^^^^^
-
-The default password is **deegree**. Enter it into the password field and click 'Log In'. The view will change now and give access to all configuration sections:
-
-.. figure:: images/browser.png
-   :figwidth: 60%
-   :width: 50%
-   :target: _images/browser.png
-
-   Logged in
-
-The links on the left allow to configure different configuration aspects of your installation. Most of them will be introduced in the next chapter. In the remainder of this chapter, the relevant menu items are in the **general** category:
-
-* workspace: Download and activate example configurations
-* proxy: Control proxy settings that deegree uses for accessing the internet
+* **workspaces**: Download and activate example configurations
+* **proxy**: Configure proxy settings
+* **module info**: Display loaded deegree modules
+* **send requests**: Send raw XML requests
+* **see layers**: Display WMS layers
 
 .. tip::
   If the machine running deegree webservices uses a proxy to access the internet and you have trouble downloading example configurations, you will probably have to configure the proxy settings. Ask your network administrator for details.
@@ -66,12 +49,12 @@ The links on the left allow to configure different configuration aspects of your
 Activating example workspaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Click on the *workspace* link:
+Click on the *workspaces* link:
 
-.. figure:: images/browser.png
+.. figure:: images/console_workspaces.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_workspaces.jpg
 
    Workspace section
 
@@ -82,14 +65,14 @@ The bottom of the workspace view lists the available example workspace. You shou
 * **deegree CSW demo**
 * **deegree WPS demo**
 
-If you click on **Import**, the corresponding example workspace will be fetched from deegree's official workspace repository and extracted in your deegree configuration folder. Depending on the workspace and your internet connection, this may take a while.
+If you click on **Import**, the corresponding example workspace will be fetched from deegree's official workspace repository and extracted in your deegree configuration folder. Depending on the workspace and your internet connection, this may take a few minutes (the Utah demo workspace is about 70 MB in size).
 
-After downloading has completed, the workspace will be shown under "Inactive workspaces":
+After downloading has completed, the workspace will be shown under "Available workspaces":
 
-.. figure:: images/browser.png
+.. figure:: images/console_workspace_imported.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_workspace_imported.jpg
 
    Added inactive workspace
 
@@ -105,19 +88,19 @@ This workspace contains a web mapping setup based on data from Utah. It contains
 
 After downloading and activating the "deegree utahDemo" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
-.. figure:: images/browser.png
+.. figure:: images/console_workspace_utah1.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_workspace_utah1.jpg
 
    Map client showing base map
 
-Click on the "+" icon on the right side to see a list of available layers. Tick one (e.g. ) to enable it in the client. It will be generated by your deegree instance.
+Click on the "+" icon on the right side to see a list of available layers. Tick one (e.g. Municipalities) to enable it in the client. It will be generated by your deegree instance.
 
-.. figure:: images/browser.png
+.. figure:: images/console_workspace_utah2.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_workspace_utah2.jpg
 
    Selecting WMS layers to be displayed
 
@@ -127,31 +110,31 @@ Alternatively, you can open a rectangle by holding the SHIFT key and clicking th
 
 In order to send some requests against the WFS, you may use the "send requests" link in the service console (go back first to the console). A simple interface for sending XML requests will open up. This interface is meant for testing the behaviour of your web service on the protocol level and contains some reasonable example requests.
 
-.. figure:: images/browser.png
+.. figure:: images/console_workspace_utah3.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_workspace_utah3.jpg
 
    Sending example requests
 
 You may select example requests from the drop-down menu and click on the "Send" button. The server response will be displayed.
 
-.. figure:: images/browser.png
+.. figure:: images/console_workspace_utah4.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_workspace_utah4.jpg
 
    Sending example requests
 
 .. tip::
   Instead of using the built-in layer preview or the generic XML client, you may use any compliant OGC client for accessing the WMS and WFS. Successfully tested desktop clients include Quantum GIS (install WFS plugin for accessing WFS), uDig, OpenJUMP and deegree iGeoDesktop. The service address to enter in your client is: http://localhost:8080/services.
 
-.. figure:: images/browser.png
+.. figure:: images/qgis_workspace_utah.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/qgis_workspace_utah.jpg
 
-   Quantum GIS displaying some WMS layers from the utahDemo
+   Quantum GIS displaying a WMS layer from the utahDemo
 
 
 .. _anchor-workspace-inspire:
@@ -211,9 +194,9 @@ The example requests also contain a lot of examples for the query possibilities 
 
 .. _anchor-workspace-csw:
 
-----------------------------------------
-Example config 3: An ISO catalogue setup
-----------------------------------------
+-------------------------------------------
+Example workspace 3: An ISO catalogue setup
+-------------------------------------------
 
 This workspace contains a catalogue service setup that is compliant to the ISO Application Profile. After downloading and starting it, you will have to setup tables in a PostGIS database first (TBD describe Oracle). You will need to have an empty and spatially-enabled PostGIS database handy that can be accessed from the machine that runs the deegree webservices.
 
@@ -260,9 +243,9 @@ After successful insertion (click "Send"), some records will be inserted into th
 
 .. _anchor-workspace-wps:
 
-------------------------------------
-Example config 4: Processing service
-------------------------------------
+---------------------------------------
+Example workspace 4: Processing service
+---------------------------------------
 
 This workspace contains a WPS setup with some simple example processes. After downloading and starting it, you can click on "send requests" in order to fire some example requests to the WPS. Use the right-most drop-down menu to select an example request and click "Send" to send it to the WPS:
 
