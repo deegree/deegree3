@@ -24,6 +24,13 @@
           </appinfo>
         </annotation>
       </element>
+      <element name="SortBy" minOccurs="0" type="anyType">
+        <annotation>
+          <appinfo>
+            <jaxb:dom />
+          </appinfo>
+        </annotation>
+      </element>      
       <group ref="l:LayerInfo" />
     </sequence>
   </complexType>

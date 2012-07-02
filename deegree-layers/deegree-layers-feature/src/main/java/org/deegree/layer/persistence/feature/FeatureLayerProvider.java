@@ -40,8 +40,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
+import static java.util.Collections.singleton;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import static org.deegree.layer.config.ConfigUtils.parseDimensions;
@@ -56,9 +60,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.dom.DOMSource;
 
@@ -68,11 +76,15 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XPathUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
@@ -90,6 +102,7 @@ import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
+import org.w3c.dom.Element;
 
 /**
  * 
@@ -165,7 +178,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 styles.put( "default", new Style() );
             }
             md.setStyles( styles );
-            Layer l = new FeatureLayer( md, store, ft.getName(), null );
+            Layer l = new FeatureLayer( md, store, ft.getName(), null, null );
             map.put( name, l );
         }
 
@@ -197,15 +210,16 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
                 QName featureType = lay.getFeatureType();
 
-                OperatorFilter filter = null;
-                XMLInputFactory fac = XMLInputFactory.newInstance();
-                if ( lay.getFilter() != null ) {
-                    XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( lay.getFilter() ) );
-                    nextElement( reader );
-                    nextElement( reader );
-                    filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
-                    reader.close();
+                // workaround for what seems to be a jaxb bug
+                Element filterEl = lay.getFilter();
+                Element sortEl = lay.getSortBy();
+                if ( filterEl != null && filterEl.getLocalName().equals( "SortBy" ) && sortEl == null ) {
+                    sortEl = filterEl;
+                    filterEl = null;
                 }
+
+                OperatorFilter filter = parseFilter( filterEl );
+                List<SortProperty> sortBy = parseSortBy( sortEl );
 
                 SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
@@ -241,13 +255,86 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                                                                               lay.getStyleRef() );
                 md.setStyles( p.first );
                 md.setLegendStyles( p.second );
-                Layer l = new FeatureLayer( md, store, featureType, filter );
+                Layer l = new FeatureLayer( md, store, featureType, filter, sortBy );
                 map.put( lay.getName(), l );
             }
             return new MultipleLayerStore( map );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );
         }
+    }
+
+    private OperatorFilter parseFilter( Element filterElement )
+                            throws FactoryConfigurationError, XMLStreamException {
+
+        if ( filterElement == null ) {
+            return null;
+        }
+
+        OperatorFilter filter = null;
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( filterElement ) );
+        nextElement( reader );
+        nextElement( reader );
+        filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
+        reader.close();
+        return filter;
+    }
+
+    private List<SortProperty> parseSortBy( Element el )
+                            throws FactoryConfigurationError, XMLStreamException {
+
+        if ( el == null ) {
+            return null;
+        }
+
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( el ) );
+
+        nextElement( reader );
+        // f:SortBy
+        nextElement( reader );
+
+        // ogc:SortBy
+        requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
+
+        nextElement( reader );
+        List<SortProperty> sortCrits = new ArrayList<SortProperty>();
+        while ( reader.isStartElement() ) {
+            SortProperty prop = parseSortProperty( reader );
+            sortCrits.add( prop );
+            nextElement( reader );
+        }
+        reader.close();
+        return sortCrits;
+    }
+
+    private SortProperty parseSortProperty( XMLStreamReader reader )
+                            throws NoSuchElementException, XMLStreamException {
+
+        requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
+        nextElement( reader );
+
+        requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
+
+        // TODO TODO!!! properly repair namespace bindings object, which seems not to contain any bindings here
+        String xpath = reader.getElementText().trim();
+        Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
+        NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
+        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+        ValueReference propName = new ValueReference( xpath, nsContext );
+        nextElement( reader );
+
+        boolean sortAscending = true;
+        if ( reader.isStartElement() ) {
+            requireStartElement( reader, singleton( new QName( OGCNS, "SortOrder" ) ) );
+            String s = reader.getElementText().trim();
+            sortAscending = "ASC".equals( s );
+            nextElement( reader );
+        }
+
+        reader.require( END_ELEMENT, OGCNS, "SortProperty" );
+        return new SortProperty( propName, sortAscending );
     }
 
     @SuppressWarnings("unchecked")

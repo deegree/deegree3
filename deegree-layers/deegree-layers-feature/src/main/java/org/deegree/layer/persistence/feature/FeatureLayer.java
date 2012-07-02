@@ -81,6 +81,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Or;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
@@ -90,6 +91,7 @@ import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
@@ -112,11 +114,19 @@ public class FeatureLayer extends AbstractLayer {
 
     private final QName featureType;
 
-    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter ) {
+    private final SortProperty[] sortBy;
+
+    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
+                         List<SortProperty> sortBy ) {
         super( md );
         this.featureStore = featureStore;
         this.featureType = featureType;
         this.filter = filter;
+        if ( sortBy != null ) {
+            this.sortBy = sortBy.toArray( new SortProperty[sortBy.size()] );
+        } else {
+            this.sortBy = null;
+        }
     }
 
     @Override
@@ -169,13 +179,13 @@ public class FeatureLayer extends AbstractLayer {
                                      @Override
                                      public Query apply( FeatureType u ) {
                                          Filter fil = Filters.addBBoxConstraint( bbox, filter2, geomProp );
-                                         return new Query( u.getName(), fil, round( query.getScale() ), maxFeatures,
-                                                           query.getResolution() );
+                                         return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
+                                                             query.getResolution() );
                                      }
                                  } ) );
         } else {
-            Query fquery = new Query( ftName, Filters.addBBoxConstraint( bbox, filter, geomProp ),
-                                      round( query.getScale() ), maxFeatures, query.getResolution() );
+            Query fquery = createQuery( ftName, Filters.addBBoxConstraint( bbox, filter, geomProp ),
+                                        round( query.getScale() ), maxFeatures, query.getResolution() );
             queries.add( fquery );
         }
 
@@ -185,6 +195,11 @@ public class FeatureLayer extends AbstractLayer {
         }
 
         return new FeatureLayerData( queries, featureStore, maxFeatures, style, ftName );
+    }
+
+    private Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution ) {
+        TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
+        return new Query( typeNames, filter, sortBy, scale, maxFeatures, resolution );
     }
 
     @Override
@@ -218,12 +233,12 @@ public class FeatureLayer extends AbstractLayer {
                                  new Mapper<Query, FeatureType>() {
                                      @Override
                                      public Query apply( FeatureType u ) {
-                                         return new Query( u.getName(), filter2, -1, query.getFeatureCount(), -1 );
+                                         return createQuery( u.getName(), filter2, -1, query.getFeatureCount(), -1 );
                                      }
                                  } ) );
             clearNulls( queries );
         } else {
-            queries.add( new Query( featureType, filter2, -1, query.getFeatureCount(), -1 ) );
+            queries.add( createQuery( featureType, filter2, -1, query.getFeatureCount(), -1 ) );
         }
 
         LOG.debug( "Finished querying the feature store(s)." );

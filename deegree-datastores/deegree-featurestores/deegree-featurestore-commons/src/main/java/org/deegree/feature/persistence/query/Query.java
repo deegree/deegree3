@@ -113,8 +113,6 @@ public class Query {
     public Query( QName ftName, Filter filter, int scale, int maxFeatures, double resolution ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
-        // this.featureVersion = null;
-        // this.srsName = null;
         this.maxFeatures = maxFeatures;
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
@@ -143,8 +141,6 @@ public class Query {
     public Query( TypeName[] typeNames, Filter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = typeNames;
         this.filter = filter;
-        // this.featureVersion = featureVersion;
-        // this.srsName = srsName;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -167,12 +163,45 @@ public class Query {
     public Query( IdFilter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = new TypeName[0];
         this.filter = filter;
-        // this.featureVersion = featureVersion;
-        // this.srsName = srsName;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
             this.sortBy = new SortProperty[0];
+        }
+    }
+
+    /**
+     * Creates a new {@link Query} instance.
+     * 
+     * @param typeNames
+     *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
+     * @param filter
+     *            filter to be applied, can be <code>null</code>, if not <code>null</code>, all contained geometry
+     *            operands must have a non-null {@link CRS}
+     * @param sortBy
+     *            sort criteria to be applied, can be <code>null</code>
+     * @param scale
+     *            if scale is positive, a scale query hint will be used
+     * @param maxFeatures
+     *            may be -1 if no limit needs to be exercised
+     * @param resolution
+     *            if resolution is positive, a pixel resolution hint will be used
+     */
+    public Query( TypeName[] typeNames, Filter filter, SortProperty[] sortBy, int scale, int maxFeatures,
+                  double resolution ) {
+        this.typeNames = typeNames;
+        this.filter = filter;
+        if ( sortBy != null ) {
+            this.sortBy = sortBy;
+        } else {
+            this.sortBy = new SortProperty[0];
+        }
+        this.maxFeatures = maxFeatures;
+        if ( scale > 0 ) {
+            hints.put( HINT_SCALE, scale );
+        }
+        if ( resolution > 0 ) {
+            hints.put( HINT_RESOLUTION, resolution );
         }
     }
 
