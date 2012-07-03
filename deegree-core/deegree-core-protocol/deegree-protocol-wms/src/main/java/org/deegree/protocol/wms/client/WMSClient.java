@@ -128,7 +128,8 @@ import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 
 /**
- * Allows for easy performing of requests again WMS 1.1.1 compliant map services.
+ * API-level client for accessing servers that implement the <a
+ * href="http://www.opengeospatial.org/standards/wms">OpenGIS Web Map Service (WMS) 1.1.1/1.3.0</a> protocol.
  * 
  * TODO refactor timeout and tiled request code
  * 
