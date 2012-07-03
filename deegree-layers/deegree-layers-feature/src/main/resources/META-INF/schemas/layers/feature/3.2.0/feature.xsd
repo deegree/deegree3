@@ -17,20 +17,34 @@
   <complexType name="FeatureLayerType">
     <sequence>
       <element name="FeatureType" type="QName" minOccurs="0" />
-      <element name="Filter" minOccurs="0" type="anyType">
-        <annotation>
-          <appinfo>
-            <jaxb:dom />
-          </appinfo>
-        </annotation>
+      <!-- it's important to use xs:any instead of just an element with anyType here, else jaxb fails to properly generate 
+        the dom! -->
+      <element name="Filter" minOccurs="0">
+        <complexType>
+          <sequence>
+            <any processContents="lax">
+              <annotation>
+                <appinfo>
+                  <jaxb:dom />
+                </appinfo>
+              </annotation>
+            </any>
+          </sequence>
+        </complexType>
       </element>
-      <element name="SortBy" minOccurs="0" type="anyType">
-        <annotation>
-          <appinfo>
-            <jaxb:dom />
-          </appinfo>
-        </annotation>
-      </element>      
+      <element name="SortBy" minOccurs="0">
+        <complexType>
+          <sequence>
+            <any processContents="lax">
+              <annotation>
+                <appinfo>
+                  <jaxb:dom />
+                </appinfo>
+              </annotation>
+            </any>
+          </sequence>
+        </complexType>
+      </element>
       <group ref="l:LayerInfo" />
     </sequence>
   </complexType>

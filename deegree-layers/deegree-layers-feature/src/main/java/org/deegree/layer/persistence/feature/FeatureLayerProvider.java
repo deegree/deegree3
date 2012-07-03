@@ -44,6 +44,7 @@ import static java.util.Collections.singleton;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
@@ -53,6 +54,8 @@ import static org.deegree.layer.config.ConfigUtils.parseStyles;
 import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +71,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -102,7 +105,6 @@ import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
-import org.w3c.dom.Element;
 
 /**
  * 
@@ -210,16 +212,10 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
                 QName featureType = lay.getFeatureType();
 
-                // workaround for what seems to be a jaxb bug
-                Element filterEl = lay.getFilter();
-                Element sortEl = lay.getSortBy();
-                if ( filterEl != null && filterEl.getLocalName().equals( "SortBy" ) && sortEl == null ) {
-                    sortEl = filterEl;
-                    filterEl = null;
-                }
-
-                OperatorFilter filter = parseFilter( filterEl );
-                List<SortProperty> sortBy = parseSortBy( sortEl );
+                // these methods do not use the dom elements but reparse the configuration file using StAX due to bugs
+                // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
+                OperatorFilter filter = parseFilter( configUrl );
+                List<SortProperty> sortBy = parseSortBy( configUrl );
 
                 SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
@@ -264,36 +260,31 @@ public class FeatureLayerProvider implements LayerStoreProvider {
         }
     }
 
-    private OperatorFilter parseFilter( Element filterElement )
-                            throws FactoryConfigurationError, XMLStreamException {
+    private static OperatorFilter parseFilter( URL configUrl )
+                            throws FactoryConfigurationError, XMLStreamException, URISyntaxException {
 
-        if ( filterElement == null ) {
+        File file = new File( configUrl.toURI() );
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
+
+        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "Filter" ) ) ) {
             return null;
         }
 
         OperatorFilter filter = null;
-        XMLInputFactory fac = XMLInputFactory.newInstance();
-        XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( filterElement ) );
-        nextElement( reader );
-        nextElement( reader );
         filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
         reader.close();
         return filter;
     }
 
-    private List<SortProperty> parseSortBy( Element el )
-                            throws FactoryConfigurationError, XMLStreamException {
+    private static List<SortProperty> parseSortBy( URL configUrl )
+                            throws FactoryConfigurationError, XMLStreamException, URISyntaxException {
 
-        if ( el == null ) {
+        File file = new File( configUrl.toURI() );
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
+
+        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "SortBy" ) ) ) {
             return null;
         }
-
-        XMLInputFactory fac = XMLInputFactory.newInstance();
-        XMLStreamReader reader = fac.createXMLStreamReader( new DOMSource( el ) );
-
-        nextElement( reader );
-        // f:SortBy
-        nextElement( reader );
 
         // ogc:SortBy
         requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
@@ -309,7 +300,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
         return sortCrits;
     }
 
-    private SortProperty parseSortProperty( XMLStreamReader reader )
+    private static SortProperty parseSortProperty( XMLStreamReader reader )
                             throws NoSuchElementException, XMLStreamException {
 
         requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
@@ -317,11 +308,9 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
         requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
 
-        // TODO TODO!!! properly repair namespace bindings object, which seems not to contain any bindings here
         String xpath = reader.getElementText().trim();
         Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
         NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
-        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
         ValueReference propName = new ValueReference( xpath, nsContext );
         nextElement( reader );
 
