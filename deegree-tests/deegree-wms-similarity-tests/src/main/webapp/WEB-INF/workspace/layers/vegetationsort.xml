@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/feature feature.xsd" xmlns:g="http://www.deegree.org/metadata/spatial" configVersion="3.2.0" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc">
+  <FeatureStoreId>dominant</FeatureStoreId>
+  <FeatureLayer>
+    <SortBy>
+      <ogc:SortBy>
+        <ogc:SortProperty>
+          <ogc:PropertyName>app:DOM</ogc:PropertyName>
+        </ogc:SortProperty>
+      </ogc:SortBy>
+    </SortBy>
+    <l:Name>dominant</l:Name>
+    <d:Title>dominant</d:Title>
+    <l:StyleRef>
+      <l:StyleStoreId>filtersort</l:StyleStoreId>
+    </l:StyleRef>
+  </FeatureLayer>
+</FeatureLayers>

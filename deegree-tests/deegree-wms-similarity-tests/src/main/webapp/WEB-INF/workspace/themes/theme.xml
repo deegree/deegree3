@@ -6,6 +6,9 @@
   <LayerStoreId>contours</LayerStoreId>
   <LayerStoreId>springs</LayerStoreId>
   <LayerStoreId>ttf</LayerStoreId>
+  <LayerStoreId>vegetationfilter</LayerStoreId>
+  <LayerStoreId>vegetationsort</LayerStoreId>
+  <LayerStoreId>vegetationfiltersort</LayerStoreId>
 
   <Theme>
     <d:Title>CITE layers</d:Title>
@@ -29,6 +32,21 @@
       <Identifier>ttfsymbol</Identifier>
       <d:Title>ttfsymbol</d:Title>
       <Layer>ttfsymbol</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>vegetationfilter</Identifier>
+      <d:Title>vegetationfilter</d:Title>
+      <Layer layerStore='vegetationfilter'>dominant</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>vegetationsort</Identifier>
+      <d:Title>vegetationsort</d:Title>
+      <Layer layerStore='vegetationsort'>dominant</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>vegetationfiltersort</Identifier>
+      <d:Title>vegetationfiltersort</d:Title>
+      <Layer layerStore='vegetationfiltersort'>dominant</Layer>
     </Theme>
   </Theme>
 
