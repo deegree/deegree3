@@ -201,8 +201,8 @@ public class GeoTIFFTileStore implements TileStore {
                             throws ResourceInitException {
         GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
         try {
-            int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
             if ( crs == null ) {
+                int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
                 String epsgCode = null;
                 if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
                     epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
