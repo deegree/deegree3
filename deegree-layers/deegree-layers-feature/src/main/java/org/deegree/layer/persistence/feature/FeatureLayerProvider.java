@@ -180,7 +180,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 styles.put( "default", new Style() );
             }
             md.setStyles( styles );
-            Layer l = new FeatureLayer( md, store, ft.getName(), null, null );
+            Layer l = new FeatureLayer( md, store, ft.getName(), null, null, null );
             map.put( name, l );
         }
 
@@ -216,6 +216,13 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                 // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
                 OperatorFilter filter = parseFilter( configUrl );
                 List<SortProperty> sortBy = parseSortBy( configUrl );
+                List<SortProperty> sortByFeatureInfo = sortBy;
+                if ( sortBy != null && lay.getSortBy().isReverseFeatureInfo() ) {
+                    sortByFeatureInfo = new ArrayList<SortProperty>();
+                    for ( SortProperty prop : sortBy ) {
+                        sortByFeatureInfo.add( new SortProperty( prop.getSortProperty(), !prop.getSortOrder() ) );
+                    }
+                }
 
                 SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
                 Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
@@ -251,7 +258,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                                                                               lay.getStyleRef() );
                 md.setStyles( p.first );
                 md.setLegendStyles( p.second );
-                Layer l = new FeatureLayer( md, store, featureType, filter, sortBy );
+                Layer l = new FeatureLayer( md, store, featureType, filter, sortBy, sortByFeatureInfo );
                 map.put( lay.getName(), l );
             }
             return new MultipleLayerStore( map );

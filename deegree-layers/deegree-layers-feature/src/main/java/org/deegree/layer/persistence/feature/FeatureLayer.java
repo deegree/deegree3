@@ -114,18 +114,19 @@ public class FeatureLayer extends AbstractLayer {
 
     private final QName featureType;
 
-    private final SortProperty[] sortBy;
+    SortProperty[] sortBy, sortByFeatureInfo;
 
     public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
-                         List<SortProperty> sortBy ) {
+                         List<SortProperty> sortBy, List<SortProperty> sortByFeatureInfo ) {
         super( md );
         this.featureStore = featureStore;
         this.featureType = featureType;
         this.filter = filter;
         if ( sortBy != null ) {
             this.sortBy = sortBy.toArray( new SortProperty[sortBy.size()] );
-        } else {
-            this.sortBy = null;
+        }
+        if ( sortByFeatureInfo != null ) {
+            this.sortByFeatureInfo = sortByFeatureInfo.toArray( new SortProperty[sortByFeatureInfo.size()] );
         }
     }
 
@@ -180,12 +181,12 @@ public class FeatureLayer extends AbstractLayer {
                                      public Query apply( FeatureType u ) {
                                          Filter fil = Filters.addBBoxConstraint( bbox, filter2, geomProp );
                                          return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
-                                                             query.getResolution() );
+                                                             query.getResolution(), sortBy );
                                      }
                                  } ) );
         } else {
             Query fquery = createQuery( ftName, Filters.addBBoxConstraint( bbox, filter, geomProp ),
-                                        round( query.getScale() ), maxFeatures, query.getResolution() );
+                                        round( query.getScale() ), maxFeatures, query.getResolution(), sortBy );
             queries.add( fquery );
         }
 
@@ -197,9 +198,10 @@ public class FeatureLayer extends AbstractLayer {
         return new FeatureLayerData( queries, featureStore, maxFeatures, style, ftName );
     }
 
-    private Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution ) {
+    static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
+                              SortProperty[] sort ) {
         TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
-        return new Query( typeNames, filter, sortBy, scale, maxFeatures, resolution );
+        return new Query( typeNames, filter, sort, scale, maxFeatures, resolution );
     }
 
     @Override
@@ -233,12 +235,13 @@ public class FeatureLayer extends AbstractLayer {
                                  new Mapper<Query, FeatureType>() {
                                      @Override
                                      public Query apply( FeatureType u ) {
-                                         return createQuery( u.getName(), filter2, -1, query.getFeatureCount(), -1 );
+                                         return createQuery( u.getName(), filter2, -1, query.getFeatureCount(), -1,
+                                                             sortByFeatureInfo );
                                      }
                                  } ) );
             clearNulls( queries );
         } else {
-            queries.add( createQuery( featureType, filter2, -1, query.getFeatureCount(), -1 ) );
+            queries.add( createQuery( featureType, filter2, -1, query.getFeatureCount(), -1, sortByFeatureInfo ) );
         }
 
         LOG.debug( "Finished querying the feature store(s)." );
