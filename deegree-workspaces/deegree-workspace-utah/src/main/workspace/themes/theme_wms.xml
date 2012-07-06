@@ -1,6 +1,7 @@
 <Themes xmlns="http://www.deegree.org/themes/standard"  xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
 
   <LayerStoreId>layer_feature_utah_airports</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_dominantvegetation</LayerStoreId>
   <LayerStoreId>layer_feature_utah_groundwater</LayerStoreId>
   <LayerStoreId>layer_feature_utah_lakes</LayerStoreId>
   <LayerStoreId>layer_feature_utah_municipalities</LayerStoreId>
@@ -29,12 +30,18 @@
         <d:Title>Airports of Utah</d:Title>
         <!-- The [1..n] Layer is the 'Name' of a Layer defined in one of the referenced LayerStores (see above 'LayerStoreId') -->
         <!-- You van also specify the layerstore explicit in the Layer Element such as  '<Layer layerStore="layer_feature_utah_airports">'  -->
+        <d:Abstract>Abstract Theme</d:Abstract>
+        <!-- 
+        <d:Keywords>
+          <d:Keyword>Keyword Theme</d:Keyword>
+        </d:Keywords>
+         -->
         <Layer>airports</Layer>
       </Theme>
     </Theme>
     <Theme>
-    <Identifier>administration</Identifier>
-    <d:Title>Administration</d:Title>
+      <Identifier>administration</Identifier>
+      <d:Title>Administration</d:Title>
       <Theme>
         <Identifier>stateboundary</Identifier>
         <d:Title>Stateboundary of Utah</d:Title>
@@ -74,7 +81,7 @@
         <Layer>DEM30</Layer>
       </Theme>
     </Theme>
-    
+  
     <Theme>
       <Identifier>Hydrology</Identifier>
       <d:Title>Hydrology of Utah</d:Title>
@@ -96,6 +103,11 @@
         <d:Title>Weatherstations in Utah County</d:Title>
         <Layer>weatherstations</Layer>
       </Theme>
+    </Theme>
+    <Theme>
+      <Identifier>dominantvegetation</Identifier>
+      <d:Title>Dominant vegetation in Utah County</d:Title>
+      <Layer>dominantvegetation</Layer>
     </Theme>
     <Theme>
       <d:Title>Cascading examples</d:Title>

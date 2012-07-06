@@ -11,7 +11,7 @@
     <ogc:Filter>
       <ogc:Not>
         <ogc:PropertyIsNull>
-          <ogc:PropertyName>app:CODE</ogc:PropertyName>
+          <ogc:PropertyName>app:code</ogc:PropertyName>
         </ogc:PropertyIsNull>
       </ogc:Not>
     </ogc:Filter>
@@ -20,7 +20,7 @@
           <SvgParameter name="fill">
             <Interpolate fallbackValue="#005C29" method="color">
                 <LookupValue>
-                    <ogc:PropertyName>app:CODE</ogc:PropertyName>
+                    <ogc:PropertyName>app:code</ogc:PropertyName>
                 </LookupValue>
                 <InterpolationPoint>
                     <Data>-1</Data>
@@ -46,7 +46,7 @@
           <SvgParameter name="fill-opacity">
             <Interpolate fallbackValue="1" method="numeric">
               <LookupValue>
-                <ogc:PropertyName>app:CODE</ogc:PropertyName>
+                <ogc:PropertyName>app:code</ogc:PropertyName>
               </LookupValue>
                 <InterpolationPoint>
                     <Data>-1</Data>
