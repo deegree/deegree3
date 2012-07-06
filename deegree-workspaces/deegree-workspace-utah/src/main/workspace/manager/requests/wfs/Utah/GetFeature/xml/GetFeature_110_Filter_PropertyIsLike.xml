@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeature version="1.1.0" 
+  xmlns="http://www.opengis.net/wfs"  
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:app="http://www.deegree.org/app"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  
+  <Query xmlns:app="http://www.deegree.org/app" typeName="app:SGID024_Municipalities2004_edited">
+  
+  <ogc:Filter>
+    <ogc:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
+      <ogc:PropertyName>app:NAME</ogc:PropertyName>
+      <ogc:Literal>Mar*-Sl#terville</ogc:Literal>
+    </ogc:PropertyIsLike>
+  </ogc:Filter>
+  
+  </Query>
+</GetFeature>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeature version="1.1.0" 
+  xmlns="http://www.opengis.net/wfs"  
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:app="http://www.deegree.org/app"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  
+  <Query xmlns:app="http://www.deegree.org/app" typeName="app:DominantVegetation">
+  
+  <PropertyName>app:objectid</PropertyName>
+  <PropertyName>app:code</PropertyName>
+  
+  <ogc:Filter>
+    <ogc:BBOX>
+      <ogc:PropertyName>app:geom</ogc:PropertyName>
+      <gml:Envelope srsName="urn:ogc:def:crs:EPSG::26912">
+        <gml:lowerCorner>414055.0 4404348.0</gml:lowerCorner>
+        <gml:upperCorner>452132.0 4426933.0</gml:upperCorner>
+      </gml:Envelope>
+    </ogc:BBOX>
+  </ogc:Filter>
+  
+  </Query>
+</GetFeature>
