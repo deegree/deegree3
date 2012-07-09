@@ -833,7 +833,7 @@ public class Java2DRendererTest {
         g.dispose();
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
-        texts.add( "polygon: white rectangle with triangle stroke and perpendicular offest of -4. Expected: triangles points to the INSIDE of the geometry!" );
+        texts.add( "polygon: white rectangle with red triangle stroke and perpendicular offest of -4. Expected: triangles points to the INSIDE of the geometry!" );
         writeTestImage( img, texts, time2 - time );
     }
 }

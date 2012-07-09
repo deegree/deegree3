@@ -36,6 +36,7 @@
 
 package org.deegree.rendering.r2d;
 
+import static com.vividsolutions.jts.algorithm.CGAlgorithms.isCCW;
 import static java.awt.BasicStroke.CAP_BUTT;
 import static java.awt.BasicStroke.CAP_ROUND;
 import static java.awt.BasicStroke.CAP_SQUARE;
@@ -57,7 +58,11 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.cs.components.Unit.METRE;
+import static org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType.Surface;
+import static org.deegree.geometry.primitive.Ring.RingType.LinearRing;
+import static org.deegree.geometry.primitive.Surface.SurfaceType.Polygon;
 import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
+import static org.deegree.geometry.validation.GeometryFixer.invertOrientation;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
@@ -78,11 +83,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.media.jai.RenderedOp;
@@ -93,7 +99,6 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
-import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -102,6 +107,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.linearization.GeometryLinearizer;
@@ -109,12 +115,22 @@ import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.refs.GeometryReference;
+import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
+import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
+import org.deegree.geometry.standard.multi.DefaultMultiSurface;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.style.styling.LineStyling;
@@ -129,6 +145,8 @@ import org.deegree.style.styling.components.UOM;
 import org.slf4j.Logger;
 
 import com.sun.media.jai.codec.MemoryCacheSeekableStream;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LinearRing;
 
 /**
  * <code>Java2DRenderer</code>
@@ -153,7 +171,7 @@ public class Java2DRenderer implements Renderer {
 
     private double res;
 
-    private Envelope bbox;
+    private Polygon clippingArea;
 
     private int width;
 
@@ -220,7 +238,7 @@ public class Java2DRenderer implements Renderer {
                 if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
                     transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
                 }
-                this.bbox = bbox;
+                this.clippingArea = calculateClippingArea( bbox );
             } catch ( Throwable e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
@@ -239,6 +257,17 @@ public class Java2DRenderer implements Renderer {
     public Java2DRenderer( Graphics2D graphics ) {
         this.graphics = graphics;
         res = 1;
+    }
+
+    private Polygon calculateClippingArea( Envelope bbox ) {
+        double resolution = bbox.getSpan0() / width;
+        double delta = resolution * 100;
+        double[] minCords = new double[] { bbox.getMin().get0() - delta, bbox.getMin().get1() - delta };
+        double[] maxCords = new double[] { bbox.getMax().get0() + delta, bbox.getMax().get1() + delta };
+        Point min = new DefaultPoint( null, bbox.getCoordinateSystem(), null, minCords );
+        Point max = new DefaultPoint( null, bbox.getCoordinateSystem(), null, maxCords );
+        Envelope enlargedBBox = new DefaultEnvelope( min, max );
+        return (Polygon) Geometries.getAsGeometry( enlargedBBox );
     }
 
     private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
@@ -727,17 +756,103 @@ public class Java2DRenderer implements Renderer {
      */
     private Geometry clipGeometry( Geometry geom ) {
         geom = transform( geom );
-        if ( bbox != null && !bbox.contains( geom ) ) {
-            double resolution = bbox.getSpan0() / width;
-            Geometry buffer = bbox.getBuffer( new Measure( new BigDecimal( resolution * 100 ), "unity" ) );
+        if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {
-                return buffer.getIntersection( geom );
+                Geometry clippedGeometry = clippingArea.getIntersection( geom );
+                com.vividsolutions.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
+                com.vividsolutions.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
+                if ( jtsOrig == jtsClipped ) {
+                    return geom;
+                }
+                geom = fixOrientation( clippedGeometry );
             } catch ( UnsupportedOperationException e ) {
                 // use original geometry if intersection not supported by JTS
                 return geom;
             }
         }
         return geom;
+    }
+
+    private Geometry fixOrientation( Geometry geom ) {
+        switch ( geom.getGeometryType() ) {
+        case PRIMITIVE_GEOMETRY:
+            return fixOrientation( (GeometricPrimitive) geom );
+        case MULTI_GEOMETRY:
+            return fixOrientation( (MultiGeometry<?>) geom );
+        default: {
+            throw new UnsupportedOperationException();
+        }
+        }
+    }
+
+    private Geometry fixOrientation( GeometricPrimitive geom ) {
+        if ( geom.getPrimitiveType() == Surface ) {
+            return fixOrientation( (Surface) geom );
+        }
+        return geom;
+    }
+
+    private Geometry fixOrientation( Surface geom ) {
+        if ( geom.getSurfaceType() == Polygon ) {
+            return fixOrientation( (Polygon) geom );
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    private Geometry fixOrientation( Polygon geom ) {
+        Ring exteriorRing = fixOrientation( geom.getExteriorRing(), false );
+        List<Ring> interiorRings = fixInteriorOrientation( geom.getInteriorRings() );
+        return new DefaultPolygon( null, geom.getCoordinateSystem(), null, exteriorRing, interiorRings );
+    }
+
+    private List<Ring> fixInteriorOrientation( List<Ring> interiorRings ) {
+        if ( interiorRings == null ) {
+            return null;
+        }
+        List<Ring> fixedRings = new ArrayList<Ring>();
+        for ( Ring interiorRing : interiorRings ) {
+            fixedRings.add( fixOrientation( interiorRing, true ) );
+        }
+        return fixedRings;
+    }
+
+    private Ring fixOrientation( Ring ring, boolean forceClockwise ) {
+        if ( ring.getRingType() != LinearRing ) {
+            throw new UnsupportedOperationException();
+        }
+        LinearRing jtsRing = (LinearRing) ( (AbstractDefaultGeometry) ring ).getJTSGeometry();
+        Coordinate[] coords = jtsRing.getCoordinates();
+
+        // TODO check if inversions can be applied in any case (i.e. whether JTS has a guaranteed orientation of
+        // intersection result polygons)
+
+        boolean needsInversion = isCCW( coords ) == forceClockwise;
+        if ( needsInversion ) {
+            return invertOrientation( ring );
+        }
+        return ring;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Geometry fixOrientation( MultiGeometry<?> geom ) {
+
+        List fixedMembers = new ArrayList<Object>( geom.size() );
+        for ( Geometry member : geom ) {
+            Geometry fixedMember = fixOrientation( member );
+            fixedMembers.add( fixedMember );
+        }
+
+        switch ( geom.getMultiGeometryType() ) {
+        case MULTI_GEOMETRY:
+            return new DefaultMultiGeometry<Geometry>( null, geom.getCoordinateSystem(), null,
+                                                       (List<Geometry>) fixedMembers );
+        case MULTI_POLYGON:
+            return new DefaultMultiPolygon( null, geom.getCoordinateSystem(), null, (List<Polygon>) fixedMembers );
+        case MULTI_SURFACE:
+            return new DefaultMultiSurface( null, geom.getCoordinateSystem(), null, (List<Surface>) fixedMembers );
+        default:
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
