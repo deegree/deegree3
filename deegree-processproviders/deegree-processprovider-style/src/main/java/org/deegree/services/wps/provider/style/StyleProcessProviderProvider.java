@@ -104,7 +104,6 @@ public class StyleProcessProviderProvider implements ProcessProviderProvider {
 
     @Override
     public URL getConfigSchema() {
-        return StyleProcessProviderProvider.class.getResource( "META-INF/schemas/provider/style/0.1.0/styleProvider.xsd" );
+        return StyleProcessProviderProvider.class.getResource( "META-INF/schemas/processes/style/0.1.0/styleProvider.xsd" );
     }
-
 }

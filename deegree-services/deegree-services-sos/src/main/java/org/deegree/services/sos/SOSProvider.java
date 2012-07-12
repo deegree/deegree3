@@ -75,7 +75,7 @@ public class SOSProvider implements OWSProvider {
 
     @Override
     public URL getConfigSchema() {
-        return SOSProvider.class.getResource( "/META-INF/schemas/sos/3.0.0/sos_configuration.xsd" );
+        return SOSProvider.class.getResource( "/META-INF/schemas/services/sos/3.0.0/sos_configuration.xsd" );
     }
 
     @Override

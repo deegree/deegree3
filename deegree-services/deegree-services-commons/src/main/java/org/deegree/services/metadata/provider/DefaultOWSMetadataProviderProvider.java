@@ -79,7 +79,7 @@ public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderPr
 
     private static final Logger LOG = getLogger( DefaultOWSMetadataProviderProvider.class );
 
-    private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class.getResource( "/META-INF/schemas/metadata/3.2.0/metadata.xsd" );
+    private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
 
     private DeegreeWorkspace workspace;
 

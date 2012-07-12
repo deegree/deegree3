@@ -76,7 +76,7 @@ public class CSWProvider implements OWSProvider {
 
     @Override
     public URL getConfigSchema() {
-        return CSWProvider.class.getResource( "/META-INF/schemas/csw/3.2.0/csw_configuration.xsd" );
+        return CSWProvider.class.getResource( "/META-INF/schemas/services/csw/3.2.0/csw_configuration.xsd" );
     }
 
     @Override

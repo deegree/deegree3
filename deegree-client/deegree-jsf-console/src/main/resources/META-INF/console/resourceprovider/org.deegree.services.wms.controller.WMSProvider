@@ -1,7 +1,7 @@
 name=WMS
 example1_name=oldstyle
-example1_location=/META-INF/schemas/wms/3.2.0/example.xml
+example1_location=/META-INF/schemas/services/wms/3.2.0/example.xml
 example1_description=Classic WMS configuration
 example2_name=newstyle
-example2_location=/META-INF/schemas/wms/3.2.0/newstyle.xml
+example2_location=/META-INF/schemas/services/wms/3.2.0/newstyle.xml
 example2_description=New WMS configuration based on themes

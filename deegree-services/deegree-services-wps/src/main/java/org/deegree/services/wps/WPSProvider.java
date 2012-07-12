@@ -75,7 +75,7 @@ public class WPSProvider implements OWSProvider {
 
     @Override
     public URL getConfigSchema() {
-        return WPSProvider.class.getResource( "/META-INF/schemas/wps/3.1.0/wps_configuration.xsd" );
+        return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/3.1.0/wps_configuration.xsd" );
     }
 
     @Override

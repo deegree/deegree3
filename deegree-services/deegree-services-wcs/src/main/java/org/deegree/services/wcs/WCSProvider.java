@@ -76,7 +76,7 @@ public class WCSProvider implements OWSProvider {
 
     @Override
     public URL getConfigSchema() {
-        return WCSProvider.class.getResource( "/META-INF/schemas/wcs/3.0.0/wcs_configuration.xsd" );
+        return WCSProvider.class.getResource( "/META-INF/schemas/services/wcs/3.0.0/wcs_configuration.xsd" );
     }
 
     @Override

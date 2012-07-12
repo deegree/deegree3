@@ -83,11 +83,11 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
 
-    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/controller/3.0.0/controller.xsd" );
+    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/controller/3.0.0/controller.xsd" );
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
-    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.2.0/metadata.xsd" );
+    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to OWS instances
     private final Map<String, List<OWS>> ogcNameToService = new HashMap<String, List<OWS>>();
