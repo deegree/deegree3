@@ -63,8 +63,8 @@ public class TableName extends SQLIdentifier {
      * @param schema
      *            database schema identifier, can be <code>null</code>
      */
-    public TableName( String table, String schema) {
-        super( table, schema);
+    public TableName( String table, String schema ) {
+        super( table, schema );
     }
 
     /**
@@ -83,5 +83,16 @@ public class TableName extends SQLIdentifier {
      */
     public String getSchema() {
         return getQualifier();
+    }
+
+    public static TableName createFromQualifiedName( String tableName ) {
+        String table = tableName;
+        String schema = null;
+        if ( table.contains( "." ) ) {
+            String[] splittedQualifiedTableName = table.split( "[.]" );
+            schema = splittedQualifiedTableName[0];
+            table = splittedQualifiedTableName[1];
+        }
+        return new TableName( table, schema );
     }
 }

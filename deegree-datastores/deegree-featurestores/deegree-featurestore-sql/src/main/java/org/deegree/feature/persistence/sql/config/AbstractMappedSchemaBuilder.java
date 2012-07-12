@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
+import static org.deegree.commons.jdbc.TableName.createFromQualifiedName;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.LINE_STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_GEOMETRY;
@@ -200,7 +201,7 @@ public abstract class AbstractMappedSchemaBuilder {
 
     protected List<TableJoin> buildJoinTable( TableName from, org.deegree.feature.persistence.sql.jaxb.Join join ) {
         if ( join != null ) {
-            TableName target = new TableName( join.getTable() );
+            TableName target = createFromQualifiedName( join.getTable() );
             if ( join.getFromColumns().size() != join.getToColumns().size() ) {
                 throw new UnsupportedOperationException( "Joins must use same number of from and to columns." );
             }
@@ -225,4 +226,5 @@ public abstract class AbstractMappedSchemaBuilder {
         }
         return null;
     }
+
 }

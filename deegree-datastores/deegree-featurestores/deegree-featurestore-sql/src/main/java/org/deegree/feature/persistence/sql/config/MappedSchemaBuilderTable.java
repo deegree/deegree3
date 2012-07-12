@@ -327,9 +327,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         TableName valueTable = table;
         if ( joinConfig != null ) {
             jc = buildJoinTable( table, joinConfig );
-            DBField dbField = new DBField( jc.get( 0 ).getToTable().toString(),
-                                           jc.get( 0 ).getToColumns().get( 0 ).toString() );
-            valueTable = new TableName( dbField.getTable(), dbField.getSchema() );
+            TableName toTable = jc.get( jc.size() - 1 ).getToTable();
+            valueTable = new TableName( toTable.getTable(), toTable.getSchema() );
         }
         int maxOccurs = joinConfig != null ? -1 : 1;
 
