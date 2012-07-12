@@ -148,10 +148,19 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
         } else {
             builder.add( propName );
         }
+
+        sqlEncoded = replaceAdditionalMsSqlServerSpecialChars( sqlEncoded );
+
         builder.add( " LIKE '" );
         builder.add( sqlEncoded );
-        builder.add( "'" );
+        builder.add( "' ESCAPE '\\'" );
         return builder.toOperation();
+    }
+
+    private String replaceAdditionalMsSqlServerSpecialChars( String sqlEncoded ) {
+        sqlEncoded = sqlEncoded.replace( "[", "\\[" );
+        sqlEncoded = sqlEncoded.replace( "]", "\\]" );
+        return sqlEncoded;
     }
 
     @Override
@@ -160,7 +169,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
-        SQLExpression propNameExpr = toProtoSQLSpatial(  op.getPropName() );
+        SQLExpression propNameExpr = toProtoSQLSpatial( op.getPropName() );
         if ( !propNameExpr.isSpatial() ) {
             String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
                          + "' does not denote a spatial column.";
