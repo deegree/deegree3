@@ -125,7 +125,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         try {
             URL mdurl;
             if ( !metadata.exists() ) {
-                mdurl = WebServicesConfiguration.class.getResource( "/META-INF/schemas/metadata/3.2.0/example.xml" );
+                mdurl = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
                 String msg = "No 'services/metadata.xml' file, assuming defaults.";
                 LOG.debug( msg );
             } else {

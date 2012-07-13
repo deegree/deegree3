@@ -196,8 +196,8 @@ public class JAXBUtils {
             try {
                 StreamSource origSchema = new StreamSource( new DURL( schemaFile.toExternalForm() ).openStream(),
                                                             schemaFile.toExternalForm() );
-                URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/description/3.1.0/description.xsd" );
-                URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/spatialmetadata/3.1.0/spatialmetadata.xsd" );
+                URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/description/3.1.0/description.xsd" );
+                URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" );
                 StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream(),
                                                       descUrl.toExternalForm() );
                 StreamSource spat = new StreamSource( new DURL( spatUrl.toExternalForm() ).openStream(),
