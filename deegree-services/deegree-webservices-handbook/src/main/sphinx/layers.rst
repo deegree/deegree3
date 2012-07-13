@@ -282,7 +282,7 @@ After that the standard options follow, as outlined in the common_ section.
 Tile layers
 -----------
 
-Tile layers are based on a tile pyramid of a tile store. You can configure an unlimited number of tile layers each based on a different tile store within one configuration file.
+Tile layers are based on tile data sets. You can configure an unlimited number of tile layers each based on several different tile data sets within one configuration file.
 
 As you might have guessed, most of the common parameters are ignored for this layer type. Most notably, the style and dimension configuration is ignored.
 
