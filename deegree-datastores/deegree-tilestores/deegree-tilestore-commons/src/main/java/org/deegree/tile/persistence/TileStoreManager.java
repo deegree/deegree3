@@ -58,6 +58,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.tile.tilematrixset.TileMatrixSetManager;
 import org.slf4j.Logger;
 
 /**
@@ -87,7 +88,7 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, CRSManager.class };
+        return new Class[] { ProxyUtils.class, CRSManager.class, TileMatrixSetManager.class };
     }
 
     static class TileStoreManagerMetadata extends DefaultResourceManagerMetadata<TileStore> {

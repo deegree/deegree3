@@ -76,8 +76,8 @@ public class TileCacheDiskLayoutTest {
         TileDataLevel mockedMatrix = Mockito.mock( TileDataLevel.class );
         when( mockedMatrix.getMetadata() ).thenReturn( md );
         TileDataSet mockedMatrixSet = Mockito.mock( TileDataSet.class );
-        when( mockedMatrixSet.getTileMatrix( "00" ) ).thenReturn( mockedMatrix );
-        when( mockedMatrixSet.getTileMatrices() ).thenReturn( Collections.singletonList( mockedMatrix ) );
+        when( mockedMatrixSet.getTileDataLevel( "00" ) ).thenReturn( mockedMatrix );
+        when( mockedMatrixSet.getTileDataLevels() ).thenReturn( Collections.singletonList( mockedMatrix ) );
 
         layout = new TileCacheDiskLayout( new File( "default" ), "png" );
         layout.setTileMatrixSet( mockedMatrixSet );

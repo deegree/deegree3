@@ -38,6 +38,7 @@ package org.deegree.remoteows;
 import org.deegree.commons.config.Resource;
 
 /**
+ * Workspace {@link Resource} that defines the access to a remote OGC Web Service instance.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$

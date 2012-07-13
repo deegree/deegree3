@@ -282,7 +282,7 @@ After that the standard options follow, as outlined in the common_ section.
 Tile layers
 -----------
 
-Tile layers are based on a tile pyramid of a tile store. You can configure an unlimited number of tile layers each based on a different tile store within one configuration file.
+Tile layers are based on tile data sets. You can configure an unlimited number of tile layers each based on several different tile data sets within one configuration file.
 
 As you might have guessed, most of the common parameters are ignored for this layer type. Most notably, the style and dimension configuration is ignored.
 
@@ -295,13 +295,18 @@ In most cases, a configuration like the following is sufficient:
               xmlns:l="http://www.deegree.org/layers/base"
               configVersion="3.2.0">
     <TileLayer>
-      <TileStoreId>pyramid</TileStoreId>
       <l:Name>example</l:Name>
       <d:Title>Example INSPIRE layer</d:Title>
+      <TileDataSet tileStoreId="sometilestore">roads</TileDataSet>
+      <TileDataSet tileStoreId="sometilestore4326">roads</TileDataSet>
     </TileLayer>
   </TileLayers>
 
 Just repeat the ``TileLayer`` element once for each layer you wish to configure.
+
+Please note that each tile data set needs to be configured with a unique tile matrix set within one layer. It is currently not possible (let's say it's not advisable) to configure two tile data sets based on the same tile matrix set within one layer, even if their actual data does not overlap.
+
+If used in a WMTS, the WMTS capabilities will contain only the actually used tile matrix sets, and will contain appropriate links in the layers which have been configured with fitting tile data sets.
 
 ---------------
 Coverage layers

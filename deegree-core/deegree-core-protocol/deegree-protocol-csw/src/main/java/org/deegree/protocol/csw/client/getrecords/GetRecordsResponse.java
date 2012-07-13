@@ -52,8 +52,8 @@ import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
-import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpResponse;
 
 /**
  * Represents a <code>GetRecords</code> response of a CSW.
@@ -65,7 +65,7 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  */
 public class GetRecordsResponse {
 
-    private final OWSResponse response;
+    private final OwsHttpResponse response;
 
     private int numberOfRecordsReturned;
 
@@ -77,7 +77,7 @@ public class GetRecordsResponse {
 
     protected String recordElementName;
 
-    public GetRecordsResponse( OWSResponse response ) throws XMLProcessingException, OWSExceptionReport,
+    public GetRecordsResponse( OwsHttpResponse response ) throws XMLProcessingException, OWSExceptionReport,
                             XMLStreamException {
         this.response = response;
         xmlStream = response.getAsXMLStream();
@@ -101,7 +101,7 @@ public class GetRecordsResponse {
         }
     }
 
-    public OWSResponse getResponse() {
+    public OwsHttpResponse getResponse() {
         return response;
     }
 

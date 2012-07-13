@@ -89,8 +89,8 @@ public class TileMatrixSetTest extends TestCase {
             when( tm.getMetadata() ).thenReturn( md );
             when( tm.getTile( 0, 0 ) ).thenReturn( t );
 
-            TileMatrixSet metadata = new TileMatrixSet( "default", "image/png", smd );
-            tms = new DefaultTileDataSet( Collections.singletonList( tm ), metadata );
+            TileMatrixSet metadata = new TileMatrixSet( "default", Collections.singletonList( md ), smd );
+            tms = new DefaultTileDataSet( Collections.singletonList( tm ), metadata, "image/png" );
         } catch ( UnknownCRSException e ) {
             throw new RuntimeException( e );
         }
@@ -106,12 +106,12 @@ public class TileMatrixSetTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.deegree.tile.TileDataSet#getTileMatrices()}.
+     * Test method for {@link org.deegree.tile.TileDataSet#getTileDataLevels()}.
      */
     @Test
     public void testGetTileMatrices() {
-        assertNotNull( tms.getTileMatrices() );
-        assertEquals( tms.getTileMatrices().size(), 1 );
+        assertNotNull( tms.getTileDataLevels() );
+        assertEquals( tms.getTileDataLevels().size(), 1 );
     }
 
 }

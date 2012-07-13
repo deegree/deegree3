@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.client;
+package org.deegree.protocol.ows.http;
 
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -42,16 +42,17 @@ import static org.deegree.protocol.ows.exception.OWSExceptionReader.parseExcepti
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Collections;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.conn.ClientConnectionManager;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.slf4j.Logger;
@@ -60,32 +61,39 @@ import org.slf4j.LoggerFactory;
 /**
  * Encapsulates an HTTP response from an OGC web service.
  * <p>
- * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise system resources (connections) may not be
- * freed.
+ * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise the HTTP connection will not be freed.
  * </p>
- * 
- * @see AbstractOWSClient
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OWSResponse {
+public class OwsHttpResponseImpl implements OwsHttpResponse {
 
-    private static Logger LOG = LoggerFactory.getLogger( OWSResponse.class );
+    private static Logger LOG = LoggerFactory.getLogger( OwsHttpResponseImpl.class );
 
     private static final XMLInputFactory xmlFac = XMLInputFactory.newInstance();
 
-    private final URI uri;
-
     private final HttpResponse httpResponse;
+
+    private final ClientConnectionManager connManager;
+
+    private final String url;
 
     private final InputStream is;
 
-    OWSResponse( URI uri, HttpResponse httpResponse ) throws IllegalStateException, IOException {
-        this.uri = uri;
+    /**
+     * Creates a new {@link OwsHttpResponseImpl} instance.
+     * 
+     * @param httpResponse
+     * @param httpClient
+     * @param url
+     * @throws IllegalStateException
+     * @throws IOException
+     */
+    OwsHttpResponseImpl( HttpResponse httpResponse, ClientConnectionManager connManager, String url )
+                            throws IllegalStateException, IOException {
         this.httpResponse = httpResponse;
+        this.connManager = connManager;
+        this.url = url;
         HttpEntity entity = httpResponse.getEntity();
         if ( entity == null ) {
             // TODO exception
@@ -93,17 +101,36 @@ public class OWSResponse {
         is = entity.getContent();
     }
 
+    /**
+     * Provides access to the raw response.
+     * 
+     * @return http response, never <code>null</code>
+     */
     public HttpResponse getAsHttpResponse() {
         return httpResponse;
     }
 
+    /**
+     * Provides access to the response body as a binary stream.
+     * 
+     * @return binary stream, never <code>null</code>
+     */
     public InputStream getAsBinaryStream() {
         return is;
     }
 
+    /**
+     * Provides access to the response body as an XML stream.
+     * 
+     * @return xml stream, never <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the stream contains an XML-encoded OWS Exception report
+     * @throws XMLStreamException
+     *             if accessing the stream fails (e.g. no XML payload)
+     */
     public XMLStreamReader getAsXMLStream()
                             throws OWSExceptionReport, XMLStreamException {
-        XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( uri.toString(), is );
+        XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
         assertNoExceptionReport( xmlStream );
         LOG.debug( "Response root element: " + xmlStream.getName() );
         String version = xmlStream.getAttributeValue( null, "version" );
@@ -115,12 +142,16 @@ public class OWSResponse {
                             throws OWSExceptionReport, XMLStreamException {
         skipStartDocument( xmlStream );
         if ( isExceptionReport( xmlStream.getName() ) ) {
-            throw parseExceptionReport( xmlStream );
+            try {
+                throw parseExceptionReport( xmlStream );
+            } finally {
+                close();
+            }
         }
     }
 
     /**
-     * Throws an {@link OWSExceptionReport} if the status code of this {@link OWSResponse} is not 200.
+     * Throws an {@link OWSExceptionReport} if the status code is not 200 (OK).
      * 
      * @throws OWSExceptionReport
      *             if status code isn't 200
@@ -131,7 +162,7 @@ public class OWSResponse {
         int statusCode = statusLine.getStatusCode();
         if ( statusCode != 200 ) {
             try {
-                XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( uri.toString(), is );
+                XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
                 assertNoExceptionReport( xmlStream );
             } catch ( OWSExceptionReport e ) {
                 throw e;
@@ -149,8 +180,31 @@ public class OWSResponse {
         throw new OWSExceptionReport( Collections.singletonList( exception ), null, null );
     }
 
-    public void close()
-                            throws IOException {
-        is.close();
+    /**
+     * Throws an {@link OWSExceptionReport} if the <code>Content-Type</code> header indicates an XML response and the
+     * contained document actually is an exception report.
+     * 
+     * @throws OWSExceptionReport
+     *             if XML content type and payload is an exception report
+     */
+    public void assertNoXmlContentTypeAndExceptionReport()
+                            throws OWSExceptionReport, XMLStreamException {
+
+        Header contentType = httpResponse.getFirstHeader( "Content-Type" );
+        if ( contentType != null && contentType.getValue().startsWith( "text/xml" ) ) {
+            XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
+            try {
+                assertNoExceptionReport( xmlStream );
+            } finally {
+                xmlStream.close();
+            }
+        }
+    }
+
+    /**
+     * Closes the HTTP connection.
+     */
+    public void close() {
+        connManager.shutdown();
     }
 }

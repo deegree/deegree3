@@ -3,9 +3,10 @@
   xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/layers/tile/3.2.0/tile.xsd"
   configVersion="3.2.0">
   <TileLayer>
-    <TileStoreId tileMatrixSet="utah">pyramid</TileStoreId>
     <l:Name>example</l:Name>
     <d:Title>Example INSPIRE layer</d:Title>
     <l:MetadataSetId>some_(uu)id</l:MetadataSetId>
+    <TileDataSet tileStoreId="utah4326">roads</TileDataSet>
+    <TileDataSet tileStoreId="utah26912">roads</TileDataSet>
   </TileLayer>
 </TileLayers>

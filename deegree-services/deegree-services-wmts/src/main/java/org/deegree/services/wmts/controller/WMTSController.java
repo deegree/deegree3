@@ -85,7 +85,8 @@ import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 import org.deegree.theme.persistence.ThemeManager;
 import org.deegree.tile.Tile;
-import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.TileDataLevel;
+import org.deegree.tile.TileDataSet;
 import org.slf4j.Logger;
 
 /**
@@ -110,7 +111,7 @@ public class WMTSController extends AbstractOWS {
 
     private List<Theme> themes = new ArrayList<Theme>();
 
-    private Map<String, TileStore> stores = new HashMap<String, TileStore>();
+    private Map<String, TileLayer> layers = new HashMap<String, TileLayer>();
 
     private String metadataUrlTemplate;
 
@@ -147,7 +148,7 @@ public class WMTSController extends AbstractOWS {
 
             for ( Layer l : Themes.getAllLayers( t ) ) {
                 if ( l instanceof TileLayer ) {
-                    stores.put( l.getMetadata().getName(), ( (TileLayer) l ).getTileStore() );
+                    layers.put( l.getMetadata().getName(), ( (TileLayer) l ) );
                 }
             }
 
@@ -228,17 +229,31 @@ public class WMTSController extends AbstractOWS {
 
     private void getTile( GetTile op, HttpResponseBuffer response )
                             throws OWSException, ServletException {
-        TileStore store = stores.get( op.getLayer() );
-        if ( store == null ) {
+        TileLayer layer = layers.get( op.getLayer() );
+        if ( layer == null ) {
             throw new OWSException( "Unknown layer: " + op.getLayer(), INVALID_PARAMETER_VALUE );
         }
 
         String format = op.getFormat();
-        if ( !store.getTileMatrixSet( op.getTileMatrixSet() ).getMetadata().getMimeType().equals( format ) ) {
+        TileDataSet tds = layer.getTileDataSet( op.getTileMatrixSet() );
+
+        if ( tds == null ) {
+            throw new OWSException( "The layer " + op.getLayer()
+                                    + " has not been configured to offer the tile matrix set " + op.getTileMatrixSet()
+                                    + ".", INVALID_PARAMETER_VALUE );
+        }
+
+        if ( !tds.getNativeImageFormat().equals( format ) ) {
             throw new OWSException( "Unknown format: " + format, INVALID_PARAMETER_VALUE );
         }
 
-        Tile t = store.getTile( op.getTileMatrixSet(), op.getTileMatrix(), op.getTileCol(), op.getTileRow() );
+        TileDataLevel level = tds.getTileDataLevel( op.getTileMatrix() );
+        if ( level == null ) {
+            throw new OWSException( "No tile matrix with id " + op.getTileMatrix() + " in tile matrix set "
+                                    + op.getTileMatrixSet() + ".", INVALID_PARAMETER_VALUE );
+        }
+
+        Tile t = level.getTile( op.getTileCol(), op.getTileRow() );
         if ( t == null ) {
             // exception or empty tile?
             throw new OWSException( "No such tile found.", INVALID_PARAMETER_VALUE );

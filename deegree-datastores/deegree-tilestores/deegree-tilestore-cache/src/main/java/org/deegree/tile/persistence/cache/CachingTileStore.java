@@ -91,20 +91,21 @@ public class CachingTileStore implements TileStore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        Collection<String> ids = tileStore.getTileMatrixSetIds();
+        Collection<String> ids = tileStore.getTileDataSetIds();
         tileMatrixSets = new HashMap<String, DefaultTileDataSet>();
         for ( String id : ids ) {
-            TileDataSet tms = tileStore.getTileMatrixSet( id );
+            TileDataSet tms = tileStore.getTileDataSet( id );
             List<TileDataLevel> list = new ArrayList<TileDataLevel>();
-            for ( TileDataLevel tm : tms.getTileMatrices() ) {
+            for ( TileDataLevel tm : tms.getTileDataLevels() ) {
                 list.add( new CachingTileMatrix( tm, cache ) );
             }
-            this.tileMatrixSets.put( id, new DefaultTileDataSet( list, tms.getMetadata() ) );
+            this.tileMatrixSets.put( id,
+                                     new DefaultTileDataSet( list, tms.getTileMatrixSet(), tms.getNativeImageFormat() ) );
         }
     }
 
     @Override
-    public Collection<String> getTileMatrixSetIds() {
+    public Collection<String> getTileDataSetIds() {
         return tileMatrixSets.keySet();
     }
 
@@ -119,7 +120,7 @@ public class CachingTileStore implements TileStore {
     }
 
     @Override
-    public TileDataSet getTileMatrixSet( String id ) {
+    public TileDataSet getTileDataSet( String id ) {
         return tileMatrixSets.get( id );
     }
 
@@ -130,7 +131,7 @@ public class CachingTileStore implements TileStore {
 
     @Override
     public Tile getTile( String tileMatrixSet, String tileMatrix, int x, int y ) {
-        TileDataLevel tm = tileMatrixSets.get( tileMatrixSet ).getTileMatrix( tileMatrix );
+        TileDataLevel tm = tileMatrixSets.get( tileMatrixSet ).getTileDataLevel( tileMatrix );
         if ( tm == null ) {
             return null;
         }
@@ -152,7 +153,7 @@ public class CachingTileStore implements TileStore {
             return size;
         }
         int cnt = 0;
-        for ( TileDataLevel tm : tileMatrixSets.get( tileMatrixSet ).getTileMatrices() ) {
+        for ( TileDataLevel tm : tileMatrixSets.get( tileMatrixSet ).getTileDataLevels() ) {
             int[] ts = Tiles.getTileIndexRange( tm, envelope );
             if ( ts != null ) {
                 String id = tm.getMetadata().getIdentifier();

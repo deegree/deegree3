@@ -83,6 +83,10 @@ public class Java2DTileRenderer implements TileRenderer {
 
     @Override
     public void render( Tile tile ) {
+        if ( tile == null ) {
+            LOG.debug( "Not rendering null tile." );
+            return;
+        }
         int minx, miny, maxx, maxy;
         Envelope env = tile.getEnvelope();
         Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( env.getMin().get0(),

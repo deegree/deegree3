@@ -45,8 +45,8 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpResponse;
 
 /**
  * TODO add class documentation here
@@ -58,17 +58,17 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  */
 public class TransactionResponse extends XMLAdapter {
 
-    private final OWSResponse response;
+    private final OwsHttpResponse response;
 
     static {
         nsContext.addNamespace( CSW_202_PREFIX, CSW_202_NS );
     }
 
-    public OWSResponse getResponse() {
+    public OwsHttpResponse getResponse() {
         return response;
     }
 
-    public TransactionResponse( OWSResponse response ) throws XMLProcessingException, OWSExceptionReport,
+    public TransactionResponse( OwsHttpResponse response ) throws XMLProcessingException, OWSExceptionReport,
                             XMLStreamException {
         this.response = response;
         this.load( response.getAsXMLStream() );

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,24 +33,45 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.client;
+package org.deegree.remoteows.wmts;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.deegree.protocol.wmts.client.WMTSClient;
+import org.deegree.remoteows.RemoteOWS;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
+/**
+ * {@link RemoteOWS} implementation for remote <a href="http://www.opengeospatial.org/standards/wmts">Web Map Tile
+ * Services</a>.
+ * 
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class RemoteWMTS implements RemoteOWS {
 
-public class OWSResponseHandler implements ResponseHandler<InputStream> {
+    private final WMTSClient client;
+
+    /**
+     * @param client
+     */
+    public RemoteWMTS( WMTSClient client ) {
+        this.client = client;
+    }
+
+    public WMTSClient getClient() {
+        return client;
+    }
 
     @Override
-    public InputStream handleResponse( HttpResponse response )
-                            throws ClientProtocolException, IOException {
+    public void destroy() {
+        // nothing to do
+    }
 
-        // TODO error handling
-        HttpEntity entity = response.getEntity();
-        return entity.getContent();
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // nothing to do
     }
 }

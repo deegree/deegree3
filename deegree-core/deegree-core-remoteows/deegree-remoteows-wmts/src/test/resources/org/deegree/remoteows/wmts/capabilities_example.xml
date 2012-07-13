@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Capabilities xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0"
+  xsi:schemaLocation="http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>deegree 3 Utah Demo</ows:Title>
+    <ows:Abstract>WMS and WFS demonstration with Utah data</ows:Abstract>
+    <ows:ServiceType>WMTS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Andreas Schmitz</ows:IndividualName>
+      <ows:PositionName>Software developer</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>0228/18496-0</ows:Voice>
+          <ows:Facsimile>0228/18496-29</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.deegree.org" />
+        <ows:HoursOfService>24x7</ows:HoursOfService>
+        <ows:ContactInstructions>Do not hesitate to call</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wmts?" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetTile">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://127.0.0.1:8080/deegree-webservices/services/wmts?" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <Contents>
+    <Layer>
+      <ows:Identifier>utah_ortho</ows:Identifier>
+      <Style>
+        <ows:Identifier>default</ows:Identifier>
+      </Style>
+      <Format>image/png</Format>
+      <TileMatrixSetLink>
+        <TileMatrixSet>Satellite_Provo</TileMatrixSet>
+      </TileMatrixSetLink>
+    </Layer>
+    <TileMatrixSet>
+      <ows:Identifier>Satellite_Provo</ows:Identifier>
+      <ows:SupportedCRS>EPSG:26912</ows:SupportedCRS>
+      <TileMatrix>
+        <ows:Identifier>7142.857142857143</ows:Identifier>
+        <ScaleDenominator>7142.857142857143</ScaleDenominator>
+        <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>13</MatrixWidth>
+        <MatrixHeight>15</MatrixHeight>
+      </TileMatrix>
+      <TileMatrix>
+        <ows:Identifier>14285.714285714286</ows:Identifier>
+        <ScaleDenominator>14285.714285714286</ScaleDenominator>
+        <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+        <TileWidth>128</TileWidth>
+        <TileHeight>128</TileHeight>
+        <MatrixWidth>13</MatrixWidth>
+        <MatrixHeight>15</MatrixHeight>
+      </TileMatrix>
+      <TileMatrix>
+        <ows:Identifier>28571.428571428572</ows:Identifier>
+        <ScaleDenominator>28571.428571428572</ScaleDenominator>
+        <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+        <TileWidth>128</TileWidth>
+        <TileHeight>128</TileHeight>
+        <MatrixWidth>7</MatrixWidth>
+        <MatrixHeight>8</MatrixHeight>
+      </TileMatrix>
+      <TileMatrix>
+        <ows:Identifier>57142.857142857145</ows:Identifier>
+        <ScaleDenominator>57142.857142857145</ScaleDenominator>
+        <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+        <TileWidth>128</TileWidth>
+        <TileHeight>128</TileHeight>
+        <MatrixWidth>4</MatrixWidth>
+        <MatrixHeight>4</MatrixHeight>
+      </TileMatrix>
+    </TileMatrixSet>
+  </Contents>
+  <Themes>
+    <Theme>
+      <ows:Title>Root theme</ows:Title>
+      <ows:Identifier />
+      <Theme>
+        <ows:Title>Transportation</ows:Title>
+        <ows:Identifier />
+        <Theme>
+          <ows:Title>Utah Orthoimage Tiled</ows:Title>
+          <ows:Identifier>utah_ortho</ows:Identifier>
+          <LayerRef>utah_ortho</LayerRef>
+        </Theme>
+      </Theme>
+    </Theme>
+  </Themes>
+</Capabilities>

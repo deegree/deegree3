@@ -59,14 +59,14 @@ public class WMSClientTest {
 
     @Test
     public void testWMS111InstantiationWithXMLAdapter()
-                            throws XMLProcessingException, IOException {
+                            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
         InputStream is = WMSClientTest.class.getResourceAsStream( "wms111.xml" );
         new WMSClient( new XMLAdapter( is ) );
     }
 
     @Test
     public void testWMS130InstantiationWithXMLAdapter()
-                            throws XMLProcessingException, IOException {
+                            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
         InputStream is = WMSClientTest.class.getResourceAsStream( "wms130.xml" );
         new WMSClient( new XMLAdapter( is ) );
     }

@@ -39,7 +39,6 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
-import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
@@ -53,6 +52,8 @@ import org.deegree.remoteows.wms_new.jaxb.HTTPBasicAuthenticationType;
 import org.slf4j.Logger;
 
 /**
+ * {@link RemoteOWS} implementation for remote <a href="http://www.opengeospatial.org/standards/wms">Web Map
+ * Services</a>.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: aschmitz $
@@ -70,18 +71,8 @@ public class RemoteWMSProvider implements RemoteOWSProvider {
     private DeegreeWorkspace workspace;
 
     @Override
-    public List<String> getCapabilitiesNamespaces() {
-        return null;
-    }
-
-    @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/remoteows/wms";
-    }
-
-    @Override
-    public String getServiceType() {
-        return "WMS";
     }
 
     @Override

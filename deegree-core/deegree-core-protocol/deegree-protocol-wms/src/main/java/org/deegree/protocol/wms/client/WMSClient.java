@@ -87,8 +87,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.gml.property.Property;
@@ -120,6 +118,7 @@ import org.deegree.layer.LayerRef;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
@@ -131,7 +130,7 @@ import org.slf4j.Logger;
  * API-level client for accessing servers that implement the <a
  * href="http://www.opengeospatial.org/standards/wms">OpenGIS Web Map Service (WMS) 1.1.1/1.3.0</a> protocol.
  * 
- * TODO refactor timeout and tiled request code
+ * TODO refactor to use {@link AbstractOWSClient#httpClient}
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: aschmitz $
@@ -155,6 +154,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
     private Version wmsVersion;
 
+    private String httpBasicUser;
+
+    private String httpBasicPass;
+
     /**
      * @param url
      * @param connectionTimeout
@@ -171,11 +174,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public WMSClient( URL url, int connectionTimeout, int requestTimeout, String user, String pass )
                             throws IOException, OWSExceptionReport, XMLStreamException {
-        super( url, user, pass );
+        super( url, new OwsHttpClientImpl( connectionTimeout * 1000, requestTimeout * 1000, user, pass ) );
         this.connectionTimeout = connectionTimeout;
         this.requestTimeout = requestTimeout;
         capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
+        this.httpBasicUser = user;
+        this.httpBasicPass = pass;
     }
 
     /**
@@ -200,7 +205,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      * @throws OWSExceptionReport
      */
     public WMSClient( URL url ) throws OWSExceptionReport, XMLStreamException, IOException {
-        super( url );
+        super( url, null );
         capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
     }
@@ -208,19 +213,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     /**
      * @param capabilities
      * @throws IOException
+     * @throws XMLStreamException
+     * @throws OWSExceptionReport
      */
-    public WMSClient( XMLAdapter capabilities ) throws IOException {
-        super( capabilities );
+    public WMSClient( XMLAdapter capabilities ) throws IOException, OWSExceptionReport, XMLStreamException {
+        super( capabilities, null );
         capaDoc.parseWMSSpecificCapabilities( getOperations() );
         checkCapabilities();
-    }
-
-    @Override
-    protected DefaultHttpClient initHttpClient() {
-        DefaultHttpClient initHttpClient = super.initHttpClient();
-        DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
-        HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
-        return initHttpClient;
     }
 
     /**

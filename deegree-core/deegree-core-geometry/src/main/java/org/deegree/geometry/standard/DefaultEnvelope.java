@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;

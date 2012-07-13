@@ -40,6 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wmts;
 
+import org.deegree.commons.tom.ows.Version;
+
 /**
  * <code>WMTSConstants</code>
  * 
@@ -51,6 +53,15 @@ package org.deegree.protocol.wmts;
 
 public class WMTSConstants {
 
+    /** Namespace for elements from WMTS specification 1.0.0 */
+    public static final String WMTS_100_NS = "http://www.opengis.net/wmts/1.0";
+
+    /** Common namespace prefix for elements from WMTS specification */
+    public static final String WMTS_PREFIX = "wmts";
+
+    /** WMTS protocol version 1.0.0 */
+    public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
+    
     /**
      * <code>WMTSRequestType</code>
      * 

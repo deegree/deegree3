@@ -43,8 +43,7 @@ package org.deegree.tile;
 import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
- * The <code>TileMatrixMetadata</code> describes the properties of a tile matrix. It can be used to determine which
- * tiles to request from the matrix.
+ * Describes the structure of a {@link TileDataLevel}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -82,7 +81,7 @@ public class TileMatrix {
      *            the number of tiles in y direction
      */
     public TileMatrix( String identifier, SpatialMetadata spatialMetadata, int tileSizeX, int tileSizeY,
-                               double resolution, int numTilesX, int numTilesY ) {
+                       double resolution, int numTilesX, int numTilesY ) {
         this.identifier = identifier;
         this.spatialMetadata = spatialMetadata;
         this.tileSizeX = tileSizeX;

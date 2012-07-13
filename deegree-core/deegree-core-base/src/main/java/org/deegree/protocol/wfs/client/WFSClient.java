@@ -68,8 +68,8 @@ import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
-import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wfs.WFSVersion;
 import org.deegree.protocol.wfs.capabilities.WFS100CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFS110CapabilitiesAdapter;
@@ -144,7 +144,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
      *             if a communication/network problem occured
      */
     public WFSClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
-        super( capaUrl );
+        super( capaUrl, null );
         wfsFts = capaDoc.parseFeatureTypeList();
         for ( WFSFeatureType wfsFt : wfsFts ) {
             ftNameTowfsFt.put( wfsFt.getName(), wfsFt );
@@ -217,7 +217,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
             kvp.put( "version", version.getOGCVersion().toString() );
             kvp.put( "request", "DescribeFeatureType" );
 
-            OWSResponse response = doGet( endPoint, kvp, null );
+            OwsHttpResponse response = httpClient.doGet( endPoint, kvp, null );
             XMLStreamReader xmlStream = null;
             StreamBufferStore tmpStore = null;
             try {
@@ -278,7 +278,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
             kvp.put( "filter", bos.toString( "UTF-8" ) );
         }
 
-        OWSResponse response = doGet( endPoint, kvp, null );
+        OwsHttpResponse response = httpClient.doGet( endPoint, kvp, null );
 
         GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
         return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );
@@ -309,7 +309,7 @@ public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
             throw new RuntimeException( "Error creating XML request: " + request );
         }
 
-        OWSResponse response = doPost( endPoint, "text/xml", requestSink, null );
+        OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", requestSink, null );
 
         GMLVersion gmlVersion = getAppSchema().getGMLSchema().getVersion();
         return new GetFeatureResponse<Feature>( response, getAppSchema(), gmlVersion );

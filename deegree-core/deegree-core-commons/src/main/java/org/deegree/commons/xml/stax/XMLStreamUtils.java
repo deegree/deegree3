@@ -286,6 +286,34 @@ public class XMLStreamUtils {
         return parseAsBoolean( xmlStream, xmlStream.getElementText() );
     }
 
+    public static int getElementTextAsInteger( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        int value;
+        QName elementName = xmlStream.getName();
+        String s = xmlStream.getElementText();
+        try {
+            value = Integer.parseInt( s );
+        } catch ( NumberFormatException e ) {
+            String msg = "Value " + s + " in element: " + elementName + " is not a parsable integer.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return value;
+    }
+
+    public static double getElementTextAsDouble( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        double value;
+        QName elementName = xmlStream.getName();
+        String s = xmlStream.getElementText();
+        try {
+            value = Double.parseDouble( s );
+        } catch ( NumberFormatException e ) {
+            String msg = "Value " + s + " in element: " + elementName + " is not a parsable double.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return value;
+    }
+    
     /**
      * Post: reader will be unchanged or at {@link XMLStreamConstants#END_ELEMENT} of the matching element or at
      * {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.

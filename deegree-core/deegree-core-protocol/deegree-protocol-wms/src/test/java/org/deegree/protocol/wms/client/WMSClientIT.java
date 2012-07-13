@@ -42,6 +42,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -51,6 +53,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.junit.Test;
 
@@ -58,10 +61,10 @@ public class WMSClientIT {
 
     @Test
     public void test130()
-                            throws XMLProcessingException, IOException, UnknownCRSException {
+                            throws XMLProcessingException, IOException, UnknownCRSException, OWSExceptionReport, XMLStreamException {
 
         InputStream is = WMSClientTest.class.getResourceAsStream( "wms130-capabilities.xml" );
-        WMSClient client = new WMSClient( new XMLAdapter( is ) );
+        WMSClient client = new WMSClient( new WMS130CapabilitiesAdapter( new XMLAdapter( is ).getRootElement() ) );
         GetMap getMap = createGetMap();
         InputStream response = client.getMap( getMap );
         assertNotNull( response );
@@ -69,32 +72,32 @@ public class WMSClientIT {
 
     @Test
     public void test130GetMapEndpointNoQuestionMark()
-                            throws XMLProcessingException, IOException, UnknownCRSException {
+                            throws XMLProcessingException, IOException, UnknownCRSException, OWSExceptionReport, XMLStreamException {
 
         InputStream is = WMSClientTest.class.getResourceAsStream( "wms130-capabilities-getmap-endpoint-noquestionmark.xml" );
-        WMSClient client = new WMSClient( new XMLAdapter( is ) );
+        WMSClient client = new WMSClient( new WMS130CapabilitiesAdapter( new XMLAdapter( is ).getRootElement() ) );
         GetMap getMap = createGetMap();
         InputStream response = client.getMap( getMap );
         assertNotNull( response );
     }
-    
+
     @Test
     public void test130GetMapEndpointExtraParamsEndsWithAmp()
-                            throws XMLProcessingException, IOException, UnknownCRSException {
+                            throws XMLProcessingException, IOException, UnknownCRSException, OWSExceptionReport, XMLStreamException {
 
         InputStream is = WMSClientTest.class.getResourceAsStream( "wms130-capabilities-getmap-endpoint-extraparams-amp.xml" );
-        WMSClient client = new WMSClient( new XMLAdapter( is ) );
+        WMSClient client = new WMSClient( new WMS130CapabilitiesAdapter( new XMLAdapter( is ).getRootElement() ) );
         GetMap getMap = createGetMap();
         InputStream response = client.getMap( getMap );
         assertNotNull( response );
     }
-    
+
     @Test
     public void test130GetMapEndpointExtraParamsNoAmpAtEnd()
-                            throws XMLProcessingException, IOException, UnknownCRSException {
+                            throws XMLProcessingException, IOException, UnknownCRSException, OWSExceptionReport, XMLStreamException {
 
         InputStream is = WMSClientTest.class.getResourceAsStream( "wms130-capabilities-getmap-endpoint-extra-params-no-amp-at-end.xml" );
-        WMSClient client = new WMSClient( new XMLAdapter( is ) );
+        WMSClient client = new WMSClient( new WMS130CapabilitiesAdapter( new XMLAdapter( is ).getRootElement() ) );
         GetMap getMap = createGetMap();
         InputStream response = client.getMap( getMap );
         assertNotNull( response );

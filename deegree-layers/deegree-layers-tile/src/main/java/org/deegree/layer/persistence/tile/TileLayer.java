@@ -40,16 +40,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.tile;
 
-import java.util.Iterator;
-import java.util.List;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.tile.Tile;
-import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.TileDataSet;
+import org.slf4j.Logger;
 
 /**
  * <code>TileLayer</code>
@@ -62,20 +70,38 @@ import org.deegree.tile.persistence.TileStore;
 
 public class TileLayer extends AbstractLayer {
 
-    private final TileStore tileStore;
+    private static final Logger LOG = getLogger( TileLayer.class );
 
-    private final String tmsid;
+    // maps tile matrix set ids to tile data sets
+    private Map<String, TileDataSet> tileDataSets = new LinkedHashMap<String, TileDataSet>();
 
-    public TileLayer( LayerMetadata md, TileStore tileStore, String tmsid ) {
+    // maps crs to tile matrix set ids
+    private Map<ICRS, String> coordinateSystems = new LinkedHashMap<ICRS, String>();
+
+    public TileLayer( LayerMetadata md, List<TileDataSet> datasets ) {
         super( md );
-        this.tileStore = tileStore;
-        this.tmsid = tmsid;
+        for ( TileDataSet tds : datasets ) {
+            coordinateSystems.put( tds.getTileMatrixSet().getSpatialMetadata().getCoordinateSystems().get( 0 ),
+                                   tds.getTileMatrixSet().getIdentifier() );
+            tileDataSets.put( tds.getTileMatrixSet().getIdentifier(), tds );
+        }
     }
 
     @Override
     public TileLayerData mapQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
-        Iterator<Tile> tiles = tileStore.getTiles( tmsid, query.getEnvelope(), query.getResolution() );
+        Envelope env = query.getEnvelope();
+        ICRS crs = env.getCoordinateSystem();
+
+        String tds = coordinateSystems.get( crs );
+        if ( tds == null ) {
+            LOG.debug( "Tile layer {} does not offer the coordinate system {}.", getMetadata().getName(),
+                       crs.getAlias() );
+            return null;
+        }
+        TileDataSet data = tileDataSets.get( tds );
+
+        Iterator<Tile> tiles = data.getTiles( env, query.getResolution() );
         return new TileLayerData( tiles );
     }
 
@@ -86,10 +112,17 @@ public class TileLayer extends AbstractLayer {
     }
 
     /**
-     * @return the underlying tile store instance.
+     * @return the tile data set this layer has been configured with wrt the tile matrix set
      */
-    public TileStore getTileStore() {
-        return tileStore;
+    public TileDataSet getTileDataSet( String tileMatrixSet ) {
+        return tileDataSets.get( tileMatrixSet );
+    }
+
+    /**
+     * @return all tile data sets this layer has been configured with
+     */
+    public Collection<TileDataSet> getTileDataSets() {
+        return tileDataSets.values();
     }
 
 }

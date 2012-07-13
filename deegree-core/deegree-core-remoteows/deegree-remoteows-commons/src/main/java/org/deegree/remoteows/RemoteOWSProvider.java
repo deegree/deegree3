@@ -47,15 +47,4 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * @version $Revision$, $Date$
  */
 public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWS> {
-
-    /**
-     * @return the namespaces of capabilities XML documents the provider can handle. May be null or empty.
-     */
-    List<String> getCapabilitiesNamespaces();
-
-    /**
-     * @return the handled service type, eg. 'WMS'. May not be null.
-     */
-    String getServiceType();
-
 }

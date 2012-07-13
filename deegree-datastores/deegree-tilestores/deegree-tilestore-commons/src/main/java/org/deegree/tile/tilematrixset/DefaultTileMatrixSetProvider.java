@@ -45,7 +45,9 @@ import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -88,6 +90,7 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
                                                                                   SCHEMA_URL, configUrl, workspace );
 
             ICRS crs = CRSManager.lookup( cfg.getCRS() );
+            List<TileMatrix> matrices = new ArrayList<TileMatrix>();
             for ( org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
                 double res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
                 double minx = tm.getTopLeftCorner().get( 0 );
@@ -96,11 +99,13 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
                 double miny = maxy - tm.getTileHeight() * tm.getMatrixHeight() * res;
                 Envelope env = new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, crs );
                 SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-                TileMatrix md = new TileMatrix( tm.getIdentifier(), null, tm.getTileWidth(), tm.getTileHeight(), res,
+                TileMatrix md = new TileMatrix( tm.getIdentifier(), smd, tm.getTileWidth(), tm.getTileHeight(), res,
                                                 tm.getMatrixWidth(), tm.getMatrixHeight() );
+                matrices.add( md );
             }
 
-            return new TileMatrixSet( new File( configUrl.getPath() ).getName(), null, null );
+            return new TileMatrixSet( new File( configUrl.getPath() ).getName(), matrices,
+                                      matrices.get( 0 ).getSpatialMetadata() );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
         }

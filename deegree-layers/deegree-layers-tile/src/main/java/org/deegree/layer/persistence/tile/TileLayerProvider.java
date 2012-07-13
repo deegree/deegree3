@@ -43,15 +43,22 @@ package org.deegree.layer.persistence.tile;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.DoublePair;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
 import org.deegree.layer.config.ConfigUtils;
@@ -60,11 +67,12 @@ import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
-import org.deegree.layer.persistence.tile.jaxb.TileLayerType.TileStoreId;
 import org.deegree.layer.persistence.tile.jaxb.TileLayers;
 import org.deegree.protocol.ows.metadata.Description;
+import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreManager;
+import org.slf4j.Logger;
 
 /**
  * <code>TileLayerProvider</code>
@@ -76,6 +84,8 @@ import org.deegree.tile.persistence.TileStoreManager;
  */
 
 public class TileLayerProvider implements LayerStoreProvider {
+
+    private static final Logger LOG = getLogger( TileLayerProvider.class );
 
     private static final URL SCHEMA = TileLayerProvider.class.getResource( "/META-INF/schemas/layers/tile/3.2.0/tile.xsd" );
 
@@ -89,22 +99,43 @@ public class TileLayerProvider implements LayerStoreProvider {
     private TileLayer createLayer( TileLayerType cfg )
                             throws ResourceInitException {
         TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-        TileStoreId id = cfg.getTileStoreId();
-        TileStore store = mgr.get( id.getValue() );
-        if ( store == null ) {
-            throw new ResourceInitException( "Tile store with id " + id.getValue() + " was not available." );
+        List<TileDataSet> datasets = new ArrayList<TileDataSet>();
+        Envelope envelope = null;
+        Set<ICRS> crsSet = new LinkedHashSet<ICRS>();
+        for ( TileLayerType.TileDataSet tds : cfg.getTileDataSet() ) {
+            String id = tds.getTileStoreId();
+            TileStore store = mgr.get( id );
+            if ( store == null ) {
+                LOG.warn( "Tile store with id {} was not available, skipping tile data set.", id );
+                continue;
+            }
+
+            String tdsId = tds.getValue();
+
+            TileDataSet dataset = store.getTileDataSet( tdsId );
+            if ( dataset == null ) {
+                LOG.warn( "Tile data set with id {} not found in tile store {}, skipping.", tdsId, id );
+                continue;
+            }
+
+            datasets.add( dataset );
+
+            SpatialMetadata smd = dataset.getTileMatrixSet().getSpatialMetadata();
+            crsSet.addAll( smd.getCoordinateSystems() );
+            Envelope env = smd.getEnvelope();
+            if ( envelope == null ) {
+                envelope = env;
+            } else {
+                envelope = envelope.merge( env );
+            }
         }
-        if ( store.getTileMatrixSet( id.getTileMatrixSet() ) == null ) {
-            throw new ResourceInitException( "Tile store with id " + id.getValue()
-                                             + " does not provide a tile matrix set with id " + id.getTileMatrixSet()
-                                             + "." );
-        }
+
         SpatialMetadata smd = fromJaxb( cfg.getEnvelope(), cfg.getCRS() );
         if ( smd.getEnvelope() == null ) {
-            smd.setEnvelope( store.getMetadata( id.getTileMatrixSet() ).getEnvelope() );
+            smd.setEnvelope( envelope );
         }
         if ( smd.getCoordinateSystems().isEmpty() ) {
-            smd.getCoordinateSystems().addAll( store.getMetadata( id.getTileMatrixSet() ).getCoordinateSystems() );
+            smd.getCoordinateSystems().addAll( crsSet );
         }
         Description desc = fromJaxb( cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords() );
         LayerMetadata md = new LayerMetadata( cfg.getName(), desc, smd );
@@ -115,7 +146,7 @@ public class TileLayerProvider implements LayerStoreProvider {
             md.setScaleDenominators( p );
         }
         md.setMetadataId( cfg.getMetadataSetId() );
-        return new TileLayer( md, store, id.getTileMatrixSet() );
+        return new TileLayer( md, datasets );
     }
 
     @Override

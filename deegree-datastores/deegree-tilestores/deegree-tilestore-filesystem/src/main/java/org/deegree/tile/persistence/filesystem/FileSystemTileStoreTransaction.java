@@ -71,7 +71,7 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
     @Override
     public void put( String matrixId, Tile tile, int x, int y )
                             throws TileIOException {
-        DiskLayout layout = ( (FileSystemTileMatrix) this.store.getTileMatrixSet( this.tileMatrixSet ).getTileMatrix( matrixId ) ).getLayout();
+        DiskLayout layout = ( (FileSystemTileDataLevel) this.store.getTileDataSet( this.tileMatrixSet ).getTileDataLevel( matrixId ) ).getLayout();
         FileOutputStream fos = null;
         try {
             File file = layout.resolve( matrixId, x, y );
@@ -89,7 +89,7 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
     @Override
     public void delete( String matrixId, int x, int y ) {
-        DiskLayout layout = ( (FileSystemTileMatrix) this.store.getTileMatrixSet( this.tileMatrixSet ).getTileMatrix( matrixId ) ).getLayout();
+        DiskLayout layout = ( (FileSystemTileDataLevel) this.store.getTileDataSet( this.tileMatrixSet ).getTileDataLevel( matrixId ) ).getLayout();
         File file = layout.resolve( matrixId, x, y );
         if ( file.exists() ) {
             file.delete();

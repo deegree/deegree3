@@ -46,24 +46,23 @@ import java.util.List;
 import org.deegree.geometry.Envelope;
 
 /**
- * A <code>TileMatrixSet</code> is a collection of tile matrices.
+ * A collection of {@link TileDataLevel}s that adhere to the structure defined by a {@link TileMatrixSet}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public interface TileDataSet {
 
     /**
      * Constructs an iterator of tiles for a resolution and envelope.
      * 
      * @param envelope
-     *            all tiles intersecting with this envelope will be returned.
+     *            all tiles intersecting with this envelope will be returned, must not be <code>null</code>
      * @param resolution
      *            selects the tile matrix, the smallest tile matrix with a sufficient resolution will be used
-     * @return an iterator of tiles, never null.
+     * @return an iterator of tiles, never <code>null</code>
      */
     Iterator<Tile> getTiles( Envelope envelope, double resolution );
 
@@ -72,14 +71,14 @@ public interface TileDataSet {
      * 
      * @return the list of tile matrices this matrix set contains.
      */
-    List<TileDataLevel> getTileMatrices();
+    List<TileDataLevel> getTileDataLevels();
 
     /**
      * Returns the metadata about this matrix set.
      * 
      * @return never null.
      */
-    TileMatrixSet getMetadata();
+    TileMatrixSet getTileMatrixSet();
 
     /**
      * Returns a single tile matrix identified by the identifier.
@@ -87,6 +86,10 @@ public interface TileDataSet {
      * @param identifier
      * @return null, if no such matrix
      */
-    TileDataLevel getTileMatrix( String identifier );
+    TileDataLevel getTileDataLevel( String identifier );
 
+    /**
+     * @return the mime type of the native image format, never <code>null</code>
+     */
+    String getNativeImageFormat();
 }

@@ -36,33 +36,21 @@
 package org.deegree.protocol.ows.client;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpClient;
+import org.deegree.protocol.ows.http.OwsHttpClientImpl;
+import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
@@ -83,9 +71,12 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSClient.class );
 
-    private final DefaultHttpClient httpClient;
-
     protected T capaDoc;
+
+    protected final OwsHttpClient httpClient;
+
+    // service endpoint derived from capabilities URL (may be null)
+    private URL capaBaseUrl;
 
     private ServiceIdentification identification;
 
@@ -93,49 +84,62 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
     private OperationsMetadata metadata;
 
-    // service endpoint derived from capabilities URL (may be null)
-    private URL capaBaseUrl;
-
-    protected String httpBasicUser;
-
-    protected String httpBasicPass;
-
     /**
-     * Creates a new {@link AbstractOWSClient} instance.
+     * Creates a new {@link AbstractOWSClient} instance from the given capabilities document.
      * 
-     * @param capaUrl
-     *            url of a OWS capabilities document, usually this is a <code>GetCapabilities</code> request to the
-     *            service, must not be <code>null</code>
+     * @param capabilities
+     *            OWS capabilities document, must not be <code>null</code>
+     * @param httpClient
+     *            client for customizing HTTP communication, can be <code>null</code>
      * @throws OWSExceptionReport
      *             if the server replied with a service exception report
      * @throws XMLStreamException
      * @throws IOException
      *             if a communication/network problem occured
      */
-    protected AbstractOWSClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
-        this( capaUrl, null, null );
+    protected AbstractOWSClient( XMLAdapter capabilities, OwsHttpClient httpClient ) throws OWSExceptionReport,
+                            XMLStreamException, IOException {
+        if ( capabilities == null ) {
+            throw new NullPointerException( "Capabilities must not be null." );
+        }
+        try {
+            capaBaseUrl = getGetUrl( "GetCapabilities" );
+        } catch ( Exception e ) {
+            LOG.warn( "No GetCapabilities URL available." );
+        }
+        if ( httpClient != null ) {
+            this.httpClient = httpClient;
+        } else {
+            this.httpClient = new OwsHttpClientImpl();
+        }
+        initCapabilities( capabilities );
     }
 
-    protected AbstractOWSClient( URL capaUrl, String user, String pass ) throws IOException, OWSExceptionReport,
+    /**
+     * Creates a new {@link AbstractOWSClient} instance from the given capabilities URL.
+     * 
+     * @param capaUrl
+     *            URL of a OWS capabilities document, usually this is a <code>GetCapabilities</code> request to the
+     *            service, must not be <code>null</code>
+     * @param httpClient
+     *            client for customizing HTTP communication, can be <code>null</code>
+     * @throws OWSExceptionReport
+     *             if the server replied with a service exception report
+     * @throws XMLStreamException
+     * @throws IOException
+     *             if a communication/network problem occured
+     */
+    protected AbstractOWSClient( URL capaUrl, OwsHttpClient httpClient ) throws IOException, OWSExceptionReport,
                             XMLStreamException {
         if ( capaUrl == null ) {
             throw new NullPointerException( "Capabilities URL must not be null." );
         }
-        httpBasicUser = user;
-        httpBasicPass = pass;
-        httpClient = initHttpClient();
-
-        OWSResponse response = doGet( capaUrl, null, null );
-        response.assertHttpStatus200();
-        XMLStreamReader responseAsXMLStream = response.getAsXMLStream();
-
-        try {
-            XMLAdapter xmlAdapter = new XMLAdapter( responseAsXMLStream );
-            initCapabilities( xmlAdapter );
-        } finally {
-            responseAsXMLStream.close();
-            response.close();
+        if ( httpClient != null ) {
+            this.httpClient = httpClient;
+        } else {
+            this.httpClient = new OwsHttpClientImpl();
         }
+        initCapabilities( capaUrl );
 
         String baseUrl = capaUrl.toString();
         int pos = baseUrl.indexOf( '?' );
@@ -146,13 +150,35 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             } catch ( Throwable t ) {
                 LOG.warn( t.getMessage() );
             }
+        } else {
+            capaBaseUrl = capaUrl;
         }
     }
 
-    protected AbstractOWSClient( XMLAdapter capabilities ) throws IOException {
-        initCapabilities( capabilities );
-        httpClient = initHttpClient();
-        capaBaseUrl = getGetUrl( "GetCapabilities" );
+    private void initCapabilities( URL capaUrl )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+
+        if ( shouldUseGet( capaUrl ) ) {
+            OwsHttpResponse response = httpClient.doGet( capaUrl, null, null );
+            response.assertHttpStatus200();
+            XMLStreamReader responseAsXMLStream = response.getAsXMLStream();
+
+            try {
+                XMLAdapter xmlAdapter = new XMLAdapter( responseAsXMLStream );
+                initCapabilities( xmlAdapter );
+            } finally {
+                responseAsXMLStream.close();
+                response.close();
+            }
+        } else {
+            XMLAdapter xmlAdapter = new XMLAdapter( capaUrl );
+            initCapabilities( xmlAdapter );
+        }
+    }
+
+    private boolean shouldUseGet( URL capaUrl ) {
+        String protocol = capaUrl.getProtocol();
+        return "http".equals( protocol ) || "https".equals( protocol );
     }
 
     protected void initCapabilities( XMLAdapter xmlAdapter )
@@ -176,16 +202,6 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         } catch ( Throwable t ) {
             LOG.warn( "Error parsing metadata section: " + t.getMessage() );
         }
-    }
-
-    /**
-     * Called in the contructor, can be overwritten to set special parameters (e.g. a connection timeout).
-     * 
-     * @return the initialised {@link HttpClient}.
-     */
-    protected DefaultHttpClient initHttpClient() {
-        ThreadSafeClientConnManager connManager = new ThreadSafeClientConnManager();
-        return new DefaultHttpClient( connManager );
     }
 
     /**
@@ -285,122 +301,5 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
             return Collections.emptyList();
         }
         return metadata.getPostUrls( operationName );
-    }
-
-    /**
-     * Performs an HTTP-GET request to the service.
-     * <p>
-     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise
-     * underlying resources (connections) may not be freed.
-     * </p>
-     * 
-     * @param endPoint
-     * @param params
-     * @param headers
-     * @return
-     * @throws IOException
-     */
-    protected OWSResponse doGet( URL endPoint, Map<String, String> params, Map<String, String> headers )
-                            throws IOException {
-
-        OWSResponse response = null;
-        URI query = null;
-        try {
-            URL normalizedEndpointUrl = normalizeGetUrl( endPoint );
-            StringBuilder sb = new StringBuilder( normalizedEndpointUrl.toString() );
-            boolean first = true;
-            if ( params != null ) {
-                for ( Entry<String, String> param : params.entrySet() ) {
-                    if ( !first ) {
-                        sb.append( '&' );
-                    } else {
-                        first = false;
-                    }
-                    sb.append( URLEncoder.encode( param.getKey(), "UTF-8" ) );
-                    sb.append( '=' );
-                    sb.append( URLEncoder.encode( param.getValue(), "UTF-8" ) );
-                }
-            }
-
-            query = new URI( sb.toString() );
-            setCredentials( endPoint );
-            HttpGet httpGet = new HttpGet( query );
-            LOG.debug( "Performing GET request: " + query );
-            HttpResponse httpResponse = httpClient.execute( httpGet );
-            response = new OWSResponse( query, httpResponse );
-        } catch ( Throwable e ) {
-            e.printStackTrace();
-            String msg = "Error performing GET request on '" + query + "': " + e.getMessage();
-            throw new IOException( msg );
-        }
-        return response;
-    }
-
-    /**
-     * Performs an HTTP-POST request to the service.
-     * <p>
-     * NOTE: The caller <b>must</b> call {@link OWSResponse#close()} on the returned object eventually, otherwise
-     * underlying resources (connections) may not be freed.
-     * </p>
-     * 
-     * @param endPoint
-     * @param contentType
-     * @param body
-     * @param headers
-     * @return
-     * @throws IOException
-     */
-    protected OWSResponse doPost( URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers )
-                            throws IOException {
-
-        OWSResponse response = null;
-        try {
-            HttpPost httpPost = new HttpPost( endPoint.toURI() );
-            LOG.debug( "Performing POST request on " + endPoint );
-            LOG.debug( "post size: " + body.size() );
-            InputStreamEntity entity = new InputStreamEntity( body.getInputStream(), (long) body.size() );
-            entity.setContentType( contentType );
-            httpPost.setEntity( entity );
-            setCredentials( endPoint );
-            HttpResponse httpResponse = httpClient.execute( httpPost );
-            response = new OWSResponse( endPoint.toURI(), httpResponse );
-        } catch ( Throwable e ) {
-            String msg = "Error performing POST request on '" + endPoint + "': " + e.getMessage();
-            throw new IOException( msg );
-        }
-        return response;
-    }
-
-    private void setCredentials( URL url ) {
-        if ( httpBasicUser != null ) {
-            httpClient.getCredentialsProvider().setCredentials( new AuthScope( url.getHost(), url.getPort() ),
-                                                                new UsernamePasswordCredentials( httpBasicUser,
-                                                                                                 httpBasicPass ) );
-        }
-    }
-
-    /**
-     * Returns a "normalized" version of the given {@link URL} that's ready for appending query parameters, i.e. it ends
-     * with <code>?</code> or <code>&</code> (if it does have a query part).
-     * 
-     * @param url
-     *            endpoint URL to be normalized, must not be <code>null</code>
-     * @return normalized URL, never <code>null</code>
-     * @throws MalformedURLException
-     */
-    protected URL normalizeGetUrl( URL url )
-                            throws MalformedURLException {
-        // TODO: this method does not work. url.getQuery is the query part not the base url
-        String s = url.toString();
-        if ( url.getQuery() != null ) {
-            if ( !s.endsWith( "&" ) ) {
-                s += "&";
-            }
-        } else {
-            if ( !s.endsWith( "?" ) ) {
-                s += "?";
-            }
-        }
-        return new URL( s );
     }
 }

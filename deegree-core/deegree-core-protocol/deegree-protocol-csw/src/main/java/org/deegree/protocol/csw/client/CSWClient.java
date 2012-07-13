@@ -49,9 +49,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -66,8 +63,9 @@ import org.deegree.protocol.csw.client.getrecords.GetRecordsXMLEncoder;
 import org.deegree.protocol.csw.client.transaction.TransactionResponse;
 import org.deegree.protocol.csw.client.transaction.TransactionXMLEncoder;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
-import org.deegree.protocol.ows.client.OWSResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpClientImpl;
+import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.domain.AllowedValues;
 import org.deegree.protocol.ows.metadata.domain.Domain;
@@ -105,8 +103,6 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
  */
 public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
-    private int connectionTimeout = 0, readTimeout = 0;
-
     /**
      * Creates a new {@link CSWClient} instance with infinite timeout.
      * 
@@ -120,7 +116,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      *             if a communication/network problem occured
      */
     public CSWClient( URL capaUrl ) throws OWSExceptionReport, XMLStreamException, IOException {
-        super( capaUrl );
+        super( capaUrl, null );
     }
 
     /**
@@ -137,10 +133,9 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      * @throws IOException
      *             if a communication/network problem occured
      */
-    public CSWClient( URL capaUrl, int connectionTimeout, int readTimeout ) throws OWSExceptionReport, XMLStreamException, IOException {
-        super( capaUrl );
-        this.connectionTimeout = connectionTimeout;
-        this.readTimeout = readTimeout;
+    public CSWClient( URL capaUrl, int connectionTimeout, int readTimeout ) throws OWSExceptionReport,
+                            XMLStreamException, IOException {
+        super( capaUrl, new OwsHttpClientImpl( connectionTimeout, 0, null, null ) );
     }
 
     @Override
@@ -207,7 +202,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         } catch ( Throwable t ) {
             throw new RuntimeException( "Error creating XML request: " + getRecords );
         }
-        OWSResponse response = doPost( endPoint, "text/xml", request, null );
+        OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
         return new GetRecordsResponse( response );
 
     }
@@ -235,7 +230,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         } catch ( Throwable t ) {
             throw new RuntimeException( "Error insering " + records.size() + " records" );
         }
-        OWSResponse response = doPost( endPoint, "text/xml", request, null );
+        OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
         return new TransactionResponse( response );
     }
 
@@ -260,15 +255,6 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         OperationsMetadata om = getOperations();
         if ( om.getOperation( operationName ) == null )
             throw new UnsupportedOperationException( "Operation " + operationName + " is not supported!" );
-    }
-
-    @Override
-    protected DefaultHttpClient initHttpClient() {
-        DefaultHttpClient initHttpClient = super.initHttpClient();
-        DefaultHttpClient defaultHttpClient = new DefaultHttpClient( initHttpClient.getConnectionManager() );
-        HttpConnectionParams.setConnectionTimeout( defaultHttpClient.getParams(), connectionTimeout );
-        HttpConnectionParams.setSoTimeout( defaultHttpClient.getParams(), readTimeout );
-        return initHttpClient;
     }
 
     /**
@@ -318,5 +304,4 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         }
         return getPostUrl( GetRecords.name() );
     }
-
 }

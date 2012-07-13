@@ -53,36 +53,40 @@ import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
- * The <code>DefaultTileMatrixSet</code> is an implementation of the <code>TileMatrixSet</code> that selects tile
- * matrices manually based on the tile matrix metadata. It can be used in conjunction with any tile matrix
- * implementation.
+ * Default implementation of {@link TileDataSet}.
+ * <p>
+ * It selects tile matrices manually based on the tile matrix metadata. It can be used in conjunction with any tile
+ * matrix implementation.
+ * </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class DefaultTileDataSet implements TileDataSet {
 
     private static final Logger LOG = getLogger( DefaultTileDataSet.class );
 
-    private final Map<String, TileDataLevel> matrices;
+    private final Map<String, TileDataLevel> levels;
 
-    private TileMatrixSet metadata;
+    private final TileMatrixSet metadata;
 
-    public DefaultTileDataSet( List<TileDataLevel> matrices, TileMatrixSet metadata ) {
-        this.matrices = new LinkedHashMap<String, TileDataLevel>();
-        for ( TileDataLevel m : matrices ) {
-            this.matrices.put( m.getMetadata().getIdentifier(), m );
+    private final String format;
+
+    public DefaultTileDataSet( List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format ) {
+        this.format = format;
+        this.levels = new LinkedHashMap<String, TileDataLevel>();
+        for ( TileDataLevel m : levels ) {
+            this.levels.put( m.getMetadata().getIdentifier(), m );
         }
-        this.metadata = metadata;
+        this.metadata = tileMatrixSet;
     }
 
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         // select correct matrix
-        Iterator<TileDataLevel> iter = matrices.values().iterator();
+        Iterator<TileDataLevel> iter = levels.values().iterator();
         TileDataLevel matrix = iter.next();
         TileDataLevel next = matrix;
         while ( next.getMetadata().getResolution() <= resolution && iter.hasNext() ) {
@@ -133,18 +137,22 @@ public class DefaultTileDataSet implements TileDataSet {
     }
 
     @Override
-    public List<TileDataLevel> getTileMatrices() {
-        return new ArrayList<TileDataLevel>( matrices.values() );
+    public List<TileDataLevel> getTileDataLevels() {
+        return new ArrayList<TileDataLevel>( levels.values() );
     }
 
     @Override
-    public TileMatrixSet getMetadata() {
+    public TileMatrixSet getTileMatrixSet() {
         return metadata;
     }
 
     @Override
-    public TileDataLevel getTileMatrix( String identifier ) {
-        return matrices.get( identifier );
+    public TileDataLevel getTileDataLevel( String identifier ) {
+        return levels.get( identifier );
     }
 
+    @Override
+    public String getNativeImageFormat() {
+        return format;
+    }
 }

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -31,48 +31,45 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs UG (haftungsbeschränkt)
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence.geotiff;
+package org.deegree.tile.persistence.filesystem;
 
 import java.io.File;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.SimpleGeometryFactory;
+import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
 
 /**
- * The <code>GeoTIFFTileMatrix</code> is a tile matrix handing out GeoTIFFTile tiles. It uses an object pool shared
- * among all tiles created by this matrix.
+ * {@link TileDataLevel} implementation for the {@link FileSystemTileStore}.
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
+ * @see DiskLayout
  * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
  */
+class FileSystemTileDataLevel implements TileDataLevel {
 
-public class GeoTIFFTileMatrix implements TileDataLevel {
+    private final SimpleGeometryFactory fac = new SimpleGeometryFactory();
 
     private final TileMatrix metadata;
 
-    private final int imageIndex;
+    private final DiskLayout layout;
 
-    private final GeometryFactory fac = new GeometryFactory();
-
-    private GenericObjectPool readerPool;
-
-    public GeoTIFFTileMatrix( TileMatrix metadata, File file, int imageIndex ) {
+    /**
+     * Creates a new {@link FileSystemTileDataLevel} instance.
+     * 
+     * @param metadata
+     * @param layout
+     */
+    FileSystemTileDataLevel( TileMatrix metadata, DiskLayout layout ) {
         this.metadata = metadata;
-        this.imageIndex = imageIndex;
-        ImageReaderFactory fac = new ImageReaderFactory( file );
-        this.readerPool = new GenericObjectPool( fac );
+        this.layout = layout;
     }
 
     @Override
@@ -81,17 +78,26 @@ public class GeoTIFFTileMatrix implements TileDataLevel {
     }
 
     @Override
-    public GeoTIFFTile getTile( int x, int y ) {
+    public Tile getTile( int x, int y ) {
         if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
+        Envelope bbox = calcEnvelope( x, y );
+        File file = layout.resolve( metadata.getIdentifier(), x, y );
+        return new FileSystemTile( bbox, file );
+    }
+
+    private Envelope calcEnvelope( int x, int y ) {
         double width = metadata.getTileWidth();
         double height = metadata.getTileHeight();
         Envelope env = metadata.getSpatialMetadata().getEnvelope();
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
-        Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
-        return new GeoTIFFTile( readerPool, imageIndex, x, y, envelope, metadata.getTilePixelsX(), metadata.getTilePixelsY() );
+        return fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
+    }
+
+    public DiskLayout getLayout() {
+        return layout;
     }
 
 }

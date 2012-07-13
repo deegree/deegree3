@@ -69,32 +69,32 @@ public interface TileStore extends Resource {
      * Returns the spatial extent of this tile store. Once instantiated, the extent of a tile store must not change,
      * even when it's transactional.
      * 
-     * @param tileMatrixSet
-     *            the id of the tile matrix set
+     * @param tileDataSet
+     *            the id of the tile data set
      * @return the envelope and crs of this tile store, never null.
      */
-    SpatialMetadata getMetadata( String tileMatrixSet );
+    SpatialMetadata getMetadata( String tileDataSet );
 
     /**
      * Returns the set of available tile matrices that this store serves.
      * 
-     * @param tileMatrixSet
+     * @param tileDataSet
      *            the id of the tile matrix set
      * @return the tile matrix set.
      */
-    TileDataSet getTileMatrixSet( String tileMatrixSet );
+    TileDataSet getTileDataSet( String tileDataSet );
 
     /**
-     * Returns the tile matrix set ids that this tile store serves.
+     * Returns the tile data set ids that this tile store serves.
      * 
      * @return the ids
      */
-    Collection<String> getTileMatrixSetIds();
+    Collection<String> getTileDataSetIds();
 
     /**
      * Creates tile stream according to the parameters.
      * 
-     * @param tileMatrixSet
+     * @param tileDataSet
      *            the id of the tile matrix set
      * @param envelope
      *            the extent of tiles needed, never null
@@ -102,28 +102,28 @@ public interface TileStore extends Resource {
      *            the desired minimum resolution of tiles, must be positive
      * @return an iterator of tiles for the given envelope and resolution, never null.
      */
-    Iterator<Tile> getTiles( String tileMatrixSet, Envelope envelope, double resolution );
+    Iterator<Tile> getTiles( String tileDataSet, Envelope envelope, double resolution );
 
     /**
      * Query a single tile from a specific matrix.
      * 
-     * @param tileMatrixSet
+     * @param tileDataSet
      *            the id of the tile matrix set
-     * @param tileMatrix
+     * @param tileDataLevel
      * @param x
      * @param y
      * @return the tile or null, if no such tile
      */
-    Tile getTile( String tileMatrixSet, String tileMatrix, int x, int y );
+    Tile getTile( String tileDataSet, String tileDataLevel, int x, int y );
 
     /**
      * Acquires transactional access to the tile store.
      * 
-     * @param tileMatrixSet
+     * @param tileDataSet
      *            the id of the tile matrix set
      * @return transaction object that allows to perform transactions operations on the store, never <code>null</code>
      * @throws FeatureStoreException
      *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
      */
-    TileStoreTransaction acquireTransaction( String tileMatrixSet );
+    TileStoreTransaction acquireTransaction( String tileDataSet );
 }

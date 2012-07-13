@@ -101,8 +101,8 @@ public class FileSystemTileStoreTest {
 
         ExecutorService exec = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
 
-        Iterator<TileDataLevel> iter = dest.getTileMatrixSet( "filesystem" ).getTileMatrices().iterator();
-        for ( TileDataLevel tm : src.getTileMatrixSet( "utah" ).getTileMatrices() ) {
+        Iterator<TileDataLevel> iter = dest.getTileDataSet( "filesystem" ).getTileDataLevels().iterator();
+        for ( TileDataLevel tm : src.getTileDataSet( "utah" ).getTileDataLevels() ) {
             String id = iter.next().getMetadata().getIdentifier();
 
             int maxx = tm.getMetadata().getNumTilesX();

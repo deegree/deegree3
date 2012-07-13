@@ -512,7 +512,7 @@ public class HttpUtils {
         return new Pair<T, HttpResponse>( worker.work( response.getEntity().getContent() ), response );
     }
 
-    private static void handleProxies( String protocol, DefaultHttpClient client, String host ) {
+    public static void handleProxies( String protocol, DefaultHttpClient client, String host ) {
         TreeSet<String> nops = new TreeSet<String>();
 
         String proxyHost = getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyHost" );

@@ -46,9 +46,11 @@ import java.io.InputStream;
 import org.deegree.geometry.Envelope;
 
 /**
- * The <code>Tile</code> interface specifies a single tile. For streaming purposes implementations are required to not
- * load the data in memory, but only generate it upon request. At a later time it's planned to add other method
- * specifications to obtain the tile as stream or URL.
+ * A single tile of a {@link TileDataLevel}.
+ * <p>
+ * For streaming purposes, implementations are required to not load the data in memory, but only generate it upon
+ * request.
+ * </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -61,20 +63,23 @@ public interface Tile {
      * This method must generate the image only upon request. It should not hold a reference to the data after creating
      * it, caching is done on a different level.
      * 
+     * @return the tile as image, never <code>null</code>
      * @throws TileIOException
      *             if generation of the image failed
-     * @return the tile as image, never <code>null</code>
      */
     BufferedImage getAsImage()
                             throws TileIOException;
 
     /**
-     * This method provides direct access to the encoded tile image. Must be able to generate a new stream each time
-     * this method is called. Stream must be closed by user.
+     * This method provides direct access to the encoded tile image.
+     * <p>
+     * Implementations must be able to generate a new stream each time this method is called. Stream must be closed by
+     * user.
+     * </p>
      * 
+     * @return the tile as stream, never <code>null</code>
      * @throws TileIOException
      *             if accessing the encoded tile image failed
-     * @return the tile as stream, never <code>null</code>
      */
     InputStream getAsStream()
                             throws TileIOException;

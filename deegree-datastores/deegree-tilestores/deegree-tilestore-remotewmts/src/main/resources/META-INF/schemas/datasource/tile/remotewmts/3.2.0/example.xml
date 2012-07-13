@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<RemoteWMTSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewmts remotewmts.xsd" configVersion="3.2.0">
+
+  <!-- [1] Id of the remote WMTS to connect to -->
+  <RemoteWMTSId>wms1</RemoteWMTSId>
+
+  <TileDataSet>
+    <!-- [1] Identifier for the tile data set -->
+    <Identifier>satellite</Identifier>
+    <!-- [1] Mime type of the desired output format -->
+    <OutputFormat>image/png</OutputFormat>
+    <!-- [1] WMTS request parameters -->
+    <RequestParams>
+      <!-- [1] Layer name -->
+      <Layer>SatelliteProvo</Layer>
+      <!-- [1] Style identifier -->
+      <Style>default</Style>
+      <!-- [1] Image format -->
+      <Format>image/png</Format>
+      <!-- [1] Identifier of the remote tile matrix set -->
+      <TileMatrixSet>EPSG:4326</TileMatrixSet>
+    </RequestParams>
+  </TileDataSet>
+
+</RemoteWMTSTileStore>

@@ -76,11 +76,11 @@ public abstract class AbstractTileStoreTransaction implements TileStoreTransacti
     @Override
     public void delete( String tileMatrixId, Envelope env ) {
         if ( tileMatrixId == null ) {
-            for ( TileDataLevel matrix : store.getTileMatrixSet( tileMatrixSet ).getTileMatrices() ) {
+            for ( TileDataLevel matrix : store.getTileDataSet( tileMatrixSet ).getTileDataLevels() ) {
                 delete( matrix, env );
             }
         } else {
-            TileDataLevel matrix = store.getTileMatrixSet( tileMatrixSet ).getTileMatrix( tileMatrixId );
+            TileDataLevel matrix = store.getTileDataSet( tileMatrixSet ).getTileDataLevel( tileMatrixId );
             delete( matrix, env );
         }
     }

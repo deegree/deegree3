@@ -28,6 +28,7 @@
     <module>deegree-remoteows-commons</module>
     <module>deegree-remoteows-wfs</module>
     <module>deegree-remoteows-wms</module>
+    <module>deegree-remoteows-wmts</module>
   </modules>
 
 </project>

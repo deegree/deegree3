@@ -486,7 +486,8 @@ public class Filters {
         }
         switch ( o.getSubType() ) {
         case PROPERTY_IS_BETWEEN:
-            return new PropertyIsBetween( exs[0], exs[1], exs[2], o.isMatchCase(), o.getMatchAction() );
+            // the ordering is a bit confusing here...
+            return new PropertyIsBetween( exs[1], exs[0], exs[2], o.isMatchCase(), o.getMatchAction() );
         case PROPERTY_IS_EQUAL_TO:
             return new PropertyIsEqualTo( exs[0], exs[1], o.isMatchCase(), o.getMatchAction() );
         case PROPERTY_IS_GREATER_THAN:

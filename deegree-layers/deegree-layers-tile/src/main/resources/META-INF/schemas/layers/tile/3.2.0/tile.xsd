@@ -15,16 +15,16 @@
 
   <complexType name="TileLayerType">
     <sequence>
-      <element name="TileStoreId">
+      <group ref="l:LayerInfo" />
+      <element name="TileDataSet" maxOccurs="unbounded">
         <complexType>
           <simpleContent>
             <extension base="string">
-              <attribute name="tileMatrixSet" type="string" use="required" />
+              <attribute name="tileStoreId" type="string" use="required" />
             </extension>
           </simpleContent>
         </complexType>
       </element>
-      <group ref="l:LayerInfo" />
     </sequence>
   </complexType>
 

@@ -96,7 +96,7 @@ public class TileCacheDiskLayout implements DiskLayout {
     @Override
     public File resolve( String matrixId, int x, int y ) {
 
-        TileDataLevel tileMatrix = set.getTileMatrix( matrixId );
+        TileDataLevel tileMatrix = set.getTileDataLevel( matrixId );
         if ( tileMatrix == null ) {
             return null;
         }
@@ -121,8 +121,8 @@ public class TileCacheDiskLayout implements DiskLayout {
 
     private String getLevelDirectory( TileDataLevel tileMatrix ) {
         DecimalFormat formatter = new DecimalFormat( "00" );
-        int num = set.getTileMatrices().size();
-        int tileMatrixIndex = num - 1 - set.getTileMatrices().indexOf( tileMatrix );
+        int num = set.getTileDataLevels().size();
+        int tileMatrixIndex = num - 1 - set.getTileDataLevels().indexOf( tileMatrix );
         return formatter.format( tileMatrixIndex );
     }
 

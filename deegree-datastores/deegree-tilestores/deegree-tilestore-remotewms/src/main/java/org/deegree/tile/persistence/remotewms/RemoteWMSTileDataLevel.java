@@ -33,43 +33,70 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence.filesystem;
+package org.deegree.tile.persistence.remotewms;
 
-import java.io.File;
+import java.util.List;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.SimpleGeometryFactory;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.wms.client.WMSClient;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
 
 /**
- * {@link TileDataLevel} implementation for the {@link FileSystemTileStore}.
- * 
- * @see DiskLayout
+ * {@link TileDataLevel} that is backed by a {@link RemoteWMSTileStore}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class FileSystemTileMatrix implements TileDataLevel {
+class RemoteWMSTileDataLevel implements TileDataLevel {
 
-    private final SimpleGeometryFactory fac = new SimpleGeometryFactory();
+    private static final GeometryFactory fac = new GeometryFactory();
 
     private final TileMatrix metadata;
 
-    private final DiskLayout layout;
+    private final int tileSizeX, tileSizeY;
+
+    private final String format;
+
+    private final List<String> layers;
+
+    private final List<String> styles;
+
+    private WMSClient client;
+
+    private final String outputFormat;
 
     /**
-     * Creates a new {@link FileSystemTileMatrix} instance.
+     * Creates a new {@link RemoteWMSTileDataLevel} instance.
      * 
-     * @param metadata
-     * @param layout
+     * @param tileMd
+     *            matrix metadata, must not be <code>null</code>
+     * @param format
+     *            format to request tile images, must not be <code>null</code>
+     * @param layers
+     *            WMS layers to request, must not be <code>null</code>
+     * @param styles
+     *            WMS styles to request, must not be <code>null</code>
+     * @param client
+     *            the WMS client to use, must not be <code>null</code>
+     * @param outputFormat
+     *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      */
-    FileSystemTileMatrix( TileMatrix metadata, DiskLayout layout ) {
-        this.metadata = metadata;
-        this.layout = layout;
+    RemoteWMSTileDataLevel( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
+                         WMSClient client, String outputFormat ) {
+        this.metadata = tileMd;
+        this.format = format;
+        this.layers = layers;
+        this.styles = styles;
+        this.outputFormat = outputFormat;
+        this.tileSizeX = tileMd.getTilePixelsX();
+        this.tileSizeY = tileMd.getTilePixelsY();
+        this.client = client;
     }
 
     @Override
@@ -82,22 +109,14 @@ class FileSystemTileMatrix implements TileDataLevel {
         if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
-        Envelope bbox = calcEnvelope( x, y );
-        File file = layout.resolve( metadata.getIdentifier(), x, y );
-        return new FileSystemTile( bbox, file );
-    }
-
-    private Envelope calcEnvelope( int x, int y ) {
         double width = metadata.getTileWidth();
         double height = metadata.getTileHeight();
         Envelope env = metadata.getSpatialMetadata().getEnvelope();
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
-        return fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
+        Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
+        GetMap gm = new GetMap( layers, styles, tileSizeX, tileSizeY, envelope, envelope.getCoordinateSystem(), format,
+                                true );
+        return new RemoteWMSTile( client, gm, outputFormat );
     }
-
-    public DiskLayout getLayout() {
-        return layout;
-    }
-
 }

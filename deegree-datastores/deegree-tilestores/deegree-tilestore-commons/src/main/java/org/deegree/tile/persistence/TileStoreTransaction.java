@@ -53,38 +53,39 @@ public interface TileStoreTransaction {
     /**
      * Updates or adds a specific tile.
      * 
-     * @param tileMatrix
-     *            the tile matrix id
+     * @param tileDataLevel
+     *            the tile data level id
      * @param tile
      *            the tile
      * @param x
      *            column index
      * @param y
      *            row index
-     * @throws TileIOException 
+     * @throws TileIOException
      */
-    void put( String tileMatrix, Tile tile, int x, int y ) throws TileIOException;
+    void put( String tileDataLevel, Tile tile, int x, int y )
+                            throws TileIOException;
 
     /**
      * Deletes a specific tile.
      * 
-     * @param tileMatrix
-     *            the tile matrix id
+     * @param tileDataLevel
+     *            the tile data level id
      * @param x
      *            column index
      * @param y
      *            row index
      */
-    void delete( String tileMatrix, int x, int y );
+    void delete( String tileDataLevel, int x, int y );
 
     /**
-     * Deletes all tiles intersecting with the given envelope. If tileMatrix is null, tiles will be deleted from all tile
-     * matrices.
+     * Deletes all tiles intersecting with the given envelope. If tileDataLevel is null, tiles will be deleted from all
+     * tile data levels.
      * 
-     * @param tileMatrix
-     *            the tile matrix id
+     * @param tileDataLevel
+     *            the tile data level id
      * @param envelope
      *            the envelope
      */
-    void delete( String tileMatrix, Envelope envelope );
+    void delete( String tileDataLevel, Envelope envelope );
 }

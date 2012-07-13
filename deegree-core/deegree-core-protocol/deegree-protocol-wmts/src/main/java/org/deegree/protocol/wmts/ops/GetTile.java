@@ -49,29 +49,57 @@ import java.util.Map;
 import org.deegree.protocol.ows.exception.OWSException;
 
 /**
- * <code>GetTile</code>
+ * A <code>GetTile</code> request to a WMTS.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class GetTile {
 
-    private String layer;
+    private final String layer;
 
-    private String style;
+    private final String style;
 
-    private String format;
+    private final String format;
 
-    private String tileMatrixSet;
+    private final String tileMatrixSet;
 
-    private String tileMatrix;
+    private final String tileMatrix;
 
-    private int tileRow;
+    private final int tileRow;
 
-    private int tileCol;
+    private final int tileCol;
+
+    /**
+     * Creates a new {@link GetTile} instance.
+     * 
+     * @param layer
+     *            requested layer, must not be <code>null</code>
+     * @param style
+     *            requested style, must not be <code>null</code>
+     * @param format
+     *            requested format, must not be <code>null</code>
+     * @param tileMatrixSet
+     *            requested tile matrix set, must not be <code>null</code>
+     * @param tileMatrix
+     *            requested tile matrix, must not be <code>null</code>
+     * @param tileRow
+     *            index of the tile row
+     * @param tileCol
+     *            index of the tile column
+     */
+    public GetTile( String layer, String style, String format, String tileMatrixSet, String tileMatrix, int tileRow,
+                    int tileCol ) {
+        this.layer = layer;
+        this.style = style;
+        this.format = format;
+        this.tileMatrixSet = tileMatrixSet;
+        this.tileMatrix = tileMatrix;
+        this.tileRow = tileRow;
+        this.tileCol = tileCol;
+    }
 
     /**
      * Convenience constructor for WMTS.
@@ -156,5 +184,4 @@ public class GetTile {
     public int getTileCol() {
         return tileCol;
     }
-
 }

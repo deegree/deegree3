@@ -1,53 +1,53 @@
 <TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd" configVersion="3.2.0">
   <TileLayer>
-    <TileStoreId tileMatrixSet="utah">pyramid</TileStoreId>
     <l:Name>pyramid</l:Name>
     <d:Title>IT tile layer uncached</d:Title>
     <l:MetadataSetId>mdsetid</l:MetadataSetId>
+    <TileDataSet tileStoreId="pyramid">utah</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="utah">cache</TileStoreId>
     <l:Name>cache</l:Name>
     <d:Title>IT tile layer cached</d:Title>
+    <TileDataSet tileStoreId="cache">utah</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="remotewms">remotewms</TileStoreId>
     <l:Name>remotewms</l:Name>
     <d:Title>IT tile layer remotewms</d:Title>
+    <TileDataSet tileStoreId="remotewms">remotewms</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="remotewms_gif">remotewms_gif</TileStoreId>
     <l:Name>remotewms_gif</l:Name>
     <d:Title>IT tile layer remotewms, GIF -> PNG recoded</d:Title>
+    <TileDataSet tileStoreId="remotewms_gif">remotewms_gif</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="remotewms130">remotewms130</TileStoreId>
     <l:Name>remotewms130</l:Name>
     <d:Title>IT tile layer remotewms WMS 1.3.0</d:Title>
+    <TileDataSet tileStoreId="remotewms130">remotewms130</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="remotewms4326_130">remotewms4326_130</TileStoreId>
     <l:Name>remotewms4326_130</l:Name>
     <d:Title>IT tile layer remotewms WMS 1.3.0, EPSG:4326</d:Title>
+    <TileDataSet tileStoreId="remotewms4326_130">remotewms4326_130</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="remotewms">remotewms_cache</TileStoreId>
     <l:Name>remotewms_cache</l:Name>
     <d:Title>IT tile layer remotewms cached</d:Title>
+    <TileDataSet tileStoreId="remotewms_cache">remotewms</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="filesystem">filesystem</TileStoreId>
     <l:Name>filesystem</l:Name>
     <d:Title>IT tile layer filesystem</d:Title>
+    <TileDataSet tileStoreId="filesystem">filesystem</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="utah4326">utah4326</TileStoreId>
     <l:Name>utah4326</l:Name>
     <d:Title>IT tile layer utah4326</d:Title>
+    <TileDataSet tileStoreId="utah4326">utah4326</TileDataSet>
   </TileLayer>
   <TileLayer>
-    <TileStoreId tileMatrixSet="remotewms4326">remotewms4326</TileStoreId>
     <l:Name>remotewms4326</l:Name>
     <d:Title>IT tile layer remotewms4326</d:Title>
+    <TileDataSet tileStoreId="remotewms4326">remotewms4326</TileDataSet>
   </TileLayer>
 </TileLayers>

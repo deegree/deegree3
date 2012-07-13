@@ -33,14 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence.remotewms;
+package org.deegree.tile.persistence.remotewmts;
 
-import java.util.List;
-
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.wms.client.WMSClient;
-import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.protocol.wmts.client.WMTSClient;
+import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
@@ -53,70 +50,62 @@ import org.deegree.tile.TileMatrix;
  * 
  * @version $Revision$, $Date$
  */
-class RemoteWMSTileMatrix implements TileDataLevel {
+class RemoteWMTSTileDataLevel implements TileDataLevel {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
-    private final TileMatrix metadata;
-
-    private final int tileSizeX, tileSizeY;
+    private final TileMatrix matrix;
 
     private final String format;
 
-    private final List<String> layers;
+    private final String layer;
 
-    private final List<String> styles;
+    private final String style;
 
-    private WMSClient client;
+    private final WMTSClient client;
 
     private final String outputFormat;
 
     /**
-     * Creates a new {@link RemoteWMSTileMatrix} instance.
+     * Creates a new {@link RemoteWMTSTileDataLevel} instance.
      * 
-     * @param tileMd
-     *            matrix metadata, must not be <code>null</code>
+     * @param matrix
+     *            tile matrix, must not be <code>null</code>
      * @param format
-     *            format to request tile images, must not be <code>null</code>
-     * @param layers
-     *            WMS layers to request, must not be <code>null</code>
-     * @param styles
-     *            WMS styles to request, must not be <code>null</code>
+     *            format to use for requesting tile images, must not be <code>null</code>
+     * @param layer
+     *            WMTS layer to request, must not be <code>null</code>
+     * @param style
+     *            WMTS style to request, must not be <code>null</code>
      * @param client
-     *            the WMS client to use, must not be <code>null</code>
+     *            WMTS client to use, must not be <code>null</code>
      * @param outputFormat
-     *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
+     *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
+     *            formats, eg. 'png')
      */
-    RemoteWMSTileMatrix( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
-                         WMSClient client, String outputFormat ) {
-        this.metadata = tileMd;
+    RemoteWMTSTileDataLevel( TileMatrix matrix, String format, String layer, String style, WMTSClient client,
+                             String outputFormat ) {
+        this.matrix = matrix;
         this.format = format;
-        this.layers = layers;
-        this.styles = styles;
+        this.layer = layer;
+        this.style = style;
         this.outputFormat = outputFormat;
-        this.tileSizeX = tileMd.getTilePixelsX();
-        this.tileSizeY = tileMd.getTilePixelsY();
         this.client = client;
     }
 
     @Override
     public TileMatrix getMetadata() {
-        return metadata;
+        return matrix;
     }
 
     @Override
     public Tile getTile( int x, int y ) {
-        if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
+        if ( matrix.getNumTilesX() <= x || matrix.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
-        double width = metadata.getTileWidth();
-        double height = metadata.getTileHeight();
-        Envelope env = metadata.getSpatialMetadata().getEnvelope();
-        double minx = width * x + env.getMin().get0();
-        double miny = env.getMax().get1() - height * y;
-        Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
-        GetMap gm = new GetMap( layers, styles, tileSizeX, tileSizeY, envelope, envelope.getCoordinateSystem(), format,
-                                true );
-        return new RemoteWMSTile( client, gm, outputFormat );
+        String tileMatrixSet;
+        String tileMatrix;
+        GetTile request = new GetTile( layer, style, format, "tileMatrixSet", "tileMatrix", x, y );
+        return new RemoteWMTSTile( client, request, outputFormat );
     }
 }

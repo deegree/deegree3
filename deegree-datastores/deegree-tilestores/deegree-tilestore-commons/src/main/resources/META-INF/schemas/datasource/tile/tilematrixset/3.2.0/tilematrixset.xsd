@@ -1,6 +1,6 @@
 <schema xmlns:tms="http://www.deegree.org/datasource/tile/tilematrixset" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/datasource/tile/tilematrixset" elementFormDefault="qualified"
-  xmlns:md="http://www.deegree.org/metadata/spatial" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
   <annotation>
     <appinfo>
@@ -9,8 +9,6 @@
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>
-
-  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" />
 
   <element name="TileMatrixSet">
     <annotation>
@@ -21,7 +19,7 @@
     <complexType>
       <sequence>
         <!-- only one CRS may be specified -->
-        <element ref="md:CRS" />
+        <element name="CRS" type="string" />
         <element name="TileMatrix" maxOccurs="unbounded">
           <complexType>
             <sequence>
@@ -41,6 +39,7 @@
           </complexType>
         </element>
       </sequence>
+      <attribute name="configVersion" type="string" use="required" fixed="3.2.0" />
     </complexType>
   </element>
 
