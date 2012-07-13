@@ -313,7 +313,7 @@ public class XMLStreamUtils {
         }
         return value;
     }
-    
+
     /**
      * Post: reader will be unchanged or at {@link XMLStreamConstants#END_ELEMENT} of the matching element or at
      * {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
@@ -452,6 +452,42 @@ public class XMLStreamUtils {
             }
         }
         return value;
+    }
+
+    public static void skipToRequiredElement( XMLStreamReader reader, QName elementName )
+                            throws XMLStreamException {
+        while ( !reader.isStartElement() || !elementName.equals( reader.getName() ) ) {
+            if ( reader.getEventType() == END_DOCUMENT ) {
+                throw new XMLParsingException( reader, "Required element " + elementName + " was not found." );
+            }
+            reader.next();
+        }
+    }
+
+    /**
+     * Forwards the given {@link XMLStreamReader} to the specified element or to the end of the enclosing
+     * element/document if there is no such element.
+     * 
+     * @param reader
+     *            reader to forward, must not be <code>null</code>
+     * @param elementName
+     *            element to forward to, must not be <code>null</code>
+     * @throws XMLStreamException
+     */
+    public static boolean skipToElementOnSameLevel( XMLStreamReader reader, QName elementName )
+                            throws XMLStreamException {
+        while ( reader.isStartElement() && !elementName.equals( reader.getName() ) ) {
+            skipElement( reader );
+            nextElement( reader );
+        }
+        return reader.isStartElement() && elementName.equals( reader.getName() );
+    }
+
+    public static void skipToRequiredElementOnSameLevel( XMLStreamReader reader, QName elementName )
+                            throws XMLStreamException {
+        if ( !skipToElementOnSameLevel( reader, elementName ) ) {
+            throw new XMLParsingException( reader, "Required element " + elementName + " was not found." );
+        }
     }
 
     /**

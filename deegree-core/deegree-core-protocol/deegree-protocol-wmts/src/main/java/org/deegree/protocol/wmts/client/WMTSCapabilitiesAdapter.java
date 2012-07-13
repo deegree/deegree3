@@ -37,14 +37,17 @@ package org.deegree.protocol.wmts.client;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static org.deegree.commons.utils.MapUtils.calcResFromScale;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsInteger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToElementOnSameLevel;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElementOnSameLevel;
 import static org.deegree.protocol.wmts.WMTSConstants.WMTS_100_NS;
 
 import java.util.ArrayList;
@@ -78,7 +81,17 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
     private static final QName LAYER = new QName( WMTS_100_NS, "Layer" );
 
+    private static final QName STYLE = new QName( WMTS_100_NS, "Style" );
+
+    private static final QName FORMAT = new QName( WMTS_100_NS, "Format" );
+
+    private static final QName TILE_MATRIX_SET_LINK = new QName( WMTS_100_NS, "TileMatrixSetLink" );
+
+    private static final QName TILE_MATRIX_SET_LIMITS = new QName( WMTS_100_NS, "TileMatrixSetLimits" );
+
     private static final QName TILE_MATRIX_SET = new QName( WMTS_100_NS, "TileMatrixSet" );
+
+    private static final QName WELL_KNOWN_SCALE_SET = new QName( WMTS_100_NS, "WellKnownScaleSet" );
 
     private static final QName TILE_MATRIX = new QName( WMTS_100_NS, "TileMatrix" );
 
@@ -106,13 +119,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         OMElement contentsElement = getElement( getRootElement(), new XPath( "wmts:Contents", nsContext ) );
         XMLStreamReader xmlStream = contentsElement.getXMLStreamReader();
         skipStartDocument( xmlStream );
-        while ( !xmlStream.isStartElement() || !LAYER.equals( xmlStream.getName() ) ) {
-            if ( xmlStream.getEventType() == END_DOCUMENT ) {
-                return emptyList();
-            }
-            xmlStream.next();
+        nextElement( xmlStream );
+        List<Layer> layers = emptyList();
+        if ( skipToElementOnSameLevel( xmlStream, LAYER ) ) {
+            layers = parseLayers( xmlStream );
         }
-        return parseLayers( xmlStream );
+        return layers;
     }
 
     private List<Layer> parseLayers( XMLStreamReader xmlStream )
@@ -126,21 +138,76 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         return layers;
     }
 
-    private Layer parseLayer( XMLStreamReader xmlStream ) {
+    private Layer parseLayer( XMLStreamReader xmlStream )
+                            throws NoSuchElementException, XMLStreamException {
 
-        // <element ref="ows:WGS84BoundingBox" minOccurs="0" maxOccurs="unbounded">
+        nextElement( xmlStream );
+
         // <element name="Identifier" type="ows:CodeType">
-        // <element ref="ows:BoundingBox" minOccurs="0" maxOccurs="unbounded">
-        // <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
-        // <element ref="ows:DatasetDescriptionSummary" minOccurs="0" maxOccurs="unbounded">
-        // <element ref="wmts:Style" maxOccurs="unbounded">
-        // <element name="Format" type="ows:MimeType" maxOccurs="unbounded">
-        // <element name="InfoFormat" type="ows:MimeType" minOccurs="0" maxOccurs="unbounded">
-        // <element ref="wmts:Dimension" minOccurs="0" maxOccurs="unbounded">
-        // <element ref="wmts:TileMatrixSetLink" maxOccurs="unbounded">
-        // <element name="ResourceURL" type="wmts:URLTemplateType" minOccurs="0" maxOccurs="unbounded">
+        skipToRequiredElementOnSameLevel( xmlStream, IDENTIFIER );
+        String identifier = xmlStream.getElementText().trim();
+        nextElement( xmlStream );
 
-        return new Layer();
+        // <element ref="wmts:Style" maxOccurs="unbounded">
+        skipToRequiredElementOnSameLevel( xmlStream, STYLE );
+        List<Style> styles = new ArrayList<Style>();
+        while ( xmlStream.isStartElement() && STYLE.equals( xmlStream.getName() ) ) {
+            styles.add( parseStyle( xmlStream ) );
+            nextElement( xmlStream );
+        }
+
+        // <element name="Format" type="ows:MimeType" maxOccurs="unbounded">
+        skipToRequiredElementOnSameLevel( xmlStream, FORMAT );
+        List<String> formats = new ArrayList<String>();
+        while ( xmlStream.isStartElement() && FORMAT.equals( xmlStream.getName() ) ) {
+            formats.add( xmlStream.getElementText().trim() );
+            nextElement( xmlStream );
+        }
+
+        // <element ref="wmts:TileMatrixSetLink" maxOccurs="unbounded">
+        skipToRequiredElementOnSameLevel( xmlStream, TILE_MATRIX_SET_LINK );
+        List<String> tileMatrixSets = new ArrayList<String>();
+        while ( xmlStream.isStartElement() && TILE_MATRIX_SET_LINK.equals( xmlStream.getName() ) ) {
+            tileMatrixSets.add( parseTileMatrixSetLink( xmlStream ) );
+            nextElement( xmlStream );
+        }
+
+        nextElement( xmlStream );
+
+        return new Layer( identifier, styles, formats, tileMatrixSets );
+    }
+
+    private Style parseStyle( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        // <attribute name="isDefault" type="boolean">
+        boolean isDefault = getAttributeValueAsBoolean( xmlStream, null, "isDefault", true );
+        nextElement( xmlStream );
+
+        // <element ref="ows:Identifier">
+        requireStartElement( xmlStream, singletonList( IDENTIFIER ) );
+        String identifier = xmlStream.getElementText().trim();
+        nextElement( xmlStream );
+
+        // <element ref="wmts:LegendURL" minOccurs="0" maxOccurs="unbounded">
+        while ( !xmlStream.isEndElement() ) {
+            xmlStream.next();
+        }
+
+        return new Style( identifier, isDefault );
+    }
+
+    private String parseTileMatrixSetLink( XMLStreamReader xmlStream )
+                            throws NoSuchElementException, XMLStreamException {
+        nextElement( xmlStream );
+        skipToRequiredElementOnSameLevel( xmlStream, TILE_MATRIX_SET );
+        String tileMatrixSet = xmlStream.getElementText().trim();
+        nextElement( xmlStream );
+
+        if ( TILE_MATRIX_SET_LIMITS.equals( xmlStream.getName() ) ) {
+            skipElement( xmlStream );
+        }
+        return tileMatrixSet;
     }
 
     public List<TileMatrixSet> parseTileMatrixSets()
@@ -148,14 +215,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         OMElement contentsElement = getElement( getRootElement(), new XPath( "wmts:Contents", nsContext ) );
         XMLStreamReader xmlStream = contentsElement.getXMLStreamReader();
         skipStartDocument( xmlStream );
-        parseLayers( xmlStream );
-        while ( !xmlStream.isStartElement() || !TILE_MATRIX_SET.equals( xmlStream.getName() ) ) {
-            if ( xmlStream.getEventType() == END_DOCUMENT ) {
-                return emptyList();
-            }
-            xmlStream.next();
+        nextElement( xmlStream );
+        List<TileMatrixSet> tileMatrixSets = emptyList();
+        if ( skipToElementOnSameLevel( xmlStream, TILE_MATRIX_SET ) ) {
+            tileMatrixSets = parseTileMatrixSets( xmlStream );
         }
-        return parseTileMatrixSets( xmlStream );
+        return tileMatrixSets;
     }
 
     private List<TileMatrixSet> parseTileMatrixSets( XMLStreamReader xmlStream )
@@ -180,15 +245,23 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         nextElement( xmlStream );
 
         // <element ref="ows:BoundingBox" minOccurs="0">
-        // <element ref="ows:SupportedCRS">
-        // <element name="WellKnownScaleSet" type="anyURI" minOccurs="0">
 
-        while ( !xmlStream.isStartElement() || !TILE_MATRIX.equals( xmlStream.getName() ) ) {
-            xmlStream.next();
-        }
+        // <element ref="ows:SupportedCRS">        
+
+//        List<QName> expectedElements = new ArrayList<QName>();
+//        expectedElements.add( WELL_KNOWN_SCALE_SET );
+//        expectedElements.add( TILE_MATRIX );
+//        requireStartElement( xmlStream, expectedElements );
+
+        // <element name="WellKnownScaleSet" type="anyURI" minOccurs="0">
+        String wellKnownScaleSet = null;
+//        if ( WELL_KNOWN_SCALE_SET.equals( xmlStream.getName() ) ) {
+//            wellKnownScaleSet = xmlStream.getElementText().trim();
+//            nextElement( xmlStream );
+//        }
 
         // <element ref="wmts:TileMatrix" maxOccurs="unbounded">
-        requireStartElement( xmlStream, singletonList( TILE_MATRIX ) );
+        skipToRequiredElementOnSameLevel( xmlStream, TILE_MATRIX );
         List<TileMatrix> matrices = new ArrayList<TileMatrix>();
         while ( xmlStream.isStartElement() && TILE_MATRIX.equals( xmlStream.getName() ) ) {
             matrices.add( parseTileMatrix( xmlStream ) );
@@ -211,7 +284,8 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
         // <element name="ScaleDenominator" type="double">
         requireStartElement( xmlStream, singletonList( SCALE_DENOMINATOR ) );
-        double resolution = getElementTextAsDouble( xmlStream );
+        double scaleDenominator = getElementTextAsDouble( xmlStream );
+        double resolution = calcResFromScale( scaleDenominator );
         nextElement( xmlStream );
 
         // <element name="TopLeftCorner" type="ows:PositionType">

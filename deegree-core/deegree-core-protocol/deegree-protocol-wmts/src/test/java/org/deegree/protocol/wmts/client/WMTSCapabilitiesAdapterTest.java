@@ -77,6 +77,23 @@ public class WMTSCapabilitiesAdapterTest {
                             throws XMLStreamException {
         List<Layer> layers = adapter.parseLayers();
         assertEquals( 1, layers.size() );
+
+        Layer layer = layers.get( 0 );
+        assertEquals( "utah_ortho", layer.getIdentifier() );
+
+        List<Style> styles = layer.getStyles();
+        assertEquals( 1, styles.size() );
+        Style style = styles.get( 0 );
+        assertEquals( "default", style.getIdentifier() );
+        assertEquals( true, style.isDefault() );
+
+        List<String> formats = layer.getFormats();
+        assertEquals( 1, formats.size() );
+        assertEquals( "image/png", formats.get( 0 ) );
+
+        List<String> tileMatrixSets = layer.getTileMatrixSets();
+        assertEquals( 1, tileMatrixSets.size() );
+        assertEquals( "Satellite_Provo", tileMatrixSets.get( 0 ) );
     }
 
     /**
@@ -85,20 +102,20 @@ public class WMTSCapabilitiesAdapterTest {
     @Test
     public void testParseTileMatrixSets()
                             throws XMLStreamException {
-//        List<TileMatrixSet> tileMatrixSets = adapter.parseTileMatrixSets();
-//        assertEquals( 1, tileMatrixSets.size() );
-//
-//        TileMatrixSet matrixSet = tileMatrixSets.get( 0 );
-//        assertEquals( "Satellite_Provo", matrixSet.getIdentifier() );
-//        List<TileMatrix> tileMatrices = matrixSet.getTileMatrices();
-//        assertEquals( 4, tileMatrices.size() );
-//
-//        TileMatrix tileMatrix = tileMatrices.get( 0 );
-//        assertEquals( "7142.857142857143", tileMatrix.getIdentifier() );
-//        assertEquals( 7142.857142857143, tileMatrix.getResolution(), 0.00001 );
-//        assertEquals( 256, tileMatrix.getTilePixelsX() );
-//        assertEquals( 256, tileMatrix.getTilePixelsY() );
-//        assertEquals( 13, tileMatrix.getNumTilesX() );
-//        assertEquals( 15, tileMatrix.getNumTilesY() );
+        List<TileMatrixSet> tileMatrixSets = adapter.parseTileMatrixSets();
+        assertEquals( 1, tileMatrixSets.size() );
+
+        TileMatrixSet matrixSet = tileMatrixSets.get( 0 );
+        assertEquals( "Satellite_Provo", matrixSet.getIdentifier() );
+        List<TileMatrix> tileMatrices = matrixSet.getTileMatrices();
+        assertEquals( 4, tileMatrices.size() );
+
+        TileMatrix tileMatrix = tileMatrices.get( 0 );
+        assertEquals( "7142.857142857143", tileMatrix.getIdentifier() );
+        assertEquals( 0.0000179663, tileMatrix.getResolution(), 0.000000001 );
+        assertEquals( 256, tileMatrix.getTilePixelsX() );
+        assertEquals( 256, tileMatrix.getTilePixelsY() );
+        assertEquals( 13, tileMatrix.getNumTilesX() );
+        assertEquals( 15, tileMatrix.getNumTilesY() );
     }
 }

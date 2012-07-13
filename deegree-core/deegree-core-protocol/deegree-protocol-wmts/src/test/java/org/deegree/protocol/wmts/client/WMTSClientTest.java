@@ -121,6 +121,11 @@ public class WMTSClientTest {
         return new GetTile( "medford:hydro", "_null", "image/png", "EPSG:900913", "EPSG:900913:24", 6203400, 2660870 );
     }
 
+    public void testWMTSClient()
+                            throws Exception {
+
+    }
+
     // /**
     // * Test method for
     // * {@link org.deegree.protocol.wmts.client.WMTSClient#getCapabilitiesAdapter(org.apache.axiom.om.OMElement,

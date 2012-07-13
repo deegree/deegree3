@@ -35,38 +35,30 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wmts.client;
 
-import java.util.List;
-
-public class Layer {
+/**
+ * TODO add class documentation here
+ * 
+ * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class Style {
 
     private final String identifier;
 
-    private final List<Style> styles;
+    private final boolean isDefault;
 
-    private final List<String> formats;
-
-    private final List<String> tileMatrixSets;
-
-    public Layer( String identifier, List<Style> styles, List<String> formats, List<String> tileMatrixSets ) {
+    public Style( String identifier, boolean isDefault ) {
         this.identifier = identifier;
-        this.styles = styles;
-        this.formats = formats;
-        this.tileMatrixSets = tileMatrixSets;
+        this.isDefault = isDefault;
     }
 
     public String getIdentifier() {
         return identifier;
     }
 
-    public List<Style> getStyles() {
-        return styles;
-    }
-
-    public List<String> getFormats() {
-        return formats;
-    }
-
-    public List<String> getTileMatrixSets() {
-        return tileMatrixSets;
+    public boolean isDefault() {
+        return isDefault;
     }
 }
