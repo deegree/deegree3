@@ -132,7 +132,7 @@ Table-driven mode configs use one or more ``FeatureType`` elements to define the
    .. literalinclude:: xml/sqlfeaturestore_tabledriven1.xml
       :language: xml
 
-The above example assumes that the database contains a table named ``country``. The feature store will determine the columns of the table automatically and derive a feature type definition:
+The above example assumes that the database contains a table named ``country``, which is located within the default database schema (for PostgreSQL ``public``). Alternatively you can fully qualify the table name such as ``public.country``. The feature store will determine the columns of the table automatically and derive a feature type definition:
 
 * Feature type name: ``app:country`` (app=http://www.deegree.org/app)
 * feature id (``gml:id``) based on primary key column of table ``country``
