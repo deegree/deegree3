@@ -48,6 +48,7 @@ import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -55,6 +56,7 @@ import java.util.Collection;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -73,6 +75,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class WMSSimilarityIntegrationTest {
+
+    private static int numFailed = 0;
 
     private String request;
 
@@ -99,14 +103,16 @@ public class WMSSimilarityIntegrationTest {
         base += "/deegree-wms-similarity-tests/services" + request;
         InputStream in = retrieve( STREAM, base );
 
+        byte[] bs = null;
+
         try {
             BufferedImage img2 = ImageIO.read( new ByteArrayInputStream( response ) );
-            byte[] bs = IOUtils.toByteArray( in );
+            bs = IOUtils.toByteArray( in );
             BufferedImage img1 = ImageIO.read( new ByteArrayInputStream( bs ) );
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageIO.write( img1, "tif", bos );
             bos.close();
-            in = new ByteArrayInputStream( bos.toByteArray() );
+            in = new ByteArrayInputStream( bs = bos.toByteArray() );
             bos = new ByteArrayOutputStream();
             bos.close();
             ImageIO.write( img2, "tif", bos );
@@ -117,6 +123,16 @@ public class WMSSimilarityIntegrationTest {
         }
 
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
+        if ( !MathUtils.isZero( 1.0 - sim ) ) {
+            System.out.println( "Trying to store request/response in tempdir: expected/response" + ++numFailed + ".tif" );
+            try {
+                IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/expected"
+                                                               + numFailed + ".tif" ) );
+                IOUtils.write( bs, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/response"
+                                                         + numFailed + ".tif" ) );
+            } catch ( Throwable t ) {
+            }
+        }
         Assert.assertEquals( "Images are not similar enough. Request: " + request, 1.0, sim, 0.01 );
     }
 
