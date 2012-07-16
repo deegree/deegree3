@@ -123,7 +123,7 @@ public class WMSSimilarityIntegrationTest {
         }
 
         double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
-        if ( !MathUtils.isZero( 1.0 - sim ) ) {
+        if ( Math.abs( 1.0 - sim ) > 0.01 ) {
             System.out.println( "Trying to store request/response in tempdir: expected/response" + ++numFailed + ".tif" );
             try {
                 IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/expected"
