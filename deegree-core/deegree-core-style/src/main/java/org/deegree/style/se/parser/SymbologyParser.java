@@ -1764,6 +1764,15 @@ public class SymbologyParser {
                     }
                 }, contn ).second;
             }
+            if ( in.getLocalName().equals( "PreventUpsideDown" ) ) {
+                contn = updateOrContinue( in, "PreventUpsideDown", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.preventUpsideDown = Boolean.parseBoolean( val );
+
+                    }
+                }, contn ).second;
+            }
         }
 
         return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );

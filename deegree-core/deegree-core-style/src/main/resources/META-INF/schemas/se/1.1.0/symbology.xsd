@@ -21,6 +21,16 @@
       </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:complexType name="LinePlacementType">
+      <xsd:complexContent>
+        <xsd:extension base="LinePlacementType">
+          <xsd:sequence>
+            <xsd:element name="PreventUpsideDown" minOccurs="0" type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
     <xsd:complexType name="ShadedReliefType">
       <xsd:complexContent>
         <xsd:extension base="ShadedReliefType">

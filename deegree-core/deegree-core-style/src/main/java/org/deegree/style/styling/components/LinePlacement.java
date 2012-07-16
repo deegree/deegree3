@@ -83,6 +83,11 @@ public class LinePlacement implements Copyable<LinePlacement> {
      */
     public boolean generalizeLine;
 
+    /**
+     * Default is false. deegree specific extension.
+     */
+    public boolean preventUpsideDown = false;
+
     @Override
     public LinePlacement copy() {
         LinePlacement copy = new LinePlacement();
@@ -93,6 +98,7 @@ public class LinePlacement implements Copyable<LinePlacement> {
         copy.gap = gap;
         copy.isAligned = isAligned;
         copy.generalizeLine = generalizeLine;
+        copy.preventUpsideDown = preventUpsideDown;
         return copy;
     }
 

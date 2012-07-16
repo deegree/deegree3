@@ -759,6 +759,11 @@ public class Java2DRenderer implements Renderer {
         if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {
                 Geometry clippedGeometry = clippingArea.getIntersection( geom );
+                if ( clippedGeometry == null ) {
+                    // can happen if the clipping somehow resulted in empty geometry collections (at least that was one
+                    // observed case)
+                    return geom;
+                }
                 com.vividsolutions.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
                 com.vividsolutions.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
                 if ( jtsOrig == jtsClipped ) {

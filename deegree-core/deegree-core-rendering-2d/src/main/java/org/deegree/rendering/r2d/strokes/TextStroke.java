@@ -70,6 +70,9 @@ import java.awt.geom.FlatteningPathIterator;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -320,7 +323,130 @@ public class TextStroke implements Stroke {
         return pair;
     }
 
+    private static final double H_PI = Math.PI / 2;
+
+    private boolean isUpsideDown( Shape shape ) {
+        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+
+        double points[] = new double[6];
+        double moveX = 0, moveY = 0;
+        double lastX = 0, lastY = 0;
+        double thisX = 0, thisY = 0;
+
+        double upsideDown = 0, total = 0;
+
+        while ( !it.isDone() ) {
+            int type = it.currentSegment( points );
+            switch ( type ) {
+            case PathIterator.SEG_MOVETO:
+                moveX = lastX = points[0];
+                moveY = lastY = points[1];
+
+                break;
+
+            case PathIterator.SEG_CLOSE:
+                points[0] = moveX;
+                points[1] = moveY;
+                // Fall into....
+
+            case PathIterator.SEG_LINETO:
+                thisX = points[0];
+                thisY = points[1];
+
+                double dx = thisX - lastX;
+                double dy = thisY - lastY;
+
+                double distance = sqrt( dx * dx + dy * dy );
+                double angle = atan2( dy, dx );
+
+                if ( Math.abs( angle ) > H_PI ) {
+                    upsideDown += distance;
+                }
+
+                total += distance;
+
+                lastX = thisX;
+                lastY = thisY;
+                break;
+            }
+
+            it.next();
+        }
+
+        return total - upsideDown < upsideDown;
+    }
+
+    private double getShapeLength( Shape shape ) {
+        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+
+        double points[] = new double[6];
+        double moveX = 0, moveY = 0;
+        double lastX = 0, lastY = 0;
+        double thisX = 0, thisY = 0;
+
+        double total = 0;
+
+        while ( !it.isDone() ) {
+            int type = it.currentSegment( points );
+            switch ( type ) {
+            case PathIterator.SEG_MOVETO:
+                moveX = lastX = points[0];
+                moveY = lastY = points[1];
+
+                break;
+
+            case PathIterator.SEG_CLOSE:
+                points[0] = moveX;
+                points[1] = moveY;
+                // Fall into....
+
+            case PathIterator.SEG_LINETO:
+                thisX = points[0];
+                thisY = points[1];
+
+                double dx = thisX - lastX;
+                double dy = thisY - lastY;
+
+                double distance = sqrt( dx * dx + dy * dy );
+
+                total += distance;
+
+                lastX = thisX;
+                lastY = thisY;
+                break;
+            }
+
+            it.next();
+        }
+
+        return total;
+    }
+
     public Shape createStrokedShape( Shape shape ) {
+        GlyphVector glyphVector = font.createGlyphVector( frc, text );
+        if ( glyphVector.getLogicalBounds().getWidth() > getShapeLength( shape ) ) {
+            return new GeneralPath();
+        }
+
+        if ( linePlacement.preventUpsideDown && isUpsideDown( shape ) ) {
+            final Shape originalShape = shape;
+            shape = (Shape) Proxy.newProxyInstance( getClass().getClassLoader(), new Class[] { Shape.class },
+                                                    new InvocationHandler() {
+
+                                                        @Override
+                                                        public Object invoke( Object proxy, Method method, Object[] args )
+                                                                                throws Throwable {
+                                                            Object retval = method.invoke( originalShape, args );
+
+                                                            if ( method.getName().equals( "getPathIterator" ) ) {
+                                                                return new ReversePathIterator( (PathIterator) retval );
+                                                            }
+
+                                                            return retval;
+                                                        }
+                                                    } );
+        }
+
         Pair<Boolean, GeneralPath> pair = tryWordWise( shape );
         if ( pair.first ) {
             if ( LOG.isDebugEnabled() ) {
@@ -328,8 +454,6 @@ public class TextStroke implements Stroke {
             }
             return pair.second;
         }
-
-        GlyphVector glyphVector = font.createGlyphVector( frc, text );
 
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
@@ -385,7 +509,7 @@ public class TextStroke implements Stroke {
                         AffineTransform t = new AffineTransform();
                         t.setToTranslation( x, y );
                         t.rotate( angle );
-                        t.translate( -px - advance, -py );
+                        t.translate( -px - advance, -py + lineHeight / 4 );
                         result.append( t.createTransformedShape( glyph ), false );
                         next += ( advance + nextAdvance );
                         currentChar++;
