@@ -158,6 +158,7 @@ public class SymbologyParserTest extends TestCase {
         tests.add( new Object[] { "sldtest7.xml", "sldtest7.xml" } );
         tests.add( new Object[] { "sldtest8.xml", "sldtest8.xml" } );
         tests.add( new Object[] { "sldtest9.xml", "sldtest9.xml" } );
+        tests.add( new Object[] { "lineplacement_ext.xml", "lineplacement_ext.xml" } );
 
         return tests;
     }
