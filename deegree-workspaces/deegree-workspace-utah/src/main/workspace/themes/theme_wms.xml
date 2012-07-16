@@ -1,6 +1,7 @@
 <Themes xmlns="http://www.deegree.org/themes/standard"  xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
 
   <LayerStoreId>layer_feature_utah_airports</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_countyboundaries</LayerStoreId>
   <LayerStoreId>layer_feature_utah_dominantvegetation</LayerStoreId>
   <LayerStoreId>layer_feature_utah_groundwater</LayerStoreId>
   <LayerStoreId>layer_feature_utah_lakes</LayerStoreId>
@@ -43,19 +44,28 @@
       <Identifier>administration</Identifier>
       <d:Title>Administration</d:Title>
       <Theme>
-        <Identifier>stateboundary</Identifier>
-        <d:Title>Stateboundary of Utah</d:Title>
-        <Layer>stateboundary</Layer>
-      </Theme>
-      <Theme>
         <Identifier>municipalities</Identifier>
         <d:Title>Municipalities of Utah</d:Title>
         <Layer>municipalities</Layer>
       </Theme>
       <Theme>
+        <Identifier>counties</Identifier>
+        <d:Title>Counties of Utah</d:Title>
+        <Theme>
+          <Identifier>countyboundaries</Identifier>
+          <d:Title>County boundaries of Utah</d:Title>
+          <Layer>countyboundaries</Layer>
+        </Theme>
+      </Theme>
+      <Theme>
         <Identifier>zipcodes</Identifier>
         <d:Title>Zip codes of Utah</d:Title>
         <Layer>zipcodes</Layer>
+      </Theme>
+      <Theme>
+        <Identifier>stateboundary</Identifier>
+        <d:Title>Stateboundary of Utah</d:Title>
+        <Layer>stateboundary</Layer>
       </Theme>
       <Theme>
         <Identifier>orthophoto</Identifier>
