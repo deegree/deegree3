@@ -436,7 +436,6 @@ public class Java2DRenderer implements Renderer {
         if ( transformer != null ) {
             ICRS crs = null;
             try {
-                // TODO minimize transformations in all other cases as well
                 crs = ( (Geometry) g ).getCoordinateSystem();
                 if ( transformer.equals( crs ) ) {
                     return g;
@@ -658,8 +657,6 @@ public class Java2DRenderer implements Renderer {
         }
         geom = clipGeometry( geom );
         if ( geom instanceof Curve ) {
-            geom = transform( geom );
-
             Double line = fromCurve( (Curve) geom, false );
             applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
                          styling.perpendicularOffsetType );
@@ -735,7 +732,6 @@ public class Java2DRenderer implements Renderer {
         }
         if ( geom instanceof Surface ) {
             // LOG.trace( "Drawing {} with {}", geom, styling );
-            geom = transform( geom );
             render( styling, (Surface) geom );
         }
         if ( geom instanceof MultiGeometry<?> ) {
@@ -754,7 +750,7 @@ public class Java2DRenderer implements Renderer {
      *            the geometry to clip, must not be <code>null</code>
      * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
      */
-    private Geometry clipGeometry( Geometry geom ) {
+    Geometry clipGeometry( Geometry geom ) {
         geom = transform( geom );
         if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {

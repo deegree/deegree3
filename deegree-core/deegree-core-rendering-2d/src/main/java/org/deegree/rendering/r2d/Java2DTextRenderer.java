@@ -169,7 +169,7 @@ public class Java2DTextRenderer implements TextRenderer {
             return;
         }
 
-        geom = renderer.transform( geom );
+        geom = renderer.clipGeometry( geom );
         AffineTransform shear = null;
 
         int style = styling.font.bold ? BOLD : PLAIN;
