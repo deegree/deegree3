@@ -65,6 +65,8 @@ class RemoteWMTSTile implements Tile {
 
     private final String outputFormat;
 
+    private final Envelope envelope;
+
     /**
      * Creates a new {@link RemoteWMTSTile} instance.
      * 
@@ -75,11 +77,13 @@ class RemoteWMTSTile implements Tile {
      * @param outputFormat
      *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
      *            formats, eg. 'png')
+     * @param envelope
      */
-    RemoteWMTSTile( WMTSClient client, GetTile request, String outputFormat ) {
+    RemoteWMTSTile( WMTSClient client, GetTile request, String outputFormat, Envelope envelope ) {
         this.client = client;
         this.request = request;
         this.outputFormat = outputFormat;
+        this.envelope = envelope;
     }
 
     @Override
@@ -113,6 +117,6 @@ class RemoteWMTSTile implements Tile {
 
     @Override
     public Envelope getEnvelope() {
-        throw new UnsupportedOperationException();
+        return envelope;
     }
 }

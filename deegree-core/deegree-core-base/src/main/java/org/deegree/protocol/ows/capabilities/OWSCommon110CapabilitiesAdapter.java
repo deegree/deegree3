@@ -36,17 +36,30 @@
 package org.deegree.protocol.ows.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.protocol.ows.metadata.domain.Domain;
 import org.deegree.protocol.ows.metadata.domain.PossibleValues;
@@ -60,6 +73,7 @@ import org.deegree.protocol.ows.metadata.operation.Operation;
  * Known OWS Common 1.1.0-based specifications:
  * <ul>
  * <li>WFS 2.0.0</li>
+ * <li>WMTS 1.0.0</li>
  * <li>WPS 1.0.0</li>
  * </ul>
  * </p>
@@ -259,5 +273,78 @@ public class OWSCommon110CapabilitiesAdapter extends AbstractOWSCommonCapabiliti
 
         return new Domain( name, possibleValues, defaultValue, meaning, dataType, valuesUnitUom, valuesUnitRefSys,
                            metadataEls );
+    }
+
+    /**
+     * Consumes an <code>ows:PositionType</code> element from the given XML stream.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (of type
+     * <code>ows:PositionType</code>)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (of type
+     * <code>ows:PositionType</code>)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (of type <code>ows:PositionType</code>),
+     *            points at the corresponding <code>END_ELEMENT</code> event (of type <code>ows:PositionType</code>)
+     *            afterwards
+     * @return corresponding coordinates, never <code>null</code>
+     * @throws XMLParsingException
+     *             if the element can not be parsed as an "ows:PositionType" element
+     * @throws XMLStreamException
+     */
+    public double[] parsePositionType( XMLStreamReader xmlStream )
+                            throws XMLStreamException, NumberFormatException {
+        String text = xmlStream.getElementText();
+        String[] tokens = text.split( "\\s+" );
+        double[] coords = new double[tokens.length];
+        for ( int i = 0; i < tokens.length; i++ ) {
+            coords[i] = Double.parseDouble( tokens[i] );
+        }
+        return coords;
+    }
+
+    /**
+     * Consumes an <code>ows:BoundingBoxType</code> element from the given XML stream.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (of type
+     * <code>ows:BoundingBoxType</code>)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (of type
+     * <code>ows:BoundingBoxType</code>)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (of type <code>ows:BoundingBoxType</code>),
+     *            points at the corresponding <code>END_ELEMENT</code> event (of type <code>ows:BoundingBoxType</code>)
+     *            afterwards
+     * @return corresponding coordinates, never <code>null</code>
+     * @throws NoSuchElementException
+     * @throws XMLParsingException
+     *             if the element can not be parsed as an "ows:BoundingBoxType" element
+     * @throws XMLStreamException
+     */
+    public Envelope parseBoundingBoxType( XMLStreamReader xmlStream, ICRS defaultCrs )
+                            throws NoSuchElementException, XMLStreamException {
+
+        String crsString = xmlStream.getAttributeValue( null, "crs" );
+        ICRS crs = defaultCrs;
+        if ( crsString != null ) {
+            crs = CRSManager.getCRSRef( crsString );
+        }
+        nextElement( xmlStream );
+
+        // <element name="LowerCorner" type="ows:PositionType">
+        requireStartElement( xmlStream, new QName( OWS_11_NS, "LowerCorner" ) );
+        double[] lowerCorner = parsePositionType( xmlStream );
+        nextElement( xmlStream );
+
+        // <element name="UpperCorner" type="ows:PositionType">
+        requireStartElement( xmlStream, new QName( OWS_11_NS, "UpperCorner" ) );
+        double[] upperCorner = parsePositionType( xmlStream );
+        nextElement( xmlStream );
+
+        Point min = new DefaultPoint( null, crs, null, lowerCorner );
+        Point max = new DefaultPoint( null, crs, null, upperCorner );
+        return new DefaultEnvelope( null, crs, null, min, max );
     }
 }

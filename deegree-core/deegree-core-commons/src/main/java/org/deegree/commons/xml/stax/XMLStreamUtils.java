@@ -360,6 +360,18 @@ public class XMLStreamUtils {
         return asQName( xmlStream, s );
     }
 
+    public static void requireStartElement( XMLStreamReader xmlStream, QName elName ) {
+        if ( xmlStream.getEventType() != START_ELEMENT ) {
+            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_1", getEventTypeString( xmlStream.getEventType() ),
+                                              elName );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        if ( !elName.equals( xmlStream.getName() ) ) {
+            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_2", xmlStream.getName(), elName );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+    }
+
     public static void requireStartElement( XMLStreamReader xmlStream, Collection<QName> expectedElements )
                             throws XMLParsingException {
         if ( xmlStream.getEventType() != START_ELEMENT ) {
@@ -846,4 +858,5 @@ public class XMLStreamUtils {
             xmlStream.writeNamespace( prefix, nsUri );
         }
     }
+
 }

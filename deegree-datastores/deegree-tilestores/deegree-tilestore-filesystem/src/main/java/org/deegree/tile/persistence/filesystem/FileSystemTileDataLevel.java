@@ -35,13 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
+import static org.deegree.tile.Tiles.calcTileEnvelope;
+
 import java.io.File;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
+import org.deegree.tile.Tiles;
 
 /**
  * {@link TileDataLevel} implementation for the {@link FileSystemTileStore}.
@@ -54,8 +56,6 @@ import org.deegree.tile.TileMatrix;
  * @version $Revision$, $Date$
  */
 class FileSystemTileDataLevel implements TileDataLevel {
-
-    private final SimpleGeometryFactory fac = new SimpleGeometryFactory();
 
     private final TileMatrix metadata;
 
@@ -82,22 +82,12 @@ class FileSystemTileDataLevel implements TileDataLevel {
         if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
-        Envelope bbox = calcEnvelope( x, y );
+        Envelope bbox = calcTileEnvelope( metadata, x, y );
         File file = layout.resolve( metadata.getIdentifier(), x, y );
         return new FileSystemTile( bbox, file );
-    }
-
-    private Envelope calcEnvelope( int x, int y ) {
-        double width = metadata.getTileWidth();
-        double height = metadata.getTileHeight();
-        Envelope env = metadata.getSpatialMetadata().getEnvelope();
-        double minx = width * x + env.getMin().get0();
-        double miny = env.getMax().get1() - height * y;
-        return fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
     }
 
     public DiskLayout getLayout() {
         return layout;
     }
-
 }

@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewmts;
 
-import org.deegree.geometry.GeometryFactory;
+import static org.deegree.tile.Tiles.calcTileEnvelope;
+
+import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.tile.Tile;
@@ -52,9 +54,11 @@ import org.deegree.tile.TileMatrix;
  */
 class RemoteWMTSTileDataLevel implements TileDataLevel {
 
-    private static final GeometryFactory fac = new GeometryFactory();
-
     private final TileMatrix matrix;
+
+    private final String tileMatrixSet;
+
+    private final String tileMatrix;
 
     private final String format;
 
@@ -71,6 +75,8 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      * 
      * @param matrix
      *            tile matrix, must not be <code>null</code>
+     * @param tileMatrixSet
+     *            tile matrix set identifier, must not be <code>null</code>
      * @param format
      *            format to use for requesting tile images, must not be <code>null</code>
      * @param layer
@@ -83,9 +89,11 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
      *            formats, eg. 'png')
      */
-    RemoteWMTSTileDataLevel( TileMatrix matrix, String format, String layer, String style, WMTSClient client,
-                             String outputFormat ) {
+    RemoteWMTSTileDataLevel( TileMatrix matrix, String tileMatrixSet, String format, String layer, String style,
+                             WMTSClient client, String outputFormat ) {
         this.matrix = matrix;
+        this.tileMatrix = matrix.getIdentifier();
+        this.tileMatrixSet = tileMatrixSet;
         this.format = format;
         this.layer = layer;
         this.style = style;
@@ -103,9 +111,8 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
         if ( matrix.getNumTilesX() <= x || matrix.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
-        String tileMatrixSet;
-        String tileMatrix;
-        GetTile request = new GetTile( layer, style, format, "tileMatrixSet", "tileMatrix", x, y );
-        return new RemoteWMTSTile( client, request, outputFormat );
+        Envelope tileEnvelope = calcTileEnvelope( matrix, x, y );
+        GetTile request = new GetTile( layer, style, format, tileMatrixSet, tileMatrix, x, y );
+        return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope );
     }
 }

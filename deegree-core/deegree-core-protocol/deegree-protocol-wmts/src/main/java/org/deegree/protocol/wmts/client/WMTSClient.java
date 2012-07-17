@@ -123,6 +123,10 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         return tileMatrixSets;
     }
 
+    public TileMatrixSet getTileMatrixSet( String tileMatrixSet ) {
+        return null;
+    }
+
     private synchronized void initTileMatrixInformation()
                             throws XMLStreamException {
         tileMatrixSets = capaDoc.parseTileMatrixSets();

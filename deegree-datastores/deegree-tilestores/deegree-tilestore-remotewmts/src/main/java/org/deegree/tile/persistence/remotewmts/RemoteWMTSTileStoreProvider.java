@@ -45,6 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,11 +60,16 @@ import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wmts.RemoteWMTS;
+import org.deegree.tile.DefaultTileDataSet;
+import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
+import org.deegree.tile.TileMatrix;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.GenericTileStore;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB;
+import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB.TileDataSet.RequestParams;
 import org.slf4j.Logger;
 
 /**
@@ -108,19 +114,6 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         }
     }
 
-    private Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config, RemoteWMTS wmts ) {
-
-        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-        for ( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig : config.getTileDataSet() ) {
-            String tileDataSetId = tileDataSetConfig.getIdentifier();
-            String outputFormat = tileDataSetConfig.getOutputFormat();
-            WMTSClient client = wmts.getClient();
-            TileDataSet tileDataSet = buildTileDataSet( tileDataSetConfig, client, outputFormat );
-            map.put( tileDataSetId, tileDataSet );
-        }
-        return map;
-    }
-
     private RemoteWMTSTileStoreJAXB unmarshallConfig( URL configUrl )
                             throws JAXBException {
         return (RemoteWMTSTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
@@ -141,23 +134,53 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         return (RemoteWMTS) wmts;
     }
 
+    private Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config, RemoteWMTS wmts ) {
+
+        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
+        for ( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig : config.getTileDataSet() ) {
+            String tileDataSetId = tileDataSetConfig.getIdentifier();
+            String outputFormat = tileDataSetConfig.getOutputFormat();
+            WMTSClient client = wmts.getClient();
+            TileDataSet tileDataSet = buildTileDataSet( tileDataSetConfig, client, outputFormat );
+            map.put( tileDataSetId, tileDataSet );
+        }
+        return map;
+    }
+
     private TileDataSet buildTileDataSet( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig, WMTSClient client,
                                           String outputFormat ) {
-        // List<String> layers = splitNullSafe( requestParams.getLayers() );
-        // List<String> styles = splitNullSafe( requestParams.getStyles() );
-        // String format = requestParams.getFormat();
-        //
-        // if ( outputFormat.startsWith( "image/" ) ) {
-        // outputFormat = outputFormat.substring( 6 );
-        // }
-        //
-        // List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
-        // for ( TileMatrix tm : tms.getTileMatrices() ) {
-        // TileDataLevel m = new RemoteWMTSTileDataLevel( tm, format, layers, styles, client, outputFormat );
-        // dataLevels.add( 0, m );
-        // }
-        // return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
-        throw new UnsupportedOperationException();
+
+        if ( outputFormat.startsWith( "image/" ) ) {
+            outputFormat = outputFormat.substring( 6 );
+        }
+
+        RequestParams requestParams = tileDataSetConfig.getRequestParams();
+        String tileMatrixSetId = requestParams.getTileMatrixSet();
+        TileMatrixSet tileMatrixSet = client.getTileMatrixSet( tileMatrixSetId );
+        List<TileDataLevel> dataLevels = buildTileDataLevels( tileMatrixSet, requestParams, client, outputFormat );
+
+        return new DefaultTileDataSet( dataLevels, tileMatrixSet, "image/" + outputFormat );
+    }
+
+    private List<TileDataLevel> buildTileDataLevels( TileMatrixSet tileMatrixSet, RequestParams requestParams,
+                                                     WMTSClient client, String outputFormat ) {
+        String layer = requestParams.getLayer();
+        String style = requestParams.getStyle();
+        String format = requestParams.getFormat();
+        String tileMatrixSetId = requestParams.getTileMatrixSet();
+
+        List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
+        for ( TileMatrix tileMatrix : tileMatrixSet.getTileMatrices() ) {
+            TileDataLevel level = buildTileDataLevel( tileMatrix, tileMatrixSetId, layer, style, format, client,
+                                                      outputFormat );
+            dataLevels.add( level );
+        }
+        return dataLevels;
+    }
+
+    private TileDataLevel buildTileDataLevel( TileMatrix tileMatrix, String tileMatrixSetId, String layer,
+                                              String style, String format, WMTSClient client, String outputFormat ) {
+        return new RemoteWMTSTileDataLevel( tileMatrix, tileMatrixSetId, format, layer, style, client, outputFormat );
     }
 
     @SuppressWarnings("unchecked")
