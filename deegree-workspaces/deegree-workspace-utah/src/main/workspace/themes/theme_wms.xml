@@ -1,7 +1,7 @@
 <Themes xmlns="http://www.deegree.org/themes/standard"  xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
 
   <LayerStoreId>layer_feature_utah_airports</LayerStoreId>
-  <LayerStoreId>layer_feature_utah_countyboundaries</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_counties</LayerStoreId>
   <LayerStoreId>layer_feature_utah_dominantvegetation</LayerStoreId>
   <LayerStoreId>layer_feature_utah_groundwater</LayerStoreId>
   <LayerStoreId>layer_feature_utah_lakes</LayerStoreId>
@@ -24,28 +24,20 @@
     <Layer>water2</Layer>
      -->
     <Theme>
-    <d:Title>Transportation</d:Title>
-      <Theme>
         <!-- if themes are used to configure WMS 'Identifier' will be the layer name declared in WMS Capabilities-->
-        <Identifier>airports</Identifier>
-        <d:Title>Airports of Utah</d:Title>
-        <!-- The [1..n] Layer is the 'Name' of a Layer defined in one of the referenced LayerStores (see above 'LayerStoreId') -->
-        <!-- You van also specify the layerstore explicit in the Layer Element such as  '<Layer layerStore="layer_feature_utah_airports">'  -->
-        <d:Abstract>Abstract Theme</d:Abstract>
-        <!-- 
-        <d:Keywords>
-          <d:Keyword>Keyword Theme</d:Keyword>
-        </d:Keywords>
-         -->
-        <Layer>airports</Layer>
-      </Theme>
-    </Theme>
-    <Theme>
       <Identifier>administration</Identifier>
       <d:Title>Administration</d:Title>
       <Theme>
         <Identifier>municipalities</Identifier>
         <d:Title>Municipalities of Utah</d:Title>
+        <d:Abstract>This layer contains all municipalities of state Utah</d:Abstract>
+        <!-- 
+        <d:Keywords>
+          <d:Keyword>Keyword Theme</d:Keyword>
+        </d:Keywords>
+         -->
+        <!-- The [1..n] Layer is the 'Name' of a Layer defined in one of the referenced LayerStores (see above 'LayerStoreId') -->
+        <!-- You can also specify the layerstore explicit in the Layer Element such as  '<Layer layerStore="layer_feature_utah_airports">'  -->
         <Layer>municipalities</Layer>
       </Theme>
       <Theme>
@@ -55,6 +47,11 @@
           <Identifier>countyboundaries</Identifier>
           <d:Title>County boundaries of Utah</d:Title>
           <Layer>countyboundaries</Layer>
+        </Theme>
+        <Theme>
+          <Identifier>countynames</Identifier>
+          <d:Title>County names of Utah</d:Title>
+          <Layer>countynames</Layer>
         </Theme>
       </Theme>
       <Theme>
@@ -76,6 +73,14 @@
         <Identifier>orthophototile</Identifier>
         <d:Title>Orthophoto of Saltlake City tile</d:Title>
         <Layer>utah_ortho</Layer>
+      </Theme>
+    </Theme>
+    <Theme>
+    <d:Title>Transportation</d:Title>
+      <Theme>
+        <Identifier>airports</Identifier>
+        <d:Title>Airports of Utah</d:Title>
+        <Layer>airports</Layer>
       </Theme>
     </Theme>
     <Theme>
