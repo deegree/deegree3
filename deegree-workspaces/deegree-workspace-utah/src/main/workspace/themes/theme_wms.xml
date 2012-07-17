@@ -1,11 +1,16 @@
 <Themes xmlns="http://www.deegree.org/themes/standard"  xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
 
   <LayerStoreId>layer_feature_utah_airports</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_contours500ft</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_contours1000ft</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_contours2500ft</LayerStoreId>
   <LayerStoreId>layer_feature_utah_counties</LayerStoreId>
   <LayerStoreId>layer_feature_utah_dominantvegetation</LayerStoreId>
   <LayerStoreId>layer_feature_utah_groundwater</LayerStoreId>
   <LayerStoreId>layer_feature_utah_lakes</LayerStoreId>
   <LayerStoreId>layer_feature_utah_municipalities</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_railroads</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_roads</LayerStoreId>
   <LayerStoreId>layer_feature_utah_stateboundary</LayerStoreId>
   <LayerStoreId>layer_feature_utah_weatherstations</LayerStoreId>
   <LayerStoreId>layer_feature_utah_zipcodes</LayerStoreId>
@@ -82,6 +87,16 @@
         <d:Title>Airports of Utah</d:Title>
         <Layer>airports</Layer>
       </Theme>
+      <Theme>
+        <Identifier>railroads</Identifier>
+        <d:Title>Railroads of Utah</d:Title>
+        <Layer>railroads</Layer>
+      </Theme>
+      <Theme>
+        <Identifier>roads</Identifier>
+        <d:Title>Roads of Utah</d:Title>
+        <Layer>roads</Layer>
+      </Theme>
     </Theme>
     <Theme>
       <d:Title>Elevation Data of Utah</d:Title>
@@ -94,6 +109,13 @@
         <Identifier>DEM30</Identifier>
         <d:Title>DEM 30m Raster of Utah</d:Title>
         <Layer>DEM30</Layer>
+      </Theme>
+      <Theme>
+        <Identifier>elevationcontours</Identifier>
+        <d:Title>Elevation contours of Utah</d:Title>
+        <Layer>contours500ft</Layer>
+        <Layer>contours1000ft</Layer>
+        <Layer>contours2500ft</Layer>
       </Theme>
     </Theme>
   
