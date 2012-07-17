@@ -41,6 +41,7 @@ import static org.deegree.protocol.wmts.WMTSConstants.WMTS_100_NS;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -53,6 +54,7 @@ import org.deegree.protocol.ows.http.OwsHttpClient;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wmts.WMTSConstants;
 import org.deegree.protocol.wmts.ops.GetTile;
+import org.deegree.tile.TileMatrixSet;
 
 /**
  * API-level client for accessing servers that implement the <a
@@ -64,6 +66,10 @@ import org.deegree.protocol.wmts.ops.GetTile;
  * @version $Revision: $, $Date: $
  */
 public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
+
+    private List<Layer> layers;
+
+    private List<TileMatrixSet> tileMatrixSets;
 
     /**
      * Creates a new {@link WMTSClient} instance.
@@ -80,6 +86,46 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
     public WMTSClient( URL capaUrl, OwsHttpClient httpClient ) throws OWSExceptionReport, XMLStreamException,
                             IOException {
         super( capaUrl, httpClient );
+    }
+
+    /**
+     * Returns metadata about the offered layers.
+     * 
+     * @return metadata about the offered layers, may be empty, but never <code>null</code>
+     * @throws XMLStreamException
+     *             if parsing the <code>wmts:Layer</code> elements in the capabilities document fails
+     */
+    public List<Layer> getLayers()
+                            throws XMLStreamException {
+        if ( layers == null ) {
+            initLayerInformation();
+        }
+        return layers;
+    }
+
+    private synchronized void initLayerInformation()
+                            throws XMLStreamException {
+        layers = capaDoc.parseLayers();
+    }
+
+    /**
+     * Returns the {@link TileMatrixSets} known to the server.
+     * 
+     * @return tile matrix sets, may be empty, but never <code>null</code>
+     * @throws XMLStreamException
+     *             if parsing the <code>wmts:TileMatrixSet</code> elements in the capabilities document fails
+     */
+    public List<TileMatrixSet> getTileMatrixSets()
+                            throws XMLStreamException {
+        if ( tileMatrixSets == null ) {
+            initTileMatrixInformation();
+        }
+        return tileMatrixSets;
+    }
+
+    private synchronized void initTileMatrixInformation()
+                            throws XMLStreamException {
+        tileMatrixSets = capaDoc.parseTileMatrixSets();
     }
 
     /**
