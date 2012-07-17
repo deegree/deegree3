@@ -35,14 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wmts.client;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static junit.framework.Assert.assertEquals;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
+import static org.deegree.protocol.wmts.WMTSConstants.WMTS_100_NS;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
@@ -77,8 +88,20 @@ public class WMTSCapabilitiesAdapterTest {
                             throws XMLStreamException {
         List<Layer> layers = adapter.parseLayers();
         assertEquals( 1, layers.size() );
+    }
 
-        Layer layer = layers.get( 0 );
+    @Test
+    public void testParseLayer()
+                            throws Exception {
+
+        XMLStreamReader xmlStream = getResourceXmlStreamReader( "wmts100_layer.xml" );
+
+        assertEquals( START_ELEMENT, xmlStream.getEventType() );
+        assertEquals( new QName( WMTS_100_NS, "Layer" ), xmlStream.getName() );
+        Layer layer = adapter.parseLayer( xmlStream );
+        assertEquals( END_ELEMENT, xmlStream.getEventType() );
+        assertEquals( new QName( WMTS_100_NS, "Layer" ), xmlStream.getName() );
+
         assertEquals( "utah_ortho", layer.getIdentifier() );
 
         List<Style> styles = layer.getStyles();
@@ -96,26 +119,68 @@ public class WMTSCapabilitiesAdapterTest {
         assertEquals( "Satellite_Provo", tileMatrixSets.get( 0 ) );
     }
 
-    /**
-     * Test method for {@link org.deegree.protocol.wmts.client.WMTSCapabilitiesAdapter#parseTileMatrixSets()}.
-     */
     @Test
     public void testParseTileMatrixSets()
                             throws XMLStreamException {
         List<TileMatrixSet> tileMatrixSets = adapter.parseTileMatrixSets();
         assertEquals( 1, tileMatrixSets.size() );
+    }
 
-        TileMatrixSet matrixSet = tileMatrixSets.get( 0 );
-        assertEquals( "Satellite_Provo", matrixSet.getIdentifier() );
-        List<TileMatrix> tileMatrices = matrixSet.getTileMatrices();
-        assertEquals( 4, tileMatrices.size() );
+    @Test
+    public void testParseTileMatrixSetWithoutTopLevelEnvelope()
+                            throws Exception {
 
-        TileMatrix tileMatrix = tileMatrices.get( 0 );
-        assertEquals( "7142.857142857143", tileMatrix.getIdentifier() );
+        XMLStreamReader xmlStream = getResourceXmlStreamReader( "wmts100_tilematrixset.xml" );
+
+        assertEquals( START_ELEMENT, xmlStream.getEventType() );
+        assertEquals( new QName( WMTS_100_NS, "TileMatrixSet" ), xmlStream.getName() );
+        TileMatrixSet tileMatrixSet = adapter.parseTileMatrixSet( xmlStream );
+        assertEquals( END_ELEMENT, xmlStream.getEventType() );
+        assertEquals( new QName( WMTS_100_NS, "TileMatrixSet" ), xmlStream.getName() );
+
+        assertEquals( "Satellite_Provo", tileMatrixSet.getIdentifier() );
+        SpatialMetadata spatialMetadata = tileMatrixSet.getSpatialMetadata();
+        assertEquals( "EPSG:26912", spatialMetadata.getCoordinateSystems().get( 0 ).getAlias() );
+        assertEquals( 441174.0, spatialMetadata.getEnvelope().getMin().get0(), 0.0001 );
+        assertEquals( 4456038.9310, spatialMetadata.getEnvelope().getMin().get1(), 0.0001 );
+        assertEquals( 441174.0597, spatialMetadata.getEnvelope().getMax().get0(), 0.0001 );
+        assertEquals( 4456039.0, spatialMetadata.getEnvelope().getMax().get1(), 0.0001 );
+        assertEquals( 4, tileMatrixSet.getTileMatrices().size() );
+    }
+
+    @Test
+    public void testParseTileMatrix()
+                            throws Exception {
+
+        XMLStreamReader xmlStream = getResourceXmlStreamReader( "wmts100_tilematrix.xml" );
+        ICRS crs = CRSManager.getCRSRef( "EPSG:26912" );
+
+        assertEquals( START_ELEMENT, xmlStream.getEventType() );
+        assertEquals( new QName( WMTS_100_NS, "TileMatrix" ), xmlStream.getName() );
+        TileMatrix tileMatrix = adapter.parseTileMatrix( xmlStream, crs );
+        assertEquals( END_ELEMENT, xmlStream.getEventType() );
+        assertEquals( new QName( WMTS_100_NS, "TileMatrix" ), xmlStream.getName() );
+
+        assertEquals( "tilematrix1", tileMatrix.getIdentifier() );
         assertEquals( 0.0000179663, tileMatrix.getResolution(), 0.000000001 );
-        assertEquals( 256, tileMatrix.getTilePixelsX() );
+        assertEquals( 512, tileMatrix.getTilePixelsX() );
         assertEquals( 256, tileMatrix.getTilePixelsY() );
-        assertEquals( 13, tileMatrix.getNumTilesX() );
-        assertEquals( 15, tileMatrix.getNumTilesY() );
+        assertEquals( 3, tileMatrix.getNumTilesX() );
+        assertEquals( 4, tileMatrix.getNumTilesY() );
+
+        SpatialMetadata spatialMetadata = tileMatrix.getSpatialMetadata();
+        assertEquals( crs, spatialMetadata.getCoordinateSystems().get( 0 ) );
+        assertEquals( 441174.0, spatialMetadata.getEnvelope().getMin().get0(), 0.0001 );
+        assertEquals( 4456038.9816, spatialMetadata.getEnvelope().getMin().get1(), 0.0001 );
+        assertEquals( 441174.0275, spatialMetadata.getEnvelope().getMax().get0(), 0.0001 );
+        assertEquals( 4456039.0, spatialMetadata.getEnvelope().getMax().get1(), 0.0001 );
+    }
+
+    private XMLStreamReader getResourceXmlStreamReader( String resourcePath )
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        URL docUrl = WMTSClientTest.class.getResource( resourcePath );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( docUrl.openStream() );
+        skipStartDocument( xmlStream );
+        return xmlStream;
     }
 }

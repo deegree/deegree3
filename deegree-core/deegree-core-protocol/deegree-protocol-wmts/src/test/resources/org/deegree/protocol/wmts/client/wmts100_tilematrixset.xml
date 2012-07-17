@@ -1,0 +1,40 @@
+<TileMatrixSet xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1">
+  <ows:Identifier>Satellite_Provo</ows:Identifier>
+  <ows:SupportedCRS>EPSG:26912</ows:SupportedCRS>
+  <TileMatrix>
+    <ows:Identifier>7142.857142857143</ows:Identifier>
+    <ScaleDenominator>7142.857142857143</ScaleDenominator>
+    <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>13</MatrixWidth>
+    <MatrixHeight>15</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <ows:Identifier>14285.714285714286</ows:Identifier>
+    <ScaleDenominator>14285.714285714286</ScaleDenominator>
+    <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+    <TileWidth>128</TileWidth>
+    <TileHeight>128</TileHeight>
+    <MatrixWidth>13</MatrixWidth>
+    <MatrixHeight>15</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <ows:Identifier>28571.428571428572</ows:Identifier>
+    <ScaleDenominator>28571.428571428572</ScaleDenominator>
+    <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+    <TileWidth>128</TileWidth>
+    <TileHeight>128</TileHeight>
+    <MatrixWidth>7</MatrixWidth>
+    <MatrixHeight>8</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <ows:Identifier>57142.857142857145</ows:Identifier>
+    <ScaleDenominator>57142.857142857145</ScaleDenominator>
+    <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
+    <TileWidth>128</TileWidth>
+    <TileHeight>128</TileHeight>
+    <MatrixWidth>4</MatrixWidth>
+    <MatrixHeight>4</MatrixHeight>
+  </TileMatrix>
+</TileMatrixSet>

@@ -59,9 +59,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
 import org.deegree.tile.TileMatrix;
@@ -78,6 +84,10 @@ import org.deegree.tile.TileMatrixSet;
 public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
     private static final QName IDENTIFIER = new QName( OWS_11_NS, "Identifier" );
+
+    private static final QName BOUNDING_BOX = new QName( OWS_11_NS, "BoundingBox" );
+
+    private static final QName SUPPORTED_CRS = new QName( OWS_11_NS, "SupportedCRS" );
 
     private static final QName LAYER = new QName( WMTS_100_NS, "Layer" );
 
@@ -114,6 +124,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         nsContext.addNamespace( "wmts", WMTS_100_NS );
     }
 
+    /**
+     * Returns the {@link Layers}s defined in this document.
+     * 
+     * @return layers, can be empty, but never <code>null</code>
+     * @throws XMLStreamException
+     */
     public List<Layer> parseLayers()
                             throws XMLStreamException {
         OMElement contentsElement = getElement( getRootElement(), new XPath( "wmts:Contents", nsContext ) );
@@ -138,12 +154,31 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         return layers;
     }
 
-    private Layer parseLayer( XMLStreamReader xmlStream )
+    /**
+     * Consumes a <code>wmts:Layer</code> element from the given XML stream.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:Layer&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/wmts:Layer&gt;)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:Layer&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/wmts:Layer&gt;) afterwards
+     * @return corresponding {@link Layer} representation, never <code>null</code>
+     * @throws XMLParsingException
+     *             if the element can not be parsed as a "wmts:Layer" element
+     * @throws XMLStreamException
+     */
+    Layer parseLayer( XMLStreamReader xmlStream )
                             throws NoSuchElementException, XMLStreamException {
 
         nextElement( xmlStream );
 
-        // <element name="Identifier" type="ows:CodeType">
+        // <element ref="ows:Title" minOccurs="0" maxOccurs="unbounded"/>
+        // <element ref="ows:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+        // <element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+
+        // <element ref="ows:Identifier">
         skipToRequiredElementOnSameLevel( xmlStream, IDENTIFIER );
         String identifier = xmlStream.getElementText().trim();
         nextElement( xmlStream );
@@ -164,6 +199,9 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
             nextElement( xmlStream );
         }
 
+        // <element name="InfoFormat" type="ows:MimeType" minOccurs="0" maxOccurs="unbounded">
+        // <element ref="wmts:Dimension" minOccurs="0" maxOccurs="unbounded">
+
         // <element ref="wmts:TileMatrixSetLink" maxOccurs="unbounded">
         skipToRequiredElementOnSameLevel( xmlStream, TILE_MATRIX_SET_LINK );
         List<String> tileMatrixSets = new ArrayList<String>();
@@ -172,7 +210,10 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
             nextElement( xmlStream );
         }
 
-        nextElement( xmlStream );
+        // <element name="ResourceURL" type="wmts:URLTemplateType" minOccurs="0" maxOccurs="unbounded">
+        while ( !xmlStream.isEndElement() || !LAYER.equals( xmlStream.getName() ) ) {
+            xmlStream.next();
+        }
 
         return new Layer( identifier, styles, formats, tileMatrixSets );
     }
@@ -210,6 +251,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         return tileMatrixSet;
     }
 
+    /**
+     * Returns the {@link TileMatrixSet}s defined in this document.
+     * 
+     * @return tile matrix sets, can be empty, but never <code>null</code>
+     * @throws XMLStreamException
+     */
     public List<TileMatrixSet> parseTileMatrixSets()
                             throws XMLStreamException {
         OMElement contentsElement = getElement( getRootElement(), new XPath( "wmts:Contents", nsContext ) );
@@ -234,51 +281,115 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         return tileMatrixSets;
     }
 
-    private TileMatrixSet parseTileMatrixSet( XMLStreamReader xmlStream )
+    /**
+     * Consumes a <code>wmts:TileMatrixSet</code> element from the given XML stream.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:TileMatrixSet&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
+     * (&lt;/wmts:TileMatrixSet&gt;)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:TileMatrixSet&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/wmts:TileMatrixSet&gt;) afterwards
+     * @return corresponding {@link TileMatrix} representation, never <code>null</code>
+     * @throws XMLParsingException
+     *             if the element can not be parsed as a "wmts:TileMatrixSet" element
+     * @throws XMLStreamException
+     */
+    TileMatrixSet parseTileMatrixSet( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         nextElement( xmlStream );
 
+        // <element ref="ows:Title" minOccurs="0" maxOccurs="unbounded"/>
+        // <element ref="ows:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+        // <element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+
         // <element ref="ows:Identifier">
-        requireStartElement( xmlStream, singletonList( IDENTIFIER ) );
+        skipToRequiredElementOnSameLevel( xmlStream, IDENTIFIER );
         String identifier = xmlStream.getElementText().trim();
         nextElement( xmlStream );
 
         // <element ref="ows:BoundingBox" minOccurs="0">
+        Envelope boundingBox = null;
+        if ( BOUNDING_BOX.equals( xmlStream.getName() ) ) {
+            skipElement( xmlStream );
+            boundingBox = parseBoundingBoxType( xmlStream, null );
+            nextElement( xmlStream );
+        }
 
-        // <element ref="ows:SupportedCRS">        
-
-//        List<QName> expectedElements = new ArrayList<QName>();
-//        expectedElements.add( WELL_KNOWN_SCALE_SET );
-//        expectedElements.add( TILE_MATRIX );
-//        requireStartElement( xmlStream, expectedElements );
+        // <element ref="ows:SupportedCRS">
+        requireStartElement( xmlStream, singletonList( SUPPORTED_CRS ) );
+        String supportedCrs = xmlStream.getElementText().trim();
+        nextElement( xmlStream );
 
         // <element name="WellKnownScaleSet" type="anyURI" minOccurs="0">
         String wellKnownScaleSet = null;
-//        if ( WELL_KNOWN_SCALE_SET.equals( xmlStream.getName() ) ) {
-//            wellKnownScaleSet = xmlStream.getElementText().trim();
-//            nextElement( xmlStream );
-//        }
+        if ( WELL_KNOWN_SCALE_SET.equals( xmlStream.getName() ) ) {
+            wellKnownScaleSet = xmlStream.getElementText().trim();
+            nextElement( xmlStream );
+        }
 
         // <element ref="wmts:TileMatrix" maxOccurs="unbounded">
         skipToRequiredElementOnSameLevel( xmlStream, TILE_MATRIX );
         List<TileMatrix> matrices = new ArrayList<TileMatrix>();
+        ICRS crs = CRSManager.getCRSRef( supportedCrs );
         while ( xmlStream.isStartElement() && TILE_MATRIX.equals( xmlStream.getName() ) ) {
-            matrices.add( parseTileMatrix( xmlStream ) );
-            XMLStreamUtils.nextElement( xmlStream );
+            matrices.add( parseTileMatrix( xmlStream, crs ) );
+            nextElement( xmlStream );
         }
 
-        SpatialMetadata spatialMetadata = null;
+        if ( boundingBox != null ) {
+            enforceCrs( crs, boundingBox );
+        }
+
+        SpatialMetadata spatialMetadata = createSpatialMetadata( crs, boundingBox, matrices );
         return new TileMatrixSet( identifier, matrices, spatialMetadata );
     }
 
-    private TileMatrix parseTileMatrix( XMLStreamReader xmlStream )
+    private void enforceCrs( ICRS crs, Envelope boundingBox ) {
+        boundingBox.getMin().setCoordinateSystem( crs );
+        boundingBox.getMax().setCoordinateSystem( crs );
+        boundingBox.setCoordinateSystem( crs );
+    }
+
+    private SpatialMetadata createSpatialMetadata( ICRS crs, Envelope boundingBox, List<TileMatrix> matrices ) {
+        Envelope matrixSetEnvelope = boundingBox;
+        if ( boundingBox == null ) {
+            matrixSetEnvelope = matrices.get( 0 ).getSpatialMetadata().getEnvelope();
+        }
+        return new SpatialMetadata( matrixSetEnvelope, singletonList( crs ) );
+    }
+
+    /**
+     * Consumes a <code>wmts:TileMatrix</code> element from the given XML stream.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:TileMatrix&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/wmts:TileMatrix&gt;)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:TileMatrix&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/wmts:TileMatrix&gt;) afterwards
+     * @param crs
+     *            world coordinate reference system, must not be <code>null</code>
+     * @return corresponding {@link TileMatrix} representation, never <code>null</code>
+     * @throws XMLParsingException
+     *             if the element can not be parsed as a "wmts:TileMatrix" element
+     * @throws XMLStreamException
+     */
+    TileMatrix parseTileMatrix( XMLStreamReader xmlStream, ICRS crs )
                             throws XMLStreamException {
 
         nextElement( xmlStream );
 
+        // <element ref="ows:Title" minOccurs="0" maxOccurs="unbounded"/>
+        // <element ref="ows:Abstract" minOccurs="0" maxOccurs="unbounded"/>
+        // <element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+
         // <element ref="ows:Identifier">
-        requireStartElement( xmlStream, singletonList( IDENTIFIER ) );
+        skipToRequiredElementOnSameLevel( xmlStream, IDENTIFIER );
         String identifier = xmlStream.getElementText().trim();
         nextElement( xmlStream );
 
@@ -290,7 +401,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
         // <element name="TopLeftCorner" type="ows:PositionType">
         requireStartElement( xmlStream, singletonList( TOP_LEFT_CORNER ) );
-        SpatialMetadata spatialMetadata = null;
+        double[] topLeftCorner = parsePositionType( xmlStream );
         skipElement( xmlStream );
         nextElement( xmlStream );
 
@@ -314,6 +425,26 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         int numTilesY = getElementTextAsInteger( xmlStream );
         nextElement( xmlStream );
 
+        SpatialMetadata spatialMetadata = createSpatialMetadata( crs, resolution, topLeftCorner, tileSizeX, tileSizeY,
+                                                                 numTilesX, numTilesY );
+
         return new TileMatrix( identifier, spatialMetadata, tileSizeX, tileSizeY, resolution, numTilesX, numTilesY );
+    }
+
+    private SpatialMetadata createSpatialMetadata( ICRS crs, double resolution, double[] topLeftCorner, int tileSizeX,
+                                                   int tileSizeY, int numTilesX, int numTilesY ) {
+
+        double worldWidth = tileSizeX * numTilesX * resolution;
+        double worldHeight = tileSizeY * numTilesY * resolution;
+
+        double min0 = topLeftCorner[0];
+        double max0 = topLeftCorner[0] + worldWidth;
+        double max1 = topLeftCorner[1];
+        double min1 = topLeftCorner[1] - worldHeight;
+
+        Point min = new DefaultPoint( null, crs, null, new double[] { min0, min1 } );
+        Point max = new DefaultPoint( null, crs, null, new double[] { max0, max1 } );
+        Envelope bbox = new DefaultEnvelope( null, crs, null, min, max );
+        return new SpatialMetadata( bbox, singletonList( crs ) );
     }
 }

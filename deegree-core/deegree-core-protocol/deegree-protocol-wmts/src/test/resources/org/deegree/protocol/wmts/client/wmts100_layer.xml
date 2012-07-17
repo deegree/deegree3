@@ -1,0 +1,10 @@
+<Layer xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1">
+  <ows:Identifier>utah_ortho</ows:Identifier>
+  <Style>
+    <ows:Identifier>default</ows:Identifier>
+  </Style>
+  <Format>image/png</Format>
+  <TileMatrixSetLink>
+    <TileMatrixSet>Satellite_Provo</TileMatrixSet>
+  </TileMatrixSetLink>
+</Layer>
