@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Pyramids xmlns="http://www.deegree.org/datasource/tile/geotiff" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/datasource/tile/geotiff/3.2.0/geotiff.xsd" configVersion="3.2.0">
-  <PyramidFile>../../data/utah/raster/Satellite_Provo/Satellite_Provo.tif</PyramidFile>
-  <CRS>EPSG:26912</CRS>
-</Pyramids>
+<GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/datasource/tile/geotiff/3.2.0/geotiff.xsd" configVersion="3.2.0">
+
+ <TileDataSet>
+    <Identifier>utah_ortho</Identifier>
+    <TileMatrixSetId>tilematrixset_utah_ortho</TileMatrixSetId>
+    <File>../../data/utah/raster/Satellite_Provo/Satellite_Provo.tif</File>
+ </TileDataSet>
+ 
+</GeoTIFFTileStore>
