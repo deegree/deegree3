@@ -37,6 +37,16 @@ package org.deegree.protocol.wmts.client;
 
 import java.util.List;
 
+/**
+ * A layer offered by a WMTS server.
+ * 
+ * @see WMTSClient
+ * 
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author: markus $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class Layer {
 
     private final String identifier;
@@ -47,25 +57,58 @@ public class Layer {
 
     private final List<String> tileMatrixSets;
 
-    public Layer( String identifier, List<Style> styles, List<String> formats, List<String> tileMatrixSets ) {
+    /**
+     * Creates a new {@link Layer} instance.
+     * 
+     * @param identifier
+     *            layer identifier, must not be <code>null</code>
+     * @param styles
+     *            available styles for the layer, must not be <code>null</code> and contain at least one entry
+     * @param formats
+     *            supported valid output MIME types for a tile, must not be <code>null</code> and contain at least one
+     *            entry
+     * @param tileMatrixSets
+     *            identifiers of the tile matrix sets, must not be <code>null</code> and contain at least one entry
+     */
+    Layer( String identifier, List<Style> styles, List<String> formats, List<String> tileMatrixSets ) {
         this.identifier = identifier;
         this.styles = styles;
         this.formats = formats;
         this.tileMatrixSets = tileMatrixSets;
     }
 
+    /**
+     * Returns the layer identifier.
+     * 
+     * @return layer identifier, never <code>null</code>
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Returns the available styles for the layer.
+     * 
+     * @return available styles for the layer, never <code>null</code> and contains at least one entry
+     */
     public List<Style> getStyles() {
         return styles;
     }
 
+    /**
+     * Returns the supported valid output MIME types for a tile.
+     * 
+     * @return supported valid output MIME types, never <code>null</code> and contains at least one entry
+     */
     public List<String> getFormats() {
         return formats;
     }
 
+    /**
+     * Returns the identifiers of the tile matrix sets.
+     * 
+     * @return identifiers of the tile matrix sets, never <code>null</code> and contains at least one entry
+     */
     public List<String> getTileMatrixSets() {
         return tileMatrixSets;
     }
