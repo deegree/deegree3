@@ -42,6 +42,7 @@
 package org.deegree.tile;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 
 /**
  * Utility methods.
@@ -52,6 +53,8 @@ import org.deegree.geometry.Envelope;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class Tiles {
+
+    private final static GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     /**
      * Calculates minx, miny, maxx and maxy indices for the given envelope in the given tile matrix.
@@ -95,5 +98,25 @@ public class Tiles {
         tilemaxy = md.getNumTilesY() - h - 1;
 
         return new int[] { tileminx, tileminy, tilemaxx, tilemaxy };
+    }
+
+    /**
+     * Returns the envelope for the specified tile indexes in the given matrix.
+     * 
+     * @param matrix
+     *            tile matrix, must not be <code>null</code>
+     * @param x
+     *            tile column index
+     * @param y
+     *            tile row index
+     * @return envelope, never <code>null</code>
+     */
+    public static Envelope calcTileEnvelope( TileMatrix matrix, int x, int y ) {
+        double width = matrix.getTileWidth();
+        double height = matrix.getTileHeight();
+        Envelope env = matrix.getSpatialMetadata().getEnvelope();
+        double minx = width * x + env.getMin().get0();
+        double miny = env.getMax().get1() - height * y;
+        return GEOMETRY_FACTORY.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
     }
 }
