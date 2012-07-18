@@ -137,7 +137,7 @@
         <Layer>lakes</Layer>
       </Theme>
       <Theme>
-        <Identifier>Groundwater</Identifier>
+        <Identifier>groundwater</Identifier>
         <d:Title>Groundwater in Utah</d:Title>
         <Layer>groundwater</Layer>
       </Theme>
