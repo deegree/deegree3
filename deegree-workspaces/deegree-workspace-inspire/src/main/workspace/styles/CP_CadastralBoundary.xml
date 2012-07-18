@@ -2,6 +2,7 @@
 <se:FeatureTypeStyle version="1.1.0" xmlns:se="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+   <se:Name>CP.CadastralBoundary</se:Name>
     <se:Description>
         <se:Title>Cadastral Boundary Default Style</se:Title>
         <se:Abstract> Cadastral boundary: black (#000000) line 1 pixel.</se:Abstract>

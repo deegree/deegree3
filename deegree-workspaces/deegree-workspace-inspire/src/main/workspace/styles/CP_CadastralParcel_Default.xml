@@ -1,4 +1,5 @@
 <se:FeatureTypeStyle xmlns:se="http://www.opengis.net/se" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+ <se:Name>CP.CadastralParcel.Default</se:Name>
   <se:Description>
     <se:Title>Cadastral Parcel Default Style</se:Title>
     <se:Abstract> Parcel outline as a black line carried by the attribute geometry + text with attribute label carried

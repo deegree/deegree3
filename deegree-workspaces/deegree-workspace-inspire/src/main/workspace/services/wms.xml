@@ -3,84 +3,15 @@
   <MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
 
   <ServiceConfiguration>
-
-    <UnrequestableLayer>
-      <Title>Root Layer</Title>
-      <CRS>EPSG:4258 EPSG:4326 EPSG:900913 EPSG:28992</CRS>
-      <!-- Layers from AdministrativeUnit (AU) data theme -->
-      <RequestableLayer>
-        <Name>AU.AdministrativeUnit</Name>
-        <Title>Administrative unit</Title>
-        <!-- Use the MetadatSetId element to specify the id of the corresponding metadata record (in the CSW) -->
-        <MetadataSetId>550e8400-e29c-11d4-a716-446655440000</MetadataSetId>
-        <FeatureStoreId>inspire</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/AU_AdministrativeUnit_Default.xml</File>
-          <Name>AU.AdministrativeUnit.Default</Name>
-        </DirectStyle>
-      </RequestableLayer>
-      <RequestableLayer>
-        <Name>AU.AdministrativeBoundary</Name>
-        <Title>Administrative boundary</Title>
-        <FeatureStoreId>inspire</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/AU_AdministrativeBoundary_Default.xml</File>
-          <Name>AU.AdministrativeBoundary.Default</Name>
-        </DirectStyle>
-      </RequestableLayer>
-
-      <!-- Layers from Cadastral Parcel (CP) data theme -->
-      <RequestableLayer>
-        <Name>CP.CadastralParcel</Name>
-        <Title>Cadastral Parcels</Title>
-        <FeatureStoreId>inspire</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/CP_CadastralParcel_Default.xml</File>
-          <Name>CP.CadastralParcel.Default</Name>
-        </DirectStyle>
-        <DirectStyle>
-          <File>../styles/CP_CadastralParcel_BoundariesOnly.xml</File>
-          <Name>CP.CadastralParcel.BoundariesOnly</Name>
-        </DirectStyle>
-      </RequestableLayer>
-      <RequestableLayer>
-        <Name>CP.CadastralZoning</Name>
-        <Title>Cadastral Zoning Default Style</Title>
-        <FeatureStoreId>inspire</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/CP_CadastralZoning.xml</File>
-          <Name>CP.CadastralZoning</Name>
-        </DirectStyle>
-      </RequestableLayer>
-      <RequestableLayer>
-        <Name>CP.CadastralBoundary</Name>
-        <Title>Cadastral Boundary Default Style</Title>
-        <FeatureStoreId>inspire</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/CP_CadastralBoundary.xml</File>
-          <Name>CP.CadastralBoundary</Name>
-        </DirectStyle>
-      </RequestableLayer>
-
-      <!-- Layers from Address (AD) data theme -->
-      <RequestableLayer>
-        <Name>AD.Address</Name>
-        <Title>Addresses</Title>
-        <FeatureStoreId>inspire</FeatureStoreId>
-        <DirectStyle>
-          <File>../styles/AD_Address_Default.xml</File>
-          <Name>AD.Address.Default</Name>
-        </DirectStyle>
-      </RequestableLayer>
-
-    </UnrequestableLayer>
+    <ThemeId>AD_Address</ThemeId>
+    <ThemeId>AU_AdministrativeUnit</ThemeId>
+    <ThemeId>CP_CadastralParcel</ThemeId>
   </ServiceConfiguration>
 
   <ExtendedCapabilities>
     <inspire_vs:ExtendedCapabilities xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd   http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
       <inspire_common:MetadataUrl>
-        <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full
-        </inspire_common:URL>
+        <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=fileIdentfierMetadataVoorServicesDocument&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</inspire_common:URL>
         <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
       </inspire_common:MetadataUrl>
       <inspire_common:SupportedLanguages>
