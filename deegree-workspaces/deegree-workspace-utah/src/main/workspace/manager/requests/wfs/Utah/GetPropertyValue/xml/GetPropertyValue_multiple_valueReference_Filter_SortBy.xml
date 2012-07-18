@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetPropertyValue 
+  version="2.0.0" 
+  service="WFS"
+  
+  valueReference="app:code|app:geom"
+  
+  xmlns="http://www.opengis.net/wfs/2.0" 
+  xmlns:app="http://www.deegree.org/app"
+  xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:fes="http://www.opengis.net/fes/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <Query typeNames="app:DominantVegetation">
+  
+    <fes:Filter>
+      <fes:BBOX>
+        <fes:ValueReference>app:geometry</fes:ValueReference>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::26912">
+          <gml:lowerCorner>432604.0 4647889.0</gml:lowerCorner>
+          <gml:upperCorner>5647889.0 5647889.0</gml:upperCorner>
+        </gml:Envelope>
+      </fes:BBOX>
+    </fes:Filter>
+    <fes:SortBy>
+      <fes:SortProperty>
+        <fes:ValueReference>app:code</fes:ValueReference>
+        <!-- SortOrder is optional. Allowed values are  ASC | DESC -->
+        <fes:SortOrder>ASC</fes:SortOrder>
+      </fes:SortProperty>
+    </fes:SortBy>
+  
+  </Query>
+</GetPropertyValue>
