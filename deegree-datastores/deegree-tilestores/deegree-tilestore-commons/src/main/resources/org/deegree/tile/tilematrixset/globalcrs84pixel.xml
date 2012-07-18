@@ -1,0 +1,170 @@
+<TileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset http://schemas.deegree.org/datasource/tile/tilematrixset/3.2.0/tilematrixset.xsd"
+  configVersion="3.2.0">
+
+  <CRS>urn:ogc:def:crs:OGC:1.3:CRS84</CRS>
+
+  <TileMatrix>
+    <Identifier>795139219.9519541</Identifier>
+    <ScaleDenominator>795139219.9519541</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>1</MatrixWidth>
+    <MatrixHeight>1</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>397569609.9759771</Identifier>
+    <ScaleDenominator>397569609.9759771</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>2</MatrixWidth>
+    <MatrixHeight>1</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>198784804.9879885</Identifier>
+    <ScaleDenominator>198784804.9879885</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>3</MatrixWidth>
+    <MatrixHeight>2</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>132523203.3253257</Identifier>
+    <ScaleDenominator>132523203.3253257</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>5</MatrixWidth>
+    <MatrixHeight>3</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>66261601.66266284</Identifier>
+    <ScaleDenominator>66261601.66266284</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>9</MatrixWidth>
+    <MatrixHeight>5</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>33130800.83133142</Identifier>
+    <ScaleDenominator>33130800.83133142</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>17</MatrixWidth>
+    <MatrixHeight>9</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>13252320.33253257</Identifier>
+    <ScaleDenominator>13252320.33253257</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>43</MatrixWidth>
+    <MatrixHeight>22</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>6626160.166266284</Identifier>
+    <ScaleDenominator>6626160.166266284</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>85</MatrixWidth>
+    <MatrixHeight>43</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>3313080.083133142</Identifier>
+    <ScaleDenominator>3313080.083133142</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>169</MatrixWidth>
+    <MatrixHeight>85</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>1656540.041566571</Identifier>
+    <ScaleDenominator>1656540.041566571</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>338</MatrixWidth>
+    <MatrixHeight>169</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>552180.0138555236</Identifier>
+    <ScaleDenominator>552180.0138555236</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>1013</MatrixWidth>
+    <MatrixHeight>507</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>331308.0083133142</Identifier>
+    <ScaleDenominator>331308.0083133142</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>1688</MatrixWidth>
+    <MatrixHeight>844</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>110436.0027711047</Identifier>
+    <ScaleDenominator>110436.0027711047</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>5063</MatrixWidth>
+    <MatrixHeight>2532</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>55218.00138555237</Identifier>
+    <ScaleDenominator>55218.00138555237</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>10126</MatrixWidth>
+    <MatrixHeight>5063</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>33130.80083133142</Identifier>
+    <ScaleDenominator>33130.80083133142</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>16876</MatrixWidth>
+    <MatrixHeight>8438</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>11043.60027711047</Identifier>
+    <ScaleDenominator>11043.60027711047</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>50626</MatrixWidth>
+    <MatrixHeight>25313</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>3313.080083133142</Identifier>
+    <ScaleDenominator>3313.080083133142</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>168751</MatrixWidth>
+    <MatrixHeight>84376</MatrixHeight>
+  </TileMatrix>
+  <TileMatrix>
+    <Identifier>1104.360027711047</Identifier>
+    <ScaleDenominator>1104.360027711047</ScaleDenominator>
+    <TopLeftCorner>-180 90</TopLeftCorner>
+    <TileWidth>256</TileWidth>
+    <TileHeight>256</TileHeight>
+    <MatrixWidth>506251</MatrixWidth>
+    <MatrixHeight>253126</MatrixHeight>
+  </TileMatrix>
+
+</TileMatrixSet>

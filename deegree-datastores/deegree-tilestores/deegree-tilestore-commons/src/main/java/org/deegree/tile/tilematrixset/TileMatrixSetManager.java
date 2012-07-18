@@ -94,6 +94,9 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet>
         super.startup( workspace );
         addStandardConfig( "inspirecrs84quad" );
         addStandardConfig( "googlecrs84quad" );
+        addStandardConfig( "globalcrs84pixel" );
+        addStandardConfig( "globalcrs84scale" );
+        addStandardConfig( "googlemapscompatible" );
     }
 
     private void addStandardConfig( String name ) {
