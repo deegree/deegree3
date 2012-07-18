@@ -20,6 +20,8 @@
       <sequence>
         <!-- only one CRS may be specified -->
         <element name="CRS" type="string" />
+        <!-- if set, this TileMatrixSet definition refers to a well-known scale set -->
+        <element name="WellKnownScaleSet" type="string" minOccurs="0" />
         <element name="TileMatrix" maxOccurs="unbounded">
           <complexType>
             <sequence>

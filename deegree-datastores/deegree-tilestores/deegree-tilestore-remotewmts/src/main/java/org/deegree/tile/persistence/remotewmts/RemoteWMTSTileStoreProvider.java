@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -134,7 +135,8 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         return (RemoteWMTS) wmts;
     }
 
-    private Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config, RemoteWMTS wmts ) {
+    private Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config, RemoteWMTS wmts )
+                            throws ResourceInitException {
 
         Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
         for ( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig : config.getTileDataSet() ) {
@@ -148,7 +150,8 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
     }
 
     private TileDataSet buildTileDataSet( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig, WMTSClient client,
-                                          String outputFormat ) {
+                                          String outputFormat )
+                            throws ResourceInitException {
 
         if ( outputFormat.startsWith( "image/" ) ) {
             outputFormat = outputFormat.substring( 6 );
@@ -156,7 +159,12 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
 
         RequestParams requestParams = tileDataSetConfig.getRequestParams();
         String tileMatrixSetId = requestParams.getTileMatrixSet();
-        TileMatrixSet tileMatrixSet = client.getTileMatrixSet( tileMatrixSetId );
+        TileMatrixSet tileMatrixSet;
+        try {
+            tileMatrixSet = client.getTileMatrixSet( tileMatrixSetId );
+        } catch ( XMLStreamException e ) {
+            throw new ResourceInitException( e.getMessage(), e );
+        }
         List<TileDataLevel> dataLevels = buildTileDataLevels( tileMatrixSet, requestParams, client, outputFormat );
 
         return new DefaultTileDataSet( dataLevels, tileMatrixSet, "image/" + outputFormat );

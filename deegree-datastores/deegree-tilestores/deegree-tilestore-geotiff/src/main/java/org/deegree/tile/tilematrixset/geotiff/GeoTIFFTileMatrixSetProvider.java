@@ -86,7 +86,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class GeoTIFFTileMatrixSetProvider implements TileMatrixSetProvider {
 
     private static final Logger LOG = getLogger( GeoTIFFTileMatrixSetProvider.class );
@@ -160,7 +159,7 @@ public class GeoTIFFTileMatrixSetProvider implements TileMatrixSetProvider {
                                                                                                        tw, th, res } );
             }
 
-            return new TileMatrixSet( file.getName().substring( 0, file.getName().length() - 4 ), matrices, smd );
+            return new TileMatrixSet( file.getName().substring( 0, file.getName().length() - 4 ), null, matrices, smd );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
         }

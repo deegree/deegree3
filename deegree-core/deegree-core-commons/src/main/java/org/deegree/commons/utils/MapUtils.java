@@ -96,8 +96,11 @@ public class MapUtils {
      * @param scale
      * @return the pixel resolution
      */
-    public static final double calcResFromScale( final double scale ) {
+    public static final double calcDegreeResFromScale( final double scale ) {
         return ( scale * DEFAULT_PIXEL_SIZE ) / WMTS_METERS_PER_DEGREE;
     }
-
+    
+    public static final double calcMetricResFromScale  (final double scale) {
+        return scale * DEFAULT_PIXEL_SIZE;
+    }
 }

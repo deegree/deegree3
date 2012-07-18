@@ -60,6 +60,8 @@ public class TileMatrixSet implements Resource {
 
     private final String identifier;
 
+    private final String wknScaleSet;
+
     private final List<TileMatrix> matrices;
 
     private final SpatialMetadata spatialMetadata;
@@ -69,13 +71,17 @@ public class TileMatrixSet implements Resource {
      * 
      * @param identifier
      *            identifier for the {@link TileMatrixSet}, must not be <code>null</code>
+     * @param wknScaleSet
+     *            URI of the well-known scale set that this matrix set is compatible with, can be <code>null</code>
      * @param matrices
      *            the {@link TileMatrix}es this matrix set consists of, must not be <code>null</code>
      * @param spatialMetadat
      *            the spatial metadata (envelope, CRS) of the tile matrix set, must not be <code>null</code>
      */
-    public TileMatrixSet( String identifier, List<TileMatrix> matrices, SpatialMetadata spatialMetadata ) {
+    public TileMatrixSet( String identifier, String wknScaleSet, List<TileMatrix> matrices,
+                          SpatialMetadata spatialMetadata ) {
         this.identifier = identifier;
+        this.wknScaleSet = wknScaleSet;
         this.matrices = matrices;
         this.spatialMetadata = spatialMetadata;
     }
@@ -87,6 +93,15 @@ public class TileMatrixSet implements Resource {
      */
     public String getIdentifier() {
         return identifier;
+    }
+
+    /**
+     * Returns the URI of the well-known scale set that this matrix set is compatible with.
+     * 
+     * @return URI of the compatible well-known scale set, can be <code>null</code>
+     */
+    public String getWellKnownScaleSet() {
+        return wknScaleSet;
     }
 
     /**

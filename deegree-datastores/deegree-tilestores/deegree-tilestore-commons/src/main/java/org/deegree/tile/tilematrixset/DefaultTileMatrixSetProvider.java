@@ -104,8 +104,9 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
                 matrices.add( md );
             }
 
-            return new TileMatrixSet( new File( configUrl.getPath() ).getName(), matrices,
-                                      matrices.get( 0 ).getSpatialMetadata() );
+            String identifier = new File( configUrl.getPath() ).getName();
+            String wknScaleSet = cfg.getWellKnownScaleSet();
+            return new TileMatrixSet( identifier, wknScaleSet, matrices, matrices.get( 0 ).getSpatialMetadata() );
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
         }

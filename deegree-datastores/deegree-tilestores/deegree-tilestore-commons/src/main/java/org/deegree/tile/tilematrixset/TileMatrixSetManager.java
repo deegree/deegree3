@@ -66,7 +66,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet> {
 
     private static final Logger LOG = getLogger( TileMatrixSetManager.class );
@@ -92,17 +91,26 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet>
     public void startup( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         super.startup( workspace );
-        addStandardConfig( "inspirecrs84quad" );
-        addStandardConfig( "googlecrs84quad" );
-        addStandardConfig( "globalcrs84pixel" );
-        addStandardConfig( "globalcrs84scale" );
-        addStandardConfig( "googlemapscompatible" );
+        addStandardConfig( "inspirecrs84quad", null );
+        addStandardConfig( "googlecrs84quad", "urn:ogc:def:wkss:OGC:1.0:GoogleCRS84Quad" );
+        addStandardConfig( "globalcrs84pixel", "urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Pixel" );
+        addStandardConfig( "globalcrs84scale", "urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Scale" );
+        addStandardConfig( "googlemapscompatible", "urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible" );
     }
 
-    private void addStandardConfig( String name ) {
+    private void addStandardConfig( String name, String wknUrn ) {
         if ( get( name ) != null ) {
+            addAsWellKnownScaleSet( name, wknUrn );
             return;
         }
+        ResourceState<TileMatrixSet> state = loadTileMatrixSetFromClasspath( name );
+        idToState.put( state.getId(), state );
+        if ( wknUrn != null ) {
+            idToState.put( wknUrn, state );
+        }
+    }
+
+    private ResourceState<TileMatrixSet> loadTileMatrixSetFromClasspath( String name ) {
         LOG.info( "Adding standard tile matrix set {}.", name );
         URL url = TileMatrixSetManager.class.getResource( name + ".xml" );
         ResourceProvider provider = nsToProvider.get( "http://www.deegree.org/datasource/tile/tilematrixset" );
@@ -127,9 +135,15 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet>
             }
             LOG.trace( "Stack trace:", t );
             state = new ResourceState<TileMatrixSet>( name, null, provider, init_error, null,
-                                                              new ResourceInitException( t.getMessage(), t ) );
+                                                      new ResourceInitException( t.getMessage(), t ) );
         }
-        idToState.put( state.getId(), state );
+        return state;
+    }
+
+    private void addAsWellKnownScaleSet( String name, String wknUrn ) {
+        if ( wknUrn != null ) {
+            idToState.put( wknUrn, getState( name ) );
+        }
     }
 
     static class TileMatrixSetManagerMetadata extends DefaultResourceManagerMetadata<TileMatrixSet> {

@@ -6,10 +6,13 @@
   <RemoteWMTSId>wms1</RemoteWMTSId>
 
   <TileDataSet>
-    <!-- [1] Identifier for the tile data set -->
+    <!-- [0..1] Identifier for the tile data set, defaults to the value of the Layer request parameter below -->
     <Identifier>satellite</Identifier>
-    <!-- [1] Mime type of the desired output format -->
+    <!-- [0..1] Mime type of the desired output format, defaults to the value of the Format request parameter below -->
     <OutputFormat>image/png</OutputFormat>
+    <!-- [0..1] Identifier of the tile matrix set in the workspace, defaults to the value of the TileMatrixSet request parameter 
+      below -->
+    <TileMatrixSetId>EPSG:4326</TileMatrixSetId>
     <!-- [1] WMTS request parameters -->
     <RequestParams>
       <!-- [1] Layer name -->
