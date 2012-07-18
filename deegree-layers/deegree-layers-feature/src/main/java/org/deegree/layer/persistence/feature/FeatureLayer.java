@@ -235,13 +235,26 @@ public class FeatureLayer extends AbstractLayer {
                                  new Mapper<Query, FeatureType>() {
                                      @Override
                                      public Query apply( FeatureType u ) {
-                                         return createQuery( u.getName(), filter2, -1, query.getFeatureCount(), -1,
+                                         Filter f;
+                                         if ( filter2 == null ) {
+                                             f = buildFilter( null, u, clickBox );
+                                         } else {
+                                             f = buildFilter( ( (OperatorFilter) filter2 ).getOperator(), u, clickBox );
+                                         }
+                                         return createQuery( u.getName(), f, -1, query.getFeatureCount(), -1,
                                                              sortByFeatureInfo );
                                      }
                                  } ) );
             clearNulls( queries );
         } else {
-            queries.add( createQuery( featureType, filter2, -1, query.getFeatureCount(), -1, sortByFeatureInfo ) );
+            Filter f;
+            if ( filter2 == null ) {
+                f = buildFilter( null, featureStore.getSchema().getFeatureType( featureType ), clickBox );
+            } else {
+                f = buildFilter( ( (OperatorFilter) filter2 ).getOperator(),
+                                 featureStore.getSchema().getFeatureType( featureType ), clickBox );
+            }
+            queries.add( createQuery( featureType, f, -1, query.getFeatureCount(), -1, sortByFeatureInfo ) );
         }
 
         LOG.debug( "Finished querying the feature store(s)." );
