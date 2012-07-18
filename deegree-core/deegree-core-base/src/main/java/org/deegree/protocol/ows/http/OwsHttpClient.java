@@ -42,7 +42,7 @@ import java.util.Map;
 import org.deegree.commons.utils.io.StreamBufferStore;
 
 /**
- * Performs HTTP requests (against remote OWS).
+ * Performs HTTP requests against remote OWS.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
