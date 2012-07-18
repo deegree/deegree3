@@ -39,12 +39,15 @@ import static junit.framework.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClientMock;
 import org.deegree.protocol.wmts.ops.GetTile;
+import org.deegree.tile.TileMatrixSet;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -115,6 +118,34 @@ public class WMTSClientTest {
         GetTile request = buildExampleRequest();
         GetTileResponse response = client.getTile( request );
         response.getAsImage();
+    }
+
+    @Test
+    public void testGetLayers()
+                            throws XMLStreamException {
+        List<Layer> clientLayers = client.getLayers();
+        Assert.assertNotNull( clientLayers );
+    }
+
+    @Test
+    public void testGetTileMatrixSets()
+                            throws XMLStreamException {
+        List<TileMatrixSet> matrixSets = client.getTileMatrixSets();
+        Assert.assertNotNull( matrixSets );
+    }
+
+    @Test
+    public void testGetTileMatrixSet()
+                            throws XMLStreamException {
+        TileMatrixSet matrixSet = client.getTileMatrixSet( "Satellite_Provo" );
+        Assert.assertNotNull( matrixSet );
+    }
+
+    @Test
+    public void testGetTileMatrixSetNotExists()
+                            throws XMLStreamException {
+        TileMatrixSet matrixSet = client.getTileMatrixSet( "Satellite_PROVO" );
+        Assert.assertNull( matrixSet );
     }
 
     private GetTile buildExampleRequest() {

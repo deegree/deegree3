@@ -123,7 +123,23 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         return tileMatrixSets;
     }
 
-    public TileMatrixSet getTileMatrixSet( String tileMatrixSet ) {
+    /**
+     * Returns the specified {@link TileMatrixSet}.
+     * 
+     * @param tileMatrixSetId
+     *            identifier of the tile matrix set, must not be <code>null</code>
+     * @return tile matrix set with the specified identifier or <code>null</code> if there is no such set
+     * @throws XMLStreamException
+     *             if parsing the <code>wmts:TileMatrixSet</code> elements in the capabilities document fails
+     */
+    public TileMatrixSet getTileMatrixSet( String tileMatrixSetId )
+                            throws XMLStreamException {
+        List<TileMatrixSet> tileMatrixSets = getTileMatrixSets();
+        for ( TileMatrixSet tileMatrixSet : tileMatrixSets ) {
+            if ( tileMatrixSet.getIdentifier().equals( tileMatrixSetId ) ) {
+                return tileMatrixSet;
+            }
+        }
         return null;
     }
 

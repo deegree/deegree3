@@ -37,7 +37,7 @@ package org.deegree.protocol.wmts.client;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.deegree.commons.utils.MapUtils.calcResFromScale;
+import static org.deegree.commons.utils.MapUtils.calcDegreeResFromScale;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
@@ -345,7 +345,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         }
 
         SpatialMetadata spatialMetadata = createSpatialMetadata( crs, boundingBox, matrices );
-        return new TileMatrixSet( identifier, matrices, spatialMetadata );
+        return new TileMatrixSet( identifier, wellKnownScaleSet, matrices, spatialMetadata );
     }
 
     private void enforceCrs( ICRS crs, Envelope boundingBox ) {
@@ -396,7 +396,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         // <element name="ScaleDenominator" type="double">
         requireStartElement( xmlStream, singletonList( SCALE_DENOMINATOR ) );
         double scaleDenominator = getElementTextAsDouble( xmlStream );
-        double resolution = calcResFromScale( scaleDenominator );
+        double resolution = calcDegreeResFromScale( scaleDenominator );
         nextElement( xmlStream );
 
         // <element name="TopLeftCorner" type="ows:PositionType">
@@ -433,6 +433,8 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
     private SpatialMetadata createSpatialMetadata( ICRS crs, double resolution, double[] topLeftCorner, int tileSizeX,
                                                    int tileSizeY, int numTilesX, int numTilesY ) {
+
+        // switch angular / metric
 
         double worldWidth = tileSizeX * numTilesX * resolution;
         double worldHeight = tileSizeY * numTilesY * resolution;
