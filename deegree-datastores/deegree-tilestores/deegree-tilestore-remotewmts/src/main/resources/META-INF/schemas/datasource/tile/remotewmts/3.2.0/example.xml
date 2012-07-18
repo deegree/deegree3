@@ -3,14 +3,14 @@
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewmts remotewmts.xsd" configVersion="3.2.0">
 
   <!-- [1] Id of the remote WMTS to connect to -->
-  <RemoteWMTSId>wms1</RemoteWMTSId>
+  <RemoteWMTSId>wmts1</RemoteWMTSId>
 
   <TileDataSet>
     <!-- [0..1] Identifier for the tile data set, defaults to the value of the Layer request parameter below -->
     <Identifier>satellite</Identifier>
     <!-- [0..1] Mime type of the desired output format, defaults to the value of the Format request parameter below -->
     <OutputFormat>image/png</OutputFormat>
-    <!-- [0..1] Identifier of the tile matrix set in the workspace, defaults to the value of the TileMatrixSet request parameter 
+    <!-- [0..1] Identifier of the local tile matrix set, defaults to the value of the TileMatrixSet request parameter 
       below -->
     <TileMatrixSetId>EPSG:4326</TileMatrixSetId>
     <!-- [1] WMTS request parameters -->

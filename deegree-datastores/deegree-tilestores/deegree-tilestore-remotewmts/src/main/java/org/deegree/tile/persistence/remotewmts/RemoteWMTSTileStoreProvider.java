@@ -71,10 +71,11 @@ import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB.TileDataSet.RequestParams;
+import org.deegree.tile.tilematrixset.TileMatrixSetManager;
 import org.slf4j.Logger;
 
 /**
- * {@link TileStoreProvider} for <code>RemoteWMTSTileStore</code>
+ * {@link TileStoreProvider} for remote WMTS.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -158,37 +159,77 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         }
 
         RequestParams requestParams = tileDataSetConfig.getRequestParams();
-        String tileMatrixSetId = requestParams.getTileMatrixSet();
-        TileMatrixSet tileMatrixSet;
+        String requestTileMatrixSetId = requestParams.getTileMatrixSet();
+        String workspaceTileMatrixSetId = tileDataSetConfig.getTileMatrixSetId();
+        TileMatrixSet localTileMatrixSet = getLocalTileMatrixSet( requestTileMatrixSetId, workspaceTileMatrixSetId );
+        TileMatrixSet remoteTileMatrixSet = getRemoteTileMatrixSet( client, requestTileMatrixSetId );
+
+        List<TileDataLevel> dataLevels = buildTileDataLevels( localTileMatrixSet, remoteTileMatrixSet, requestParams,
+                                                              client, outputFormat );
+        return new DefaultTileDataSet( dataLevels, localTileMatrixSet, "image/" + outputFormat );
+    }
+
+    private TileMatrixSet getLocalTileMatrixSet( String requestTileMatrixSetId, String workspaceTileMatrixSetId )
+                            throws ResourceInitException {
+        String tileMatrixSetId = workspaceTileMatrixSetId;
+        if ( tileMatrixSetId == null ) {
+            tileMatrixSetId = requestTileMatrixSetId;
+        }
+
+        TileMatrixSetManager tileMatrixSetManager = workspace.getSubsystemManager( TileMatrixSetManager.class );
+        TileMatrixSet tileMatrixSet = tileMatrixSetManager.get( tileMatrixSetId );
+        if ( tileMatrixSet == null ) {
+            String msg = "No local TileMatrixSet definition with identifier '" + tileMatrixSetId + "' available.";
+            throw new ResourceInitException( msg );
+        }
+        return tileMatrixSet;
+    }
+
+    private TileMatrixSet getRemoteTileMatrixSet( WMTSClient client, String tileMatrixSetId )
+                            throws ResourceInitException {
+        TileMatrixSet tileMatrixSet = null;
         try {
             tileMatrixSet = client.getTileMatrixSet( tileMatrixSetId );
         } catch ( XMLStreamException e ) {
-            throw new ResourceInitException( e.getMessage(), e );
+            if ( tileMatrixSet == null ) {
+                String msg = "No remote TileMatrixSet definition with identifier '" + tileMatrixSetId + "' available.";
+                throw new ResourceInitException( msg );
+            }
         }
-        List<TileDataLevel> dataLevels = buildTileDataLevels( tileMatrixSet, requestParams, client, outputFormat );
-
-        return new DefaultTileDataSet( dataLevels, tileMatrixSet, "image/" + outputFormat );
+        return tileMatrixSet;
     }
 
-    private List<TileDataLevel> buildTileDataLevels( TileMatrixSet tileMatrixSet, RequestParams requestParams,
+    private List<TileDataLevel> buildTileDataLevels( TileMatrixSet localTileMatrixSet,
+                                                     TileMatrixSet remoteTileMatrixSet, RequestParams requestParams,
                                                      WMTSClient client, String outputFormat ) {
         String layer = requestParams.getLayer();
         String style = requestParams.getStyle();
         String format = requestParams.getFormat();
-        String tileMatrixSetId = requestParams.getTileMatrixSet();
+        String remoteTileMatrixSetId = remoteTileMatrixSet.getIdentifier();
 
         List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
-        for ( TileMatrix tileMatrix : tileMatrixSet.getTileMatrices() ) {
-            TileDataLevel level = buildTileDataLevel( tileMatrix, tileMatrixSetId, layer, style, format, client,
-                                                      outputFormat );
+        List<TileMatrix> localTileMatrices = localTileMatrixSet.getTileMatrices();
+        List<TileMatrix> remoteTileMatrices = remoteTileMatrixSet.getTileMatrices();
+        int numMatrices = remoteTileMatrices.size();
+        if ( localTileMatrices.size() < numMatrices ) {
+            numMatrices = localTileMatrices.size();
+        }
+        for ( int i = 0; i < numMatrices; i++ ) {
+            TileMatrix localTileMatrix = localTileMatrices.get( i );
+            TileMatrix remoteTileMatrix = remoteTileMatrices.get( i );
+            String remoteTileMatrixId = remoteTileMatrix.getIdentifier();
+            TileDataLevel level = buildTileDataLevel( localTileMatrix, remoteTileMatrixId, remoteTileMatrixSetId,
+                                                      layer, style, format, client, outputFormat );
             dataLevels.add( level );
         }
         return dataLevels;
     }
 
-    private TileDataLevel buildTileDataLevel( TileMatrix tileMatrix, String tileMatrixSetId, String layer,
-                                              String style, String format, WMTSClient client, String outputFormat ) {
-        return new RemoteWMTSTileDataLevel( tileMatrix, tileMatrixSetId, format, layer, style, client, outputFormat );
+    private TileDataLevel buildTileDataLevel( TileMatrix tileMatrix, String remoteTileMatrixSetId,
+                                              String remoteTileMatrixSet, String layer, String style, String format,
+                                              WMTSClient client, String outputFormat ) {
+        return new RemoteWMTSTileDataLevel( tileMatrix, remoteTileMatrixSetId, remoteTileMatrixSet, format, layer,
+                                            style, client, outputFormat );
     }
 
     @SuppressWarnings("unchecked")

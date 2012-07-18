@@ -45,7 +45,7 @@ import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
 
 /**
- * {@link TileDataLevel} that is backed by a {@link RemoteWMSTileStore}.
+ * {@link TileDataLevel} that is backed by a remote WMTS instance.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -56,9 +56,9 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
 
     private final TileMatrix matrix;
 
-    private final String tileMatrixSet;
+    private final String remoteTileMatrixSetId;
 
-    private final String tileMatrix;
+    private final String remoteTileMatrixId;
 
     private final String format;
 
@@ -75,8 +75,10 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      * 
      * @param matrix
      *            tile matrix, must not be <code>null</code>
-     * @param tileMatrixSet
-     *            tile matrix set identifier, must not be <code>null</code>
+     * @param remoteTileMatrixSetId
+     *            tile matrix set identifier on the remote server, must not be <code>null</code>
+     * @param remoteTileMatrixId
+     *            tile matrix identifier on the remote server, must not be <code>null</code>
      * @param format
      *            format to use for requesting tile images, must not be <code>null</code>
      * @param layer
@@ -89,11 +91,11 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
      *            formats, eg. 'png')
      */
-    RemoteWMTSTileDataLevel( TileMatrix matrix, String tileMatrixSet, String format, String layer, String style,
-                             WMTSClient client, String outputFormat ) {
+    RemoteWMTSTileDataLevel( TileMatrix matrix, String remoteTileMatrixSetId, String remoteTileMatrixId, String format,
+                             String layer, String style, WMTSClient client, String outputFormat ) {
         this.matrix = matrix;
-        this.tileMatrix = matrix.getIdentifier();
-        this.tileMatrixSet = tileMatrixSet;
+        this.remoteTileMatrixSetId = remoteTileMatrixSetId;
+        this.remoteTileMatrixId = remoteTileMatrixId;
         this.format = format;
         this.layer = layer;
         this.style = style;
@@ -112,7 +114,7 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
             return null;
         }
         Envelope tileEnvelope = calcTileEnvelope( matrix, x, y );
-        GetTile request = new GetTile( layer, style, format, tileMatrixSet, tileMatrix, x, y );
+        GetTile request = new GetTile( layer, style, format, remoteTileMatrixSetId, remoteTileMatrixId, x, y );
         return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope );
     }
 }

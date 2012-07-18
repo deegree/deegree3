@@ -28,14 +28,25 @@
         <element name="TileDataSet" maxOccurs="unbounded">
           <complexType>
             <sequence>
-              <element name="Identifier" type="string">
+              <element name="Identifier" type="string" minOccurs="0">
                 <annotation>
-                  <documentation>Identifier for the tile data set</documentation>
+                  <documentation>Identifier for the tile data set, defaults to the value of the Layer request parameter
+                    below
+                  </documentation>
                 </annotation>
               </element>
-              <element name="OutputFormat" type="string">
+              <element name="OutputFormat" type="string" minOccurs="0">
                 <annotation>
-                  <documentation>Mime type of the desired output format</documentation>
+                  <documentation>Mime type of the desired output format, defaults to the value of the Format request
+                    parameter below
+                  </documentation>
+                </annotation>
+              </element>
+              <element name="TileMatrixSetId" type="string" minOccurs="0">
+                <annotation>
+                  <documentation>Identifier of the local tile matrix set, defaults to the value of the TileMatrixSet
+                    request parameter below
+                  </documentation>
                 </annotation>
               </element>
               <element name="RequestParams">
