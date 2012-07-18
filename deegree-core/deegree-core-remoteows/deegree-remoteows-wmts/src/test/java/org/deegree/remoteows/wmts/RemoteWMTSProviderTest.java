@@ -66,7 +66,6 @@ public class RemoteWMTSProviderTest {
                             throws ResourceInitException {
         RemoteWMTSProvider provider = new RemoteWMTSProvider();
         URL configUrl = RemoteWMTSProviderTest.class.getResource( "example.invalid" );
-        RemoteWMTS remoteWmts = provider.create( configUrl );
-        assertNotNull( remoteWmts );
+        provider.create( configUrl );
     }
 }

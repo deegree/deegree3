@@ -54,12 +54,20 @@ public class RemoteWMTS implements RemoteOWS {
     private final WMTSClient client;
 
     /**
+     * Creates a new {@link RemoteWMTS} instance.
+     * 
      * @param client
+     *            client to use for accessing the remote WMTS, must not be <code>null</code>
      */
     public RemoteWMTS( WMTSClient client ) {
         this.client = client;
     }
 
+    /**
+     * Returns the client for accessing the remote WMTS.
+     * 
+     * @return client for accessing the remote WMTS, never <code>null</code>
+     */
     public WMTSClient getClient() {
         return client;
     }
