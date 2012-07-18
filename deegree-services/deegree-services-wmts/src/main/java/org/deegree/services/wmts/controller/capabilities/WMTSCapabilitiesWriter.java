@@ -250,70 +250,49 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         // actually used tile matrix sets are going to be collected the first way through the layers
         Set<TileMatrixSet> matrixSets = new LinkedHashSet<TileMatrixSet>();
 
-        // layers
         for ( Theme t : themes ) {
             for ( Layer l : Themes.getAllLayers( t ) ) {
                 if ( l instanceof TileLayer ) {
-                    TileLayer tl = (TileLayer) l;
-                    LayerMetadata md = tl.getMetadata();
-                    for ( TileDataSet tds : tl.getTileDataSets() ) {
-                        matrixSets.add( tds.getTileMatrixSet() );
-                    }
-
-                    writer.writeStartElement( WMTSNS, "Layer" );
-
-                    exportMetadata( md, true, null );
-                    writer.writeStartElement( WMTSNS, "Style" );
-                    writeElement( writer, OWS110_NS, "Identifier", "default" );
-                    writer.writeEndElement();
-                    List<String> fmts = new ArrayList<String>();
-                    for ( TileDataSet tds : tl.getTileDataSets() ) {
-                        String fmt = tds.getNativeImageFormat();
-                        if ( !fmts.contains( fmt ) ) {
-                            fmts.add( fmt );
-                        }
-                    }
-                    for ( String fmt : fmts ) {
-                        writeElement( writer, WMTSNS, "Format", fmt );
-                    }
-                    for ( TileDataSet tds : tl.getTileDataSets() ) {
-                        writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
-                        writeElement( writer, WMTSNS, "TileMatrixSet", tds.getTileMatrixSet().getIdentifier() );
-                        writer.writeEndElement();
-                    }
-
-                    writer.writeEndElement();
+                    exportLayer( matrixSets, (TileLayer) l );
                 }
             }
         }
 
-        // tile matrices
         for ( TileMatrixSet tms : matrixSets ) {
-            writer.writeStartElement( WMTSNS, "TileMatrixSet" );
+            exportTileMatrixSet( tms );
+        }
 
-            exportMetadata( null, true, tms.getIdentifier() );
-            ICRS cs = tms.getSpatialMetadata().getCoordinateSystems().get( 0 );
-            writeElement( writer, OWS110_NS, "SupportedCRS", cs.getAlias() );
+        writer.writeEndElement();
+    }
 
-            for ( TileMatrix tm : tms.getTileMatrices() ) {
-                writer.writeStartElement( WMTSNS, "TileMatrix" );
-                double scale;
-                if ( cs.getUnits()[0].equals( Unit.DEGREE ) ) {
-                    scale = MapUtils.calcScaleFromDegrees( tm.getResolution() );
-                } else {
-                    scale = tm.getResolution() / DEFAULT_PIXEL_SIZE;
-                }
-                writeElement( writer, OWS110_NS, "Identifier", tm.getIdentifier() );
-                writeElement( writer, WMTSNS, "ScaleDenominator", scale + "" );
-                Envelope env = tm.getSpatialMetadata().getEnvelope();
-                writeElement( writer, WMTSNS, "TopLeftCorner", env.getMin().get0() + " " + env.getMax().get1() );
-                writeElement( writer, WMTSNS, "TileWidth", Integer.toString( tm.getTilePixelsX() ) );
-                writeElement( writer, WMTSNS, "TileHeight", Integer.toString( tm.getTilePixelsY() ) );
-                writeElement( writer, WMTSNS, "MatrixWidth", Integer.toString( tm.getNumTilesX() ) );
-                writeElement( writer, WMTSNS, "MatrixHeight", Integer.toString( tm.getNumTilesY() ) );
+    private void exportTileMatrixSet( TileMatrixSet tms )
+                            throws XMLStreamException {
+        writer.writeStartElement( WMTSNS, "TileMatrixSet" );
 
-                writer.writeEndElement();
+        exportMetadata( null, true, tms.getIdentifier() );
+        ICRS cs = tms.getSpatialMetadata().getCoordinateSystems().get( 0 );
+        writeElement( writer, OWS110_NS, "SupportedCRS", cs.getAlias() );
+        String wknScaleSet = tms.getWellKnownScaleSet();
+        if ( wknScaleSet != null ) {
+            writeElement( writer, WMTSNS, "WellKnownScaleSet", wknScaleSet );
+        }
+
+        for ( TileMatrix tm : tms.getTileMatrices() ) {
+            writer.writeStartElement( WMTSNS, "TileMatrix" );
+            double scale;
+            if ( cs.getUnits()[0].equals( Unit.DEGREE ) ) {
+                scale = MapUtils.calcScaleFromDegrees( tm.getResolution() );
+            } else {
+                scale = tm.getResolution() / DEFAULT_PIXEL_SIZE;
             }
+            writeElement( writer, OWS110_NS, "Identifier", tm.getIdentifier() );
+            writeElement( writer, WMTSNS, "ScaleDenominator", scale + "" );
+            Envelope env = tm.getSpatialMetadata().getEnvelope();
+            writeElement( writer, WMTSNS, "TopLeftCorner", env.getMin().get0() + " " + env.getMax().get1() );
+            writeElement( writer, WMTSNS, "TileWidth", Integer.toString( tm.getTilePixelsX() ) );
+            writeElement( writer, WMTSNS, "TileHeight", Integer.toString( tm.getTilePixelsY() ) );
+            writeElement( writer, WMTSNS, "MatrixWidth", Integer.toString( tm.getNumTilesX() ) );
+            writeElement( writer, WMTSNS, "MatrixHeight", Integer.toString( tm.getNumTilesY() ) );
 
             writer.writeEndElement();
         }
@@ -321,4 +300,35 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
+    private void exportLayer( Set<TileMatrixSet> matrixSets, TileLayer tl )
+                            throws XMLStreamException {
+        LayerMetadata md = tl.getMetadata();
+        for ( TileDataSet tds : tl.getTileDataSets() ) {
+            matrixSets.add( tds.getTileMatrixSet() );
+        }
+
+        writer.writeStartElement( WMTSNS, "Layer" );
+
+        exportMetadata( md, true, null );
+        writer.writeStartElement( WMTSNS, "Style" );
+        writeElement( writer, OWS110_NS, "Identifier", "default" );
+        writer.writeEndElement();
+        List<String> fmts = new ArrayList<String>();
+        for ( TileDataSet tds : tl.getTileDataSets() ) {
+            String fmt = tds.getNativeImageFormat();
+            if ( !fmts.contains( fmt ) ) {
+                fmts.add( fmt );
+            }
+        }
+        for ( String fmt : fmts ) {
+            writeElement( writer, WMTSNS, "Format", fmt );
+        }
+        for ( TileDataSet tds : tl.getTileDataSets() ) {
+            writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
+            writeElement( writer, WMTSNS, "TileMatrixSet", tds.getTileMatrixSet().getIdentifier() );
+            writer.writeEndElement();
+        }
+
+        writer.writeEndElement();
+    }
 }
