@@ -35,8 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs;
 
+import static org.deegree.commons.utils.MapUtils.calcDegreeResFromScale;
+import static org.deegree.commons.utils.MapUtils.calcMetricResFromScale;
+import static org.deegree.cs.components.Unit.DEGREE;
+import static org.deegree.cs.components.Unit.METRE;
+
+import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
+import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * TODO: move this!
@@ -51,4 +58,38 @@ public class CRSUtils {
     /** The commonly used geographic 'EPSG:4326', with axis order X, Y. */
     public static final CRS EPSG_4326 = GeographicCRS.WGS84;
 
+    /**
+     * Calculates the resolution (world units / pixel) for the given scale denominator (1 / map scale) and coordinate
+     * reference system (determines the world units).
+     * 
+     * @param scaleDenominator
+     *            scale denominator (1 / map scale)
+     * @param crs
+     *            coordinate reference system, must not be <code>null</code>
+     * @return resolution in world units per pixel
+     */
+    public static double calcResolution( double scaleDenominator, ICRS crs ) {
+        IUnit units = crs.getAxis()[0].getUnits();
+        return calcResolution( scaleDenominator, units );
+    }
+
+    /**
+     * Calculates the resolution (world units / pixel) for the given scale denominator (1 / map scale) and unit system.
+     * 
+     * @param scaleDenominator
+     *            scale denominator (1 / map scale)
+     * @param units
+     *            units, must not be <code>null</code>
+     * @return resolution in world units per pixel
+     */
+    public static double calcResolution( double scaleDenominator, IUnit units ) {
+        if ( units.equals( METRE ) ) {
+            return calcMetricResFromScale( scaleDenominator );
+        } else if ( units.equals( DEGREE ) ) {
+            return calcDegreeResFromScale( scaleDenominator );
+        }
+        String msg = "Unhandled unit type: " + units
+                     + ". Conversion from scale denominator to resolution not implemented";
+        throw new IllegalArgumentException( msg );
+    }
 }

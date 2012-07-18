@@ -162,7 +162,7 @@ public class WMTSCapabilitiesAdapterTest {
         assertEquals( new QName( WMTS_100_NS, "TileMatrix" ), xmlStream.getName() );
 
         assertEquals( "tilematrix1", tileMatrix.getIdentifier() );
-        assertEquals( 0.0000179663, tileMatrix.getResolution(), 0.000000001 );
+        assertEquals( 2.0, tileMatrix.getResolution(), 0.000000001 );
         assertEquals( 512, tileMatrix.getTilePixelsX() );
         assertEquals( 256, tileMatrix.getTilePixelsY() );
         assertEquals( 3, tileMatrix.getNumTilesX() );
@@ -171,8 +171,8 @@ public class WMTSCapabilitiesAdapterTest {
         SpatialMetadata spatialMetadata = tileMatrix.getSpatialMetadata();
         assertEquals( crs, spatialMetadata.getCoordinateSystems().get( 0 ) );
         assertEquals( 441174.0, spatialMetadata.getEnvelope().getMin().get0(), 0.0001 );
-        assertEquals( 4456038.9816, spatialMetadata.getEnvelope().getMin().get1(), 0.0001 );
-        assertEquals( 441174.0275, spatialMetadata.getEnvelope().getMax().get0(), 0.0001 );
+        assertEquals( 4453991.0, spatialMetadata.getEnvelope().getMin().get1(), 0.0001 );
+        assertEquals( 444246.0, spatialMetadata.getEnvelope().getMax().get0(), 0.0001 );
         assertEquals( 4456039.0, spatialMetadata.getEnvelope().getMax().get1(), 0.0001 );
     }
 

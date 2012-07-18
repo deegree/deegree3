@@ -37,7 +37,6 @@ package org.deegree.protocol.wmts.client;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.deegree.commons.utils.MapUtils.calcDegreeResFromScale;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
@@ -48,6 +47,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToElementOnSameLevel;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElementOnSameLevel;
+import static org.deegree.cs.CRSUtils.calcResolution;
 import static org.deegree.protocol.wmts.WMTSConstants.WMTS_100_NS;
 
 import java.util.ArrayList;
@@ -396,7 +396,6 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         // <element name="ScaleDenominator" type="double">
         requireStartElement( xmlStream, singletonList( SCALE_DENOMINATOR ) );
         double scaleDenominator = getElementTextAsDouble( xmlStream );
-        double resolution = calcDegreeResFromScale( scaleDenominator );
         nextElement( xmlStream );
 
         // <element name="TopLeftCorner" type="ows:PositionType">
@@ -425,6 +424,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         int numTilesY = getElementTextAsInteger( xmlStream );
         nextElement( xmlStream );
 
+        double resolution = calcResolution( scaleDenominator, crs );
         SpatialMetadata spatialMetadata = createSpatialMetadata( crs, resolution, topLeftCorner, tileSizeX, tileSizeY,
                                                                  numTilesX, numTilesY );
 
@@ -433,8 +433,6 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
     private SpatialMetadata createSpatialMetadata( ICRS crs, double resolution, double[] topLeftCorner, int tileSizeX,
                                                    int tileSizeY, int numTilesX, int numTilesY ) {
-
-        // switch angular / metric
 
         double worldWidth = tileSizeX * numTilesX * resolution;
         double worldHeight = tileSizeY * numTilesY * resolution;

@@ -2,7 +2,7 @@
   <ows:Identifier>tilematrix1</ows:Identifier>
   <ScaleDenominator>7142.857142857143</ScaleDenominator>
   <TopLeftCorner>441174.0 4456039.0</TopLeftCorner>
-  <TileWidth>512</TileWidth>
+  <TileWidth>512</TileWid>
   <TileHeight>256</TileHeight>
   <MatrixWidth>3</MatrixWidth>
   <MatrixHeight>4</MatrixHeight>

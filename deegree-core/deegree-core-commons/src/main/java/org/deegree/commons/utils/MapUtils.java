@@ -91,16 +91,25 @@ public class MapUtils {
     }
 
     /**
-     * Calculates the pixel resolution for a given scale, according to the informative annexes of the WMTS 1.0.0 spec.
+     * Calculates the pixel resolution for the given scale denominator, according to the informative annexes of the WMTS
+     * 1.0.0 spec.
      * 
      * @param scale
-     * @return the pixel resolution
+     *            scale denominator (1 / scale)
+     * @return the pixel resolution (degrees per pixel)
      */
     public static final double calcDegreeResFromScale( final double scale ) {
         return ( scale * DEFAULT_PIXEL_SIZE ) / WMTS_METERS_PER_DEGREE;
     }
-    
-    public static final double calcMetricResFromScale  (final double scale) {
+
+    /**
+     * Calculates the pixel resolution for the given scale denominator, assuming a metric coordinate reference system.
+     * 
+     * @param scale
+     *            scale denominator (1 / scale)
+     * @return the pixel resolution (meters per pixel)
+     */
+    public static final double calcMetricResFromScale( final double scale ) {
         return scale * DEFAULT_PIXEL_SIZE;
     }
 }
