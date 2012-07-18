@@ -106,9 +106,9 @@ public class Tiles {
      * @param matrix
      *            tile matrix, must not be <code>null</code>
      * @param x
-     *            tile column index
+     *            tile column index (counting from zero)
      * @param y
-     *            tile row index
+     *            tile row index (counting from zero)
      * @return envelope, never <code>null</code>
      */
     public static Envelope calcTileEnvelope( TileMatrix matrix, int x, int y ) {
