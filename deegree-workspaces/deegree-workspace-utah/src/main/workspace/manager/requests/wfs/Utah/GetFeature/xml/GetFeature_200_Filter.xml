@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeature 
+  version="2.0.0" 
+  service="WFS" 
+  xmlns="http://www.opengis.net/wfs/2.0" 
+  xmlns:gml="http://www.opengis.net/gml/3.2" 
+  xmlns:fes="http://www.opengis.net/fes/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd
+http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+
+  <Query xmlns:app="http://www.deegree.org/app" typeNames="SGID100_RailroadsDLG100">
+    
+  <fes:Filter>
+    <fes:And>    
+      <fes:BBOX>
+        <fes:ValueReference>app:geometry</fes:ValueReference>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::26912">
+          <gml:lowerCorner>432604.0 4647889.0</gml:lowerCorner>
+          <gml:upperCorner>5647889.0 5647889.0</gml:upperCorner>
+        </gml:Envelope>
+      </fes:BBOX>
+      <fes:Or>
+        <fes:PropertyIsEqualTo>
+          <fes:ValueReference>app:OBJECTID</fes:ValueReference>
+          <fes:Literal>446</fes:Literal>
+        </fes:PropertyIsEqualTo>
+        <fes:PropertyIsGreaterThan>
+          <fes:ValueReference>app:SHAPE_LEN</fes:ValueReference>
+          <fes:Literal>10000</fes:Literal>
+        </fes:PropertyIsGreaterThan>
+      </fes:Or>
+    </fes:And>
+  </fes:Filter>
+  
+  </Query>
+</GetFeature>

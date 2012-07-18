@@ -11,7 +11,7 @@
   
   <PropertyName>app:objectid</PropertyName>
   <PropertyName>app:code</PropertyName>
-    <!--
+  
   <ogc:Filter>
 
     <ogc:And>
@@ -20,13 +20,13 @@
         <ogc:Literal>30*</ogc:Literal>
       </ogc:PropertyIsLike>
       <ogc:Not>
-        <ogc:PropertyIsNull>        
+        <ogc:PropertyIsEqualTo>
           <ogc:PropertyName>app:code</ogc:PropertyName>
-        </ogc:PropertyIsNull>
+          <ogc:Literal>301</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
       </ogc:Not>
     </ogc:And>
   </ogc:Filter>
   
-    -->
   </Query>
 </GetFeature>

@@ -9,26 +9,26 @@
   
   <Query xmlns:app="http://www.deegree.org/app" typeName="app:DominantVegetation">
   
-  <PropertyName>app:objectid</PropertyName>
-  <PropertyName>app:code</PropertyName>
-  
-  <ogc:Filter>
-    <ogc:BBOX>
-      <ogc:PropertyName>app:geom</ogc:PropertyName>
-      <gml:Envelope srsName="urn:ogc:def:crs:EPSG::26912">
-        <gml:lowerCorner>414055.0 4404348.0</gml:lowerCorner>
-        <gml:upperCorner>452132.0 4426933.0</gml:upperCorner>
-      </gml:Envelope>
-    </ogc:BBOX>
-  </ogc:Filter>
-  
-  <ogc:SortBy>
-    <ogc:SortProperty>
-      <ogc:PropertyName>app:code</ogc:PropertyName>
-      <!--  ASC | DESC -->
-      <ogc:SortOrder>ASC</ogc:SortOrder>
-    </ogc:SortProperty>
-  </ogc:SortBy>
+    <PropertyName>app:objectid</PropertyName>
+    <PropertyName>app:code</PropertyName>
+    
+    <ogc:Filter>
+      <ogc:BBOX>
+        <ogc:PropertyName>app:geom</ogc:PropertyName>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::26912">
+          <gml:lowerCorner>414055.0 4404348.0</gml:lowerCorner>
+          <gml:upperCorner>452132.0 4426933.0</gml:upperCorner>
+        </gml:Envelope>
+      </ogc:BBOX>
+    </ogc:Filter>
+    
+    <ogc:SortBy>
+      <ogc:SortProperty>
+        <ogc:PropertyName>app:code</ogc:PropertyName>
+        <!-- SortOrder is optional. Allowed values are  ASC | DESC -->
+        <ogc:SortOrder>ASC</ogc:SortOrder>
+      </ogc:SortProperty>
+    </ogc:SortBy>
   
   </Query>
 </GetFeature>

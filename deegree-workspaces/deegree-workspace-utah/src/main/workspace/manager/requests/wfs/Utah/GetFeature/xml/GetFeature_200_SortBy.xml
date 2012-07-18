@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeature 
+  version="2.0.0" 
+  service="WFS" 
+  xmlns="http://www.opengis.net/wfs/2.0" 
+  xmlns:gml="http://www.opengis.net/gml/3.2" 
+  xmlns:fes="http://www.opengis.net/fes/2.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd
+http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+
+  <Query xmlns:app="http://www.deegree.org/app" typeNames="app:DominantVegetation">
+    <fes:Filter>
+      <fes:BBOX>
+        <fes:ValueReference>app:geom</fes:ValueReference>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::26912">
+          <gml:lowerCorner>414055.0 4404348.0</gml:lowerCorner>
+          <gml:upperCorner>452132.0 4426933.0</gml:upperCorner>
+        </gml:Envelope>
+      </fes:BBOX>
+    </fes:Filter>
+    <fes:SortBy>
+      <fes:SortProperty>
+        <fes:ValueReference>app:code</fes:ValueReference>
+        <!-- SortOrder is optional. Allowed values are  ASC | DESC -->
+        <fes:SortOrder>DESC</fes:SortOrder>
+      </fes:SortProperty>
+    </fes:SortBy>
+    
+  </Query>
+</GetFeature>

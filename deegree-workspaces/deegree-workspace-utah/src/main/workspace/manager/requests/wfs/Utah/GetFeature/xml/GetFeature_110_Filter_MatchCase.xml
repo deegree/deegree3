@@ -13,6 +13,7 @@
   <PropertyName>app:NAME</PropertyName>
   
   <ogc:Filter>
+    <!-- Filter encoding spec. doesn't allow matchCase for PropertyIsLike but only for PropertyIsEqualTo. deegree allows matchcase for PropertyIsLike anyhow  -->
     <ogc:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!" matchCase="false">
       <ogc:PropertyName>app:NAME</ogc:PropertyName>
       <ogc:Literal>RoCkY RiDgE</ogc:Literal>
