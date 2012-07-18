@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset http://schemas.deegree.org/datasource/tile/tilematrixset/3.2.0/tilematrixset.xsd"
   configVersion="3.2.0">
 
-  <CRS>urn:ogc:def:crs:EPSG:6.18:3:3857</CRS>
+  <CRS>urn:ogc:def:crs:EPSG::3857</CRS>
 
   <TileMatrix>
     <Identifier>0</Identifier>
