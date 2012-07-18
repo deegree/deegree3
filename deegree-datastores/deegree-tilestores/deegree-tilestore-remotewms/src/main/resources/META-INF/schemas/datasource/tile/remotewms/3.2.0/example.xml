@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewms http://schemas.deegree.org/datasource/tile/remotewms/3.2.0/remotewms.xsd"
   configVersion="3.2.0">
 
-  <!-- [1]: Id of the remote OWS to connect to (must be a WMS instance) -->
+  <!-- [1]: Id of the remote WMS to connect to -->
   <RemoteWMSId>wms1</RemoteWMSId>
 
   <TileDataSet>
@@ -18,9 +18,9 @@
       <Layers>SatelliteProvo</Layers>
       <!-- [0..1] Comma-separated list of styles -->
       <Styles>default</Styles>
-      <!-- [1] Image format, default png if availabe -->
+      <!-- [1] Image format -->
       <Format>image/png</Format>
-      <!-- CRS for querying the remote service -->
+      <!-- [1] CRS for querying the remote service -->
       <CRS>EPSG:4326</CRS>
     </RequestParams>
   </TileDataSet>
@@ -37,9 +37,9 @@
       <Layers>Roads</Layers>
       <!-- [0..1] Comma-separated list of styles -->
       <Styles>default</Styles>
-      <!-- [1] Image format, default png if availabe -->
+      <!-- [1] Image format -->
       <Format>image/png</Format>
-      <!-- CRS for querying the remote service -->
+      <!-- [1] CRS for querying the remote service -->
       <CRS>EPSG:4326</CRS>
     </RequestParams>
   </TileDataSet>
