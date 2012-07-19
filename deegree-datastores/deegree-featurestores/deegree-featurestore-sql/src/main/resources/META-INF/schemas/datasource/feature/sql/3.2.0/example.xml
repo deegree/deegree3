@@ -39,8 +39,8 @@
       <Column name="youridcolumnname" />
       <AutoIdGenerator />
     </FIDMapping>
-    <Primitive mapping="prop1" path="property1" />
-    <Geometry mapping="the_geom">
+    <Primitive path="property1" mapping="prop1" />
+    <Geometry path="propertygeom" mapping="the_geom">
       <StorageCRS srid="-1">EPSG:4326</StorageCRS>
     </Geometry>
   </FeatureTypeMapping>
