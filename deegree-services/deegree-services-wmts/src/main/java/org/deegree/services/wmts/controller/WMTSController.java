@@ -62,6 +62,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.layer.Layer;
@@ -78,6 +79,8 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.wmts.controller.capabilities.WMTSCapabilitiesWriter;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
@@ -131,6 +134,16 @@ public class WMTSController extends AbstractOWS {
 
         identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
         provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
+
+        OWSMetadataProviderManager mmgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
+        ResourceState<OWSMetadataProvider> state = mmgr.getState( getId() );
+        if ( state != null ) {
+            OWSMetadataProvider metadata = state.getResource();
+            if ( metadata != null ) {
+                identification = metadata.getServiceIdentification();
+                provider = metadata.getServiceProvider();
+            }
+        }
 
         DeegreeWMTS conf = (DeegreeWMTS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
         ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
