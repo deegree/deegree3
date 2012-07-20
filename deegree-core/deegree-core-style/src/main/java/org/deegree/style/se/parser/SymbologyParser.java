@@ -54,7 +54,7 @@ import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsBoolean;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsRelaxedQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.resolve;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
@@ -109,32 +109,32 @@ import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.style.se.unevaluated.Continuation;
-import org.deegree.style.se.unevaluated.Symbolizer;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
+import org.deegree.style.se.unevaluated.Symbolizer;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.RasterChannelSelection;
 import org.deegree.style.styling.RasterStyling;
-import org.deegree.style.styling.TextStyling;
 import org.deegree.style.styling.RasterStyling.ContrastEnhancement;
 import org.deegree.style.styling.RasterStyling.Overlap;
 import org.deegree.style.styling.RasterStyling.ShadedRelief;
+import org.deegree.style.styling.TextStyling;
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Font;
+import org.deegree.style.styling.components.Font.Style;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Halo;
 import org.deegree.style.styling.components.LinePlacement;
 import org.deegree.style.styling.components.Mark;
-import org.deegree.style.styling.components.PerpendicularOffsetType;
-import org.deegree.style.styling.components.Stroke;
-import org.deegree.style.styling.components.UOM;
-import org.deegree.style.styling.components.Font.Style;
 import org.deegree.style.styling.components.Mark.SimpleMark;
+import org.deegree.style.styling.components.PerpendicularOffsetType;
 import org.deegree.style.styling.components.PerpendicularOffsetType.Substraction;
 import org.deegree.style.styling.components.PerpendicularOffsetType.Type;
+import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineCap;
 import org.deegree.style.styling.components.Stroke.LineJoin;
+import org.deegree.style.styling.components.UOM;
 import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
@@ -1791,7 +1791,7 @@ public class SymbologyParser {
         if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
             Triple<Symbolizer<?>, Continuation<StringBuffer>, String> pair = parseSymbolizer( in );
             return new org.deegree.style.se.unevaluated.Style( pair.first, pair.second, pair.first.getName(),
-                                                                       pair.third );
+                                                               pair.third );
         }
         if ( in.getLocalName().equals( "FeatureTypeStyle" ) ) {
             return parseFeatureTypeOrCoverageStyle( in );
@@ -1811,7 +1811,7 @@ public class SymbologyParser {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             try {
                 URL url = SymbologyParser.parseOnlineResource( in );
-                System.out.println("reading url" + url);
+                System.out.println( "reading url" + url );
                 XMLStreamReader newReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                                  url.openStream() );
                 while ( !newReader.isStartElement() )
@@ -1847,7 +1847,7 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
-                featureTypeName = getElementTextAsQName( in );
+                featureTypeName = getElementTextAsRelaxedQName( in );
             }
 
             // TODO unused
@@ -1916,8 +1916,7 @@ public class SymbologyParser {
             }
         }
 
-        return new org.deegree.style.se.unevaluated.Style( result, labels, labelXMLTexts, common.name,
-                                                                   featureTypeName );
+        return new org.deegree.style.se.unevaluated.Style( result, labels, labelXMLTexts, common.name, featureTypeName );
     }
 
     static class ElseFilter implements Filter {
