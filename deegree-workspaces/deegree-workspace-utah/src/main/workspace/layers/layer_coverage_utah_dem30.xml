@@ -19,7 +19,7 @@
       <l:Units>m</l:Units>
       <l:UnitSymbol></l:UnitSymbol>
        -->
-      <l:Extent>0/3500</l:Extent>
+      <l:Extent>0/3500/1</l:Extent>
     </l:Dimension>
     <l:StyleRef>
       <l:StyleStoreId>utah_dem30</l:StyleStoreId>
