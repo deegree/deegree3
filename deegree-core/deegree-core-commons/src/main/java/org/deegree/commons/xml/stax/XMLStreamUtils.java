@@ -62,6 +62,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -208,6 +210,28 @@ public class XMLStreamUtils {
             result = new QName( nsUri, localPart, prefix );
         }
         return result;
+    }
+
+    /**
+     * Works like #asQName, but also allows for {http://www.deegree.org/app}:localName (deegree2-style) 'qualified'
+     * names.
+     * 
+     * @param xmlStream
+     * @param s
+     *            may not be null
+     * @return a parsed qname
+     */
+    public static QName asRelaxedQName( XMLStreamReader xmlStream, String s ) {
+        try {
+            return asQName( xmlStream, s );
+        } catch ( XMLParsingException e ) {
+            Matcher m = Pattern.compile( "\\{(http://[^}]+)\\}:(.+)" ).matcher( s );
+            if ( m.find() ) {
+                return new QName( m.group( 1 ), m.group( 2 ) );
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -358,6 +382,15 @@ public class XMLStreamUtils {
             throw new XMLParsingException( xmlStream, "No element text, but QName expected." );
         }
         return asQName( xmlStream, s );
+    }
+
+    public static QName getElementTextAsRelaxedQName( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+        String s = xmlStream.getElementText();
+        if ( s == null ) {
+            throw new XMLParsingException( xmlStream, "No element text, but QName expected." );
+        }
+        return asRelaxedQName( xmlStream, s );
     }
 
     public static void requireStartElement( XMLStreamReader xmlStream, QName elName ) {
