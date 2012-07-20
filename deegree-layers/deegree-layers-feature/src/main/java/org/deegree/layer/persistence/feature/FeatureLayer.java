@@ -273,8 +273,7 @@ public class FeatureLayer extends AbstractLayer {
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             if ( pt instanceof GeometryPropertyType
                  && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
-                list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
-                                   new Intersects( new ValueReference( pt.getName() ), clickBox ) ) );
+                list.add( new Intersects( new ValueReference( pt.getName() ), clickBox ) );
             }
         }
         if ( list.size() > 1 ) {
@@ -282,16 +281,19 @@ public class FeatureLayer extends AbstractLayer {
             if ( operator == null ) {
                 return new OperatorFilter( or );
             }
-            return new OperatorFilter( new And( or, operator ) );
+            return new OperatorFilter( new And( operator, or ) );
         }
         if ( list.isEmpty() ) {
             // obnoxious case where feature has no geometry properties (but features may have extra geometry props)
-            list.add( new And( new BBOX( null, clickBox ), new Intersects( null, clickBox ) ) );
+            if ( operator == null ) {
+                return new OperatorFilter( new Intersects( null, clickBox ) );
+            }
+            return new OperatorFilter( new And( operator, new Intersects( null, clickBox ) ) );
         }
         if ( operator == null ) {
             return new OperatorFilter( list.get( 0 ) );
         }
-        return new OperatorFilter( new And( list.get( 0 ), operator ) );
+        return new OperatorFilter( new And( operator, list.get( 0 ) ) );
     }
 
     /**
@@ -360,7 +362,7 @@ public class FeatureLayer extends AbstractLayer {
                         }
                     }
                     Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>( formatDateTime( theVal ) );
-                    os[i++] = new PropertyIsEqualTo( property, lit, null, null );
+                    os[i++] = new PropertyIsEqualTo( property, lit, true, null );
                 }
             }
             if ( os.length > 1 ) {
@@ -447,7 +449,7 @@ public class FeatureLayer extends AbstractLayer {
                         }
                     }
                     os[i++] = new PropertyIsEqualTo( new ValueReference( dim.getPropertyName() ),
-                                                     new Literal<PrimitiveValue>( o.toString() ), null, null );
+                                                     new Literal<PrimitiveValue>( o.toString() ), true, null );
                 }
             }
             if ( os.length > 1 ) {
