@@ -377,8 +377,9 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                                                                       }
                                                                   }
                                                               }
-                                                              return new GenericFeature( featureType, ( ++currentid )
-                                                                                                      + "", props, null );
+                                                              return new GenericFeature( featureType,
+                                                                                         "ID_" + ( ++currentid ),
+                                                                                         props, null );
                                                           }
                                                       } );
 
