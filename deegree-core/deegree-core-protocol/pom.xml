@@ -26,7 +26,7 @@
 
   <modules>
     <module>deegree-protocol-wms</module>
-    <module>deegree-protocol-wmts</module>
+    <!-- <module>deegree-protocol-wmts</module> -->
     <module>deegree-protocol-csw</module>
   </modules>
 
