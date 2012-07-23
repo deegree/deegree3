@@ -142,8 +142,8 @@ public class WMTSCapabilitiesAdapterTest {
         SpatialMetadata spatialMetadata = tileMatrixSet.getSpatialMetadata();
         assertEquals( "EPSG:26912", spatialMetadata.getCoordinateSystems().get( 0 ).getAlias() );
         assertEquals( 441174.0, spatialMetadata.getEnvelope().getMin().get0(), 0.0001 );
-        assertEquals( 4456038.9310, spatialMetadata.getEnvelope().getMin().get1(), 0.0001 );
-        assertEquals( 441174.0597, spatialMetadata.getEnvelope().getMax().get0(), 0.0001 );
+        assertEquals( 4448359.0, spatialMetadata.getEnvelope().getMin().get1(), 0.0001 );
+        assertEquals( 447830.0, spatialMetadata.getEnvelope().getMax().get0(), 0.0001 );
         assertEquals( 4456039.0, spatialMetadata.getEnvelope().getMax().get1(), 0.0001 );
         assertEquals( 4, tileMatrixSet.getTileMatrices().size() );
     }
