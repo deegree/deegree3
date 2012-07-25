@@ -113,8 +113,8 @@ OpenLayers.DOTS_PER_INCH = 90.72;
     var caps = new OpenLayers.Format.WMTSCapabilities().read(capabilities)
 
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'utah4326', layer: 'utah4326', matrixSet: 'utah4326', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms4326', layer: 'remotewms4326', matrixSet: 'remotewms4326', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms4326_130', layer: 'remotewms4326_130', matrixSet: 'remotewms4326_130', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms4326', layer: 'remotewms4326', matrixSet: 'utah4326', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms4326_130', layer: 'remotewms4326_130', matrixSet: 'utah4326', format: 'image/png'}));
 
 //    map.setCenter(new OpenLayers.LonLat(0, 0), 0)
     map.addControl(new OpenLayers.Control.LayerSwitcher())

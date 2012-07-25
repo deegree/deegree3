@@ -114,11 +114,11 @@ OpenLayers.DOTS_PER_INCH = 90.72;
 
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'nocache', layer: 'pyramid', matrixSet: 'utah', format: 'image/png'}));
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'cache', layer: 'cache', matrixSet: 'utah', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms', layer: 'remotewms', matrixSet: 'remotewms', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_gif', layer: 'remotewms_gif', matrixSet: 'remotewms_gif', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms130', layer: 'remotewms130', matrixSet: 'remotewms130', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_cache', layer: 'remotewms_cache', matrixSet: 'remotewms', format: 'image/png'}));
-    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'filesystem', layer: 'filesystem', matrixSet: 'filesystem', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms', layer: 'remotewms', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_gif', layer: 'remotewms_gif', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms130', layer: 'remotewms130', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_cache', layer: 'remotewms_cache', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'filesystem', layer: 'filesystem', matrixSet: 'utah', format: 'image/png'}));
 
     map.setCenter(new OpenLayers.LonLat(0, 0), 0)
     map.addControl(new OpenLayers.Control.LayerSwitcher())
