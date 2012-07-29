@@ -204,6 +204,8 @@ public class LayerMetadata {
                 }
                 if ( spatialMetadata.getEnvelope() == null ) {
                     spatialMetadata.setEnvelope( md.getSpatialMetadata().getEnvelope() );
+                } else {
+                    spatialMetadata.setEnvelope( spatialMetadata.getEnvelope().merge( md.getSpatialMetadata().getEnvelope() ) );
                 }
             }
         }

@@ -83,6 +83,7 @@ import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
+import org.deegree.theme.Themes;
 import org.slf4j.Logger;
 
 /**
@@ -181,10 +182,16 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( "Layer" );
         LayerMetadata md = theme.getMetadata();
+        // TODO think about a push approach instead of a pull approach
         LayerMetadata lmd = null;
-        if ( theme.getLayers().size() > 0 ) {
-            lmd = theme.getLayers().get( 0 ).getMetadata();
+        for ( org.deegree.layer.Layer l : Themes.getAllLayers( theme ) ) {
+            if ( lmd == null ) {
+                lmd = l.getMetadata();
+            } else {
+                lmd.merge( l.getMetadata() );
+            }
         }
+
         if ( md.isQueryable() ) {
             writer.writeAttribute( "queryable", "1" );
         }
