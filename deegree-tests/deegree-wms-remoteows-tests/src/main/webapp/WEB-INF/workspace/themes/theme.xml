@@ -6,7 +6,6 @@
   <LayerStoreId>optionssingle</LayerStoreId>
   <LayerStoreId>multiple</LayerStoreId>
   <LayerStoreId>optionsmultiple</LayerStoreId>
-  <LayerStoreId>multipleoptionsmultiplelayers</LayerStoreId>
   <LayerStoreId>timeout</LayerStoreId>
   <LayerStoreId>esri</LayerStoreId>
   <LayerStoreId>mywms</LayerStoreId>
@@ -21,26 +20,26 @@
     <Theme>
       <Identifier>single</Identifier>
       <d:Title>single</d:Title>
-      <Layer layerStore='single'>ZipCodes</Layer>
+      <Layer layerStore='single'>zipcodes</Layer>
     </Theme>
     <Theme>
       <Identifier>optionssingle</Identifier>
       <d:Title>optionssingle</d:Title>
-      <Layer layerStore='optionssingle'>ZipCodes</Layer>
+      <Layer layerStore='optionssingle'>zipcodes</Layer>
     </Theme>
     <Theme>
       <Identifier>multiple</Identifier>
       <d:Title>multiple</d:Title>
-      <Layer layerStore='multiple'>ZipCodes</Layer>
-      <Layer layerStore='multiple'>Roads</Layer>
-      <Layer layerStore='multiple'>Railroads</Layer>
+      <Layer layerStore='multiple'>zipcodes</Layer>
+      <Layer layerStore='multiple'>roads</Layer>
+      <Layer layerStore='multiple'>railroads</Layer>
     </Theme>
     <Theme>
       <Identifier>optionsmultiple</Identifier>
       <d:Title>optionsmultiple</d:Title>
-      <Layer layerStore='optionsmultiple'>ZipCodes</Layer>
-      <Layer layerStore='optionsmultiple'>Roads</Layer>
-      <Layer layerStore='optionsmultiple'>Railroads</Layer>
+      <Layer layerStore='optionsmultiple'>zipcodes</Layer>
+      <Layer layerStore='optionsmultiple'>roads</Layer>
+      <Layer layerStore='optionsmultiple'>railroads</Layer>
     </Theme>
     <Theme>
       <Identifier>timeout</Identifier>
@@ -65,17 +64,17 @@
     <Theme>
       <Identifier>parameters</Identifier>
       <d:Title>parameters</d:Title>
-      <Layer layerStore='parameters'>ZipCodes</Layer>
+      <Layer layerStore='parameters'>zipcodes</Layer>
     </Theme>
     <Theme>
       <Identifier>parametersext</Identifier>
       <d:Title>parametersext</d:Title>
-      <Layer layerStore='parametersext'>ZipCodes</Layer>
+      <Layer layerStore='parametersext'>zipcodes</Layer>
     </Theme>
     <Theme>
       <Identifier>transformedgif</Identifier>
       <d:Title>transformedgif</d:Title>
-      <Layer layerStore='transformedgif'>ZipCodes</Layer>
+      <Layer layerStore='transformedgif'>zipcodes</Layer>
     </Theme>
     <Theme>
       <Identifier>umn</Identifier>
