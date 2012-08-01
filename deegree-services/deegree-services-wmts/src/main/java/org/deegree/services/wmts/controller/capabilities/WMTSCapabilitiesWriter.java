@@ -289,10 +289,10 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
             writeElement( writer, WMTSNS, "ScaleDenominator", scale + "" );
             Envelope env = tm.getSpatialMetadata().getEnvelope();
             writeElement( writer, WMTSNS, "TopLeftCorner", env.getMin().get0() + " " + env.getMax().get1() );
-            writeElement( writer, WMTSNS, "TileWidth", Integer.toString( tm.getTilePixelsX() ) );
-            writeElement( writer, WMTSNS, "TileHeight", Integer.toString( tm.getTilePixelsY() ) );
-            writeElement( writer, WMTSNS, "MatrixWidth", Integer.toString( tm.getNumTilesX() ) );
-            writeElement( writer, WMTSNS, "MatrixHeight", Integer.toString( tm.getNumTilesY() ) );
+            writeElement( writer, WMTSNS, "TileWidth", "" + tm.getTilePixelsX() );
+            writeElement( writer, WMTSNS, "TileHeight", "" + tm.getTilePixelsY() );
+            writeElement( writer, WMTSNS, "MatrixWidth", "" + tm.getNumTilesX() );
+            writeElement( writer, WMTSNS, "MatrixHeight", "" + tm.getNumTilesY() );
 
             writer.writeEndElement();
         }
