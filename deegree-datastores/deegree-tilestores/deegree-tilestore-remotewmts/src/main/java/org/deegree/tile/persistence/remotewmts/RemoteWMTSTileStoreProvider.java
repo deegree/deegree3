@@ -141,13 +141,27 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
 
         Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
         for ( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig : config.getTileDataSet() ) {
-            String tileDataSetId = tileDataSetConfig.getIdentifier();
-            String outputFormat = tileDataSetConfig.getOutputFormat();
+            String tileDataSetId = determineLayerId( tileDataSetConfig );
+            String outputFormat = determineOutputFormat( tileDataSetConfig );
             WMTSClient client = wmts.getClient();
             TileDataSet tileDataSet = buildTileDataSet( tileDataSetConfig, client, outputFormat );
             map.put( tileDataSetId, tileDataSet );
         }
         return map;
+    }
+
+    private String determineLayerId( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig ) {
+        if ( tileDataSetConfig.getIdentifier() != null ) {
+            return tileDataSetConfig.getIdentifier();
+        }
+        return tileDataSetConfig.getRequestParams().getLayer();
+    }
+
+    private String determineOutputFormat( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig ) {
+        if ( tileDataSetConfig.getOutputFormat() != null ) {
+            return tileDataSetConfig.getOutputFormat();
+        }
+        return tileDataSetConfig.getRequestParams().getFormat();
     }
 
     private TileDataSet buildTileDataSet( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig, WMTSClient client,
@@ -161,6 +175,9 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         RequestParams requestParams = tileDataSetConfig.getRequestParams();
         String requestTileMatrixSetId = requestParams.getTileMatrixSet();
         String workspaceTileMatrixSetId = tileDataSetConfig.getTileMatrixSetId();
+        if ( workspaceTileMatrixSetId == null ) {
+            workspaceTileMatrixSetId = requestTileMatrixSetId;
+        }
         TileMatrixSet localTileMatrixSet = getLocalTileMatrixSet( requestTileMatrixSetId, workspaceTileMatrixSetId );
         TileMatrixSet remoteTileMatrixSet = getRemoteTileMatrixSet( client, requestTileMatrixSetId );
 

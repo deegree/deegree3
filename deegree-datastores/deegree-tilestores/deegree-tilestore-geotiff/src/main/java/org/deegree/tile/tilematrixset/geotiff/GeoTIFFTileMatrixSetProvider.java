@@ -51,6 +51,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -153,7 +154,8 @@ public class GeoTIFFTileMatrixSetProvider implements TileMatrixSetProvider {
                 int numy = (int) Math.ceil( (double) height / (double) th );
                 double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
                 String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
-                TileMatrix tmd = new TileMatrix( id, smd, tw, th, res, numx, numy );
+                TileMatrix tmd = new TileMatrix( id, smd, BigInteger.valueOf( tw ), BigInteger.valueOf( th ), res,
+                                                 BigInteger.valueOf( numx ), BigInteger.valueOf( numy ) );
                 matrices.add( tmd );
                 LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
                                                                                                        tw, th, res } );

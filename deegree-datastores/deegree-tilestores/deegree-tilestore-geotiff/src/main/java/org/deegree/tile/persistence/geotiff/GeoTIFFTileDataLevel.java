@@ -87,7 +87,7 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
     }
 
     @Override
-    public GeoTIFFTile getTile( int x, int y ) {
+    public GeoTIFFTile getTile( long x, long y ) {
         if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
@@ -107,8 +107,7 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
         Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
-        return new GeoTIFFTile( readerPool, imageIndex, x, y, envelope, metadata.getTilePixelsX(),
-                                metadata.getTilePixelsY() );
+        return new GeoTIFFTile( readerPool, imageIndex, (int) x, (int) y, envelope, (int) metadata.getTilePixelsX(),
+                                (int) metadata.getTilePixelsY() );
     }
-
 }

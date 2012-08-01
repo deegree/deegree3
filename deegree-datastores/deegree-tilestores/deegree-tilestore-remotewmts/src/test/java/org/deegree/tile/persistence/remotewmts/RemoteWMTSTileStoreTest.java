@@ -40,7 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewmts;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,13 +50,9 @@ import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.persistence.GenericTileStore;
+import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreManager;
 import org.junit.After;
 import org.junit.Before;
@@ -91,32 +88,12 @@ public class RemoteWMTSTileStoreTest {
     }
 
     @Test
-    public void testGetMetdataEPSG26912() {
-//        GenericTileStore store = (GenericTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
-//        SpatialMetadata metadata = store.getMetadata( "tiles26912" );
-//        assertEquals( 1, metadata.getCoordinateSystems().size() );
-//        assertEquals( "urn:opengis:def:crs:epsg::26912", metadata.getCoordinateSystems().get( 0 ).getId() );
-//        assertEquals( 228563.303, metadata.getEnvelope().getMin().get0(), 0.001 );
-//        assertEquals( 4103089.15, metadata.getEnvelope().getMin().get1(), 0.001 );
-//        assertEquals( 779065.703, metadata.getEnvelope().getMax().get0(), 0.001 );
-//        assertEquals( 4653591.55, metadata.getEnvelope().getMax().get1(), 0.001 );
-    }
-
-    @Test
-    public void testGetTileMatrixSetEPSG26912() {
-//        GenericTileStore store = (GenericTileStore) ws.getSubsystemManager( TileStoreManager.class ).get( "tiles26912" );
-//        TileDataSet dataSet = store.getTileDataSet( "tiles26912" );
-//
-//        assertEquals( 10, dataSet.getTileDataLevels().size() );
-//        double scale = 1000.0;
-//        double resolution = MapUtils.DEFAULT_PIXEL_SIZE * scale;
-//        for ( TileDataLevel matrix : dataSet.getTileDataLevels() ) {
-//            TileMatrix md = matrix.getMetadata();
-//            assertEquals( resolution, md.getResolution(), 0.001 );
-//            assertEquals( resolution * md.getTilePixelsX(), md.getTileWidth(), 0.001 );
-//            assertEquals( resolution * md.getTilePixelsY(), md.getTileHeight(), 0.001 );
-//            scale *= 2.0;
-//            resolution *= 2.0;
-//        }
+    public void testTileDataSet() {
+        TileStore store = ws.getSubsystemManager( TileStoreManager.class ).get( "medford_buildings" );
+        assertNotNull( store );
+        assertEquals( 1, store.getTileDataSetIds().size() );
+        TileDataSet tileDataSet = store.getTileDataSet( "medford:buildings" );
+        assertEquals( "image/png", tileDataSet.getNativeImageFormat() );
+        assertEquals( 19, tileDataSet.getTileDataLevels().size() );
     }
 }

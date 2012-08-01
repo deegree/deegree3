@@ -146,19 +146,19 @@ public class CachingTileStore implements TileStore {
      * @param envelope
      *            may be null, in which case all objects will be removed from the cache
      */
-    public int invalidateCache( String tileMatrixSet, Envelope envelope ) {
+    public long invalidateCache( String tileMatrixSet, Envelope envelope ) {
         if ( envelope == null ) {
             int size = cache.getSize();
             cache.removeAll();
             return size;
         }
-        int cnt = 0;
+        long cnt = 0;
         for ( TileDataLevel tm : tileMatrixSets.get( tileMatrixSet ).getTileDataLevels() ) {
-            int[] ts = Tiles.getTileIndexRange( tm, envelope );
+            long[] ts = Tiles.getTileIndexRange( tm, envelope );
             if ( ts != null ) {
                 String id = tm.getMetadata().getIdentifier();
-                for ( int x = ts[0]; x <= ts[2]; ++x ) {
-                    for ( int y = ts[1]; y <= ts[3]; ++y ) {
+                for ( long x = ts[0]; x <= ts[2]; ++x ) {
+                    for ( long y = ts[1]; y <= ts[3]; ++y ) {
                         if ( cache.remove( id + "_" + x + "_" + y ) ) {
                             ++cnt;
                         }

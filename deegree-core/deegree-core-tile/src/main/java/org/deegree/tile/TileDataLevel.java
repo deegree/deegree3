@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -41,7 +41,7 @@
 package org.deegree.tile;
 
 /**
- * A single level of a {@link TileDataSet}. Tile indices are counted from 0.
+ * A single level of a {@link TileDataSet}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -53,16 +53,18 @@ public interface TileDataLevel {
     /**
      * Returns the tile matrix, which describes the extent of data, size of tiles etc.
      * 
-     * @return the metadata, never null.
+     * @return matrix metadata, never <code>null</code>
      */
     TileMatrix getMetadata();
 
     /**
-     * Retrieve a single tile.
+     * Retrieves a single tile.
      * 
      * @param x
+     *            column index of the tile, counting from zero
      * @param y
-     * @return the tile at x/y. May return null if there is no such tile.
+     *            row index of the tile, counting from zero
+     * @return the tile at x/y or <code>null</code> if there is no such tile
      */
-    Tile getTile( int x, int y );
+    Tile getTile( long x, long y );
 }

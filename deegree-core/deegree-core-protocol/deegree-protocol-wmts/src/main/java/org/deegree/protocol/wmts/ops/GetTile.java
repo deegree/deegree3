@@ -68,9 +68,9 @@ public class GetTile {
 
     private final String tileMatrix;
 
-    private final int tileRow;
+    private final long tileRow;
 
-    private final int tileCol;
+    private final long tileCol;
 
     /**
      * Creates a new {@link GetTile} instance.
@@ -85,20 +85,19 @@ public class GetTile {
      *            requested tile matrix set, must not be <code>null</code>
      * @param tileMatrix
      *            requested tile matrix, must not be <code>null</code>
-     * @param tileRow
+     * @param x
      *            index of the tile row
-     * @param tileCol
+     * @param y
      *            index of the tile column
      */
-    public GetTile( String layer, String style, String format, String tileMatrixSet, String tileMatrix, int tileRow,
-                    int tileCol ) {
+    public GetTile( String layer, String style, String format, String tileMatrixSet, String tileMatrix, long x, long y ) {
         this.layer = layer;
         this.style = style;
         this.format = format;
         this.tileMatrixSet = tileMatrixSet;
         this.tileMatrix = tileMatrix;
-        this.tileRow = tileRow;
-        this.tileCol = tileCol;
+        this.tileRow = x;
+        this.tileCol = y;
     }
 
     /**
@@ -174,14 +173,14 @@ public class GetTile {
     /**
      * @return the tileRow
      */
-    public int getTileRow() {
+    public long getTileRow() {
         return tileRow;
     }
 
     /**
      * @return the tileCol
      */
-    public int getTileCol() {
+    public long getTileCol() {
         return tileCol;
     }
 }

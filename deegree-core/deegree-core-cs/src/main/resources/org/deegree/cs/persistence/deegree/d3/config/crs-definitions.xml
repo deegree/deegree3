@@ -21790,6 +21790,7 @@
                 <crs:Id>osm_slippy_map</crs:Id>
                 <crs:Id>urn:ogc:def:crs:epsg::3785</crs:Id>
                 <crs:Id>urn:opengis:def:crs:epsg::3785</crs:Id>
+                <crs:Id>urn:ogc:def:crs:EPSG::900913</crs:Id>
                 <crs:Name>OSM_Slippy_Map</crs:Name>
                 <crs:Name>Google_Maps projected crs based on a mercator projection</crs:Name>
                 <crs:Version>2009-12-09T13:39</crs:Version>

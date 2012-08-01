@@ -40,6 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
+import java.math.BigInteger;
+
 import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
@@ -52,15 +54,15 @@ import org.deegree.geometry.metadata.SpatialMetadata;
  */
 public class TileMatrix {
 
-    private String identifier;
+    private final String identifier;
 
-    private SpatialMetadata spatialMetadata;
+    private final SpatialMetadata spatialMetadata;
 
-    private int numTilesX, numTilesY;
+    private final BigInteger numTilesX, numTilesY;
 
-    private int tileSizeX, tileSizeY;
+    private final BigInteger tileSizeX, tileSizeY;
 
-    private double resolution, tileWidth, tileHeight;
+    private final double resolution, tileWidth, tileHeight;
 
     /**
      * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
@@ -70,18 +72,18 @@ public class TileMatrix {
      * @param spatialMetadata
      *            the envelope and coordinate system, never null
      * @param tileSizeX
-     *            the width of a tile in pixels
+     *            the width of a tile in pixels, must be positive and not <code>null</code>
      * @param tileSizeY
-     *            the height of a tile in pixels
+     *            the height of a tile in pixels, must be positive and not <code>null</code>
      * @param resolution
      *            the resolution of a pixel in world coordinates
      * @param numTilesX
-     *            the number of tiles in x direction
+     *            the number of tiles in x direction, must be positive and not <code>null</code>
      * @param numTilesY
-     *            the number of tiles in y direction
+     *            the number of tiles in y direction, must be positive and not <code>null</code>
      */
-    public TileMatrix( String identifier, SpatialMetadata spatialMetadata, int tileSizeX, int tileSizeY,
-                       double resolution, int numTilesX, int numTilesY ) {
+    public TileMatrix( String identifier, SpatialMetadata spatialMetadata, BigInteger tileSizeX, BigInteger tileSizeY,
+                       double resolution, BigInteger numTilesX, BigInteger numTilesY ) {
         this.identifier = identifier;
         this.spatialMetadata = spatialMetadata;
         this.tileSizeX = tileSizeX;
@@ -89,6 +91,37 @@ public class TileMatrix {
         this.resolution = resolution;
         this.numTilesX = numTilesX;
         this.numTilesY = numTilesY;
+        this.tileWidth = tileSizeX.longValue() * resolution;
+        this.tileHeight = tileSizeY.longValue() * resolution;
+    }
+
+    /**
+     * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
+     * 
+     * @param identifier
+     *            to identify the tile matrix
+     * @param spatialMetadata
+     *            the envelope and coordinate system, never null
+     * @param tileSizeX
+     *            the width of a tile in pixels, must be positive
+     * @param tileSizeY
+     *            the height of a tile in pixels, must be positive
+     * @param resolution
+     *            the resolution of a pixel in world coordinates
+     * @param numTilesX
+     *            the number of tiles in x direction, must be positive
+     * @param numTilesY
+     *            the number of tiles in y direction, must be positive
+     */
+    public TileMatrix( String identifier, SpatialMetadata spatialMetadata, long tileSizeX, long tileSizeY,
+                       double resolution, long numTilesX, long numTilesY ) {
+        this.identifier = identifier;
+        this.spatialMetadata = spatialMetadata;
+        this.tileSizeX = BigInteger.valueOf( tileSizeX );
+        this.tileSizeY = BigInteger.valueOf( tileSizeY );
+        this.resolution = resolution;
+        this.numTilesX = BigInteger.valueOf( numTilesX );
+        this.numTilesY = BigInteger.valueOf( numTilesY );
         this.tileWidth = tileSizeX * resolution;
         this.tileHeight = tileSizeY * resolution;
     }
@@ -103,15 +136,15 @@ public class TileMatrix {
     /**
      * @return the width of a tile in pixels
      */
-    public int getTilePixelsX() {
-        return tileSizeX;
+    public long getTilePixelsX() {
+        return tileSizeX.longValue();
     }
 
     /**
      * @return the height of a tile in pixels
      */
-    public int getTilePixelsY() {
-        return tileSizeY;
+    public long getTilePixelsY() {
+        return tileSizeY.longValue();
     }
 
     /**
@@ -124,15 +157,15 @@ public class TileMatrix {
     /**
      * @return the number of tiles in x direction
      */
-    public int getNumTilesX() {
-        return numTilesX;
+    public long getNumTilesX() {
+        return numTilesX.longValue();
     }
 
     /**
      * @return the number of tiles in y direction
      */
-    public int getNumTilesY() {
-        return numTilesY;
+    public long getNumTilesY() {
+        return numTilesY.longValue();
     }
 
     /**

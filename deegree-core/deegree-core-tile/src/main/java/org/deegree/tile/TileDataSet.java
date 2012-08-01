@@ -49,6 +49,7 @@ import org.deegree.geometry.Envelope;
  * A collection of {@link TileDataLevel}s that adhere to the structure defined by a {@link TileMatrixSet}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
@@ -69,7 +70,7 @@ public interface TileDataSet {
     /**
      * Returns the tile matrices of this matrix set.
      * 
-     * @return the list of tile matrices this matrix set contains.
+     * @return the list of tile matrices this matrix set contains, never <code>null</code>
      */
     List<TileDataLevel> getTileDataLevels();
 
@@ -89,7 +90,9 @@ public interface TileDataSet {
     TileDataLevel getTileDataLevel( String identifier );
 
     /**
-     * @return the mime type of the native image format, never <code>null</code>
+     * Returns the mime type of the native image format.
+     * 
+     * @return mime type, never <code>null</code>
      */
     String getNativeImageFormat();
 }

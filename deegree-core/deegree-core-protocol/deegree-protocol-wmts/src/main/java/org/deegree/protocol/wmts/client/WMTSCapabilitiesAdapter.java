@@ -39,8 +39,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsBigInteger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsInteger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
@@ -50,6 +50,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElementO
 import static org.deegree.cs.CRSUtils.calcResolution;
 import static org.deegree.protocol.wmts.WMTSConstants.WMTS_100_NS;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -406,22 +407,22 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
         // <element name="TileWidth" type="positiveInteger">
         requireStartElement( xmlStream, singletonList( TILE_WIDTH ) );
-        int tileSizeX = getElementTextAsInteger( xmlStream );
+        BigInteger tileSizeX = getElementTextAsBigInteger( xmlStream );
         nextElement( xmlStream );
 
         // <element name="TileHeight" type="positiveInteger">
         requireStartElement( xmlStream, singletonList( TILE_HEIGHT ) );
-        int tileSizeY = getElementTextAsInteger( xmlStream );
+        BigInteger tileSizeY = getElementTextAsBigInteger( xmlStream );
         nextElement( xmlStream );
 
         // <element name="MatrixWidth" type="positiveInteger">
         requireStartElement( xmlStream, singletonList( MATRIX_WIDTH ) );
-        int numTilesX = getElementTextAsInteger( xmlStream );
+        BigInteger numTilesX = getElementTextAsBigInteger( xmlStream );
         nextElement( xmlStream );
 
         // <element name="MatrixHeight" type="positiveInteger">
         requireStartElement( xmlStream, singletonList( MATRIX_HEIGHT ) );
-        int numTilesY = getElementTextAsInteger( xmlStream );
+        BigInteger numTilesY = getElementTextAsBigInteger( xmlStream );
         nextElement( xmlStream );
 
         double resolution = calcResolution( scaleDenominator, crs );
@@ -431,11 +432,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         return new TileMatrix( identifier, spatialMetadata, tileSizeX, tileSizeY, resolution, numTilesX, numTilesY );
     }
 
-    private SpatialMetadata createSpatialMetadata( ICRS crs, double resolution, double[] topLeftCorner, int tileSizeX,
-                                                   int tileSizeY, int numTilesX, int numTilesY ) {
+    private SpatialMetadata createSpatialMetadata( ICRS crs, double resolution, double[] topLeftCorner,
+                                                   BigInteger tileSizeX, BigInteger tileSizeY, BigInteger numTilesX,
+                                                   BigInteger numTilesY ) {
 
-        double worldWidth = tileSizeX * numTilesX * resolution;
-        double worldHeight = tileSizeY * numTilesY * resolution;
+        double worldWidth = tileSizeX.longValue() * numTilesX.longValue() * resolution;
+        double worldHeight = tileSizeY.longValue() * numTilesY.longValue() * resolution;
 
         double min0 = topLeftCorner[0];
         double max0 = topLeftCorner[0] + worldWidth;

@@ -52,6 +52,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -319,6 +320,20 @@ public class XMLStreamUtils {
             value = Integer.parseInt( s );
         } catch ( NumberFormatException e ) {
             String msg = "Value " + s + " in element: " + elementName + " is not a parsable integer.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return value;
+    }
+
+    public static BigInteger getElementTextAsBigInteger( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        BigInteger value;
+        QName elementName = xmlStream.getName();
+        String s = xmlStream.getElementText();
+        try {
+            value = new BigInteger( s );
+        } catch ( NumberFormatException e ) {
+            String msg = "Value " + s + " in element: " + elementName + " is not a parsable BigInteger.";
             throw new XMLParsingException( xmlStream, msg );
         }
         return value;

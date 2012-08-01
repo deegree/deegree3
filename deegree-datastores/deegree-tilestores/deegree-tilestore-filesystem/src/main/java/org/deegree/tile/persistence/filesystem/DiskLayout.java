@@ -62,7 +62,7 @@ public interface DiskLayout {
      *            row index of the tile (starting at 0)
      * @return tile file or <code>null</code> if the tile matrix does not exist (or indexes are out of range)
      */
-    File resolve( String matrixId, int x, int y );
+    File resolve( String matrixId, long x, long y );
 
     /**
      * Returns the suffix of the tile files (without '.').

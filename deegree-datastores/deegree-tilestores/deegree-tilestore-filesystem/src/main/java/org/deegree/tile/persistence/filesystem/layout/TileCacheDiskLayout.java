@@ -94,7 +94,7 @@ public class TileCacheDiskLayout implements DiskLayout {
     }
 
     @Override
-    public File resolve( String matrixId, int x, int y ) {
+    public File resolve( String matrixId, long x, long y ) {
 
         TileDataLevel tileMatrix = set.getTileDataLevel( matrixId );
         if ( tileMatrix == null ) {
@@ -126,7 +126,7 @@ public class TileCacheDiskLayout implements DiskLayout {
         return formatter.format( tileMatrixIndex );
     }
 
-    private String getColumnFileNamePart( int x ) {
+    private String getColumnFileNamePart( long x ) {
         StringBuilder sb = new StringBuilder();
         DecimalFormat formatter = new DecimalFormat( "000" );
         sb.append( formatter.format( x / 1000000 ) );
@@ -138,8 +138,8 @@ public class TileCacheDiskLayout implements DiskLayout {
         return sb.toString();
     }
 
-    private String getRowFileNamePart( int y, TileDataLevel tileMatrix ) {
-        int tileCacheY = getTileCacheYIndex( tileMatrix, y );
+    private String getRowFileNamePart( long y, TileDataLevel tileMatrix ) {
+        long tileCacheY = getTileCacheYIndex( tileMatrix, y );
         StringBuilder sb = new StringBuilder();
         DecimalFormat formatter = new DecimalFormat( "000" );
         sb.append( formatter.format( tileCacheY / 1000000 ) );
@@ -152,7 +152,7 @@ public class TileCacheDiskLayout implements DiskLayout {
         return sb.toString();
     }
 
-    private int getTileCacheYIndex( TileDataLevel tileMatrix, int y ) {
+    private long getTileCacheYIndex( TileDataLevel tileMatrix, long y ) {
         // TileCache's y-axis is inverted
         return tileMatrix.getMetadata().getNumTilesY() - 1 - y;
     }

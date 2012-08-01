@@ -38,6 +38,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Collections;
 
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -46,8 +47,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.TileDataLevel;
-import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileDataSet;
+import org.deegree.tile.TileMatrix;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -72,7 +73,8 @@ public class TileCacheDiskLayoutTest {
         double[] max = new double[] { 1000.0, 1000.0 };
         Envelope env = fac.createEnvelope( min, max, crs );
         SpatialMetadata spatialMetadata = new SpatialMetadata( env, singletonList( crs ) );
-        TileMatrix md = new TileMatrix( "00", spatialMetadata, 128, 128, 0.001, 1000000000, 1000000000 );
+        TileMatrix md = new TileMatrix( "00", spatialMetadata, BigInteger.valueOf( 128 ), BigInteger.valueOf( 128 ),
+                                        0.001, BigInteger.valueOf( 1000000000 ), BigInteger.valueOf( 1000000000 ) );
         TileDataLevel mockedMatrix = Mockito.mock( TileDataLevel.class );
         when( mockedMatrix.getMetadata() ).thenReturn( md );
         TileDataSet mockedMatrixSet = Mockito.mock( TileDataSet.class );

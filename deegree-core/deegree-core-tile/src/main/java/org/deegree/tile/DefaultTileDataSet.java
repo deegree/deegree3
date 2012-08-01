@@ -55,8 +55,8 @@ import org.slf4j.Logger;
 /**
  * Default implementation of {@link TileDataSet}.
  * <p>
- * It selects tile matrices manually based on the tile matrix metadata. It can be used in conjunction with any tile
- * matrix implementation.
+ * Selects tile matrices based on tile matrix metadata. Can be used in conjunction with any implementation of
+ * {@link TileMatrixSet}.
  * </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
@@ -74,13 +74,23 @@ public class DefaultTileDataSet implements TileDataSet {
 
     private final String format;
 
+    /**
+     * Creates a new {@link DefaultTileDataSet} instance.
+     * 
+     * @param levels
+     *            data levels, must not be <code>null</code>
+     * @param tileMatrixSet
+     *            corresponding matrix set metadata, must not be <code>null</code>
+     * @param format
+     *            native image format, must not be <code>null</code>
+     */
     public DefaultTileDataSet( List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format ) {
-        this.format = format;
         this.levels = new LinkedHashMap<String, TileDataLevel>();
         for ( TileDataLevel m : levels ) {
             this.levels.put( m.getMetadata().getIdentifier(), m );
         }
         this.metadata = tileMatrixSet;
+        this.format = format;
     }
 
     @Override
@@ -97,7 +107,7 @@ public class DefaultTileDataSet implements TileDataSet {
             matrix = next;
         }
 
-        final int[] idxs = Tiles.getTileIndexRange( matrix, envelope );
+        final long[] idxs = Tiles.getTileIndexRange( matrix, envelope );
 
         if ( idxs == null ) {
             return Collections.<Tile> emptyList().iterator();
@@ -110,7 +120,7 @@ public class DefaultTileDataSet implements TileDataSet {
 
         // fetch tiles lazily
         return new Iterator<Tile>() {
-            int x = idxs[0], y = idxs[1];
+            long x = idxs[0], y = idxs[1];
 
             @Override
             public boolean hasNext() {

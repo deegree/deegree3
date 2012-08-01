@@ -78,7 +78,7 @@ class FileSystemTileDataLevel implements TileDataLevel {
     }
 
     @Override
-    public Tile getTile( int x, int y ) {
+    public Tile getTile( long x, long y ) {
         if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }

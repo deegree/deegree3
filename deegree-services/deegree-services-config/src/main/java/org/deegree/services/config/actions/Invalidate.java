@@ -108,7 +108,7 @@ public class Invalidate {
             bbox.setCoordinateSystem( ts.getMetadata( tmsid ).getCoordinateSystems().get( 0 ) );
         }
 
-        int num = ( (CachingTileStore) ts ).invalidateCache( tmsid, bbox );
+        long num = ( (CachingTileStore) ts ).invalidateCache( tmsid, bbox );
         IOUtils.write( "Removed " + num + " elements from the cache.\n", resp.getOutputStream() );
     }
 

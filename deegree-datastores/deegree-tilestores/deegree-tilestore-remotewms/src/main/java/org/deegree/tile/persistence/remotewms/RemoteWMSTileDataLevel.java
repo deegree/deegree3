@@ -59,7 +59,7 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
 
     private final TileMatrix metadata;
 
-    private final int tileSizeX, tileSizeY;
+    private final long tileSizeX, tileSizeY;
 
     private final String format;
 
@@ -88,7 +88,7 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
      *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      */
     RemoteWMSTileDataLevel( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
-                         WMSClient client, String outputFormat ) {
+                            WMSClient client, String outputFormat ) {
         this.metadata = tileMd;
         this.format = format;
         this.layers = layers;
@@ -105,7 +105,7 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
     }
 
     @Override
-    public Tile getTile( int x, int y ) {
+    public Tile getTile( long x, long y ) {
         if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
             return null;
         }
@@ -115,8 +115,8 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
         Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
-        GetMap gm = new GetMap( layers, styles, tileSizeX, tileSizeY, envelope, envelope.getCoordinateSystem(), format,
-                                true );
+        GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope,
+                                envelope.getCoordinateSystem(), format, true );
         return new RemoteWMSTile( client, gm, outputFormat );
     }
 }

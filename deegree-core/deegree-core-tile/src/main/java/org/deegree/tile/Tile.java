@@ -48,8 +48,7 @@ import org.deegree.geometry.Envelope;
 /**
  * A single tile of a {@link TileDataLevel}.
  * <p>
- * For streaming purposes, implementations are required to not load the data in memory, but only generate it upon
- * request.
+ * For streaming purposes, implementations are required to not load the data in memory, but to generate it upon request.
  * </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>

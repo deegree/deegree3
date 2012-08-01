@@ -63,7 +63,7 @@ public class Tiles {
      * @param envelope
      * @return null, if envelopes do not intersect
      */
-    public static int[] getTileIndexRange( TileDataLevel matrix, Envelope envelope ) {
+    public static long[] getTileIndexRange( TileDataLevel matrix, Envelope envelope ) {
         TileMatrix md = matrix.getMetadata();
 
         // calc tile indices
@@ -78,10 +78,10 @@ public class Tiles {
         double maxx = envelope.getMax().get0();
         double maxy = envelope.getMax().get1();
 
-        int tileminx = (int) Math.floor( ( minx - mminx ) / md.getTileWidth() );
-        int tileminy = (int) Math.floor( ( miny - mminy ) / md.getTileHeight() );
-        int tilemaxx = (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() );
-        int tilemaxy = (int) Math.ceil( ( maxy - mminy ) / md.getTileHeight() );
+        long tileminx = (int) Math.floor( ( minx - mminx ) / md.getTileWidth() );
+        long tileminy = (int) Math.floor( ( miny - mminy ) / md.getTileHeight() );
+        long tilemaxx = (int) Math.floor( ( maxx - mminx ) / md.getTileWidth() );
+        long tilemaxy = (int) Math.ceil( ( maxy - mminy ) / md.getTileHeight() );
 
         // sanitize values
         tileminx = Math.max( 0, tileminx );
@@ -93,11 +93,11 @@ public class Tiles {
         tilemaxx = Math.min( md.getNumTilesX() - 1, tilemaxx );
         tilemaxy = Math.min( md.getNumTilesY() - 1, tilemaxy );
 
-        int h = tileminy;
+        long h = tileminy;
         tileminy = md.getNumTilesY() - tilemaxy - 1;
         tilemaxy = md.getNumTilesY() - h - 1;
 
-        return new int[] { tileminx, tileminy, tilemaxx, tilemaxy };
+        return new long[] { tileminx, tileminy, tilemaxx, tilemaxy };
     }
 
     /**
@@ -111,7 +111,7 @@ public class Tiles {
      *            tile row index (counting from zero)
      * @return envelope, never <code>null</code>
      */
-    public static Envelope calcTileEnvelope( TileMatrix matrix, int x, int y ) {
+    public static Envelope calcTileEnvelope( TileMatrix matrix, long x, long y ) {
         double width = matrix.getTileWidth();
         double height = matrix.getTileHeight();
         Envelope env = matrix.getSpatialMetadata().getEnvelope();

@@ -86,13 +86,13 @@ public abstract class AbstractTileStoreTransaction implements TileStoreTransacti
     }
 
     private void delete( TileDataLevel matrix, Envelope env ) {
-        int[] tileIndexRange = Tiles.getTileIndexRange( matrix, env );
-        int minX = tileIndexRange[0];
-        int minY = tileIndexRange[1];
-        int maxX = tileIndexRange[2];
-        int maxY = tileIndexRange[3];
-        for ( int x = minX; x <= maxX; x++ ) {
-            for ( int y = minY; y <= maxY; y++ ) {
+        long[] tileIndexRange = Tiles.getTileIndexRange( matrix, env );
+        long minX = tileIndexRange[0];
+        long minY = tileIndexRange[1];
+        long maxX = tileIndexRange[2];
+        long maxY = tileIndexRange[3];
+        for ( long x = minX; x <= maxX; x++ ) {
+            for ( long y = minY; y <= maxY; y++ ) {
                 delete( matrix.getMetadata().getIdentifier(), x, y );
             }
         }

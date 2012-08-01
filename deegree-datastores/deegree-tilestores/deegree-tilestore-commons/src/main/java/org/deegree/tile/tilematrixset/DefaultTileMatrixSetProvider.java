@@ -95,8 +95,8 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
                 double res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
                 double minx = tm.getTopLeftCorner().get( 0 );
                 double maxy = tm.getTopLeftCorner().get( 1 );
-                double maxx = tm.getTileWidth() * tm.getMatrixWidth() * res + minx;
-                double miny = maxy - tm.getTileHeight() * tm.getMatrixHeight() * res;
+                double maxx = tm.getTileWidth().longValue() * tm.getMatrixWidth().longValue() * res + minx;
+                double miny = maxy - tm.getTileHeight().longValue() * tm.getMatrixHeight().longValue() * res;
                 Envelope env = new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, crs );
                 SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
                 TileMatrix md = new TileMatrix( tm.getIdentifier(), smd, tm.getTileWidth(), tm.getTileHeight(), res,
