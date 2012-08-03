@@ -40,10 +40,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewmts;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.ows.http.CloseRequiredInputStream;
+import org.deegree.protocol.wmts.client.GetTileResponse;
 import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.tile.Tile;
@@ -63,7 +71,7 @@ class RemoteWMTSTile implements Tile {
 
     private final GetTile request;
 
-    private final String outputFormat;
+    private final String recodedOutputFormat;
 
     private final Envelope envelope;
 
@@ -74,45 +82,65 @@ class RemoteWMTSTile implements Tile {
      *            client to use for performing the {@link GetTile} request, must not be <code>null</code>
      * @param request
      *            request for retrieving the tile image, must not be <code>null</code>
-     * @param outputFormat
+     * @param recodedOutputFormat
      *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
      *            formats, eg. 'png')
      * @param envelope
      */
-    RemoteWMTSTile( WMTSClient client, GetTile request, String outputFormat, Envelope envelope ) {
+    RemoteWMTSTile( WMTSClient client, GetTile request, String recodedOutputFormat, Envelope envelope ) {
         this.client = client;
         this.request = request;
-        this.outputFormat = outputFormat;
+        this.recodedOutputFormat = recodedOutputFormat;
         this.envelope = envelope;
     }
 
     @Override
     public BufferedImage getAsImage()
                             throws TileIOException {
-        // try {
-        // return ImageIO.read( getAsStream() );
-        // } catch ( IOException e ) {
-        // throw new TileIOException( "Error decoding image : " + e.getMessage(), e );
-        // }
-        throw new UnsupportedOperationException();
+
+        CloseRequiredInputStream is = getNativeFormatRemoteStream();
+        try {
+            return ImageIO.read( is );
+        } catch ( IOException e ) {
+            throw new TileIOException( "Error decoding remote WMTS response as image : " + e.getMessage(), e );
+        } finally {
+            closeQuietly( is );
+        }
     }
 
     @Override
-    public InputStream getAsStream()
+    public CloseRequiredInputStream getAsStream()
                             throws TileIOException {
-        // try {
-        // if ( outputFormat != null ) {
-        // BufferedImage img = ImageIO.read( client.getMap( request ) );
-        // ByteArrayOutputStream out = new ByteArrayOutputStream();
-        // ImageIO.write( img, outputFormat, out );
-        // out.close();
-        // return new ByteArrayInputStream( out.toByteArray() );
-        // }
-        // return client.getMap( request );
-        // } catch ( IOException e ) {
-        // throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
-        // }
-        throw new UnsupportedOperationException();
+        if ( recodedOutputFormat == null ) {
+            return getNativeFormatRemoteStream();
+        }
+        return getRecodedImageStream();
+    }
+
+    private CloseRequiredInputStream getNativeFormatRemoteStream()
+                            throws TileIOException {
+
+        CloseRequiredInputStream is = null;
+        try {
+            GetTileResponse response = client.getTile( request );
+            is = response.getAsRawResponse().getAsBinaryStream();
+        } catch ( Exception e ) {
+            throw new TileIOException( e.getMessage(), e );
+        }
+        return is;
+    }
+
+    private CloseRequiredInputStream getRecodedImageStream()
+                            throws TileIOException {
+        BufferedImage img = getAsImage();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            ImageIO.write( img, recodedOutputFormat, out );
+            out.close();
+        } catch ( IOException e ) {
+            throw new TileIOException( "Error recoding remote WMTS tile image: " + e.getMessage(), e );
+        }
+        return new CloseRequiredInputStream( null, new ByteArrayInputStream( out.toByteArray() ) );
     }
 
     @Override

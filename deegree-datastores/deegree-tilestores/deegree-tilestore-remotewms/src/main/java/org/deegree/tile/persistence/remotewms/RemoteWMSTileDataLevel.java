@@ -69,7 +69,7 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
 
     private WMSClient client;
 
-    private final String outputFormat;
+    private final String recodedOutputFormat;
 
     /**
      * Creates a new {@link RemoteWMSTileDataLevel} instance.
@@ -84,16 +84,16 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
      *            WMS styles to request, must not be <code>null</code>
      * @param client
      *            the WMS client to use, must not be <code>null</code>
-     * @param outputFormat
+     * @param recodedOutputFormat
      *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      */
     RemoteWMSTileDataLevel( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
-                            WMSClient client, String outputFormat ) {
+                            WMSClient client, String recodedOutputFormat ) {
         this.metadata = tileMd;
         this.format = format;
         this.layers = layers;
         this.styles = styles;
-        this.outputFormat = outputFormat;
+        this.recodedOutputFormat = recodedOutputFormat;
         this.tileSizeX = tileMd.getTilePixelsX();
         this.tileSizeY = tileMd.getTilePixelsY();
         this.client = client;
@@ -117,6 +117,6 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
         Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
         GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope,
                                 envelope.getCoordinateSystem(), format, true );
-        return new RemoteWMSTile( client, gm, outputFormat );
+        return new RemoteWMSTile( client, gm, recodedOutputFormat );
     }
 }

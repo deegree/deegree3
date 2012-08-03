@@ -158,10 +158,12 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
     }
 
     private String determineOutputFormat( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig ) {
-        if ( tileDataSetConfig.getOutputFormat() != null ) {
-            return tileDataSetConfig.getOutputFormat();
+        String requestedOutputFormat = tileDataSetConfig.getOutputFormat();
+        String requestFormat = tileDataSetConfig.getRequestParams().getFormat();
+        if ( requestedOutputFormat != null ) {
+            return requestedOutputFormat;
         }
-        return tileDataSetConfig.getRequestParams().getFormat();
+        return requestFormat;
     }
 
     private TileDataSet buildTileDataSet( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig, WMTSClient client,
@@ -235,7 +237,7 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
             TileMatrix localTileMatrix = localTileMatrices.get( i );
             TileMatrix remoteTileMatrix = remoteTileMatrices.get( i );
             String remoteTileMatrixId = remoteTileMatrix.getIdentifier();
-            TileDataLevel level = buildTileDataLevel( localTileMatrix, remoteTileMatrixId, remoteTileMatrixSetId,
+            TileDataLevel level = buildTileDataLevel( localTileMatrix, remoteTileMatrixSetId, remoteTileMatrixId,
                                                       layer, style, format, client, outputFormat );
             dataLevels.add( level );
         }
@@ -243,9 +245,9 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
     }
 
     private TileDataLevel buildTileDataLevel( TileMatrix tileMatrix, String remoteTileMatrixSetId,
-                                              String remoteTileMatrixSet, String layer, String style, String format,
+                                              String remoteTileMatrixId, String layer, String style, String format,
                                               WMTSClient client, String outputFormat ) {
-        return new RemoteWMTSTileDataLevel( tileMatrix, remoteTileMatrixSetId, remoteTileMatrixSet, format, layer,
+        return new RemoteWMTSTileDataLevel( tileMatrix, remoteTileMatrixSetId, remoteTileMatrixId, format, layer,
                                             style, client, outputFormat );
     }
 

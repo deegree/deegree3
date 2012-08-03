@@ -60,7 +60,7 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
 
     private final String remoteTileMatrixId;
 
-    private final String format;
+    private final String requestFormat;
 
     private final String layer;
 
@@ -79,7 +79,7 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      *            tile matrix set identifier on the remote server, must not be <code>null</code>
      * @param remoteTileMatrixId
      *            tile matrix identifier on the remote server, must not be <code>null</code>
-     * @param format
+     * @param requestFormat
      *            format to use for requesting tile images, must not be <code>null</code>
      * @param layer
      *            WMTS layer to request, must not be <code>null</code>
@@ -91,12 +91,12 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
      *            formats, eg. 'png')
      */
-    RemoteWMTSTileDataLevel( TileMatrix matrix, String remoteTileMatrixSetId, String remoteTileMatrixId, String format,
+    RemoteWMTSTileDataLevel( TileMatrix matrix, String remoteTileMatrixSetId, String remoteTileMatrixId, String requestFormat,
                              String layer, String style, WMTSClient client, String outputFormat ) {
         this.matrix = matrix;
         this.remoteTileMatrixSetId = remoteTileMatrixSetId;
         this.remoteTileMatrixId = remoteTileMatrixId;
-        this.format = format;
+        this.requestFormat = requestFormat;
         this.layer = layer;
         this.style = style;
         this.outputFormat = outputFormat;
@@ -114,7 +114,7 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
             return null;
         }
         Envelope tileEnvelope = calcTileEnvelope( matrix, x, y );
-        GetTile request = new GetTile( layer, style, format, remoteTileMatrixSetId, remoteTileMatrixId, x, y );
+        GetTile request = new GetTile( layer, style, requestFormat, remoteTileMatrixSetId, remoteTileMatrixId, x, y );
         return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope );
     }
 }
