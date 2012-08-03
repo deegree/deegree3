@@ -115,11 +115,6 @@ public class CachingTileStore implements TileStore {
     }
 
     @Override
-    public SpatialMetadata getMetadata( String id ) {
-        return tileStore.getMetadata( id );
-    }
-
-    @Override
     public TileDataSet getTileDataSet( String id ) {
         return tileMatrixSets.get( id );
     }

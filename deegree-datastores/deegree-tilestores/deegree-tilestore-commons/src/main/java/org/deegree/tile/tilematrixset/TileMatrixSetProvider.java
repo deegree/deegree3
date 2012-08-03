@@ -52,7 +52,6 @@ import org.deegree.tile.TileMatrixSet;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public interface TileMatrixSetProvider extends ExtendedResourceProvider<TileMatrixSet> {
 
     // specifies type parameter

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.http;
 
-import java.io.InputStream;
+import java.io.Closeable;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -51,7 +51,7 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * 
  * @version $Revision$, $Date$
  */
-public interface OwsHttpResponse {
+public interface OwsHttpResponse extends Closeable {
 
     /**
      * Provides access to the raw response.
@@ -65,7 +65,7 @@ public interface OwsHttpResponse {
      * 
      * @return binary stream, never <code>null</code>
      */
-    public InputStream getAsBinaryStream();
+    public CloseRequiredInputStream getAsBinaryStream();
 
     /**
      * Provides access to the response body as an XML stream.
@@ -101,5 +101,6 @@ public interface OwsHttpResponse {
     /**
      * Closes the HTTP connection.
      */
+    @Override
     public void close();
 }

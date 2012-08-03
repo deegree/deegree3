@@ -46,7 +46,7 @@ import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.Tiles;
 
 /**
- * Provides base functionality for implementations of {@link TileStoreTransaction}.
+ * Provides common base functionality for implementations of {@link TileStoreTransaction}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>

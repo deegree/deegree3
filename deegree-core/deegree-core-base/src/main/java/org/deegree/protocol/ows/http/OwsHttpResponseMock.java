@@ -36,7 +36,6 @@
 package org.deegree.protocol.ows.http;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -78,9 +77,9 @@ class OwsHttpResponseMock implements OwsHttpResponse {
     }
 
     @Override
-    public InputStream getAsBinaryStream() {
+    public CloseRequiredInputStream getAsBinaryStream() {
         try {
-            return responseBody.openStream();
+            return new CloseRequiredInputStream( this, responseBody.openStream() );
         } catch ( IOException e ) {
             throw new RuntimeException( e.getMessage(), e );
         }

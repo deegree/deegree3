@@ -109,6 +109,9 @@ public class OwsHttpClientImpl implements OwsHttpClient {
         this.pass = httpBasicPass;
     }
 
+    /**
+     * Creates a new {@link OwsHttpClientImpl} instance without HTTP authentication and default timeouts.
+     */
     public OwsHttpClientImpl() {
         this( DEFAULT_CONNECTION_TIMEOUT_MILLIS, DEFAULT_READ_TIMEOUT_MILLIS, null, null );
     }
@@ -139,7 +142,7 @@ public class OwsHttpClientImpl implements OwsHttpClient {
             query = new URI( sb.toString() );
             HttpGet httpGet = new HttpGet( query );
             DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
-            LOG.info( "Performing GET request: " + query );
+            LOG.debug( "Performing GET request: " + query );
             HttpResponse httpResponse = httpClient.execute( httpGet );
             response = new OwsHttpResponseImpl( httpResponse, httpClient.getConnectionManager(), sb.toString() );
         } catch ( Throwable e ) {

@@ -45,20 +45,14 @@ import java.util.Iterator;
 
 import org.deegree.commons.config.Resource;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataSet;
 
 /**
- * The <code>TileStore</code> interface defines a deegree resource that can be used to read tiles. It's planned to
- * extend the interface to provide write access as well (that's why it has been called store already).
- * 
- * <p>
- * TODO: specify transactional methods, think about what the WMTS protocol will need (probably the
- * <code>TileMatrixMetadata</code>) and provide access here.
- * </p>
+ * {@link Resource} that provides access to stored {@link TileDataSet}s and {@link Tile}s.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
@@ -66,28 +60,18 @@ import org.deegree.tile.TileDataSet;
 public interface TileStore extends Resource {
 
     /**
-     * Returns the spatial extent of this tile store. Once instantiated, the extent of a tile store must not change,
-     * even when it's transactional.
+     * Returns the specified {@link TileDataSet}.
      * 
      * @param tileDataSet
-     *            the id of the tile data set
-     * @return the envelope and crs of this tile store, never null.
-     */
-    SpatialMetadata getMetadata( String tileDataSet );
-
-    /**
-     * Returns the set of available tile matrices that this store serves.
-     * 
-     * @param tileDataSet
-     *            the id of the tile matrix set
-     * @return the tile matrix set.
+     *            the id of the tile data set, must not be <code>null</code>
+     * @return the tile data set, or <code>null</code>, if no tile data set with the specified identifier exists
      */
     TileDataSet getTileDataSet( String tileDataSet );
 
     /**
-     * Returns the tile data set ids that this tile store serves.
+     * Returns the identifiers of all {@link TileDataSet}s served by this tile store.
      * 
-     * @return the ids
+     * @return the identifiers, can be empty, but never <code>null</code>
      */
     Collection<String> getTileDataSetIds();
 
@@ -95,24 +79,27 @@ public interface TileStore extends Resource {
      * Creates tile stream according to the parameters.
      * 
      * @param tileDataSet
-     *            the id of the tile matrix set
+     *            the id of the tile data set, must not be <code>null</code>
      * @param envelope
-     *            the extent of tiles needed, never null
+     *            the extent of tiles needed, must not be <code>null</code>
      * @param resolution
      *            the desired minimum resolution of tiles, must be positive
-     * @return an iterator of tiles for the given envelope and resolution, never null.
+     * @return an iterator of tiles for the given envelope and resolution, never <code>null</code>
      */
     Iterator<Tile> getTiles( String tileDataSet, Envelope envelope, double resolution );
 
     /**
-     * Query a single tile from a specific matrix.
+     * Queries a single tile from the specified tile data set.
      * 
      * @param tileDataSet
-     *            the id of the tile matrix set
+     *            id of the tile data set, must not be <code>null</code>
      * @param tileDataLevel
+     *            id of the tile data level, must not be <code>null</code>
      * @param x
+     *            column index, starting at zero
      * @param y
-     * @return the tile or null, if no such tile
+     *            row index, starting at zero
+     * @return the specified tile, or <code>null</code>, if no such tile exists
      */
     Tile getTile( String tileDataSet, String tileDataLevel, int x, int y );
 
@@ -120,10 +107,8 @@ public interface TileStore extends Resource {
      * Acquires transactional access to the tile store.
      * 
      * @param tileDataSet
-     *            the id of the tile matrix set
+     *            the id of the tile data set to be modified, must not be <code>null</code>
      * @return transaction object that allows to perform transactions operations on the store, never <code>null</code>
-     * @throws FeatureStoreException
-     *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
      */
     TileStoreTransaction acquireTransaction( String tileDataSet );
 }

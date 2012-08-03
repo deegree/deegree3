@@ -105,7 +105,7 @@ public class Invalidate {
         }
 
         if ( bbox != null ) {
-            bbox.setCoordinateSystem( ts.getMetadata( tmsid ).getCoordinateSystems().get( 0 ) );
+            bbox.setCoordinateSystem( ts.getTileDataSet( tmsid ).getTileMatrixSet().getSpatialMetadata().getCoordinateSystems().get( 0 ) );
         }
 
         long num = ( (CachingTileStore) ts ).invalidateCache( tmsid, bbox );

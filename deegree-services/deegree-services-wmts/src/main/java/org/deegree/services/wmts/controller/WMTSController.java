@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
+import static org.apache.commons.io.IOUtils.copy;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -60,7 +61,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.Version;
@@ -273,7 +273,7 @@ public class WMTSController extends AbstractOWS {
         }
 
         try {
-            IOUtils.copy( t.getAsStream(), response.getOutputStream() );
+            copy( t.getAsStream(), response.getOutputStream() );            
         } catch ( Throwable e ) {
             throw new ServletException( e );
         }
@@ -285,5 +285,4 @@ public class WMTSController extends AbstractOWS {
     public String getMetadataUrlTemplate() {
         return metadataUrlTemplate;
     }
-
 }

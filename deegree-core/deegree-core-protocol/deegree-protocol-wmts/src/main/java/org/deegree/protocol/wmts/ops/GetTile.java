@@ -96,8 +96,8 @@ public class GetTile {
         this.format = format;
         this.tileMatrixSet = tileMatrixSet;
         this.tileMatrix = tileMatrix;
-        this.tileRow = x;
-        this.tileCol = y;
+        this.tileCol = x;
+        this.tileRow = y;
     }
 
     /**

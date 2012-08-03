@@ -40,15 +40,12 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
-import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreTransaction;
 
 /**
- * Generic {@link TileStore}.
+ * Generic implementation of {@link TileStore}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
@@ -58,13 +55,13 @@ import org.deegree.tile.persistence.TileStoreTransaction;
  */
 public class GenericTileStore implements TileStore {
 
-    private Map<String, TileDataSet> tileDataSets;
+    private final Map<String, TileDataSet> tileDataSets;
 
     /**
      * Creates a new {@link GenericTileStore} instance.
      * 
      * @param tileDataSets
-     *            the tile data sets to serve
+     *            the tile data sets to serve, must not be <code>null</code>
      */
     public GenericTileStore( Map<String, TileDataSet> tileDataSets ) {
         this.tileDataSets = tileDataSets;
@@ -89,11 +86,6 @@ public class GenericTileStore implements TileStore {
     @Override
     public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
         return tileDataSets.get( id ).getTiles( envelope, resolution );
-    }
-
-    @Override
-    public SpatialMetadata getMetadata( String id ) {
-        return tileDataSets.get( id ).getTileMatrixSet().getSpatialMetadata();
     }
 
     @Override

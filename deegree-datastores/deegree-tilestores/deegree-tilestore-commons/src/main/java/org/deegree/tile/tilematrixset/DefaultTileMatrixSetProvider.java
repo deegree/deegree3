@@ -42,6 +42,7 @@
 package org.deegree.tile.tilematrixset;
 
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
 import java.io.File;
 import java.net.URL;
@@ -52,7 +53,6 @@ import java.util.List;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -70,8 +70,11 @@ import org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
+
+    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset";
+
+    private static final String JAXB_PACKAGE = "org.deegree.tile.tilematrixset.jaxb";
 
     private static final URL SCHEMA_URL = DefaultTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/3.2.0/tilematrixset.xsd" );
 
@@ -86,12 +89,11 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
     public TileMatrixSet create( URL configUrl )
                             throws ResourceInitException {
         try {
-            TileMatrixSetConfig cfg = (TileMatrixSetConfig) JAXBUtils.unmarshall( "org.deegree.tile.tilematrixset.jaxb",
-                                                                                  SCHEMA_URL, configUrl, workspace );
+            TileMatrixSetConfig cfg = (TileMatrixSetConfig) unmarshall( JAXB_PACKAGE, SCHEMA_URL, configUrl, workspace );
 
-            ICRS crs = CRSManager.lookup( cfg.getCRS() );
+            ICRS crs = CRSManager.getCRSRef( cfg.getCRS() );
             List<TileMatrix> matrices = new ArrayList<TileMatrix>();
-            for ( org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
+            for ( TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
                 double res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
                 double minx = tm.getTopLeftCorner().get( 0 );
                 double maxy = tm.getTopLeftCorner().get( 1 );
@@ -112,6 +114,7 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};
@@ -119,12 +122,11 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
 
     @Override
     public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/tile/tilematrixset";
+        return CONFIG_NAMESPACE;
     }
 
     @Override
     public URL getConfigSchema() {
         return SCHEMA_URL;
     }
-
 }

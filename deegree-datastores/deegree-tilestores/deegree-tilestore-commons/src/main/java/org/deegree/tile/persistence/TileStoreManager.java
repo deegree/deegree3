@@ -62,18 +62,14 @@ import org.deegree.tile.tilematrixset.TileMatrixSetManager;
 import org.slf4j.Logger;
 
 /**
- * The <code>TileStoreManager</code> is <code>ResourceManager</code> that manages <code>TileStore</code> resources.
- * 
- * <p>
- * TODO: It probably needs to be able to handle tile store level dependencies once caches have been implemented (tile
- * stores that depend on other tile stores).
- * </p>
+ * {@link ResourceManager} for {@link TileStore} resources.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
+@SuppressWarnings("unchecked")
 public class TileStoreManager extends AbstractResourceManager<TileStore> {
 
     private static final Logger LOG = getLogger( TileStoreManager.class );
@@ -86,7 +82,6 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class, CRSManager.class, TileMatrixSetManager.class };
     }
@@ -145,8 +140,6 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
                 break;
             }
         }
-
         return result;
     }
-
 }

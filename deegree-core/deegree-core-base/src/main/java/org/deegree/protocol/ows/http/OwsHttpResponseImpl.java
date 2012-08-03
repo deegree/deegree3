@@ -101,33 +101,17 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
         is = entity.getContent();
     }
 
-    /**
-     * Provides access to the raw response.
-     * 
-     * @return http response, never <code>null</code>
-     */
+    @Override
     public HttpResponse getAsHttpResponse() {
         return httpResponse;
     }
 
-    /**
-     * Provides access to the response body as a binary stream.
-     * 
-     * @return binary stream, never <code>null</code>
-     */
-    public InputStream getAsBinaryStream() {
-        return is;
+    @Override
+    public CloseRequiredInputStream getAsBinaryStream() {
+        return new CloseRequiredInputStream( this, is );
     }
 
-    /**
-     * Provides access to the response body as an XML stream.
-     * 
-     * @return xml stream, never <code>null</code>
-     * @throws OWSExceptionReport
-     *             if the stream contains an XML-encoded OWS Exception report
-     * @throws XMLStreamException
-     *             if accessing the stream fails (e.g. no XML payload)
-     */
+    @Override
     public XMLStreamReader getAsXMLStream()
                             throws OWSExceptionReport, XMLStreamException {
         XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
@@ -150,12 +134,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
         }
     }
 
-    /**
-     * Throws an {@link OWSExceptionReport} if the status code is not 200 (OK).
-     * 
-     * @throws OWSExceptionReport
-     *             if status code isn't 200
-     */
+    @Override
     public void assertHttpStatus200()
                             throws OWSExceptionReport {
         StatusLine statusLine = httpResponse.getStatusLine();
@@ -180,13 +159,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
         throw new OWSExceptionReport( Collections.singletonList( exception ), null, null );
     }
 
-    /**
-     * Throws an {@link OWSExceptionReport} if the <code>Content-Type</code> header indicates an XML response and the
-     * contained document actually is an exception report.
-     * 
-     * @throws OWSExceptionReport
-     *             if XML content type and payload is an exception report
-     */
+    @Override
     public void assertNoXmlContentTypeAndExceptionReport()
                             throws OWSExceptionReport, XMLStreamException {
 
@@ -201,9 +174,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
         }
     }
 
-    /**
-     * Closes the HTTP connection.
-     */
+    @Override
     public void close() {
         connManager.shutdown();
     }

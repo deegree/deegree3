@@ -48,7 +48,7 @@ public class TileStoreException extends RuntimeException {
     private static final long serialVersionUID = -336113433539622673L;
 
     /**
-     * Creates a new {@link FeatureStoreException} without detail message.
+     * Creates a new {@link TileStoreException} without detail message.
      */
     public TileStoreException() {
         super();

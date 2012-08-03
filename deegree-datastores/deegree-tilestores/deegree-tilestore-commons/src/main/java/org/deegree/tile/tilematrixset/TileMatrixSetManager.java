@@ -59,7 +59,18 @@ import org.deegree.tile.TileMatrixSet;
 import org.slf4j.Logger;
 
 /**
- * <code>TileMatrixSetManager</code>
+ * {@link ResourceManager} for {@link TileMatrixSet} resources.
+ * <p>
+ * In addition to the tile matrix set definitions from the active workspace, this manager always provides the following
+ * standard definitions (read from the classpath):
+ * <ul>
+ * <li>inspirecrs84quad</li>
+ * <li>googlecrs84quad</li>
+ * <li>globalcrs84pixel</li>
+ * <li>globalcrs84scale</li>
+ * <li>googlemapscompatible</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -151,5 +162,4 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet>
             super( "tile matrix sets", "datasources/tile/tilematrixset", TileMatrixSetProvider.class, workspace );
         }
     }
-
 }
