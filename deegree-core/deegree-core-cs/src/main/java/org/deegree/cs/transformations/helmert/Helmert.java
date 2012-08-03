@@ -523,9 +523,6 @@ public class Helmert extends Transformation {
         return !hasValues();
     }
 
-    /**
-     * @return
-     */
     public boolean areRotationsInRad() {
         return rotationInRadians;
     }
