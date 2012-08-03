@@ -4,18 +4,6 @@
     <gml:null>missing</gml:null>
   </gml:boundedBy>
   <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_21">
-      <app:OBJECTID>22</app:OBJECTID>
-      <app:ZIP>84337</app:ZIP>
-      <app:PO_NAME>Tremonton</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>6617.00000000</app:SUMBLKPOP>
-      <app:POP1999>8259.00000000</app:POP1999>
-      <app:SHAPE_AREA>253604088.500</app:SHAPE_AREA>
-      <app:SHAPE_LEN>93198.4618086</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
     <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_25">
       <app:OBJECTID>26</app:OBJECTID>
       <app:ZIP>84307</app:ZIP>
@@ -28,87 +16,15 @@
     </app:SGID500_ZipCodes>
   </gml:featureMember>
   <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_32">
-      <app:OBJECTID>33</app:OBJECTID>
-      <app:ZIP>84302</app:ZIP>
-      <app:PO_NAME>Brigham City</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>17529.00000000</app:SUMBLKPOP>
-      <app:POP1999>20483.00000000</app:POP1999>
-      <app:SHAPE_AREA>182869711.950</app:SHAPE_AREA>
-      <app:SHAPE_LEN>94018.4354418</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_40">
-      <app:OBJECTID>41</app:OBJECTID>
-      <app:ZIP>84302</app:ZIP>
-      <app:PO_NAME>Brigham City</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>17529.00000000</app:SUMBLKPOP>
-      <app:POP1999>20483.00000000</app:POP1999>
-      <app:SHAPE_AREA>7505162.92500</app:SHAPE_AREA>
-      <app:SHAPE_LEN>17045.0517107</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_41">
-      <app:OBJECTID>42</app:OBJECTID>
-      <app:ZIP>84302</app:ZIP>
-      <app:PO_NAME>Brigham City</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>17529.00000000</app:SUMBLKPOP>
-      <app:POP1999>20483.00000000</app:POP1999>
-      <app:SHAPE_AREA>100533.700000</app:SHAPE_AREA>
-      <app:SHAPE_LEN>1629.47574423</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_42">
-      <app:OBJECTID>43</app:OBJECTID>
-      <app:ZIP>84302</app:ZIP>
-      <app:PO_NAME>Brigham City</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>17529.00000000</app:SUMBLKPOP>
-      <app:POP1999>20483.00000000</app:POP1999>
-      <app:SHAPE_AREA>1180779.02500</app:SHAPE_AREA>
-      <app:SHAPE_LEN>4858.06337433</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_43">
-      <app:OBJECTID>44</app:OBJECTID>
-      <app:ZIP>84307</app:ZIP>
-      <app:PO_NAME>Corinne</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>974.00000000</app:SUMBLKPOP>
-      <app:POP1999>1165.00000000</app:POP1999>
-      <app:SHAPE_AREA>43306.2000000</app:SHAPE_AREA>
-      <app:SHAPE_LEN>1037.31779268</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_48">
-      <app:OBJECTID>49</app:OBJECTID>
-      <app:ZIP>84302</app:ZIP>
-      <app:PO_NAME>Brigham City</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>17529.00000000</app:SUMBLKPOP>
-      <app:POP1999>20483.00000000</app:POP1999>
-      <app:SHAPE_AREA>150036.025000</app:SHAPE_AREA>
-      <app:SHAPE_LEN>1570.86581088</app:SHAPE_LEN>
-    </app:SGID500_ZipCodes>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_49">
-      <app:OBJECTID>50</app:OBJECTID>
-      <app:ZIP>84302</app:ZIP>
-      <app:PO_NAME>Brigham City</app:PO_NAME>
-      <app:STATE>UT</app:STATE>
-      <app:SUMBLKPOP>17529.00000000</app:SUMBLKPOP>
-      <app:POP1999>20483.00000000</app:POP1999>
-      <app:SHAPE_AREA>44913043.5250</app:SHAPE_AREA>
-      <app:SHAPE_LEN>42480.9664585</app:SHAPE_LEN>
+    <app:SGID500_ZipCodes xmlns:app="http://www.deegree.org/app" fid="SGID500_ZIPCODES_37">
+      <app:OBJECTID>38</app:OBJECTID>
+      <app:ZIP></app:ZIP>
+      <app:PO_NAME></app:PO_NAME>
+      <app:STATE></app:STATE>
+      <app:SUMBLKPOP>0E-8</app:SUMBLKPOP>
+      <app:POP1999>0E-8</app:POP1999>
+      <app:SHAPE_AREA>19128247.8500</app:SHAPE_AREA>
+      <app:SHAPE_LEN>23968.0541301</app:SHAPE_LEN>
     </app:SGID500_ZipCodes>
   </gml:featureMember>
 </FeatureCollection>
