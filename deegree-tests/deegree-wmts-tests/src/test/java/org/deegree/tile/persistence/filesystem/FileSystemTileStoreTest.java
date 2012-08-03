@@ -105,8 +105,8 @@ public class FileSystemTileStoreTest {
         for ( TileDataLevel tm : src.getTileDataSet( "utah" ).getTileDataLevels() ) {
             String id = iter.next().getMetadata().getIdentifier();
 
-            int maxx = tm.getMetadata().getNumTilesX();
-            int maxy = tm.getMetadata().getNumTilesY();
+            int maxx = (int) tm.getMetadata().getNumTilesX();
+            int maxy = (int) tm.getMetadata().getNumTilesY();
             for ( int x = 0; x < maxx; ++x ) {
                 Worker w = new Worker( x, maxy, tm, ta, id );
                 exec.submit( w );
