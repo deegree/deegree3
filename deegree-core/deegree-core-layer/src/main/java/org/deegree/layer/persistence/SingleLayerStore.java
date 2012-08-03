@@ -65,7 +65,7 @@ public class SingleLayerStore implements LayerStore {
 
     @Override
     public void destroy() {
-        // nothing to do
+        layer.destroy();
     }
 
     @Override

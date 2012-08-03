@@ -76,4 +76,9 @@ public abstract class AbstractLayer implements Layer {
         return metadata;
     }
 
+    @Override
+    public void destroy() {
+        // nothing to do
+    }
+
 }

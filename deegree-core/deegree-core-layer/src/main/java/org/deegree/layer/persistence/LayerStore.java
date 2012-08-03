@@ -49,8 +49,15 @@ import org.deegree.layer.Layer;
  */
 public interface LayerStore extends Resource {
 
+    /**
+     * @return all layers of this layer store.
+     */
     List<Layer> getAll();
 
+    /**
+     * @param identifier
+     * @return the layer with the given identifier, or null, if non-existent
+     */
     Layer get( String identifier );
 
 }

@@ -51,12 +51,36 @@ import org.deegree.protocol.ows.exception.OWSException;
  */
 public interface Layer {
 
+    /**
+     * @return the metadata object, never null
+     */
     LayerMetadata getMetadata();
 
+    /**
+     * @param query
+     *            may not be null
+     * @param headers
+     *            may not be null. Extra HTTP headers will be added, as required by the WMS spec.
+     * @return a layer data corresponding to the query, never null
+     * @throws OWSException
+     */
     LayerData mapQuery( LayerQuery query, List<String> headers )
                             throws OWSException;
 
+    /**
+     * @param query
+     *            may not be null
+     * @param headers
+     *            may not be null. Extra HTTP headers will be added, as required by the WMS spec.
+     * @return a layer data corresponding to the query, never null
+     * @throws OWSException
+     */
     LayerData infoQuery( LayerQuery query, List<String> headers )
                             throws OWSException;
+
+    /**
+     * Should be called by layer stores upon workspace destruction.
+     */
+    void destroy();
 
 }

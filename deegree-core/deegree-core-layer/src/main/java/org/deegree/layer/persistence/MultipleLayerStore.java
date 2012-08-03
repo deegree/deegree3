@@ -66,7 +66,9 @@ public class MultipleLayerStore implements LayerStore {
 
     @Override
     public void destroy() {
-        // nothing to do
+        for ( Layer l : map.values() ) {
+            l.destroy();
+        }
     }
 
     @Override
