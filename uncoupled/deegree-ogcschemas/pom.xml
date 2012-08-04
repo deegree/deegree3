@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-ogcschemas</artifactId>
-  <version>20110513</version>
+  <version>20120804</version>
   <name>deegree-ogcschemas</name>
   <packaging>jar</packaging>
   <description>XML schemas from http://schemas.opengeospatial.net</description>
@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.1-pre13-SNAPSHOT</version>
+    <version>3.1.2</version>
   </parent>
 
   <repositories>
