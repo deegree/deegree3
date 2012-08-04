@@ -191,6 +191,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 lmd.merge( l.getMetadata() );
             }
         }
+        md.merge( lmd );
 
         if ( md.isQueryable() ) {
             writer.writeAttribute( "queryable", "1" );

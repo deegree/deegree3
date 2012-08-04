@@ -219,6 +219,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 lmd.merge( l.getMetadata() );
             }
         }
+        md.merge( lmd );
 
         writer.writeStartElement( WMSNS, "Layer" );
 
