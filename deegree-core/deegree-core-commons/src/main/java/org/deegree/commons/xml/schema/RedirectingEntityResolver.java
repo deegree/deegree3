@@ -69,27 +69,27 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
     private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
 
-    private static final String LISTING = ".LISTING";
+    // private static final String LISTING = ".LISTING";
 
     private static final URL baseURL;
 
-    private static Set<String> availableFiles = new HashSet<String>();
+    // private static Set<String> availableFiles = new HashSet<String>();
 
     static {
-        baseURL = RedirectingEntityResolver.class.getResource( ROOT + LISTING );
+        baseURL = RedirectingEntityResolver.class.getResource( ROOT );
         if ( baseURL == null ) {
-            LOG.warn( getMessage( "XML_SCHEMAS_NO_LOCAL_COPY", ROOT + LISTING ) );
+            LOG.warn( getMessage( "XML_SCHEMAS_NO_LOCAL_COPY", ROOT ) );
         }
-        try {
-            BufferedReader reader = new BufferedReader(
-                                                        new InputStreamReader( new URL( baseURL, LISTING ).openStream() ) );
-            String line = null;
-            while ( ( line = reader.readLine() ) != null ) {
-                availableFiles.add( line.trim() );
-            }
-        } catch ( Exception e ) {
-            LOG.warn( getMessage( "XML_SCHEMAS_ERROR_READING_LISTING", ROOT + LISTING, e.getMessage() ) );
-        }
+        // try {
+        // BufferedReader reader = new BufferedReader(
+        // new InputStreamReader( new URL( baseURL, LISTING ).openStream() ) );
+        // String line = null;
+        // while ( ( line = reader.readLine() ) != null ) {
+        // availableFiles.add( line.trim() );
+        // }
+        // } catch ( Exception e ) {
+        // LOG.warn( getMessage( "XML_SCHEMAS_ERROR_READING_LISTING", ROOT + LISTING, e.getMessage() ) );
+        // }
     }
 
     /**
@@ -102,14 +102,19 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
     public String redirect( String systemId ) {
         if ( systemId.startsWith( SCHEMAS_OPENGIS_NET_URL ) ) {
             String localPart = systemId.substring( SCHEMAS_OPENGIS_NET_URL.length() );
-            if ( availableFiles.contains( localPart ) ) {
+            URL u = RedirectingEntityResolver.class.getResource( ROOT + localPart );
+            if ( u != null ) {
                 LOG.debug( "Local hit: " + systemId );
-                try {
-                    return new URL( baseURL, localPart ).toString();
-                } catch ( MalformedURLException e ) {
-                    // should never happen
-                }
+                return u.toString();
             }
+            // if ( availableFiles.contains( localPart ) ) {
+            // LOG.debug( "Local hit: " + systemId );
+            // try {
+            // return new URL( baseURL, localPart ).toString();
+            // } catch ( MalformedURLException e ) {
+            // // should never happen
+            // }
+            // }
         } else if ( systemId.equals( "http://www.w3.org/2001/xml.xsd" ) ) {
             // workaround for schemas that include the xml base schema...
             return RedirectingEntityResolver.class.getResource( "/w3c/xml.xsd" ).toString();
@@ -126,4 +131,5 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
         LOG.debug( "'" + systemId + "' -> '" + redirectedSystemId + "'" );
         return new XMLInputSource( null, redirectedSystemId, null );
     }
+
 }
