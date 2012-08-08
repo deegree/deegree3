@@ -37,13 +37,8 @@ package org.deegree.commons.xml.schema;
 
 import static org.deegree.commons.i18n.Messages.getMessage;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
@@ -69,27 +64,13 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
     private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
 
-    // private static final String LISTING = ".LISTING";
-
     private static final URL baseURL;
-
-    // private static Set<String> availableFiles = new HashSet<String>();
 
     static {
         baseURL = RedirectingEntityResolver.class.getResource( ROOT );
         if ( baseURL == null ) {
             LOG.warn( getMessage( "XML_SCHEMAS_NO_LOCAL_COPY", ROOT ) );
         }
-        // try {
-        // BufferedReader reader = new BufferedReader(
-        // new InputStreamReader( new URL( baseURL, LISTING ).openStream() ) );
-        // String line = null;
-        // while ( ( line = reader.readLine() ) != null ) {
-        // availableFiles.add( line.trim() );
-        // }
-        // } catch ( Exception e ) {
-        // LOG.warn( getMessage( "XML_SCHEMAS_ERROR_READING_LISTING", ROOT + LISTING, e.getMessage() ) );
-        // }
     }
 
     /**
@@ -107,14 +88,6 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
                 LOG.debug( "Local hit: " + systemId );
                 return u.toString();
             }
-            // if ( availableFiles.contains( localPart ) ) {
-            // LOG.debug( "Local hit: " + systemId );
-            // try {
-            // return new URL( baseURL, localPart ).toString();
-            // } catch ( MalformedURLException e ) {
-            // // should never happen
-            // }
-            // }
         } else if ( systemId.equals( "http://www.w3.org/2001/xml.xsd" ) ) {
             // workaround for schemas that include the xml base schema...
             return RedirectingEntityResolver.class.getResource( "/w3c/xml.xsd" ).toString();
