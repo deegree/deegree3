@@ -9,10 +9,10 @@
 
   <xsd:annotation>
     <xsd:appinfo xmlns:gmlsf="http://www.opengis.net/gmlsf"
-      source="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsfLevels.xsd">
+      source="../gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsfLevels.xsd">
       <gmlsf:ComplianceLevel>1</gmlsf:ComplianceLevel>
       <gmlsf:GMLProfileSchema>
-      http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd
+      ../gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd
       </gmlsf:GMLProfileSchema>
     </xsd:appinfo>
     <xsd:documentation xml:lang="en">

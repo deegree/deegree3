@@ -118,6 +118,9 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
         } else if ( systemId.equals( "http://www.w3.org/2001/xml.xsd" ) ) {
             // workaround for schemas that include the xml base schema...
             return RedirectingEntityResolver.class.getResource( "/w3c/xml.xsd" ).toString();
+        } else if ( systemId.equals( "http://www.w3.org/1999/xlink.xsd" ) ) {
+            // workaround for schemas that include the xlink schema...
+            return RedirectingEntityResolver.class.getResource( "/w3c/xlink.xsd" ).toString();
         }
         return systemId;
     }

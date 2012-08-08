@@ -83,7 +83,7 @@ public class XSModelAnalyzerTest {
         QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
         List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
                                                                                         null, true, true );
-        assertEquals( 5, concreteFeatureElements.size() );
+        assertEquals( 14, concreteFeatureElements.size() );
     }
 
     /**
