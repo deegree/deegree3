@@ -1,0 +1,80 @@
+<!-- $HeadURL$ -->
+<!-- $Id$ -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree processingService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" background="#CECECE">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+                        <tr valign="top">
+                            <td colspan="3">
+                                <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td width="30%"><strong><em>Basic WPS Requests</em></strong></td>
+                            <td>
+                                <ul>
+                                    <li><a href="#basic_gc">GetCapabilities</a></li>
+                                    <li><a href="#basic_dpb">DescribeProcess</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2">
+            <colgroup>
+                <col width="30%">
+                <col width="65%">
+                <col width="5%">
+            </colgroup>
+            <tr valign="top">
+                <th>Request</th>
+                <th colspan="2">Description</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td colspan="2">
+                    <a name="basic_gc"></a>
+                    <b>GetCapabilities</b><br />
+                    <p>Retrieve capabilities information</p>
+                </td>
+                <td width="5%"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetCapabilities&version=0.4.0&service=WPS">WPS 0.4.0 GetCapabilities</a></td>
+                <td colspan="2">
+                    <p>Retrieve capabilities information by using the URL
+                    <br/><a href="./services?REQUEST=GetCapabilities&version=0.4.0&service=WPS">${default.online.resource}?REQUEST=GetCapabilities&version=0.4.0&service=WPS</a></p>
+                </td>
+            </tr>
+            <tr valign="top"  bgcolor="#d7deed">
+                <td colspan="2">
+                    <a name="basic_dpb"></a>
+                    <b>DescribeProcess</b><br />
+                    <p>Describes defined processes</p>
+                </td>
+                <td><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?service=WPS&version=0.4.0&request=DescribeProcess&Identifier=Buffer">WPS 0.4.0 DescribeProcess Buffer</a>
+                <td colspan="2">
+                    A DescribeProcess request, which describes the Buffer process:<br/><br/>
+                    .../services<br />
+                    service=WPS<br />
+                    version=0.4.0<br />
+                    request=DescribeProcess<br />
+                    Identifier=Buffer<br />
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

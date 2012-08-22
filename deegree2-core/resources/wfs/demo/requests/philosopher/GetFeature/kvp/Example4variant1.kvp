@@ -1,0 +1,9 @@
+# Namespace tolerance testing: SORTBY property does not contain a namespace prefix
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+TYPENAME=app:Philosopher&
+PROPERTYNAME=app:name&
+SORTBY=dateOfBirth&
+FILTER=<Filter xmlns="http://www.opengis.net/ogc"><PropertyIsLike wildCard="*" singleChar="#" escapeChar="!"><PropertyName>apx:name</PropertyName><Literal>*Sartre*</Literal></PropertyIsLike></Filter>

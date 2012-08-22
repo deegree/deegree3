@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <NamedLayer>
+        <Name>defaultstyle</Name>
+        <UserStyle>
+            <Name>default:weatherstationPie</Name>
+            <Title>default weatherstation</Title>
+            <FeatureTypeStyle>
+                <Name>default:weatherstation</Name>
+                <Rule>
+                    <Name>weatherstationPie</Name>
+                    <MinScaleDenominator>0</MinScaleDenominator>
+                    <MaxScaleDenominator>100000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <ExternalGraphic>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms/charts?chart=Pie3D&amp;title=&amp;legend=false&amp;width=324&amp;height=135&amp;format=image/png&amp;GDD=$GDD$&amp;HDD=$HDD$&amp;CDD=$CDD$"/>
+                                <Format>image/png</Format>
+                            </ExternalGraphic>
+                            <Size>324</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>weatherstationPie</Name>
+                    <MinScaleDenominator>100000</MinScaleDenominator>
+                    <MaxScaleDenominator>1000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <ExternalGraphic>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms/charts?chart=Pie3D&amp;title=&amp;legend=false&amp;width=216&amp;height=90&amp;format=image/png&amp;GDD=$GDD$&amp;HDD=$HDD$&amp;CDD=$CDD$"/>
+                                <Format>image/png</Format>0
+                            </ExternalGraphic>
+                            <Size>220</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>default:weatherstationPie</Name>
+                    <MinScaleDenominator>1000000</MinScaleDenominator>
+                    <MaxScaleDenominator>4336730</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <ExternalGraphic>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms/charts?chart=Pie&amp;title=&amp;legend=false&amp;width=130&amp;height=46&amp;format=image/png&amp;GDD=$GDD$&amp;HDD=$HDD$&amp;CDD=$CDD$"/>
+                                <Format>image/png</Format>
+                            </ExternalGraphic>
+                            <Size>110</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+        <UserStyle>
+            <Name>default:weatherstationBar</Name>
+            <Title>default weatherstation</Title>
+            <FeatureTypeStyle>
+                <Name>default:weatherstation</Name>
+                <Rule>
+                    <Name>weatherstationBar</Name>
+                    <MinScaleDenominator>0</MinScaleDenominator>
+                    <MaxScaleDenominator>10000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <ExternalGraphic>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms/charts?chart=Bar3D&amp;title=&amp;legend=false&amp;width=250&amp;height=210&amp;format=image/png&amp;GDD=$GDD$&amp;HDD=$HDD$&amp;CDD=$CDD$"/>
+                                <Format>image/png</Format>
+                            </ExternalGraphic>
+                            <Size>250</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>weatherstationBar</Name>
+                    <MinScaleDenominator>10000</MinScaleDenominator>
+                    <MaxScaleDenominator>100000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <ExternalGraphic>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms/charts?chart=Bar3D&amp;title=&amp;legend=false&amp;width=167&amp;height=140&amp;format=image/png&amp;GDD=$GDD$&amp;HDD=$HDD$&amp;CDD=$CDD$"/>
+                                <Format>image/png</Format>0
+                            </ExternalGraphic>
+                            <Size>167</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>default:weatherstationBar</Name>
+                    <MinScaleDenominator>100000</MinScaleDenominator>
+                    <MaxScaleDenominator>4336730</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <ExternalGraphic>
+                                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms/charts?chart=Bar3D&amp;title=&amp;legend=false&amp;width=111&amp;height=93&amp;format=image/png&amp;GDD=$GDD$&amp;HDD=$HDD$&amp;CDD=$CDD$"/>
+                                <Format>image/png</Format>
+                            </ExternalGraphic>
+                            <Size>111</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+        <UserStyle>
+            <Name>default:weatherstation</Name>
+            <Title>default weatherstation</Title>
+            <FeatureTypeStyle>
+                <Name>default:weatherstation</Name>
+                <Rule>
+                    <Name>weatherstation</Name>
+                    <MinScaleDenominator>0</MinScaleDenominator>
+                    <MaxScaleDenominator>4336730</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#ffff00</CssParameter>
+                                    <CssParameter name="fill-opacity">1.0</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>8</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>default:weatherstation</Name>
+                    <MinScaleDenominator>4336730</MinScaleDenominator>
+                    <MaxScaleDenominator>1.7976931348623157E308</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#ffff00</CssParameter>
+                                    <CssParameter name="fill-opacity">1.0</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>10</Size>
+                            <Rotation>0</Rotation>
+                        </Graphic>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>

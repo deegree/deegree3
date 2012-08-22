@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCapabilities xmlns="http://www.opengis.net/wcts/0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ows="http://www.opengis.net/ows/1.1"
+  xsi:schemaLocation="http://www.opengis.net/wcts/0.0 ../../wctsGetCapabilities.xsd" service="WCTS"
+  updateSequence="XYZ123">
+  <ows:AcceptVersions>
+    <ows:Version>0.0.0</ows:Version>
+  </ows:AcceptVersions>
+  <ows:Sections>
+    <ows:Section>All</ows:Section>
+  </ows:Sections>
+</GetCapabilities>

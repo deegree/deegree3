@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 67-68-->
+<wfs:Transaction version="1.1.0" service="WFS" xmlns="http://www.someserver.com/myns" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.someserver.com/myns
+http://www.someserver.com/wfs/cwwfs.cgi?request=describefeaturetype&amp;typename=InWaterA_1M.xsd http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">
+  <wfs:Insert idgen="UseExisting">
+    <InWaterA_1M gml:id="INW1">
+      <wkbGeom>
+        <gml:Polygon gml:id="P1" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-98.54 24.26 ...</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </wkbGeom>
+      <id>150</id>
+      <f_code>ABCDE</f_code>
+      <hyc>152</hyc>
+      <tileId>250</tileId>
+      <facId>111</facId>
+    </InWaterA_1M>
+    <InWaterA_1M gml:id="INW2">
+      <wkbGeom>
+        <gml:Polygon gml:id="P2" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-99.99 22.22 ...</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </wkbGeom>
+      <id>111</id>
+      <f_code>FGHIJ</f_code>
+      <hyc>222</hyc>
+      <tileId>333</tileId>
+      <facId>444</facId>
+    </InWaterA_1M>
+  </wfs:Insert>
+</wfs:Transaction>

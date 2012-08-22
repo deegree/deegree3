@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoverageDescription xmlns="http://www.opengis.net/wcs" xmlns:deegree="http://www.deegree.org/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" updateSequence="String" version="1.0.0">
+	<CoverageOffering>
+		<name>dgm</name>
+		<label xmlns:wcs="http://www.opengis.net/wcs">dgm</label>
+		<lonLatEnvelope xmlns:wcs="http://www.opengis.net/wcs" srsName="WGS84(DD)">
+			<gml:pos dimension="2">9,52</gml:pos>
+			<gml:pos dimension="2">13,55</gml:pos>
+		</lonLatEnvelope>
+		<wcs:keywords xmlns:wcs="http://www.opengis.net/wcs">
+			<wcs:keyword/>
+		</wcs:keywords>
+		<domainSet>
+			<spatialDomain xmlns:wcs="http://www.opengis.net/wcs">
+				<gml:Envelope srsName="http://www.opengis.net/gml/srs/epsg.xml#EPSG:31467">
+					<gml:pos dimension="2">3566000.0,5935999.0</gml:pos>
+					<gml:pos dimension="2">3568000.0,5937999.0</gml:pos>
+				</gml:Envelope>
+			</spatialDomain>
+		</domainSet>
+		<rangeSet>
+			<RangeSet refSys="http://www.deegree.org" refSysLabel="String" semantic="http://www.deegree.org">
+				<description xmlns:wcs="http://www.opengis.net/wcs"/>
+				<name>prototyp</name>
+				<label xmlns:wcs="http://www.opengis.net/wcs">prototyp</label>
+				<nullValues semantic="http://www.deegree.org" type="xs:integer">
+					<interval atomic="false" closure="closed" semantic="http://www.deegree.org">
+						<min>-99</min>
+						<max>0</max>
+						<res>1</res>
+					</interval>
+					<singleValue>-9999</singleValue>
+				</nullValues>
+			</RangeSet>
+		</rangeSet>
+		<supportedCRSs>
+			<requestCRSs xmlns:wcs="http://www.opengis.net/wcs">EPSG:31467</requestCRSs>
+			<requestResponseCRSs xmlns:wcs="http://www.opengis.net/wcs">EPSG:31467</requestResponseCRSs>
+			<nativeCRSs xmlns:wcs="http://www.opengis.net/wcs">EPSG:31467</nativeCRSs>
+		</supportedCRSs>
+		<supportedFormats xmlns:wcs="http://www.opengis.net/wcs" nativeFormat="tif">
+			<formats>jpeg</formats>
+			<formats>GeoTiff</formats>
+			<formats>png</formats>
+			<formats>tif</formats>
+			<formats>tiff</formats>
+		</supportedFormats>
+		<supportedInterpolations default="nearest neighbor">
+			<interpolationMethod>nearest neighbor</interpolationMethod>
+		</supportedInterpolations>
+		<deegree:Extension xmlns:wcs="http://www.opengis.net/wcs" type="shapeIndexed">
+			<deegree:Resolution max="99999999" min="4.0">
+				<deegree:Range>
+					<deegree:Name>default</deegree:Name>
+				</deegree:Range>
+				<deegree:Shape directoryProperty="FOLDER" srsName="EPSG:31467" tileProperty="FILENAME">./sh4.0</deegree:Shape>
+			</deegree:Resolution>
+			<deegree:Resolution max="4.0" min="2.0">
+				<deegree:Range>
+					<deegree:Name>default</deegree:Name>
+				</deegree:Range>
+				<deegree:Shape directoryProperty="FOLDER" srsName="EPSG:31467" tileProperty="FILENAME">./sh2.0</deegree:Shape>
+			</deegree:Resolution>
+			<deegree:Resolution max="2.0" min="0.0">
+				<deegree:Range>
+					<deegree:Name>default</deegree:Name>
+				</deegree:Range>
+				<deegree:Shape directoryProperty="FOLDER" srsName="EPSG:31467" tileProperty="FILENAME">./sh1.0</deegree:Shape>
+			</deegree:Resolution>
+		</deegree:Extension>
+	</CoverageOffering>
+</CoverageDescription>

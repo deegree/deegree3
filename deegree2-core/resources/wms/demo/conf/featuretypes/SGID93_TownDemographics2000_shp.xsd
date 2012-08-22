@@ -1,0 +1,1078 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:app="http://www.deegree.org/app" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.deegree.org/app">
+   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+   <xsd:annotation>
+      <xsd:appinfo>
+         <deegreewfs:Prefix>app</deegreewfs:Prefix>
+         <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+         <deegreewfs:File>../../../data/utah/vector/SGID93_TownDemographics2000</deegreewfs:File>
+         <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+      </xsd:appinfo>
+   </xsd:annotation>
+   <xsd:element name="SGID93_TownDemographics2000" substitutionGroup="gml:_Feature" type="app:SGID93_TownDemographics2000Type">
+      <xsd:annotation>
+         <xsd:appinfo>
+            <deegreewfs:table>SGID93_TownDemographics2000</deegreewfs:table>
+            <deegreewfs:gmlId prefix="ID_">
+               <deegreewfs:MappingField field="FID" type="INTEGER"/>
+            </deegreewfs:gmlId>
+            <deegreewfs:visible>true</deegreewfs:visible>
+            <deegreewfs:transaction delete="false" insert="false" update="false"/>
+         </xsd:appinfo>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="SGID93_TownDemographics2000Type">
+      <xsd:complexContent>
+         <xsd:extension base="gml:AbstractFeatureType">
+            <xsd:sequence>
+               <xsd:element name="geometry" type="gml:GeometryPropertyType">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="GEOM" srs="26912" type="GEOMETRY"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="objectid" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="OBJECTID" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="code" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="CODE" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="name" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="elev" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="ELEV" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="utah" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="UTAH" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n1" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N1" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n2" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N2" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n3" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N3" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n4" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N4" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n5" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N5" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n6" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N6" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n7" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N7" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n8" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N8" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n9" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N9" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n10" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N10" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n11" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N11" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n12" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N12" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n13" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N13" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="a" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="A" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n16" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N16" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n17" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N17" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n18" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N18" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n19" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N19" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n20" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N20" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n21" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N21" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n22" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N22" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n23" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N23" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n24" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N24" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n25" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N25" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n26" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N26" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n27" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N27" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n28" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N28" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n29" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N29" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n30" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N30" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n31" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N31" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n32" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N32" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n33" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N33" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n34" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N34" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n35" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N35" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n36" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N36" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n37" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N37" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n38" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N38" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n39" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N39" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n40" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N40" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n41" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N41" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n42" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N42" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n43" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N43" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n44" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N44" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n45" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N45" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n46" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N46" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n47" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N47" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n48" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N48" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n49" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N49" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n50" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N50" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n51" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N51" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n52" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N52" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n53" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N53" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n54" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N54" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n55" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N55" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n56" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N56" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n57" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N57" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n58" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N58" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n59" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N59" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n60" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N60" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n61" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N61" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n62" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N62" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n63" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N63" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n64" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N64" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n65" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N65" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n66" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N66" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n67" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N67" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n68" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N68" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n69" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N69" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n70" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N70" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n71" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N71" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n72" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N72" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n73" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N73" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n74" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N74" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n75" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N75" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n76" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N76" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n77" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N77" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n78" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N78" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n79" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N79" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n80" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N80" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n81" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N81" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n82" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N82" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n83" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N83" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n84" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N84" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n85" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N85" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n86" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N86" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n87" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N87" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n88" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N88" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n89" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N89" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n90" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N90" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n91" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N91" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n92" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N92" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n93" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N93" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n94" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N94" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n95" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N95" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n96" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N96" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n97" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N97" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n98" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N98" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n99" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N99" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n100" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N100" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n101" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N101" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n102" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N102" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n103" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N103" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n104" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N104" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n105" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N105" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n106" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N106" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n107" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N107" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n108" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N108" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n109" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N109" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n110" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N110" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="n111" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="N111" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+</xsd:schema>

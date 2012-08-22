@@ -1,0 +1,121 @@
+<xsd:schema xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<wfs:Prefix>app</wfs:Prefix>
+			<wfs:Backend>ORACLE</wfs:Backend>
+			<wfs:DefaultSRS>EPSG:31466</wfs:DefaultSRS>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>oracle.jdbc.OracleDriver</Driver>
+				<Url>jdbc:oracle:thin:@hurricane:1521:devs</Url>
+				<User>dev</User>
+				<Password>dev</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ============================================================== -->
+	<xsd:element name="stadtbezirke" type="app:stadtbezirkeType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<wfs:table>stadtbezirke</wfs:table>
+				<wfs:gmlId prefix="ID_">
+					<wfs:MappingField field="STADTBEZIR" type="INTEGER"/>
+				</wfs:gmlId>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="stadtbezirkeType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="STADTBEZIR" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="STADTBEZIR" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="SBZNAME" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="SBZNAME" type="VARCHAR"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="X_COORD" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="X_COORD" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Y_COORD" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="Y_COORD" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="UL_X" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="UL_X" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="UL_Y" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="UL_Y" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="LR_X" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="LR_X" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="LR_Y" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="LR_Y" type="NUMERIC"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="GEOM" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="GEOM" type="GEOMETRY"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

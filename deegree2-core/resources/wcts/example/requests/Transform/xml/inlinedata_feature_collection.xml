@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewcts:Transform xmlns="http://www.deegree.org/wcts" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:wcts="http://www.opengis.net/wcts/0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:deegreewcts="http://www.deegree.org/wcts" service="WCTS" version="0.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/wcts ../../../../../../../../resources/schema/deegreeTransform.xsd">
+  <!-- Shows the usage of the deegree specific inline data element and two feature collections-->
+  <wcts:SourceCRS>urn:ogc:def:crs:EPSG::4314</wcts:SourceCRS>
+  <wcts:TargetCRS>urn:ogc:def:crs:EPSG::31466</wcts:TargetCRS>
+  <deegreewcts:InputData>
+    <ows:ReferenceGroup>
+      <ows:Title>The Capitals</ows:Title>
+      <ows:Reference xlink:href="none" />
+    </ows:ReferenceGroup>
+    <deegreewcts:InlineData>
+      <!-- FeatureCollectionData can have unbounded feature collections -->
+      <deegreewcts:FeatureCollectionData>
+        <gml:FeatureCollection>
+          <gml:boundedBy>
+            <!-- Envelopes are no geometries and will therefore not be transformed -->
+            <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4314">
+              <gml:lowerCorner>8.83319047 54.90017335</gml:lowerCorner>
+              <gml:upperCorner>8.87995937 54.90022855</gml:upperCorner>
+              <!-- should be: 2681710,05 6089164,17
+                2684708,53 6089292,73
+              -->
+            </gml:Envelope>
+          </gml:boundedBy>
+          <gml:featureMember>
+            <Capital gml:id="SOME_COOL_ID">
+              <cityName>Dude city</cityName>
+              <stateName>Heavy duty</stateName>
+              <gml:pointProperty>
+                <!-- Only geometries are regarded -->
+                <gml:Point srsName="urn:ogc:def:crs:EPSG::4314">
+                  <gml:pos>8.83319047 54.90017335</gml:pos>
+                  <!-- should be: 2681710,05 6089164,17 -->
+                </gml:Point>
+              </gml:pointProperty>
+            </Capital>
+          </gml:featureMember>
+        </gml:FeatureCollection>
+        <gml:FeatureCollection>
+          <gml:boundedBy>
+            <!-- Envelopes are no geometries and will therefore not be transformed -->
+            <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4314">
+              <gml:lowerCorner>8.83319047 54.90017335</gml:lowerCorner>
+              <gml:upperCorner>8.9579078 54.90028055</gml:upperCorner>
+              <!-- 2681710.05 6089164.17
+                2689706.09 6089507.01 -->
+            </gml:Envelope>
+          </gml:boundedBy>
+          <gml:featureMember>
+            <Capital gml:id="ANOTHER_COOL_ID">
+              <cityName>Gotham city</cityName>
+              <stateName>Some cool state, which does not matter at all.</stateName>
+              <app:geom>
+                <!-- Taken from the wfs-philosopher insert example. Only geometries are regarded, notice the usage of 
+                  the alternate epsg code definitions. -->
+                <gml:MultiPolygon srsName="EPSG:4314">
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4314">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">
+                            8.83319047,54.90017335 8.87995937,54.90022855 8.89554903,54.90024295 8.83319047,54.90017335
+                            <!-- 2681710.05 6089164.17
+                              2684708.53 6089292.73
+                              2685708.03 6089335.59
+                            -->
+                          </gml:coordinates>
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4314">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">
+                            8.89554903,54.90024295 8.91113871,54.90025535 8.9267284,54.90026575 8.89554903,54.90024295
+                            <!-- 2685708.03 6089335.59
+                              2686707.54 6089378.44 
+                              2687707.05 6089421.3  
+                            -->
+                          </gml:coordinates>
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                </gml:MultiPolygon>
+              </app:geom>
+            </Capital>
+          </gml:featureMember>
+        </gml:FeatureCollection>
+      </deegreewcts:FeatureCollectionData>
+    </deegreewcts:InlineData>
+  </deegreewcts:InputData>
+  <OutputFormat>text/xml; gmlVersion=3.1.1</OutputFormat>
+</deegreewcts:Transform>

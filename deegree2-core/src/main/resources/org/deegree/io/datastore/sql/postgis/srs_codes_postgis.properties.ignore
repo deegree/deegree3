@@ -1,0 +1,20 @@
+#$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/io/datastore/sql/postgis/srs_codes_postgis.properties.ignore $
+# WGS84
+EPSG\:4326=4326
+# ED50 \ UTM
+EPSG\:23031=23031
+EPSG\:23032=23032
+EPSG\:23033=23033
+# Gauss-Krueger
+EPSG\:31466=31466
+EPSG\:31467=31467
+EPSG\:31468=31468
+EPSG\:31469=31469
+# ETRS89 \ UTM
+EPSG\:25831=25831
+EPSG\:25832=25832
+EPSG\:25833=25833
+# Amersfoort RD (NL) 
+EPSG\:28992=28992
+urn\:ogc\:def\:crs\:EPSG\:\:28992=28992
+urn\:opengis\:def\:crs\:EPSG\:\:28992=28992

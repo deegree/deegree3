@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the fake sld schema file until it is updated by the OGC. -->
+<schema xmlns:wms="http://www.opengis.net/wms"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.opengis.net/sld"
+	xmlns:sld="http://www.deegree.org/sld"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<import namespace="http://www.opengis.net/wms"
+		schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd" />
+
+	<element name="GetLegendGraphic" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+
+</schema>

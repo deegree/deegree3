@@ -1,0 +1,11 @@
+<gml:MultiCurve xmlns:gml="http://www.opengis.net/gml">
+	<gml:curveMember>
+		<gml:Curve srsName="EPSG:25832">
+			<gml:segments>
+				<gml:LineStringSegment>
+			 	<gml:coordinates>719100,6219100 719200,6219200 719100,6219300</gml:coordinates>
+				</gml:LineStringSegment>
+			</gml:segments>
+		</gml:Curve>
+	</gml:curveMember>
+</gml:MultiCurve>

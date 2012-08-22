@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewmps:PrintMap xmlns:deegree="http://www.deegree.org/wmps" xmlns:deegreewmps="http://www.deegree.org/wmps" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+	<deegreewmps:Layers>
+		<sld:NamedLayer>
+			<sld:Name>DD_Luftbildkarte_2003</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</deegreewmps:Layers>
+	<!--
+	<deegreewmps:Layers>
+		<sld:NamedLayer>
+			<sld:Name>DD_Hintergrundkarte</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</deegreewmps:Layers>
+		<deegreewmps:Layers>
+		<sld:NamedLayer>
+			<sld:Name>DD_rak_geb_10000</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</deegreewmps:Layers>
+	<deegreewmps:Layers>
+		<sld:NamedLayer>
+			<sld:Name>hw10_region</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</deegreewmps:Layers>
+	<deegreewmps:Layers>
+		<sld:NamedLayer>
+			<sld:Name>bahnnetz_l</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</deegreewmps:Layers>
+-->
+	<deegreewmps:Center srsName="EPSG:31466">
+		<gml:pos>2580093.6998338704 5620488.043731785</gml:pos>
+	</deegreewmps:Center>
+	<deegreewmps:ScaleDenominator>5000</deegreewmps:ScaleDenominator>		
+	-->
+	<!--DD_Stadtplan
+	<deegreewmps:Center srsName="EPSG:31466">
+		<gml:pos>2578762.3180936323 5620169.669837381</gml:pos>
+	</deegreewmps:Center>		
+	<deegreewmps:ScaleDenominator>10000</deegreewmps:ScaleDenominator>		
+	-->
+	<!-- DD_DGK
+	<gml:Envelope srsName="EPSG:31466">		
+		<gml:pos>2577758.4808385516 5622527.231182207</gml:pos>
+		<gml:pos>2577976.4594814484 5622711.4747001445</gml:pos>
+	</gml:Envelope>
+	<deegreewmps:Center srsName="EPSG:31466">
+		<gml:pos>2577866.30 5622619.48</gml:pos>
+	</deegreewmps:Center>		
+	<deegreewmps:ScaleDenominator>1000</deegreewmps:ScaleDenominator>	
+	-->
+	<deegreewmps:Transparent>true</deegreewmps:Transparent>
+	<deegreewmps:BGColor>#FFFFFF</deegreewmps:BGColor>
+	<deegreewmps:Legend>true</deegreewmps:Legend>
+	<deegreewmps:ScaleBar>true</deegreewmps:ScaleBar>
+	<deegreewmps:Template>Bonn_Dina0</deegreewmps:Template>
+	<deegreewmps:EMailAddress>deshmukh@lat-lon.de</deegreewmps:EMailAddress>
+	<deegreewmps:TextAreas>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>Title</deegreewmps:Name>
+			<deegreewmps:Text>lat/lon gesellschaft für raumbezogene Informationssysteme mbH</deegreewmps:Text>
+		</deegreewmps:TextArea>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>Copyright</deegreewmps:Name>
+			<deegreewmps:Text>(c) deegree 2006</deegreewmps:Text>
+		</deegreewmps:TextArea>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>Description</deegreewmps:Name>
+			<deegreewmps:Text>Dies ist meine erste gedruckte Karte</deegreewmps:Text>
+		</deegreewmps:TextArea>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>Notes</deegreewmps:Name>
+			<deegreewmps:Text>Dies ist ein weiterer Beispieltext</deegreewmps:Text>
+		</deegreewmps:TextArea>
+	</deegreewmps:TextAreas>
+</deegreewmps:PrintMap>

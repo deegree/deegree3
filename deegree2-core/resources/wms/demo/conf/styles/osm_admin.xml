@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/database" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <sld:Name>OSMAdministrativeBoundaries</sld:Name>    
+    <sld:UserStyle>
+      <sld:Name>default:adminboundaries</sld:Name>
+      <sld:Title>admin</sld:Title>
+      <sld:FeatureTypeStyle>
+        <sld:Name>AdminBoundaries</sld:Name>
+        <sld:Rule>
+          <sld:Name>NRW</sld:Name>
+          <ogc:Filter>
+            <ogc:Or>
+              <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>app:adminlevel</ogc:PropertyName>
+                <ogc:Literal>2</ogc:Literal>
+              </ogc:PropertyIsEqualTo>
+              <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>app:adminlevel</ogc:PropertyName>
+                <ogc:Literal>4</ogc:Literal>
+              </ogc:PropertyIsEqualTo>
+            </ogc:Or>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>5000000000</sld:MaxScaleDenominator>
+          <sld:LineSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:centerline</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#ff0000</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.7</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">5</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">9 2</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name>Regierungsbezirke</sld:Name>
+          <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+              <ogc:PropertyName>app:adminlevel</ogc:PropertyName>
+              <ogc:Literal>5</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>5000000000</sld:MaxScaleDenominator>
+          <sld:LineSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:centerline</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#ff0000</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.7</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">4</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">9 2</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name>Kreise</sld:Name>
+          <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+              <ogc:PropertyName>app:adminlevel</ogc:PropertyName>
+              <ogc:Literal>6</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>5000000000</sld:MaxScaleDenominator>
+          <sld:LineSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:centerline</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#ff0000</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.7</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">3</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">9 2</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name>Gemeinde/Stadt</sld:Name>
+          <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+              <ogc:PropertyName>app:adminlevel</ogc:PropertyName>
+              <ogc:Literal>8</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>5000000000</sld:MaxScaleDenominator>
+          <sld:LineSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:centerline</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#ff0000</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.7</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">2</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">9 2</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name>Ortsbezirk</sld:Name>
+          <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+              <ogc:PropertyName>app:adminlevel</ogc:PropertyName>
+              <ogc:Literal>9</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+          </ogc:Filter>
+          <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>5000000000</sld:MaxScaleDenominator>
+          <sld:LineSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:centerline</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#ff0000</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.7</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">1</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">9 2</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns="http://www.opengis.net/sld" xmlns:app="http://www.deegree.org/app"
+  xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:java="java"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" version="1.0.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <sld:Name>position</sld:Name>
+    <sld:UserStyle>
+      <sld:Name>default:position</sld:Name>
+      <sld:Title>default:position</sld:Title>
+      <sld:IsDefault>1</sld:IsDefault>
+      <sld:FeatureTypeStyle>
+        <sld:Name>position</sld:Name>
+        <sld:Rule>
+          <sld:Name>position</sld:Name>
+          <sld:MinScaleDenominator>0.000000000000001</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>10000000000000000</sld:MaxScaleDenominator>
+          <sld:PointSymbolizer>
+            <Graphic>
+              <ExternalGraphic>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="../symbols/redcircle.svg" />
+                <Format>image/svg</Format>
+              </ExternalGraphic>
+              <Size>25</Size>
+            </Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetResourceByID xmlns="http://www.opengis.net/wcts/0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcts/0.0 ../../wctsGetResourceByID.xsd" service="WCTS" version="0.0.0">
+  <!-- Get the crs with id EPSG:31466 (Gauss Krueger 2) -->
+  <ows:ResourceID>urn:ogc:def:crs:EPSG::31466</ows:ResourceID>
+</GetResourceByID>

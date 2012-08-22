@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <!-- request all countries (in EPSG:23032) which intersect with the bbox (550000 5100000, 600000 5200000) (in EPSG:23032)-->	
+  <wfs:Query srsName="EPSG:23032" typeName="app:Country">
+    <ogc:Filter>
+      <ogc:BBOX>
+        <ogc:PropertyName>app:geom</ogc:PropertyName>
+        <gml:Envelope srsName="EPSG:23032">
+          <gml:coord>
+            <gml:X>550000</gml:X>
+            <gml:Y>5100000</gml:Y>
+          </gml:coord>
+          <gml:coord>
+            <gml:X>600000</gml:X>
+            <gml:Y>5200000</gml:Y>
+          </gml:coord>
+        </gml:Envelope>
+      </ogc:BBOX>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

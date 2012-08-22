@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <!-- Please be aware, that namespaces are used. So if you use featuretypes which are bound to app
+  the property names in this document must use them too. e.g.  <ogc:PropertyName>app:geom</ogc:PropertyName> -->
+  <sld:NamedLayer>
+    <sld:Name>cite:BasicPolygons</sld:Name>
+    <sld:UserStyle>
+      <!-- The <sld:Name> of the <sld:UserStyle> must be identical to the one referenced in the
+        wms_configuration.xml  -->
+      <sld:Name>default:DigitizeFeatures</sld:Name>
+      <sld:Title>default:DigitizeFeatures</sld:Title>
+      <sld:IsDefault>0</sld:IsDefault>
+      <sld:FeatureTypeStyle>
+        <sld:Name>Digitized Features</sld:Name>
+        <sld:Rule>
+          <sld:Name>Features</sld:Name>
+          <sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+          <sld:PolygonSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:geometry</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#00b400</sld:CssParameter>
+              <sld:CssParameter name="fill-opacity">0.0</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#8B2323</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">1.5</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

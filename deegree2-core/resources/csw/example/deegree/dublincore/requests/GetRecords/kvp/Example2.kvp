@@ -1,0 +1,9 @@
+http://www.someserver.com/csw.cgi?
+REQUEST=GetRecords&
+TYPENAMES=dataset&
+OUTPUTFORMAT=text/xml&
+OUTPUTSCHEMA=dublincore&
+SCHEMALANGUAGE=XMLSCHEMA&
+CONSTRAINTLANGUAGE=FILTER&
+CONSTRAINT=<Filter xmlns="http://www.opengis.net/ogc"><PropertyIsEqualTo><PropertyName xmlns:dc="http://purl.org/dc/elements/1.1/">dc:identifier</PropertyName><Literal>{42AE2814-FCC1-4BC2-BAF4-CA3E55514997}</Literal></PropertyIsEqualTo></Filter>&
+RESULTTYPE=HITS

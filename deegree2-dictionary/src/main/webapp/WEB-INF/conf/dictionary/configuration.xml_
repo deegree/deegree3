@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dict:DictionaryResource xmlns:dict="http://www.deegree.org/dictionary" 
+xmlns:jdbc="http://www.deegree.org/jdbc">
+	<dict:connection>
+		<jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+		<jdbc:Url>jdbc:postgresql://localhost:5432/igeodesktop</jdbc:Url>
+		<jdbc:User>postgres</jdbc:User>
+		<jdbc:Password>postgres</jdbc:Password>		
+	</dict:connection>
+	<dict:definition>
+		<dict:name>SGID100_CountyBoundaries/SHAPE_AREA</dict:name>
+		<dict:codeSpace>http://www.deegree.org/app</dict:codeSpace>
+		<dict:table>testdict</dict:table>
+	</dict:definition>
+</dict:DictionaryResource>

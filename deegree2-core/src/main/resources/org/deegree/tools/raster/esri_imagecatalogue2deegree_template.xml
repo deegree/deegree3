@@ -1,0 +1,5 @@
+<deegreewcs:Extension type="file"  xmlns:deegreewcs="http://www.deegree.org/wcs" >
+    <deegreewcs:Resolution min="0" max="99999999">
+        
+    </deegreewcs:Resolution>
+</deegreewcs:Extension>

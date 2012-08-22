@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WCS_Capabilities xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:deegree="http://www.deegree.org/wcs"
+  version="1.0.0" updateSequence="1.0.0">
+  <!--
+    except the deegree-section and the Service section all other settings are optional and will
+    be set by default if not available. As a result of this a user is able to up a WFS with minimal 
+    definitions as 'DefaultOnlineResource' and 'DataDirectory'
+  -->
+  <deegree:deegreeParam>
+    <!--
+      The DefaultOnlineResource will be used if a required OnlineResource is
+      not defined
+    -->
+    <deegree:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+      xlink:href="http://localhost:8080/deegree-wcs/" />
+    <!-- optional; default = 100 (MB) -->
+    <deegree:CacheSize>250</deegree:CacheSize>
+    <!-- maximum time for the execution of a request until an exception of time-exceed is thrown.
+      optional; default 5 Minutes -->
+    <deegree:RequestTimeLimit>10</deegree:RequestTimeLimit>
+    <!--
+      list of directories to be scanned for coverages to be served by a WCS.  deegree will
+      look for configuration files in this directories and add the corresponding coverages
+      to the ContentMetadata section if not already present.
+      optional; default: $RootDirectory$/WEB-INF/data
+    -->
+    <deegree:DataDirectoryList>
+      <deegree:DataDirectory>data/africa</deegree:DataDirectory>
+      <deegree:DataDirectory>data/bonn</deegree:DataDirectory>
+    </deegree:DataDirectoryList>
+  </deegree:deegreeParam>
+  <Service>
+    <!--
+      optional; no default
+    -->
+    <metadataLink xlink:type="simple" xlink:href="http://www.deegree.org" gml:remoteSchema="http://www.deegree.org" about="http://www.deegree.org" metadataType="TC211" />
+    <!--
+      optional; no default
+    -->
+    <description>deegree WCS being OGC WCS 1.0.0 reference implementation</description>
+    <!--
+      mandatory; if missing 'deegreewcs' will be used as default
+    -->
+    <name>WCS</name>
+    <!--
+      mandatory; if missing 'deegreewcs' will be used as default
+    -->
+    <label>deegree WCS</label>
+    <!--
+      optional; no default
+    -->
+    <keywords>
+      <keyword>deegree</keyword>
+      <keyword>WCS</keyword>
+      <type codeSpace="http://www.deegree.org">deegree internal</type>
+    </keywords>
+    <keywords>
+      <keyword>reference implemenation</keyword>
+      <keyword>WCS</keyword>
+      <type codeSpace="http://www.deegree.org">OGC</type>
+    </keywords>
+    <!--
+      optional; no default
+    -->
+    <responsibleParty>
+      <!--
+        mandatory; if missing 'deegree' will be used as default
+      -->
+      <individualName>Andreas Poth</individualName>
+      <!--
+        optional; no default
+      -->
+      <organisationName>lat/lon</organisationName>
+      <!--
+        optional; no default
+      -->
+      <positionName>technical director</positionName>
+      <!--
+        optional; no default
+        if contactInfo is defined all sub-elements are are also optional
+      -->
+      <contactInfo>
+        <phone>
+          <voice>0049228184960</voice>
+          <voice>0049228184960</voice>
+          <facsimile>00492281849629</facsimile>
+          <facsimile>00492281849629</facsimile>
+        </phone>
+        <address>
+          <deliveryPoint>Aennchenstr. 19</deliveryPoint>
+          <deliveryPoint>Aennchenstr. 19</deliveryPoint>
+          <city>Bonn</city>
+          <administrativeArea>NRW</administrativeArea>
+          <postalCode>53177</postalCode>
+          <country>Germany</country>
+          <electronicMailAddress>poth@lat-lon.de</electronicMailAddress>
+          <electronicMailAddress>info@lat-lon.de</electronicMailAddress>
+        </address>
+        <onlineResource xlink:type="simple" xlink:href="http://www.lat-lon.de"
+          xlink:role="http://www.lat-lon.de" xlink:arcrole="http://www.lat-lon.de"
+          xlink:title="lat/lon homepage" xlink:show="new" xlink:actuate="onLoad" />
+      </contactInfo>
+    </responsibleParty>
+    <!--
+      mandatory; if missing 'NONE' will be used as default
+    -->
+    <fees codeSpace="http://www.deegree.org">NONE</fees>
+    <!--
+      mandatory; if missing 'NONE' will be used as default
+    -->
+    <accessConstraints codeSpace="http://www.deegree.org">NONE</accessConstraints>
+    <accessConstraints codeSpace="http://www.deegree.org">SOME</accessConstraints>
+  </Service>
+  <!--
+    The Capability section is mandatory for OGC WCS but optional for deegree WCS. All values 
+    will set by default if not present.
+  -->
+  <Capability>
+    <Request>
+      <!--
+        GetCapabilities is required and will be set by default if missing
+      -->
+      <GetCapabilities>
+        <DCPType>
+          <HTTP>
+            <!--
+              HTTP Get is required and will be set by default if missing
+            -->
+            <Get>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://localhost:8080/deegree-wcs/services?" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://localhost:8080/deegree-wcs/services" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <!--
+        DescribeCoverage is required and will be set by default if missing
+      -->
+      <DescribeCoverage>
+        <DCPType>
+          <HTTP>
+            <!--
+              HTTP Get is required and will be set by default if missing
+            -->
+            <Get>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://localhost:8080/deegree-wcs/services?" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://localhost:8080/deegree-wcs/services" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </DescribeCoverage>
+      <!--
+        GetCoverage is required and will be set by default if missing
+      -->
+      <GetCoverage>
+        <DCPType>
+          <HTTP>
+            <!--
+              HTTP Get is required and will be set by default if missing
+            -->
+            <Get>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://localhost:8080/deegree-wcs/services?" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:type="simple"
+                xlink:href="http://localhost:8080/deegree-wcs/services" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCoverage>
+    </Request>
+    <!--
+      mandatory: application/vnd.ogc.se_xml will be set as default if missing
+    -->
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/deegree_xml</Format>
+    </Exception>
+    <VendorSpecificCapabilities />
+  </Capability>
+  <!--
+    mandatory; if missing it will be created by deegree and filled with 'CoverageOfferingBrief' 
+    descriptions for all coverages that can be found in directories listed in 'DataDirectoryList'.
+    If 'ContentMetadata' isn't defined or is empty and no coverages that can be found in 
+    directories listed in 'DataDirectoryList' the configuration is invalid because a (deegree) WCS 
+    at least have to serve one coverage.
+    If 'ContentMetadata' is defined deegree adds all coverages found in directories listed in 
+    'DataDirectoryList' that are not defined ContentMetadata automaticly
+    All attributes of 'ContentMetadata' are optional and don't has a default
+  -->
+  <ContentMetadata xlink:type="simple" xlink:href="http://www.deegree.org"
+    gml:remoteSchema="http://www.deegree.org" version="1.0.0" updateSequence="1.0.0">
+    <!--
+      because 'CoverageOfferingBrief' is a subset of the elements defined in 'CoverageOffering' that 
+      will be returned to a DescribeCoverage request and that is basis of the configuration for a 
+      deegree WCS data source configuration most of the required elementes can be extracted
+      from there and don't must be set twice.
+    -->
+    <!--CoverageOfferingBrief-->
+    <!--
+      mandatory; will be extracted from the configuration assigned to this coverage if not set. 
+      If not set 'deegree:Configuration' must be set and vice versa
+    -->
+    <!--name>BonnPhgr</name-->
+    <!--
+      Configuration is a deegree-specific parameter that won't be delievered as response
+      to a GetCapabilities request. If its missing it will be set by default using the coverage  
+      name completed with 
+      'file:///' + $RootDirectory$ + '/WEB-INF/config/' + $CoverageOfferingBrief/name$ + 'Config.xml'
+      so it must be set if 'name' isn't and vice versa
+    -->
+    <!--deegree:Configuration>file:///c:/wcs/WEB-INF/config/bonnConfig.xml</deegree:Configuration>
+      </CoverageOfferingBrief>
+      <CoverageOfferingBrief>
+      <name>world_elev</name>
+      </CoverageOfferingBrief>
+      <CoverageOfferingBrief>
+      <deegree:Configuration>file:///c:/wcs/WEB-INF/config/landsatConfig.xml</deegree:Configuration>
+      </CoverageOfferingBrief-->
+    <CoverageOfferingBrief gml:id="ID000001">
+      <metadataLink xlink:type="simple" xlink:href="http://www.deegree.org" gml:remoteSchema="http://www.deegree.org" about="http://www.deegree.org" metadataType="TC211" />
+      <description>None</description>
+      <name>Mapneatline</name>
+      <label>map neatline</label>
+      <lonLatEnvelope srsName="WGS84(DD)">
+        <gml:pos dimension="2">-1,-1</gml:pos>
+        <gml:pos dimension="2">1,1</gml:pos>
+      </lonLatEnvelope>
+      <keywords>
+        <keyword>Mapeatline</keyword>
+        <keyword>cite</keyword>
+        <keyword>CITE</keyword>
+        <keyword>test data</keyword>
+      </keywords>
+      <deegree:Configuration>./example_WCS100_configuration.xml</deegree:Configuration>
+    </CoverageOfferingBrief>
+    <CoverageOfferingBrief gml:id="ID000002">
+      <description>None</description>
+      <name>europe</name>
+      <label>europe</label>
+      <lonLatEnvelope srsName="WGS84(DD)">
+        <gml:pos dimension="2">-20,40</gml:pos>
+        <gml:pos dimension="2">20,90</gml:pos>
+      </lonLatEnvelope>
+      <keywords>
+        <keyword>europe</keyword>
+        <keyword>shape</keyword>
+        <keyword>CITE</keyword>
+        <keyword>test data</keyword>
+      </keywords>
+      <deegree:Configuration>./wcs_europe_configuration.xml</deegree:Configuration>
+    </CoverageOfferingBrief>
+    <CoverageOfferingBrief gml:id="ID000003">
+      <description>None</description>
+      <name>europeNI</name>
+      <label>europeNI</label>
+      <lonLatEnvelope srsName="WGS84(DD)">
+        <gml:pos dimension="2">-20,40</gml:pos>
+        <gml:pos dimension="2">20,90</gml:pos>
+      </lonLatEnvelope>
+      <keywords>
+        <keyword>europe</keyword>
+        <keyword>shape</keyword>
+        <keyword>CITE</keyword>
+        <keyword>test data</keyword>
+      </keywords>
+      <deegree:Configuration>./nameindexed_WCS100_configuration.xml</deegree:Configuration>
+    </CoverageOfferingBrief>
+  </ContentMetadata>
+</WCS_Capabilities>

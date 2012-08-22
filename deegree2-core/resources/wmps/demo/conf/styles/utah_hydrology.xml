@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+	<sld:NamedLayer>
+		<sld:Name>Lake</sld:Name>
+         <!-- 
+         +++++++++++++++++++++++++++++++++++++++
+         +++++++++++++ Layer Lake ++++++++++++++
+         +++++++++++++++++++++++++++++++++++++++
+         -->
+         <sld:UserStyle>
+            <sld:Name>default:Lake</sld:Name>
+            <sld:Title>default:Lake</sld:Title>
+            <sld:Abstract>default:Lake</sld:Abstract>
+            <sld:FeatureTypeStyle>
+                <sld:Title>default:Lake</sld:Title>
+                <sld:Rule>
+                    <sld:Name>default:Lake</sld:Name>
+                    <sld:Title>default:Lake</sld:Title>
+                    <sld:Abstract>default:Lake</sld:Abstract>
+                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <sld:PolygonSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Fill>
+                            <sld:CssParameter name='fill'>#7f7fd7</sld:CssParameter>
+                            <sld:CssParameter name='fill-opacity'>1.0</sld:CssParameter>
+                        </sld:Fill>
+                        <sld:Stroke>
+                            <sld:CssParameter name='stroke'>#4b4bbe</sld:CssParameter>
+                            <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
+                            <sld:CssParameter name='stroke-linejoin'>mitre</sld:CssParameter>
+                            <sld:CssParameter name='stroke-opacity'>1.0</sld:CssParameter>
+                            <sld:CssParameter name='stroke-width'>1.0</sld:CssParameter>
+                        </sld:Stroke>
+                    </sld:PolygonSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+        <sld:UserStyle>
+			<sld:Name>default:Lake</sld:Name>
+			<sld:Title>default:Lake</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>LakeStyle</sld:Name>
+				<sld:Rule>
+					<sld:Name>SHAPE_AREA_0.65-20766.025</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsBetween>
+							<ogc:PropertyName>app:shape_area</ogc:PropertyName>
+							<ogc:LowerBoundary>
+								<ogc:Literal>0.0</ogc:Literal>
+							</ogc:LowerBoundary>
+							<ogc:UpperBoundary>
+								<ogc:Literal>20000</ogc:Literal>
+							</ogc:UpperBoundary>
+						</ogc:PropertyIsBetween>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#00BFFF</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#0000ff</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>app:SHAPE_AREA_20766.025-75287.99</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsBetween>
+							<ogc:PropertyName>app:shape_area</ogc:PropertyName>
+							<ogc:LowerBoundary>
+								<ogc:Literal>20000</ogc:Literal>
+							</ogc:LowerBoundary>
+							<ogc:UpperBoundary>
+								<ogc:Literal>100000</ogc:Literal>
+							</ogc:UpperBoundary>
+						</ogc:PropertyIsBetween>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#1E90FF</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#3300cc</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>SHAPE_AREA_75287.99</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsBetween>
+							<ogc:PropertyName>app:shape_area</ogc:PropertyName>
+							<ogc:LowerBoundary>
+								<ogc:Literal>100000</ogc:Literal>
+							</ogc:LowerBoundary>
+							<ogc:UpperBoundary>
+								<ogc:Literal>2.70763158858E9</ogc:Literal>
+							</ogc:UpperBoundary>
+						</ogc:PropertyIsBetween>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#000080</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000099</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+        <!-- 
+        +++++++++++++++++++++++++++++++++++++++
+        +++++++++++++ Layer Springs +++++++++++
+        +++++++++++++++++++++++++++++++++++++++
+         -->
+		<sld:UserStyle>
+			<sld:Name>default:Springs</sld:Name>
+			<sld:Title>default:Springs</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>Springs</sld:Name>
+				<sld:Rule>
+					<sld:Name>Springs</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:code</ogc:PropertyName>
+							<ogc:Literal>1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>50000000</sld:MaxScaleDenominator>
+					<sld:PointSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Graphic>
+							<sld:Mark>
+								<sld:WellKnownName>square</sld:WellKnownName>
+								<sld:Fill>
+									<sld:CssParameter name="fill">#660000</sld:CssParameter>
+									<sld:CssParameter name="fill-opacity">0.5</sld:CssParameter>
+								</sld:Fill>
+							</sld:Mark>
+							<!-- 
+                            Scale dependent size of the object; deegree vendor specific
+                            $SCALE gives back the SLD scale of the wms and can be used for doing mathmatical
+                            calculations; in this case dividing 20000  by the $SCALE which means the symbol
+                            has a 'real' size of 20000 map units -->
+						 	<!-- 
+                            <sld:Size>
+                              <ogc:Div>
+                                <ogc:Literal>20000</ogc:Literal>
+                                <ogc:PropertyName>$SCALE</ogc:PropertyName>
+                              </ogc:Div>
+                            </sld:Size>
+                            -->
+							<sld:Size>5</sld:Size>
+							<sld:Rotation>0</sld:Rotation>
+						</sld:Graphic>
+					</sld:PointSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>Springs</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:code</ogc:PropertyName>
+							<ogc:Literal>2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>50000000</sld:MaxScaleDenominator>
+					<sld:PointSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Graphic>
+							<sld:Mark>
+								<sld:WellKnownName>cross</sld:WellKnownName>
+								<sld:Fill>
+									<sld:CssParameter name="fill">#2F4F4F</sld:CssParameter>
+									<sld:CssParameter name="fill-opacity">0.5</sld:CssParameter>
+								</sld:Fill>
+							</sld:Mark>
+							<sld:Size>5</sld:Size>
+							<sld:Rotation>0</sld:Rotation>
+						</sld:Graphic>
+					</sld:PointSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>Springs</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:code</ogc:PropertyName>
+							<ogc:Literal>3</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>50000000</sld:MaxScaleDenominator>
+					<sld:PointSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Graphic>
+							<sld:Mark>
+								<sld:WellKnownName>x</sld:WellKnownName>
+								<sld:Fill>
+									<sld:CssParameter name="fill">#2F4F4F</sld:CssParameter>
+									<sld:CssParameter name="fill-opacity">0.5</sld:CssParameter>
+								</sld:Fill>
+							</sld:Mark>
+							<sld:Size>5</sld:Size>
+							<sld:Rotation>0</sld:Rotation>
+						</sld:Graphic>
+					</sld:PointSymbolizer>
+				</sld:Rule>
+				<!--  Textsymbolizer for Points  -->
+				<sld:Rule>
+					<sld:Name>Springs</sld:Name>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>500000</sld:MaxScaleDenominator>
+					<sld:TextSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Label>
+							<ogc:PropertyName>app:source</ogc:PropertyName>
+						</sld:Label>
+						<sld:Font>
+							<sld:CssParameter name="font-family">Arial</sld:CssParameter>
+							<sld:CssParameter name="font-family">Sans-Serif</sld:CssParameter>
+							<sld:CssParameter name="font-style">italic</sld:CssParameter>
+							<sld:CssParameter name="font-size">10</sld:CssParameter>
+							<sld:CssParameter name="font-color">#222222</sld:CssParameter>
+						</sld:Font>
+						<sld:LabelPlacement>
+							<!--
+                            There are two options to place the text either automatically or by setting 
+                            AchorPoint/Displacement 
+                            -->
+							<sld:PointPlacement auto="true"/>
+							<!-- 
+                            <sld:PointPlacement>
+                              <sld:Displacement></sld:Displacement>-->
+							<!--
+                             The coordinates are given as two floating-point numbers in the AnchorPointX and
+                             AnchorPointY elements each with values between 0.0 and 1.0 inclusive. The bounding
+                             box of the label to be rendered is considered to be in a coorindate space from 0.0 (lower-
+                             left corner) to 1.0 (upper-right corner), and the anchor position is specified as a point in
+                             this space. The default point is X=0, Y=0.5, which is at the middle height of the left-
+                             hand side of the label.
+                            -->
+							<!--
+                            <sld:AnchorPoint>
+                              <sld:AnchorPointX>0</sld:AnchorPointX>
+                              <sld:AnchorPointY>0.5</sld:AnchorPointY>
+                            </sld:AnchorPoint>-->
+							<!-- 
+                            This will often be used to avoid over-plotting a graphic symbol marking a city or some
+                            such feature. The displacements are in units of pixels above and to the right of the point.
+                            A system may reflect this displacement about the X and/or Y axes to de-conflict labels.
+                            The default displacement is X=0, Y=0  
+                            -->
+							<!--
+                              <sld:Displacement>
+                                <sld:DisplacementX>5</sld:DisplacementX>
+                                <sld:DisplacementY>-10</sld:DisplacementY>
+                              </sld:Displacement>
+                            </sld:PointPlacement>
+                        -->
+						</sld:LabelPlacement>
+						<sld:Halo>
+							<sld:Fill>
+								<sld:CssParameter name="fill">#0080C0</sld:CssParameter>
+								<sld:CssParameter name="fill-opacity">0.6</sld:CssParameter>
+							</sld:Fill>
+						</sld:Halo>
+					</sld:TextSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+        <!-- 
+        +++++++++++++++++++++++++++++++++++++++
+        ++++++++++ Layer Groundwater ++++++++++
+        +++++++++++++++++++++++++++++++++++++++
+         -->
+        <sld:UserStyle>
+            <sld:Name>default:Groundwater</sld:Name>
+            <sld:Title>default:Groundwater</sld:Title>
+            <sld:Abstract>default:Groundwater</sld:Abstract>
+            <sld:FeatureTypeStyle>
+                <sld:Title>default:Groundwater</sld:Title>
+                <sld:Rule>
+                    <sld:Name>Groundwater</sld:Name>
+                    <sld:Title>Groundwater</sld:Title>
+                    <sld:Abstract>Groundwater</sld:Abstract>
+                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <sld:PolygonSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Fill>
+                            <sld:CssParameter name='fill'>#6060A3</sld:CssParameter>
+                            <sld:CssParameter name='fill-opacity'>0.8</sld:CssParameter>
+                        </sld:Fill>
+                        <sld:Stroke>
+                            <sld:CssParameter name='stroke'>#4b4bbe</sld:CssParameter>
+                            <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
+                            <sld:CssParameter name='stroke-linejoin'>mitre</sld:CssParameter>
+                            <sld:CssParameter name='stroke-opacity'>1.0</sld:CssParameter>
+                            <sld:CssParameter name='stroke-width'>1.0</sld:CssParameter>
+                        </sld:Stroke>
+                    </sld:PolygonSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+        <!-- 
+        +++++++++++++++++++++++++++++++++++++++
+        +++++++++++++ Layer Rivers ++++++++++++
+        +++++++++++++++++++++++++++++++++++++++
+         -->
+        <sld:UserStyle>
+            <sld:Name>default:Rivers</sld:Name>
+            <sld:Title>default:Rivers</sld:Title>
+            <sld:Abstract>default:Rivers</sld:Abstract>
+            <sld:FeatureTypeStyle>
+                <sld:Title>default:Rivers</sld:Title>
+                <sld:Rule>
+                    <sld:Name>Rivers</sld:Name>
+                    <sld:Title>Rivers</sld:Title>
+                    <sld:Abstract>Rivers</sld:Abstract>
+                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <sld:LineSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName xmlns:app="http://www.deegree.org/app">app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Stroke>
+                            <sld:CssParameter name="stroke">#4b4bbe</sld:CssParameter>
+                            <sld:CssParameter name="stroke-linecap">butt</sld:CssParameter>
+                            <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+                            <sld:CssParameter name="stroke-width">1.0</sld:CssParameter>
+                        </sld:Stroke>
+                    </sld:LineSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+	</sld:NamedLayer>
+</sld:StyledLayerDescriptor>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="D:\workspace\deegree\resources\csw\example\deegree\xslt\dc_transaction_in.xsl"?>
+<csw:Transaction version="2.0.0" service="CSW" verboseResponse="true" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://www.purl.org/dc/terms/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw
+http://schemas.opengis.net/csw/2.0.0/CSW-publication.xsd">
+	<csw:Delete handle="delete1" typeName="csw:Record">
+		<csw:Constraint version="1.0.0">
+			<ogc:Filter>
+				<ogc:PropertyIsLike wildCard="%" singleChar="_" escape="\">
+					<ogc:PropertyName>identifier</ogc:PropertyName>
+					<ogc:Literal>%</ogc:Literal>
+				</ogc:PropertyIsLike>
+			</ogc:Filter>
+		</csw:Constraint>
+	</csw:Delete>
+	<csw:Insert>
+		<csw:Record xmlns:dc="http://purl.org/dc/elements/1.1/">
+			<dct:abstract>This is the abstract.</dct:abstract>
+			<dc:contributor>Me</dc:contributor>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic" xmlns:dcmiBox="http://dublincore.org/documents/2000/07/11/dcmi-box/">
+					<dcmiBox:northlimit units="decimal degrees">34.353</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-96.223</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">28.229</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-108.44</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:description>This concerns a very important issue.</dc:description>
+			<dc:format>text/plain</dc:format>
+			<dc:identifier>XZY-8256723-BII-A</dc:identifier>
+			<dc:subject>whatever</dc:subject>
+			<dc:title>Will there be light at the end of the tunnel?</dc:title>
+			<dc:type>dataset</dc:type>
+			<dc:contributor>Myself</dc:contributor>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Update handle="update1">
+		<csw:RecordProperty>
+			<csw:Name>dc:description</csw:Name>
+			<csw:Value>Maybe not so important at all</csw:Value>
+		</csw:RecordProperty>		
+		<csw:Constraint version="1.0.0">
+			<ogc:Filter>
+				<ogc:PropertyIsEqualTo>
+					<ogc:PropertyName>dc:identifier</ogc:PropertyName>
+					<ogc:Literal>XZY-8256723-BII-A</ogc:Literal>
+				</ogc:PropertyIsEqualTo>
+			</ogc:Filter>
+		</csw:Constraint>
+	</csw:Update>
+</csw:Transaction>

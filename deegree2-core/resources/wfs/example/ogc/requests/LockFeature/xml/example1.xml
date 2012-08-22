@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 60-->
+<LockFeature version="1.1.0" service="WFS" lockAction="SOME" xmlns="http://www.opengis.net/wfs" xmlns:myns="http://www.someserver.com/myns" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <Lock typeName="myns:InWaterA_1M">
+    <ogc:Filter>
+      <ogc:GmlObjectId gml:id="InWaterA_1M.1013"/>
+      <ogc:GmlObjectId gml:id="InWaterA_1M.1014"/>
+      <ogc:GmlObjectId gml:id="InWaterA_1M.1015"/>
+      <ogc:GmlObjectId gml:id="InWaterA_1M.1016"/>
+      <ogc:GmlObjectId gml:id="InWaterA_1M.1017"/>
+    </ogc:Filter>
+  </Lock>
+</LockFeature>

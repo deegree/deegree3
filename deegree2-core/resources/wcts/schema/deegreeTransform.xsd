@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema xmlns:wcts="http://www.opengis.net/wcts/0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/wcts"
+  xmlns:d_wcts="http://www.deegree.org/wcts" elementFormDefault="qualified" version="0.4.0" xml:lang="en">
+  <annotation>
+    <appinfo>deegreeTransform.xsd 2008-04-03</appinfo>
+    <documentation>
+      This XML Schema Document encodes the deegree specific WCTS Transform operation request and response. Copyright (c)
+      2007 Lat/Lon GmbH, Inc. All Rights Reserved.
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+    includes and imports
+    ============================================================== -->
+  <import namespace="http://www.opengis.net/wcts/0.0" schemaLocation="./wctsCommon.xsd" />
+  <import namespace="http://www.opengis.net/ows/1.1"
+    schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsInputOutputData.xsd" />
+  <import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryBasic0d1d.xsd" />
+  <import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryPrimitives.xsd" />
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <!-- ==============================================================
+    The transform request definition
+    ============================================================== -->
+  <element name="Transform" type="d_wcts:TransformType" />
+  <complexType name="TransformType">
+    <annotation>
+      <documentation>
+        Request to a WCTS to perform the Transform operation. This operation transforms coordinates from one coordinate
+        reference system into another, where those coordinates are in geometric primitives defined by GML features, GML
+        Geometries or SimpleData. This Transform operation is different from the operation originally defined by the
+        wcts. It allows only for inline data to send to and from the client.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <extension base="wcts:RequestBaseType">
+        <sequence>
+          <choice>
+            <group ref="wcts:SourceAndTargetCRSs">
+              <annotation>
+                <documentation>
+                  References to the well-known SourceCRS and desired TargetCRS, included when client is not specifying a
+                  specific coordinate operation.
+                </documentation>
+              </annotation>
+            </group>
+            <element ref="wcts:Transformation">
+                <annotation>
+                  <documentation>
+                    Identifier or definition of the desired coordinate operation, included when client is specifying a
+                    specific coordinate operation, possibly a user-defined coordinate operation. In this use, this
+                    element shall:
+                    * Reference a well-known coordinate operation, whose definition is known to the WCTS server
+                    note, the other two definitions (file loading, gml:transformation) are not supported (yet).
+                  </documentation>
+                </annotation>
+              </element>            
+          </choice>
+          <element ref="d_wcts:InputData">
+            <annotation>
+              <documentation>
+                This element is the key difference to the wcts defined InputData, while the wcts:InputData only
+                references mime/multipart data, this element only allows for inline data, which is in most case a lot
+                more convenient.
+              </documentation>
+            </annotation>
+          </element>
+          <element name="OutputFormat" type="ows:MimeType" minOccurs="0">
+            <annotation>
+              <documentation>
+                Identifier of the output format to be used for the transformed features or coverage, allowing advanced
+                WCTS servers to perform reformatting. The output formats supported by a WCTS server are listed in the
+                Contents section of the Capabilities document. If this element is omitted, the output format shall be
+                the same as the format of the InputData. If that output format is not supported by a WCTS server, an
+                exception message shall be returned.
+              </documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+    </complexType>
+    <element name="InputData" type="d_wcts:InputDataType" />
+    <complexType name="InputDataType">
+      <annotation>
+        <documentation>The base type of all projections defines some elements defining the projection.</documentation>
+      </annotation>
+      <complexContent>
+        <!--as for the InputOutputData elements of this type will have the ows:Manifest data type as a base.-->
+        <extension base="ows:ManifestType">
+          <sequence>
+            <element name="InlineData" type="d_wcts:InlineDataType" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    <complexType name="InlineDataType">
+      <annotation>
+        <documentation>A type containing all inlineData elements</documentation>
+      </annotation>
+      <choice>
+        <element name="SimpleData" type="d_wcts:SimpleDataType" />
+        <element name="GeometryData" type="d_wcts:GeometryDataType" />
+        <element name="FeatureCollectionData" type="d_wcts:FeatureCollectionDataType" />
+      </choice>
+    </complexType>
+    <complexType name="SimpleDataType">
+      <annotation>
+        <documentation>
+          A list of coordinates in the source CRS. separated by the 'cs' attribute for the coordinates and the 'ts'
+          attribute for the tuples
+        </documentation>
+      </annotation>
+      <simpleContent>
+        <extension base="xs:string">
+          <attribute name="cs" use="optional" default="," />
+          <attribute name="ts" use="optional" default=" " />
+        </extension>
+      </simpleContent>
+    </complexType>
+    <complexType name="GeometryDataType">
+      <annotation>
+        <documentation>A type containing gml:geometries.</documentation>
+      </annotation>
+      <choice maxOccurs="unbounded">
+        <!-- a geometry or a surface -->
+        <element ref="gml:_Geometry" />
+        <element ref="d_wcts:AbstractGeometryPrimitive" />
+      </choice>
+    </complexType>
+    <!--This element is necessary to be able to validate surfaces as well -->
+    <element name="AbstractGeometryPrimitive" type="gml:AbstractGeometricPrimitiveType" abstract="true" />
+    <complexType name="FeatureCollectionDataType">
+      <annotation>
+        <documentation>A type containing gml:FeatureCollections</documentation>
+      </annotation>
+      <sequence maxOccurs="unbounded">
+        <element ref="gml:FeatureCollection" />
+      </sequence>
+    </complexType>
+    <!-- ==============================================================
+      The transform response definition
+      ============================================================== -->
+    <element name="OperationResponse" type="d_wcts:OperationResponseType" />
+    <complexType name="OperationResponseType">
+      <annotation>
+        <documentation>
+          While the response to a wcts does not allow inline data, the deegree wcts does. Instead of returning an
+          ows:OperationResponse the deegree:wcts reponses with this element, the difference is the definition of the
+          inputdata type
+        </documentation>
+      </annotation>
+      <complexContent>
+        <!--as for the ows:OperationResponse, elements of this type will have the ows:Manifest data type as a base.-->
+        <extension base="ows:ManifestType">
+        <choice>
+          <sequence>
+            <element name="InlineData" type="d_wcts:InlineDataType" />
+          </sequence>
+          <!-- allow for direct geometries -->
+          <sequence>
+            <element ref="gml:_Geometry" />
+          </sequence>
+          <sequence>
+            <element ref="gml:_Feature" />
+          </sequence>
+          </choice>
+        </extension>
+      </complexContent>
+      </complexType>
+</schema>

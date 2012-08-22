@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <!-- request all countries that intersect with bbox (8 48, 9 48.1) -->
+  <wfs:Query typeName="app:Country">
+    <ogc:Filter>
+      <ogc:BBOX>
+        <ogc:PropertyName>app:geom</ogc:PropertyName>
+        <gml:Envelope>
+          <gml:coord>
+            <gml:X>8</gml:X>
+            <gml:Y>48</gml:Y>
+          </gml:coord>
+          <gml:coord>
+            <gml:X>9</gml:X>
+            <gml:Y>48.1</gml:Y>
+          </gml:coord>
+        </gml:Envelope>
+      </ogc:BBOX>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

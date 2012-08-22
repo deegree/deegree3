@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<IsTransformable xmlns="http://www.opengis.net/wcts/0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcts ../../wctsIsTransformable.xsd" service="WCTS" version="0.0.0">
+  <!-- Check if a LineString geometry can be converted from EPSG:4326 to EPSG:23032-->
+  <SourceCRS>urn:ogc:def:crs:EPSG:6.0:4326</SourceCRS>
+  <TargetCRS>urn:ogc:def:crs:EPSG:6.0:23032</TargetCRS>
+  <GeometryType>LineString</GeometryType>
+</IsTransformable>

@@ -1,0 +1,6 @@
+<!-- DEFAULT WMS ADDRESSES -->
+<option value="http://demo.deegree.org/deegree-wms/services" title="demo deegree WMS">demo deegree WMS</option>
+<option value="http://testing.deegree.org/deegree-wms/services" title="testing deegree WMS">testing deegree WMS</option>
+<option value="http://localhost:8080/deegree-wms/services" title="local deegree WMS">local deegree WMS</option>
+
+<!-- ADD MORE WMS ADDRESSES HERE -->

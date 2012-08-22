@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:smXML="http://metadata.dgiwg.org/smXML" version="0.9">
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../gml3.1/xlink/xlinks.xsd"/>
+	<!-- ================================== Includes ================================== -->
+	<xs:include schemaLocation="./basicTypes.xsd"/>
+	<!-- ========================= IM_Object: abstract Root ============================= -->
+	<!--================= Type ===================-->
+	<xs:complexType name="_Object_Type" abstract="true">
+		<xs:sequence/>
+		<xs:attributeGroup ref="smXML:ObjectIdentification"/>
+	</xs:complexType>
+	<!--================= Element =================-->
+	<xs:element name="_Object" type="smXML:_Object_Type" abstract="true"/>
+	<!-- ========================================================================== -->
+	<!-- ====================== Reference of a resource =============================== -->
+	<xs:attributeGroup name="ObjectReference">
+		<xs:attributeGroup ref="xlink:simpleLink"/>
+		<xs:attribute name="remoteSchema" type="xs:anyURI" use="optional"/>
+		<xs:attribute name="uuidref" type="xs:string"/>
+	</xs:attributeGroup>
+	<xs:element name="Reference" type="smXML:Reference_Type"/>
+	<xs:complexType name="Reference_Type">
+		<xs:sequence/>
+		<xs:attributeGroup ref="smXML:ObjectReference"/>
+	</xs:complexType>
+	<!-- ========================================================================== -->
+	<!-- ====================== Identification of a resource ============================== -->
+	<xs:attributeGroup name="ObjectIdentification">
+		<xs:attribute name="id" type="xs:ID" use="optional"/>
+		<xs:attribute name="uuid" type="xs:string" use="optional"/>
+	</xs:attributeGroup>
+	<!-- ====================== The CodeList prototype ================================= -->
+	<!--It is used to refer to a specific codeListValue in a register-->
+	<!--================= Type ==================-->
+	<xs:complexType name="CodeListValue_Type">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+				<xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+				<xs:attribute name="codeListValue" type="xs:anyURI" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- ========================================================================== -->
+	<!-- ====================== The Register prototype ================================= -->
+	<!--It is used to refer to a specific value in a register-->
+	<!--================= Type ==================-->
+	<xs:complexType name="RegisterValue_Type">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+				<xs:attributeGroup ref="xlink:simpleLink"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- ========================================================================== -->
+	<!--==============End================-->
+</xs:schema>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema targetNamespace="http://www.opengis.net/wcts/0.0" xmlns:wcts="http://www.opengis.net/wcts/0.0"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.4.0" xml:lang="en">
+  <annotation>
+    <appinfo>wctsOperationParameter.xsd 2007-05-01</appinfo>
+    <appinfo>
+      <GMLProfileSchema>
+        http://schemas.opengis.net/gml/3.1.1/profiles/CommonCRSs/1.0.0/coordinateOperations.xsd
+      </GMLProfileSchema>
+    </appinfo>
+    <documentation>
+      This XML Schema Document is a GML Application Schema that expands the definitions of OperationParameters.
+      Copyright (c) 2007 Open Geospatial Consortium, Inc. All Rights Reserved.
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+    includes and imports
+    ============================================================== -->
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+  <import namespace="http://www.opengis.net/ows/1.1" schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd" />
+  <!-- ==============================================================
+    elements and types
+    ============================================================== -->
+  <element name="OperationParameter" type="wcts:OperationParameterType" substitutionGroup="gml:OperationParameter">
+    <annotation>
+      <documentation>Extended definition of an WCTS operation parameter.</documentation>
+    </annotation>
+  </element>
+  <!-- ==================================================== -->
+  <complexType name="OperationParameterType">
+    <complexContent>
+      <extension base="gml:OperationParameterType">
+        <sequence>
+          <element name="allowedValues" type="ows:UnNamedDomainType" minOccurs="0">
+            <annotation>
+              <documentation>
+                List the allowed values for the parameter, often including the meaning and the referenceSystem or units
+                of measure (Uom) of this parameter.
+              </documentation>
+            </annotation>
+          </element>
+          <element name="otherUOM" type="ows:DomainMetadataType" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+              <documentation>
+                Unordered list of the zero or more identifiers of other units of measure supported for the value of this
+                operations parameter. This list shall be omitted when this parameter does not use a unit of measure, or
+                when the only units supported are specified by the ows:UOM included in the allowedValues.
+              </documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- =================================================== -->
+</schema>

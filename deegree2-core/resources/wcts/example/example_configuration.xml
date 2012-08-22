@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<d_wcts:Configuration version="0.4.0" updateSequence="String" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wcs="http://www.opengis.net/wcs/1.2"
+  xmlns:wcts="http://www.opengis.net/wcts/0.0" xmlns:d_wcts="http://www.deegree.org/wcts" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/wcts ../schema/deegreeConfiguration.xsd http://www.deegree.org/wcts ../schema/deegreeAbstractMetadata.xsd">
+  <d_wcts:deegreeParams>
+    <!-- Optional parameter defining the CRS Provider for the wcts, if omitted the default CRS provider will be used.  -->
+    <!-- d_wcts:crsProvider>org.deegree.crs.configuration.gml.GMLCRSProvider</d_wcts:crsProvider-->
+    <!-- Optional parameter, if true the response of an transform operation type will use the deegree construct, 
+      inline_data/[featurecollection_data|simpleData|geometryData] else the [geometries|featurecollections] 
+      will be directly beneath the response. Default is true. -->
+    <!--d_wcts:useDeegreeTransformResponse>true</d_wcts:useDeegreeTransformResponse-->
+    <d_wcts:createDefaultTransformationDescriptions>true</d_wcts:createDefaultTransformationDescriptions>
+  </d_wcts:deegreeParams>
+  <ows:ServiceIdentification>
+    <ows:Title xml:lang="en-us">Web Coordinate Transformation Service</ows:Title>
+    <ows:Abstract xml:lang="en-us">Network service for transforming coordinates from one CRS to another</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword xml:lang="en-us">Coordinate Reference System</ows:Keyword>
+      <ows:Keyword>transformation</ows:Keyword>
+      <ows:Keyword>conversion</ows:Keyword>
+      <ows:Keyword>coordinate operation</ows:Keyword>
+      <ows:Type codeSpace="http://www.deegree.org">the type of the keywords</ows:Type>
+    </ows:Keywords>
+    <ows:ServiceType codeSpace="http://www.deegree.org">OGC WCTS</ows:ServiceType>
+    <ows:ServiceTypeVersion>0.4.0</ows:ServiceTypeVersion>
+    <ows:Profile>http://www.deegree.org</ows:Profile>
+    <ows:Fees>Nottin</ows:Fees>
+    <ows:AccessConstraints>Free to all</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Rutger Bezema</ows:IndividualName>
+      <ows:PositionName>Software developer</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 (0)228 184960</ows:Voice>
+          <ows:Facsimile>+49 (0)228 1849629</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+          <ows:PostalCode>43225</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>my_mail@some.com</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.lat-lon.de" />
+        <ows:HoursOfService>Open all day</ows:HoursOfService>
+        <ows:ContactInstructions>Don't do it</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role codeSpace="http://www.deegree.org">A nice role</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <!-- The GetCapabilities operation is implemented by this server -->
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <!-- For all possible values, take a look at the post. Normally the get urls will look like this. -->
+          <ows:Get xlink:href="http://www.deegree.org" />
+          <!--  An example configuration for different post urls. For post requests of GetCapbilities operations can 
+            only be addressed at two different urls (getCapabilities_soap, and getCapabilities_xml)-->
+          <ows:Post xlink:href="http://www.deegree.org/getCapabilites_soap">
+            <!-- When the HTTP POST connect point URL is different for different encodings of the
+              operation requests, this ows:Constraint element shall be included in each Post element.-->
+            <ows:Constraint name="PostEncoding">
+              <ows:AllowedValues>
+                <ows:Value>SOAP</ows:Value>
+              </ows:AllowedValues>
+              <ows:DefaultValue>SOAP</ows:DefaultValue>
+              <ows:Meaning ows:reference="http://www.deegree.org">Soap encoded GetCapabilities can only be handled at the given url.</ows:Meaning>
+              <ows:DataType ows:reference="http://www.deegree.org">This data type metadata should be referenced or included for each quantity</ows:DataType>
+              <ows:UOM ows:reference="http://www.deegree.org">
+                Doesn't make a lot of sense for GetCapabilities. But the definition of the unit of measure of this set of values. In this case, the xlink:href attribute can
+                reference a URN for a well-known unit of measure (uom). For example, such a URN could be a UOM identification URN defined in the "ogc" URN namespace.
+              </ows:UOM>
+              <ows:Metadata xlink:title="A link to some more metadata" xlink:href="http://www.deegree.org" />
+            </ows:Constraint>
+          </ows:Post>
+          <ows:Post xlink:href="http://www.deegree.org/getCapabilites_xml">
+            <!-- When the HTTP POST connect point URL is different for different encodings of the
+              operation requests, this ows:Constraint element shall be included in each Post element.-->
+            <ows:Constraint name="PostEncoding">
+              <ows:AllowedValues>
+                <ows:Value>XML</ows:Value>
+              </ows:AllowedValues>
+              <ows:DefaultValue>XML</ows:DefaultValue>
+              <ows:Meaning ows:reference="http://www.deegree.org">Soap encoded GetCapabilities can only be handled at the given url.</ows:Meaning>
+              <ows:DataType ows:reference="http://www.deegree.org">This data type metadata should be referenced or included for each quantity</ows:DataType>
+              <ows:UOM ows:reference="http://www.deegree.org">
+                Doesn't make a lot of sense for GetCapabilities. But the definition of the unit of measure of this set of values. In this case, the xlink:href attribute can
+                reference a URN for a well-known unit of measure (uom). For example, such a URN could be a UOM identification URN defined in the "ogc" URN namespace.
+              </ows:UOM>
+              <ows:Metadata xlink:title="A link to some more metadata" xlink:href="http://www.deegree.org" />
+            </ows:Constraint>
+          </ows:Post>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <!-- The Transform operation is implemented by this server -->
+    <ows:Operation name="Transform">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://www.deegree.org/" />
+          <!-- When the HTTP POST connect point URL is different for different encodings of the operation requests, this
+            ows:Constraint element shall be included in each Post element.-->
+          <ows:Post xlink:href="http://www.deegree.org/" />
+        </ows:HTTP>
+      </ows:DCP>
+      <!-- When this WCTS server implements the 'store' parameter, this
+        shall be specified by including an ows:Parameter element with 'store' as the name
+        attribute value, and both 'True' and 'False' as allowed Values. When this WCS server
+        does not implement the 'store' parameter, this shall be specified by including an
+        ows:Parameter element with 'store' as the 'name' attribute value, and only 'False' as an
+        allowed Value.
+      -->
+      <ows:Parameter name="store">
+        <ows:AllowedValues>
+          <ows:Value>True</ows:Value>
+          <ows:Value>False</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>False</ows:DefaultValue>
+        <ows:Meaning ows:reference="http://www.deegree.org">This wcts can store results</ows:Meaning>
+      </ows:Parameter>
+      <!-- All WCTS servers shall specify the encodings that may be sent using HTTP POST
+        transfer of operation requests. Specifically, an ows:Constraint element shall be included,
+        with 'PostEncoding' as the value of the 'name' attribute and specifying different
+        allowed values for each allowed encoding:
+        a) The value 'SOAP' shall indicate that SOAP encoding is allowed.
+        b) The value 'XML' shall indicate that XML encoding is allowed (without SOAP
+        message encapsulation).
+      -->
+      <ows:Constraint name="PostEncoding">
+        <ows:AllowedValues>
+          <ows:Value>SOAP</ows:Value>
+          <ows:Value>XML</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>XML</ows:DefaultValue>
+        <ows:Meaning ows:reference="http://www.deegree.org">This service supports soap and xml for postencodings for a transform request at the given post address.</ows:Meaning>
+      </ows:Constraint>
+    </ows:Operation>
+    <!--  The optional operations -->
+    <ows:Operation name="IsTransformable">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://www.deegree.org/" />
+          <ows:Post xlink:href="http://www.deegree.org/" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetResourceByID">
+      <ows:DCP>
+        <ows:HTTP>
+          <!-- only accessible by http get. -->
+          <ows:Get xlink:href="http://www.deegree.org/" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <!-- 
+      When the connect point URL is the same for all encodings of all operation requests, this
+      ows:Constraint element shall be included in the OperationsMetadata element.-->
+    <ows:Constraint name="PostEncoding">
+      <ows:AllowedValues>
+        <ows:Value>SOAP</ows:Value>
+        <ows:Value>XML</ows:Value>
+      </ows:AllowedValues>
+      <ows:DefaultValue>XML</ows:DefaultValue>
+      <ows:Meaning ows:reference="http://www.deegree.org">This wct would be able to handle soap and xml on the given post addresses for each operation</ows:Meaning>
+    </ows:Constraint>
+    <ows:ExtendedCapabilities>
+      <!--  now define the definitions for the deegree specific modifications to the transform operation, which is the 
+        {http://www.deegree.org/wcts}:InlineData element, containing a choice of {http://www.deegree.org/wcts}:SimpleData, 
+        {http://www.deegree.org/wcts}:GeometryData or {http://www.deegree.org/wcts}:FeatureCollectionData -->
+    </ows:ExtendedCapabilities>
+  </ows:OperationsMetadata>
+  <wcts:Contents userDefinedCRSs="false">
+    <!-- The transformations used by this wcts -->
+    <wcts:Transformation>urn:ogc:def:crs:epsg::1777</wcts:Transformation>
+    <wcts:Transformation>urn:deegree:wcts:transformation:1</wcts:Transformation>
+    <wcts:Transformation>urn:deegree:wcts:transformation:2</wcts:Transformation>
+    <!-- Identifiers of well-known operation methods which the server can use in user-defined coordinate operations, 
+      currently not supported though! -->
+    <!--     
+      <wcts:Method>urn:ogc:def:method:EPSG::9801</wcts:Method>
+      <wcts:Method>urn:ogc:def:method:EPSG::9802</wcts:Method>
+      <wcts:Method>urn:ogc:def:method:EPSG::9803</wcts:Method>
+    -->
+
+
+    <!--  Reference to well-known CRS in which the server can accept sourceCRS values -->
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::2397</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::2398</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::2399</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::25832</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::25833</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::3068</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::31466</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::31467</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::31468</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::31469</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::4314</wcts:SourceCRS>
+    <wcts:SourceCRS>urn:ogc:def:crs:epsg::4326</wcts:SourceCRS>
+    <!--  Reference to well-known CRS which the server can transform to -->
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::2397</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::2398</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::2399</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::25832</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::25833</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::3068</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::31466</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::31467</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::31468</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::31469</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::4314</wcts:TargetCRS>
+    <wcts:TargetCRS>urn:ogc:def:crs:epsg::4326</wcts:TargetCRS>
+    <!--  Information about the coverage handling abilities of this wcts. Currently not supported -->
+    <!-- 
+      <wcts:CoverageAbilities>
+      <wcts:CoverageType>GRID</wcts:CoverageType>
+      <wcts:CoverageFormat>image/pix</wcts:CoverageFormat>
+      <wcts:CoverageFormat>image/HDF-EOS</wcts:CoverageFormat>
+      <wcts:CoverageFormat>image/DTED</wcts:CoverageFormat>
+      <wcts:CoverageFormat>image/GeoTIFF</wcts:CoverageFormat>
+      <wcts:CoverageFormat>image/NITF</wcts:CoverageFormat>
+      <wcs:InterpolationMethods>
+      <wcs:InterpolationMethod>nearest</wcs:InterpolationMethod>
+      <wcs:InterpolationMethod>linear</wcs:InterpolationMethod>
+      </wcs:InterpolationMethods>
+      <wcs:Default>nearest</wcs:Default>
+      </wcts:CoverageAbilities>
+    -->
+    <!-- Information about the feature handling abilities of this wcts, listing the geometries that are supported. 
+      The remoteProperties specifies if this server supports remote properties in features transformed. -->
+    <wcts:FeatureAbilities remoteProperties="false">
+      <wcts:GeometryType>Point</wcts:GeometryType>
+      <wcts:GeometryType>LineString</wcts:GeometryType>
+      <wcts:GeometryType>Polygon</wcts:GeometryType>
+      <wcts:GeometryType>MultiPolygon</wcts:GeometryType>
+      <wcts:GeometryType>Surface</wcts:GeometryType>
+      <!-- Identifier of feature format in which the Transform operation can input and output features -->
+      <wcts:FeatureFormat input="true" output="true">text/xml; gmlVersion=3.1.0</wcts:FeatureFormat>
+    </wcts:FeatureAbilities>
+    <!-- Metadata about the data served by this wcts implementation, For example this metadata could include more
+      detailed definitions of the CRSs, Transformations and Methods known to this server, perhaps in the form of a 
+      gml:Dictionary of such informations -->
+    <ows:Metadata>
+      <d_wcts:transformationMetadata transformationID="urn:ogc:def:crs:epsg::1777" sourceCRS="urn:ogc:def:crs:epsg::4314" targetCRS="urn:ogc:def:crs:epsg::4326">
+        <d_wcts:description>Transforming geographic coordinates from EPSG:4314 (DHDN) to EPSG:4326 (WGS 84) coordinate system using the Helmert transformation</d_wcts:description>
+      </d_wcts:transformationMetadata>
+    </ows:Metadata>
+    <ows:Metadata>
+      <d_wcts:transformationMetadata transformationID="urn:deegree:wcts:transformation:1" sourceCRS="urn:ogc:def:crs:EPSG::2397" targetCRS="urn:ogc:def:crs:EPSG::3068">
+        <d_wcts:description>
+          Transforming projected coordinates from EPSG:2397 (Pulkovo 1942(83) / Gauss-Kruger zone 4) to EPSG:3068 (DHDN / Soldner Berlin ) coordinate system using the Helmert
+          transformation
+        </d_wcts:description>
+      </d_wcts:transformationMetadata>
+    </ows:Metadata>
+    <ows:Metadata>
+      <d_wcts:transformationMetadata transformationID="urn:deegree:wcts:transformation:2" sourceCRS="urn:ogc:def:crs:EPSG::31466" targetCRS="urn:ogc:def:crs:EPSG::25832">
+        <d_wcts:description>
+          Transforming projected coordinates from EPSG:31466 (DHDN / Gauss-Kruger zone 2) to EPSG:25832 (ETRS89 / UTM zone 32N) coordinate system using the Helmert transformation
+        </d_wcts:description>
+      </d_wcts:transformationMetadata>
+    </ows:Metadata>
+  </wcts:Contents>
+</d_wcts:Configuration>

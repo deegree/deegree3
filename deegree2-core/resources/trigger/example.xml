@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dgTrigger:TriggerConfiguration xmlns:dgTrigger="http://www.deegree.org/trigger" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/trigger
+D:\java\source\deegree2\resources\trigger\triggerconfiguration.xsd">
+	<dgTrigger:class>
+		<dgTrigger:name>de.latlon.trigger.TriggerDocumentTest</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>testDocumentReader</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<dgTrigger:trigger>
+					<dgTrigger:name>ValidationTrigger</dgTrigger:name>
+					<dgTrigger:performingClass>de.latlon.trigger.Validate</dgTrigger:performingClass>
+					<dgTrigger:initParam>
+						<dgTrigger:name>configFile</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>e:/temp/configuration.xml</dgTrigger:value>
+					</dgTrigger:initParam>
+					<dgTrigger:initParam>
+						<dgTrigger:name>validationType</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>strong</dgTrigger:value>
+					</dgTrigger:initParam>
+				</dgTrigger:trigger>
+			</dgTrigger:preTrigger>
+			<dgTrigger:postTrigger>
+				<dgTrigger:trigger>
+					<dgTrigger:name>FormattingTrigger</dgTrigger:name>
+					<dgTrigger:performingClass>de.latlon.trigger.Formatting</dgTrigger:performingClass>
+					<dgTrigger:initParam>
+						<dgTrigger:name>config</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>e:/temp/anotherconfiguration.xml</dgTrigger:value>
+					</dgTrigger:initParam>
+					<dgTrigger:trigger>
+						<dgTrigger:name>logger</dgTrigger:name>
+						<dgTrigger:performingClass>de.latlon.trigger.Logger</dgTrigger:performingClass>
+					</dgTrigger:trigger>
+				</dgTrigger:trigger>
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>
+	</dgTrigger:class>
+</dgTrigger:TriggerConfiguration>

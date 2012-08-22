@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <!-- request all springs having a code of 5; if no srsName="EPSG:xxxxx" is used in
+  <wfs:Query> the default srs will be used -->
+  <wfs:Query typeName="app:Springs" srsName="EPSG:4326">
+    <ogc:Filter>
+      <ogc:PropertyIsEqualTo>
+         <ogc:PropertyName>app:code</ogc:PropertyName>
+         <ogc:Literal>5</ogc:Literal>
+      </ogc:PropertyIsEqualTo>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

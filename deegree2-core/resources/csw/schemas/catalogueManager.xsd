@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:md="http://www.deegree.org/cataloguemanager" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/cataloguemanager" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/gml/3.1.1/xlink/xlinks.xsd"/>
+	<xs:element name="searchableProperties">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="md:Property" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="searchableCSW" type="md:searchableCSWType"/>
+	<xs:complexType name="searchableCSWType">
+		<xs:sequence>
+			<xs:element name="CSW" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute ref="xlink:href" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="onlineResource">
+		<xs:complexType>
+			<xs:attribute ref="xlink:href" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fullHTMLFormat">
+		<xs:complexType>
+			<xs:attribute ref="xlink:href" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pdfFormat">
+		<xs:complexType>
+			<xs:attribute ref="xlink:href" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="linkageFormat">
+		<xs:complexType>
+			<xs:attribute ref="xlink:href" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dateProperties">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="md:Property" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="briefHTMLFormat">
+		<xs:complexType>
+			<xs:attribute ref="xlink:href" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Templates">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Template" maxOccurs="4">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="md:onlineResource"/>
+						</xs:sequence>
+						<xs:attribute name="hierarchyLevel" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Search">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="md:searchableProperties"/>
+				<xs:element ref="md:dateProperties"/>
+				<xs:element name="ignoreCharacters" type="xs:string"/>
+				<xs:element name="stepSize" type="xs:int"/>
+				<xs:element ref="md:searchableCSW"/>
+				<xs:element ref="md:briefHTMLFormat"/>
+				<xs:element ref="md:fullHTMLFormat"/>
+				<xs:element ref="md:pdfFormat"/>
+				<xs:element ref="md:linkageFormat" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ResponsibleParties">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ResponsibleParty" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DisplayName" type="xs:string"/>
+							<xs:element name="IndividualName" type="xs:string"/>
+							<xs:element name="OrganisationName" type="xs:string"/>
+							<xs:element name="Role" type="xs:string"/>
+							<xs:element name="Street" type="xs:string"/>
+							<xs:element name="City" type="xs:string"/>
+							<xs:element name="PostalCode" type="xs:string"/>
+							<xs:element name="Country" type="xs:string"/>
+							<xs:element name="Voice" type="xs:string"/>
+							<xs:element name="Facsimile" type="xs:string" minOccurs="0"/>
+							<xs:element name="EMail" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Property">
+		<xs:complexType>
+			<xs:attribute name="namespace" type="xs:string" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MD_Elements">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="element" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="md:CatalogueService"/>
+				<xs:element ref="md:Templates"/>
+				<xs:element ref="md:MD_Elements"/>
+				<xs:element ref="md:BoundingBoxes"/>
+				<xs:element ref="md:ResponsibleParties"/>
+				<xs:element ref="md:Search"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CatalogueService" type="md:CatalogueServiceType"/>
+	<xs:complexType name="CatalogueServiceType">
+		<xs:sequence>
+			<xs:element ref="md:onlineResource"/>
+			<xs:element name="metadataSchema" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="BoundingBoxes">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="BBOX" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="id" type="xs:string" use="required"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

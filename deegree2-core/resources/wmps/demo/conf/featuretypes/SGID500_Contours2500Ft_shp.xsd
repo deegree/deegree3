@@ -1,0 +1,69 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Prefix>app</deegreewfs:Prefix>
+            <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+            <deegreewfs:File>../../../data/utah/vector/SGID500_Contours2500Ft</deegreewfs:File>
+            <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <!-- ============================================================== -->
+    <xsd:element name='Contours2500Ft' type='app:Contours2500FtType' substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <deegreewfs:table>SGID500_Contours2500Ft</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+                    <deegreewfs:MappingField field='ID' type="INTEGER" />
+                </deegreewfs:gmlId>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!-- ============================================================== -->
+    <xsd:complexType name='Contours2500FtType'>
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+                    <xsd:element name='contourLine' type='gml:GeometryPropertyType'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='GEOM' type='GEOMETRY' srs='-1' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='objectid' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='OBJECTID' type='NUMERIC' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='elev' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='ELEV' type='NUMERIC' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='shape_len' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='SHAPE_LEN' type='NUMERIC' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

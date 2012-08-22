@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dgp:Module xmlns:dgp="http://www.deegree.org/project" xmlns:cmm="http://www.deegree.org/coremapmodel" xmlns:set="http://www.deegree.org/settings" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/project ../schema/jaxbschema/project.xsd">
+	<dgp:name>EditStyle</dgp:name>
+	<cmm:identifier>
+		<cmm:value>EditStyleId</cmm:value>
+	</cmm:identifier>
+	<dgp:className>org.deegree.igeo.modules.EditStyleModule</dgp:className>
+	<dgp:ViewForm>
+		<dgp:FrameViewForm resizeable="false">
+			<dgp:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.style.RuleDialog</dgp:containerClass>
+			<dgp:ComponentState modal="true" active="false">
+				<dgp:windowState>closed</dgp:windowState>
+			</dgp:ComponentState>
+			<dgp:frameTitle>$editStyle.FrameTitle</dgp:frameTitle>
+		</dgp:FrameViewForm>
+		<dgp:Layout>
+			<dgp:NoneLayout/>
+		</dgp:Layout>
+	</dgp:ViewForm>
+	<dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>EditStyle_Open_TB</cmm:value>
+		</cmm:identifier>
+		<dgp:tooltip>$editStyle.tooltip</dgp:tooltip>
+		<dgp:assignedAction>editStyle</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/palette.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<set:HelpContext>
+		<set:page mainPage="true">
+			<cmm:OnlineResource xlink:href="./help/style_editor/style_editor.de.html"/>
+			<set:keyword>rule</set:keyword>
+			<set:keyword>style</set:keyword>
+		</set:page>
+	</set:HelpContext>
+</dgp:Module>

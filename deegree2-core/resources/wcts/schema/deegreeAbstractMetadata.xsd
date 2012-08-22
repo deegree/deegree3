@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:dg="http://www.deegree.org/wcts" targetNamespace="http://www.deegree.org/wcts" elementFormDefault="qualified" attributeFormDefault="unqualified">
+ <xs:annotation>
+  <xs:appinfo>deegreeAbstractMetadata.xsd 2008-10-11</xs:appinfo>
+  <xs:documentation>This XML Schema Document encodes the deegree profile for the AbstractMetadata elements in the Capabilities/Content/Metadata section.</xs:documentation>
+ </xs:annotation>
+ <xs:import namespace="http://www.opengis.net/ows/1.1" schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsCommon.xsd"/>
+ <xs:element name="transformationMetadata" type="dg:transformMetadataType" substitutionGroup="ows:AbstractMetaData"/>
+ <xs:complexType name="transformMetadataType">
+  <xs:annotation>
+   <xs:documentation>
+        The Transform data type is a substitution group for the AbstractMetadata element, which is allowed in the content/Metadata element. It describes the transformation from
+        source to target crs.
+      </xs:documentation>
+  </xs:annotation>
+  <xs:sequence>
+   <xs:element name="description" type="xs:string"/>
+  </xs:sequence>
+  <xs:attribute name="transformationID" use="required"/>
+  <xs:attribute name="sourceCRS" use="required"/>
+  <xs:attribute name="targetCRS" use="required"/>
+ </xs:complexType>
+</xs:schema>

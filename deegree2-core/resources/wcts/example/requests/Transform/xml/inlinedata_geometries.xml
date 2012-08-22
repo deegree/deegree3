@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewcts:Transform xmlns="http://www.deegree.org/wcts" xmlns:wcts="http://www.opengis.net/wcts/0.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:deegreewcts="http://www.deegree.org/wcts" xmlns:gml="http://www.opengis.net/gml" service="WCTS" version="0.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/wcts ../../../../../../../../resources/schema/deegreeTransform.xsd">
+  <!-- Shows the usage of the deegree specific inline data element and three geometries-->
+  <wcts:SourceCRS>urn:ogc:def:crs:EPSG::4314</wcts:SourceCRS>
+  <wcts:TargetCRS>urn:ogc:def:crs:EPSG::31466</wcts:TargetCRS>
+  <deegreewcts:InputData>
+    <ows:ReferenceGroup>
+      <ows:Title>A German nonsense geometry</ows:Title>
+      <ows:Reference xlink:href="none" />
+    </ows:ReferenceGroup>
+    <deegreewcts:InlineData>
+      <!-- Geometrydata can have unbounded geometries -->
+      <deegreewcts:GeometryData>
+        <gml:Point srsName="urn:ogc:def:crs:EPSG::4314">
+          <gml:pos>8.83319047 54.90017335</gml:pos>
+          <!-- should be: 2681710,05 6089164,17 -->
+        </gml:Point>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">
+                8.83319047,54.90017335 8.87995937,54.90022855 8.89554903,54.90024295 8.83319047,54.90017335
+                <!-- 2681710.05 6089164.17
+                  2684708.53 6089292.73
+                  2685708.03 6089335.59
+                -->
+              </gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+        <gml:Surface>
+          <gml:patches>
+            <gml:PolygonPatch>
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:coordinates cs="," decimal="." ts=" ">
+                    8.89554903,54.90024295 8.91113871,54.90025535 8.9267284,54.90026575 8.89554903,54.90024295
+                    <!-- 2685708.03 6089335.59
+                      2686707.54 6089378.44 
+                      2687707.05 6089421.3  
+                    -->
+                  </gml:coordinates>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+          </gml:patches>
+        </gml:Surface>
+      </deegreewcts:GeometryData>
+    </deegreewcts:InlineData>
+  </deegreewcts:InputData>
+  <OutputFormat>text/xml; gmlVersion=3.1.1</OutputFormat>
+</deegreewcts:Transform>

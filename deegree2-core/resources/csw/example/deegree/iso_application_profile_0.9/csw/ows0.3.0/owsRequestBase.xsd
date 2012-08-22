@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows" xmlns:ows="http://www.opengis.net/ows" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.3.0" xml:lang="en">
+	<annotation>
+		<appinfo>owsRequestBase.xsd 2004/4/07</appinfo>
+		<documentation>
+			<scope>OGC Web Service. </scope>
+			<description>This XML Schema fragment encodes the common parameters in all OWS operation requests except GetCapabilities. This fragment should be copied and edited by each OWS, to specify a specific value for the "service" and "version" attributes. That fragment should then be extended for each operation used by that OWS. Primary editor: Arliss Whiteside. </description>
+			<copyright>Copyright (c) 2004 OpenGIS, All Rights Reserved.</copyright>
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<complexType name="RequestBaseType">
+		<annotation>
+			<documentation>XML encoded operation request base, for all operations except Get Capabilities. In this XML encoding, no "request" parameter is included, since the final element name will specify the specific operation. </documentation>
+		</annotation>
+		<sequence/>
+		<attribute name="service" type="string" use="required">
+			<annotation>
+				<documentation>Service type identifier, where the string value is the OWS type abbreviation, such as "WMS" or "WFS". </documentation>
+			</annotation>
+		</attribute>
+		<attribute name="version" type="string" use="required">
+			<annotation>
+				<documentation>Specification version for OWS version and operation. See Version parameter Subclause 7.3.1 for more information. </documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+</schema>

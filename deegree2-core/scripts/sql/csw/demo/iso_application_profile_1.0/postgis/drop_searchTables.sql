@@ -1,0 +1,10 @@
+DROP SEQUENCE CQP_MAIN_ID_seq;
+DROP SEQUENCE CQP_BBOX_ID_seq;
+DROP SEQUENCE CQP_PublicationDate_ID_seq;
+DROP SEQUENCE CQP_DomainConsistency_ID_seq;
+DROP SEQUENCE CQP_SpecificationDate_ID_seq;
+DROP TABLE CQP_Main;
+DROP TABLE CQP_BBOX;
+DROP TABLE CQP_PublicationDate;
+DROP TABLE CQP_SpecificationDate;
+DROP TABLE CQP_DomainConsistency;

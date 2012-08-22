@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==================================================================
+
+ This file is part of deegree.
+ Copyright (C) 2001-2006 by:
+ EXSE, Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+ 
+ =================================================================
+ 
+@author <a href="mailto:poth@lat-lon.de">Andreas Poth </a>
+@author last edited by: $Author: poth $
+ 
+@version 1.1, $Revision: 2893 $, $Date: 2006-05-25 17:38:27 +0200 (Do, 25 Mai 2006) $
+ 
+@since 1.1
+
+================================================================== -->
+<xs:schema targetNamespace="http://www.deegree.org/security" xmlns:deegree="http://www.deegree.org/security" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="deegreePolicy.xsd"/>
+	<xs:element name="OWSPolicy" type="deegree:PolicyType">
+		<xs:annotation>
+			<xs:documentation>root element of the deegree policy document for protecting Web map Services</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="GetMapType">
+		<xs:complexContent>
+			<xs:extension base="deegree:_RequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetMap" type="deegree:GetMapType" substitutionGroup="deegree:_Request"/>
+	<xs:complexType name="GetFeatureInfoType">
+		<xs:complexContent>
+			<xs:extension base="deegree:_RequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetFeatureInfo" type="deegree:GetFeatureInfoType" substitutionGroup="deegree:_Request"/>
+	<xs:complexType name="GetLegendGraphicType">
+		<xs:complexContent>
+			<xs:extension base="deegree:_RequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetLegendGraphic" type="deegree:GetLegendGraphicType" substitutionGroup="deegree:_Request"/>
+	<xs:complexType name="GetScaleBarType">
+		<xs:complexContent>
+			<xs:extension base="deegree:_RequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetScaleBar" type="deegree:GetScaleBarType" substitutionGroup="deegree:_Request"/>
+	<xs:complexType name="WMSParameterType">
+		<xs:complexContent>
+			<xs:extension base="deegree:ParameterType">
+				<xs:attribute name="name" type="deegree:WmsParamNameType" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Parameter" type="deegree:WMSParameterType" substitutionGroup="deegree:_Parameter"/>
+	<xs:simpleType name="WmsParamNameType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="requestMethod"/>
+			<xs:enumeration value="getContentLength"/>
+			<xs:enumeration value="postContentLength"/>
+			<xs:enumeration value="header"/>
+			<xs:enumeration value="request"/>
+			<xs:enumeration value="version"/>
+			<xs:enumeration value="updatesequence"/>
+			<xs:enumeration value="layers"/>
+			<xs:enumeration value="bbox"/>
+			<xs:enumeration value="resolution"/>
+			<xs:enumeration value="maxWidth"/>
+			<xs:enumeration value="maxHeight"/>
+			<xs:enumeration value="transparency"/>
+			<xs:enumeration value="bgcolor"/>
+			<xs:enumeration value="color"/>
+			<xs:enumeration value="labelColor"/>
+			<xs:enumeration value="bottomLabel"/>
+			<xs:enumeration value="topLabel"/>
+			<xs:enumeration value="maxSize"/>
+			<xs:enumeration value="sld"/>
+			<xs:enumeration value="sld_body"/>
+			<xs:enumeration value="format"/>
+			<xs:enumeration value="exception"/>
+			<xs:enumeration value="featureInfoLayers"/>
+			<xs:enumeration value="infoFormat"/>
+			<xs:enumeration value="maxFeatureCount"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

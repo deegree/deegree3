@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================== Includes================================== -->
+    <xs:include schemaLocation="./identification.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="LI_ProcessStep_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="description" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="rationale" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="dateTime" type="smXML:DateTime_PropertyType" minOccurs="0"/>
+                    <xs:element name="processor" type="smXML:CI_ResponsibleParty_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="source" type="smXML:LI_Source_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="LI_ProcessStep" type="smXML:LI_ProcessStep_Type"/>
+    <xs:complexType name="LI_ProcessStep_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:LI_ProcessStep"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="LI_Source_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="description" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="scaleDenominator" type="smXML:MD_RepresentativeFraction_PropertyType" minOccurs="0"/>
+                    <xs:element name="sourceReferenceSystem" type="smXML:MD_ReferenceSystem_PropertyType" minOccurs="0"/>
+                    <xs:element name="sourceCitation" type="smXML:CI_Citation_PropertyType" minOccurs="0"/>
+                    <xs:element name="sourceExtent" type="smXML:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="sourceStep" type="smXML:LI_ProcessStep_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="LI_Source" type="smXML:LI_Source_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   "description" is mandatory if "sourceExtent" is not documented
+   ***   "sourceExtent" is mandatory if "description" is not documented
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="LI_Source_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:LI_Source"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="LI_Lineage_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="statement" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="source" type="smXML:LI_Source_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="processStep" type="smXML:LI_ProcessStep_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="LI_Lineage" type="smXML:LI_Lineage_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   If(count(source) + count(processStep) =0) and (DQ_DataQuality.scope.level = 'dataset' or 'series') then statement is mandatory
+   ***   "source" role is mandatory if LI_Lineage.statement and "processStep" role are not documented
+   ***   "processStep" role is mandatory if LI_Lineage.statement and "source" role are not documented
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="LI_Lineage_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:LI_Lineage"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_ConformanceResult_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Result_Type">
+                <xs:sequence>
+                    <xs:element name="specification" type="smXML:CI_Citation_PropertyType"/>
+                    <xs:element name="explanation" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="pass" type="smXML:Boolean_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_ConformanceResult" type="smXML:DQ_ConformanceResult_Type" substitutionGroup="smXML:_DQ_Result"/>
+    <xs:complexType name="DQ_ConformanceResult_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_ConformanceResult"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_QuantitativeResult_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Result_Type">
+                <xs:sequence>
+                    <xs:element name="valueType" type="smXML:RecordType_PropertyType" minOccurs="0"/>
+                    <xs:element ref="smXML:_UnitOfMeasure"/>
+                    <xs:element name="errorStatistic" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="value" type="smXML:Record_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_QuantitativeResult" type="smXML:DQ_QuantitativeResult_Type" substitutionGroup="smXML:_DQ_Result"/>
+    <xs:complexType name="DQ_QuantitativeResult_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_QuantitativeResult"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_Result_Type" abstract="true"/>
+    <xs:element name="_DQ_Result" type="smXML:_DQ_Result_Type" abstract="true"/>
+    <xs:complexType name="_DQ_Result_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_Result"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_TemporalValidity_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_TemporalAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_TemporalValidity" type="smXML:DQ_TemporalValidity_Type" substitutionGroup="smXML:_DQ_TemporalAccuracy"/>
+    <xs:complexType name="DQ_TemporalValidity_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_TemporalValidity"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_TemporalConsistency_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_TemporalAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_TemporalConsistency" type="smXML:DQ_TemporalConsistency_Type" substitutionGroup="smXML:_DQ_TemporalAccuracy"/>
+    <xs:complexType name="DQ_TemporalConsistency_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_TemporalConsistency"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_AccuracyOfATimeMeasurement_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_TemporalAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_AccuracyOfATimeMeasurement" type="smXML:DQ_AccuracyOfATimeMeasurement_Type" substitutionGroup="smXML:_DQ_TemporalAccuracy"/>
+    <xs:complexType name="DQ_AccuracyOfATimeMeasurement_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_AccuracyOfATimeMeasurement"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_QuantitativeAttributeAccuracy_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_ThematicAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_QuantitativeAttributeAccuracy" type="smXML:DQ_QuantitativeAttributeAccuracy_Type" substitutionGroup="smXML:_DQ_ThematicAccuracy"/>
+    <xs:complexType name="DQ_QuantitativeAttributeAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_QuantitativeAttributeAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_NonQuantitativeAttributeAccuracy_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_ThematicAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_NonQuantitativeAttributeAccuracy" type="smXML:DQ_NonQuantitativeAttributeAccuracy_Type" substitutionGroup="smXML:_DQ_ThematicAccuracy"/>
+    <xs:complexType name="DQ_NonQuantitativeAttributeAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_NonQuantitativeAttributeAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_ThematicClassificationCorrectness_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_ThematicAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_ThematicClassificationCorrectness" type="smXML:DQ_ThematicClassificationCorrectness_Type" substitutionGroup="smXML:_DQ_ThematicAccuracy"/>
+    <xs:complexType name="DQ_ThematicClassificationCorrectness_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_ThematicClassificationCorrectness"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_RelativeInternalPositionalAccuracy_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_PositionalAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_RelativeInternalPositionalAccuracy" type="smXML:DQ_RelativeInternalPositionalAccuracy_Type" substitutionGroup="smXML:_DQ_PositionalAccuracy"/>
+    <xs:complexType name="DQ_RelativeInternalPositionalAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_RelativeInternalPositionalAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_GriddedDataPositionalAccuracy_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_PositionalAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_GriddedDataPositionalAccuracy" type="smXML:DQ_GriddedDataPositionalAccuracy_Type" substitutionGroup="smXML:_DQ_PositionalAccuracy"/>
+    <xs:complexType name="DQ_GriddedDataPositionalAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_GriddedDataPositionalAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_AbsoluteExternalPositionalAccuracy_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_PositionalAccuracy_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_AbsoluteExternalPositionalAccuracy" type="smXML:DQ_AbsoluteExternalPositionalAccuracy_Type" substitutionGroup="smXML:_DQ_PositionalAccuracy"/>
+    <xs:complexType name="DQ_AbsoluteExternalPositionalAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_AbsoluteExternalPositionalAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_TopologicalConsistency_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_LogicalConsistency_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_TopologicalConsistency" type="smXML:DQ_TopologicalConsistency_Type" substitutionGroup="smXML:_DQ_LogicalConsistency"/>
+    <xs:complexType name="DQ_TopologicalConsistency_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_TopologicalConsistency"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_FormatConsistency_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_LogicalConsistency_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_FormatConsistency" type="smXML:DQ_FormatConsistency_Type" substitutionGroup="smXML:_DQ_LogicalConsistency"/>
+    <xs:complexType name="DQ_FormatConsistency_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_FormatConsistency"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_DomainConsistency_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_LogicalConsistency_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_DomainConsistency" type="smXML:DQ_DomainConsistency_Type" substitutionGroup="smXML:_DQ_LogicalConsistency"/>
+    <xs:complexType name="DQ_DomainConsistency_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_DomainConsistency"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_ConceptualConsistency_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_LogicalConsistency_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_ConceptualConsistency" type="smXML:DQ_ConceptualConsistency_Type" substitutionGroup="smXML:_DQ_LogicalConsistency"/>
+    <xs:complexType name="DQ_ConceptualConsistency_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_ConceptualConsistency"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_CompletenessOmission_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Completeness_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_CompletenessOmission" type="smXML:DQ_CompletenessOmission_Type" substitutionGroup="smXML:_DQ_Completeness"/>
+    <xs:complexType name="DQ_CompletenessOmission_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_CompletenessOmission"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_CompletenessCommission_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Completeness_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_CompletenessCommission" type="smXML:DQ_CompletenessCommission_Type" substitutionGroup="smXML:_DQ_Completeness"/>
+    <xs:complexType name="DQ_CompletenessCommission_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_CompletenessCommission"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_TemporalAccuracy_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Element_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_DQ_TemporalAccuracy" type="smXML:_DQ_TemporalAccuracy_Type" abstract="true" substitutionGroup="smXML:_DQ_Element"/>
+    <xs:complexType name="_DQ_TemporalAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_TemporalAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_ThematicAccuracy_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Element_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_DQ_ThematicAccuracy" type="smXML:_DQ_ThematicAccuracy_Type" abstract="true" substitutionGroup="smXML:_DQ_Element"/>
+    <xs:complexType name="_DQ_ThematicAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_ThematicAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_PositionalAccuracy_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Element_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_DQ_PositionalAccuracy" type="smXML:_DQ_PositionalAccuracy_Type" abstract="true" substitutionGroup="smXML:_DQ_Element"/>
+    <xs:complexType name="_DQ_PositionalAccuracy_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_PositionalAccuracy"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_LogicalConsistency_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Element_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_DQ_LogicalConsistency" type="smXML:_DQ_LogicalConsistency_Type" abstract="true" substitutionGroup="smXML:_DQ_Element"/>
+    <xs:complexType name="_DQ_LogicalConsistency_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_LogicalConsistency"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_Completeness_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DQ_Element_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_DQ_Completeness" type="smXML:_DQ_Completeness_Type" abstract="true" substitutionGroup="smXML:_DQ_Element"/>
+    <xs:complexType name="_DQ_Completeness_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_Completeness"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_DQ_Element_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="nameOfMeasure" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="measureIdentification" type="smXML:MD_Identifier_PropertyType" minOccurs="0"/>
+                    <xs:element name="measureDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="evaluationMethodType" type="smXML:DQ_EvaluationMethodTypeCode_PropertyType" minOccurs="0"/>
+                    <xs:element name="evaluationMethodDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="evaluationProcedure" type="smXML:CI_Citation_PropertyType" minOccurs="0"/>
+                    <xs:element name="dateTime" type="smXML:DateTime_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="smXML:_DQ_Result" maxOccurs="2"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_DQ_Element" type="smXML:_DQ_Element_Type" abstract="true"/>
+    <xs:complexType name="_DQ_Element_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DQ_Element"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_DataQuality_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="scope" type="smXML:DQ_Scope_PropertyType"/>
+                    <xs:element name="lineage" type="smXML:LI_Lineage_PropertyType" minOccurs="0"/>
+                    <xs:element name="report" type="smXML:_DQ_Element_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_DataQuality" type="smXML:DQ_DataQuality_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   "report" or "lineage" role is mandatory if scope.DQ_Scope.level = 'dataset'
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="DQ_DataQuality_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_DataQuality"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_Scope_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="level" type="smXML:MD_ScopeCode_PropertyType"/>
+                    <xs:element name="extent" type="smXML:EX_Extent_PropertyType" minOccurs="0"/>
+                    <xs:element name="levelDescription" type="smXML:MD_ScopeDescription_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DQ_Scope" type="smXML:DQ_Scope_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   "levelDescription" is mandatory if "level" notEqual 'dataset' or 'series'
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="DQ_Scope_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_Scope"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DQ_EvaluationMethodTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="DQ_EvaluationMethodTypeCode" type="smXML:DQ_EvaluationMethodTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="DQ_EvaluationMethodTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DQ_EvaluationMethodTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

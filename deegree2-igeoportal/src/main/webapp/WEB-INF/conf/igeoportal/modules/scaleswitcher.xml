@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:Module xmlns:deegree="http://www.deegree.org/context" hidden="false" type="content" width="250" height="670" scrolling="no">
+	<deegree:Name>ScaleSwitcher</deegree:Name>
+    <deegree:Title>Scale switcher</deegree:Title>
+    <deegree:Content>./modules/scaleswitcher/scaleswitcher.html</deegree:Content>
+    <deegree:ModuleJS>./modules/scaleswitcher/scaleswitcher.js</deegree:ModuleJS>
+    <deegree:ParameterList>
+        <deegree:Parameter>
+            <deegree:Name>label</deegree:Name>
+            <deegree:Value>'Scale:'</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>listOfScales</deegree:Name>
+            <deegree:Value>'1:100;1:5000;1:10000;1:25000;1:50000;1:100000;1:500000;1:1000000;1:5000000'</deegree:Value>
+        </deegree:Parameter>
+    </deegree:ParameterList>
+</deegree:Module>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+type="shapeIndexed": a set of coverage tiles whose bounding boxes are described
+                                           by a shape file. 
+                                           notice that for each combination of deegree:Resolution and available
+                                           range axises one data source (shape) is defined. having one range 
+                                           and two range axis (time, elevation) with each having two sub-set 
+                                           ranges four  different combinations are possible. 
+                                           The last two </deegree:Resolution> elements just defines a range for
+                                           the first axis. This means that the assigned shapes are valid
+                                           for the complete range of the second axis (elevation). 
+                                           If one images to have more than one range and more than two
+                                           subsets for each axis it is clear that shape indexed coverages are 
+                                           not a very good format for storing data with compound ranges, 
+                                           but it's just for demonstration. A database based approach would
+                                           be better for this.
+    -->
+<deegree:Extension type="shapeIndexed">
+    <!--
+        within a  deegree:Resolution element any combination of Ranges and
+        Axis can be defined that correspondes to the ones defined in the </CoverageOffering>.
+        Such a combination acts like a 'compound key' in a database and indicates
+        which data source is valid for a GetCoverage request.
+        -->
+    <deegree:Resolution max="99999999" min="0.064">
+        <!--
+           the refernced shape is valid for raster resolutuions from 0.64 to 9999999 degrees,
+           for a range on the time-axis from 1998-12-17 to 2000-12-17 and for a range on the
+           elevation axis from 0 to 1000 (meter).
+       -->
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+            <deegree:Axis>
+                <deegree:Name>time</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>1998-12-17</deegree:min>
+                    <deegree:max>2000-12-17</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+            <deegree:Axis>
+                <deegree:Name>elevation</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>0</deegree:min>
+                    <deegree:max>1000</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+        </deegree:Range>
+        <Shape tilePoperty="FILE" directoryProperty="DIR" srsName="EPSG:31466">data/world064a.shp</Shape>
+    </deegree:Resolution>
+    <deegree:Resolution max="99999999" min="0.064">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+            <deegree:Axis>
+                <deegree:Name>time</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>2000-12-17</deegree:min>
+                    <deegree:max>2002-12-17</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+            <deegree:Axis>
+                <deegree:Name>elevation</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>0</deegree:min>
+                    <deegree:max>1000</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+        </deegree:Range>
+        <Shape tilePoperty="FILE" directoryProperty="DIR" srsName="EPSG:31466">data/world064b.shp</Shape>
+    </deegree:Resolution>
+    <deegree:Resolution max="99999999" min="0.064">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+            <deegree:Axis>
+                <deegree:Name>time</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>1998-12-17</deegree:min>
+                    <deegree:max>2000-12-17</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+            <deegree:Axis>
+                <deegree:Name>elevation</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>1000</deegree:min>
+                    <deegree:max>2000</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+        </deegree:Range>
+        <Shape tilePoperty="FILE" directoryProperty="DIR" srsName="EPSG:31466">data/world064c.shp</Shape>
+    </deegree:Resolution>
+    <deegree:Resolution max="99999999" min="0.064">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+            <deegree:Axis>
+                <deegree:Name>time</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>2000-12-17</deegree:min>
+                    <deegree:max>2002-12-17</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+            <deegree:Axis>
+                <deegree:Name>elevation</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>1000</deegree:min>
+                    <deegree:max>2000</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+        </deegree:Range>
+        <Shape tilePoperty="FILE" directoryProperty="DIR" srsName="EPSG:31466">data/world064d.shp</Shape>
+    </deegree:Resolution>
+    <!--
+            the following two </deegree:Resolution> elements just defines range sets for the
+            first axis (time)
+            -->
+    <deegree:Resolution max="0.064" min="0.016">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+            <deegree:Axis>
+                <deegree:Name>time</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>1998-12-17</deegree:min>
+                    <deegree:max>2000-12-17</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+        </deegree:Range>
+        <Shape tilePoperty="FILE" directoryProperty="DIR" srsName="EPSG:31466">data/world064d.shp</Shape>
+    </deegree:Resolution>
+    <deegree:Resolution max="0.064" min="0.016">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+            <deegree:Axis>
+                <deegree:Name>time</deegree:Name>
+                <deegree:interval>
+                    <deegree:min>2000-12-17</deegree:min>
+                    <deegree:max>2002-12-17</deegree:max>
+                </deegree:interval>
+            </deegree:Axis>
+        </deegree:Range>
+        <Shape tilePoperty="FILE" directoryProperty="DIR" srsName="EPSG:31466">data/world064e.shp</Shape>
+    </deegree:Resolution>
+</deegree:Extension>

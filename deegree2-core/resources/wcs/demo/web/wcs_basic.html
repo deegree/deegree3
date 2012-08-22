@@ -1,0 +1,126 @@
+<!-- HeadURL -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree coverageService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" width="100%">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="3">
+                    <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td width="30%"><strong><em>Basic WCS requests</em></strong></td>
+                <td>
+                    <ul>
+                        <li><a href="#basic_gc">GetCapabilities</a></li>
+                        <li><a href="#basic_dc">DescribeCoverage</a></li>
+                        <li><a href="#basic_gco">GetCoverage</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2" width="100%">
+            <tr valign="top" bgcolor="#a3b4d9">
+                <th>Request / Description</th>
+                <th>Result</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gc"></a>
+                    <b>GetCapabilities</b><br />
+                    <p>Retrieve capabilities information</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td colspan="2">
+                    <a href="./services?REQUEST=GetCapabilities&version=1.0.0&service=WCS">WCS 1.0.0 GetCapabilities</a>
+                    <br /><br />
+                    ${default.online.resource}?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="2">
+                    <a href="./services?service=WCS&version=1.0.0&request=GetCapabilities&section=/WCS_Capabilities/Service">WCS 1.0.0 GetCapabilities Service Section</a><br /><br />
+                    GetCapabilities request to get the service section of the Capabilities Document
+                    <br /><br />
+                    ...services?<br />
+                    service=WCS<br />
+                    version=1.0.0<br />
+                    request=GetCapabilities<br />
+                    section=/WCS_Capabilities/Service<br />
+                </td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_dc"></a>
+                    <b>DescribeCoverage</b><br />
+                    <p>describes coverages served by the WCS</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td colspan="2">
+                    <a href="./services?service=WCS&version=1.0.0&request=DescribeCoverage">WCS 1.0.0 DescribeCoverage</a>
+                    <br /><br />
+                    A DescribeCoverage request which describes all offered coverages:<br /><br />
+                    ...services?<br />
+                    service=WCS<br />
+                    version=1.0.0<br />
+                    request=DescribeCoverage<br />
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="2">
+                    <a href="./services?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=saltlakesatellite">WCS 1.0.0 DescribeCoverage saltlakesatellite</a>
+                    <br /><br />
+                    This DescribeCoverage request describes the coverage saltlakesatellite:<br /><br />
+                    ...services?<br />
+                    service=WCS<br />
+                    version=1.0.0<br />
+                    request=DescribeCoverage<br />
+                    coverage=saltlakesatellite<br />
+                </td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gco"></a>
+                    <b>GetCoverage</b><br />
+                    <p>Puts out images of coverages</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?service=WCS&version=1.0.0&request=GetCoverage&coverage=saltlakesatellite&crs=EPSG:26912&BBOX=420015.601297584,4508009.18775396,431966.87709265726,4519960.463549033&width=500&height=500&format=jpeg">WCS 1.0.0 GetCoverage saltlakesatellite</a>
+                    <br />
+                    <p>
+                     A GetCoverage request which puts out an image of the saltlakesatellite coverage:
+                     <br /><br />
+                     ...services?<br />
+                     service=WCS<br />
+                     version=1.0.0<br />
+                     request=GetCoverage<br />
+                     coverage=saltlakesatellite<br />
+                     crs=EPSG:26912<br />
+                     BBOX=420015.601297584,4508009.18775396,431966.87709265726,4519960.463549033<br />
+                     width=500<br />
+                     height=500<br />
+                     format=jpeg<br />
+                    </p>
+                </td>
+                <td><img src="./services?service=WCS&version=1.0.0&request=GetCoverage&coverage=saltlakesatellite&crs=EPSG:26912&BBOX=420015.601297584,4508009.18775396,431966.87709265726,4519960.463549033&width=250&height=250&format=jpeg" align="middle"/></td>
+            </tr>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,45 @@
+<!--
+a special option to simplify configuration instead of defining a <deegree:Resolution> entry
+for each combination ranges and axisis (see deegree_wcs_extension1.xml) to use 
+'variables' for range parameters in directory- and file-names. Predefined are time variables:
+$YEAR $MONTH $DAY $HOUR $MINUTE
+and $ELEVATION
+valid values for the variables are given by the axis definitions in the 'rangeSet' section.
+(this technic shall be available for all storage types)
+-->
+<deegree:Extension type="nameIndexed">
+    <deegree:Resolution max="99999999" min="1">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+        </deegree:Range>
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/775165/$YEAR/$MONTH/$DAY/$ELEVATION/l1</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2677500,5616500 2678000,5617000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/780155/$YEAR/$MONTH/$DAY/$ELEVATION/l1</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2678000,5615500 2678500,5616000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+    </deegree:Resolution>
+    <deegree:Resolution max="1" min="0.5">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+        </deegree:Range>
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/775165/$YEAR/$MONTH/$DAY/$ELEVATION/l0.5</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2677500,5616500 2678000,5617000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/780155/$YEAR/$MONTH/$DAY/$ELEVATION/l0.5</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2678000,5615500 2678500,5616000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+    </deegree:Resolution>
+</deegree:Extension>

@@ -1,0 +1,7 @@
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+NAMESPACE=xmlns(app=http://www.deegree.org/app)&
+TYPENAME=app:Philosopher&
+FILTER=<Filter xmlns="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app"><PropertyIsLike wildCard="*" singleChar="#" escapeChar="!"><PropertyName>app:name</PropertyName><Literal>*Sartre*</Literal></PropertyIsLike></Filter>

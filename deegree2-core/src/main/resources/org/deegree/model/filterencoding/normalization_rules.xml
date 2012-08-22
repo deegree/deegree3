@@ -1,0 +1,366 @@
+<dgfunct:NormalizationRules xmlns:dgfunct="http://www.deegree.org/filter/function">
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ß</dgfunct:RegExpr>
+        <dgfunct:Replacement>SS</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>é|è|ê|É|È|Ê</dgfunct:RegExpr>
+        <dgfunct:Replacement>E</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>á|à|â|Á|À|Â</dgfunct:RegExpr>
+        <dgfunct:Replacement>A</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ó|ò|ô|Ó|Ò|Ô</dgfunct:RegExpr>
+        <dgfunct:Replacement>O</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ú|ù|û|Ú|Ù|Û</dgfunct:RegExpr>
+        <dgfunct:Replacement>U</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ä|Ä</dgfunct:RegExpr>
+        <dgfunct:Replacement>A</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ü|Ü</dgfunct:RegExpr>
+        <dgfunct:Replacement>U</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ö|Ö</dgfunct:RegExpr>
+        <dgfunct:Replacement>O</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>AE</dgfunct:RegExpr>
+        <dgfunct:Replacement>A</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>OE</dgfunct:RegExpr>
+        <dgfunct:Replacement>O</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>UE</dgfunct:RegExpr>
+        <dgfunct:Replacement>U</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>EY|AY|AI</dgfunct:RegExpr>
+        <dgfunct:Replacement>EI</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>IE</dgfunct:RegExpr>
+        <dgfunct:Replacement>I</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>TH</dgfunct:RegExpr>
+        <dgfunct:Replacement>T</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>CK</dgfunct:RegExpr>
+        <dgfunct:Replacement>K</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>-|\.|,|’|´|`|\(|\)|/|\\</dgfunct:RegExpr>
+        <dgfunct:Replacement> </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ALTE[ ]|ALTE[MR][ ]</dgfunct:RegExpr>
+        <dgfunct:Replacement>A </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>A[MN][ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>A </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>AUF[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>A </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>AUF[ ][MN][ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>A D</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>BEI[ ]|BEIM[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>B </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>DER[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>D </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>DIE[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>D </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>DAS[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>D </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>DE[MN][ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>D </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>GEMEINDE[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>GEM </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>I[MN][ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>I </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>KREIS[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>KR </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>SANKT[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>ST </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>VO[MN][ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>V </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ZU[ ]|ZU[MN][ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>Z </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>CONRAD[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>KONRAD </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ALEX[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>ALEXANDER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>EV[ ]|EVGL[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>EVANGELISCHE </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>FRH[ ]|FRHR[ ]|FREIH[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>FREIHERR </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>GEBR[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>GEBRUDER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>GERH[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>GERHARD </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>GESCHW[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>GESCHWISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>GOTTFR[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>GOTTFRIED </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>HEINR[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>HEINRICH </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>KARD[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>KARDINAL </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>LUDW[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>LUDWIG </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>MAT[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>MATIAS </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>MAX[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>MAXIMILIAN </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>PF[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>PFARRER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>PROF[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>PROFESSOR </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>RICH[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>RICHARD </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>WILH[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>WILHELM </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>DR[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>DOKTOR </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>BGM[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>BURGERMEISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>BURGERM[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>BURGERMEISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>OBERBURGERM[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>BURGERMEISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ALTBURGERM[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>BURGERMEISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>OBERBURGERMEISTER[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>BURGERMEISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ALTBURGERMEISTER[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>BURGERMEISTER </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>STADT[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement> </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>HAUPTSTADT[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement> </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>LANDESHAUPTSTADT[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement> </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>STR[ ]|STR$</dgfunct:RegExpr>
+    <dgfunct:Replacement>STRASE</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>PL[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>PLATZ </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>SIDL[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>SIDLUNG </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>RHEINL[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>RHEINLAND </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>WESTF[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>WESTFALEN </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>NRW[ ]</dgfunct:RegExpr>
+    <dgfunct:Replacement>NORDRHEINWESTFALEN </dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>[ ]</dgfunct:RegExpr>
+        <dgfunct:Replacement></dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>AA</dgfunct:RegExpr>
+    <dgfunct:Replacement>A</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>BB</dgfunct:RegExpr>
+    <dgfunct:Replacement>B</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>CC</dgfunct:RegExpr>
+    <dgfunct:Replacement>C</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>DD</dgfunct:RegExpr>
+    <dgfunct:Replacement>D</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>EE</dgfunct:RegExpr>
+    <dgfunct:Replacement>E</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>FF</dgfunct:RegExpr>
+    <dgfunct:Replacement>F</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>GG</dgfunct:RegExpr>
+    <dgfunct:Replacement>G</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>HH</dgfunct:RegExpr>
+    <dgfunct:Replacement>H</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>II</dgfunct:RegExpr>
+    <dgfunct:Replacement>I</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>JJ</dgfunct:RegExpr>
+    <dgfunct:Replacement>J</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>KK</dgfunct:RegExpr>
+    <dgfunct:Replacement>K</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>LL</dgfunct:RegExpr>
+    <dgfunct:Replacement>L</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>MM</dgfunct:RegExpr>
+    <dgfunct:Replacement>M</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>NN</dgfunct:RegExpr>
+    <dgfunct:Replacement>N</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>OO</dgfunct:RegExpr>
+    <dgfunct:Replacement>O</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>PP</dgfunct:RegExpr>
+    <dgfunct:Replacement>P</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>QQ</dgfunct:RegExpr>
+    <dgfunct:Replacement>Q</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>RR</dgfunct:RegExpr>
+    <dgfunct:Replacement>R</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>SS</dgfunct:RegExpr>
+    <dgfunct:Replacement>S</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>TT</dgfunct:RegExpr>
+    <dgfunct:Replacement>T</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>UU</dgfunct:RegExpr>
+    <dgfunct:Replacement>U</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>VV</dgfunct:RegExpr>
+    <dgfunct:Replacement>V</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>WW</dgfunct:RegExpr>
+    <dgfunct:Replacement>W</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>XX</dgfunct:RegExpr>
+    <dgfunct:Replacement>X</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>YY</dgfunct:RegExpr>
+    <dgfunct:Replacement>Y</dgfunct:Replacement>
+    </dgfunct:Rule>
+    <dgfunct:Rule>
+        <dgfunct:RegExpr>ZZ</dgfunct:RegExpr>
+    <dgfunct:Replacement>Z</dgfunct:Replacement>
+    </dgfunct:Rule>
+</dgfunct:NormalizationRules>

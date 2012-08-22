@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.opengis.net/cat/csw" xmlns:ows="http://www.opengis.net/ows" xmlns:dct="http://www.purl.org/dc/terms/" xmlns:dc="http://www.purl.org/dc/elements/1.1/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:csw="http://www.opengis.net/cat/csw" elementFormDefault="qualified" version="2.0.0" id="csw-record">
+	<xsd:annotation>
+		<xsd:appinfo>
+			<dc:identifier xmlns:dc="http://www.purl.org/dc/elements/1.1/">
+      http://schemas.opengis.net/csw/2.0.0/record
+      </dc:identifier>
+		</xsd:appinfo>
+		<xsd:documentation xml:lang="en">
+    This schema defines the basic record types that are common to all CSW 
+    implementations. An application profile may extend AbstractRecordType to 
+    represent model-specific content.
+    </xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://www.purl.org/dc/terms/" schemaLocation="./rec-dcterms.xsd"/>
+	<xsd:import namespace="http://www.purl.org/dc/elements/1.1/" schemaLocation="./rec-dcmes.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/ows" schemaLocation="./../ows0.3.0/owsBoundingBox.xsd"/>
+	<xsd:element name="AbstractRecord" type="csw:AbstractRecordType" abstract="true" id="AbstractRecord"/>
+	<xsd:complexType name="AbstractRecordType" abstract="true" id="AbstractRecordType"/>
+	<xsd:element name="DCMIRecord" type="csw:DCMIRecordType" substitutionGroup="csw:AbstractRecord"/>
+	<xsd:complexType name="DCMIRecordType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+      This type encapsulates all of the standard DCMI metadata terms, 
+      including the Dublin Core refinements; these terms may be mapped to the 
+      profile-specific information model.
+      </xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="csw:AbstractRecordType">
+				<xsd:sequence>
+					<xsd:group ref="dct:DCMI-terms"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="BriefRecord" type="csw:BriefRecordType" substitutionGroup="csw:AbstractRecord"/>
+	<xsd:complexType name="BriefRecordType" final="#all">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+      This type defines a brief representation of the common record format. 
+      It extends AbstractRecordType to include only the dc:identifier and 
+      dc:type properties.
+      </xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="csw:AbstractRecordType">
+				<xsd:sequence>
+					<xsd:element ref="dc:identifier"/>
+					<xsd:element ref="dc:type" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="SummaryRecord" type="csw:SummaryRecordType" substitutionGroup="csw:AbstractRecord"/>
+	<xsd:complexType name="SummaryRecordType" final="#all">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+      This type defines a summary representation of the common record format. 
+      It extends AbstractRecordType to include the core properties.
+      </xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="csw:AbstractRecordType">
+				<xsd:sequence>
+					<xsd:choice maxOccurs="unbounded">
+						<xsd:element ref="dc:identifier"/>
+						<xsd:element ref="dc:type"/>
+						<xsd:element ref="dc:title"/>
+						<xsd:element ref="dc:subject"/>
+						<xsd:element ref="dc:format"/>
+						<xsd:element ref="dc:relation"/>
+						<xsd:element ref="dct:modified"/>
+						<xsd:element ref="dct:abstract"/>
+						<xsd:element ref="dct:spatial"/>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="Record" type="csw:RecordType" substitutionGroup="csw:AbstractRecord"/>
+	<xsd:complexType name="RecordType" final="#all">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+      This type extends DCMIRecordType to add ows:BoundingBox; it may be used 
+      to specify a bounding envelope for the catalogued resource.
+      </xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="csw:DCMIRecordType">
+				<xsd:sequence>
+					<xsd:element ref="ows:BoundingBox" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

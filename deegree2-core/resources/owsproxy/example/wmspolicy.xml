@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<deegreeSec:OWSPolicy service="WMS" xmlns:deegreeSec="http://www.deegree.org/security" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/security
+..\schema\wmspolicy.xsd">
+	<deegreeSec:Security>
+		<deegreeSec:RegistryClass>org.deegree.security.drm.SQLRegistry</deegreeSec:RegistryClass>
+		<deegreeSec:ReadWriteTimeout>300</deegreeSec:ReadWriteTimeout>
+		<deegreeSec:RegistryConfig>
+			<deegreeJDBC:JDBCConnection xmlns:deegreeJDBC="http://www.deegree.org/jdbc">
+				<deegreeJDBC:Driver>org.postgresql.Driver</deegreeJDBC:Driver>
+				<deegreeJDBC:Url>jdbc:postgresql://localhost:5433/igeosecurity</deegreeJDBC:Url>
+				<deegreeJDBC:User>aUser</deegreeJDBC:User>
+				<deegreeJDBC:Password>aPassword</deegreeJDBC:Password>
+			</deegreeJDBC:JDBCConnection>
+		</deegreeSec:RegistryConfig>
+		<deegreeSec:AuthentificationSettings>
+			<deegreeSec:AuthentificationService>
+				<deegreeSec:OnlineResource xlink:type="simple" xlink:href="http://localhost:8081/wss/wss"/>
+			</deegreeSec:AuthentificationService>
+		</deegreeSec:AuthentificationSettings>
+	</deegreeSec:Security>
+	<deegreeSec:GeneralConditions>
+		<deegreeSec:Conditions>
+			<deegreeSec:Parameter name="getContentLength" userCoupled="false">
+				<deegreeSec:Value>1000</deegreeSec:Value>
+			</deegreeSec:Parameter>
+			<deegreeSec:Parameter name="postContentLength" userCoupled="false">
+				<deegreeSec:Value>10000</deegreeSec:Value>
+			</deegreeSec:Parameter>
+			<deegreeSec:Parameter name="header" userCoupled="false">
+				<deegreeSec:Any/>
+			</deegreeSec:Parameter>
+			<deegreeSec:Parameter name="requestMethod" userCoupled="false">
+				<deegreeSec:Value>GET,POST</deegreeSec:Value>
+			</deegreeSec:Parameter>
+		</deegreeSec:Conditions>
+	</deegreeSec:GeneralConditions>
+	<deegreeSec:Requests>
+		<deegreeSec:GetCapabilities>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter name="request" userCoupled="false">
+					<deegreeSec:Value>GetCapabilities</deegreeSec:Value>
+					<deegreeSec:Value>capabilities</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="version" userCoupled="false">
+					<deegreeSec:Value>1.1.0</deegreeSec:Value>
+					<deegreeSec:Value>1.1.1</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="updatesequence" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Parameter name="layers" userCoupled="true"/>				
+			</deegreeSec:PostConditions>
+		</deegreeSec:GetCapabilities>
+		<deegreeSec:GetMap>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter name="request" userCoupled="false">
+					<deegreeSec:Value>map</deegreeSec:Value>
+					<deegreeSec:Value>GetMap</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="layers" userCoupled="true"/>
+				<deegreeSec:Parameter name="version" userCoupled="false">
+					<deegreeSec:Value>1.1.0</deegreeSec:Value>
+					<deegreeSec:Value>1.1.1</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="bgcolor" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="transparency" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="exception" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="bbox" userCoupled="false">
+					<deegreeSec:Value>-180,-90,180,90,EPSG:4326</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="format" userCoupled="false">
+					<deegreeSec:Value>image/jpeg</deegreeSec:Value>
+					<deegreeSec:Value>image/jpg</deegreeSec:Value>
+					<deegreeSec:Value>image/png</deegreeSec:Value>
+					<deegreeSec:Value>image/gif</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="maxWidth" userCoupled="false">
+					<deegreeSec:Value>3600</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="maxHeight" userCoupled="false">
+					<deegreeSec:Value>3600</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="resolution" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="sld" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Any/>
+			</deegreeSec:PostConditions>
+		</deegreeSec:GetMap>
+		<deegreeSec:GetFeatureInfo>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter name="request" userCoupled="false">
+					<deegreeSec:Value>GetFeatureInfo</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="version" userCoupled="false">
+					<deegreeSec:Value>1.1.0</deegreeSec:Value>
+					<deegreeSec:Value>1.1.1</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="featureInfoLayers" userCoupled="true"/>
+				<deegreeSec:Parameter name="infoFormat" userCoupled="false">
+					<deegreeSec:Value>application/vnd.ogc.gml</deegreeSec:Value>
+					<deegreeSec:Value>text/html</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="maxFeatureCount" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="exception" userCoupled="false">
+					<!-- any exception format defined here must also be valid for GetMap -->
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Any/>
+			</deegreeSec:PostConditions>
+		</deegreeSec:GetFeatureInfo>
+		<deegreeSec:GetLegendGraphic>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter name="request" userCoupled="false">
+					<deegreeSec:Value>GetLegendGraphic</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="version" userCoupled="false">
+					<deegreeSec:Value>1.1.1</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="layers" userCoupled="false"/>
+				<deegreeSec:Parameter name="maxWidth" userCoupled="false">
+					<deegreeSec:Value>50</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="maxHeight" userCoupled="false">
+					<deegreeSec:Value>50</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="format" userCoupled="false">
+					<deegreeSec:Value>image/jpeg</deegreeSec:Value>
+					<deegreeSec:Value>image/png</deegreeSec:Value>
+					<deegreeSec:Value>image/gif</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="exception" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Any/>
+			</deegreeSec:PostConditions>
+		</deegreeSec:GetLegendGraphic>
+	</deegreeSec:Requests>
+</deegreeSec:OWSPolicy>

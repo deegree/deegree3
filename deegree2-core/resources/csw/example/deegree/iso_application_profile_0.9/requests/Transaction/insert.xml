@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:Transaction service="CSW" version="2.0.0" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:gml="http://www.opengis.net/gml" xmlns:iso19115full="http://schemas.opengis.net/iso19115full" xmlns:iso19115brief="http://schemas.opengis.net/iso19115brief" xmlns:smXML="http://metadata.dgiwg.org/smXML">
+	<csw:Insert>
+		<iso19115full:MD_Metadata>
+			<iso19115full:fileIdentifier>
+				<smXML:CharacterString>Example_2007_10_18</smXML:CharacterString>
+			</iso19115full:fileIdentifier>
+			<iso19115full:hierarchyLevel>
+				<smXML:MD_ScopeCode codeList="MD_ScopeCode" codeListValue="dataset"/>
+			</iso19115full:hierarchyLevel>
+			<iso19115full:hierarchyLevelName>
+				<smXML:CharacterString>dataset</smXML:CharacterString>
+			</iso19115full:hierarchyLevelName>
+			<iso19115full:contact>
+				<smXML:CI_ResponsibleParty>
+					<smXML:role>
+						<smXML:CI_RoleCode codeList="CI_RoleCode" codeListValue="author"/>
+					</smXML:role>
+				</smXML:CI_ResponsibleParty>
+			</iso19115full:contact>
+			<iso19115full:dateStamp>
+				<smXML:DateTime>2007-09-30T00:00:00</smXML:DateTime>
+			</iso19115full:dateStamp>
+			<iso19115full:identificationInfo>
+				<smXML:MD_DataIdentification>
+					<smXML:citation>
+						<smXML:CI_Citation>
+							<smXML:title>
+								<smXML:CharacterString>Topographische Karte 1 : 5 000</smXML:CharacterString>
+							</smXML:title>
+							<smXML:date>
+								<smXML:CI_Date>
+									<smXML:date>
+										<smXML:DateTime>2007-03-01T00:00:00</smXML:DateTime>
+									</smXML:date>
+									<smXML:dateType>
+										<smXML:CI_DateTypeCode codeList="CI_DateTypeCode" codeListValue="revision"/>
+									</smXML:dateType>
+								</smXML:CI_Date>
+							</smXML:date>
+						</smXML:CI_Citation>
+					</smXML:citation>
+					<smXML:abstract>
+						<smXML:CharacterString>This is an test dataset for the csw.</smXML:CharacterString>
+					</smXML:abstract>
+					<smXML:language>
+						<smXML:CharacterString>de</smXML:CharacterString>
+					</smXML:language>
+					<smXML:topicCategory>
+						<smXML:MD_TopicCategoryCode>imageryBaseMapsEarthCover</smXML:MD_TopicCategoryCode>
+					</smXML:topicCategory>
+				</smXML:MD_DataIdentification>
+			</iso19115full:identificationInfo>
+		</iso19115full:MD_Metadata>
+	</csw:Insert>
+</csw:Transaction>

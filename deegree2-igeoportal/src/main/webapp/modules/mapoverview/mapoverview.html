@@ -1,0 +1,51 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree. For copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="author" content="lat/lon GmbH" />
+        <meta name="KeyWords" content="deegree iGeoPortal lat/lon" />
+        <title>deegree iGeoPortal</title>
+        <link href="../../css/deegree.css" rel="stylesheet" type="text/css" />
+        <script LANGUAGE="JavaScript1.2" TYPE="text/javascript">
+
+            var isNav = false;
+
+            function detectBorwser() {
+                isNav = (navigator.appName.indexOf("Netscape")>=0);
+            }
+
+            function register() {
+                if ( parent.controller == null ) {
+                    parent.controller = new parent.Controller();
+                    parent.controller.init();
+                }
+                detectBorwser();
+                if ( isNav ) {
+                    onmouseup = initEventHandler;
+                } else {
+                    document.onmouseup = initEventHandler;
+                }
+            }
+
+            function initMapOverview() {
+                parent.controller.initMapOverview( document );
+            }
+
+            function initEventHandler(e) {
+                var x  = 0;
+                var y  = 0;
+                if (this.isNav) {
+                	 x = e.clientX;
+                     y = e.clientY;
+                } else {
+                    x = window.event.x;
+                    y = window.event.y;
+                }
+                parent.controller.vMapOverview.mouseUp(x,y);
+            }
+        </script>
+    </head>
+    <body onload="register(); initMapOverview();" class="pMapOverview">
+    </body>
+</html>

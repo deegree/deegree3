@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 71 -->
+<wfs:Transaction version="1.1.0" service="WFS" xmlns="http://www.someserver.com/myns"  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">
+  <wfs:Delete typeName="InWaterA_1M">
+    <ogc:Filter>
+      <ogc:GmlObjectId gml:id="InWaterA_1M.1013"/>
+    </ogc:Filter>
+  </wfs:Delete>
+</wfs:Transaction>

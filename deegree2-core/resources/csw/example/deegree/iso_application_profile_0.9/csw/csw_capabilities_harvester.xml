@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	Dieses Konfigurationsdatei soll nur dann genutzt werden, wenn der entsprechende 
+	Katalog die Harvest-Operation unterszützt
+ -->
+<csw:Capabilities version="2.0.0" updateSequence="0" xmlns:ows="http://www.opengis.net/ows" xmlns:ogc="http://www.opengis.net/ogc" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:deegree="http://www.deegree.org/csw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<deegree:deegreeParams>
+		<deegree:DefaultOnlineResource xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+		<deegree:CacheSize>1</deegree:CacheSize>
+		<deegree:RequestTimeLimit>60</deegree:RequestTimeLimit>
+		<deegree:Encoding>ISO-8859-1</deegree:Encoding>
+		<deegree:TransactionInputXSLT xlink:type="simple" xlink:href="transaction.xsl"/>
+		<deegree:TransactionOutputXSLT xlink:type="simple" xlink:href="transactionOut.xsl"/>
+		<!-- this parameter will be used to define the default schema used by the catalogue
+               if OUTPUTSCHEMA parameter is missing. According to CS-W specification this must be
+               OGCCORE which is not useful for GetRecordById requests -->
+		<deegree:DefaultOutputSchema>csw:profile</deegree:DefaultOutputSchema>
+		<deegree:WFSResource xlink:type="simple" xlink:href="wfs_capabilities.xml"/>
+	</deegree:deegreeParams>
+	<ows:ServiceIdentification>
+		<ows:ServiceType>CSW</ows:ServiceType>
+		<ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+		<ows:Title>deegree 2.1 CSW test</ows:Title>
+		<ows:Abstract>abstract</ows:Abstract>
+		<ows:Keywords>
+			<ows:Keyword>deegree</ows:Keyword>
+		</ows:Keywords>
+		<ows:Fees>NO FEES - IT'S FREE</ows:Fees>
+		<ows:AccessConstraints>NONE</ows:AccessConstraints>
+	</ows:ServiceIdentification>
+	<ows:ServiceProvider>
+		<ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+		<ows:ProviderSite xlink:type="simple" xlink:href="http://www.latlon.de"/>
+		<ows:ServiceContact>
+			<ows:IndividualName/>
+			<ows:PositionName/>
+			<ows:ContactInfo>
+				<ows:Phone>
+					<ows:Voice>++49 228 18496-0</ows:Voice>
+					<ows:Facsimile>++49 228 18496-29</ows:Facsimile>
+				</ows:Phone>
+				<ows:Address>
+					<ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+					<ows:DeliveryPoint>basement</ows:DeliveryPoint>
+					<ows:City>Bonn</ows:City>
+					<ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+					<ows:PostalCode>53177</ows:PostalCode>
+					<ows:Country>Germany</ows:Country>
+					<ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+				</ows:Address>
+				<ows:OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+				<ows:HoursOfService>9am-17pm</ows:HoursOfService>
+				<ows:ContactInstructions>personal</ows:ContactInstructions>
+			</ows:ContactInfo>
+			<ows:Role>PointOfContact</ows:Role>
+		</ows:ServiceContact>
+	</ows:ServiceProvider>
+	<ows:OperationsMetadata>
+		<ows:Operation name="GetCapabilities">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+				</ows:HTTP>
+			</ows:DCP>
+		</ows:Operation>
+		<ows:Operation name="DescribeRecord">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+					<ows:Post xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="typeName">
+				<ows:Value>csw:dataset</ows:Value>
+				<ows:Value>csw:datasetcollection</ows:Value>
+				<ows:Value>csw:application</ows:Value>
+				<ows:Value>csw:service</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/xml</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="schemaLanguage">
+				<ows:Value>XMLSCHEMA</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="GetRecords">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Post xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="typeName">
+				<ows:Value deegree:schema="iso19115_be_bb_full.xsd">csw:dataset</ows:Value>
+				<ows:Value deegree:schema="iso19115_be_bb_full.xsd">csw:datasetcollection</ows:Value>
+				<ows:Value deegree:schema="iso19115_be_bb_full.xsd">csw:application</ows:Value>
+				<ows:Value deegree:schema="iso19119.xsd">csw:service</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/xml</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="outputSchema">
+				<ows:Value deegree:input="inDC.xsl" deegree:output="outDC.xsl">DublinCore</ows:Value>
+				<ows:Value deegree:input="in_csw_profile.xsl" deegree:output="out_csw_profile.xsl">csw:profile</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="resultType">
+				<ows:Value>RESULTS</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="elementSetName">
+				<ows:Value>brief</ows:Value>
+				<ows:Value>summary</ows:Value>
+				<ows:Value>full</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="GetRecordById">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+					<ows:Post xlink:type="simple" xlink:href="http://localhost:8080/deegree-csw/services"/>
+				</ows:HTTP>
+			</ows:DCP>
+		</ows:Operation>
+		<ows:Operation name="Transaction">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Post xlink:href="http://localhost:8080/deegree-csw/services?"/>
+				</ows:HTTP>
+			</ows:DCP>
+		</ows:Operation>
+		<ows:Operation name="Harvest">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:href="http://localhost:8080/deegree-csw/services?"/>
+				</ows:HTTP>
+			</ows:DCP>
+		</ows:Operation>
+	</ows:OperationsMetadata>
+	<ogc:Filter_Capabilities>
+		<ogc:Spatial_Capabilities>
+			<ogc:Spatial_Operators>
+				<ogc:BBOX/>
+			</ogc:Spatial_Operators>
+		</ogc:Spatial_Capabilities>
+		<ogc:Scalar_Capabilities>
+			<ogc:Logical_Operators/>
+			<ogc:Comparison_Operators>
+				<ogc:Like/>
+			</ogc:Comparison_Operators>
+			<ogc:Arithmetic_Operators>
+				<ogc:Simple_Arithmetic/>
+			</ogc:Arithmetic_Operators>
+		</ogc:Scalar_Capabilities>
+	</ogc:Filter_Capabilities>
+</csw:Capabilities>

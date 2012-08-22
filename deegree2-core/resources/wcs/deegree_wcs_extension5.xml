@@ -1,0 +1,46 @@
+<!--
+'file' storages are similar to 'nameIndexed' storages except that not directories are
+referenced but single files or groups of files.
+-->
+<deegree:Extension type="OracleGeoRaster">
+	<deegree:Resolution max="99999999" min="10">
+		<deegree:Range>
+			<deegree:Name>time</deegree:Name>
+		</deegree:Range>
+		<deegree:OracleGeoRaster>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>org.postgresql.Driver</Driver>
+				<Url>jdbc:postgresql://your_db_server:5432/deegreetest</Url>
+				<User>deegreetest</User>
+				<Password>deegreetest</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+			<deegree:Table>MyTable</deegree:Table>
+			<deegree:RDTTable>MyRDTTable</deegree:RDTTable>
+			<deegree:Column>MyColumn</deegree:Column>
+			<deegree:Identification>ID = 'A_ID' AND Name like '%aName%'</deegree:Identification>
+			<deegree:Level>1</deegree:Level>
+		</deegree:OracleGeoRaster>
+	</deegree:Resolution>
+	<deegree:Resolution max="10" min="0">
+		<deegree:Range>
+			<deegree:Name>time</deegree:Name>
+		</deegree:Range>
+		<deegree:OracleGeoRaster>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>org.postgresql.Driver</Driver>
+				<Url>jdbc:postgresql://your_db_server:5432/deegreetest</Url>
+				<User>deegreetest</User>
+				<Password>deegreetest</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+			<deegree:Table>MyTable</deegree:Table>
+			<deegree:RDTTable>MyRDTTable</deegree:RDTTable>
+			<deegree:Column>MyColumn</deegree:Column>
+			<deegree:Identification>ID = 'A_ID' AND Name like '%aName%'</deegree:Identification>
+			<deegree:Level>2</deegree:Level>
+		</deegree:OracleGeoRaster>
+	</deegree:Resolution>
+</deegree:Extension>

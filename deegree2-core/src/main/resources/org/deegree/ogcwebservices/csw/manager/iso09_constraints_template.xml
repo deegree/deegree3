@@ -1,0 +1,8 @@
+ <csw:Constraint version="1.0.0">
+	<ogc:Filter xmlns:iso19115="http://schemas.opengis.net/iso19115full" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:dc="http://www.purl.org/dc/elements/1.1/">
+		<ogc:PropertyIsEqualTo>
+			<ogc:PropertyName>$xPath$</ogc:PropertyName>
+			<ogc:Literal>$identifier$</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+	</ogc:Filter>
+</csw:Constraint>

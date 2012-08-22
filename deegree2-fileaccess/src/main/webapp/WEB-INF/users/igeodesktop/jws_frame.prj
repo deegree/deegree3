@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:Project xmlns:ns2="http://www.deegree.org/project" xmlns="http://www.deegree.org/coremapmodel" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:ns4="http://www.deegree.org/jdbc" xmlns:ns5="http://www.deegree.org/settings" language="de">
+	<ns2:name>Test Project with Frame Layout</ns2:name>
+	<identifier>
+		<value>TP1</value>
+	</identifier>
+	<ns2:View hasFooter="true">
+		<ns2:ViewForm>
+			<ns2:FrameViewForm resizeable="true">
+				<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.map.DefaultMapFrame</ns2:containerClass>
+				<ns2:ComponentState active="true" modal="false">
+					<ns2:windowState>normal</ns2:windowState>
+				</ns2:ComponentState>
+				<ns2:frameTitle>$FVF1.FrameTitle</ns2:frameTitle>
+			</ns2:FrameViewForm>
+			<ns2:Layout>
+				<ns2:BorderLayout/>
+			</ns2:Layout>
+		</ns2:ViewForm>
+		<ns2:SupportedViewPlatform>Application</ns2:SupportedViewPlatform>
+		<ns2:Window height="800" left="360" top="67" width="826"/>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="700" left="10" top="100" width="320"/>
+			</ns2:AbsolutePosition>
+			<ns2:ModuleGroup>
+				<ns2:name>ModuleGrp</ns2:name>
+				<identifier>
+					<value>ModuleGrpId</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.DefaultModuleGroup</ns2:className>
+				<ns2:ViewForm>
+					<ns2:FrameViewForm closable="false">
+						<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.DefaultFrame</ns2:containerClass>
+						<ns2:ComponentState active="true" modal="false">
+							<ns2:windowState>normal</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:frameTitle>$F6.FrameTitle</ns2:frameTitle>
+					</ns2:FrameViewForm>
+					<ns2:Layout>
+						<ns2:TabLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:ModuleRegister>
+					<ns2:AbsolutePosition>
+						<ns2:Window height="400" left="466" top="483" width="500"/>
+					</ns2:AbsolutePosition>
+					<ns2:Module>
+						<ns2:name>LayerInfo</ns2:name>
+						<identifier>
+							<value>LayerInfoId</value>
+						</identifier>
+						<ns2:className>org.deegree.igeo.modules.LayerInfoModule</ns2:className>
+						<ns2:ViewForm>
+							<ns2:FrameViewForm resizeable="true">
+								<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.objectinfo.LayerInfoFrame</ns2:containerClass>
+								<ns2:ComponentState active="false" modal="false">
+									<ns2:windowState>closed</ns2:windowState>
+								</ns2:ComponentState>
+								<ns2:frameTitle>$F5.FrameTitle</ns2:frameTitle>
+							</ns2:FrameViewForm>
+							<ns2:Layout>
+								<ns2:NoneLayout/>
+							</ns2:Layout>
+						</ns2:ViewForm>
+						<ns2:Menu>
+							<identifier>
+								<value>LayerInfoMB</value>
+							</identifier>
+							<ns2:parent>
+								<value>MB1view</value>
+							</ns2:parent>
+							<ns2:name/>
+							<ns2:MenuItem>
+								<ns2:name>$LayerInfo</ns2:name>
+								<ns2:assignedAction>open</ns2:assignedAction>
+								<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/table.png"/>
+							</ns2:MenuItem>
+						</ns2:Menu>
+						<ns2:ToolBarEntry>
+							<identifier>
+								<value>OpenLayerInfo</value>
+							</identifier>
+							<ns2:name/>
+							<ns2:tooltip>$OpenLayerInfo.tooltip</ns2:tooltip>
+							<ns2:assignedAction>open</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/table.png"/>
+							<ns2:entryType>PushButton</ns2:entryType>
+						</ns2:ToolBarEntry>
+						<ns5:HelpContext>
+							<ns5:page>
+								<OnlineResource ns3:href="./help/attributtable/features_select.de.html"/>
+								<ns5:keyword>Objekte: selektieren</ns5:keyword>
+							</ns5:page>
+						</ns5:HelpContext>
+						<ns5:HelpContext>
+							<ns5:page>
+								<OnlineResource ns3:href="./help/attributtable/features_info.de.html"/>
+								<ns5:keyword>Objekte: Informationen aufrufen</ns5:keyword>
+							</ns5:page>
+						</ns5:HelpContext>
+					</ns2:Module>
+				</ns2:ModuleRegister>
+				<ns2:ModuleRegister>
+					<ns2:HeaderPosition>
+						<ns2:headerPosition>10</ns2:headerPosition>
+					</ns2:HeaderPosition>
+					<ns2:Module>
+						<ns2:name>ScaleModule</ns2:name>
+						<identifier>
+							<value>ScaleModuleId</value>
+						</identifier>
+						<ns2:className>org.deegree.igeo.modules.DefaultModule</ns2:className>
+						<ns2:ViewForm>
+							<ns2:PaneViewForm>
+								<ns2:containerClass viewPlatform="Application">
+							org.deegree.igeo.views.swing.ScaleSelectionPanel
+						</ns2:containerClass>
+								<ns2:ComponentState active="true" modal="false">
+									<ns2:windowState>normal</ns2:windowState>
+								</ns2:ComponentState>
+								<ns2:paneTitle>$F6.FrameTitle</ns2:paneTitle>
+							</ns2:PaneViewForm>
+							<ns2:Layout>
+								<ns2:NoneLayout/>
+							</ns2:Layout>
+						</ns2:ViewForm>
+						<ns2:init-param>
+							<ns2:name>scales</ns2:name>
+							<ns2:value>100000, 250000, 500000, 1000000, 5000000, 10000000</ns2:value>
+						</ns2:init-param>
+					</ns2:Module>
+				</ns2:ModuleRegister>
+				<ns2:ModuleRegister>
+					<ns2:AbsolutePosition>
+						<ns2:Window height="500" left="650" top="50" width="600"/>
+					</ns2:AbsolutePosition>
+					<ns2:ModuleReference>
+						<OnlineResource ns3:href="open_imageviewer.mdx"/>
+					</ns2:ModuleReference>
+				</ns2:ModuleRegister>
+				<ns2:ModuleRegister>
+					<ns2:TabPosition>
+						<ns2:tabPosition>1</ns2:tabPosition>
+					</ns2:TabPosition>
+					<ns2:Module>
+						<ns2:name>Ebenenansicht</ns2:name>
+						<identifier>
+							<value>LayerTreeId</value>
+						</identifier>
+						<ns2:className>org.deegree.igeo.modules.LayerListTreeViewModule</ns2:className>
+						<ns2:ViewForm>
+							<ns2:PaneViewForm>
+								<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.layerlist.LayerTreePanel</ns2:containerClass>
+								<ns2:ComponentState active="true" modal="false">
+									<ns2:windowState>normal</ns2:windowState>
+								</ns2:ComponentState>
+								<ns2:paneTitle>$F6.FrameTitle</ns2:paneTitle>
+							</ns2:PaneViewForm>
+							<ns2:Layout>
+								<ns2:NoneLayout/>
+							</ns2:Layout>
+						</ns2:ViewForm>
+						<ns2:PopUpEntry assignedGroup="LLTreeView">
+							<identifier>
+								<value>LLTV1</value>
+							</identifier>
+							<ns2:name>$removeLayer.name</ns2:name>
+							<ns2:assignedAction>removeLayer</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/removelayer.png"/>
+						</ns2:PopUpEntry>
+						<ns2:PopUpEntry>
+							<identifier>
+								<value>LLTV5</value>
+							</identifier>
+							<ns2:name>$addLayerGroup.name</ns2:name>
+							<ns2:assignedAction>addLayerGroup</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/s_add_layergroup.png"/>
+						</ns2:PopUpEntry>
+						<ns2:PopUpEntry>
+							<identifier>
+								<value>LLTV6</value>
+							</identifier>
+							<ns2:name>$rename</ns2:name>
+							<ns2:assignedAction>rename</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/rename.png"/>
+						</ns2:PopUpEntry>
+						<ns2:PopUpEntry>
+							<identifier>
+								<value>LLTV4</value>
+							</identifier>
+							<ns2:name>$layerInfo.name</ns2:name>
+							<ns2:assignedAction>layerInfo</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/s_layerinfo.png"/>
+						</ns2:PopUpEntry>
+						<ns2:PopUpEntry>
+							<identifier>
+								<value>LayerInfoMB_1</value>
+							</identifier>
+							<ns2:name>$LayerInfo</ns2:name>
+							<ns2:assignedAction>$module:LayerInfo#open</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/table.png"/>
+						</ns2:PopUpEntry>
+						<ns2:PopUpEntry>
+							<identifier>
+								<value>ES1</value>
+							</identifier>
+							<ns2:name>$EditStyle.name</ns2:name>
+							<ns2:assignedAction>$module:EditStyle#editStyle</ns2:assignedAction>
+							<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/palette.png"/>
+						</ns2:PopUpEntry>
+						<ns2:PopUpEntry>
+							<identifier>
+								<value>LLTV3</value>
+							</identifier>
+							<ns2:name>$setEditing.name</ns2:name>
+							<ns2:assignedAction>setEditing</ns2:assignedAction>
+						</ns2:PopUpEntry>
+					</ns2:Module>
+				</ns2:ModuleRegister>
+				<ns2:ModuleRegister>
+					<ns2:TabPosition>
+						<ns2:tabPosition>2</ns2:tabPosition>
+					</ns2:TabPosition>
+					<ns2:Module>
+						<ns2:name>Legende</ns2:name>
+						<identifier>
+							<value>LegendViewId</value>
+						</identifier>
+						<ns2:className>org.deegree.igeo.modules.DefaultModule</ns2:className>
+						<ns2:ViewForm>
+							<ns2:PaneViewForm>
+								<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.legend.LegendPanel</ns2:containerClass>
+								<ns2:ComponentState active="true" modal="false">
+									<ns2:windowState>normal</ns2:windowState>
+								</ns2:ComponentState>
+								<ns2:paneTitle>$F6.FrameTitle</ns2:paneTitle>
+							</ns2:PaneViewForm>
+							<ns2:Layout>
+								<ns2:NoneLayout/>
+							</ns2:Layout>
+						</ns2:ViewForm>
+					</ns2:Module>
+				</ns2:ModuleRegister>
+				<ns2:ModuleRegister>
+					<ns2:TabPosition>
+						<ns2:tabPosition>3</ns2:tabPosition>
+					</ns2:TabPosition>
+					<ns2:Module>
+						<ns2:name>ProxyManager</ns2:name>
+						<identifier>
+							<value>F1</value>
+						</identifier>
+						<ns2:className>org.deegree.igeo.modules.ProxyManagerModule</ns2:className>
+						<ns2:ViewForm>
+							<ns2:PaneViewForm>
+								<ns2:containerClass viewPlatform="Application"> org.deegree.igeo.views.swing.proxymanager.ProxyManagerPanel</ns2:containerClass>
+								<ns2:ComponentState active="true" modal="false">
+									<ns2:windowState>normal</ns2:windowState>
+								</ns2:ComponentState>
+								<ns2:paneTitle>$F4.FrameTitle</ns2:paneTitle>
+							</ns2:PaneViewForm>
+							<ns2:Layout>
+								<ns2:NoneLayout/>
+							</ns2:Layout>
+						</ns2:ViewForm>
+					</ns2:Module>
+				</ns2:ModuleRegister>
+			</ns2:ModuleGroup>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:BorderPosition>
+				<ns2:borderPositionValue>center</ns2:borderPositionValue>
+			</ns2:BorderPosition>
+			<ns2:ModuleReference>
+				<OnlineResource ns3:href="map_module.mdx"/>
+			</ns2:ModuleReference>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="504" left="351" top="185" width="388"/>
+			</ns2:AbsolutePosition>
+			<ns2:Module>
+				<ns2:name>MapModelCollectionInfoInfo</ns2:name>
+				<identifier>
+					<value>MapModelCollectionInfoInfo</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.MapModelCollectionInfoModule</ns2:className>
+				<ns2:ViewForm>
+					<ns2:FrameViewForm resizeable="false">
+						<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.MapModelCollectionInfoDialog</ns2:containerClass>
+						<ns2:ComponentState active="false" modal="false">
+							<ns2:windowState>closed</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:frameTitle>$MapModelCollectionInfo.FrameTitle</ns2:frameTitle>
+					</ns2:FrameViewForm>
+					<ns2:Layout>
+						<ns2:NoneLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:Menu>
+					<identifier>
+						<value>MMC1</value>
+					</identifier>
+					<ns2:parent>
+						<value>MB1</value>
+					</ns2:parent>
+					<ns2:name>dummy</ns2:name>
+					<ns2:MenuItem>
+						<ns2:name>$MapModelCollectionInfo.open</ns2:name>
+						<ns2:assignedAction>open</ns2:assignedAction>
+					</ns2:MenuItem>
+				</ns2:Menu>
+				<ns2:init-param>
+					<ns2:name>programName</ns2:name>
+					<ns2:value>cmd</ns2:value>
+				</ns2:init-param>
+				<ns2:init-param>
+					<ns2:name>programParameter</ns2:name>
+					<ns2:value>/c,start,$PROPERTY</ns2:value>
+				</ns2:init-param>
+			</ns2:Module>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="504" left="351" top="185" width="388"/>
+			</ns2:AbsolutePosition>
+			<ns2:Module>
+				<ns2:name>Bookmark</ns2:name>
+				<identifier>
+					<value>BookmarkId</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.bookmarks.BookmarkModule</ns2:className>
+				<ns2:ViewForm>
+					<ns2:FrameViewForm resizeable="true">
+						<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.bookmark.BookmarkFrame</ns2:containerClass>
+						<ns2:ComponentState active="false" modal="false">
+							<ns2:windowState>closed</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:frameTitle>$Bookmark.FrameTitle</ns2:frameTitle>
+					</ns2:FrameViewForm>
+					<ns2:Layout>
+						<ns2:NoneLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:ToolBarEntry>
+					<identifier>
+						<value>Bookmark_Open_TB</value>
+					</identifier>
+					<ns2:name/>
+					<ns2:tooltip>$Bookmark.open.tooltip</ns2:tooltip>
+					<ns2:assignedAction>open</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/bookmark.png"/>
+					<ns2:entryType>PushButton</ns2:entryType>
+				</ns2:ToolBarEntry>
+				<ns2:ToolBarEntry>
+					<identifier>
+						<value>Bookmark_add_TB</value>
+					</identifier>
+					<ns2:name/>
+					<ns2:tooltip>$Bookmark.add.tooltip</ns2:tooltip>
+					<ns2:assignedAction>addBookmark</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/bookmark_add.png"/>
+					<ns2:entryType>PushButton</ns2:entryType>
+				</ns2:ToolBarEntry>
+			</ns2:Module>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="600" left="100" top="100" width="500"/>
+			</ns2:AbsolutePosition>
+			<ns2:Module>
+				<ns2:name>AddLayer</ns2:name>
+				<identifier>
+					<value>AddLayerId</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.AddLayerModule</ns2:className>
+				<ns2:ViewForm>
+					<ns2:FrameViewForm resizeable="true">
+						<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.addlayer.AddLayerFrame</ns2:containerClass>
+						<ns2:ComponentState active="false" modal="false">
+							<ns2:windowState>closed</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:frameTitle>$AddLayer.FrameTitle</ns2:frameTitle>
+					</ns2:FrameViewForm>
+					<ns2:Layout>
+						<ns2:NoneLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:ToolBarEntry>
+					<identifier>
+						<value>AddLayer_Open_TB</value>
+					</identifier>
+					<ns2:name/>
+					<ns2:tooltip>$AddNewLayer.tooltip</ns2:tooltip>
+					<ns2:assignedAction>addLayer</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/addLayer.png"/>
+					<ns2:entryType>PushButton</ns2:entryType>
+				</ns2:ToolBarEntry>
+				<ns2:init-param>
+					<ns2:name>knownWMS</ns2:name>
+					<ns2:value>demo deegree wms: http://testing.deegree.org/deegree-wms/services,another wms: http://another.de/wms</ns2:value>
+				</ns2:init-param>
+				<ns2:init-param>
+					<ns2:name>WMSversions</ns2:name>
+					<ns2:value>1.0.0,1.1.0,1.1.1</ns2:value>
+				</ns2:init-param>
+				<ns2:init-param>
+					<ns2:name>knownWFS</ns2:name>
+					<ns2:value>demo deegree wfs: http://testing.deegree.org/deegree-wfs/services</ns2:value>
+				</ns2:init-param>
+				<ns2:init-param>
+					<ns2:name>knownWCS</ns2:name>
+					<ns2:value>demo deegree wcs: http://demo.deegree.org/deegree-wcs/services</ns2:value>
+				</ns2:init-param>
+			</ns2:Module>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="590" left="102" top="362" width="420"/>
+			</ns2:AbsolutePosition>
+			<ns2:Module>
+				<ns2:name>EditStyle</ns2:name>
+				<identifier>
+					<value>EditStyleId</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.EditStyleModule</ns2:className>
+				<ns2:ViewForm>
+					<ns2:FrameViewForm resizeable="false">
+						<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.style.RuleDialog</ns2:containerClass>
+						<ns2:ComponentState active="false" modal="true">
+							<ns2:windowState>closed</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:frameTitle>$editStyle.FrameTitle</ns2:frameTitle>
+					</ns2:FrameViewForm>
+					<ns2:Layout>
+						<ns2:NoneLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:ToolBarEntry>
+					<identifier>
+						<value>EditStyle_Open_TB</value>
+					</identifier>
+					<ns2:tooltip>$editStyle.tooltip</ns2:tooltip>
+					<ns2:assignedAction>editStyle</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/palette.png"/>
+					<ns2:entryType>PushButton</ns2:entryType>
+				</ns2:ToolBarEntry>
+			</ns2:Module>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="500" left="650" top="50" width="600"/>
+			</ns2:AbsolutePosition>
+			<ns2:ModuleReference>
+				<OnlineResource ns3:href="analysis_module.mdx"/>
+			</ns2:ModuleReference>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="500" left="650" top="50" width="600"/>
+			</ns2:AbsolutePosition>
+			<ns2:ModuleReference>
+				<OnlineResource ns3:href="copypaste_module.mdx"/>
+			</ns2:ModuleReference>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:FooterPosition>
+				<ns2:footerPosition>0</ns2:footerPosition>
+			</ns2:FooterPosition>
+			<ns2:Module>
+				<ns2:name>Measuring</ns2:name>
+				<identifier>
+					<value>Measure1</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.MeasureModule</ns2:className>
+				<ns2:ViewForm>
+					<ns2:PaneViewForm>
+						<ns2:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.measure.MeasureFooterPanel</ns2:containerClass>
+						<ns2:ComponentState active="false" modal="false">
+							<ns2:windowState>normal</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:paneTitle>$M1.PaneTitle</ns2:paneTitle>
+					</ns2:PaneViewForm>
+					<ns2:Layout>
+						<ns2:NoneLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:Menu>
+					<identifier>
+						<value>MeasureMB</value>
+					</identifier>
+					<ns2:parent>
+						<value>MB1</value>
+					</ns2:parent>
+					<ns2:name/>
+					<ns2:MenuItem>
+						<ns2:name>$MD.name</ns2:name>
+						<ns2:assignedAction>measureDistance</ns2:assignedAction>
+						<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/ruler.png"/>
+					</ns2:MenuItem>
+					<ns2:MenuItem>
+						<ns2:name>$MA.name</ns2:name>
+						<ns2:assignedAction>measureArea</ns2:assignedAction>
+						<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/measure_areas.png"/>
+					</ns2:MenuItem>
+				</ns2:Menu>
+			</ns2:Module>
+		</ns2:ModuleRegister>
+		<ns2:ModuleRegister>
+			<ns2:AbsolutePosition>
+				<ns2:Window height="600" left="100" top="100" width="500"/>
+			</ns2:AbsolutePosition>
+			<ns2:Module>
+				<ns2:name>WebServerModule</ns2:name>
+				<identifier>
+					<value>WebServerModuleID</value>
+				</identifier>
+				<ns2:className>org.deegree.igeo.modules.remotecontrol.WebServerModule</ns2:className>
+				<ns2:ViewForm>
+					<ns2:FrameViewForm resizeable="true">
+						<ns2:containerClass viewPlatform="Application">
+							org.deegree.igeo.views.swing.addlayer.DefaultPanel
+                        </ns2:containerClass>
+						<ns2:ComponentState active="true" modal="false">
+							<ns2:windowState>closed</ns2:windowState>
+						</ns2:ComponentState>
+						<ns2:frameTitle>$WebServerModule</ns2:frameTitle>
+					</ns2:FrameViewForm>
+					<ns2:Layout>
+						<ns2:NoneLayout/>
+					</ns2:Layout>
+				</ns2:ViewForm>
+				<ns2:ToolBarEntry>
+					<identifier>
+						<value>WebServerStart</value>
+					</identifier>
+					<ns2:tooltip>$WebServerStart</ns2:tooltip>
+					<ns2:assignedAction>start</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/server_start.png"/>
+					<ns2:entryType>PushButton</ns2:entryType>
+				</ns2:ToolBarEntry>
+				<ns2:ToolBarEntry>
+					<identifier>
+						<value>WebServerStop</value>
+					</identifier>
+					<ns2:tooltip>$WebServerStop</ns2:tooltip>
+					<ns2:assignedAction>stop</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/server_stop.png"/>
+					<ns2:entryType>PushButton</ns2:entryType>
+				</ns2:ToolBarEntry>
+				<ns2:init-param>
+					<ns2:name>port</ns2:name>
+					<ns2:value>8888</ns2:value>
+				</ns2:init-param>
+				<ns2:init-param>
+					<ns2:name>setBBOX</ns2:name>
+					<ns2:value>org.deegree.igeo.modules.remotecontrol.SetBBOXHandler</ns2:value>
+				</ns2:init-param>
+				<ns2:init-param>
+					<ns2:name>selectFeatures</ns2:name>
+					<ns2:value>org.deegree.igeo.modules.remotecontrol.SelectFeatureHandler</ns2:value>
+				</ns2:init-param>
+			</ns2:Module>
+		</ns2:ModuleRegister>
+		<ns2:MenuBar>
+			<ns2:Menu>
+				<identifier>
+					<value>MB1</value>
+				</identifier>
+				<ns2:name>$MB1.name</ns2:name>
+				<ns2:MenuItem>
+					<ns2:name>$MB03.name</ns2:name>
+					<ns2:assignedAction>newproject</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/s_newProjectOpen.png"/>
+				</ns2:MenuItem>
+				<ns2:MenuItem>
+					<ns2:name>$MB0.name</ns2:name>
+					<ns2:assignedAction>open</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/projectOpen.png"/>
+				</ns2:MenuItem>
+				<ns2:MenuItem>
+					<ns2:name>$MB01.name</ns2:name>
+					<ns2:assignedAction>save</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/s_save.png"/>
+				</ns2:MenuItem>
+				<ns2:MenuItem>
+					<ns2:name>$MB02.name</ns2:name>
+					<ns2:assignedAction>saveas</ns2:assignedAction>
+					<ns2:icon ns3:href="http://localhost:8080/igeodesktop/resources/icons/s_save_as.png"/>
+				</ns2:MenuItem>
+				<ns2:MenuItem>
+					<ns2:name>$MB12.name</ns2:name>
+					<ns2:assignedAction>undo</ns2:assignedAction>
+				</ns2:MenuItem>
+				<ns2:MenuItem>
+					<ns2:name>$MB13.name</ns2:name>
+					<ns2:assignedAction>redo</ns2:assignedAction>
+				</ns2:MenuItem>
+			</ns2:Menu>
+		</ns2:MenuBar>
+		<ns2:ToolBar floatable="true" useRollover="true"/>
+	</ns2:View>
+	<ns2:Settings>
+		<ns5:MapHandling>
+			<ns5:zoomLevel>25</ns5:zoomLevel>
+			<ns5:panLevel>25</ns5:panLevel>
+		</ns5:MapHandling>
+		<ns5:DataAdapter>
+			<ns5:WFSFeatureAdapter>
+				<ns5:CapabilitiesEvaluator/>
+				<ns5:CapabilitiesEvaluator changeable="false" val="org.deegree.igeo.dataadapter.WFS110CapabilitiesEvaluator" version="1.1.0"/>
+				<ns5:Timeout val="60000"/>
+				<ns5:MaxFeature val="5000"/>
+				<ns5:DataLoader/>
+			</ns5:WFSFeatureAdapter>
+			<ns5:WMSGridCoverageAdapter>
+				<ns5:CapabilitiesEvaluator/>
+				<ns5:Timeout val="60000"/>
+				<ns5:featureCount/>
+			</ns5:WMSGridCoverageAdapter>
+		</ns5:DataAdapter>
+		<ns5:HelpPage/>
+		<ns5:CursorDefinitions>
+			<ns5:Cursor action="default" name="default"/>
+		</ns5:CursorDefinitions>
+		<ns5:Graphics>
+			<ns5:SymbolDefinitions/>
+			<ns5:FillGraphicDefinitions/>
+			<ns5:DashArrayDefinitions/>
+		</ns5:Graphics>
+		<ns5:Formats changeable="true">
+			<ns5:Format name="number" pattern="##.000"/>
+		</ns5:Formats>
+		<ns5:FileAccess changeable="true">
+			<ns5:Access class="org.deegree.igeo.io.RemoteFSAccess" fileType="project"/>
+			<ns5:Access class="org.deegree.igeo.io.RemoteFSAccess" fileType="module"/>
+			<ns5:Access class="org.deegree.igeo.io.RemoteFSAccess" fileType="geoDataFile"/>
+		</ns5:FileAccess>
+	</ns2:Settings>
+	<MapModelCollection>
+		<name>TestMMC</name>
+		<maxExtent crs="EPSG:26912" maxx="664791.803125" maxy="4653798.05" minx="252400.003125" miny="4107118.55"/>
+		<externalResource>
+			<OnlineResource ns3:href="./docs/deegree_client_portal_specification.odt"/>
+			<abstract>
+				According to changed requirements to thin and thick geospatial clients in following document a new
+				concept for deegree's implementation of portal and client functionality will be developed. One basic
+				decision is to brake with current implementation of iGeoPortal standard and portlet edition and not to
+				use classes, JavaScript objects, HTML-pages and JSPs anymore. The same is true for further usage of
+				moduls developed by lat/lon for OpenJUMP (deeJUMP).
+			</abstract>
+			<externalResourceTitle>deegree client and portal concept and specification</externalResourceTitle>
+			<externalResourceType>Open Office document</externalResourceType>
+		</externalResource>
+		<mapModel current="true">
+			<name>TestMM</name>
+			<identifier>
+				<value>MM1</value>
+			</identifier>
+			<targetDevice>
+				<pixelWidth>810</pixelWidth>
+				<pixelHeight>661</pixelHeight>
+				<dpi>96</dpi>
+			</targetDevice>
+			<supportedCRS/>
+			<extent crs="EPSG:26912" maxx="430885.20178820123" maxy="4514317.568564087" minx="426082.0761673432" miny="4510397.980866078"/>
+			<maxExtent crs="EPSG:26912" maxx="664791.803125" maxy="4653798.05" minx="252400.003125" miny="4107118.55"/>
+			<layerGroup>
+				<identifier>
+					<value>UTAH frames</value>
+				</identifier>
+				<title>UTAH</title>
+				<abstract>example of frames configuration</abstract>
+				<layer editable="false" queryable="true" visible="true">
+					<identifier>
+						<value>aa77af95-7e49-4846-a614-e59b56bef197</value>
+					</identifier>
+					<abstract/>
+					<title>Roads of Utah</title>
+					<maxScaleDenominator>9.0E99</maxScaleDenominator>
+					<minScaleDenominator>0.0</minScaleDenominator>
+					<Datasource>
+						<WMSDatasource allowSwapAxis="false" editable="false" lazyLoading="true" queryable="true" serviceVersion="1.1.1" supportToolTips="false">
+							<name>deegree wms</name>
+							<extent crs="EPSG:26912" maxx="430885.20178820123" maxy="4514317.568564087" minx="426082.0761673432" miny="4510397.980866078"/>
+							<nativeCRS>EPSG:26912</nativeCRS>
+							<minScaleDenominator>0.0</minScaleDenominator>
+							<maxScaleDenominator>9.0E99</maxScaleDenominator>
+							<capabilitiesURL>
+								<OnlineResource ns3:href="http://testing.deegree.org:80/deegree-wms/services?version=1.1.1&amp;service=WMS&amp;request=GetCapabilities"/>
+							</capabilitiesURL>
+							<baseRequest>REQUEST=GetMap&amp;TRANSPARENT=TRUE&amp;FORMAT=image/png&amp;LAYERS=Roads</baseRequest>
+						</WMSDatasource>
+					</Datasource>
+					<Style>
+						<NamedStyle current="true">
+							<name>default</name>
+							<title>default</title>
+							<abstract>default</abstract>
+							<legendURL>
+								<OnlineResource ns3:href="http://testing.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Roads&amp;style=default:Roads"/>
+							</legendURL>
+						</NamedStyle>
+					</Style>
+				</layer>
+				<layerGroup queryable="true" visible="true">
+					<identifier>
+						<value>51e7491c-e248-413f-a498-8c70598b5f33</value>
+						<namespace>http://www.deegree.org</namespace>
+					</identifier>
+					<title>environment</title>
+					<abstract>environment</abstract>
+					<layer editable="true" queryable="true" visible="true">
+						<identifier>
+							<value>431f6478-008c-4e9a-a5e7-aca3d1a8ef05</value>
+						</identifier>
+						<title>Springs</title>
+						<maxScaleDenominator>9.0E99</maxScaleDenominator>
+						<minScaleDenominator>0.0</minScaleDenominator>
+						<selectedFor>action</selectedFor>
+						<Datasource>
+							<WFSDatasource editable="true" lazyLoading="false" queryable="true" supportToolTips="true">
+								<name>Springs demo_WFS</name>
+								<extent crs="EPSG:26912" maxx="432550.303125" maxy="4518719.55" minx="422498.803125" miny="4510398.05"/>
+								<nativeCRS>EPSG:26912</nativeCRS>
+								<minScaleDenominator>0.0</minScaleDenominator>
+								<maxScaleDenominator>9.0E99</maxScaleDenominator>
+								<capabilitiesURL>
+									<OnlineResource ns3:href="http://testing.deegree.org/deegree-wfs/services?SERVICE=WFS&amp;REQUEST=GetCapabilities"/>
+								</capabilitiesURL>
+								<geometryProperty>
+									<localName>geometry</localName>
+									<namespace>http://www.deegree.org/app</namespace>
+								</geometryProperty>
+								<GetFeatureRequest version="1.1.0">&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" handle="" outputFormat="text/xml; subtype=gml/3.1.1" resultType="results" service="WFS" version="1.1.0"&gt;&lt;Query xmlns:app="http://www.deegree.org/app" typeName="app:Springs" xmlns="http://www.opengis.net/wfs"&gt;&lt;ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"&gt;&lt;ogc:BBOX xmlns:gml="http://www.opengis.net/gml"&gt;&lt;ogc:PropertyName&gt;app:geometry&lt;/ogc:PropertyName&gt;&lt;gml:Envelope srsName="EPSG:26912"&gt;&lt;gml:coordinates cs="," decimal="." ts=" "&gt;419661.1799842159,4507750.333995652 433177.38996306807,4518813.602163528&lt;/gml:coordinates&gt;&lt;/gml:Envelope&gt;&lt;/ogc:BBOX&gt;&lt;/ogc:Filter&gt;&lt;/Query&gt;&lt;/wfs:GetFeature&gt;</GetFeatureRequest>
+							</WFSDatasource>
+						</Datasource>
+						<Style>
+							<DirectStyle current="true" uom="pixel">
+								<name>default1</name>
+								<title>Springs</title>
+								<abstract>default3</abstract>
+								<legendImage>iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAfUlEQVR42mNkwA/+Gxv/v4QuePYsox6QYsSmgYmBymDwG8hIavgRCkcWkEYKHIShlxHoiosjK1JoEsvggMUXo8QCUMwzoscYOQZDkxDYgYykpj9C6ZHmOeU/BV5mHHrpkJjCACuA6vtPtAthYYTPUGyRguFC5PRFTHoFqQcA1SU4HftmhMsAAAAASUVORK5CYII=</legendImage>
+								<sld>&lt;?xml version='1.0' encoding='UTF-8'?&gt;&lt;StyledLayerDescriptor version='1.0.0' xmlns='http://www.opengis.net/sld' xmlns:gml='http://www.opengis.net/gml' xmlns:ogc='http://www.opengis.net/ogc' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'&gt;&lt;NamedLayer&gt;&lt;Name&gt;Springs&lt;/Name&gt;&lt;UserStyle xmlns='http://www.opengis.net/sld' xmlns:gml='http://www.opengis.net/gml' xmlns:ogc='http://www.opengis.net/ogc' xmlns:xlink='http://www.w3.org/1999/xlink' &gt;&lt;Name&gt;default1&lt;/Name&gt;&lt;Title&gt;Springs&lt;/Title&gt;&lt;Abstract&gt;default3&lt;/Abstract&gt;&lt;FeatureTypeStyle&gt;&lt;Title&gt;Regel 1&lt;/Title&gt;&lt;FeatureTypeName&gt;{http://www.deegree.org/app}:Springs&lt;/FeatureTypeName&gt;&lt;SemanticTypeIdentifier&gt;generic:any&lt;/SemanticTypeIdentifier&gt;&lt;Rule&gt;&lt;Name&gt;default&lt;/Name&gt;&lt;Title&gt;default&lt;/Title&gt;&lt;Abstract&gt;default&lt;/Abstract&gt;&lt;MinScaleDenominator&gt;0.0&lt;/MinScaleDenominator&gt;&lt;MaxScaleDenominator&gt;9.0E99&lt;/MaxScaleDenominator&gt;&lt;PointSymbolizer&gt;&lt;Geometry&gt;&lt;ogc:PropertyName xmlns:app1='http://www.deegree.org/app'&gt;app1:geometry&lt;/ogc:PropertyName&gt;&lt;/Geometry&gt;&lt;Graphic&gt;&lt;Mark&gt;&lt;WellKnownName&gt;star&lt;/WellKnownName&gt;&lt;Fill&gt;&lt;CssParameter name='fill-opacity'&gt;0.82&lt;/CssParameter&gt;&lt;CssParameter name='fill'&gt;#3333ff&lt;/CssParameter&gt;&lt;/Fill&gt;&lt;Stroke&gt;&lt;CssParameter name='stroke-linejoin'&gt;round&lt;/CssParameter&gt;&lt;CssParameter name='stroke'&gt;#000000&lt;/CssParameter&gt;&lt;CssParameter name='stroke-opacity'&gt;1.0&lt;/CssParameter&gt;&lt;CssParameter name='stroke-linecap'&gt;square&lt;/CssParameter&gt;&lt;CssParameter name='stroke-width'&gt;1.0&lt;/CssParameter&gt;&lt;/Stroke&gt;&lt;/Mark&gt;&lt;Opacity&gt;0.82&lt;/Opacity&gt;&lt;Size&gt;40.0&lt;/Size&gt;&lt;Rotation&gt;0.0&lt;/Rotation&gt;&lt;/Graphic&gt;&lt;/PointSymbolizer&gt;&lt;/Rule&gt;&lt;Rule&gt;&lt;Name&gt;default&lt;/Name&gt;&lt;Title&gt;default&lt;/Title&gt;&lt;Abstract&gt;default&lt;/Abstract&gt;&lt;MinScaleDenominator&gt;0.0&lt;/MinScaleDenominator&gt;&lt;MaxScaleDenominator&gt;9.0E99&lt;/MaxScaleDenominator&gt;&lt;TextSymbolizer&gt;&lt;Geometry&gt;&lt;ogc:PropertyName xmlns:app1='http://www.deegree.org/app'&gt;app1:geometry&lt;/ogc:PropertyName&gt;&lt;/Geometry&gt;&lt;Label&gt;&lt;ogc:PropertyName xmlns:app1="http://www.deegree.org/app"&gt;app1:objectid&lt;/ogc:PropertyName&gt;&lt;/Label&gt;&lt;Font&gt;&lt;CssParameter name='font-color'&gt;#000000&lt;/CssParameter&gt;&lt;CssParameter name='font-family'&gt;SansSerif&lt;/CssParameter&gt;&lt;CssParameter name='font-weight'&gt;normal&lt;/CssParameter&gt;&lt;CssParameter name='font-style'&gt;normal&lt;/CssParameter&gt;&lt;CssParameter name='font-size'&gt;10.0&lt;/CssParameter&gt;&lt;/Font&gt;&lt;LabelPlacement&gt;&lt;PointPlacement auto='true'&gt;&lt;AnchorPoint&gt;&lt;AnchorPointX&gt;0.0&lt;/AnchorPointX&gt;&lt;AnchorPointY&gt;0.5&lt;/AnchorPointY&gt;&lt;/AnchorPoint&gt;&lt;Displacement&gt;&lt;DisplacementX&gt;0.0&lt;/DisplacementX&gt;&lt;DisplacementY&gt;0.0&lt;/DisplacementY&gt;&lt;/Displacement&gt;&lt;Rotation&gt;0.0&lt;/Rotation&gt;&lt;/PointPlacement&gt;&lt;/LabelPlacement&gt;&lt;Halo&gt;&lt;Radius&gt;4.0&lt;/Radius&gt;&lt;Fill&gt;&lt;CssParameter name='fill-opacity'&gt;1.0&lt;/CssParameter&gt;&lt;CssParameter name='fill'&gt;#ffffff&lt;/CssParameter&gt;&lt;/Fill&gt;&lt;Stroke&gt;&lt;CssParameter name='stroke-linejoin'&gt;round&lt;/CssParameter&gt;&lt;CssParameter name='stroke'&gt;#000000&lt;/CssParameter&gt;&lt;CssParameter name='stroke-opacity'&gt;1.0&lt;/CssParameter&gt;&lt;CssParameter name='stroke-linecap'&gt;square&lt;/CssParameter&gt;&lt;CssParameter name='stroke-width'&gt;1.0&lt;/CssParameter&gt;&lt;/Stroke&gt;&lt;/Halo&gt;&lt;/TextSymbolizer&gt;&lt;/Rule&gt;&lt;/FeatureTypeStyle&gt;&lt;/UserStyle&gt;&lt;/NamedLayer&gt;&lt;/StyledLayerDescriptor&gt;</sld>
+							</DirectStyle>
+						</Style>
+					</layer>
+				</layerGroup>
+				<layerGroup queryable="true" visible="true">
+					<identifier>
+						<value>694f71b8-4172-4543-9c8b-caa480a4fb4c</value>
+						<namespace>http://www.deegree.org</namespace>
+					</identifier>
+					<title>infrastructure</title>
+					<abstract>infrastructure</abstract>
+					<layer editable="false" queryable="true" visible="true">
+						<identifier>
+							<value>53231219-3456-4475-9782-da106b309821</value>
+						</identifier>
+						<abstract/>
+						<title>Airports</title>
+						<maxScaleDenominator>9.0E99</maxScaleDenominator>
+						<minScaleDenominator>0.0</minScaleDenominator>
+						<Datasource>
+							<WMSDatasource editable="false" lazyLoading="true" queryable="true" supportToolTips="false">
+								<name>deegree wms</name>
+								<extent crs="EPSG:26912" maxx="430877.95725483686" maxy="4514317.568564087" minx="426089.32070070755" miny="4510397.980866078"/>
+								<nativeCRS>EPSG:26912</nativeCRS>
+								<minScaleDenominator>0.0</minScaleDenominator>
+								<maxScaleDenominator>9.0E99</maxScaleDenominator>
+								<capabilitiesURL>
+									<OnlineResource ns3:href="http://testing.deegree.org/deegree-wms/services?SERVICE=WMS&amp;REQUEST=GetCapabilities"/>
+								</capabilitiesURL>
+								<baseRequest>REQUEST=GetMap&amp;&amp;FORMAT=image/gif&amp;TRANSPARENT=TRUE&amp;LAYERS=Airports&amp;STYLES=</baseRequest>
+							</WMSDatasource>
+						</Datasource>
+						<Style>
+							<NamedStyle current="true">
+								<name>default</name>
+								<title>default</title>
+								<abstract>default</abstract>
+								<legendURL>
+									<OnlineResource ns3:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Airports&amp;style=default:Airports"/>
+								</legendURL>
+							</NamedStyle>
+						</Style>
+					</layer>
+					<layer editable="false" queryable="true" visible="true">
+						<identifier>
+							<value>d4333c15-b423-4cac-a641-4b9ffc91d65d</value>
+						</identifier>
+						<abstract/>
+						<title>Railroads</title>
+						<maxScaleDenominator>9.0E99</maxScaleDenominator>
+						<minScaleDenominator>0.0</minScaleDenominator>
+						<Datasource>
+							<WMSDatasource editable="false" lazyLoading="true" queryable="true" supportToolTips="false">
+								<name>deegree wms</name>
+								<extent crs="EPSG:26912" maxx="430877.95725483686" maxy="4514317.568564087" minx="426089.32070070755" miny="4510397.980866078"/>
+								<nativeCRS>EPSG:26912</nativeCRS>
+								<minScaleDenominator>0.0</minScaleDenominator>
+								<maxScaleDenominator>9.0E99</maxScaleDenominator>
+								<capabilitiesURL>
+									<OnlineResource ns3:href="http://testing.deegree.org/deegree-wms/services?SERVICE=WMS&amp;REQUEST=GetCapabilities"/>
+								</capabilitiesURL>
+								<baseRequest>REQUEST=GetMap&amp;&amp;FORMAT=image/gif&amp;TRANSPARENT=TRUE&amp;LAYERS=Railroads&amp;STYLES=</baseRequest>
+							</WMSDatasource>
+						</Datasource>
+						<Style>
+							<NamedStyle current="true">
+								<name>default</name>
+								<title>default</title>
+								<abstract>default</abstract>
+								<legendURL>
+									<OnlineResource ns3:href="http://testing.deegre.org/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Railroads&amp;style=default:Railroads"/>
+								</legendURL>
+							</NamedStyle>
+						</Style>
+					</layer>
+				</layerGroup>
+				<layer editable="false" queryable="true" visible="true">
+					<identifier>
+						<value>fd7f7170-cb91-4083-8232-e17533292dd8</value>
+					</identifier>
+					<abstract/>
+					<title>Ortho Imagery of Salt Lake City no Bbox</title>
+					<maxScaleDenominator>9.0E99</maxScaleDenominator>
+					<minScaleDenominator>0.0</minScaleDenominator>
+					<Datasource>
+						<WMSDatasource allowSwapAxis="false" editable="false" lazyLoading="true" queryable="true" serviceVersion="1.1.1" supportToolTips="false">
+							<name>deegree wms</name>
+							<extent crs="EPSG:26912" maxx="430885.20178820123" maxy="4514317.568564087" minx="426082.0761673432" miny="4510397.980866078"/>
+							<nativeCRS>EPSG:26912</nativeCRS>
+							<minScaleDenominator>0.0</minScaleDenominator>
+							<maxScaleDenominator>9.0E99</maxScaleDenominator>
+							<capabilitiesURL>
+								<OnlineResource ns3:href="http://testing.deegree.org:80/deegree-wms/services?version=1.1.1&amp;service=WMS&amp;request=GetCapabilities"/>
+							</capabilitiesURL>
+							<baseRequest>REQUEST=GetMap&amp;TRANSPARENT=TRUE&amp;FORMAT=image/png&amp;LAYERS=orthoimage1</baseRequest>
+						</WMSDatasource>
+					</Datasource>
+					<Style>
+						<NamedStyle current="true">
+							<name>default</name>
+							<title>default</title>
+							<abstract>default</abstract>
+							<legendURL>
+								<OnlineResource ns3:href="http://testing.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=orthoimage1&amp;style=default:orthoimage1"/>
+							</legendURL>
+						</NamedStyle>
+					</Style>
+				</layer>
+			</layerGroup>
+			<description/>
+		</mapModel>
+	</MapModelCollection>
+</ns2:Project>

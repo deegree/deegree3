@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:Module xmlns:deegree="http://www.deegree.org/context" hidden="false" type="content" width="250" height="670" scrolling="no">
+	<deegree:Name>Legend</deegree:Name>
+    <deegree:Content>./modules/legend/legend_dyn.jsp</deegree:Content>
+    <deegree:ModuleJS>./modules/legend/legend_dyn.js</deegree:ModuleJS>
+    <deegree:ParameterList>
+        <deegree:Parameter>
+            <deegree:Name>label</deegree:Name>
+            <deegree:Value>'Legend'</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>bgcolor</deegree:Name>
+            <deegree:Value>''</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>layerlist</deegree:Name>
+            <deegree:Value>this.layerList</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>width</deegree:Name>
+            <deegree:Value>20</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>height</deegree:Name>
+            <deegree:Value>20</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>offset</deegree:Name>
+            <deegree:Value>20</deegree:Value>
+        </deegree:Parameter>
+    </deegree:ParameterList>
+</deegree:Module>

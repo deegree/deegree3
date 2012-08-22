@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:Module xmlns:deegree="http://www.deegree.org/context" hidden="false" type="content" width="250" height="670" scrolling="no">
+	<deegree:Name>MapOverview</deegree:Name>
+    <deegree:Title>Map overview</deegree:Title>
+    <deegree:Content>./modules/mapoverview/mapoverview.html</deegree:Content>
+    <deegree:ModuleJS>./modules/mapoverview/mapoverview.js</deegree:ModuleJS>
+    <deegree:ParameterList>
+        <deegree:Parameter>
+            <deegree:Name>src</deegree:Name>
+            <deegree:Value>'./overview_utah.gif'</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>minx</deegree:Name>
+            <deegree:Value>161923</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>miny</deegree:Name>
+            <deegree:Value>4094621</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>maxx</deegree:Name>
+            <deegree:Value>725119</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>maxy</deegree:Name>
+            <deegree:Value>4657817</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>foregroundColor</deegree:Name>
+            <deegree:Value>'#0000ff'</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>width</deegree:Name>
+            <deegree:Value>150</deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>height</deegree:Name>
+            <deegree:Value>150</deegree:Value>
+        </deegree:Parameter>
+    <deegree:Parameter>
+            <deegree:Name>offset</deegree:Name>
+            <deegree:Value>45</deegree:Value>
+        </deegree:Parameter>
+    </deegree:ParameterList>
+</deegree:Module>

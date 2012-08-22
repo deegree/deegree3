@@ -1,0 +1,54 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree. For copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="lat/lon GmbH">
+        <meta name="KeyWords" content="OGC deegree iGeoPortal lat/lon" />
+		<meta name="audience" content="">
+   		<title>deegree iGeoPortal - Recenter to Layer</title>
+        <link href="../../css/deegree.css" rel="stylesheet" type="text/css"/>
+        <script src="recentertolayer.js" type="text/javascript"></script>
+        <script src="./javascript/envelope.js" type="text/javascript"></script>
+        <script src="./javascript/event.js" type="text/javascript"></script>
+        <script src="./javascript/rpc.js" type="text/javascript"></script>
+        <script language="JavaScript1.2" type="text/javascript">
+        <!--
+            //invisible iframe to establish the communication between client and server
+            var proxy = null;
+
+            //initialize the main controller
+            function register() {
+                if ( parent.controller == null ) {
+                    parent.controller = new parent.Controller();
+                    parent.controller.init();
+                }
+            }
+            //intialize the JavaScript object corresponding this modul
+            function initRecenterToLayer() {
+                setProxy(proxy);
+                requestRecenterToLayer( parent.controller );
+            }
+
+            function setProxy(vproxy){
+                proxy = vproxy;
+            }
+
+            function recenterToLayer(minx, miny, maxx, maxy){
+                setProxy( proxy );
+                var env = new Envelope( minx, miny, maxx, maxy );
+                var event = new Event( 'RecenterToLayer', 'BBOX', env );
+                parent.controller.actionPerformed( event );
+
+                var html = parent.document.getElementsByTagName('html')[0];
+                var pendingIFrame = parent.document.getElementById('r2LtmpIFrame');//parent.document.getElementsByTagName('iframe')[0];
+            }
+
+        // -->
+        </script>
+    </head>
+    <!--body onload="javascript:doRequest();" bgcolor="#CCCCCC"-->
+    <body onload="initRecenterToLayer();" class="pRecenterToLayer">
+        <iframe src="recentertolayerproxy.jsp" width="0" height="0" frameborder="0"></iframe>
+    </body>
+</html>

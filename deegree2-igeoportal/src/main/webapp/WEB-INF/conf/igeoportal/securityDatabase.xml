@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+	<Driver>org.postgresql.Driver</Driver>
+	<Url>jdbc:postgresql://localhost:5432/security</Url>
+	<User>postgres</User>
+	<Password>postgres</Password>
+	<SecurityConstraints />
+	<Encoding>iso-8859-1</Encoding>
+</JDBCConnection>

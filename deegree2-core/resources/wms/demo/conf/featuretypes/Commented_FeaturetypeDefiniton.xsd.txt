@@ -1,0 +1,107 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <xsd:import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    
+  <!-- configuration for the persistence backend to be used -->
+  <!-- This is an automatic generated  and manually extended featuretypedefinition file. It associates 
+  the WFS with the data source(s) -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <!--Please refer the demo definitons for accessing HSQLDB, SHAPE or POSTGIS  -->
+      <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+      <!-- This part varies depending on the backend type -->
+      <deegreewfs:File>../../../data/utah/vector/SGID500_EnergyResourcesPoly</deegreewfs:File>
+      <!-- This will NOT be set by the creation-tool so please insert the EPSG: appropriate to your data source SRS -->
+      <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <!-- ============================================================== -->
+  <!-- here the featuretype name is set, under which the WFS will offer this featuretype. If you would
+  like to change this featuretype name make sure, you also change the type='app:EnergyResourcesType' and 
+  further below the <xsd:complexType name='EnergyResourcesType'> -->
+  <xsd:element name='EnergyResources' type='app:EnergyResourcesType'
+    substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <!-- the referenced table in the DB/file is set here. Never change this unless your sources 
+        have changed -->
+        <deegreewfs:table>SGID500_EnergyResourcesPoly</deegreewfs:table>
+        <!-- The unique identifier is set here  -->
+        <deegreewfs:gmlId prefix="ID_">
+          <deegreewfs:MappingField field='ID' type="INTEGER" />
+        </deegreewfs:gmlId>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name='EnergyResourcesType'>
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <!-- The geometry property will be mapped here. As you can see property naming 
+          ( <xsd:element name='geometry') can differ from the source name (<deegreewfs:MappingField field='GEOM' ...)  -->
+          <xsd:element name='geometry' type='gml:GeometryPropertyType'>
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <!-- the srs='' specifies how the data is saved in the database/file table; for shapes
+                  this is -1 as this information is not stored in the file, for databases it 
+                  depends on the DB-Settings, wether the SRS is saved or not.  --> 
+                  <deegreewfs:MappingField field='GEOM' type='GEOMETRY' srs='-1' />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name='objectid' type='xsd:integer'>
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field='OBJECTID' type='NUMERIC' />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <!-- You are free to change the order of the elements or reduce the number -->
+          <!-- By default the featuretypedefinition creation tool sets no minOccurs=""; 
+          minOccurs sets whether or not a property CAN (minOccurs="0") or MUST (minOccurs="1") be 
+          delivered by WFS. If not set minOccurs="1".  In the demos the EnergyResources WMS layer 
+          uses this mechanism as it has a filter condition which requests just some properties of 
+          the WFS  -->
+          <xsd:element name='code' type='xsd:string' minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field='CODE' type='VARCHAR' />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name='shape_area' type='xsd:double' minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field='SHAPE_AREA' type='NUMERIC' />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name='shape_len' type='xsd:double' minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field='SHAPE_LEN' type='NUMERIC' />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,159 @@
+<xsd:schema xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Prefix>app</deegreewfs:Prefix>
+            <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+            <deegreewfs:File>../../../data/utah/vector/weather</deegreewfs:File>
+            <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <!-- ============================================================== -->
+    <xsd:element name="WeatherStation" type="app:WeatherStationType" substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <deegreewfs:table>weatherstations</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+                    <deegreewfs:MappingField field="ID" type="INTEGER" />
+                </deegreewfs:gmlId>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!-- ============================================================== -->
+    <xsd:complexType name="WeatherStationType">
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+                    <xsd:element name="geometry" type="gml:GeometryPropertyType">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="GEOM" type="GEOMETRY" srs="-1" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="id" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="name" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="NAME" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="state" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="STATE" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="elevation" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="ELEVATION" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="maximum_Temperature" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="MAXIMUM_TEM" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="minimum_Temperature" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="MINIMUM_TEM" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="observation_Temperature" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="OBSERVATION" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="precipitation" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="PRECIPITATI" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="snow_Fall" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="SNOW_FALL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="snow_Depth" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="SNOW_DEPTH" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="GDD" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="HDD" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="HDD" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="HDD" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="CDD" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="CDD" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<!-- This file is part of deegree. For copyright/license information, please visit http://www.deegree.org/license. -->
+<web-app>
+    <display-name>deegree2 - iGeoPortal standard edition</display-name>
+    
+    <!-- this parameter is used within the welcome pages -->
+    <context-param>
+        <param-name>igeoportal</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    
+    <!-- 
+    <filter>
+        <filter-name>LoggingFilter</filter-name>
+        <filter-class>org.deegree.enterprise.servlet.LoggingFilter</filter-class>
+        <init-param>
+            <param-name>sourceAddresses</param-name>
+            <param-value>127.0.0.1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>mimeTypes</param-name>
+            <param-value>text/xml;plain/text</param-value>
+        </init-param>
+        <init-param>
+            <param-name>metaInfo</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoggingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+
+    <servlet>
+        <servlet-name>RequestHandler</servlet-name>
+        <servlet-class>org.deegree.portal.standard.PortalRequestDispatcher</servlet-class>
+        <init-param>
+            <param-name>Handler.configFile</param-name>
+            <param-value>WEB-INF/conf/igeoportal/controller.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>MapContext.configFile</param-name>
+            <param-value>WEB-INF/conf/igeoportal/wmc_start_utah.xml</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>PrintAccess</servlet-name>
+        <servlet-class>org.deegree.enterprise.servlet.DirectoryAccessServlet</servlet-class>
+        <init-param>
+            <param-name>ROOTDIR</param-name>
+            <param-value>./print/</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <!-- This servlet is being used for the download button within the toolbar module. -->
+    <servlet>
+        <servlet-name>Download</servlet-name>
+        <servlet-class>org.deegree.enterprise.servlet.DownloadServlet</servlet-class>
+        <!-- DOWNLOAD_DIR must correspond to folder given in the WMC configuration as defined in: 
+             General/Extension/deegree:IOSettings/deegree:DownloadDirectory  -->
+        <init-param>
+            <param-name>DOWNLOAD_DIR</param-name>
+            <param-value>./WEB-INF/downloads/</param-value>
+        </init-param>
+        <!-- ALLOWED_IP_ADDRESS is used to restrict downloads to a certain IP-Address. 
+             If ALLOWED_IP_ADDRESS is omitted, any IP-Address will be accepted. -->
+        <!-- 
+        <init-param>
+            <param-name>ALLOWED_IP_ADDRESS</param-name>
+            <param-value>127.0.0.1</param-value>
+        </init-param>
+         -->
+    </servlet>
+    
+    <servlet>
+        <servlet-name>ajaxControl</servlet-name>
+        <servlet-class>org.deegree.enterprise.control.ajax.RequestDispatcher</servlet-class>
+        <init-param>
+            <param-name>Handler.configFile</param-name>
+            <param-value>WEB-INF/conf/igeoportal/ajaxcontroller.xml</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>gazetteerHighlightWMS</servlet-name>
+        <servlet-class>org.deegree.enterprise.servlet.SessionWMS</servlet-class>
+        <init-param>
+            <param-name>PATTERN</param-name>
+            <param-value>WEB-INF/conf/igeoportal/highlight/046.png</param-value>
+        </init-param>
+        <init-param>
+            <param-name>STROKEWIDTH</param-name>
+            <param-value>3</param-value>
+        </init-param>
+        <init-param>
+            <param-name>STROKE</param-name>
+            <param-value>#FF0000</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>RequestHandler</servlet-name>
+        <url-pattern>/control</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PrintAccess</servlet-name>
+        <url-pattern>/print</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Download</servlet-name>
+        <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ajaxControl</servlet-name>
+        <url-pattern>/ajaxcontrol</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>gazetteerHighlightWMS</servlet-name>
+        <url-pattern>/highlightwms</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>modules/welcome/welcome.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

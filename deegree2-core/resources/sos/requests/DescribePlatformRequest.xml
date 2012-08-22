@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scs:DescribePlatform version="0.8.0" service="SCS" outputFormat="SensorML" xmlns:scs="http://www.opengis.net/scs">
+	<scs:TypeName>Platform1</scs:TypeName>
+</scs:DescribePlatform>

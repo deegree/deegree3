@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dg:ChartConfiguration xmlns:dg="http://www.deegree.org/charts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.deegree.org/charts http://schemas.deegree.org/charts/1.0.0/charts_configuration.xsd" >
+	<dg:GeneralChartSettings>
+		<dg:Antialiasing>true</dg:Antialiasing>
+		<dg:TextAntialiasing>true</dg:TextAntialiasing>
+		<dg:BorderVisibility>false</dg:BorderVisibility>
+		<dg:RectangleInsets>0,0,0,0</dg:RectangleInsets>
+		<dg:BackgroundColor>0xffffff</dg:BackgroundColor>
+		<dg:BackgroundOpacity>0</dg:BackgroundOpacity>
+        <dg:ForegroundOpacity>1</dg:ForegroundOpacity>
+		<dg:FontFamily>ARIAL</dg:FontFamily>
+		<dg:FontType>PLAIN</dg:FontType>
+		<dg:FontSize>12</dg:FontSize>
+	</dg:GeneralChartSettings>
+	<dg:GeneralPlotSettings>
+		<dg:ForegroundOpacity>0.8</dg:ForegroundOpacity>
+		<dg:BackgroundColor>0xffffff</dg:BackgroundColor>
+		<dg:BackgroundOpacity>0</dg:BackgroundOpacity>
+		<dg:OutlineVisibility>false</dg:OutlineVisibility>
+	</dg:GeneralPlotSettings>
+	<dg:PiePlotSettings>
+		<dg:InteriorGap>0.01</dg:InteriorGap>
+		<dg:LabelGap>0.01</dg:LabelGap>
+		<dg:Circular>true</dg:Circular>
+		<dg:BaseSectionColor>0xFFFFFF</dg:BaseSectionColor>
+		<dg:BaseSectionOpacity>0</dg:BaseSectionOpacity>
+		<dg:ShadowColor>0xDDDDDD</dg:ShadowColor>
+		<dg:ShadowOpacity>0</dg:ShadowOpacity>
+	</dg:PiePlotSettings>
+	<dg:LinePlotSettings>
+		<dg:RenderLines>true</dg:RenderLines>
+		<dg:RenderShapes>true</dg:RenderShapes>
+	</dg:LinePlotSettings>
+</dg:ChartConfiguration>

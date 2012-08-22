@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:dgjdbc="http://www.deegree.org/jdbc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+  <xsd:import namespace="http://www.opengis.net/wfs" schemaLocation="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
+  <!-- configuration of the persistence backend to be used -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+      <deegreewfs:File>BasicPolygons</deegreewfs:File>      
+    </xsd:appinfo>
+  </xsd:annotation>
+  <!-- ====================================================================== -->
+  <xsd:element name="BasicPolygons" type="app:BasicPolygonsType" substitutionGroup="gml:_Feature"/>
+  <xsd:complexType name="BasicPolygonsType">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>BasicPolygons</deegreewfs:table>
+        <deegreewfs:gmlId prefix="POLY_">
+          <deegreewfs:MappingField field="FID" type="INTEGER"/>
+        </deegreewfs:gmlId>
+      </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="ID" type="INTEGER"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="type" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="TYP" type="INTEGER"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geom" type="gml:GeometryPropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="GEOM" type="GEOMETRY"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ====================================================================== -->
+</xsd:schema>

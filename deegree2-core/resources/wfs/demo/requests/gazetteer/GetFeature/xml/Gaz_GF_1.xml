@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" outputFormat="text/xml; subtype=gml/3.1.1"
+  xmlns:wfs="http://www.opengis.net/wfs">
+  <wfs:Query xmlns:app="http://www.deegree.org/app" typeName="dog:Counties"
+    xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:wfs="http://www.opengis.net/wfs" xmlns:dog="http://www.deegree.org/dog" xmlns:iso19112="http://www.opengis.net/iso19112">
+    <Filter xmlns="http://www.opengis.net/ogc">
+      <PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
+        <PropertyName>iso19112:geographicIdentifier</PropertyName>
+        <Literal>Be*</Literal>
+      </PropertyIsLike>
+    </Filter>
+  </wfs:Query>
+</wfs:GetFeature>

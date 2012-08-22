@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema xmlns:wcts="http://www.opengis.net/wcts/0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:wcs="http://www.opengis.net/wcs/1.2" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.opengis.net/wcts/0.0" elementFormDefault="qualified" version="0.4.0" xml:lang="en">
+  <annotation>
+    <appinfo>wctsIsTransformable.xsd 2007-05-01, vodafone specific version</appinfo>
+    <documentation>
+      This XML Schema Document encodes the IsTransformable operation request and response. Copyright (c) 2007 Open
+      Geospatial Consortium, Inc. All Rights Reserved.
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+    includes and imports
+    ============================================================== -->
+  <include schemaLocation="./wctsContents.xsd" />
+  <import namespace="http://www.opengis.net/ows/1.1"
+    schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsDataIdentification.xsd" />
+  <!-- ==============================================================
+    elements and types
+    ============================================================== -->
+  <element name="IsTransformable">
+    <annotation>
+      <documentation>
+        Request to a WCTS to perform the IsTransformable operation. This operation allows clients to check if
+        transformation of a specific set of geometry and/or coverage types is possible between two coordinate reference
+        systems. Either the desired source and target CRSs can be directly identified, or a specific coordinate
+        transformation between two CRSs can be identified. This operation will check if the identified geometries are
+        supported and if there is a valid way (sequence of transformation steps) to transform the coordinates from the
+        source CRS to the target CRS. (This operation will not check if this transformation makes any sense.) In this
+        XML encoding, no "request" parameter is included, since the element name specifies the specific operation.
+      </documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wcts:RequestBaseType">
+          <sequence>
+            <choice>
+              <sequence>
+                <group ref="wcts:SourceAndTargetCRSs">
+                  <annotation>
+                    <documentation>
+                      References to the well-known SourceCRS and desired TargetCRS, included when client is not
+                      specifying a specific coordinate operation.
+                    </documentation>
+                  </annotation>
+                </group>
+              </sequence>
+              <element name="Transformation" type="anyURI">
+                <annotation>
+                  <documentation>
+                    Identifier or definition of the desired coordinate operation, included when client is specifying a
+                    specific coordinate operation.
+                  </documentation>
+                </annotation>
+              </element>
+              <element name="Method" type="anyURI">
+                <annotation>
+                  <documentation>
+                    Identifier od desired well-known operation method that can be used in a user-defined coordinate
+                    operation, included when client is considering specifying a specific user-defined coordinate
+                    operation.
+                  </documentation>
+                </annotation>
+              </element>
+            </choice>
+            <choice>
+              <element name="GeometryType" type="wcts:GeometryTypeType" maxOccurs="unbounded">
+                <annotation>
+                  <documentation>
+                    Unordered list of one or more GML 3 geometric primitive types that a client can request be
+                    transformed by a WCTS server. It is assumed that a WCTS server can also transform the corresponding
+                    geometric complexes and aggregates.
+                  </documentation>
+                </annotation>
+              </element>
+            </choice>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- =========================================================== -->
+  <!-- =========================================================== -->
+  <element name="IsTransformableResponse">
+    <annotation>
+      <documentation>Response to a valid IsTransformable operation request sent to a WCTS.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="problem" type="wcts:ProblemType" minOccurs="0">
+          <annotation>
+            <documentation>
+              Type of transformation problem detected by WCTS server. This element shall be included whenever the
+              "transformable" attribute is false.
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="transformable" type="boolean" use="required">
+        <annotation>
+          <documentation>
+            Indicates whether this WCTS server can perform a transformation from the sourceCRS to the targetCRS
+            identified in the operation request. The value shall be "true" or "false".
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!-- =========================================================== -->
+  <complexType name="ProblemType">
+    <annotation>
+      <documentation>Type of IsTransformable problem detected by WCTS server.</documentation>
+    </annotation>
+    <simpleContent>
+      <restriction base="ows:CodeType">
+        <attribute name="codeSpace" type="anyURI" use="optional"
+          default="http://schemas.opengis.net/wcts/0.0.0/problemType.xml">
+          <annotation>
+            <documentation>
+              Reference to a dictionary that specifies allowed values for problem type identifier strings. This
+              reference defaults to the standard problem type dictionary specified in WCTS 0.0.0.
+            </documentation>
+          </annotation>
+        </attribute>
+      </restriction>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+</schema>

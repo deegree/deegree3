@@ -1,0 +1,6 @@
+http://www.someserver.com/csw.cgi?
+REQUEST=GetRecords&
+TYPENAMES=dataset&
+OUTPUTFORMAT=text/xml&
+OUTPUTSCHEMA=dublincore&
+SCHEMALANGUAGE=XMLSCHEMA

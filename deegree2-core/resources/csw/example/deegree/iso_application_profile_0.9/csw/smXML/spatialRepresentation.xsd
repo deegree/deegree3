@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================== Includes ================== -->
+    <xs:include schemaLocation="./citation.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="MD_GridSpatialRepresentation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_MD_SpatialRepresentation_Type">
+                <xs:sequence>
+                    <xs:element name="axisDimensionProperties" type="smXML:MD_Dimension_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="cellGeometry" type="smXML:MD_CellGeometryCode_PropertyType"/>
+                    <xs:element name="transformationParameterAvailability" type="smXML:Boolean_PropertyType"/>
+                    <xs:element name="numberOfDimensions" type="smXML:CharacterString_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_GridSpatialRepresentation" type="smXML:MD_GridSpatialRepresentation_Type" substitutionGroup="smXML:_MD_SpatialRepresentation"/>
+    <xs:complexType name="MD_GridSpatialRepresentation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_GridSpatialRepresentation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_VectorSpatialRepresentation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_MD_SpatialRepresentation_Type">
+                <xs:sequence>
+                    <xs:element name="topologyLevel" type="smXML:MD_TopologyLevelCode_PropertyType" minOccurs="0"/>
+                    <xs:element name="geometricObjects" type="smXML:MD_GeometricObjects_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_VectorSpatialRepresentation" type="smXML:MD_VectorSpatialRepresentation_Type" substitutionGroup="smXML:_MD_SpatialRepresentation"/>
+    <xs:complexType name="MD_VectorSpatialRepresentation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_VectorSpatialRepresentation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_MD_SpatialRepresentation_Type" abstract="true"/>
+    <xs:element name="_MD_SpatialRepresentation" type="smXML:_MD_SpatialRepresentation_Type" abstract="true"/>
+    <xs:complexType name="_MD_SpatialRepresentation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_MD_SpatialRepresentation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Georeferenceable_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:MD_GridSpatialRepresentation_Type">
+                <xs:sequence>
+                    <xs:element name="controlPointAvailability" type="smXML:Boolean_PropertyType"/>
+                    <xs:element name="orientationParameterAvailability" type="smXML:Boolean_PropertyType"/>
+                    <xs:element name="orientationParameterDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="georeferencedParameters" type="smXML:Record_PropertyType"/>
+                    <xs:element name="parameterCitation" type="smXML:CI_Citation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Georeferenceable" type="smXML:MD_Georeferenceable_Type" substitutionGroup="smXML:MD_GridSpatialRepresentation"/>
+    <xs:complexType name="MD_Georeferenceable_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Georeferenceable"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Dimension_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="dimensionName" type="smXML:MD_DimensionNameTypeCode_PropertyType"/>
+                    <xs:element name="resolution" type="smXML:Measure_PropertyType" minOccurs="0"/>
+                    <xs:element name="dimensionSize" type="smXML:CharacterString_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Dimension" type="smXML:MD_Dimension_Type"/>
+    <xs:complexType name="MD_Dimension_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Dimension"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Georectified_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:MD_GridSpatialRepresentation_Type">
+                <xs:sequence>
+                    <xs:element name="checkPointAvailability" type="smXML:Boolean_PropertyType"/>
+                    <xs:element name="checkPointDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="cornerPoints" type="smXML:GM_Point_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="centerPoint" type="smXML:GM_Point_PropertyType" minOccurs="0"/>
+                    <xs:element name="pointInPixel" type="smXML:MD_PixelOrientationCode_PropertyType"/>
+                    <xs:element name="transformationDimensionDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="transformationDimensionMapping" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="2"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Georectified" type="smXML:MD_Georectified_Type" substitutionGroup="smXML:MD_GridSpatialRepresentation">
+        <xs:annotation>
+            <xs:documentation>
+   ***   "checkPointDescription" is mandatory if "checkPointAvailability" = 1
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_Georectified_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Georectified"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_GeometricObjects_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="geometricObjectType" type="smXML:MD_GeometricObjectTypeCode_PropertyType"/>
+                    <xs:element name="geometricObjectCount" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_GeometricObjects" type="smXML:MD_GeometricObjects_Type"/>
+    <xs:complexType name="MD_GeometricObjects_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_GeometricObjects"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_TopologyLevelCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_TopologyLevelCode" type="smXML:MD_TopologyLevelCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_TopologyLevelCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_TopologyLevelCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_GeometricObjectTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_GeometricObjectTypeCode" type="smXML:MD_GeometricObjectTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_GeometricObjectTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_GeometricObjectTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_CellGeometryCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_CellGeometryCode" type="smXML:MD_CellGeometryCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_CellGeometryCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_CellGeometryCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_DimensionNameTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_DimensionNameTypeCode" type="smXML:MD_DimensionNameTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_DimensionNameTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_DimensionNameTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_PixelOrientationCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_PixelOrientationCode" type="smXML:MD_PixelOrientationCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_PixelOrientationCode_PropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:MD_PixelOrientationCode"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <!-- request all philosophers that where born in a country that does not intersect with the bbox (-1 52, 10 53)-->
+  <wfs:Query typeName="app:Philosopher">
+    <ogc:Filter>
+      <ogc:Disjoint>
+        <ogc:PropertyName>app:placeOfBirth/app:Place/app:country/app:Country/app:geom</ogc:PropertyName>
+        <gml:Envelope>
+          <gml:coord>
+            <gml:X>-1</gml:X>
+            <gml:Y>52</gml:Y>
+          </gml:coord>
+          <gml:coord>
+            <gml:X>10</gml:X>
+            <gml:Y>53</gml:Y>
+          </gml:coord>
+        </gml:Envelope>
+      </ogc:Disjoint>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

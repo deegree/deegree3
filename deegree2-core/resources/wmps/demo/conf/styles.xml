@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="String" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:apps="http://www.deegree.org/apps" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<NamedLayer>
+		<Name>europe:country</Name>
+		<UserStyle>
+			<Name>default:europe:country</Name>
+			<Title>default:europe:country</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>bezirke</Name>
+				<Rule>
+					<Name>bezirke</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">#4444bb</CssParameter>
+							<CssParameter name="fill-opacity">1.0</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">#000000</CssParameter>
+							<CssParameter name="stroke-opacity">1.0</CssParameter>
+							<CssParameter name="stroke-width">1.0</CssParameter>
+							<CssParameter name="stroke-dasharray">1</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:deegree_bplan_recht</Name>
+			<Title>default:europe:country</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>bezirke</Name>
+				<Rule>
+					<Name>bezirke</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">#4444bb</CssParameter>
+							<CssParameter name="fill-opacity">1.0</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">#000000</CssParameter>
+							<CssParameter name="stroke-opacity">1.0</CssParameter>
+							<CssParameter name="stroke-width">1.0</CssParameter>
+							<CssParameter name="stroke-dasharray">1</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+	</NamedLayer>
+</StyledLayerDescriptor>

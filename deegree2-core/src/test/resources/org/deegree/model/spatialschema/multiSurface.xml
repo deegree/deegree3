@@ -1,0 +1,56 @@
+<gml:MultiSurface xmlns:gml="http://www.opengis.net/gml">
+	<gml:surfaceMembers>
+		<gml:Surface xmlns:gml="http://www.opengis.net/gml">
+			<gml:patches>
+				<gml:Polygon>
+					<!-- floor -->
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsName="http://www.opengis.net/gml/srs/epsg.xml#4314">37.41188 -121.93243 37.41188 -121.93132              37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+				<gml:Polygon>
+					<!-- north wall -->
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsName="http://www.opengis.net/gml/srs/epsg.xml#4314">37.41188 -121.93243 37.41188 -121.93243 37.41188 -121.93132 37.41188 -121.93132 37.41188 -121.93243</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+				<gml:Polygon>
+					<!-- east wall -->
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsName="http://www.opengis.net/gml/srs/epsg.xml#4314">37.41188 -121.93132 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93132 37.41188 -121.93132</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+				<gml:Polygon>
+					<!-- south wall -->
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsName="http://www.opengis.net/gml/srs/epsg.xml#4314">37.41142 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41142 -121.93242 37.41142 -121.93132</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+				<gml:Polygon>
+					<!-- west wall -->
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsName="http://www.opengis.net/gml/srs/epsg.xml#4314">37.41142 -121.93243 37.41142 -121.93243 37.41188 -121.93243 37.41188 -121.93243 37.41142 -121.93243</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+				<gml:Polygon>
+					<!-- roof -->
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsName="http://www.opengis.net/gml/srs/epsg.xml#4314">37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+			</gml:patches>
+		</gml:Surface>
+	</gml:surfaceMembers>
+</gml:MultiSurface>

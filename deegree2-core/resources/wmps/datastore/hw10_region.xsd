@@ -1,0 +1,112 @@
+<xsd:schema xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns:deegreewfs="http://www.deegree.org/wfs" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<deegreewfs:Prefix>app</deegreewfs:Prefix>
+			<deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+			<deegreewfs:DefaultSRS>EPSG:31466</deegreewfs:DefaultSRS>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>org.postgresql.Driver</Driver>
+				<Url>jdbc:postgresql://hurricane:5432/bonn</Url>
+				<User>dev</User>
+				<Password>dev</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ============================================================== -->
+	<xsd:element name="hw10_region" type="app:hw10_regionType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>hw10_region</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID_">
+					<deegreewfs:MappingField field="gid" type="INTEGER"/>
+				</deegreewfs:gmlId>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="hw10_regionType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="gid" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gid" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="obj_id" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="obj_id" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="obj_sub_id" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="obj_sub_id" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="zvs_code" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="zvs_code" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="zvs_name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="zvs_name" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="layer_code" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="layer_code" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="layer_name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="layer_name" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="GEOM" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="the_geom" type="GEOMETRY"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

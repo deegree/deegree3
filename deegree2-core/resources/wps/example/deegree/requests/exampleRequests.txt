@@ -1,0 +1,145 @@
+/*----------------    FILE HEADER  ------------------------------------------
+
+ This file is part of deegree.
+ Copyright (C) 2001-2005 by:
+ EXSE, Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/exse/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstraﬂe 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+
+ ---------------------------------------------------------------------------*/
+ 
+ /**
+ * XMLFactory.java
+ * 
+ * Created on 31.03.2006. 17:28:46h
+ * 
+ * @author <a href="mailto:kiehle@giub.uni-bonn.de">Christian Kiehle</a>
+ * @author <a href="mailto:che@wupperverband.de">Christian Heier</a>
+ * 
+ * @version 1.0.
+ * 
+ * @since 2.0
+ */
+ 
+*******************
+* ExampleRequests *
+*******************
+
+
+* GetCapabilities through http get, key-value-pair encoded
+http://localhost:8080/deegree_wps/ogcwebservice?Service=WPS&Request=GetCapabilities&Version=0.4.0
+
+* DescribeProcess (buffer) through http get, key-value-pair encoded
+http://localhost:8080/deegree_wps/ogcwebservice?Service=WPS&Request=DescribeProcess&&Version=0.4.0&Identifier=buffer
+
+* ExecuteRequest through http post, XML encoded
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="0.4.0" store="false" status="false" xmlns:wps="http://www.opengeospatial.net/wps" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengeospatial.net/wps..\wpsExecute.xsd">
+	<ows:Identifier>Buffer</ows:Identifier>
+	<wps:DataInputs>
+		<wps:Input>
+			<ows:Identifier>InputGeometry</ows:Identifier>
+			<ows:Title>InputGeometry</ows:Title>
+			<ows:Abstract>InputGeometry</ows:Abstract>
+			<wps:ComplexValue format="text/xml" encoding="UTF-8" schema="http://schemas.opengis.net/gml/3.0.0/base/gml.xsd">
+				<wfs:FeatureCollection xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<gml:boundedBy>
+						<gml:Envelope>
+							<gml:pos>2581829.334 5660821.982</gml:pos>
+							<gml:pos>2582051.078 5661086.442</gml:pos>
+						</gml:Envelope>
+					</gml:boundedBy>
+					<gml:featureMember>
+						<app:flurstuecke gml:id="ID_10208">
+							<app:gid>001</app:gid>
+							<app:id>001</app:id>
+							<app:rechtswert>2581969.20000000020</app:rechtswert>
+							<app:hochwert>5660957.50000000000</app:hochwert>
+							<app:datum>20030910</app:datum>
+							<app:folie>1</app:folie>
+							<app:objart>001</app:objart>
+							<app:aliasfolie>Flurstuecke</app:aliasfolie>
+							<app:aliasart>Flurstueck</app:aliasart>
+							<app:alknr>001</app:alknr>
+							<app:gemarkung>001</app:gemarkung>
+							<app:flur>001</app:flur>
+							<app:zaehler>001</app:zaehler>
+							<app:nenner>001</app:nenner>
+							<app:beschrift>001</app:beschrift>
+							<app:the_geom>
+								<gml:MultiPolygon srsName="EPSG:31466">
+									<gml:polygonMember>
+										<gml:Polygon srsName="EPSG:31466">
+											<gml:outerBoundaryIs>
+												<gml:LinearRing>
+													<gml:coordinates cs="," decimal="." ts=" ">2581856.436,5660874.757 2581947.164,5660938.093 2581940.797,5660952.002 2581936.158,5660962.135 2581971.597,5660982.717 2581971.83,5660982.852 2581969.62,5660994.184 2581967.616,5661004.464 2581959.465,5661016.584 2581958.555,5661017.679 2581967.415,5661024.833 2581974.177,5661032.529 2582021.543,5661086.442 2582051.078,5661001.919 2582002.624,5660957.782 2581960.501,5660919.412 2581956.98,5660916.972 2581904.676,5660880.734 2581878.263,5660853.196 2581868.096,5660842.595 2581848.325,5660821.982 2581829.334,5660840.172 2581837.725,5660850.881 2581856.436,5660874.757</gml:coordinates>
+												</gml:LinearRing>
+											</gml:outerBoundaryIs>
+										</gml:Polygon>
+									</gml:polygonMember>
+								</gml:MultiPolygon>
+							</app:the_geom>
+						</app:flurstuecke>
+					</gml:featureMember>
+				</wfs:FeatureCollection>
+			</wps:ComplexValue>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>BufferDistance</ows:Identifier>
+			<ows:Title>BufferDistance</ows:Title>
+			<ows:Abstract>The width of the buffer must be beween 1 and 101.</ows:Abstract>
+			<wps:LiteralValue dataType="urn:ogc:def:dataType:OGC:0.0:Integer" uom="urn:ogc:def:dataType:OGC:0.0:Integer">55</wps:LiteralValue>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>EndCapStyle</ows:Identifier>
+			<ows:Title>EndCapStyle</ows:Title>
+			<ows:Abstract>The Style of the generated end caps of the buffer. Possible values are 1 (round caps), 2 (end caps are truncated flat at the line ends), and 3 (End caps are squared off at the buffer distance beyond the line ends).</ows:Abstract>
+			<wps:LiteralValue dataType="urn:ogc:def:dataType:OGC:0.0:Integer" uom="urn:ogc:def:dataType:OGC:0.0:Integer">3</wps:LiteralValue>
+		</wps:Input>
+		<wps:Input>
+			<ows:Identifier>ApproximationQuantization</ows:Identifier>
+			<ows:Title>ApproximationQuantization</ows:Title>
+			<ows:Abstract>The number of quadrant segments for different curve approximation levels of end caps. An integer between 8 (dafault) and 20.</ows:Abstract>
+			<wps:LiteralValue dataType="urn:ogc:def:dataType:OGC:0.0:Integer" uom="urn:ogc:def:dataType:OGC:0.0:Integer">14</wps:LiteralValue>
+		</wps:Input>
+	</wps:DataInputs>
+	<wps:OutputDefinitions>
+		<wps:Output format="text/xml" encoding="UTF-8" schema="http://schemas.opengis.net/gml/3.0.0/base/gml.xsd" uom="urn:ogc:def:dataType:OGC:0.0:Integer">
+			<ows:Identifier>The buffered geometries</ows:Identifier>
+			<ows:Title>The buffered geometries</ows:Title>
+			<ows:Abstract>The buffered geometries</ows:Abstract>
+		</wps:Output>
+	</wps:OutputDefinitions>
+</wps:Execute>

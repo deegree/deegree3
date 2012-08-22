@@ -1,0 +1,7 @@
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetGmlObject&
+TRAVERSEXLINKDEPTH=1&
+EXPIRY=1&
+GMLOBJECTID=InWaterA_1M.1234

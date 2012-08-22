@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <sld:Name>bbox</sld:Name>
+    <sld:UserStyle>
+      <sld:Name>default:bbox</sld:Name>
+      <sld:Title>default:bbox</sld:Title>
+      <sld:IsDefault>1</sld:IsDefault>
+      <sld:FeatureTypeStyle>
+        <sld:Name>Bbox_ortho_image</sld:Name>
+        <sld:Rule>
+          <sld:Name>AerialImageBBox</sld:Name>
+          <sld:MinScaleDenominator>357393</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>3.779527559017329E14</sld:MaxScaleDenominator>
+          <sld:PolygonSymbolizer>
+            <sld:Geometry>
+              <ogc:PropertyName>app:geometry</ogc:PropertyName>
+            </sld:Geometry>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#990000</sld:CssParameter>
+              <!-- Setting the opacity of the fill to 0.0 results in a transparent fill -->
+              <sld:CssParameter name="fill-opacity">0.0</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#234700</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">2</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

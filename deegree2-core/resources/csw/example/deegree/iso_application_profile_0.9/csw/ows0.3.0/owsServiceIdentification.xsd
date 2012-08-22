@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/ows" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="0.3.0" xml:lang="en">
+	<annotation>
+		<appinfo>owsServiceIdentification.xsd 2004/03/15</appinfo>
+		<documentation>
+			<description>This XML Schema encodes the common "ServiceIdentification" section of the GetCapabilities operation response, known as the Capabilities XML document. This section encodes the SV_ServiceIdentification class of ISO 19119 (OGC Abstract Specification Topic 12). Primary editor: Arliss Whiteside. </description>
+			<copyright>Copyright (c) 2004 OpenGIS, All Rights Reserved. </copyright>
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<include schemaLocation="ows19115subset.xsd"/>
+	<!-- ==============================================================
+		elements and types
+	============================================================== -->
+	<element name="ServiceIdentification">
+		<annotation>
+			<documentation>General metadata for this specific server. This XML Schema of this section shall be the same for all OWS. </documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="ServiceType" type="ows:CodeType">
+					<annotation>
+						<documentation>A service type name from a registry of services. For example, the values of the nameSpace attribute and name and name string may be "OGC" and "catalogue." This name is normally used for machine-to-machine communication. </documentation>
+					</annotation>
+				</element>
+				<element name="ServiceTypeVersion" type="ows:VersionType" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of one or more versions of this service type implemented by this server. This information is not adequate for version negotiation, and shall not be used for that purpose. </documentation>
+					</annotation>
+				</element>
+				<element name="Title" type="string">
+					<annotation>
+						<documentation>Title of this server, normally used for display to a human. </documentation>
+					</annotation>
+				</element>
+				<element name="Abstract" type="string" minOccurs="0">
+					<annotation>
+						<documentation>Brief narrative description of this server, normally used for display to a human. </documentation>
+					</annotation>
+				</element>
+				<element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="Fees" type="string" minOccurs="0">
+					<annotation>
+						<documentation>Fees and terms for retrieving data from or otherwise using this server, including the monetary units as specified in ISO 4217. The reserved value NONE shall be used to mean no fees or terms. If this element is omitted, no meaning is implied. </documentation>
+					</annotation>
+				</element>
+				<element name="AccessConstraints" type="string" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>Unordered list of access constraints applied to assure the protection of privacy or intellectual property, and any other restrictions on retrieving or using data from or otherwise using this server. The reserved value NONE shall be used to mean no access constraints are imposed. If this element is omitted, no meaning is implied. </documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- ========================================================= -->
+	<simpleType name="VersionType">
+		<annotation>
+			<documentation>Specification version for OWS operation. The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99. Each version shall be for the Implementation Specification (document) and the associated XML Schemas to which requested operations will conform. An Implementation Specification version normally specifies XML Schemas against which an XML encoded operation response must conform and should be validated. See Version negotiation subclause for more information. </documentation>
+		</annotation>
+		<restriction base="string"/>
+	</simpleType>
+</schema>

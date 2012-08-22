@@ -1,0 +1,629 @@
+body {
+    font-family: Arial, Helvetica, Verdana, Geneva, sans-serif;
+    color: #000000;
+    font-size: 12px; /*-*/
+    margin: 5px;
+    /* background-image_:url( '../images/bg.jpg' ) ; */
+    /* background-repeat_: repeat-x; */
+}
+
+a,div,input,li,ol,p,select,td,th,ul {
+    font-size:10pt;
+}
+
+a {
+    color: #660033;
+}
+
+a.bold { font-weight:bold; }
+
+a.header2 {
+    font-size: 14pt;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a.main:link, a.main:visited {
+    color: blue;
+}
+
+a.menu {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a.orange {
+    color: #EE7000;
+    text-decoration: none;
+}
+
+div.in1 { margin-left: 2em; }
+div.in2 { margin-left: 4em; }
+
+font.orange {
+    color:#EE7000;
+    text-decoration: none;
+}
+
+h1 { font-size: 16pt; font-weight: bold; }
+h2 { font-size: 12pt; font-weight: bold; }
+h3 { font-size: 12pt; font-weight: normal; }
+
+img {
+    border: none;
+}
+
+p#congrats {
+    margin-top: 0;
+    font-weight: bold;
+    text-align: center;
+}
+
+p#footer {
+    text-align: right;
+    font-size: 90%;
+}
+
+th {
+    /* 
+    font-size:12pt;
+    font-weight:bold;
+    */
+    font-family: Verdana, "Times New Roman", Times, serif;
+    font-size: 110%;
+    font-weight: normal;
+    font-style: italic;
+    background: #c1cde5;
+    text-align: left;   
+}
+
+td {
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+td.menu {
+    background: #FFFFFF;
+}
+
+td.news {
+    vertical-align: top;
+    border-left-style: solid;
+    border-left-width: 2px;
+    border-left-color: #de6339;
+}
+
+/* popup windows are marked with td.header and td.text
+   used in: addwms.jsp, deletecontext_note.jsp, loadcontext.jsp, login.jsp, loginnotice.jsp, logout.jsp, 
+            logoutnotice.jsp, message.jsp, missinglogin.jsp, savecontext.jsp, wmslayerselect.jsp */
+td.header {
+    font-family: Verdana, Arial, Sans-Serif;
+    font-size: 12pt;
+    font-weight: bold;
+    color: #1c488f;
+}
+td.text {
+    font-family: Verdana, Arial, Sans-Serif;
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+/* Colours and other attributes for all tags */
+.b {
+    font-weight: bold;
+}
+.center {
+    text-align: center;
+}
+.code {
+    background: #FFFFE0;
+    color: #000000;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 110%;
+    margin-left: 2.5em;
+}
+.dl {
+    font-weight: bold;
+}
+.listfont {
+    font-family: Arial,Helvetica,Verdana,Geneva,sans-serif;
+    font-size: 10pt;
+    color: #000000;
+}
+.navi10b {
+    font-family: Arial,Helvetica,Verdana,Geneva,sans-serif;
+    font-size: 19pt;
+    color: #999999;
+}
+.sblack  {
+    font-size: 8pt;
+    text-decoration: none;
+}
+.tt { font-family: "Courier New", Courier, monospace; }
+
+.black { color: #000000 }
+.blue { color: #0000FF; }
+.green { color: #006600 }
+.orange { color: #EE7000; }
+.red { color: #FF0000; }
+.sepia { color: #660033 }
+.white { color: #FFFFFF; }
+
+
+
+/* ******************************** */
+/* ****** NEW LAYOUT CLASSES ****** */
+/* ******************************** */
+
+/* ********************** */
+/*     button classes     */
+/* ********************** */
+/* These classes are used for design of almost all click buttons. */
+
+.buttonArea {
+    width: 160px;
+    height: 18px;
+    background-color: #d9e7f8;
+    border: #1c488f 1px solid;
+    color: #1c488f;
+    font-size: 10pt;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+}
+/* buttonArea1 - buttonArea3 are used for layout of buttons in popup windows */
+.buttonArea1 {
+    width: 80px;
+    position: absolute;
+    left: 35;
+    height: 18px;
+    background-color: #d9e7f8;
+    border: #1c488f 1px solid;
+    color: #1c488f;
+    font-size: 10pt;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+}
+.buttonArea2 {
+    width: 80px;
+    position: absolute;
+    left: 165;
+    height: 18px;
+    background-color: #d9e7f8;
+    border: #1c488f 1px solid;
+    color: #1c488f;
+    font-size: 10pt;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+}
+.buttonArea3 {
+    width: 80px;
+    position: absolute;
+    left: 295;
+    height: 18px;
+    background-color: #d9e7f8;
+    border: #1c488f 1px solid;
+    color: #1c488f;
+    font-size: 10pt;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+}
+.buttonIcon {
+   background-color: #d9e7f8;
+   width: 25px;
+   height: 18px;
+   padding-top: 4.5px;
+   padding-bottom: 2px;
+   text-align: center;
+}
+.buttonIconPressed {
+  background-color: #d9e7f8;
+   width: 25px;
+   height: 20px;
+   padding-top: 4.5px;
+   opacity: .50;
+   filter: alpha(opacity=50);
+   -moz-opacity: 0.5;
+}
+.buttonIconHelp {
+   background-color: #d9e7f8;
+   width: 30px;
+   height: 25px;
+   padding-top: 4.5px;
+   padding-bottom: 3px;
+   padding-left: 2px;
+   text-align: center;
+}
+
+/* ********************** */
+/* window/overlay classes */
+/* ********************** */
+/* These classes are needed for overlay layout.
+# Each module that shall be able to be overlayed needs to define a classe called ".classModuleName",
+  where ModuleName needs to be replaced by the module's name.
+# Each front end area that shall be able to contain overlay modules needs to define a class called ".FrontendAreaWindow",
+  where FrontendArea needs to be replaced by the respective front end area's name (north, east, south, west, center).
+# The classes ".windowHeader" and ".windowHeaderClosed" are used, if the module definition states header="true"
+*/
+
+.classCoordinateDisplay {
+    position: absolute;
+    background-image: url( '../images/space.gif' );
+}
+
+.classGazModule {
+    position: absolute;
+    background-image: url( '../images/space.gif' );
+}
+
+.classLegalNote {
+   position: absolute;
+   background: #FFFFFF;
+}
+
+.classMapOverview {
+    position: absolute;
+    background: #FFFFFF;
+    border: #000000 2px solid;
+    opacity: .80;
+    filter: alpha(opacity=80);
+    -moz-opacity: 0.80;
+}
+
+.classScaleSwitcher {
+    position: absolute;
+    background-image: url( '../images/space.gif' );
+}
+
+.classTimeselect {
+   position: absolute;
+   background: #FFFFFF;
+}
+
+.windowHeader {
+    position: static;
+    height: 18px;
+    background-image: url( '../images/windowheader.gif' );
+    background-repeat: repeat-x;
+}
+
+.windowHeaderClosed {
+    position: static;
+    height: 18px;
+    background-image: url( '../images/windowheader.gif' );
+    background-repeat: repeat-x;
+}
+
+.eastWindow {
+    position: absolute;
+    background: #FFFFFF;
+    border: #000000 2px solid;
+    opacity: .90;
+    filter: alpha(opacity=90);
+    -moz-opacity: 0.90;
+}
+
+/* ********************** */
+/*    frontend classes    */
+/* ********************** */
+.feWest {
+    background-color: #FFFFFF;
+}
+.feCenter {
+    background-color: #FFFFFF;
+}
+.feEast {
+    background-color: #FFFFFF;
+}
+.feNorth {
+    background-color: #FFFFFF;
+}
+.feSouth {
+    background-color: #FFFFFF;
+}
+
+/* ********************** */
+/*  module page classes   */
+/* ********************** */
+.pAbout {
+    background-color: #FFFFFF;
+}
+.pAddWMS {
+    background-color: #FFFFFF;
+}
+.pContextSwitcher {
+    /* if the optional param "bgcolor" is set in module configuration of ContextSwitcher in WMC, */
+    /* then this css-setting will be overwritten */
+    background-color: #FFFFFF;
+}
+.pCoordinateDisplay {
+    background-image: url( '../images/space.gif' );
+    color: #000000;
+}
+/* There are more CSW Client Module classes below this section */
+.pCswModule {
+    background-color: #a3b4d9;
+}
+.pCswModuleMain {
+    margin: 35px 0 0 35px;
+}
+.pCswModuleNavi {
+    background-color: #c1cde5;
+}
+.pCswModuleSearch {
+    background-color: #e3e7f4;
+}
+.pCustomTabSwitch {
+    background-image: url( '../images/space.gif' );
+}
+.pDateTimeDialog {
+    background-color: #FFFFFF;
+    margin: 5px;
+}
+.pDateTimeDialogFooter {
+    background-color: #FFFFFF;
+    position: absolute;
+    left: 0px;
+    top: 300px;
+    width: 330px;
+    height: 25px;
+}
+.pDateTimeDialogHeader {
+    background-color: #FFFFFF;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 330px;
+    height: 25px;
+}
+.pDefaultContentSwitch {
+    background-image: url( '../images/space.gif' );
+    color: #000000;
+}
+.pDeleteContextNote{
+    background-color: #FFFFFF;
+}
+.pDigitizerModule {
+    background-color: #FFFFFF;
+}
+.pDigitizerWindow{
+    background-color: #FFFFFF;
+}
+.pDigitizerWindowInside{
+    background-color: #FFFFFF;
+}
+.pDownloadLayerList{
+    background-color: #FFFFFF;
+}
+.pEasyGaz{
+	margin: 5px;
+}
+.pError {
+    background-color: #E9E9E9;
+}
+.pFooter {
+    background-image: url( '../images/space.gif' );
+    font-family: arial,helvetica,sans-serif;
+    font-size: 8pt;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: right;
+}
+.pGazFlavor {
+    background-color: #DDDDDD;
+}
+.pGazModule {
+    background-color: #FFFFFF;
+}
+.pGazWindow {
+    background-color: #FFFFFF;
+}
+.pHeader {
+    background-color: #FFFFFF;
+    font-family: arial,helvetica,sans-serif;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 5 5 5 5;
+    text-align: center;
+    color: #222222;
+}
+.pHelp {
+    background-color: #FFFFFF;
+}
+.pLayerListView {
+    background-image: url( '../images/space.gif' );
+}
+.pLegal{
+    background-color: #FFFFFF;
+    margin-top: 20px;
+}
+.pLegendDyn {
+    background-image: url( '../images/space.gif' );
+}
+.pLegend {
+    background-image: url( '../images/space.gif' );
+}
+.pLoadContext {
+
+}
+.pLogin {
+
+}
+.pLoginNotice {
+
+}
+.pLogout {
+
+}
+.pLogoutNotice {
+
+}
+.pMapEditor {
+    color: #E9E9E9;
+}
+.pMapEditorCoords {
+    position: absolute;
+    left: 40px;
+    color: #000000;
+}
+.pMapOverview {
+    background-color: #FFFFFF;
+}
+.pMapView {
+    background-color: #E9E9E9;
+}
+.pMeasurement {
+    margin: 5px;    
+}
+.pMenubarBottom {
+
+}
+.pMenubarTop {
+    background-image: url( '../images/space.gif' );
+}
+.pMenuButton {
+
+}
+.pMessage {
+
+}
+.pMissingLogin {
+
+}
+.pNote {
+
+}
+.pPrintDialog{
+
+}
+.pPrintView{
+
+}
+.pRecenterToLayer {
+
+}
+.pRegister {
+
+}
+.pSaveContext {
+
+}
+.pScaleSwitcher {
+	margin: 5px;
+
+}
+.pSpacer {
+
+}
+.pTimeSelect {
+
+}
+.pToolbar {
+    /* if the optional param "bgcolor" is set in module configuration of Toolbar in WMC, */
+    /* then this css-setting will be overwritten */
+    background-image: url( '../images/space.gif' );
+    /* only visible, if module size differs from toolbar size */
+    margin: 5 5 5 5;
+}
+.pWMSLayerSelect {
+    color: #000000;
+    background-color: #FFFFFF;
+}
+
+/* **************************** */
+/*  CSW Client Module classes   */
+/* **************************** */
+table {
+    border-collapse: collapse;
+}
+table.md {
+    width: 600px;
+    background-color: #e3e7f4;
+    border: 1px;
+}
+table.inf {
+    width: 612px;
+    background-color: #e3e7f4;
+    border: 1px;
+}
+table.except {
+    background-color: #FF0000;
+    border-style: dotted;
+    border-color: #2481CE;
+}
+div.md {
+    height: 380px;
+    background-color: #e3e7f4;
+    overflow: scroll;
+}
+div.inf {
+    height: 120px;
+    background-color: #e3e7f4;
+    overflow: auto;
+}
+/* used for search-result and information */
+td.key {
+    width: 130px;       
+    font-weight: bold;
+    padding: 5px 10px;
+    vertical-align: top;
+}
+td.key_list {
+    font-weight: bold;
+    padding: 5px 10px;
+    vertical-align: top;
+}
+td.val {
+    width: 470px;   
+    padding: 5px 10px;
+}
+td.val_em {
+    width: 470px;   
+    padding: 5px 10px;
+    color: #FF0000;
+}
+td.inf {
+    width: 590px;       
+    padding: 10px 10px;
+    vertical-align: top;
+}
+ul.val {
+    list-style-type: circle;
+    list-style-position: outside;
+}
+td.val_list {
+    padding: 5px 10px;
+}
+.men1 {
+    font-size: 8pt;
+    font-weight: bold;
+    margin-top: 1;
+    margin-bottom: 1;
+}
+.men2 {
+    font-size: 8pt;
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.title {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.spacebottom {
+    margin-bottom: 10px;
+}
+.spacetop {
+    margin-top: 10px;
+}
+.spacetop_result_tab {
+    margin-top: 25px;
+}

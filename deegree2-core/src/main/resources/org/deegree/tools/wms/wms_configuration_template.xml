@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMT_MS_Capabilities xmlns:deegree="http://www.deegree.org/wms" xmlns:app="http://www.deegree.org/app"
+	xmlns:gml="http://www.opengis.net/gml" version="1.1.1" updateSequence="1.1.0">
+	<deegree:DeegreeParam>
+		<deegree:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+			xlink:href="http://localhost:8080/deegree2demo/ogcwebservice" />
+		<!-- default = 100 (MB) -->
+		<deegree:CacheSize>100</deegree:CacheSize>
+		<!-- maximum lifetime of the processes in the WMS; default = 3600 (sec)-->
+		<deegree:MaxLifeTime>3600</deegree:MaxLifeTime>
+		<!-- maximum time for the execution of a request until an exception of time-exceed is thrown
+			default 15 Sekunden -->
+		<deegree:RequestTimeLimit>35</deegree:RequestTimeLimit>
+		<!--
+			determines the quality of the map/image generated from a GetMap request. the parameter only will be evaluated if the
+			desired format is able to handle it. the range of values is 0 ... 1, where 1 is best and 0 is worst. default is 0.95
+		-->
+		<deegree:MapQuality>1.00</deegree:MapQuality>
+		<!-- maximum map width that can be requested. default = 1000 -->
+		<deegree:MaxMapWidth>5000</deegree:MaxMapWidth>
+		<!-- maximum map height that can be requested. default = 1000 -->
+		<deegree:MaxMapHeight>5000</deegree:MaxMapHeight>
+		<deegree:AntiAliased>true</deegree:AntiAliased>
+        <!-- DefaultPNGFormat defines the default bit mode if image/png is requested  -->
+		<!-- Can be 24bit or 8bit mode -->
+		<deegree:DefaultPNGFormat>image/png; mode=24bit</deegree:DefaultPNGFormat>
+		<!-- copyright note that will be  drawed at the letf side of the maps bottom -->
+		<!-- Copyright>deegree 2006</Copyright -->
+		<!--
+			returns the URl where the DTD for OGC WMS capabilities DOCTYPE definiton is located. default =
+			http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd
+		-->
+		<!--
+			<deegree:DTDLocation> <deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+			xlink:href="http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd" /> </deegree:DTDLocation>
+		-->
+		<!--
+			This parameters are used to be able to validate GML GetFeatureInfo responses. The values provided here will be used
+			as an xsi:schemaLocation pair in the GML documents. Please note that the namespace should currently always be
+			http://www.lat-lon.de.
+		-->
+		<!--
+			<deegree:FeatureInfoSchema> <deegree:Namespace>http://www.lat-lon.de</deegree:Namespace> <deegree:OnlineResource
+			xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+			xlink:href="http://hillary.lat-lon.de/~schmitz/featureschema.xsd"/> </deegree:FeatureInfoSchema>
+		-->
+		<!--
+			define a proxy server if the WMS is seperated by a firewall from the DTD-location or the locations of connected
+			REMOTEWFS, REMOTEWCS and REMOTEWMS as an alternative you can set commandline parameters at the call of the java
+			interpreter like this: java -DproxyHost=131.220.106.104 -DproxyPort=1234 -classpath ...
+		-->
+		<!--Proxy proxyHost="131.220.106.104" proxyPort="1234"/-->
+	</deegree:DeegreeParam>
+	<Service>
+		<Name>OGC:WMS</Name>
+		<Title>cite:deegree wms</Title>
+		<!-- abstract und keywords are optional -->
+		<Abstract>wms reference implementation</Abstract>
+		<KeywordList>
+			<Keyword>deegree</Keyword>
+			<Keyword>wms</Keyword>
+		</KeywordList>
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+			xlink:href="http://localhost:8080/deegree/ogcwebservice?" />
+		<!-- the following service information is optional -->
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>Andreas Poth</ContactPerson>
+				<ContactOrganization>lat/lon</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactPosition>Technical Director</ContactPosition>
+			<ContactAddress>
+				<AddressType>XXXX</AddressType>
+				<Address>Aennchenstr. 19</Address>
+				<City>Bonn</City>
+				<StateOrProvince>NRW</StateOrProvince>
+				<PostCode>53177</PostCode>
+				<Country>Germany</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>0049228184960</ContactVoiceTelephone>
+			<ContactFacsimileTelephone>
+				00492281849629
+			</ContactFacsimileTelephone>
+			<ContactElectronicMailAddress>
+				info@lat-lon.de
+			</ContactElectronicMailAddress>
+		</ContactInformation>
+		<Fees>none</Fees>
+		<AccessConstraints>none</AccessConstraints>
+	</Service>
+	<Capability>
+		<Request>
+			<!-- by default available -->
+			<GetCapabilities>
+				<!-- default and mandatory = application/vnd.ogc.wms_xml -->
+				<Format>application/vnd.ogc.wms_xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+								xlink:href="http://localhost:8080/deegree/ogcwebservice?" />
+						</Get>
+						<!-- POST isn't supported -->
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<!-- by default available -->
+			<GetMap>
+				<!-- default = image/gif; image/png; image/jpg -->
+				<!-- mandatory = image/png -->
+				<Format>image/png</Format>
+				<Format>image/gif</Format>
+				<Format>image/png; mode=8bit</Format>
+				<Format>image/png; mode=24bit</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/tif</Format>
+				<Format>image/bmp</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+								xlink:href="http://localhost:8080/deegree/ogcwebservice?" />
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+								xlink:href="http://localhost:8080/deegree/ogcwebservice" />
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetMap>
+			<!-- by default available -->
+			<GetFeatureInfo>
+				<!-- default & mandatory = application/vnd.ogc.gml -->
+				<Format>application/vnd.ogc.gml</Format>
+				<Format>text/plain</Format>
+				<Format>text/html</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+								xlink:href="http://localhost:8080/deegree/ogcwebservice?" />
+						</Get>
+						<!-- POST isn't supported -->
+					</HTTP>
+				</DCPType>
+			</GetFeatureInfo>
+			<GetLegendGraphic>
+				<!-- default = image/gif; image/png; image/jpg -->
+				<!-- mandatory = image/png -->
+				<Format>image/gif</Format>
+				<Format>image/png</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/jpg</Format>
+				<Format>image/tif</Format>
+				<Format>image/bmp</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+								xlink:href="http://localhost:8080/deegree/ogcwebservice?" />
+						</Get>
+						<!-- POST isn't supported -->
+					</HTTP>
+				</DCPType>
+			</GetLegendGraphic>
+		</Request>
+		<Exception>
+			<!-- default & mandatory= application/vnd.ogc.se_xml -->
+			<Format>application/vnd.ogc.se_xml</Format>
+			<Format>application/vnd.ogc.se_inimage</Format>
+			<Format>application/vnd.ogc.se_blank</Format>
+		</Exception>
+		<!-- optional; default = all false -->
+		<UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="0" />
+		<!-- cascaded is optional and default=false -->
+		<!-- TOP LAYER -->
+	</Capability>
+</WMT_MS_Capabilities>

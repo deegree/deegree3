@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:Module xmlns:deegree="http://www.deegree.org/context" hidden="false" type="content" width="250" height="670" scrolling="no">
+	<deegree:Name>Gazetteer</deegree:Name>
+    <deegree:Title>Gazetteer search</deegree:Title>
+    <deegree:Content>./modules/easygaz/gazetteer_panel.jsp</deegree:Content>
+    <deegree:ModuleJS>./modules/easygaz/gazetteer.js</deegree:ModuleJS>
+    <deegree:ParameterList>
+        <deegree:Parameter>
+            <deegree:Name>gaz1</deegree:Name>
+            <deegree:Value><![CDATA[<Hierarchy name="Free search (Utah)" address="http://testing.deegree.org:80/deegree-wfs/services">
+                    <Type name="Counties" freeSearch="true" strictMode="false" matchCase="false">
+                        <FeatureType name="CountyBoundaries_edited" namespace="http://www.deegree.org/app">
+                            <GeographicIdentifier property="name"/>
+                            <GeographicExtent property="geometry"/>
+                            <HighlightGeometry property="geometry"/>
+                        </FeatureType>
+                    </Type>
+                </Hierarchy>]]></deegree:Value>
+        </deegree:Parameter>
+        <deegree:Parameter>
+            <deegree:Name>gaz2</deegree:Name>
+            <deegree:Value><![CDATA[<Hierarchy name="Strict search (Utah)" address="http://testing.deegree.org:80/deegree-wfs/services">
+                    <Type name="Counties" freeSearch="false" strictMode="false" matchCase="true">
+                        <FeatureType name="CountyBoundaries_edited" namespace="http://www.deegree.org/app">
+                            <GeographicIdentifier property="name"/>
+                            <GeographicExtent property="geometry"/>
+                            <HighlightGeometry property="geometry"/>
+                        </FeatureType>
+                    </Type>
+                </Hierarchy>]]></deegree:Value>
+        </deegree:Parameter>
+    </deegree:ParameterList>
+</deegree:Module>

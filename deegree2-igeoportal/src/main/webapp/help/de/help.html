@@ -1,0 +1,27 @@
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type"  content="text/html; charset=UTF-8">
+		<title>deegree: Hilfe</title>
+		<script language="JavaScript">
+        function switchTo() {
+            neu_url = self.location.search;
+            anker = self.location.search.indexOf('*');
+            if ( neu_url.length > 0 ) {
+                if ( anker == -1 )
+                    self.haupt.location.href = neu_url.substring(1,neu_url.length);
+                else	
+                    self.haupt.location.href = neu_url.substring(1,anker) + '#' + neu_url.substring(anker+1,neu_url.length);
+            }
+        }
+        </script>
+	</head>
+	<frameset cols="240,*" frameborder="no" border="0" framespacing="0">
+		<frame src="help_menue.htm" name="menue" noresize="noresize" scrolling="auto">
+		<frame src="help_content.htm" name="haupt" onload="window.focus();switchTo();" scrolling="auto">
+	</frameset>
+    <noframes>
+        <body></body>
+    </noframes>
+</html>

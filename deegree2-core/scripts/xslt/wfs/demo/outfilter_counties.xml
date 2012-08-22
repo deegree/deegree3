@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+        xmlns:app="http://www.deegree.org/app"
+        xmlns:dog="http://www.deegree.org/dog"
+        xmlns:gco="http://www.isotc211.org/2005/gco"
+        xmlns:gmd="http://www.isotc211.org/2005/gmd"
+        xmlns:gml="http://www.opengis.net/gml"
+        xmlns:iso19112="http://www.opengis.net/iso19112"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:output method="xml" version="1.0" encoding="UTF-8"/>
+  
+    <xsl:template name="COUNTIES">
+        <dog:Counties>
+            <xsl:copy-of select="app:Counties/@gml:id"/>
+            <xsl:apply-templates select="app:Counties"/>
+      <!--xsl:copy-of select="."/-->
+        </dog:Counties>
+    </xsl:template>
+  
+    <xsl:template match="app:Counties" name="CountiesTemplate">
+        <xsl:copy-of select="gml:boundedBy"/>
+    <!-- All iso19112-Elements first ... -->
+        <xsl:if test="boolean( app:geographicIdentifier )">
+            <iso19112:geographicIdentifier>
+                <xsl:value-of select="app:geographicIdentifier"></xsl:value-of>
+            </iso19112:geographicIdentifier>
+        </xsl:if>
+        <xsl:if test="boolean( app:alternativeGeographicIdentifier )">
+            <iso19112:alternativeGeographicIdentifier>
+                <xsl:value-of select="app:alternativeGeographicIdentifier"></xsl:value-of>
+            </iso19112:alternativeGeographicIdentifier>
+        </xsl:if>
+        <!--
+    <xsl:if test="boolean( app:westBoundLongitude )">
+      <iso19112:geographicExtent>
+        <xsl:call-template name="GEOGRAPHICBBOX"/>
+      </iso19112:geographicExtent>
+        </xsl:if>-->
+        <xsl:if test="boolean( app:geographicExtent/* )">
+            <iso19112:geographicExtent>
+                <iso19112:EX_BoundingPolygon>
+                    <xsl:copy-of select="app:geographicExtent/*"></xsl:copy-of>
+                </iso19112:EX_BoundingPolygon>
+            </iso19112:geographicExtent>
+        </xsl:if>
+        <xsl:if test="boolean( app:temporalExtent )">
+            <iso19112:temporalExtent>
+                <xsl:call-template name="TEMPORALEXTENT"/>
+            </iso19112:temporalExtent>
+        </xsl:if>
+        <xsl:if test="boolean( app:position )">
+            <iso19112:position>
+                <xsl:copy-of select="app:position/gml:Point"/>
+            </iso19112:position>
+        </xsl:if>
+        <xsl:if test="boolean( app:gazetteer )">
+            <iso19112:gazetteer>
+                <xsl:choose>
+                    <xsl:when test="boolean( app:gazetteer/@xlink:href )">
+                        <xsl:attribute name="xlink:href">
+                            <xsl:value-of select="app:gazetteer/@xlink:href"/>
+                        </xsl:attribute>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:call-template name="GAZETTEER"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </iso19112:gazetteer>
+        </xsl:if>
+        <xsl:if test="boolean( app:locationType )">
+            <iso19112:locationType>
+                <xsl:choose>
+                    <xsl:when test="boolean( app:locationType/@xlink:href )">
+                        <xsl:attribute name="xlink:href">
+                            <xsl:value-of select="app:locationType/@xlink:href"/>
+                        </xsl:attribute>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="app:locationType/app:SI_LocationType"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </iso19112:locationType>
+        </xsl:if>   
+        <xsl:if test="boolean( app:parent )">
+            <iso19112:parent>
+                <xsl:value-of select="app:parent"></xsl:value-of>
+            </iso19112:parent>
+        </xsl:if>      
+    </xsl:template>
+  
+    <xsl:template match="app:locationType/app:SI_LocationType">
+        <xsl:call-template name="LOCATIONTYPE"/>
+    </xsl:template>
+
+</xsl:stylesheet>

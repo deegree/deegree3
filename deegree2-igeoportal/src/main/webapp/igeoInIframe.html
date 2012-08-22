@@ -1,0 +1,25 @@
+<html>
+   <head>
+      <title>Enter the title of your HTML document here</title>
+      <script type="text/javascript" src="./javascript/event.js"></script>
+      <script type="text/javascript" src="./javascript/envelope.js"></script>
+      <script type="text/javascript">
+
+      function setBBOX() {
+          var tmp = document.getElementById( 'BBOX' ).value.split(',');
+          var minx = parseFloat(tmp[0]); 
+          var miny = parseFloat(tmp[1]);
+          var maxx = parseFloat(tmp[2]);
+          var maxy = parseFloat(tmp[3]);
+    	  var env = new Envelope( minx, miny, maxx, maxy );
+          var event = new Event( 'ScaleSwitcher', 'BBOX', env );
+    	  window.frames[0].controller.actionPerformed( event );
+      }
+      
+      </script>
+   </head>
+   <body>
+      <p><a href="javascript:setBBOX()">set BBOX</a> <input id="BBOX" type="text" size="80" value="-86822,4010746,1005471,4726039"> </p>
+      <iframe  src="http://localhost:8080/igeoportal/" width="1000" height="800"></iframe>
+   </body>
+</html>

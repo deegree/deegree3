@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://schemas.opengis.net/iso19115brief" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:iso19119="http://schemas.opengis.net/iso19119" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:csw="http://www.opengis.net/cat/csw" xmlns="http://schemas.opengis.net/iso19115brief" attributeFormDefault="unqualified">
+	<!-- ================================================================
+    * Topic:        Metadataschema for CS-W 2.0/ISO Profile             *
+    * Filename:     iso19115_brief.xsd                                  *
+    * Description:  XML Schema of brief resultset.                      *
+    * Last update:  01.10.2004                                          *
+    * Editor(s):    con terra GmbH                                      *
+    *               Kristian Senkler (senkler@conterra.de)              *
+    *               Uwe Voges (voges@conterra.de)                       *
+    *                                                                   *
+    * (referenced types are taken from smXML v0.9, available under      *
+    *    http://metadata.dgiwg.org/ISO19115/ISO19139_v0_9.htm)          *
+    ================================================================= -->
+	<!-- ===============================================
+    Imported namespaces
+    =============================================== -->
+	<xs:import namespace="http://metadata.dgiwg.org/smXML" schemaLocation="./smXML/metadataEntity.xsd"/>
+	<xs:import namespace="http://www.opengis.net/cat/csw" schemaLocation="./csw2.0/record.xsd"/>
+	<xs:import namespace="http://schemas.opengis.net/iso19119" schemaLocation="./iso19119.xsd"/>
+	<!-- ===============================================
+    MD_Metadata
+    =============================================== -->
+	<xs:complexType name="MD_Metadata_Type">
+		<xs:complexContent>
+			<xs:extension base="csw:AbstractRecordType">
+				<xs:sequence>
+					<xs:element name="fileIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="hierarchyLevel" type="smXML:MD_ScopeCode_PropertyType"/>
+					<xs:element name="contact" type="smXML:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="identificationInfo" type="_MD_Identification_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="federatedCatalog" type="smXML:CI_OnlineResource_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Metadata" type="MD_Metadata_Type" substitutionGroup="csw:AbstractRecord"/>
+	<xs:complexType name="MD_Metadata_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_Metadata"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    _MD_Identification
+    =============================================== -->
+	<xs:complexType name="_MD_Identification_Type" abstract="true">
+		<xs:sequence>
+			<xs:element name="title" type="smXML:CharacterString_PropertyType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="_MD_Identification" type="_MD_Identification_Type" abstract="true"/>
+	<xs:complexType name="_MD_Identification_PropertyType">
+		<xs:choice>
+			<xs:element ref="_MD_Identification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    MD_DataIdentification
+    =============================================== -->
+	<xs:complexType name="MD_DataIdentification_Type">
+		<xs:complexContent>
+			<xs:extension base="_MD_Identification_Type">
+				<xs:sequence>
+					<xs:element name="topicCategory" type="smXML:MD_TopicCategoryCode_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="extent" type="smXML:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_DataIdentification" type="MD_DataIdentification_Type" substitutionGroup="_MD_Identification"/>
+	<xs:complexType name="MD_DataIdentification_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_DataIdentification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    SV_ServiceIdentification
+    =============================================== -->
+	<xs:complexType name="SV_ServiceIdentification_Type">
+		<xs:complexContent>
+			<xs:extension base="_MD_Identification_Type">
+				<xs:sequence>
+					<xs:element name="serviceType" type="smXML:CharacterString_PropertyType"/>
+					<xs:element name="serviceTypeVersion" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="SV_ServiceIdentification" type="SV_ServiceIdentification_Type" substitutionGroup="_MD_Identification"/>
+	<xs:complexType name="SV_ServiceIdentification_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_ServiceIdentification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    CSW_ServiceIdentification
+    =============================================== -->
+	<xs:complexType name="CSW_ServiceIdentification_Type">
+		<xs:complexContent>
+			<xs:extension base="SV_ServiceIdentification_Type">
+				<xs:sequence>
+					<xs:element name="extent" type="smXML:EX_Extent_PropertyType" minOccurs="0"/>
+					<xs:element name="couplingType" type="iso19119:CSW_CouplingType_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CSW_ServiceIdentification" type="CSW_ServiceIdentification_Type" substitutionGroup="SV_ServiceIdentification"/>
+	<xs:complexType name="CSW_ServiceIdentification_PropertyType">
+		<xs:choice>
+			<xs:element ref="CSW_ServiceIdentification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

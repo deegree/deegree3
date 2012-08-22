@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema xmlns:wcts="http://www.opengis.net/wcts/0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:wcs="http://www.opengis.net/wcs/1.2" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.opengis.net/wcts/0.0" elementFormDefault="qualified" version="0.4.0" xml:lang="en">
+  <annotation>
+    <appinfo>wctsContents.xsd 2007-05-16, vodafone specific version</appinfo>
+    <documentation>
+      This XML Schema Document encodes the Contents section of the WCTS GetCapabilities operation response. Copyright
+      (c) 2007 Open Geospatial Consortium, Inc. All Rights Reserved.
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+    includes and imports
+    ============================================================== -->
+  <include schemaLocation="./wctsCommon.xsd" />
+  <import namespace="http://www.opengis.net/ows/1.1"
+    schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsDataIdentification.xsd" />
+  <!-- ==============================================================
+    elements and types
+    ============================================================== -->
+  <element name="Contents">
+    <annotation>
+      <documentation>
+        Contents section of WCTS service metadata (or Capabilites) XML document. For the WCTS, these contents are data
+        and functions that the WCTS server supports (not data that can be accessed from this server).
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Transformation" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Unordered list of zero or more identifiers of well-known coordinate operations which the server can
+              perform.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="Method" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Unordered list of zero or more identifiers of well-known operation methods which the server can apply in
+              user-defined coordinate Transformations and Conversions.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="SourceCRS" type="anyURI" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Unordered list of one or more identifiers of well-known CRSs in which the server can accept sourceCRS
+              values.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="TargetCRS" type="anyURI" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Unordered list of one or more identifiers of well-known CRSs in which the server can accept targetCRS
+              values.
+            </documentation>
+          </annotation>
+        </element>
+        <choice>
+          <element ref="wcts:FeatureAbilities" />
+        </choice>
+        <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Optional unordered list of additional metadata about the data served by this WCTS implementation. For
+              example, this metadata could include more detailed definitions of the Methods, Transformations, and CRSs
+              known to this server, perhaps in the form of a gml:Dictionary of such information.
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="userDefinedCRSs" type="boolean" use="required">
+        <annotation>
+          <documentation>
+            Specifies if this server supports user-defined Coordinate Reference Systems (CRSs).
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!-- =========================================================== -->
+  <element name="FeatureAbilities">
+    <annotation>
+      <documentation>Specifies feature transformation abilities of WCTS server .</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="GeometryType" type="wcts:GeometryTypeType" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Unordered list of one or more GML 3 geometric primitive types supported by this WCTS server. It is assumed
+              that a WCTS server can also transform the corresponding geometric complexes and aggregates. It is also
+              assumed that this WCTS server can transform at least one geometric primitive type.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="FeatureFormat" type="wcts:InputOutputFormatType" maxOccurs="unbounded">
+          <annotation>
+            <documentation>
+              Unordered list of one or more identifiers of well-known feature formats in which the transform operation
+              can accept input features and/or produce output features.
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="remoteProperties" type="boolean" use="required">
+        <annotation>
+          <documentation>Specifies if this server supports remote properties in features transformed.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!-- ========================================================== -->
+  <complexType name="InputOutputFormatType">
+    <annotation>
+      <documentation>
+        Format supported by OWS server for inputs and/or outputs. This element extends the ows:MimeType by adding two
+        boolean attributes "input" and "output", which indicate if this format is supported in input and output
+        respectively. By default, the "input" and "output" attribute values are true, indicating that this format is
+        supported in both input and output.
+      </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="ows:MimeType">
+        <attribute name="input" type="boolean" use="optional" default="true">
+          <annotation>
+            <documentation>Indicates if this format can be used as the input format.</documentation>
+          </annotation>
+        </attribute>
+        <attribute name="output" type="boolean" use="optional" default="true">
+          <annotation>
+            <documentation>Indicates if this format can be used as the output format.</documentation>
+          </annotation>
+        </attribute>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- =========================================================== -->
+</schema>

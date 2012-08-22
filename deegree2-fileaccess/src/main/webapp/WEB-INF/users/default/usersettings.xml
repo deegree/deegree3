@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<set:Settings xmlns:cmm="http://www.deegree.org/coremapmodel" xmlns:set="http://www.deegree.org/settings" 
+              xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://www.deegree.org/settings ../schema/jaxbschema/settings.xsd">
+	<set:MapHandling changeable="false">
+		<set:zoomLevel val="25"/>
+		<set:panLevel val="25"/>
+	</set:MapHandling>
+	<set:DigitizingOptions changeable="true">
+		<set:vertices>
+			<set:searchRadius uom="pixel" val="25"/>
+		</set:vertices>
+		<set:graphicLineSize uom="pixel" val="2"/>
+	</set:DigitizingOptions>
+	<set:Validation>
+		<set:GeometryMetrics changeable="true" checkForPolygonOrientation="true"/>
+		<set:GeometryTypes changeable="true" allowHoles="false"/>
+		<set:GeometryTopology changeable="true" allowEqualGeometries="false"/>
+	</set:Validation>
+	<set:DataAdapter>
+		<set:WFSFeatureAdapter>
+			<set:CapabilitiesEvaluator val="org.deegree.igeo.dataadapter.WFS110CapabilitiesEvaluator"/>
+			<set:Timeout val="10000"/>
+			<set:MaxFeature val="5000"/>
+			<set:DataLoader val="org.deegree.igeo.dataadapter.WFS110DataLoader"/>
+		</set:WFSFeatureAdapter>
+	</set:DataAdapter>
+	<set:ProjectTemplates>
+			<set:Template desc="default project with pane layout" file="resources/templates/default" name="default (pane layout)"/>
+            <set:Template desc="project with innerframe layout" file="resources/templates/empty_innerframelayout" name="innerframe layout"/>
+	        <set:Template desc="project with frame layout" file="resources/templates/frame_layout" name="frame layout"/>	
+	</set:ProjectTemplates>
+	<set:DatabaseDrivers>
+		<set:database name="Oracle" driver=""/>
+	</set:DatabaseDrivers>
+	<set:FileFilter changeable="false">
+		<set:Format desc="georeferenced jpeg image" extension="jpg" name="JPEG image"/>
+		<set:Format desc="georeferenced jpeg image" extension="jpeg" name="JPEG image"/>
+		<set:Format desc="georeferenced bmp image" extension="bmp" name="bitmap image"/>
+		<set:Format desc="georeferenced gif image" extension="gif" name="GIF image"/>
+		<set:Format desc="georeferenced png image" extension="png" name="PNG image"/>
+		<set:Format desc="georeferenced tif image" extension="tif" name="TIFF image"/>
+		<set:Format desc="georeferenced tif image" extension="tiff" name="TIFF image"/>
+		<set:Format desc="ESRI Shape File" extension="shp" name="shape file" isVector="true"/>
+		<set:Format desc="GML 2 or 3.1 file" extension="gml" name="GML file" isVector="true"/>
+		<set:Format desc="GML 2 or 3.1 file" extension="xml" name="XML file" isVector="true"/>
+	</set:FileFilter>
+	<set:HelpPage/>
+	<set:CursorDefinitions>
+		<set:Cursor name="default" action="default"/>
+	</set:CursorDefinitions>
+	<set:Clipboard changeable="false" maxObjects="1000" format="text/xml; subtype=gml/3.1.1"/>
+<!--	
+	<set:Graphics changeable="true">
+		<set:SymbolDefinitions>
+			<set:Graphic file="an.xml" name="dddd"/>
+		</set:SymbolDefinitions>
+		<set:FillGraphicDefinitions>
+			<set:Graphic file="dsa.gif" name="sffg"/>
+		</set:FillGraphicDefinitions>
+		<set:DashArrayDefinitions>
+			<set:DashArray array="1 0 2 0" name="first"/>
+		</set:DashArrayDefinitions>
+		<set:ClassificationPreset name="aname" type="myType">
+			<set:Preset>uzu</set:Preset>
+		</set:ClassificationPreset>
+		<set:StylePreset name="asw">
+			<set:Preset>oiuz</set:Preset>
+		</set:StylePreset>
+		<set:SymbolizerPreset name="ugg">
+			<set:Preset>oid</set:Preset>
+		</set:SymbolizerPreset>
+		<set:ColorSchemes name="h">
+			<set:Colorlist>
+				<set:ColorListEntry>
+					<set:position>1</set:position>
+					<set:color>#FFee55</set:color>
+				</set:ColorListEntry>
+			</set:Colorlist>
+		</set:ColorSchemes>
+	</set:Graphics>
+-->
+	<set:Security>
+		<set:Authentication>
+			<set:method>user/password</set:method>
+			<set:AuthenticationServer>http://www.lat-lon.de
+			</set:AuthenticationServer>
+		</set:Authentication>
+	</set:Security>
+	<set:Formats>
+		<set:Format pattern="##.000" name="number"/>
+	</set:Formats>
+</set:Settings>

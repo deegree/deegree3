@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeSec:OWSPolicy
+  xmlns="http://www.deegree.org/security"
+  service="CSW"
+  xmlns:deegreeSec="http://www.deegree.org/security"
+  xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xsi:schemaLocation="http://www.deegree.org/security">
+
+  <deegreeSec:Security>
+    <deegreeSec:RegistryClass>org.deegree.security.drm.SQLRegistry</deegreeSec:RegistryClass>
+    <deegreeSec:ReadWriteTimeout>300</deegreeSec:ReadWriteTimeout>
+    <deegreeSec:RegistryConfig>
+
+      <!-- original-->
+      <!-- JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>oracle.jdbc.driver.OracleDriver</Driver>
+        <Url>jdbc:oracle:thin:@localhost:1521:latlon</Url>
+        <User>security</User>
+        <Password>security</Password>
+        </JDBCConnection-->
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.postgresql.Driver</Driver>
+        <Url>jdbc:postgresql://hurricane:5432/adv_registry_users</Url>
+        <User>postgres</User>
+        <Password>postgres</Password>
+        <SecurityConstraints />
+        <Encoding>UTF-8</Encoding>
+      </JDBCConnection>
+    </deegreeSec:RegistryConfig>
+    <!-- deegreeSec:AuthentificationSettings>
+      <deegreeSec:AuthentificationService>
+      <deegreeSec:OnlineResource
+      xlink:type="simple"
+      xlink:href="http://localhost:8081/wss/wss" />
+      </deegreeSec:AuthentificationService>
+      </deegreeSec:AuthentificationSettings-->
+  </deegreeSec:Security>
+
+  <deegreeSec:GeneralConditions>
+    <deegreeSec:Conditions>
+      <deegreeSec:Parameter
+        name="getContentLength"
+        userCoupled="false">
+        <deegreeSec:Value>10000</deegreeSec:Value>
+      </deegreeSec:Parameter>
+      <deegreeSec:Parameter
+        name="postContentLength"
+        userCoupled="false">
+        <deegreeSec:Value>1000000</deegreeSec:Value>
+      </deegreeSec:Parameter>
+      <deegreeSec:Parameter
+        name="header"
+        userCoupled="false">
+        <deegreeSec:Any />
+      </deegreeSec:Parameter>
+      <deegreeSec:Parameter
+        name="requestMethod"
+        userCoupled="false">
+        <deegreeSec:Value>GET,POST</deegreeSec:Value>
+      </deegreeSec:Parameter>
+    </deegreeSec:Conditions>
+  </deegreeSec:GeneralConditions>
+  <deegreeSec:Requests>
+    <deegreeSec:GetCapabilities>
+      <deegreeSec:PreConditions>
+        <deegreeSec:Parameter
+          name="request"
+          userCoupled="false">
+          <deegreeSec:Value>GetCapabilities</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="version"
+          userCoupled="false">
+          <deegreeSec:Value>2.0.1</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="updatesequence"
+          userCoupled="false">
+          <deegreeSec:Any />
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="sections"
+          userCoupled="false">
+          <deegreeSec:Any />
+        </deegreeSec:Parameter>
+      </deegreeSec:PreConditions>
+      <deegreeSec:PostConditions>
+        <deegreeSec:Any />
+      </deegreeSec:PostConditions>
+    </deegreeSec:GetCapabilities>
+    <deegreeSec:GetRepositoryItem>
+      <deegreeSec:PreConditions>
+        <deegreeSec:Parameter
+          name="version"
+          userCoupled="false">
+          <deegreeSec:Value>2.0.1</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="extrinsicObject"
+          userCoupled="true" />
+      </deegreeSec:PreConditions>
+      <deegreeSec:PostConditions>
+        <deegreeSec:Any />
+      </deegreeSec:PostConditions>
+    </deegreeSec:GetRepositoryItem>
+    <deegreeSec:GetRecords>
+      <deegreeSec:PreConditions>
+        <deegreeSec:Parameter
+          name="version"
+          userCoupled="false">
+          <deegreeSec:Any />
+          <!-- deegreeSec:Value>2.0.1</deegreeSec:Value-->
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="maxRecords"
+          userCoupled="false">
+          <deegreeSec:Value>1000</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="metadataFormat"
+          userCoupled="false">
+          <deegreeSec:Any />
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="outputFormat"
+          userCoupled="false">
+          <deegreeSec:Any />
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="outputSchema"
+          userCoupled="false">
+          <deegreeSec:Value>http://www.opengis.net/cat/csw</deegreeSec:Value>
+          <deegreeSec:Value>urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="resultType"
+          userCoupled="false">
+          <deegreeSec:Value>HITS</deegreeSec:Value>
+          <deegreeSec:Value>hits</deegreeSec:Value>
+          <deegreeSec:Value>RESULTS</deegreeSec:Value>
+          <deegreeSec:Value>results</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="sortBy"
+          userCoupled="false">
+          <deegreeSec:Any></deegreeSec:Any>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="typeNames"
+          userCoupled="true">
+          <deegreeSec:Value>rim:Association</deegreeSec:Value>
+          <deegreeSec:Value>rim:AuditableEvent</deegreeSec:Value>
+          <deegreeSec:Value>rim:Classification</deegreeSec:Value>
+          <deegreeSec:Value>rim:ClassificationNode</deegreeSec:Value>
+          <deegreeSec:Value>rim:ClassificationScheme</deegreeSec:Value>
+          <deegreeSec:Value>rim:ExternalIdentifier</deegreeSec:Value>
+          <deegreeSec:Value>rim:ExtrinsicObject</deegreeSec:Value>
+          <deegreeSec:Value>rim:RegistryPackage</deegreeSec:Value>
+          <deegreeSec:Value>rim:Slot</deegreeSec:Value>
+          <deegreeSec:Value>rim:RegistryObject</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="elementSetName"
+          userCoupled="false">
+          <deegreeSec:Value>brief</deegreeSec:Value>
+          <deegreeSec:Value>summary</deegreeSec:Value>
+          <deegreeSec:Value>full</deegreeSec:Value>
+        </deegreeSec:Parameter>
+      </deegreeSec:PreConditions>
+      <deegreeSec:PostConditions>
+        <!--
+          Solange anonyme Nutzer alles lesen dürfen muss keine einschränkende postcondition definiert sein
+          <deegreeSec:Parameter name="instanceFilter" userCoupled="true"/>
+        -->
+        <deegreeSec:Any />
+      </deegreeSec:PostConditions>
+    </deegreeSec:GetRecords>
+    <deegreeSec:GetRecordById>
+      <deegreeSec:PreConditions>
+        <deegreeSec:Parameter
+          name="version"
+          userCoupled="false">
+          <deegreeSec:Any />
+          <!--deegreeSec:Value>2.0.1</deegreeSec:Value-->
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          name="elementSetName"
+          userCoupled="false">
+          <deegreeSec:Value>brief</deegreeSec:Value>
+          <deegreeSec:Value>summary</deegreeSec:Value>
+          <deegreeSec:Value>full</deegreeSec:Value>
+        </deegreeSec:Parameter>
+      </deegreeSec:PreConditions>
+      <deegreeSec:PostConditions>
+        <!--
+          Solange anonyme Nutzer alles lesen dürfen muss keine einschränkende postcondition definiert sein
+          <deegreeSec:Parameter name="instanceFilter" userCoupled="true"/>
+        -->
+        <deegreeSec:Any />
+      </deegreeSec:PostConditions>
+    </deegreeSec:GetRecordById>
+    <deegreeSec:DescribeRecord>
+      <deegreeSec:PreConditions>
+        <deegreeSec:Parameter
+          userCoupled="false"
+          name="typeName">
+          <deegreeSec:Value>rim:Association</deegreeSec:Value>
+          <deegreeSec:Value>rim:AuditableEvent</deegreeSec:Value>
+          <deegreeSec:Value>rim:Classification</deegreeSec:Value>
+          <deegreeSec:Value>rim:ClassificationNode</deegreeSec:Value>
+          <deegreeSec:Value>rim:ClassificationScheme</deegreeSec:Value>
+          <deegreeSec:Value>rim:ExternalIdentifier</deegreeSec:Value>
+          <deegreeSec:Value>rim:ExtrinsicObject</deegreeSec:Value>
+          <deegreeSec:Value>rim:RegistryPackage</deegreeSec:Value>
+          <deegreeSec:Value>rim:RegistryObject</deegreeSec:Value>
+          <deegreeSec:Value>rim:Slot</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          userCoupled="false"
+          name="schemaLanguage">
+          <deegreeSec:Value>XMLSCHEMA</deegreeSec:Value>
+        </deegreeSec:Parameter>
+        <deegreeSec:Parameter
+          userCoupled="false"
+          name="outputFormat">
+          <deegreeSec:Value>application/xml</deegreeSec:Value>
+        </deegreeSec:Parameter>
+      </deegreeSec:PreConditions>
+      <deegreeSec:PostConditions>
+        <deegreeSec:Any />
+      </deegreeSec:PostConditions>
+    </deegreeSec:DescribeRecord>
+    <deegreeSec:CSW_Insert>
+      <deegreeSec:PreConditions>
+        <deegreeSec:Parameter
+          userCoupled="false"
+          name="metadataFormat">
+          <!-- 
+            <deegreeSec:Value>rim:Association</deegreeSec:Value>
+            <deegreeSec:Value>rim:AuditableEvent</deegreeSec:Value>
+            <deegreeSec:Value>rim:Classification</deegreeSec:Value>
+            <deegreeSec:Value>rim:ClassificationNode</deegreeSec:Value>
+            <deegreeSec:Value>rim:ClassificationScheme</deegreeSec:Value>
+            <deegreeSec:Value>rim:ExternalIdentifier</deegreeSec:Value>
+            <deegreeSec:Value>rim:ExtrinsicObject</deegreeSec:Value>
+            <deegreeSec:Value>rim:RegistryPackage</deegreeSec:Value>
+            <deegreeSec:Value>rim:Slot</deegreeSec:Value-->
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:Association</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:AuditableEvent</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:Classification</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:ClassificationNode</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:ClassificationScheme</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:ExternalIdentifier</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:ExtrinsicObject</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:RegistryPackage</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:RegistryObject</deegreeSec:Value>
+          <deegreeSec:Value>{urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0}:Slot</deegreeSec:Value>
+        </deegreeSec:Parameter>
+      </deegreeSec:PreConditions>
+      <deegreeSec:PostConditions>
+        <deegreeSec:Parameter
+          name="instanceFilter"
+          userCoupled="true">
+        </deegreeSec:Parameter>
+      </deegreeSec:PostConditions>
+    </deegreeSec:CSW_Insert>
+  </deegreeSec:Requests>
+</deegreeSec:OWSPolicy>

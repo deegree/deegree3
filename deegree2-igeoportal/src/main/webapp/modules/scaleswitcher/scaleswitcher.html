@@ -1,0 +1,77 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree. For copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="author" content="lat/lon GmbH" />
+        <meta name="KeyWords" content="deegree iGeoPortal lat/lon" />
+        <title>deegree iGeoPortal - Scale switcher</title>
+        <link href="../../css/deegree.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="../../javascript/ext-3.3.1/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" title="blue"  href="../../javascript/ext-3.3.1/resources/css/xtheme-blue.css" /> 
+        <link rel="stylesheet" type="text/css" title="gray"  href="../../javascript/ext-3.3.1/resources/css/xtheme-gray.css" />
+        <link rel="stylesheet" type="text/css" title="black" href="../../javascript/ext-3.3.1/resources/css/xtheme-access.css" />
+        <script type="text/javascript" src="../../javascript/utils.js"></script>
+        <script type="text/javascript" src="../../javascript/ext-3.3.1/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="../../javascript/ext-3.3.1/ext-all.js"></script>
+        <script type="text/javascript" src="../../javascript/json2.js"></script>
+        <script LANGUAGE="JavaScript1.2" TYPE="text/javascript">
+         
+            //initialize the main controller
+            function register() {
+                if ( parent.controller == null ) {
+                    parent.controller = new parent.Controller();
+                    parent.controller.init();
+                }
+                parent.setActiveStyleSheet();
+            }
+
+            //initialize the JavaScript object corresponding the ScaleSwitcher module
+            function initScaleSwitcher() {               
+                parent.controller.initScaleSwitcher( document );
+
+                new Ext.form.ComboBox({
+                    listeners:{ 'select': switchScale },
+                    itemId: 'scList',
+                    id: 'scList',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    editable: false,
+                    transform:'scaleList',
+                    width: 100,
+                    listWidth: 100,
+                    x: 90,
+                    y: -20,
+                    forceSelection:true
+                });
+
+                parent.controller.vScaleSwitcher.setUpdate( callPaintNow );
+            }
+
+            function switchScale(cb, record, index) {
+                //alert( record.data['value'] );
+                parent.controller.vScaleSwitcher.switchScale( record.data['value'] );
+            }
+
+            function callPaintNow() {
+                if ( Ext.getCmp( 'scList' ) != null ) {
+	                var data = Ext.getCmp( 'scList' ).getStore();
+	                var sc = parent.controller.mapModel.getScaleDenominator()
+	                // required for using OpenLayers as Map component
+	                sc = sc / 1.25992;
+	                var s = '1:' + Math.round( sc );
+	                data.getAt( 0 ).set('value', s );
+	                data.getAt( 0 ).set('text', s );
+	                Ext.getCmp('scList').setValue( s ); 
+                }
+            }          
+
+        </script>
+    </head>
+    <body onload="register(); initScaleSwitcher(); callPaintNow()" class="pScaleSwitcher">
+        <br />
+        <span id="spanScaleSwitchElement" class="listfont"></span>        
+        <select id="scaleList" name="scaleList">
+        </select>
+    </body>
+</html>

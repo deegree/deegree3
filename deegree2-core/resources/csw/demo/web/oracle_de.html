@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>deegree catalogueManager</title>
+		<link href="./css/metadataclient.css"  type="text/css" rel="stylesheet">
+	</head>
+	<body>
+	    <div id="boxSearch">
+            <div class="topFrame">
+                <table cellpadding="0" cellspacing="0" border="0" summary="">
+                    <tr>
+                        <td><img border="0" src="./images/logo-deegree.png" alt="logo"/></td>
+                        <td width="100"></td>
+                        <td><h2>catalogueManager Hinweise f&uuml;r Oracle</h2></td>
+                    </tr>
+                </table>                
+            </div>
+          
+            <div style="height: 200px; width: 800px; margin-top:80px; border-style: solid;">
+                <p>
+                Wenn Sie eine Oracle Datenbank zur Speicherung ihrer Metadaten nutzen wollen, müssen Sie zuvor sicherstellen,
+                dass der entsprechende JDBC Treiber sowie ggf. weitere erforderliche Java libraries in das Verzeichnis:
+                WEB-INF/lib kopiert werden. Denn leider sind wir aufgrund der Lizenzbestimmungen von Oracle
+                nicht berechtigt, diese libraries mit zu liefern.
+                </p>
+                <p>
+                    Für Oracle 10g werden die Dateien: ojdbc14_10g.jar, sdoapi.jar und sdoutl.jar benötigt.
+                    Für Oracle 11g sind es die Dateien: ojdbc6_g.jar (nur bei JDK 6) oder ojdbc5_g.jar (bei JDK 5 oder JDK 6 ), 
+                    sdoapi.jar und sdoutl.jar benötigt. 
+                </p>
+                <p>
+                    Sie finden die Dateien als Bestandteil ihrer Oracle Installation oder können Sie über die Oracle-Seiten beziehen.
+                </p>
+            </div>
+        </div>
+	</body>
+</html>

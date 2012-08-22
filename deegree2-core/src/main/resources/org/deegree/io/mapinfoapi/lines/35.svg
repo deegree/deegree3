@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="260"
+   height="50"
+   id="svg1931"
+   inkscape:version="0.44.1"
+   version="1.0">
+  <defs
+     id="defs1933" />
+  <metadata
+     id="metadata1936">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:10px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 53.541824,0.51081039 L 53.541824,29.025734"
+       id="path1902" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:10px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 74.159759,0.51081039 L 74.159759,29.025734"
+       id="path2066" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:10px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 184.92842,22.35708 L 184.92842,50.872004"
+       id="path1942" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:10px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 205.54635,22.35708 L 205.54635,50.872004"
+       id="path1944" />
+  </g>
+</svg>

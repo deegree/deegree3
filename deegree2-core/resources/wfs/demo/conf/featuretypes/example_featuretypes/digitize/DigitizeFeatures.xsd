@@ -1,0 +1,90 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app"
+  xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:app="http://www.deegree.org/app"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.deegree.org/wfs"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <xsd:import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+  <!-- configuration for the persistence backend to be used -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.postgresql.Driver</Driver>
+        <Url>jdbc:postgresql://localhost:5432/deegreetest</Url>
+        <User>deegreetest</User>
+        <Password>deegreetest</Password>
+        <SecurityConstraints />
+        <Encoding>iso-8859-1</Encoding>
+      </JDBCConnection>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <!-- ============================================================== -->
+  <xsd:element name="DigitizeFeatures" type="app:DigitizeFeaturesType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>digitizefeatures</deegreewfs:table>
+        <deegreewfs:gmlId prefix="ID_">
+          <deegreewfs:MappingField field="gid" type="INTEGER" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">digitizefeatures_gid_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+          <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+        <deegreewfs:OtherSRS>EPSG:4326</deegreewfs:OtherSRS>      
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="DigitizeFeaturesType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="gid" type="xsd:integer" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="gid" type="INTEGER" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geographicIdentifier" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geographicidentifier" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="comment" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="comment" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geometry" type="gml:GeometryPropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geometry" type="GEOMETRY" srs="26912" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

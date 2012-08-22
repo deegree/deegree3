@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:app="http://www.deegree.org/app" xmlns:dgjdbc="http://www.deegree.org/jdbc" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/wfs" schemaLocation="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
+	<!-- configuration of the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<deegreewfs:Prefix>app</deegreewfs:Prefix>
+			<deegreewfs:Backend>WFS</deegreewfs:Backend>
+			<deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+			<deegreewfs:Url inFilter="./request1.xsl" outFilter="./response1.xsl" timeout="2000">http://localhost:8081/deegree/servicesA</deegreewfs:Url>
+			<deegreewfs:Url inFilter="./request2.xsl" >http://localhost:8082/deegree/servicesB</deegreewfs:Url>
+			<deegreewfs:Url outFilter="./response1.xsl">http://localhost:8083/deegree/servicesC</deegreewfs:Url>
+            <deegreewfs:Url>http://localhost:8083/deegree/servicesC</deegreewfs:Url>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ====================================================================== -->
+	<xsd:element name="BasicPolygons" type="app:BasicPolygonsType" substitutionGroup="gml:_Feature"/>
+	<xsd:complexType name="BasicPolygonsType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="id" type="xsd:integer"/>
+					<xsd:element name="type" type="xsd:integer"/>
+					<xsd:element name="name" type="xsd:string"/>
+					<xsd:element name="geom" type="gml:GeometryPropertyType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+</xsd:schema>

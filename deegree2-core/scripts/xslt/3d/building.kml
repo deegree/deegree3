@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0" xmlns:citygml="http://www.citygml.org/citygml/1/0/0" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs">
+	<Document>
+		<Style id="defaultPolygonStyle">
+			<PolyStyle>
+				<color>e5aaaaaa</color>
+				<outline>0</outline>
+			</PolyStyle>
+		</Style>
+		<name>Gebaudemodell_LOD1_361022</name>
+		<LookAt xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+			<longitude>7.422433220062869</longitude>
+			<latitude>52.333803944746926</latitude>
+		</LookAt>
+		<Folder>
+			<name>Wohnhaus_allgemein</name>
+			<Placemark xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+				<styleUrl>#defaultPolygonStyle</styleUrl>
+				<Polygon>
+					<altitudeMode>absolute</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>7.43284459104547,52.32471428155331,36.8390705475444 7.432823141852914,52.324986407513244,36.8390705475444 7.4330804118084215,52.32499372855619,36.8390705475444 7.433101714251386,52.32472164926143,36.8390705475444 7.43284459104547,52.32471428155331,36.8390705475444</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+				<styleUrl>#defaultPolygonStyle</styleUrl>
+				<Polygon>
+					<altitudeMode>absolute</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>7.43284459104547,52.32471428155331,42.58 7.433101714251386,52.32472164926143,42.58 7.4330804118084215,52.32499372855619,42.58 7.432823141852914,52.324986407513244,42.58 7.43284459104547,52.32471428155331,42.58</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+				<styleUrl>#defaultPolygonStyle</styleUrl>
+				<Polygon>
+					<altitudeMode>absolute</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>7.43284459104547,52.32471428155331,36.8390705475444 7.43284459104547,52.32471428155331,42.58 7.432823141852914,52.324986407513244,42.58 7.432823141852914,52.324986407513244,36.8390705475444 7.43284459104547,52.32471428155331,36.8390705475444</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+				<styleUrl>#defaultPolygonStyle</styleUrl>
+				<Polygon>
+					<altitudeMode>absolute</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>7.432823141852914,52.324986407513244,36.8390705475444 7.432823141852914,52.324986407513244,42.58 7.4330804118084215,52.32499372855619,42.58 7.4330804118084215,52.32499372855619,36.8390705475444 7.432823141852914,52.324986407513244,36.8390705475444</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+				<styleUrl>#defaultPolygonStyle</styleUrl>
+				<Polygon>
+					<altitudeMode>absolute</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>7.4330804118084215,52.32499372855619,36.8390705475444 7.4330804118084215,52.32499372855619,42.58 7.433101714251386,52.32472164926143,42.58 7.433101714251386,52.32472164926143,36.8390705475444 7.4330804118084215,52.32499372855619,36.8390705475444</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+			<Placemark xmlns:geometryutil="org.deegree.framework.xml.GeometryUtils" xmlns:java="java">
+				<styleUrl>#defaultPolygonStyle</styleUrl>
+				<Polygon>
+					<altitudeMode>absolute</altitudeMode>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>7.433101714251386,52.32472164926143,36.8390705475444 7.433101714251386,52.32472164926143,42.58 7.43284459104547,52.32471428155331,42.58 7.43284459104547,52.32471428155331,36.8390705475444 7.433101714251386,52.32472164926143,36.8390705475444</coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+			</Placemark>
+		</Folder>
+	</Document>
+</kml>

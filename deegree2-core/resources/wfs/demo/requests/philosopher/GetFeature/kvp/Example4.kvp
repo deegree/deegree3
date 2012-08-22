@@ -1,0 +1,9 @@
+#Test that has the SORTBY property not matching
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+TYPENAME=app:Philosopher&
+PROPERTYNAME=app:name&
+SORTBY=app:dateOfBirth&
+FILTER=<Filter xmlns="http://www.opengis.net/ogc"><PropertyIsLike wildCard="*" singleChar="#" escapeChar="!"><PropertyName>app:name</PropertyName><Literal>*Sartre*</Literal></PropertyIsLike></Filter>

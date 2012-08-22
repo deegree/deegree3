@@ -1,0 +1,7 @@
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=LockFeature&
+LOCKACTION=ALL&
+TYPENAME=INWATER_1M,BuiltUpA_1M&
+FILTER=(<Filter xmlns:gml="http://www.opengis.net/gml"><Within><PropertyName>wkbGeom</PropertyName><gml:Envelope><gml:lowerCorner>10 10</gml:lowerCorner><gml:upperCorner>20 20</gml:upperCorner></gml:Envelope></Within></Filter>)(<Filter xmlns:gml="http://www.opengis.net/gml"><Within><PropertyName>wkbGeom</PropertyName><gml:Envelope><gml:lowerCorner>10 10</gml:lowerCorner><gml:upperCorner>20 20</gml:upperCorner></gml:Envelope></Within></Filter>)

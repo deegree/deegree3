@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.deegree.org/trigger" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dgTrigger="http://www.deegree.org/trigger" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="TriggerConfiguration" type="dgTrigger:TriggerConfigurationType"/>
+	<xs:complexType name="TriggerConfigurationType">
+		<xs:sequence>
+			<xs:element name="class" type="dgTrigger:ClassType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ClassType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="method" type="dgTrigger:MethodType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MethodType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="preTrigger" type="dgTrigger:TypedTrigger" minOccurs="0"/>
+			<xs:element name="postTrigger" type="dgTrigger:TypedTrigger" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="trigger" type="dgTrigger:TriggerType"/>
+	<xs:complexType name="TriggerType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="performingClass" type="xs:string"/>
+			<xs:element name="initParam" type="dgTrigger:InitParamType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="trigger" type="dgTrigger:TriggerType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TypedTrigger">
+		<xs:sequence>
+			<xs:element ref="dgTrigger:trigger"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ParamType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="type" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InitParamType">
+		<xs:complexContent>
+			<xs:extension base="dgTrigger:ParamType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

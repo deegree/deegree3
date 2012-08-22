@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><templates><template autoinsert="true" context="java" deleted="false" description="inserts the logger statement" enabled="true" name="logger">private static ILogger LOG = LoggerFactory.getLogger( ${enclosing_type}.class );</template></templates>

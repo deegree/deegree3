@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities xmlns:deegree="http://www.deegree.org/wfs" xmlns:ows="http://www.opengis.net/ows" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.0"
+  xmlns:dog="http://www.deegree.org/dog" xmlns:iso19112="http://www.opengis.net/iso19112"
+  updateSequence="10">
+  <!-- ================================================================== -->
+  <!-- DEEGREE PARAMETERS                                                                                              -->
+  <!-- ================================================================== -->
+  <deegree:deegreeParams>
+    <!-- mandatory; used as the default URL for omitted DCP-elements (in the OperationMetadata section) -->
+    <deegree:DefaultOnlineResource xlink:type="simple" xlink:href="${default.online.resource}" />
+    <!-- optional; default = 100 (MB); cache size available for storing feature instances in memory -->
+    <deegree:CacheSize>250</deegree:CacheSize>
+    <!-- optional; default = 30 (seconds); maximum time allowed for the execution of a request  -->
+    <deegree:RequestTimeLimit>120</deegree:RequestTimeLimit>
+    <!-- optional; default = same directory as configuration; list of directories to be scanned for featuretypes/datastores to be served by the WFS -->
+    <deegree:DataDirectoryList>
+      <!-- Following directory will be replaced inside the demo ant script, don't change -->
+      <deegree:DataDirectory>featuretypes/example_featuretypes/philosopher/postgis/</deegree:DataDirectory>
+    </deegree:DataDirectoryList>
+    <!-- optional; default = directory from system property "java.io.tmpdir" -->
+    <!--    <deegree:LockManagerDirectory>/tmp</deegree:LockManagerDirectory>-->
+    <!-- optional; default = false -->
+    <!-- <deegree:CheckUTMZones>false</deegree:CheckUTMZones> -->
+  </deegree:deegreeParams>
+  <!-- ================================================================== -->
+  <!-- SERVICE IDENTIFICATION SECTION                                                                             -->
+  <!-- ================================================================== -->
+  <ows:ServiceIdentification>
+    <ows:Title>demo_WFS</ows:Title>
+    <ows:Abstract>deegree ${deegree.version} WFS (1.1.0)</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>WFS</ows:Keyword>
+      <ows:Keyword>deegree</ows:Keyword>
+      <ows:Keyword>Utah</ows:Keyword>
+      <ows:Keyword>complex</ows:Keyword>
+      <ows:Keyword>1.1.0</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType>WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+    <ows:Fees>None</ows:Fees>
+    <ows:AccessConstraints>None</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <!-- ================================================================== -->
+  <!-- SERVICE PROVIDER SECTION                                                                                     -->
+  <!-- ================================================================== -->
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Markus Schneider</ows:IndividualName>
+      <ows:PositionName>deegree WFS core developer</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 228 184960</ows:Voice>
+          <ows:Facsimile>+49 228 1849629</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>Northrhine-Westfalia</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.lat-lon.de" />
+        <ows:HoursOfService>9am - 4pm (CET)</ows:HoursOfService>
+        <ows:ContactInstructions>Email preferred</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <!-- ================================================================== -->
+  <!-- OPERATIONS METADATA SECTION                                                                            -->
+  <!-- ================================================================== -->
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <!-- ows:DCP element omitted -> filled automatically with DefaultOnlineResource value -->
+      <ows:Parameter name="AcceptVersions">
+        <ows:Value>1.1.0</ows:Value>
+        <ows:Value>1.0.0</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:Value>application/xml</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="Sections">
+        <ows:Value>ServiceIdentification</ows:Value>
+        <ows:Value>ServiceProvider</ows:Value>
+        <ows:Value>OperationsMetadata</ows:Value>
+        <ows:Value>FeatureTypeList</ows:Value>
+        <ows:Value>ServesGMLObjectTypeList</ows:Value>
+        <ows:Value>SupportsGMLObjectTypeList</ows:Value>
+        <ows:Value>Filter_Capabilities</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <!-- ows:DCP element omitted -> filled automatically with DefaultOnlineResource value -->
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <!-- ows:DCP element omitted -> filled automatically with DefaultOnlineResource value -->
+    </ows:Operation>
+    <ows:Operation name="GetFeatureWithLock">
+      <!-- ows:DCP element omitted -> filled automatically with DefaultOnlineResource value -->
+    </ows:Operation>
+    <ows:Operation name="LockFeature">
+      <!-- ows:DCP element omitted -> filled automatically with DefaultOnlineResource value -->
+    </ows:Operation>
+    <ows:Operation name="Transaction">
+      <!-- ows:DCP element omitted -> filled automatically with DefaultOnlineResource value -->
+      <ows:Parameter name="inputFormat">
+        <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="idgen">
+        <ows:Value>GenerateNew</ows:Value>
+        <ows:Value>UseExisting</ows:Value>
+        <!--  <ows:Value>ReplaceDuplicate</ows:Value> -->
+      </ows:Parameter>
+      <ows:Parameter name="releaseAction">
+        <ows:Value>ALL</ows:Value>
+        <!--  <ows:Value>SOME</ows:Value> -->
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Parameter name="srsName">
+      <ows:Value>EPSG:4326</ows:Value>
+    </ows:Parameter>
+    <!-- Maximum number of features, which the WFS will return to the client  -->
+    <ows:Constraint name="DefaultMaxFeatures">
+      <ows:Value>15000</ows:Value>
+    </ows:Constraint>
+    <ows:Constraint name="LocalTraverseXLinkScope">
+      <ows:Value>0</ows:Value>
+      <ows:Value>*</ows:Value>
+    </ows:Constraint>
+    <ows:Constraint name="RemoteTraverseXLinkScope">
+      <ows:Value>0</ows:Value>
+      <ows:Value>*</ows:Value>
+    </ows:Constraint>
+    <!-- time in minutes until locked features expire; not evaluated yet -->
+    <ows:Constraint name="DefaultLockExpiry">
+      <ows:Value>5</ows:Value>
+    </ows:Constraint>
+  </ows:OperationsMetadata>
+  <!-- ================================================================== -->
+  <!-- FEATURE TYPE LIST SECTION                                                                                     -->
+  <!-- ================================================================== -->
+  <!--
+    The wfs:FeatureTypeList can usually be left empty, as it gets filled with information automatically by evaluation of the defined featuretype
+    definitions located in <deegree:DataDirectory>s. It has to be filled, if you wish to offer featuretypes in different SRSs. There still has to be a
+    featuretype definition in the <deegree:DataDirectory>. You can also define deegreewfs:inFilter and deegreewfs:outFilter attributes to the
+    <wfs:OutputFormats> to change GML format. Refer documentation for this topic.
+  -->
+  <!-- Utah example --> 
+  <!--
+  <wfs:FeatureTypeList xmlns:app="http://www.deegree.org/app">
+    <wfs:FeatureType>
+      <wfs:Name>app:Springs</wfs:Name>
+      <wfs:Title>Spring in Utah</wfs:Title>
+      <wfs:Abstract>All Spring in Utah</wfs:Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Springs</ows:Keyword>
+      </ows:Keywords>
+      <wfs:DefaultSRS>EPSG:26912</wfs:DefaultSRS>
+      <wfs:OtherSRS>EPSG:4326</wfs:OtherSRS>
+      <wfs:OutputFormats>
+        <wfs:Format deegree:outFilter="xslt/outwfs1_0_0.xsl" deegree:inFilter="" deegree:schemaLocation="./schemas/SGID024_Springs_shp.xsd">GML2</wfs:Format>
+        <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>
+      </wfs:OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180 -90</ows:LowerCorner>
+        <ows:UpperCorner>180 90</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </wfs:FeatureType>
+    -->
+  <!-- Gazeteer example -->
+        <!--
+      <wfs:FeatureType>
+        <wfs:Name>iso19112:SI_Gazetteer</wfs:Name>
+        <wfs:Title/>
+        <wfs:DefaultSRS>EPSG:26912</wfs:DefaultSRS>
+        <wfs:Operations>
+          <wfs:Operation>Query</wfs:Operation>
+        </wfs:Operations>
+        <wfs:OutputFormats>
+          <wfs:Format deegree:outFilter="./xslt/outfilter_main.xsl" deegree:inFilter="./xslt/infilter_main.xsl" deegree:schemaLocation="./schemas/iso19112.xsd">text/xml; subtype=gml/3.1.1</wfs:Format>
+        </wfs:OutputFormats>
+        <ows:WGS84BoundingBox>
+          <ows:LowerCorner>-180 -90</ows:LowerCorner>
+          <ows:UpperCorner>180 90</ows:UpperCorner>
+        </ows:WGS84BoundingBox>
+    </wfs:FeatureType>
+      <wfs:FeatureType>
+        <wfs:Name>dog:Counties</wfs:Name>
+        <wfs:Title/>
+        <wfs:DefaultSRS>EPSG:26912</wfs:DefaultSRS>
+        <wfs:Operations>
+          <wfs:Operation>Query</wfs:Operation>
+        </wfs:Operations>
+        <wfs:OutputFormats>
+          <wfs:Format deegree:outFilter="./xslt/outfilter_main.xsl" deegree:inFilter="./xslt/infilter_main.xsl" deegree:schemaLocation="./schemas/iso19112.xsd">text/xml; subtype=gml/3.1.1</wfs:Format>
+        </wfs:OutputFormats>
+        <ows:WGS84BoundingBox>
+          <ows:LowerCorner>-180 -90</ows:LowerCorner>
+          <ows:UpperCorner>180 90</ows:UpperCorner>
+        </ows:WGS84BoundingBox>
+    </wfs:FeatureType>
+      <wfs:FeatureType>
+        <wfs:Name>dog:Municipalities</wfs:Name>
+        <wfs:Title/>
+        <wfs:DefaultSRS>EPSG:26912</wfs:DefaultSRS>
+        <wfs:Operations>
+          <wfs:Operation>Query</wfs:Operation>
+        </wfs:Operations>
+        <wfs:OutputFormats>
+          <wfs:Format deegree:outFilter="./xslt/outfilter_main.xsl" deegree:inFilter="./xslt/infilter_main.xsl" deegree:schemaLocation="./schemas/iso19112.xsd">text/xml; subtype=gml/3.1.1</wfs:Format>
+      </wfs:OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180 -90</ows:LowerCorner>
+        <ows:UpperCorner>180 90</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </wfs:FeatureType>
+      </wfs:FeatureTypeList>
+      -->    
+  <!-- ================================================================== -->
+  <!-- FILTER CAPABILITIES SECTION                                                                                   -->
+  <!-- ================================================================== -->
+  <ogc:Filter_Capabilities>
+    <!-- Don't change <ogc:Filter_Capabilities>, its client information only -->
+    <ogc:Spatial_Capabilities>
+      <ogc:GeometryOperands>
+        <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+      </ogc:GeometryOperands>
+      <ogc:SpatialOperators>
+        <ogc:SpatialOperator name="BBOX" />
+        <ogc:SpatialOperator name="Equals" />
+        <ogc:SpatialOperator name="Disjoint" />
+        <ogc:SpatialOperator name="Intersects" />
+        <ogc:SpatialOperator name="Touches" />
+        <ogc:SpatialOperator name="Crosses" />
+        <ogc:SpatialOperator name="Within" />
+        <ogc:SpatialOperator name="Contains" />
+        <ogc:SpatialOperator name="Overlaps" />
+        <ogc:SpatialOperator name="Beyond" />
+      </ogc:SpatialOperators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:LogicalOperators />
+      <ogc:ComparisonOperators>
+        <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+      </ogc:ComparisonOperators>
+      <ogc:ArithmeticOperators>
+        <ogc:SimpleArithmetic />
+      </ogc:ArithmeticOperators>
+    </ogc:Scalar_Capabilities>
+    <ogc:Id_Capabilities>
+      <ogc:EID />
+      <ogc:FID />
+    </ogc:Id_Capabilities>
+  </ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

@@ -1,0 +1,22 @@
+DBSchematToDatastoreConf - creates a wfs-featuretype configuration from a DB-Schema
+This tool is able to generate DB schemas to wfs datastore schemas. It can handle following backends:
+- shape files (use -driver shape) and something like -url /path/to/shapefilename_with_no_extension
+- oracle database (use -driver oracle.jdbc.OracleDriver and something like -url jdbc:oracle:thin:@your_host:1521 )
+- postgis database (use -driver org.postgresql.Driver and something like -url jdbc:postgresql://your_host:5432 )
+- other (generic) databases like hsql (-driver org.hsqldb.jdbcDrive -url jdbc:hsqldb:/path/to/hsqldb_file) or ingres (-driver ? -url ? ) 
+
+This tool has following syntax: 
+org.deegree.tools.datastore.DBSchemaToDatastoreConf -tables -driver -url -output -user [-password -h -? -help]
+-tables a qouted list of tables (seperated with ',' '|' or ';' ) to create the featuretypes from.
+-driver one of the drivers mentioned above.
+-url an url to your database, see your database manual for the exact jdbc phrase
+-output a filename to which the featuretype description will be saved.
+-user to be used to connect to the database
+-password (optional) to be used to connect to the database, if not given, the password will be the emtpy string
+-insert (optional) true|false (false is default) defining that inserts are allowed on a feature type 
+-update (optional) true|false (false is default) defining that updates are allowed on a feature type
+-delete (optional) true|false (false is default) defining that deletes are allowed on a feature type
+-idGenerator (optional) DB_MAX|DB_SEQ (UUID is default) defining which kind of id generation shall be used for a feature type
+-omitFidAsProperty (optional) true|false (false is default) if true, fid column (usually primary key) is not mapped to a property
+-sequence (conditional) name of the DB sequence if -idGenerator is DB_SEQ  
+-h -? -help print this message.

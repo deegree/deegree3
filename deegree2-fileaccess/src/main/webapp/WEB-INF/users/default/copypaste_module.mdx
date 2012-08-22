@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dgp:Module xmlns:dgp="http://www.deegree.org/project" xmlns:cmm="http://www.deegree.org/coremapmodel" xmlns:set="http://www.deegree.org/settings" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/project ../schema/jaxbschema/project.xsd">
+	<dgp:name>CPModule</dgp:name>
+	<cmm:identifier>
+		<cmm:value>F28z9</cmm:value>
+	</cmm:identifier>
+	<dgp:className>org.deegree.igeo.modules.CopyPasteModule</dgp:className>
+	<dgp:ViewForm>
+		<dgp:PaneViewForm>
+			<dgp:containerClass viewPlatform="Application">org.deegree.igeo.views</dgp:containerClass>
+			<dgp:ComponentState active="false" modal="false">
+				<dgp:windowState>closed</dgp:windowState>
+			</dgp:ComponentState>
+			<dgp:paneTitle>CopyPasteModule</dgp:paneTitle>
+		</dgp:PaneViewForm>
+		<dgp:Layout>
+			<dgp:NoneLayout/>
+		</dgp:Layout>
+	</dgp:ViewForm>
+	<!-- dgp:Menu>
+		<cmm:identifier>
+			<cmm:value>CopyPasteMenue</cmm:value>
+		</cmm:identifier>
+		<dgp:parent>
+			<cmm:value>MB1edit</cmm:value>
+		</dgp:parent>
+		<dgp:name>CopyPaste</dgp:name>
+		<dgp:MenuItem>
+			<dgp:name>$copy.name</dgp:name>
+			<dgp:tooltip>$CopyObject.tooltip</dgp:tooltip>
+			<dgp:assignedAction>copy</dgp:assignedAction>
+		</dgp:MenuItem>
+	</dgp:Menu-->
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>identifier76582346</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$ExtractFeatureToLayer.tooltip</dgp:tooltip>
+		<dgp:assignedAction>selectedFeaturesToLayer</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/feature_to_layer.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>dfdfdfrtrg</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$CopyFeatures.tooltip</dgp:tooltip>
+		<dgp:assignedAction>copy</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/copy_feature.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>dfdfdfg</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$CopyAsWKT.tooltip</dgp:tooltip>
+		<dgp:assignedAction>copyAsWKT</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/copy_feature_as_wkt.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>rtdfdg4</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$PasteFeatures.tooltip</dgp:tooltip>
+		<dgp:assignedAction>paste</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/paste_feature.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>rtdfdg4</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$ClearClipboard.tooltip</dgp:tooltip>
+		<dgp:assignedAction>clearClipboard</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/clear_clipboard.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+  <set:HelpContext>
+    <set:page mainPage="true">
+      <cmm:OnlineResource xlink:href="./help/cpmodule/features_select.de.html"/>
+      <set:keyword>Objekte selektieren</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/cpmodule/features_info.de.html"/>
+      <set:keyword>Objektinformation aufrufen</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/cpmodule/features_export.de.html"/>
+      <set:keyword>Objekte exportieren</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/cpmodule/features_copy.de.html"/>
+      <set:keyword>Objekte kopieren</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/cpmodule/data_copy.de.html"/>
+      <set:keyword>Sachdaten kopieren</set:keyword>
+    </set:page>
+  </set:HelpContext>
+	
+</dgp:Module>

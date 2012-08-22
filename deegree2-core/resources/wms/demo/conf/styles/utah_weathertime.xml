@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <sld:NamedLayer>
+        <sld:Name>WeatherstationTime</sld:Name>
+        <sld:UserStyle>
+            <sld:Name>default:WeatherTime</sld:Name>
+            <sld:Title>Weather in Time</sld:Title>
+            <sld:IsDefault>1</sld:IsDefault>
+            <sld:FeatureTypeStyle>
+                <sld:Name>default:weatherStationTime</sld:Name>
+                <sld:Rule>
+                    <sld:Name>default</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsLessThan>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:Literal>100</ogc:Literal>
+                        </ogc:PropertyIsLessThan>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF0000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                                </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                 <sld:Rule>
+                    <sld:Name>Under 100</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsLessThan>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:Literal>100</ogc:Literal>
+                        </ogc:PropertyIsLessThan>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF0000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                                </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                 <sld:Rule>
+                    <sld:Name>Under 100</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsLessThan>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:Literal>100</ogc:Literal>
+                        </ogc:PropertyIsLessThan>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF0000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                                </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>101 - 200</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>100</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>201</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF4000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>101 - 200</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>100</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>201</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF4000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>101 - 200</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>100</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>201</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF4000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>201 - 300</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>200</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>301</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF8000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>201 - 300</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>200</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>301</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF8000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>201 - 300</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>200</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>301</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FF8000</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>301 - 400</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>300</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>401</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FFBF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>301 - 400</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>300</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>401</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FFBF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>301 - 400</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>300</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>401</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FFBF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>401 - 500</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>400</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>501</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FFFF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>401 - 500</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>400</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>501</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FFFF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>401 - 500</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>400</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>501</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#FFFF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>501 - 600</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>500</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>601</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#BFFF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>501 - 600</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>500</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>601</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#BFFF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>501 - 600</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>500</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>601</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#BFFF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>601 - 700</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>600</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>701</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#80FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>601 - 700</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>600</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>701</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#80FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>601 - 700</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>600</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>701</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#80FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>701 - 800</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>700</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>801</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#40FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>701 - 800</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>700</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>801</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#40FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>701 - 800</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>700</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>801</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#40FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>801 - 900</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>800</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>901</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#00FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>801 - 900</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>800</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>901</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#00FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>801 - 900</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>800</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>901</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#00FF00</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>901 - 1000</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>900</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>1001</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#00FF40</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>15</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>901 - 1000</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>900</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>1001</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>100000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>1000000</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#00FF40</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>12</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>901 - 1000</sld:Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsBetween>
+                            <ogc:PropertyName>app:cdd</ogc:PropertyName>
+                            <ogc:LowerBoundary>
+                                <ogc:Literal>900</ogc:Literal>
+                            </ogc:LowerBoundary>
+                            <ogc:UpperBoundary>
+                                <ogc:Literal>1001</ogc:Literal>
+                            </ogc:UpperBoundary>
+                        </ogc:PropertyIsBetween>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>1000000</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>4336730</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:geometry</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>square</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">#00FF40</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                            <sld:Size>10</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+    </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

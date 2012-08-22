@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  ======================================================================================
+
+This file is part of deegree.
+Copyright (C) 2001-2008 by:
+EXSE, Department of Geography, University of Bonn
+http://www.giub.uni-bonn.de/deegree/
+lat/lon GmbH
+http://www.lat-lon.de
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Contact:
+
+Andreas Poth
+lat/lon GmbH
+Aennchenstr. 19
+53177 Bonn
+Germany
+E-Mail: poth@lat-lon.de
+
+Prof. Dr. Klaus Greve
+Department of Geography
+University of Bonn
+Meckenheimer Allee 166
+53115 Bonn
+Germany
+E-Mail: greve@giub.uni-bonn.de
+
+@version $Revision$
+@author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
+@author last edited by: $Author$
+
+@version 1.0. $Revision$, $Date$
+                 
+====================================================================================== -->
+<dgTrigger:TriggerConfiguration xmlns:dgTrigger="http://www.deegree.org/trigger" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/trigger
+../../../../resources/trigger/triggerconfiguration.xsd">
+<!--
+	!!! E X A M P L E !!! 
+	<dgTrigger:class>
+		<dgTrigger:name>de.latlon.trigger.TriggerDocumentTest</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>testDocumentReader</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<dgTrigger:trigger>
+					<dgTrigger:name>ValidationTrigger</dgTrigger:name>
+					<dgTrigger:performingClass>de.latlon.trigger.Validate</dgTrigger:performingClass>
+					<dgTrigger:initParam>
+						<dgTrigger:name>configFile</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>e:/temp/configuration.xml</dgTrigger:value>
+					</dgTrigger:initParam>
+					<dgTrigger:initParam>
+						<dgTrigger:name>validationType</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>strong</dgTrigger:value>
+					</dgTrigger:initParam>
+				</dgTrigger:trigger>
+			</dgTrigger:preTrigger>
+			<dgTrigger:postTrigger>
+				<dgTrigger:trigger>
+					<dgTrigger:name>FormattingTrigger</dgTrigger:name>
+					<dgTrigger:performingClass>de.latlon.trigger.Formatting</dgTrigger:performingClass>
+					<dgTrigger:initParam>
+						<dgTrigger:name>config</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>e:/temp/anotherconfiguration.xml</dgTrigger:value>
+					</dgTrigger:initParam>
+					<dgTrigger:trigger>
+						<dgTrigger:name>logger</dgTrigger:name>
+						<dgTrigger:performingClass>de.latlon.trigger.Logger</dgTrigger:performingClass>
+					</dgTrigger:trigger>
+				</dgTrigger:trigger>
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>
+	</dgTrigger:class>
+ -->	
+ 	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.io.datastore.Datastore</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>transformQuery</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<dgTrigger:trigger>
+					<dgTrigger:name>request crs transforming</dgTrigger:name>
+					<dgTrigger:performingClass>org.deegree.io.datastore.RequestCRSTransformationTrigger</dgTrigger:performingClass>
+				</dgTrigger:trigger>
+			</dgTrigger:preTrigger>		
+		</dgTrigger:method>
+		
+		<dgTrigger:method>
+			<dgTrigger:name>transformResult</dgTrigger:name>
+			<dgTrigger:postTrigger>
+				<dgTrigger:trigger>
+					<dgTrigger:name>response crs transforming</dgTrigger:name>
+					<dgTrigger:performingClass>org.deegree.io.datastore.ResponseCRSTransformationTrigger</dgTrigger:performingClass>
+				</dgTrigger:trigger>
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wfs.WFService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>	
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>	
+		</dgTrigger:method>		
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.csw.CatalogueService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.sos.SOService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wass.was.WAService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wass.wss.WSService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wmps.WMPService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wms.WMService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wps.WPService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.ogcwebservices.wpvs.WPVService</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>doService</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+	<dgTrigger:class>
+		<dgTrigger:name>org.deegree.security.owsproxy.OWSProxyPolicyFilter</dgTrigger:name>
+		<dgTrigger:method>
+			<dgTrigger:name>validate</dgTrigger:name>
+			<dgTrigger:preTrigger>
+				<!-- add trigger definition(s) if required -->
+			</dgTrigger:preTrigger>		
+			<dgTrigger:postTrigger>
+				<!-- 
+					uncomment this and set useful values for parameter 'replacements'
+					consider that the keys will be interpreted as regulafr expressions
+				<dgTrigger:trigger>
+					<dgTrigger:name>owsProxyStringReplacementTrigger</dgTrigger:name>
+					<dgTrigger:performingClass>org.deegree.security.owsproxy.StringReplacementTrigger</dgTrigger:performingClass>
+					<dgTrigger:initParam>
+						<dgTrigger:name>replacements</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>{Markus Schneider|Andreas Poth}{lat|LAT}</dgTrigger:value>
+					</dgTrigger:initParam>
+					<dgTrigger:initParam>
+						<dgTrigger:name>conseredRequests</dgTrigger:name>
+						<dgTrigger:type>java.lang.String</dgTrigger:type>
+						<dgTrigger:value>WMS:GetCapabilities,WFS:GetCapabilities</dgTrigger:value>
+					</dgTrigger:initParam>
+				</dgTrigger:trigger>	
+				-->
+			</dgTrigger:postTrigger>
+		</dgTrigger:method>	
+	</dgTrigger:class>
+	
+</dgTrigger:TriggerConfiguration>

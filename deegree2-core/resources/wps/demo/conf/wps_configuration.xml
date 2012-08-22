@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- This file is part of the deegree wps implementation. It represents an exemplary configuration document for a wps capabilities interface. -->
+  <!--
+    Only wps specific elements will be explained below. The implementation is based on version 0.4.0 of the OGC Web Processing Service Specification.
+  -->
+<Capabilities xmlns:xlink="http://www.w3.org/1999/xlink" version="0.4.0" xmlns:wps="http://www.opengis.net/wps" xmlns:ows="http://www.opengis.net/ows"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps ..\wpsGetCapabilities.xsd" xmlns:deegree="http://www.deegree.org/wps">
+  <!-- deegreeParams are for internal configuration of the deegree framework-->
+  <deegree:deegreeParams>
+    <deegree:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+      xlink:href="${default.online.resource}" />
+    <deegree:CacheSize>100</deegree:CacheSize>
+    <deegree:RequestTimeLimit>35</deegree:RequestTimeLimit>
+    <!--
+      The ProcessDirectoryList will be scanned recursively for processes which will be automatically registered to the wps server. The path is
+      relative to the file you are currently reading.
+    -->
+    <deegree:ProcessDirectoryList>
+      <deegree:ProcessDirectory>processConfigs</deegree:ProcessDirectory>
+    </deegree:ProcessDirectoryList>
+    <!--
+      The RequestQueueManager is responsible for storing requests. This feature will be essential at the time the server supports storage of output.
+      Any RequestQueueManager implementation shall implement the org.deegree.ogcwebservices.wps.execute.RequestQueueManager interface. The current
+      DefaultRequestQueueManager simply stores requests to a map and retrieves them afterwards from the map.
+    -->
+    <deegree:RequestQueueManager>
+      <deegree:ResponsibleClass>org.deegree.ogcwebservices.wps.execute.DefaultRequestQueueManager</deegree:ResponsibleClass>
+    </deegree:RequestQueueManager>
+  </deegree:deegreeParams>
+  <!-- The remainder of this file is a standard capabilities description. -->
+  <ows:ServiceIdentification>
+    <ows:Title>deegree WPS Server</ows:Title>
+    <ows:Abstract>deegree ${deegree.version} WPS</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>WPS</ows:Keyword>
+      <ows:Keyword>geospatial</ows:Keyword>
+      <ows:Keyword>geoprocessing</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType>WPS</ows:ServiceType>
+    <ows:ServiceTypeVersion>0.4.0</ows:ServiceTypeVersion>
+    <ows:Fees>NONE</ows:Fees>
+    <ows:AccessConstraints>NONE</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Christian Kiehle</ows:IndividualName>
+      <ows:PositionName>Project Manager</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 288 18496-0</ows:Voice>
+          <ows:Facsimile>+49 288 18496-29</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>ON</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>kiehle@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+      </ows:ContactInfo>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="${default.online.resource}?" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeProcess">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="${default.online.resource}?" />
+          <!-- <ows:Post xlink:href="${default.online.resource}"/> -->
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="Execute">
+      <ows:DCP>
+        <ows:HTTP>
+          <!-- <ows:Get xlink:href="${default.online.resource}?"/> -->
+          <ows:Post xlink:href="${default.online.resource}" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <!-- The server will generate a dynamic process offerings section out of the process descriptions. -->
+</Capabilities>

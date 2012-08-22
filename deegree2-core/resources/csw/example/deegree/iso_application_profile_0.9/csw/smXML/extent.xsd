@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Lara J. Bordick (Northrop Grumman) -->
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================== Includes ================== -->
+    <xs:include schemaLocation="./referenceSystem.xsd"/>
+    <xs:include schemaLocation="./External/geometry.xsd"/>
+    <xs:include schemaLocation="./External/temporalObjects.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="EX_TemporalExtent_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="extent" type="smXML:TM_Primitive_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_TemporalExtent" type="smXML:EX_TemporalExtent_Type"/>
+    <xs:complexType name="EX_TemporalExtent_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:EX_TemporalExtent"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="EX_VerticalExtent_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="minimumValue" type="smXML:Real_PropertyType"/>
+                    <xs:element name="maximumValue" type="smXML:Real_PropertyType"/>
+                    <xs:element name="unitOfMeasure" type="smXML:UomLength_PropertyType"/>
+                    <xs:element name="verticalDatum" type="smXML:RS_Identifier_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_VerticalExtent" type="smXML:EX_VerticalExtent_Type"/>
+    <xs:complexType name="EX_VerticalExtent_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:EX_VerticalExtent"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="EX_BoundingPolygon_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_EX_GeographicExtent_Type">
+                <xs:sequence>
+                    <xs:element name="polygon" type="smXML:_GM_Object_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_BoundingPolygon" type="smXML:EX_BoundingPolygon_Type" substitutionGroup="smXML:_EX_GeographicExtent"/>
+    <xs:complexType name="EX_BoundingPolygon_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:EX_BoundingPolygon"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="EX_Extent_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="description" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="verticalElement" type="smXML:EX_VerticalExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="temporalElement" type="smXML:EX_TemporalExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="geographicElement" type="smXML:_EX_GeographicExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_Extent" type="smXML:EX_Extent_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   count(description + geographicElement + temporalElement + verticalElement) &gt;0
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="EX_Extent_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:EX_Extent"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_EX_GeographicExtent_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="extentTypeCode" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_EX_GeographicExtent" type="smXML:_EX_GeographicExtent_Type" abstract="true"/>
+    <xs:complexType name="_EX_GeographicExtent_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_EX_GeographicExtent"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="EX_GeographicBoundingBox_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_EX_GeographicExtent_Type">
+                <xs:sequence>
+                    <xs:element name="westBoundLongitude" type="smXML:approximateLongitude_PropertyType"/>
+                    <xs:element name="eastBoundLongitude" type="smXML:approximateLongitude_PropertyType"/>
+                    <xs:element name="southBoundLatitude" type="smXML:approximateLatitude_PropertyType"/>
+                    <xs:element name="northBoundLatitude" type="smXML:approximateLatitude_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_GeographicBoundingBox" type="smXML:EX_GeographicBoundingBox_Type" substitutionGroup="smXML:_EX_GeographicExtent"/>
+    <xs:complexType name="EX_GeographicBoundingBox_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:EX_GeographicBoundingBox"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="EX_SpatialTemporalExtent_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:EX_TemporalExtent_Type">
+                <xs:sequence>
+                    <xs:element name="spatialExtent" type="smXML:_EX_GeographicExtent_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_SpatialTemporalExtent" type="smXML:EX_SpatialTemporalExtent_Type" substitutionGroup="smXML:EX_TemporalExtent"/>
+    <xs:complexType name="EX_SpatialTemporalExtent_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:EX_SpatialTemporalExtent"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="EX_GeographicDescription_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_EX_GeographicExtent_Type">
+                <xs:sequence>
+                    <xs:element name="geographicIdentifier" type="smXML:MD_Identifier_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="EX_GeographicDescription" type="smXML:EX_GeographicDescription_Type" substitutionGroup="smXML:_EX_GeographicExtent"/>
+    <xs:complexType name="EX_GeographicDescription_PropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:EX_GeographicDescription"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+	<sld:NamedLayer>
+		<sld:Name>Railroads</sld:Name>
+        <!-- 
+         +++++++++++++++++++++++++++++++++++++++
+         +++++++++++ Layer Railroads +++++++++++
+         +++++++++++++++++++++++++++++++++++++++
+         -->
+		<sld:UserStyle>
+			<sld:Name>default:Railroads</sld:Name>
+			<sld:Title>railroad</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>Railroads</sld:Name>
+				<sld:Rule>
+					<sld:Name>LineRule</sld:Name>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">5</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>LineRule</sld:Name>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#FFFFFF</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">3</sld:CssParameter>
+							<sld:CssParameter name="stroke-linecap">square</sld:CssParameter>
+							<sld:CssParameter name="stroke-linejoin">round</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">10 15</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+        <!-- 
+         +++++++++++++++++++++++++++++++++++++++
+         +++++++++++ Layer Airports ++++++++++++
+         +++++++++++++++++++++++++++++++++++++++
+         -->
+		<sld:UserStyle>
+			<sld:Name>default:Airports</sld:Name>
+			<sld:Title>default:Airports</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>Airports</sld:Name>
+				<sld:Rule>
+					<sld:Name>LineRule</sld:Name>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#B0C4DE</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">3</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+	</sld:NamedLayer>
+</sld:StyledLayerDescriptor>

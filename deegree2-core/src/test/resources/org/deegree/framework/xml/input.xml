@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wfs="http://www.opengis.net/wfs">
+  <gml:boundedBy>
+    <gml:Envelope>
+      <gml:pos>-10.0 -10.0</gml:pos>
+      <gml:pos>10.0 10.0</gml:pos>
+    </gml:Envelope>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <Record fid="DC_cite:BasicPolygons">
+      <DUBLINCORE.IDENTIFIER>cite:BasicPolygons</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>artificial features</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Basic Polygons dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Basic Polygons</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-10.0,-10.0 10.0,-10.0 10.0,10.0 -10.0,10.0 -10.0,-10.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:Bridges">
+      <DUBLINCORE.IDENTIFIER>cite:Bridges</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>structure,bridges</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Bridges dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Bridges</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:BuildingCenters">
+      <DUBLINCORE.IDENTIFIER>cite:BuildingCenters</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>location,building centers</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Building Centers dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Building Centers</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:Buildings">
+      <DUBLINCORE.IDENTIFIER>cite:Buildings</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>structure,buildings</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Buildings dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Buildings</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:DividedRoutes">
+      <DUBLINCORE.IDENTIFIER>cite:DividedRoutes</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>transportation,routes</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Divided Routes dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Divided Routes</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:Forests">
+      <DUBLINCORE.IDENTIFIER>cite:Forests</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>biota,forest</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Forests dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Forests</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:Lakes">
+      <DUBLINCORE.IDENTIFIER>cite:Lakes</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>inlandWaters,lakes</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Lakes dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Lakes</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:MapNeatline">
+      <DUBLINCORE.IDENTIFIER>cite:MapNeatline</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>boundaries,map boundary</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Map Neatline dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Map Neatline</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:NamedPlaces">
+      <DUBLINCORE.IDENTIFIER>cite:NamedPlaces</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>location,place names</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Named Places dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Named Places</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:Ponds">
+      <DUBLINCORE.IDENTIFIER>cite:Ponds</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>inlandWaters,ponds</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Ponds dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Ponds</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:RoadSegments">
+      <DUBLINCORE.IDENTIFIER>cite:RoadSegments</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>transportation,roads</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Road Segments dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Road Segments</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Record fid="DC_cite:Streams">
+      <DUBLINCORE.IDENTIFIER>cite:Streams</DUBLINCORE.IDENTIFIER>
+      <DUBLINCORE.CONTRIBUTOR>lat/lon GmbH</DUBLINCORE.CONTRIBUTOR>
+      <DUBLINCORE.CREATOR>Open Geospatial Consortium</DUBLINCORE.CREATOR>
+      <DUBLINCORE.PUBLISHER>lat/lon GmbH</DUBLINCORE.PUBLISHER>
+      <DUBLINCORE.SUBJECT>inlandWaters,streams</DUBLINCORE.SUBJECT>
+      <DUBLINCORE.DESCRIPTION>Streams dataset from OGC CITE WMS 1.1.1 test data. This set of features makes up a map of a fictional location called Blue Lake. The features are as described in the Simple Features Specification for SQL document, except they have been converted to WGS84 coordinates and have been reoriented so the area is centered at 0 degrees latitude, 0 degrees longitude.</DUBLINCORE.DESCRIPTION>
+      <DUBLINCORE.RELATION>http://cite.occamlab.com/</DUBLINCORE.RELATION>
+      <DUBLINCORE.SOURCE>http://cite.occamlab.com/test_engine/wms_1_1_1/files/WmsTestData.zip</DUBLINCORE.SOURCE>
+      <DUBLINCORE.RIGHTS>publicly available</DUBLINCORE.RIGHTS>
+      <DUBLINCORE.FORMAT>shapefile</DUBLINCORE.FORMAT>
+      <DUBLINCORE.TYPE>geospatial vector dataset</DUBLINCORE.TYPE>
+      <DUBLINCORE.TITLE>OGC CITE Streams</DUBLINCORE.TITLE>
+      <DUBLINCORE.DATE>2004-09-09 10:00:00.0</DUBLINCORE.DATE>
+      <DUBLINCORE.LANGUAGE>en</DUBLINCORE.LANGUAGE>
+      <DUBLINCORE.COVERAGE>
+        <gml:Polygon srsName="EPSG:4326">
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0 1.0,-1.0 1.0,1.0 -1.0,1.0 -1.0,-1.0</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </DUBLINCORE.COVERAGE>
+    </Record>
+  </gml:featureMember>
+</wfs:FeatureCollection>

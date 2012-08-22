@@ -1,0 +1,2 @@
+C:\Programme\Java\jre1.5.0_06\bin\java -classpath .;..\..\classes;..\..\lib\jts\jts-1.8.jar;..\..\lib\log4j\log4j-1.2.9.jar;..\..\lib\commons\commons-logging.jar;..\..\lib\xml\jaxen-1.1-beta-8.jar;..\..\lib\jai\jai_core.jar org.deegree.tools.srs.DemoCRSTransform -sourceCRS epsg:4326 -targetCRS epsg:31467 -coord "6.365453 , 39.4902283"
+pause

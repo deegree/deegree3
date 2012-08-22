@@ -1,0 +1,35 @@
+<!-- $HeadURL$ -->
+<!-- $Id$ -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree terrainService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <p>
+        deegree Web Perspective View Service (WPVS) is an open source implementation of the draft OpenGIS&reg; Web 
+        Perspective View Service Implementation Specifications. It provides a simple HTTP GET interface for requesting 
+        3D scenes from one or more distributed geospatial databases and/or data files. A WPVS request defines the 
+        geographic datasets (which are more or less equivalent to WMS layers), an area of interest, a position of the 
+        viewer and the view direction. The response to this request is one image (returned as JPEG, PNG, etc) containing 
+        the rendered view of the requested 3D scene.
+        </p>
+        <p>
+        The benefit of a WPVS is its ability to render complex 3D scenes for extremly large datasets with high 
+        performance on a server, while the results can be displayed in any web browser without any additional plugins. 
+        The WPVS demo comes with a simple HTML/JSP client that enables you to create and manipulate 3D scene views by 
+        clicking onto self explaining control elements.
+        </p>
+        <p>
+        Unfortunately, the WPVS specification never became an official OGC standard. deegree implements the draft 
+        version of 1.0.0 implementation specification from 2005-10-20.
+        </p>
+        <p>
+        Please note: The deegree3 WPVS implementation is already available which offers a massive performance 
+        improvement and even better rendering quality. For details see the <a target="_blank" 
+        href="http://wiki.deegree.org/deegreeWiki/deegree3/WebPerspectiveViewService">deegree wiki</a>.
+        </p>
+    </body>
+</html>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:Capabilities
+  version="2.0.0"
+  updateSequence="0"
+  xmlns:ows="http://www.opengis.net/ows"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:csw="http://www.opengis.net/cat/csw"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:deegree="http://www.deegree.org/csw"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:wrs="http://www.opengis.net/cat/wrs">
+  <deegree:deegreeParams>
+    <deegree:DefaultOnlineResource
+      xlink:type="simple"
+      xlink:href="http://localhost:8081/wfs/services" />
+    <deegree:CacheSize>1</deegree:CacheSize>
+    <deegree:RequestTimeLimit>60</deegree:RequestTimeLimit>
+    <deegree:Encoding>UTF-8</deegree:Encoding>
+    <deegree:TransactionInputXSLT
+      xlink:type="simple"
+      xlink:href="ebrim/inEBRIM.xsl" />
+    <deegree:TransactionOutputXSLT
+      xlink:type="simple"
+      xlink:href="ebrim/outEBRIM.xsl" />
+    <!-- this parameter will be used to define the default schema used by the catalogue
+      if OUTPUTSCHEMA parameter is missing. According to CS-W specification this must be
+      OGCCORE which is not useful for GetRecordById requests -->
+    <deegree:DefaultOutputSchema>urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0</deegree:DefaultOutputSchema>
+    <deegree:WFSResource
+      xlink:type="simple"
+      xlink:href="wfs_capabilities.xml" />
+  </deegree:deegreeParams>
+  <ows:ServiceIdentification>
+    <ows:ServiceType>CSW</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:Title>deegree 2.0 CSW test</ows:Title>
+    <ows:Abstract>abstract</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>deegree</ows:Keyword>
+    </ows:Keywords>
+    <ows:Fees>NO FEES - IT'S FREE</ows:Fees>
+    <ows:AccessConstraints>NONE</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite
+      xlink:type="simple"
+      xlink:href="http://www.latlon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName />
+      <ows:PositionName />
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>++49 228 18496-0</ows:Voice>
+          <ows:Facsimile>++49 228 18496-29</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:DeliveryPoint>basement</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource
+          xlink:type="simple"
+          xlink:href="mailto:info@latlon.de" />
+        <ows:HoursOfService>9am-17pm</ows:HoursOfService>
+        <ows:ContactInstructions>personal</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get
+            xlink:type="simple"
+            xlink:href="http://localhost:8081/wfs/services" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeRecord">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get
+            xlink:type="simple"
+            xlink:href="http://localhost:8081/wfs/services" />
+          <ows:Post
+            xlink:type="simple"
+            xlink:href="http://localhost:8081/wfs/services" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="typeName">
+        <ows:Value>csw:dataset</ows:Value>
+        <ows:Value>csw:datasetcollection</ows:Value>
+        <ows:Value>csw:application</ows:Value>
+        <ows:Value>csw:service</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="schemaLanguage">
+        <ows:Value>XMLSCHEMA</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetRecords">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Post
+            xlink:type="simple"
+            xlink:href="http://localhost:8081/wfs/services" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="typeName">
+        <!--  The following values map the schema(s) to the types this csw can handle -->
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:Association</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:AuditableEvent</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:Classification</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:ClassificationNode</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:ClassificationScheme</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:ExternalIdentifier</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:ExtrinsicObject</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:RegistryPackage</ows:Value>
+        <ows:Value deegree:schema="oasis_ebrim/3.0/rim.xsd">rim:Slot</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>application/xml</ows:Value>
+      </ows:Parameter>
+      <!-- which xslt scripts should be used if the given outputschema attribute is set, don't forget to set the deegree:defaultoutputschema element accordingly (in the deegreeparams section) -->
+      <ows:Parameter name="outputSchema">
+        <ows:Value
+          deegree:input="ebrim/inEBRIM.xsl"
+          deegree:output="ebrim/outEBRIM.xsl">urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0</ows:Value>
+        <ows:Value
+          deegree:input="ebrim/inEBRIM.xsl"
+          deegree:output="ebrim/outEBRIM.xsl">csw:Record</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="resultType">
+        <ows:Value>RESULTS</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="elementSetName">
+        <ows:Value>brief</ows:Value>
+        <ows:Value>summary</ows:Value>
+        <ows:Value>full</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetRecordById">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get
+            xlink:type="simple"
+            xlink:href="http://localhost:8081/wfs/services" />
+          <ows:Post
+            xlink:type="simple"
+            xlink:href="http://localhost:8081/wfs/services" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="Transaction">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Post xlink:href="http://127.0.0.1:8080/deegreewfs?" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <ogc:Filter_Capabilities>
+    <ogc:Spatial_Capabilities>
+      <ogc:Spatial_Operators>
+        <ogc:BBOX />
+      </ogc:Spatial_Operators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:Logical_Operators />
+      <ogc:Comparison_Operators>
+        <ogc:Like />
+      </ogc:Comparison_Operators>
+      <ogc:Arithmetic_Operators>
+        <ogc:Simple_Arithmetic />
+      </ogc:Arithmetic_Operators>
+    </ogc:Scalar_Capabilities>
+  </ogc:Filter_Capabilities>
+  <wrs:ServiceFeatures>
+    <wrs:feature name="http://www.opengis.net/cat/wrs/features/deep-search">
+      <wrs:property name="http://www.opengis.net/cat/wrs/properties/mime-types">
+        <wrs:value>application/xml</wrs:value>
+        <wrs:value>text/xml</wrs:value>
+      </wrs:property>
+    </wrs:feature>
+    <wrs:feature name="http://www.opengis.net/cat/wrs/features/audit-trail" />
+    <!-- wrs:feature name="http://www.opengis.net/cat/wrs/features/version-control">
+      <wrs:property name="http://www.opengis.net/cat/wrs/properties/object-types">
+      <wrs:value>urn:oasis:names:tc:ebxmlregrep: ObjectType:RegistryObject:Service</wrs:value>
+      <wrs:value>
+      urn:oasis:names:tc:ebxmlregrep: ObjectType:RegistryObject:ExtrinsicObject
+      </wrs:value>
+      </wrs:property>
+      </wrs:feature-->
+  </wrs:ServiceFeatures>
+  <wrs:ServiceProperties>
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/extensionpackages">
+      <wrs:value>urn:x-ogc:specification:csw-ebrim:extpkg: Basic</wrs:value>
+    </wrs:property>
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/harvestprotocols">
+      <wrs:value>http</wrs:value>
+    </wrs:property>
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/query-languages">
+      <wrs:value>http://www.opengis.net/ogc</wrs:value>
+      <wrs:value>http://www.w3.org/TR/xpath</wrs:value>
+    </wrs:property>
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/mime-types">
+      <wrs:value>application/xml</wrs:value>
+      <wrs:value>text/xml</wrs:value>
+    </wrs:property>
+    <!-- duplicates info in ogc:GeometryOperands? -->
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/geometry-types">
+      <wrs:value>gml:Point</wrs:value>
+    </wrs:property>
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/temporal-refsystems">
+      <wrs:value>urn:x-ogc:def:trs:ISO-8601</wrs:value>
+    </wrs:property>
+    <wrs:property name="http://www.opengis.net/cat/wrs/properties/spatial-refsystems">
+      <wrs:value>urn:x-ogc:def:crs:EPSG:4326</wrs:value>
+    </wrs:property>
+  </wrs:ServiceProperties>
+  <wrs:WSDL-services
+    xlink:type="simple"
+    xlink:href="http://catalogue.demo.acme.com/catalogue/wsdl"
+    xlink:title="Available service endpoints (WSDL 2.0)"
+    xlink:role="http://www.w3.org/2005/08/wsdl" />
+</csw:Capabilities>

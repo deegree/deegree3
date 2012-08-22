@@ -1,0 +1,47 @@
+<!--
+nameIndexed means that the name of each tile within a directory is constructed from
+the coordinates of its lower left corner. Because the resolution of the tiles is known
+deegree can 'calculate' the required tiles from the requested bounding box
+-->
+<deegree:Extension type="nameIndexed">
+    <deegree:Resolution max="99999999" min="1">
+        <!--
+            it is assumed that the resolution of the tiles contained within a directory is
+            equal to the min-resolution the enclosing directory belongs to.
+            attributes:
+            - extensions: contains a list of recognized file endings.
+            - tileWidth: width of a tile in pixel 
+            - tileHeight: height of a tile in pixel 
+        -->
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/775165/l1</deegree:Name>
+            <!--
+            bounding box of the tiles stored within the directory
+            optional; default: the entire coverage
+            -->
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2677500,5616500 2678000,5617000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/780155/l1</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2678000,5615500 2678500,5616000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+    </deegree:Resolution>
+    <deegree:Resolution max="1" min="0.5">
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/775165/l0.5</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2677500,5616500 2678000,5617000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+        <deegree:Directory extensions="tif,gif,bmp,jpg,png" tileHeight="250" tileWidth="250">
+            <deegree:Name>aerial_images/780155/l0.5</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2678000,5615500 2678500,5616000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:Directory>
+    </deegree:Resolution>
+</deegree:Extension>

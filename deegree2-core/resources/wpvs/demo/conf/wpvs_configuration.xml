@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewpvs:WPVS_Configuration xmlns:deegreewpvs="http://www.deegree.org/wpvs" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:ows="http://www.opengis.net/ows" xmlns:wpvs="http://www.opengis.net/wpvs" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:app="http://www.deegree.org/app"
+  xmlns:wfs="http://www.opengis.net/wfs" version="1.0.0" updateSequence="String">
+  <!-- ================================================================== -->
+  <!--    DEEGREE PARAMS SECTION     		                                -->
+  <!-- ================================================================== -->
+  <deegreewpvs:deegreeParams>
+    <deegreewpvs:DefaultOnlineResource xlink:href="${default.online.resource}" />
+    <deegreewpvs:CacheSize>100</deegreewpvs:CacheSize>
+    <!-- The time a request has, before it gets terminated -->
+    <deegreewpvs:RequestTimeLimit>60</deegreewpvs:RequestTimeLimit>
+    <!-- for jpeg (in the future tiff) encoding -->
+    <deegreewpvs:ViewQuality>0.95</deegreewpvs:ViewQuality>
+    <!-- maximum view width that can be requested. default = 1200 -->
+    <deegreewpvs:MaxViewWidth>1200</deegreewpvs:MaxViewWidth>
+    <!-- maximum view height that can be requested. default = 1000 -->
+    <deegreewpvs:MaxViewHeight>1000</deegreewpvs:MaxViewHeight>
+    <!--  what kind of splitter to use if the no splitter is requested (can be BBOX or QUAD) -->
+    <deegreewpvs:DefaultSplitter>QUAD</deegreewpvs:DefaultSplitter>
+    <!--
+      defines the maximum requestsize for a texture. This values will be applied to all datasource! If this value is omitted or larger then the gpu's
+      maximum texturesize, the gpu's value will be used.
+    -->
+    <deegreewpvs:MaxTextureDimension>2048</deegreewpvs:MaxTextureDimension>
+    <!--
+      The number of leaves a quad-splitter can have, before it starts merging quad-leaves, defaults to 10. This value speeds up the process of the
+      quadtree. In some special cases it is preferable to leave the quadtree's leaves as they were calculated, without merging them.
+    -->
+    <deegreewpvs:QuadMergeCount>8</deegreewpvs:QuadMergeCount>
+    <!-- The minimalheight of the terrain, if no fitting dgm is found all points will be set to this
+      height, defaults to 0-->
+    <deegreewpvs:MinimalTerrainHeight>1280</deegreewpvs:MinimalTerrainHeight>
+    <!--  which is printed in the lowerleft corner of the GetView (image) response, can be omitted -->
+    <deegreewpvs:Copyright>
+      <!-- Text>Copyright 2006 lat/lon GmbH </Text -->
+      <deegreewpvs:ImageURL xlink:href="images/copyright/logo-deegree_alpha.gif" watermark="false" />
+    </deegreewpvs:Copyright>
+    <!--
+      If the splitter is QUAD should it generate lots of request (e.g higher quality) or fewer requests (e.g. lower Quality but quicker processing
+      time)
+    -->
+    <deegreewpvs:RequestQualityPreferred>false</deegreewpvs:RequestQualityPreferred>
+    <!-- What is the maximum requestable far clippingplane in meters-->
+    <deegreewpvs:RequestsMaximumFarClippingPlane>15000</deegreewpvs:RequestsMaximumFarClippingPlane>
+    <!-- The near clippingplane of the viewport, preferrably set to 1000th of the maximum far clippingplane, defaults to 
+      the value 2-->
+    <deegreewpvs:NearClippingPlane>2</deegreewpvs:NearClippingPlane>
+    <!--
+      If a wcs is used for the elevationmodel, the following value defines the minimal resolution in meters, which means a wcs-request can not have a
+      smaller resolution as this value. This helps removing typical "ricefield" forms in the landscape.
+    -->
+    <deegreewpvs:MinimalWCSElevationModelResolution>40</deegreewpvs:MinimalWCSElevationModelResolution>
+    <!--
+      If a wcs is used for the elevationmodel, it is often possible to see a little rim between the request tiles. This value defines a percentage to
+      add to the request, resulting in overlapping request thus removing the space between tiles. valid values are 0 <= x <= 100
+    -->
+    <deegreewpvs:ExtendRequestPercentage>6</deegreewpvs:ExtendRequestPercentage>
+    <!-- A list of the images a client can request to be rendered in the background -->
+    <deegreewpvs:BackgroundList>
+      <deegreewpvs:Background name="cirrus" href="images/sky/cirrus.jpg" />
+      <deegreewpvs:Background name="cloudy" href="images/sky/cloudy.jpg" />
+      <deegreewpvs:Background name="sunset" href="images/sky/sunset.jpg" />
+    </deegreewpvs:BackgroundList>
+    <deegreewpvs:RenderAntialiased>true</deegreewpvs:RenderAntialiased>
+  </deegreewpvs:deegreeParams>
+  <!-- ================================================================== -->
+  <!--    SERVICE IDENTIFICATION SECTION         		                    -->
+  <!-- ================================================================== -->
+  <ows:ServiceIdentification>
+    <ows:Title>WPVS for Salt Lake City, Utah -USA</ows:Title>
+    <ows:Abstract>
+      A WPVS which creates a perspective view of the Downtown region of Salt Lake City, Utah - USA
+    </ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>WPVS</ows:Keyword>
+      <ows:Type>String</ows:Type>
+    </ows:Keywords>
+    <ows:ServiceType>WPVS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+    <ows:Fees>none</ows:Fees>
+    <ows:AccessConstraints>none</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <!-- ================================================================== -->
+  <!--    SERVICE PROVIDER SECTION                                    	-->
+  <!-- ================================================================== -->
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Rutger Bezema</ows:IndividualName>
+      <ows:PositionName>developer</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 228 184960</ows:Voice>
+          <ows:Facsimile>+49 228 1849629</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>Northrhine-Westfalia</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.lat-lon.de" />
+        <ows:HoursOfService>9am - 4pm (CET)</ows:HoursOfService>
+        <ows:ContactInstructions>Email preferred</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <!-- ================================================================== -->
+  <!--    OPERATIONS METADATA SECTION                                     -->
+  <!-- ================================================================== -->
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="${default.online.resource}?">
+            <ows:Constraint name="operation_dcp_http_get_constraint_name_String">
+              <ows:AllowedValues>
+                <ows:Value>operation_dcp_http_get_constraint_owsValue_String</ows:Value>
+              </ows:AllowedValues>
+              <ows:DefaultValue>String</ows:DefaultValue>
+            </ows:Constraint>
+          </ows:Get>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="GetCapabilitiesOperation_parameter_name_String">
+        <ows:AllowedValues>
+          <ows:Value>operation_parameter_owsValue_String</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>String</ows:DefaultValue>
+      </ows:Parameter>
+      <ows:Constraint name="operation_constrain_name_String">
+        <ows:AllowedValues>
+          <ows:Value>operation_constrain_owsValue_String</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>String</ows:DefaultValue>
+      </ows:Constraint>
+    </ows:Operation>
+    <ows:Operation name="GetView">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="${default.online.resource}?">
+            <ows:Constraint name="String">
+              <ows:AllowedValues>
+                <ows:Value>String</ows:Value>
+              </ows:AllowedValues>
+              <ows:DefaultValue>String</ows:DefaultValue>
+            </ows:Constraint>
+          </ows:Get>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="GetViewOperation_parameter_name_String">
+        <ows:AllowedValues>
+          <ows:Value>String</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>String</ows:DefaultValue>
+      </ows:Parameter>
+      <ows:Constraint name="String">
+        <ows:AllowedValues>
+          <ows:Value>String</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>String</ows:DefaultValue>
+      </ows:Constraint>
+    </ows:Operation>
+    <ows:Parameter name="String">
+      <ows:AllowedValues>
+        <ows:Value>String</ows:Value>
+      </ows:AllowedValues>
+      <ows:DefaultValue>String</ows:DefaultValue>
+    </ows:Parameter>
+    <ows:Constraint name="String">
+      <ows:AllowedValues>
+        <ows:Value>String</ows:Value>
+      </ows:AllowedValues>
+      <ows:DefaultValue>String</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:ExtendedCapabilities>Text</ows:ExtendedCapabilities>
+  </ows:OperationsMetadata>
+  <!-- ================================================================== -->
+  <!--    DATASET SECTION                                     			-->
+  <!-- ================================================================== -->
+  <deegreewpvs:Dataset queryable="0" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+    <!--
+      The name by which a Dataset shall be requested, the specification is not clear about the real requestable element, therefor deegree uses the
+      (optional) Name element to find datasets for a given request. If the dataset is not a structural one the name is thus mandatory (in deegree), in
+      this toplayer dataset the name could be omitted.
+    -->
+    <deegreewpvs:Name>WPVS Top Layer</deegreewpvs:Name>
+    <!--
+      the Title element will be represented to a client to pick from, not to be confused with the identifier element, which will be given in a GetView
+      request.
+    -->
+    <deegreewpvs:Title>A human readable name for this dataset</deegreewpvs:Title>
+    <deegreewpvs:Abstract>
+      This Dataset is the root of all datasets, the values here will be used to fill in optional values in it's
+      children. This
+      abstract element is optional.
+    </deegreewpvs:Abstract>
+    <!-- Keywords: Optional Unordered list of one or more commonly used or formalised word(s) or phrase(s) used to describe the subject.-->
+    <ows:Keywords>
+      <!-- mandatory element -->
+      <ows:Keyword>Cool view</ows:Keyword>
+      <!-- optional element describing in which namespace/dictionary etc. the keywords can be found-->
+      <ows:Type codeSpace="http://optional_codespace_attribute/">englisch slang dictonary</ows:Type>
+    </ows:Keywords>
+    <!-- The root dataset must define at least one coordinate system, the other datasets will use this crs if no other is given-->
+    <deegreewpvs:CRS>EPSG:26912</deegreewpvs:CRS>
+    <!-- Mandatory element, describing the returned object of this dataset, e.g. text/xml or image/png -->
+    <deegreewpvs:Format>image/jpg</deegreewpvs:Format>
+    <!-- Mandotory element -->
+    <ows:WGS84BoundingBox crs="urn:ogc:def:crs:OGC:2:84" dimensions="2">
+      <ows:LowerCorner>-111.95352895979279 40.724274423103856</ows:LowerCorner>
+      <ows:UpperCorner>-111.88392802793884 40.871304682151964</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+    <!--  Optional element BoundingBox can be used to precise the valid bbox for the supported crs's -->
+    <ows:BoundingBox crs="EPSG:26912" dimensions="2">
+      <ows:LowerCorner>424585.3 4512973.8</ows:LowerCorner>
+      <ows:UpperCorner>425403.5 4513746.0</ows:UpperCorner>
+    </ows:BoundingBox>
+    <!--
+      Optional element dimension can be used to describe different dimension inside a dataset, comparable to the dimension element of a wms-layer.
+      Mandatory attributes are: name and units, Optional attributes: unitSymbol (a string), default (a string), multipleValues (a boolean),
+      nearestValue (a boolean), current (a boolean) ****Attention, deegree WPVS can parse, but not handle this element at the moment******
+    -->
+    <wpvs:Dimension name="time" units="hour" unitSymbol="h" default="23" multipleValues="false" nearestValue="true" current="true">A time dimension of this dataset</wpvs:Dimension>
+    <!-- Optional element DataProvider can be used to describe the owner of this dataset -->
+    <wpvs:DataProvider>
+      <wpvs:ProviderName>Optional name of this provider</wpvs:ProviderName>
+      <wpvs:ProviderSite xlink:href="http://Optional_internetsite_of_this_provider.com" />
+      <!-- optional logo which can be diplayed to a user, optional attributes width and height > 0 -->
+      <wpvs:LogoURL width="400" height="400">
+        <!-- mandatory element format -->
+        <wpvs:Format>mime/type</wpvs:Format>
+        <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+      </wpvs:LogoURL>
+    </wpvs:DataProvider>
+    <!-- mandatory element Identifier which clients will use to refer this dataset to, unambigous/unique for all datasets -->
+    <deegreewpvs:Identifier codeSpace="http://www.optional_attribute.com">
+      first_dataset_identifier
+    </deegreewpvs:Identifier>
+    <!-- optional element metadata, can be used for detailed, standardized metadata about the data underneath a particular dataset -->
+    <wpvs:MetaData type="The type attribute indicates the standard to which the metadata complies">
+      <!-- mandatory element format -->
+      <wpvs:Format>mime/type</wpvs:Format>
+      <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+    </wpvs:MetaData>
+    <!--
+      optional element DatasetReference A wpvs Server may use DatasetReference to offer a link to the underlying data represented by a particular
+      dataset
+    -->
+    <wpvs:DatasetReference>
+      <!-- mandatory element format -->
+      <wpvs:Format>mime/type</wpvs:Format>
+      <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+    </wpvs:DatasetReference>
+    <!--
+      optional element FeatureListReference A wpvs Server may use FeatureListReference to point to a list of the features represented in a dataset
+    -->
+    <wpvs:FeatureListReference>
+      <!-- mandatory element format -->
+      <wpvs:Format>mime/type</wpvs:Format>
+      <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+    </wpvs:FeatureListReference>
+    <!--
+      optional element style, lists the name by which a style is requested and a human-readable title for pick lists, optionally (and ideally)
+      provides a human-readable description, and optionally gives a style URL.
+    -->
+    <wpvs:Style>
+      <wpvs:Name>the human readable mandatory name</wpvs:Name>
+      <wpvs:Title>the unique mandatory style title</wpvs:Title>
+      <wpvs:Abstract>describing the syle mandatory</wpvs:Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Cool Style</ows:Keyword>
+        <ows:Type codeSpace="http://optional_codespace_attribute/">englisch slang dictonary</ows:Type>
+      </ows:Keywords>
+      <wpvs:Identifier codeSpace="http://www.optional_attribute.com">mandatory_unique_style_identifier</wpvs:Identifier>
+      <!--
+        optional list of element LegendURL (attributes width and height are mandatory), A WPVS Server may use zero or more LegendURL elements to
+        provide an image(s) of a legend relevant to each Style of a Dataset
+      -->
+      <wpvs:LegendURL width="400" height="400">
+        <!-- mandatory element format -->
+        <wpvs:Format>mime/type</wpvs:Format>
+        <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+      </wpvs:LegendURL>
+      <!-- Optional list of element StyleSheeetURL provides symbology information for each Style of a Dataset -->
+      <wpvs:StyleSheetURL>
+        <!-- mandatory element format -->
+        <wpvs:Format>mime/type</wpvs:Format>
+        <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+      </wpvs:StyleSheetURL>
+      <!--
+        Optional list of element StyleURL. A WPVS Server may use StyleURL to offer more information about the data or symbology underlying a
+        particular Style
+      -->
+      <wpvs:StyleURL>
+        <!-- mandatory element format -->
+        <wpvs:Format>mime/type</wpvs:Format>
+        <wpvs:OnlineResource xlink:href="http://optional_online_location.com" />
+      </wpvs:StyleURL>
+    </wpvs:Style>
+    <!-- mandatory element MinimumScaleDenominator 0 < value <= maximumScaleDenominator-->
+    <deegreewpvs:MinimumScaleDenominator>0.1</deegreewpvs:MinimumScaleDenominator>
+    <!-- mandatory element MaximumScaleDenominator  value >= minimumScaleDenominator-->
+    <deegreewpvs:MaximumScaleDenominator>55555555</deegreewpvs:MaximumScaleDenominator>
+    <!-- ********************* -->
+    <!--  FIRST CHILD DATASET, -->
+    <!--    which uses a localwfs to display some buildings -->
+    <!-- ********************* -->
+    <deegreewpvs:Dataset queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+      <!--
+        The schema says name is optional, for deegree the name is only optional if the dataset is a structural one (one which will not provide
+        viewable data and thus cannot be requested by a GetView-Request). This dataset provides viewable data therefore this name element is mandatory
+      -->
+      <deegreewpvs:Name>Buildings</deegreewpvs:Name>
+      <deegreewpvs:Title>Utah WPVS</deegreewpvs:Title>
+      <deegreewpvs:Format>innerDataset_format_application/x;x=x</deegreewpvs:Format>
+      <deegreewpvs:Abstract>
+        A dataset which shows some buildings of Salt Lake City, Utah - USA
+      </deegreewpvs:Abstract>
+      <deegreewpvs:CRS>EPSG:26912</deegreewpvs:CRS>
+      <ows:WGS84BoundingBox crs="urn:ogc:def:crs:OGC:2:84" dimensions="2">
+        <ows:LowerCorner>-111.95352895979279 40.724274423103856</ows:LowerCorner>
+        <ows:UpperCorner>-111.88392802793884 40.771304682151964</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <deegreewpvs:Identifier>second_dataset_identifier</deegreewpvs:Identifier>
+      <deegreewpvs:MinimumScaleDenominator>0.1</deegreewpvs:MinimumScaleDenominator>
+      <deegreewpvs:MaximumScaleDenominator>700000</deegreewpvs:MaximumScaleDenominator>
+      <!-- ******************** -->
+      <!-- A LocalWFSDataSource -->
+      <!-- ******************** -->
+      <!--
+        The schema says DataSource is optional, for deegree the DataSource is only optional if the dataset is a structural one (one which will not
+        provide viewable data and thus cannot be requested by a GetView-Request). This dataset provides viewable data therefore at least one
+        DataSource element is mandatory
+      -->
+      <deegreewpvs:LocalWFSDataSource>
+        <!-- The Name element of a deegreewpvs:DataSource is optional. It is only useful for the 
+          administrator and finding debug information -->
+        <deegreewpvs:Name>app:WPVS</deegreewpvs:Name>
+        <!-- The mandatory OWSCapabilities element defines the location of the capabilities 
+          document of this DataSource -->
+        <deegreewpvs:OWSCapabilities>
+          <!-- mandatory OnlineResource element -->
+          <deegreewpvs:OnlineResource xlink:type="simple" xlink:href="file:LOCALWFS_configuration.xml" />
+        </deegreewpvs:OWSCapabilities>
+        <!-- Each DataSource must have a MinimumScaleDenominator -->
+        <deegreewpvs:MinimumScaleDenominator>0.1</deegreewpvs:MinimumScaleDenominator>
+        <!-- Each DataSource must have a MaximumScaleDenominator -->
+        <deegreewpvs:MaximumScaleDenominator>700000</deegreewpvs:MaximumScaleDenominator>
+        <!--
+          Optional GeometryProperty defining the location of the Geometry inside a Feature, though a string is valid, this should be a qualified name
+        -->
+        <deegreewpvs:GeometryProperty>app:geometry</deegreewpvs:GeometryProperty>
+      </deegreewpvs:LocalWFSDataSource>
+    </deegreewpvs:Dataset>
+
+    <!-- ********************* -->
+    <!--  Second CHILD DATASET, -->
+    <!-- which shows only the mandatory elements  -->
+    <!-- ********************* -->
+    <deegreewpvs:Dataset queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+      <deegreewpvs:Name>satellite_images</deegreewpvs:Name>
+      <deegreewpvs:Title>SaltLake Satellite photos</deegreewpvs:Title>
+      <deegreewpvs:Format>image/jpg</deegreewpvs:Format>
+      <deegreewpvs:CRS>EPSG:26912</deegreewpvs:CRS>
+      <ows:WGS84BoundingBox crs="urn:ogc:def:crs:OGC:2:84" dimensions="2">
+        <ows:LowerCorner>-111.94721360400128 40.719021928792515</ows:LowerCorner>
+        <ows:UpperCorner>-111.80644038553243 40.82820182642026</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <deegreewpvs:Identifier>third_dataset_identifier</deegreewpvs:Identifier>
+      <deegreewpvs:MinimumScaleDenominator>0.1</deegreewpvs:MinimumScaleDenominator>
+      <deegreewpvs:MaximumScaleDenominator>700000</deegreewpvs:MaximumScaleDenominator>
+
+      <!-- ******************** -->
+      <!-- A LocalWCSDataSource -->
+      <!-- ******************** -->
+      <deegreewpvs:LocalWCSDataSource>
+        <deegreewpvs:Name>SaltLake_satellite</deegreewpvs:Name>
+        <deegreewpvs:OWSCapabilities>
+          <deegreewpvs:OnlineResource xlink:type="simple" xlink:href="LOCALWCS_configuration.xml" />
+        </deegreewpvs:OWSCapabilities>
+        <!--
+          optional ValidArea element defines an area a datasource is valid for, if no ValidArea is given, the surrounding datasets WGS84BoundingBox is
+          used. Valid Geometry definitions are gml:Surface, gml:Polygon or ows:BoundingBox <deegreewpvs:ValidArea> <gml:Polygon srsName="EPSG:31466">
+          <gml:outerBoundaryIs> <gml:LinearRing> <gml:coordinates cs="," decimal="." ts=" "> 3565687.9,5935846.7 3568308.4,5935846.7
+          3568308.4,5937998.9 3565687.9,5937998.9 3565687.9,5935846.7 </gml:coordinates> </gml:LinearRing> </gml:outerBoundaryIs> </gml:Polygon>
+          </deegreewpvs:ValidArea>
+        -->
+        <!-- Each DataSource must have a MinimumScaleDenominator -->
+        <deegreewpvs:MinimumScaleDenominator>0.1</deegreewpvs:MinimumScaleDenominator>
+        <!-- Each DataSource must have a MaximumScaleDenominator -->
+        <deegreewpvs:MaximumScaleDenominator>1000000</deegreewpvs:MaximumScaleDenominator>
+        <!--
+          Mandatory FilterCondition element, for a CoverageDataSourceType this element defines parts of a wcs/wms request, for a WFSDataSourceType
+          this element defines a wfs:query
+        -->
+        <deegreewpvs:FilterCondition>
+          <!-- Mandatory Request element of type WCSRequest, WMSRequest or wfs:Query -->
+          <deegreewpvs:WCSRequest>
+            <![CDATA[VERSION=1.0.0&coverage=saltlakesatellite&TRANSPARENT=TRUE&FORMAT=jpeg&EXCEPTIONS=application/vnd.ogc.se_xml&crs=EPSG:26912]]>
+          </deegreewpvs:WCSRequest>
+        </deegreewpvs:FilterCondition>
+        <!--
+          Optional TransparentColors element defines a color in a CoverageRequest (wcs/wms) which should be transparent, for the ElevationModel
+          element this element has no effect
+        -->
+        <deegreewpvs:TransparentColors>
+          <!-- Mandatory Color(s) element(s), defining color(s) in hex or oct String format, 
+            which should be transparent -->
+          <deegreewpvs:Color>0xffffff</deegreewpvs:Color>
+          <deegreewpvs:Color>0777777</deegreewpvs:Color>
+        </deegreewpvs:TransparentColors>
+      </deegreewpvs:LocalWCSDataSource>
+    </deegreewpvs:Dataset>
+
+    <!--
+      optional element ElevationModel, The elevation model is valid for all child datasets if no other is given, if no elevationmodel is given at all
+      the wpvs uses deegreewpvs:MinimalTerrainHeight or 0
+    -->
+    <deegreewpvs:ElevationModel>
+      <!-- Mandatory Name element with which this ElevationModel shall be requested -->
+      <deegreewpvs:Name>saltlake_dem</deegreewpvs:Name>
+      <!-- some datasources which can be one or more of LocalWCSDataSource, RemoteWCSDataSource, LocalWFSDataSource or RemoteWFSDataSource -->
+      <deegreewpvs:LocalWCSDataSource>
+        <deegreewpvs:Name>DEM-Model of Salt Lake City</deegreewpvs:Name>
+        <deegreewpvs:OWSCapabilities>
+          <deegreewpvs:OnlineResource xlink:type="simple" xlink:href="LOCALWCS_configuration.xml" />
+        </deegreewpvs:OWSCapabilities>
+        <deegreewpvs:MinimumScaleDenominator>0.1</deegreewpvs:MinimumScaleDenominator>
+        <deegreewpvs:MaximumScaleDenominator>1000000</deegreewpvs:MaximumScaleDenominator>
+        <deegreewpvs:FilterCondition>
+          <deegreewpvs:WCSRequest>
+            <![CDATA[VERSION=1.0.0&coverage=saltlakedem&TRANSPARENT=TRUE&FORMAT=GeoTiff&EXCEPTIONS=application/vnd.ogc.se_xml&crs=EPSG:26912&response_CRS=EPSG:26912]]>
+          </deegreewpvs:WCSRequest>
+        </deegreewpvs:FilterCondition>
+        <deegreewpvs:TransparentColors>
+          <deegreewpvs:Color>#000000</deegreewpvs:Color>
+        </deegreewpvs:TransparentColors>
+      </deegreewpvs:LocalWCSDataSource>
+    </deegreewpvs:ElevationModel>
+
+    <!--
+      The schema says DataSource is optional, for deegree the DataSource element is only optional if the dataset is a structural one (one which will
+      not provide viewable data and thus cannot be requested by a GetView-Request). This (top layer) dataset provides no viewable data therefore no
+      DataSource element is given
+    -->
+
+  </deegreewpvs:Dataset>
+</deegreewpvs:WPVS_Configuration>

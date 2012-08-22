@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:PrintMap xmlns:deegree="http://www.deegree.org/wmps" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+    <deegree:Layers/>       
+    <deegree:Center>
+        <gml:pos></gml:pos>
+    </deegree:Center>
+    <deegree:ScaleDenominator></deegree:ScaleDenominator>
+    <deegree:Transparent>true</deegree:Transparent>
+    <deegree:BGColor>0xFFFFFF</deegree:BGColor>
+    <deegree:Legend></deegree:Legend>
+    <deegree:ScaleBar></deegree:ScaleBar>
+    <deegree:Template></deegree:Template>
+    <deegree:DPI></deegree:DPI>
+    <deegree:EMailAddress></deegree:EMailAddress>
+    <deegree:TextAreas/>
+</deegree:PrintMap>

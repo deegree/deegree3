@@ -1,0 +1,25 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree. For copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="author" content="lat/lon GmbH" />
+        <meta name="KeyWords" content="deegree iGeoPortal lat/lon" />
+        <title>deegree iGeoPortal</title>
+        <link href="../../css/deegree.css" rel="stylesheet" type="text/css" />
+        <script LANGUAGE="JavaScript1.2" TYPE="text/javascript">
+            function register() {
+                if ( parent.controller == null ) {
+                    parent.controller = new parent.Controller();
+                    parent.controller.init();
+                }
+            }
+
+            function initToolbar() {
+                parent.controller.initToolbar( document );
+            }
+        </script>
+    </head>
+    <body onload="register(); initToolbar();" class="pToolbar">
+    </body>
+</html>

@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="1.0.0"
+	xmlns="http://www.opengis.net/sld"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:se="http://www.opengis.net/se"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!--
+		Here are two examples on how to define RasterSymbolizers for raster layers
+		in a Symbology Encoding-like way. Please note that besides Opacity only the
+		ColorMap element is supported right now. You can use both Categorize and Interpolate,
+		as long as they're not used together.
+		
+		Please note that you can use color values with an optional opacity/alpha component. If
+		it is set for a certain value, the default opacity value will be overridden. Color values are
+		specified in hex as follows:
+		#aarrggbb
+		where aa is the optional alpha component (00 means zero opacity, ff is completely opaque) and
+		rr, gg, bb are the red, green and blue color components.
+	-->
+	<!-- NamedLayer>
+		<Name>orthoimage3</Name>
+		<UserStyle>
+			<Name>default:orthoimage3</Name>
+			<Title>Raster symbolisiert</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>raster</Name>
+				<Rule>
+					<Name>raster2</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<se:RasterSymbolizer>
+					This opacity value is the default opacity value, it can be overridden in the color values below.
+						<se:Opacity>0.5</se:Opacity>
+						<se:ColorMap>
+						The interpolate color map creates a gradient coloring from one color to the next.
+						The fallback value is ignored (but required by the specification).
+							<se:Interpolate fallbackValue="#dddddd">
+							The lookup value has to be set to 'Rasterdata'.
+								<se:LookupValue>Rasterdata</se:LookupValue>
+								The interpolation points build the basis for the gradient coloring.
+								In this example, a data point of 500 will be colored in red, while
+								a data point of 1300 will be colored in green. A value of 900 would 
+								be colored with equal red and green components.
+								<se:InterpolationPoint>
+									<se:Data>-9999</se:Data>
+									<se:Value>#00ffffff</se:Value>
+								</se:InterpolationPoint>
+								<se:InterpolationPoint>
+									<se:Data>-9998</se:Data>
+									<se:Value>#ffffffff</se:Value>
+								</se:InterpolationPoint>
+								<se:InterpolationPoint>
+									<se:Data>500</se:Data>
+									<se:Value>#ff0000</se:Value>
+								</se:InterpolationPoint>
+								<se:InterpolationPoint>
+									<se:Data>1300</se:Data>
+									<se:Value>#00ff00</se:Value>
+								</se:InterpolationPoint>
+							</se:Interpolate>
+						</se:ColorMap>
+					</se:RasterSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+	</NamedLayer>
+	<NamedLayer>
+		<Name>orthoimage</Name>
+		<UserStyle>
+			<Name>default:orthoimage</Name>
+			<Title>Raster symbolisiert</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>raster</Name>
+				<Rule>
+					<Name>raster2</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<se:RasterSymbolizer>
+						<se:Opacity>0.5</se:Opacity>
+						<se:ColorMap>
+						The categorize method colors values between two values with just one color.
+						In the following example a value of 26 would be colored with #7deb32. The
+						opacity for the no-data value of -9999 (and below) is set to zero, so
+						areas with non-existing data will be completely transparent.
+							<se:Categorize fallbackValue="#78c818">
+								<se:LookupValue>
+									Rasterdata
+								</se:LookupValue>
+								<se:Value>#00000000</se:Value>
+								<se:Threshold>-9999</se:Threshold>
+								<se:Value>#00ff00</se:Value>
+								<se:Threshold>-417</se:Threshold>
+								<se:Value>#00fa00</se:Value>
+								<se:Threshold>-333</se:Threshold>
+								<se:Value>#14f500</se:Value>
+								<se:Threshold>-250</se:Threshold>
+								<se:Value>#28f502</se:Value>
+								<se:Threshold>-167</se:Threshold>
+								<se:Value>#3cf505</se:Value>
+								<se:Threshold>-83</se:Threshold>
+								<se:Value>#50f50a</se:Value>
+								<se:Threshold>-1</se:Threshold>
+								<se:Value>#64f014</se:Value>
+								<se:Threshold>0</se:Threshold>
+								<se:Value>#7deb32</se:Value>
+								<se:Threshold>30</se:Threshold>
+								<se:Value>#78c818</se:Value>
+								<se:Threshold>105</se:Threshold>
+								<se:Value>#38840c</se:Value>
+								<se:Threshold>300</se:Threshold>
+								<se:Value>#2c4b04</se:Value>
+								<se:Threshold>400</se:Threshold>
+								<se:Value>#ffff00</se:Value>
+								<se:Threshold>700</se:Threshold>
+								<se:Value>#dcdc00</se:Value>
+								<se:Threshold>1200</se:Threshold>
+								<se:Value>#b47800</se:Value>
+								<se:Threshold>1400</se:Threshold>
+								<se:Value>#c85000</se:Value>
+								<se:Threshold>1600</se:Threshold>
+								<se:Value>#be4100</se:Value>
+								<se:Threshold>2000</se:Threshold>
+								<se:Value>#963000</se:Value>
+								<se:Threshold>3000</se:Threshold>
+								<se:Value>#3c0200</se:Value>
+								<se:Threshold>5000</se:Threshold>
+								<se:Value>#ffffff</se:Value>
+								<se:Threshold>13000</se:Threshold>
+								<se:Value>#ffffff</se:Value>
+							</se:Categorize>
+						</se:ColorMap>
+					</se:RasterSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+	</NamedLayer-->
+	<NamedLayer>
+		<Name>default:citelayers</Name>
+		<Title>Cite test</Title>
+		<UserStyle>
+			<Name>default:cite:BasicPolygons</Name>
+			<Title>cite:BasicPolygons</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<PolygonSymbolizer>
+						<Name>GrayFill</Name>
+						<Fill>
+							<CssParameter name="fill">
+								#444444
+							</CssParameter>
+							<CssParameter name="fill-opacity">
+								1
+							</CssParameter>
+						</Fill>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:MapNeatline</Name>
+			<Title>cite:MapNeatline</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>cite:MapNeatline</Name>
+				<Rule>
+					<Name>cite:MapNeatline</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>99999999</MaxScaleDenominator>
+					<LineSymbolizer>
+						<Stroke>
+							<CssParameter name="stroke">
+								#000000
+							</CssParameter>
+							<CssParameter name="stroke-width">
+								1
+							</CssParameter>
+						</Stroke>
+					</LineSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:BuildingCenters</Name>
+			<Title>cite:BuildingCenters</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>cite:BuildingCenters</Name>
+				<Rule>
+					<Name>cite:BuildingCenters</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<PointSymbolizer>
+						<Graphic>
+							<Mark>
+								<WellKnownName>triangle</WellKnownName>
+								<Fill>
+									<CssParameter name="fill">
+										#000000
+									</CssParameter>
+								</Fill>
+								<Stroke>
+									<CssParameter name="stoke">
+										#111111
+									</CssParameter>
+									<CssParameter name="stoke-width">
+										1.0
+									</CssParameter>
+								</Stroke>
+							</Mark>
+							<Size>3</Size>
+						</Graphic>
+					</PointSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Bridges</Name>
+			<Title>cite:Bridges</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>cite:Bridges</Name>
+				<Title>cite:Bridges</Title>
+				<Rule>
+					<Name>cite:Bridges</Name>
+					<Title>cite:Bridges</Title>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<PointSymbolizer>
+						<Graphic>
+							<Mark>
+								<WellKnownName>circle</WellKnownName>
+								<Fill>
+									<CssParameter name="fill">
+										#ff0000
+									</CssParameter>
+								</Fill>
+								<Stroke>
+									<CssParameter name="stroke">
+										#0000ff
+									</CssParameter>
+									<CssParameter name="stroke-width">
+										1.0
+									</CssParameter>
+								</Stroke>
+							</Mark>
+						</Graphic>
+					</PointSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Lakes</Name>
+			<Title>BlueFill</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>BlueFill</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>99999999</MaxScaleDenominator>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">
+								0x0000FF
+							</CssParameter>
+							<CssParameter name="fill-opacity">
+								1
+							</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">
+								0x000000
+							</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Forests</Name>
+			<Title>BlueFill</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>BlueFill</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>99999999</MaxScaleDenominator>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">
+								0x00F200
+							</CssParameter>
+							<CssParameter name="fill-opacity">
+								1
+							</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">
+								0x000000
+							</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Buildings</Name>
+			<Title>default:Buildings</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>default:Buildings</Name>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">
+								0xFFFFFF
+							</CssParameter>
+							<CssParameter name="fill-opacity">
+								1
+							</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">
+								0x000000
+							</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:NamedPlaces</Name>
+			<Title>default:NamedPlaces</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>default:NamedPlaces</Name>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">
+								0xCCCCCC
+							</CssParameter>
+							<CssParameter name="fill-opacity">
+								1
+							</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">
+								0x000000
+							</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Ponds</Name>
+			<Title>default:cite:Ponds</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>default:cite:Ponds</Name>
+					<PolygonSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>GEOM</ogc:PropertyName>
+						</Geometry>
+						<Fill>
+							<CssParameter name="fill">
+								0xDDDDDD
+							</CssParameter>
+							<CssParameter name="fill-opacity">
+								1
+							</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">
+								0x000000
+							</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Streams</Name>
+			<Title>default:cite:Streams</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>LineRule</Name>
+					<LineSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>GEOM</ogc:PropertyName>
+						</Geometry>
+						<Stroke>
+							<CssParameter name="stroke">
+								#0000FF
+							</CssParameter>
+							<CssParameter name="stroke-width">
+								2
+							</CssParameter>
+						</Stroke>
+					</LineSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:DividedRoutes</Name>
+			<Title>default:cite:DividedRoutes</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>LineRule</Name>
+					<LineSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>GEOM</ogc:PropertyName>
+						</Geometry>
+						<Stroke>
+							<CssParameter name="stroke">
+								#000000
+							</CssParameter>
+							<CssParameter name="stroke-width">
+								3
+							</CssParameter>
+						</Stroke>
+					</LineSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:RoadSegments</Name>
+			<Title>default:cite:RoadSegments</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>LineRule</Name>
+					<LineSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>GEOM</ogc:PropertyName>
+						</Geometry>
+						<Stroke>
+							<CssParameter name="stroke">
+								#000000
+							</CssParameter>
+							<CssParameter name="stroke-width">
+								3
+							</CssParameter>
+						</Stroke>
+					</LineSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+		<UserStyle>
+			<Name>default:cite:Rivers</Name>
+			<Title>default:cite:Rivers</Title>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>MyFeatureTypeStyle09876</Name>
+				<Rule>
+					<Name>LineRule</Name>
+					<LineSymbolizer>
+						<Geometry>
+							<ogc:PropertyName>GEOM</ogc:PropertyName>
+						</Geometry>
+						<Stroke>
+							<CssParameter name="stroke">
+								#0000FF
+							</CssParameter>
+							<CssParameter name="stroke-width">
+								1
+							</CssParameter>
+						</Stroke>
+					</LineSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+	</NamedLayer>
+</StyledLayerDescriptor>

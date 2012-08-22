@@ -1,0 +1,319 @@
+<xsd:schema xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/wfs" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<deegreewfs:Prefix>app</deegreewfs:Prefix>
+			<deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+			<deegreewfs:DefaultSRS>EPSG:31467</deegreewfs:DefaultSRS>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>org.postgresql.Driver</Driver>
+				<Url>jdbc:postgresql://hurricane:5432/deegree2</Url>
+				<User>dev</User>
+				<Password>dev</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ============================================================== -->
+	<xsd:element name="gewerbegebiete" type="app:gewerbegebieteType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>gewerbegebiete</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID_">
+					<deegreewfs:MappingField field="gid" type="INTEGER"/>
+				</deegreewfs:gmlId>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="gewerbegebieteType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="gid" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gid" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="id" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="id" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="name" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="kommune" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="kommune" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="kommune_2" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="kommune_2" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="verfuegbar" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="verfuegbar" type="NUMERIC"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="flaeche_ge" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="flaeche_ge" type="NUMERIC"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ausweisung" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ausweisung" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="nr" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="nr" type="BIGINT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="stala_nr" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="stala_nr" type="BIGINT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="w" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="w" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="wr" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="wr" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="wa" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="wa" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="md" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="md" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="mi" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="mi" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="mk" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="mk" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="gee" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gee" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ge" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ge" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="gie" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gie" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="gi" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gi" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="so" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="so" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="gesamtflae" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gesamtflae" type="DOUBLE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="davon_beba" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="davon_beba" type="DOUBLE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="unbebaut_i" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="unbebaut_i" type="DOUBLE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="bebauungsp" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="bebauungsp" type="BIT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="gleisansch" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="gleisansch" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="anschlusss" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="anschlusss" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="datum_letz" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="datum_letz" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="zur_autoba" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="zur_autoba" type="BIGINT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="internetid" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="internetid" type="BIGINT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="GEOM" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="the_geom" type="GEOMETRY"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

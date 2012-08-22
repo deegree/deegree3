@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+	<import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<annotation>
+		<appinfo>
+			<deegreewfs:Prefix>app</deegreewfs:Prefix>
+			<deegreewfs:Backend>SDE</deegreewfs:Backend>
+			<deegreewfs:DefaultSRS>EPSG:31466</deegreewfs:DefaultSRS>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>SDE</Driver>
+				<Url>Svrarcgis:5151</Url>
+				<User>********</User>
+				<Password>********</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+				<SDEDatabase>RENDELSUR</SDEDatabase>
+				<SDEVersion>SDE.DEFAULT</SDEVersion>
+				<!-- 4326SDE.DEFAULT-->
+			</JDBCConnection>
+		</appinfo>
+	</annotation>
+	<element name="MyFeatureType" type="app:MyFeatureTypeType" substitutionGroup="gml:_Feature">
+		<annotation>
+			<appinfo>
+				<deegreewfs:table>MyFeatureType</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID_">
+					<deegreewfs:MappingField field="OBJECTID" type="INTEGER"/>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>true</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</appinfo>
+		</annotation>
+		<!-- annotation of each element (=feature type definition) contains associated  table name and gml:id definition AbstractFeatureType-->
+	</element>
+	<complexType name="MyFeatureTypeType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<xsd:element name="objectid" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="rendelsur.DBO.MyFeatureType.OBJECTID" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="rtacod" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="RTA_COD" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="geom" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="SHAPE" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

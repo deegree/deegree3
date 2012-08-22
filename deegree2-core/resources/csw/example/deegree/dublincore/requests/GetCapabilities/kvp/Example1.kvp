@@ -1,0 +1,5 @@
+http://www.someserver.com/wfs.cgi?
+REQUEST=GetCapabilities&
+SERVICE=CSW&
+ACCEPTVERSION=2.0.0,0.7.2&
+outputFormat=application/xml

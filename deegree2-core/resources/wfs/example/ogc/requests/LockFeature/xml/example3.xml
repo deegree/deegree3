@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 61-->
+<LockFeature version="1.1.0" service="WFS" xmlns="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:myns="http://www.someserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <Lock handle="Lock1" typeName="myns:InWaterA_1M">
+    <ogc:Filter>
+      <ogc:Within>
+        <ogc:PropertyName>myns:wkbGeom</ogc:PropertyName>
+        <gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-95.7 38.1 -97.8 38.2 -95.7 38.1</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </ogc:Within>
+    </ogc:Filter>
+  </Lock>
+</LockFeature>

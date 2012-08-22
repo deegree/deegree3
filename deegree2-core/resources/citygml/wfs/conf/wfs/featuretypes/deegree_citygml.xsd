@@ -1,0 +1,1506 @@
+<xsd:schema targetNamespace="http://www.citygml.org/citygml/1/0/0" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:citygml="http://www.citygml.org/citygml/1/0/0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../../../../../../resources/schemas/3.1.1/base/feature.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../../../../../../resources/schemas/3.1.1/base/geometryAggregates.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<deegreewfs:Prefix>app</deegreewfs:Prefix>
+			<deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+			<deegreewfs:DefaultSRS>EPSG:31466</deegreewfs:DefaultSRS>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>org.postgresql.Driver</Driver>
+				<Url>jdbc:postgresql://localhost:5432/bonnwpvs</Url>
+				<User>postgres</User>
+				<Password>postgres</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+			<deegreewfs:SuppressXLinkOutput>true</deegreewfs:SuppressXLinkOutput>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ============================================================== -->
+	<xsd:element name="Feature" type="citygml:FeatureType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Feature</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID1_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>true</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="FeatureType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="id" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ID" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="building" type="gml:FeaturePropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Building">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="road" type="gml:FeaturePropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Road">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="railway" type="gml:FeaturePropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Railway">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="cityFurniture" type="gml:FeaturePropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:CityFurniture">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="address" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Address">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="type" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="TYPE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="creation" type="xsd:date" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CREATION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="revision" type="xsd:date" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="REVISION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="deletion" type="xsd:date" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="DELETION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="envelope" type="gml:GeometryPropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ENVELOPE" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="featureName" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="externalReference" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Externalref">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="lod1tis" type="gml:GeometryPropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="lod1tis" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="lod2tis" type="gml:GeometryPropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="lod2tis" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="lod3tis" type="gml:GeometryPropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="lod3tis" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="lod4tis" type="gml:GeometryPropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="lod4tis" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="function" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="FUNCTIONNAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="usage" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="USAGE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="linkedFeature" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:LINK_FEAT_FEAT">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_source" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="linkedGeometry" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:LINK_FEAT_GEOM">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="stringAttribute" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Text_Attribute">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<!--
+					<xsd:element name="dateAttribute" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Date_Attribute">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="intAttribute" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Int_Attribute">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					-->
+					<!--
+					<xsd:element name="uriAttribute" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:URI_Attribute">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="doubleAttribute" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Float_Attribute">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_feature" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					-->
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Building" type="citygml:BuildingType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Building</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID2_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="BuildingType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="class" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CLASS" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="yearOfConstruction" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="YEAROFCONSTRUCTION" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="measuredheight" type="xsd:double" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="MEASUREDHEIGHT" type="FLOAT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="storeysaboveground" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="STOREYSABOVEGROUND" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="storeysbelowground" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="STOREYSBELOWGROUND" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="storeyheightsaboveground" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="STOREYHEIGHTSABOVEGROUND" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="storeyheightsbelowground" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="STOREYHEIGHTSBELOWGROUND" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="roofType" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="rooftype" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Address" type="citygml:AddressType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Address</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID3_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="AddressType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="code" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CODE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="street" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="STREET" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="postalcode" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="POSTALCODE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="citydistrict" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CITYDISTRICT" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="city" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CITY" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="administrativearea" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ADMINISTRATIVEAREA" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="country" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="COUNTRY" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Float_Attribute" type="citygml:Float_AttributeType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Float_Attribute</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID4_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="Float_AttributeType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="value" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="VALUE" type="FLOAT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="URI_Attribute" type="citygml:URI_AttributeType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>URI_Attribute</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID5_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="URI_AttributeType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="value" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="VALUE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Int_Attribute" type="citygml:Int_AttributeType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Int_Attribute</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID6_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="Int_AttributeType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="value" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="VALUE" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Text_Attribute" type="citygml:Text_AttributeType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Text_Attribute</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID7_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="Text_AttributeType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="value" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="VALUE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Date_Attribute" type="citygml:Date_AttributeType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Date_Attribute</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID8_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="Date_AttributeType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="value" type="xsd:date">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="VALUE" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Externalref" type="citygml:ExternalrefType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Externalref</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID9_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="ExternalrefType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="uri" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="URI" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="informationsystem" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="INFORMATIONSYSTEM" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="LINK_FEAT_FEAT" type="citygml:LINK_FEAT_FEATType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>link_feat_feat</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID10_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="LINK_FEAT_FEATType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="feature" type="gml:FeaturePropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Feature">
+									<deegreewfs:Relation>
+										<deegreewfs:From fk="true">
+											<deegreewfs:MappingField field="fk_target" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="creation" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CREATION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="deletion" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="DELETION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="role" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ROLE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="LINK_FEAT_GEOM" type="citygml:LINK_FEAT_GEOMType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>link_feat_geom</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID11_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="LINK_FEAT_GEOMType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="lod" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="LOD" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="type" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="TYPE" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="function" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="FUNCTIONDESC" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="polygon" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Polygon">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_geometry" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="solid" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Solid">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_geometry" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="composite" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:LINK_FEAT_GEOM">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_source" type="INTEGER" table="JT_LFG_LFG"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+									<deegreewfs:Relation>
+										<deegreewfs:From fk="true">
+											<deegreewfs:MappingField field="fk_target" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Polygon" type="citygml:PolygonType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Polygon</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID12_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="PolygonType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="geom" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="GEOMETRY" type="GEOMETRY" srs="31466"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="material" type="gml:FeaturePropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Material">
+									<deegreewfs:Relation>
+										<deegreewfs:From fk="true">
+											<deegreewfs:MappingField field="fk_material" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="texture" type="gml:FeaturePropertyType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Texture">
+									<deegreewfs:Relation>
+										<deegreewfs:From fk="true">
+											<deegreewfs:MappingField field="fk_texture" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="orientation" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ORIENTATION" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="creation" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="CREATION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="deletion" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="DELETION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="revision" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="REVISION" type="DATE"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="function" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="FUNCTIONDESC" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Solid" type="citygml:SolidType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Solid</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID13_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="SolidType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="function" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="FUNCTIONDESC" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="exteriorSurfaces" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Polygon">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_solid_ex" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="interiorSurfaces" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:InteriorSurface">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="fk_polygon" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="InteriorSurface" type="citygml:InteriorSurfaceType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>INNER_BOUNDARY</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID14_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="InteriorSurfaceType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="interiorSurfaces" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="citygml:Polygon">
+									<deegreewfs:Relation>
+										<deegreewfs:From fk="true">
+											<deegreewfs:MappingField field="fk_polygon" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Material" type="citygml:MaterialType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>MATERIAL</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID15_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="MaterialType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="shininess" type="xsd:double" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="SHININESS" type="NUMERIC"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="transparency" type="xsd:double" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="TRANSPARENCY" type="FLOAT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ambientintensity" type="xsd:double" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="AMBIENTINTENSITY" type="FLOAT"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="specularcolor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="SPECULARCOLOR" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="diffusecolor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="DIFFUSECOLOR" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="emissivecolor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="EMISSIVECOLOR" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Texture" type="citygml:TextureType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>TEXTURE</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID16_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="TextureType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="texturemap" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="TEXTUREMAP" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="texturecoordinates" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="TEXTURECOORDINATES" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="texturetype" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="TEXTURETYPE" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="repeat" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="REPEAT" type="NUMERIC"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="TraficArea" type="citygml:TraficAreaType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>TraficArea</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID17_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="TraficAreaType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="id" type="xsd:double">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="ID" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="surfacematerial" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="SURFACEMATERIAL" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Road" type="citygml:RoadType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Road</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID18_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="RoadType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="dummyValue" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="dummyValue" type="NUMERIC"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="CityFurniture" type="citygml:CityFurnitureType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>CityFurniture</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID19_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="CityFurnitureType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="dummyValue" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="dummyValue" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="Railway" type="citygml:RailwayType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>Railway</deegreewfs:table>
+				<deegreewfs:gmlId prefix="ID20_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CITYGML_ID_SEQ</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+				</deegreewfs:gmlId>
+				<deegreewfs:visible>false</deegreewfs:visible>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="RailwayType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="dummyValue" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="dummyValue" type="INTEGER"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

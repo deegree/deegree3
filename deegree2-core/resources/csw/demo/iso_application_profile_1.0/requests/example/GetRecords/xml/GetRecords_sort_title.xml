@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:GetRecords service="CSW" version="2.0.2" outputFormat="application/xml" outputSchema="http://www.isotc211.org/2005/gmd" resultType="results" 
+    xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+    xmlns:ogc="http://www.opengis.net/ogc" 
+    xmlns:gmd="http://www.isotc211.org/2005/gmd"
+    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
+    <csw:Query typeNames="gmd:MD_Metadata">
+        <csw:ElementSetName>full</csw:ElementSetName>
+        <ogc:SortBy>
+            <ogc:SortProperty>
+                <ogc:PropertyName>apiso:Title</ogc:PropertyName>
+                <ogc:SortOrder>DESC</ogc:SortOrder>
+            </ogc:SortProperty>
+        </ogc:SortBy>
+    </csw:Query>
+</csw:GetRecords>
+

@@ -1,0 +1,2 @@
+C:\Programme\Java\jre1.5.0_06\bin\java -classpath .;../../classes;../../lib/xml/jaxen-1.1-beta-8.jar;../../lib/log4j/log4j-1.2.9.jar org.deegree.tools.wms.WFS2WMS -parentLayer LAYER -wfsCaps D:\java\projekte\bkg_geowebserver\temp\wfs.xml -outFile e:/temp/out.xml
+pause

@@ -1,0 +1,1933 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CityGML Version No. 0.3.0, May 31th, 2006-->
+<!-- CityGML - GML3 application schema for the 3D city model of the Special Interest Group 3D (SIG 3D) of GDI NRW-->
+<!-- Editors: Dr. Gerhard Groeger & Dr. Thomas H. Kolbe, Institute for Cartography and Geoinformation, University of Bonn -->
+<!-- For further information see: www.citygml.org -->
+<!-- For the history of changes and additions to this CityGML schema see file history.txt -->
+<xs:schema targetNamespace="http://www.citygml.org/citygml/1/0/0" xmlns="http://www.citygml.org/citygml/1/0/0" xmlns:xAL="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.opengis.net/gml" schemaLocation="3.1.1/base/gml.xsd"/>
+	<xs:import namespace="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0" schemaLocation="xAL/xAL.xsd"/>
+	<!-- ========================================================================================= -->
+	<!-- ======================Root Element: CityModel================================================ -->
+	<!-- ========================================================================================= -->
+	<xs:complexType name="CityModelType">
+		<xs:annotation>
+			<xs:documentation>Type describing the "root" element of any city model file. It is a
+				collection whose members are restricted to be features of a city model. All features
+				are included as cityObjectMember. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:AbstractFeatureCollectionType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================= -->
+	<xs:element name="CityModel" type="CityModelType" substitutionGroup="gml:_FeatureCollection"/>
+	<!-- ========================================================================================= -->
+	<!-- =======================================CityModel Members  ================================== -->
+	<!-- ========================================================================================= -->
+	<xs:element name="cityObjectMember" type="gml:FeaturePropertyType" substitutionGroup="gml:featureMember"/>
+	<!-- ========================================================================================= -->
+	<!-- ==================================CityObject: Base Class of all Features========================== -->
+	<!-- ========================================================================================= -->
+	<xs:complexType name="_CityObjectType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the abstract superclass of most CityGML features.
+				Its purpose is to provide a creation and a termination date as well as a reference
+				to corresponding objects in other information systems and gerneric attributes.
+				A generalization relation may be used to relate features, which represent the 
+				same real-world object in different Levels-of-Detail, i.e. a feature and its generalized
+				counterpart(s). The direction of this relation is from the feature to the corresponding
+				generalized feature.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:AbstractFeatureType">
+				<xs:sequence>
+					<xs:element name="creationDate" type="xs:date" minOccurs="0"/>
+					<xs:element name="terminationDate" type="xs:date" minOccurs="0"/>
+					<xs:element name="externalReference" type="ExternalReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="_genericAttribute" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="generalizesTo" type="GeneralizationRelationType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================= -->
+	<xs:element name="_CityObject" type="_CityObjectType" abstract="true" substitutionGroup="gml:_Feature"/>
+	<!-- ========================================================================================= -->
+	<xs:complexType name="GeneralizationRelationType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an CityObject to its corresponding CityObject
+				in higher LoD, i.e. to the CityObjects representing the same real world object in
+				higher LoD. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="_CityObject"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ===========================EXTERNAL REFERENCES (all LoD)=================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ExternalReferenceType">
+		<xs:annotation>
+			<xs:documentation>Type describing the reference to an corresponding object in an other
+				information system, for example in the german cadastre ALKIS, the german topographic
+				information system or ATKIS, ot the british OS mastermap. The reference consists of
+				the name of the external information system, represented by an URI, and the
+				reference of the external object, given either by a string or by an URI.
+				If the informationSystem element is missing in the ExternalReference,
+				the ExternalObjectReference must be an URI, which contains an indication
+				of the informationSystem.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="informationSystem" type="xs:anyURI" minOccurs="0"/>
+			<xs:element name="externalObject" type="ExternalObjectReferenceType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ExternalObjectReferenceType">
+		<xs:choice>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="uri" type="xs:anyURI"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================= -->
+	<!-- ==================================Generic CityObjects and Attributes=============================-->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_GenericAttributeType" abstract="true">
+		<xs:annotation>
+			<xs:documentation> Generic (user defined) attributes may be used to represent attributes
+				 which are not covered explicitly by the CityGML schema. Generic attributes should be 
+				used with care; 	they should only be used if there is no appropiate attribute available in the schema.
+				Oherwise, problems concerning semantic interoperability may arise.
+				 A generic attribute has a name and a value, which has further 
+				subclasses (IntAttrribute, StringAttribute, ...).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_genericAttribute" type="_GenericAttributeType" abstract="true"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="StringAttributeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_GenericAttributeType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="stringAttribute" type="StringAttributeType" substitutionGroup="_genericAttribute"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="IntAttributeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_GenericAttributeType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:integer"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="intAttribute" type="IntAttributeType" substitutionGroup="_genericAttribute"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="DoubleAttributeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_GenericAttributeType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:double"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="doubleAttribute" type="DoubleAttributeType" substitutionGroup="_genericAttribute"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="DateAttributeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_GenericAttributeType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:date"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="dateAttribute" type="DateAttributeType" substitutionGroup="_genericAttribute"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="UriAttributeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_GenericAttributeType">
+				<xs:sequence>
+					<xs:element name="value" type="xs:anyURI"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="uriAttribute" type="UriAttributeType" substitutionGroup="_genericAttribute"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="GenericCityObjectType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="xs:string" minOccurs="0"/>
+					<xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod0Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod1Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod2Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod3Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod4Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod0TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod1TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod2TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod3TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod4TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod0ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod1ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod2ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod3ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod4ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="GenericCityObject" type="GenericCityObjectType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- =======================================GROUPS============================================ -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="CityObjectGroupType">
+		<xs:annotation>
+			<xs:documentation> A group may be used to aggregate arbitrary CityObjects
+				according to some user-defined criteria. Examples for groups are the buildings in a
+				specific region, the result of a query, or objects put together for visualization
+				purposes. Each group has a name (inherited from AbstractGMLType), functions (e.g.,
+				building group), a class and zero or more usages. A geometry may optionally be attached to a group, if
+				the geometry of the whole group differs from the geometry of the parts. Each member
+				of a group may be qualified by a role name, reflecting the role each cityObject
+				plays in the context of the group.  
+				As subclass of _CityObject, a CityObjectGroup inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  
+				As CityObjectGroup itself is a CityObject, it may also contain groups.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="xs:string" minOccurs="0"/>
+					<xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="groupMember" type="CityObjectGroupMemberType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="CityObjectGroup" type="CityObjectGroupType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ======================Type for Aggregation of Group Members===================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="CityObjectGroupMemberType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of a group to its members, which are
+				CityObjects. Since an association attribute group for enabling the use of references
+				is provided, the relation may either be given by a reference to a city object defined alsewhere, or by
+				inlining of  the complete city object. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:AssociationType">
+				<xs:attribute name="role" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ======================================== Sites ============================================= -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_SiteType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the abstract superclass for buildings, facilities,
+				etc. Future extensions of CityGML like bridges and tunnels would be modelled as
+				subclasses of _Site. The german translation of site is 'Anlage'.
+				As subclass of _CityObject, a _Site inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_Site" type="_SiteType" abstract="true" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<!-- ===================================BUILDINGS (all LoD)======================================= -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_AbstractBuildingType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the thematic and geometric attributes and the
+				associations of buildings. It is an abstract type, only its subclasses Building and
+				BuildingPart can be instantiated. An _AbstractBuilding may consist of BuildingParts,
+				which are again _AbstractBuildings by inheritance. Thus an aggregation hierarchy
+				between _AbstractBuildings of arbitrary depth may be specified. In such an
+				hierarchy, top elements are Buildings, while all other elements are BuildingParts.
+				Each element of such a hierarchy may have all attributes and geometries of
+				_AbstractBuildings. It must, however, be assured than no inconsistencies occur (for
+				example, if the geometry of a Building does not correspond to the geometries of its
+				parts, of if the roof type of a Building is saddle roof, while its parts have an hip
+				roof). </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_SiteType">
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation> The name will be represented by gml:name (inherited from
+							_GML) . list order for storeyHeightsAboveground: first floor, second
+							floor,... list order for storeyHeightsBelowground: first floor below
+							ground, second floor below ground,... The lodXMultiSurface must
+							be used, if the geometry of a building is just a collection of
+							surfaces bounding a solid, but not a topologically clean solid boundary
+							necessary for GML3 solid boundaries. 
+						</xs:documentation>
+					</xs:annotation>
+					<xs:element name="class" type="BuildingClassType" minOccurs="0"/>
+					<xs:element name="function" type="BuildingFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="BuildingUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="yearOfConstruction" type="xs:gYear" minOccurs="0"/>
+					<xs:element name="roofType" type="RoofTypeType" minOccurs="0"/>
+					<xs:element name="measuredHeight" type="gml:LengthType" minOccurs="0"/>
+					<xs:element name="storeysAboveGround" type="xs:nonNegativeInteger" minOccurs="0"/>
+					<xs:element name="storeysBelowGround" type="xs:nonNegativeInteger" minOccurs="0"/>
+					<xs:element name="storeyHeightsAboveGround" type="gml:MeasureOrNullListType" minOccurs="0"/>
+					<xs:element name="storeyHeightsBelowGround" type="gml:MeasureOrNullListType" minOccurs="0"/>
+					<xs:element name="lod1Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod1MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod1TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod2Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod2MultiCurve" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod2TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="outerBuildingInstallation" type="BuildingInstallationPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="boundedBy" type="BoundarySurfacePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod3Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiCurve" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod3TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod4Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiCurve" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod4TerrainIntersection" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="interiorRoom" type="InteriorRoomPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="consistsOfBuildingPart" type="BuildingPartPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="address" type="AddressPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_AbstractBuilding" type="_AbstractBuildingType" abstract="true" substitutionGroup="_Site"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingClassType">
+		<xs:annotation>
+			<xs:documentation> Class of a building. The values of this type are defined in a the XML
+				file "CityGML_ExternalCodeLists.xml", according to the dictionary concept of GML3. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingFunctionType">
+		<xs:annotation>
+			<xs:documentation> Intended function of a building. The values of this type are defined in the XML
+				file "CityGML_ExternalCodeLists.xml", according to the dictionary concept of GML3.
+				The values may be adopted from ALKIS, the german standard for cadastre modelling.
+				If the cadastre models from other countries differ in the building functions,
+				these values may be compiled in another codelist to be used with CityGML.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingUsageType">
+		<xs:annotation>
+			<xs:documentation> Actual usage of a building. The values of this type are defined in a the XML
+				file "CityGML_ExternalCodeLists.xml", according to the dictionary concept of GML3..
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="RoofTypeType">
+		<xs:annotation>
+			<xs:documentation>Roof Types. The values of this type are defined in a XML file,
+				according to the dictionary concept of GML3.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BuildingPartType">
+		<xs:complexContent>
+			<xs:extension base="_AbstractBuildingType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="BuildingPart" type="BuildingPartType" substitutionGroup="_AbstractBuilding"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BuildingType">
+		<xs:complexContent>
+			<xs:extension base="_AbstractBuildingType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Building" type="BuildingType" substitutionGroup="_AbstractBuilding"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BuildingPartPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an _AbstractBuilding to its building parts. The
+				gml:AssociationType attribute group for enabling the
+				use of refs is not repeated in the restriction and thus omitted. The building part
+				has to be given inline, i.e. explicitely in this property. The reason for this inline definition is
+				that no BuildingPart is used by more than one building, thus the use or references to building 
+				parts defined elsewhere is prohibited.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence>
+					<xs:element ref="BuildingPart"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BuildingInstallationType">
+		<xs:annotation>
+			<xs:documentation>A BuildingInstallation (German translation is 'Gebäudecharakteristik')
+				is a part of a Building which has not the significance of a BuildingPart. Examples
+				are stairs, antennas, balconies or small roofs. 
+				As subclass of _CityObject, a BuildingInstallation inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="BuildingInstallationClassType" minOccurs="0"/>
+					<xs:element name="function" type="BuildingInstallationFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="BuildingInstallationUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod2Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod3Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod4Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="BuildingInstallation" type="BuildingInstallationType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingInstallationClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a building installation. The values of this type are defined
+				in the XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept
+				of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingInstallationFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a building installation. The values of this type are
+				defined in the XML file CityGML_ExternalCodeLists.xml, according to the dictionary
+				concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingInstallationUsageType">
+		<xs:annotation>
+			<xs:documentation>Actual Usage of a building installation. The values of this type are
+				defined in the XML file CityGML_ExternalCodeLists.xml, according to the dictionary
+				concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BuildingInstallationPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an AbstractBuilding to its building
+				installations.  The gml:AssociationType attribute group for enabling the
+				use of refs is not repeated in the restriction and thus omitted. The building installation
+				has to be given inline, i.e. explicitely in this property. The reason for this inline definition is
+				that no installation of a building is used by more than one building, thus the use or references to building 
+				installations defined elsewhere is prohibited.				
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence>
+					<xs:element ref="BuildingInstallation"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ========================SURFACES OF BUILDINGS AND ROOMS( LoD2 to LOD4)=====================-->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_BoundarySurfaceType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>A BoundarySurface (German translation is 'Begrenzungsfläche') is a
+				thematic object which classifies surfaces bounding a building or a room. The
+				geometry of a BoundarySurface is given by MultiSurfaces. 
+				As it is a subclass of _CityObject, it inherits all atributes and relations, in particular 
+				the external references, the generic attributes, and the generalization relations.	
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="opening" type="OpeningPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_BoundarySurface" type="_BoundarySurfaceType" abstract="true" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="RoofSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="RoofSurface" type="RoofSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="WallSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="WallSurface" type="WallSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="GroundSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="GroundSurface" type="GroundSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ClosureSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="ClosureSurface" type="ClosureSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<!-- ===================================LoD4 only Surfaces=========================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="FloorSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="FloorSurface" type="FloorSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="InteriorWallSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="InteriorWallSurface" type="InteriorWallSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="CeilingSurfaceType">
+		<xs:complexContent>
+			<xs:extension base="_BoundarySurfaceType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="CeilingSurface" type="CeilingSurfaceType" substitutionGroup="_BoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- =============================Relation of Buildings/Rooms to its bounding Surfaces=================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BoundarySurfacePropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an Building or Room to its bounding thematic
+				surfaces (walls, roofs, ..). There is no differentiation between interior surfaces
+				bounding rooms and outer ones bounding buildings (one reason is, that
+				ClosureSurfaces belong to both types). It has to be made sure by additional
+				integrity constraints that, e.g. a building is not related to CeilingSurfaces or a
+				room not to RoofSurfaces. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="_BoundarySurface"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ================================Openings (LoD3 and LoD4 only)================================= -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="OpeningPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an BondarySurface to its openings (doors,
+				windows). </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="_Opening"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_OpeningType" abstract="true">
+		<xs:annotation>
+			<xs:documentation> Type for openings (doors, windows) in walls. Used in LoD3 and LoD4
+				only. As subclass of _CityObject, an _Opening inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_Opening" type="_OpeningType" abstract="true" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="WindowType">
+		<xs:annotation>
+			<xs:documentation> Type for windows in walls. Used in LoD3 and LoD4 only .
+				As subclass of _CityObject, a window inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_OpeningType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Window" type="WindowType" substitutionGroup="_Opening"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="DoorType">
+		<xs:annotation>
+			<xs:documentation> Type for doors in walls. Used in LoD3 and LoD4 only .
+				As subclass of _CityObject, a Door inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_OpeningType">
+				<xs:sequence>
+					<xs:element name="address" type="AddressPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Door" type="DoorType" substitutionGroup="_Opening"/>
+	<!-- ========================================================================================== -->
+	<!-- ====================================ROOMS (LoD4 only)====================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="RoomType">
+		<xs:annotation>
+			<xs:documentation>A Room is a thematic object for modelling the closed parts inside a
+				building. It has to be closed, if necessary by using closure surfaces. The geometry
+				may be either a solid, or a MultiSurface if the boundary is not topologically clean.
+				The room connectivity may be derived by detecting shared  thematic openings
+				or closure surfaces: two rooms are connected if both use the same opening object or the same 
+				closure surface.  The thematic surfaces bounding a room are referenced by
+				the boundedBy property.
+				As subclass of _CityObject, a Room inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  					
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="RoomClassType" minOccurs="0"/>
+					<xs:element name="function" type="RoomFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="RoomUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod4Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="boundedBy" type="BoundarySurfacePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="interiorFurniture" type="InteriorFurniturePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="interiorBuildingInstallation" type="BuildingInstallationPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Room" type="RoomType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="RoomClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a room . The values of this type are defined in the XML file
+				CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="RoomFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a room. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="RoomUsageType">
+		<xs:annotation>
+			<xs:documentation>Actual Usage of a room. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BuildingFurnitureType">
+		<xs:annotation>
+			<xs:documentation>Type for building furnitures. As subclass of _CityObject, a BuildingFurniture inherits all 
+				attributes and relations, in particular an id, names, external references, generic attributes 
+				and generalization relations.  						
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="BuildingFurnitureClassType" minOccurs="0"/>
+					<xs:element name="function" type="BuildingFurnitureFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="BuildingFurnitureUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod4Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod4ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="BuildingFurniture" type="BuildingFurnitureType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingFurnitureClassType">
+		<xs:annotation>
+			<xs:documentation> Class of a building furniture. The values of this type are defined
+				in a XML file, according to the dictionary concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingFurnitureFunctionType">
+		<xs:annotation>
+			<xs:documentation> Function of a building furniture. The values of this type are defined
+				in a XML file, according to the dictionary concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="BuildingFurnitureUsageType">
+		<xs:annotation>
+			<xs:documentation> Actual Usage of a building Furniture. The values of this type are
+				defined in a XML file, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ============================Relation of Building to Rooms (LoD4 only)============================= -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="InteriorRoomPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an AbstractBuilding to its rooms. The
+				gml:AssociationType attribute group for enabling the use of refs is not repeated in
+				the restriction and thus omitted. The room has to be given inline within this 
+				property, not by reference. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence>
+					<xs:element ref="Room"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="InteriorFurniturePropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of a room to its interior furnitures (movable).
+				The gml:AssociationType attribute group for enabling the use of refs is not repeated
+				in the restriction and thus omitted. The BuildingFurniture has to be given
+				inline within this property, not by reference. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence>
+					<xs:element ref="BuildingFurniture"/>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!--==================== ================== Address (all LoD) ====================================== -->
+	<!-- ======================================uses xAL Standard====================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="AddressPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an AbstractBuilding or a Door to its Addresses.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="Address"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="AddressType">
+		<xs:annotation>
+			<xs:documentation>Type for addresses. It  references the xAL address standard issued by the
+				OASIS consortium.
+				Please note, that addresses are modelled as GML features. Every address can be assigned zero or more 
+				2D or 3D point geometries (one gml:MultiPoint geometry) locating the entrance(s).  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:AbstractFeatureType">
+				<xs:sequence>
+					<xs:element name="xalAddress" type="xalAddressPropertyType"/>
+					<xs:element name="multiPoint" type="gml:MultiPointPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Address" type="AddressType" substitutionGroup="gml:_Feature"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="xalAddressPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an Address feature to the xAL address element.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="xAL:AddressDetails"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ======================================MATERIAL/TEXTURES================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="TexturedSurfaceType">
+		<xs:annotation>
+			<xs:documentation> 
+				The concept of positioning textures on surfaces complies with the standard X3D.
+				Because there has been no appropriate texturing concept in GML3, CityGML adds the class 
+				TexturedSurface to the geometry model of GML 3. A texture is specified as a raster image referenced by an 
+				URI, and can be an arbitrary resource, even in the internet. Textures are positioned by employing the concept of 
+				texture coordinates, i.e. each texture coordinate matches with exactly one 3D coordinate of the TexturedSurface.
+				The use of texture coordinates allows an exact positioning and trimming of the texture on the surface geometry.
+				Each surface may be assigned one or more appearances, each refering to one side of the surface. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:OrientableSurfaceType">
+				<xs:sequence>
+					<xs:element ref="appearance" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="TexturedSurface" type="TexturedSurfaceType" substitutionGroup="gml:OrientableSurface"/>
+	<!-- ========================================================================================== -->
+	<xs:element name="appearance" type="_AppearancePropertyType"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_AppearancePropertyType">
+		<xs:annotation>
+			<xs:documentation> A property that has an _Appearance as its value domain, which can
+				either be a Material (Color,...) or a Texture. The _Appearance Element can either
+				be encapsulated in an element of this type or an XLink reference to a remote
+				_Appearance element (where remote includes geometry elements located elsewhere in
+				the same document). Either the reference or the contained element must be given, but
+				neither both nor none. 
+				The side of the surface the _Appearance refers to is given by the orientation attribute,
+				which refers to the corresponding sign attribute of the orientable surface: 
+				+ means the side with positive orientation, and - the side with negative orientation.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="_Appearance" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="orientation" type="gml:SignType" default="+"/>
+		<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_AppearanceType" abstract="true">
+		<xs:annotation>
+			<xs:documentation> This abstract type is the parent type of MaterialType and
+				SimpleTextureType. It is derived from gml:AbstractGMLType, thus
+				it inherits the attribute gml:id and may be referenced by an appearanceProperty,
+				although it is defined elsewhere in another appearanceProperty. 
+			 </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:AbstractGMLType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_Appearance" type="_AppearanceType" abstract="true" substitutionGroup="gml:_GML"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="MaterialType">
+		<xs:annotation>
+			<xs:documentation> Adopted from X3D standard (http://www.web3d.org/x3d/)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_AppearanceType">
+				<xs:sequence>
+					<xs:element name="shininess" type="doubleBetween0and1" minOccurs="0"/>
+					<xs:element name="transparency" type="doubleBetween0and1" minOccurs="0"/>
+					<xs:element name="ambientIntensity" type="doubleBetween0and1" minOccurs="0"/>
+					<xs:element name="specularColor" type="Color" minOccurs="0"/>
+					<xs:element name="diffuseColor" type="Color" minOccurs="0"/>
+					<xs:element name="emissiveColor" type="Color" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Material" type="MaterialType" substitutionGroup="_Appearance"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="SimpleTextureType">
+		<xs:annotation>
+			<xs:documentation> Adopted from X3D standard (http://www.web3d.org/x3d/). 
+				ToDo: repeat				
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_AppearanceType">
+				<xs:sequence>
+					<xs:element name="textureMap" type="xs:anyURI"/>
+					<xs:element name="textureCoordinates" type="gml:doubleList"/>
+					<xs:element name="textureType" type="TextureTypeType" minOccurs="0"/>
+					<xs:element name="repeat" type="xs:boolean" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="SimpleTexture" type="SimpleTextureType" substitutionGroup="_Appearance"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="Color">
+		<xs:annotation>
+			<xs:documentation> List of three values (red, green, blue), separated by spaces. The
+				values must be in the range between zero and one. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="doubleBetween0and1List">
+			<xs:minLength value="3"/>
+			<xs:maxLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TextureTypeType">
+		<xs:annotation>
+			<xs:documentation>
+				Textures can be qualified by the attribute textureType. 
+				The textureType differentiates between textures, which are specific for a certain object and
+				are only used for that object (specific), and prototypic textures being typical for that kind of
+				object and are used many times for all objects of that kind (typical). A typical texture may
+				be replaced by a specific, if available. Textures may also be classified as unknown.			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="specific"/>
+			<xs:enumeration value="typical"/>
+			<xs:enumeration value="unknown"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!--======================================Transportation Model ==================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_TransportationObjectType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the abstract superclass for transportation objects.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_TransportationObject" type="_CityObjectType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="TransportationComplexType">
+		<xs:annotation>
+			<xs:documentation>Type describing transportation complexes, which are aggregated
+				features, e.g. roads, which consist of parts (traffic areas, e.g. pedestrian path,
+				and auxiliary traffic areas). 
+				As subclass of _CityObject, a TransportationComplex inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  					
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_TransportationObjectType">
+				<xs:sequence>
+					<xs:element name="function" type="TransportationComplexFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="TransportationComplexUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="trafficArea" type="TrafficAreaPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="auxiliaryTrafficArea" type="AuxiliaryTrafficAreaPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod0Network" type="gml:GeometricComplexPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod1MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="TransportationComplex" type="TransportationComplexType" substitutionGroup="_TransportationObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="TrafficAreaType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for traffic Areas.
+				Traffic areas are the surfaces where traffic actually takes place. 
+				As subclass of _CityObject, a TrafficArea inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  				
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_TransportationObjectType">
+				<xs:sequence>
+					<xs:element name="usage" type="TrafficAreaUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="function" type="TrafficAreaFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="surfaceMaterial" type="TrafficSurfaceMaterialType" minOccurs="0"/>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="TrafficArea" type="TrafficAreaType" substitutionGroup="_TransportationObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="AuxiliaryTrafficAreaType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for auxiliary traffic Areas.
+				These are the surfaces where no traffic actually takes place, but which 
+				belong to a transportation object. Examples are kerbstones, road markings and grass stripes.
+				As subclass of _CityObject, an AuxiliaryTrafficArea inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_TransportationObjectType">
+				<xs:sequence>
+					<xs:element name="function" type="AuxiliaryTrafficAreaFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="surfaceMaterial" type="TrafficSurfaceMaterialType" minOccurs="0"/>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="AuxiliaryTrafficArea" type="AuxiliaryTrafficAreaType" substitutionGroup="_TransportationObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="TrafficAreaPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of a transportation complex to its parts, which
+				are traffic areas in this case. Since an attribute group for enabling the use of
+				references is provided, the relation may be given by a reference to an an element
+				defined elsewhere or by the complete TrafficArea inline.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="TrafficArea"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="AuxiliaryTrafficAreaPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of an Transportation Complex to its parts, which
+				are AuxiliaryTrafficAreas in this case . Since an attribute group for enabling the
+				use of references is provided, the relation may be given by a reference to a AuxiliaryTrafficArea
+				defined elsewhere or by the inline definition of an AuxiliaryTrafficArea.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="AuxiliaryTrafficArea"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ============================Subtypes of Transportation Complex=============================== -->
+	<xs:complexType name="TrackType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for tracks. A track is a small path
+				mainly used by pedestrians. 
+				As subclass of _CityObject, a Track inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="TransportationComplexType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Track" type="TrackType" substitutionGroup="TransportationComplex"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="RoadType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for roads. As subclass of _CityObject, a Road inherits 
+				all attributes and relations, in particular an id, names, external references, generic attributes and 
+				generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="TransportationComplexType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Road" type="RoadType" substitutionGroup="TransportationComplex"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="RailwayType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for railways. As subclass of _CityObject, a Railway inherits all attributes 
+				and relations, in particular an id, names, external references, generic attributes and generalization relations.  			 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="TransportationComplexType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Railway" type="RailwayType" substitutionGroup="TransportationComplex"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="SquareType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for squares. A square is an open area commonly found in 
+				cities (like a plaza). As subclass of _CityObject, a Square inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="TransportationComplexType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="Square" type="SquareType" substitutionGroup="TransportationComplex"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TransportationComplexFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a transportation complex. The values of this type are
+				defined in the XML file CityGML_ExternalCodeLists.xml, according to the dictionary
+				concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TransportationComplexUsageType">
+		<xs:annotation>
+			<xs:documentation>Actual Usage of a transportation complex. The values of this type are
+				defined in the XML file CityGML_ExternalCodeLists.xml, according to the dictionary
+				concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TrafficAreaFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a traffic area. The values of this type are defined in the
+				XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="AuxiliaryTrafficAreaFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of an auxiliary traffic area. The values of this type are
+				defined in the XML file CityGML_ExternalCodeLists.xml, according to the dictionary
+				concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TrafficAreaUsageType">
+		<xs:annotation>
+			<xs:documentation>Usage of a traffic area. The values of this type are defined in the
+				XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TrafficSurfaceMaterialType">
+		<xs:annotation>
+			<xs:documentation>Type for surface materials of transportation objects. The values of
+				this type are defined in the XML file CityGML_ExternalCodeLists.xml, according to
+				the dictionary concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ==========================================Vegetation Model=================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_VegetationObjectType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the abstract superclass for vegetation objects. A
+				subclass is either a SolitaryVegetationObject or a PlantCover. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_VegetationObject" type="_VegetationObjectType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="PlantCoverType">
+		<xs:annotation>
+			<xs:documentation>Type describing Plant Covers resp. Biotopes (German translation: Vegetation). 
+				As subclass of _CityObject, a VegetationObject inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_VegetationObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="PlantCoverClassType" minOccurs="0"/>
+					<xs:element name="function" type="PlantCoverFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="averageHeight" type="gml:LengthType" minOccurs="0"/>
+					<xs:element name="lod1MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod1MultiSolid" type="gml:MultiSolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod2MultiSolid" type="gml:MultiSolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSolid" type="gml:MultiSolidPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="PlantCover" type="PlantCoverType" substitutionGroup="_VegetationObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="PlantCoverClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a PlantCover. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="PlantCoverFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a PlantCover. The values of this type are defined in the
+				XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="SolitaryVegetationObjectType">
+		<xs:annotation>
+			<xs:documentation>Type describing solitary vegetation objects, e.g., trees. Its geometry
+				is either defined explicitly by a GML 3 geometry with absolute coordinates, or in the case
+				of multiple occurences of the same vegetation object,  implicitly by a reference to a 
+				shape definition and a transformation. The shape definition may be given in an external file.
+				As subclass of _CityObject, a SolitaryVegetationObject inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  				
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_VegetationObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="PlantClassType" minOccurs="0"/>
+					<xs:element name="function" type="PlantFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="species" type="SpeciesType" minOccurs="0"/>
+					<xs:element name="height" type="gml:LengthType" minOccurs="0"/>
+					<xs:element name="trunkDiameter" type="gml:LengthType" minOccurs="0"/>
+					<xs:element name="crownDiameter" type="gml:LengthType" minOccurs="0"/>
+					<xs:element name="lod1Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod2Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod3Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod4Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod1ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod2ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod3ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod4ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="SolitaryVegetationObject" type="SolitaryVegetationObjectType" substitutionGroup="_VegetationObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="PlantClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a PlantType. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="PlantFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a PlantType. The values of this type are defined in the
+				XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="SpeciesType">
+		<xs:annotation>
+			<xs:documentation>Type of a Species. The values of this type are defined in the XML file
+				CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ImplicitRepresentationPropertyType">
+		<xs:annotation>
+			<xs:documentation> A property that has a Implicit Representation as its value domain,
+				which is a representation of a geometry by referencing a prototype and transforming
+				it to its real position in space. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="ImplicitGeometry"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ImplicitGeometryType">
+		<xs:annotation>
+			<xs:documentation> Type for the implicit representation of a geometry.
+				An implicit geometry is a geometric object, where the shape is stored only once as a prototypical geometry, 
+				e.g. a tree or other vegetation object, a traffic light or a traffic sign. 
+				This prototypic geometry object is re-used or referenced many times, wherever the corresponding feature 
+				occurs in the 3D city model. Each occurrence is represented by a link to the prototypic shape geometry 
+				(in a local cartesian coordinate system), by a transforma-tion matrix that is multiplied with each 3D 
+				coordinate tuple of the prototype, and by an anchor point denoting the base point of the object in the 
+				world coordinate reference system. In order to determine the absolute coordinates of an implicit geometry, 
+				the anchor point coordinates have to be added to the matrix multiplication results. The transformation
+				matrix accounts for the intended rotation, scaling, and local translation of the prototype. 
+				It is a 4x4 matrix that is multiplied with the prototype coordinates using homogeneous coordinates, i.e. (x,y,z,1). 
+				This way even a projection might be modeled by the transformation matrix.
+				The concept of implicit geometries is an enhancement of the geometry model of GML3. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:AbstractGMLType">
+				<xs:sequence>
+					<xs:element name="mimeType" type="MimeTypeType" minOccurs="0"/>
+					<xs:element name="transformationMatrix" type="TransformationMatrixType" minOccurs="0"/>
+					<xs:element name="libraryObject" type="xs:anyURI" minOccurs="0"/>
+					<xs:element name="relativeGMLGeometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="referencePoint" type="gml:PointPropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="ImplicitGeometry" type="ImplicitGeometryType" substitutionGroup="gml:_GML"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="MimeTypeType">
+		<xs:annotation>
+			<xs:documentation>MIME type of a geometry in an external library file. MIME types are defined by the
+				IETF (Internet Engineering Task Force). The values of this type
+				are defined in the XML file CityGML_ExternalCodeLists.xml, according to the
+				dictionary concept of GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ==========================================Water Bodies Model================================ -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_WaterObjectType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the abstract superclass for water objects.
+				As subclass of _CityObject, a _WaterObject inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_WaterObject" type="_WaterObjectType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="WaterBodyType">
+		<xs:annotation>
+			<xs:documentation>Type describing Water Bodies, e.g., lakes, rivers. 
+				As subclass of _CityObject, a WaterBody inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_WaterObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="WaterBodyClassType" minOccurs="0"/>
+					<xs:element name="function" type="WaterBodyFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="WaterBodyUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod0MultiCurve" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod0MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod1MultiCurve" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					<xs:element name="lod1MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod1Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod2Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod3Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="lod4Solid" type="gml:SolidPropertyType" minOccurs="0"/>
+					<xs:element name="boundedBy" type="BoundedByWaterSurfacePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="WaterBody" type="WaterBodyType" substitutionGroup="_WaterObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="WaterBodyClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a Water Body. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="WaterBodyFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a Water Body. The values of this type are defined in the
+				XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="WaterBodyUsageType">
+		<xs:annotation>
+			<xs:documentation>Actual usage of a water body. The values of this type are defined in
+				the XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of
+				GML3. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BoundedByWaterSurfacePropertyType">
+		<xs:annotation>
+			<xs:documentation> A type for a property of a Water Body denoting its boundary, which is 	a water surface. 
+				Since an attribute group for enabling the use of references is provided, the relation may be given 
+				by a reference to a WaterBoundarySurface
+				defined elsewhere or by the inline definition of a WaterBoundarySurface.			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="_WaterBoundarySurface"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_WaterBoundarySurfaceType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>A WaterBoundarySurface is a thematic object which classifies surfaces
+				bounding a water body. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="lod2Surface" type="gml:SurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3Surface" type="gml:SurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4Surface" type="gml:SurfacePropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_WaterBoundarySurface" type="_WaterBoundarySurfaceType" abstract="true" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="WaterLevelType">
+		<xs:annotation>
+			<xs:documentation>Type for the specification of the level of a water surface. 
+				The optional attribute waterLevel of a WaterSurface can be used to describe the water level, 
+				for which the given 3D surface geometry was acquired. This is especially important, when the 
+				water body is influenced by the tide. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="WaterSurfaceType">
+		<xs:annotation>
+			<xs:documentation>Type describing the surface of a water body, which separates
+				the water from the air. 	As subclass of _CityObject, a WaterSurface inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_WaterBoundarySurfaceType">
+				<xs:sequence>
+					<xs:element name="waterLevel" type="WaterLevelType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="WaterSurface" type="WaterSurfaceType" substitutionGroup="_WaterBoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="WaterGroundSurfaceType">
+		<xs:annotation>
+			<xs:documentation>Type describing the ground surface of a water body, i.e. the boundary
+				to the digital terrain model. As subclass of _CityObject, a WaterGroundSurface
+				inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_WaterBoundarySurfaceType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="WaterGroundSurface" type="WaterGroundSurfaceType" substitutionGroup="_WaterBoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="WaterClosureSurfaceType">
+		<xs:annotation>
+			<xs:documentation>Type describing the closure surface between water bodys.
+				As subclass of _CityObject, a WaterClosureSurface inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_WaterBoundarySurfaceType">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="WaterClosureSurface" type="WaterClosureSurfaceType" substitutionGroup="_WaterBoundarySurface"/>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ==========================================Land Use ======================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="LandUseType">
+		<xs:annotation>
+			<xs:documentation>Type describing the class for Land Use in all LoD. LandUse objects describe areas 
+				of the earth’s surface dedicated to a specific land use.  The geometry must consist of  3-D surfaces. 
+				As subclass of _CityObject, a LandUse inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="LandUseClassType" minOccurs="0"/>
+					<xs:element name="function" type="LandUseFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="usage" type="LandUseUsageType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod0MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod1MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod2MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod3MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+					<xs:element name="lod4MultiSurface" type="gml:MultiSurfacePropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="LandUse" type="LandUseType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="LandUseClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a Landuse. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="LandUseFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a Landuse. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="LandUseUsageType">
+		<xs:annotation>
+			<xs:documentation>Usage of a Landuse. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<!-- =========================================City Model Furnitures================================= -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="CityFurnitureType">
+		<xs:annotation>
+			<xs:documentation>Type describing city furnitures, like traffic lights, benches, ...
+				As subclass of _CityObject, a CityFurniture inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="class" type="CityFurnitureClassType" minOccurs="0"/>
+					<xs:element name="function" type="CityFurnitureFunctionType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lod1Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod2Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod3Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod4Geometry" type="gml:GeometryPropertyType" minOccurs="0"/>
+					<xs:element name="lod1ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod2ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod3ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+					<xs:element name="lod4ImplicitRepresentation" type="ImplicitRepresentationPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="CityFurniture" type="CityFurnitureType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="CityFurnitureFunctionType">
+		<xs:annotation>
+			<xs:documentation>Function of a Furniture. The values of this type are defined in the
+				XML file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="CityFurnitureClassType">
+		<xs:annotation>
+			<xs:documentation>Class of a Furniture. The values of this type are defined in the XML
+				file CityGML_ExternalCodeLists.xml, according to the dictionary concept of GML3.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- =========================================Digital Terrain Model================================= -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ReliefFeatureType">
+		<xs:annotation>
+			<xs:documentation>Type describing the features of the Digital Terrain Model.
+				As subclass of _CityObject, a ReliefFeature inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="lod" type="integerBetween0and4"/>
+					<xs:element name="reliefComponent" type="ReliefComponentPropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="ReliefFeature" type="ReliefFeatureType" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="_ReliefComponentType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Type describing the vomponents of a relief feature - either a TIN, a
+				Grid, mass points or break lines.
+				As subclass of _CityObject, a ReliefComponent inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  						
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_CityObjectType">
+				<xs:sequence>
+					<xs:element name="lod" type="integerBetween0and4"/>
+					<xs:element name="extent" type="gml:PolygonPropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="_ReliefComponent" type="_ReliefComponentType" abstract="true" substitutionGroup="_CityObject"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="ReliefComponentPropertyType">
+		<xs:annotation>
+			<xs:documentation>Denotes the relation of a relief feature to its components. The
+				relation may be given by a reference to a component definede elsewhere or by the complete inline
+				definition of a component.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="_ReliefComponent"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="TINReliefType">
+		<xs:annotation>
+			<xs:documentation>Type describing the TIN component of a relief feature.
+				As subclass of _CityObject, a TINRelief inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_ReliefComponentType">
+				<xs:sequence>
+					<xs:element name="tin" type="tinPropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="TINRelief" type="TINReliefType" substitutionGroup="_ReliefComponent"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="RasterReliefType">
+		<xs:annotation>
+			<xs:documentation>Type describing the raster component of a relief feature.
+				As subclass of _CityObject, a RasterRelief inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_ReliefComponentType">
+				<xs:sequence>
+					<xs:element name="grid" type="gridPropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="RasterRelief" type="RasterReliefType" substitutionGroup="_ReliefComponent"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="MassPointReliefType">
+		<xs:annotation>
+			<xs:documentation>Type describing the mass point component of a relief feature.
+				As subclass of _CityObject, a MassPoint Relief inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_ReliefComponentType">
+				<xs:sequence>
+					<xs:element name="reliefPoints" type="gml:MultiPointPropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="MassPointRelief" type="MassPointReliefType" substitutionGroup="_ReliefComponent"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="BreaklineReliefType">
+		<xs:annotation>
+			<xs:documentation>Type describing the break line Component of a relief feature. A break
+				line relief consists of break lines or ridgeOrValleyLines (German Translation:
+				Geripplinie)
+				As subclass of _CityObject, a BreaklineRelief inherits all attributes and relations, in particular
+				an id, names, external references, generic attributes and generalization relations.  			
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="_ReliefComponentType">
+				<xs:sequence>
+					<xs:choice>
+						<xs:element name="ridgeOrValleyLines" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+						<xs:element name="breaklines" type="gml:MultiCurvePropertyType" minOccurs="0"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:element name="BreaklineRelief" type="BreaklineReliefType" substitutionGroup="_ReliefComponent"/>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="tinPropertyType">
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="gml:TriangulatedSurface"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<xs:complexType name="gridPropertyType">
+		<xs:complexContent>
+			<xs:restriction base="gml:AssociationType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="gml:RectifiedGridCoverage"/>
+				</xs:sequence>
+				<xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================================================================== -->
+	<!-- ============= The height values of the grid are represented by Elevation elements, which have a height  ======= -->
+	<!-- ============= value and a unit of measurement, e.g. meter.                                                                                 ======= -->
+	<!-- ========================================================================================== -->
+	<xs:element name="Elevation" type="gml:LengthType" substitutionGroup="gml:_Object"/>
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ==========================================Miscellaneous===================================== -->
+	<!-- ========================================================================================== -->
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="doubleBetween0and1">
+		<xs:annotation>
+			<xs:documentation>Type for values, which are greater or equal than 0 and less or equal
+				than 1. Used for color encoding, for example. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:double">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="doubleBetween0and1List">
+		<xs:annotation>
+			<xs:documentation>List for double values, which are greater or equal than 0 and less or
+				equal than 1. Used for color encoding, for example. </xs:documentation>
+		</xs:annotation>
+		<xs:list itemType="doubleBetween0and1"/>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="TransformationMatrixType">
+		<xs:annotation>
+			<xs:documentation>Used for implicit geometries. The Transformation matrix is a 4 by 4
+				matrix, thus it must be a list with 16 items. The order the matrix element are
+				represented is row-major, i. e. the first 4 elements represent the first row, the
+				fifth to the eight element the second row,... 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="gml:doubleList">
+			<xs:minLength value="16"/>
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+	<xs:simpleType name="integerBetween0and4">
+		<xs:annotation>
+			<xs:documentation>Type for integer values, which are greater or equal than 0 and less or
+				equal than 4. Used for encoding of the LoD number. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ========================================================================================== -->
+</xs:schema>

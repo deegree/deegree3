@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="String" xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<NamedLayer>
+		<Name>XXXX</Name>
+		<UserStyle>
+			<Name>default:hw10_region</Name>
+			<IsDefault>1</IsDefault>
+			<FeatureTypeStyle>
+				<Name>bezirke</Name>
+				<Rule>
+					<Name>bezirke</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<PolygonSymbolizer>
+						<Fill>
+							<CssParameter name="fill">#4444bb</CssParameter>
+							<CssParameter name="fill-opacity">0.5</CssParameter>
+						</Fill>
+						<Stroke>
+							<CssParameter name="stroke">#FFFFFF</CssParameter>
+							<CssParameter name="stroke-opacity">1.0</CssParameter>
+							<CssParameter name="stroke-width">5.0</CssParameter>
+						</Stroke>
+					</PolygonSymbolizer>
+				</Rule>				<!--
+				<Rule>
+					<Name>bezirke</Name>
+					<MinScaleDenominator>0</MinScaleDenominator>
+					<MaxScaleDenominator>999999999</MaxScaleDenominator>
+					<TextSymbolizer>						
+						<Label>
+							<ogc:PropertyName>app:SBZNAME</ogc:PropertyName>
+						</Label>
+						<Font>
+							<CssParameter name="font-family">Arial</CssParameter>
+							<CssParameter name="font-family">Sans-Serif</CssParameter>
+							<CssParameter name="font-style">italic</CssParameter>
+							<CssParameter name="font-size">10</CssParameter>
+							<CssParameter name="font-color">#222222</CssParameter>
+						</Font>
+						<LabelPlacement>
+							<PointPlacement auto="true"/>
+						</LabelPlacement>
+						<Halo>
+							<Fill>
+								<CssParameter name="fill">#00FFFF</CssParameter>
+								<CssParameter name="fill-opacity">0.8</CssParameter>
+							</Fill>
+						</Halo>
+					</TextSymbolizer>
+				</Rule>
+-->
+			</FeatureTypeStyle>
+		</UserStyle>
+	</NamedLayer>
+</StyledLayerDescriptor>

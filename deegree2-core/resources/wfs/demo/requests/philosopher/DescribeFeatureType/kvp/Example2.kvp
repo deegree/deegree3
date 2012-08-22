@@ -1,0 +1,6 @@
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=DescribeFeatureType&
+NAMESPACE=xmlns(http://www.deegree.org/app)&
+TYPENAME=Philosopher

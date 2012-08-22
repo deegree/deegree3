@@ -1,0 +1,426 @@
+<gml:MultiGeometry xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd">
+  <!-- 
+    A gml:MultiGeometry that consists of the following member geometries:
+
+        - a gml:Point
+        - a gml:MultiPoint
+        - a gml:LineString
+        - a gml:MultiLineString
+        - a gml:Surface
+        - a gml:MultiSurface
+        - a gml:Polygon
+        - a gml:MultiPolygon
+        - a gml:MultiGeometry that consists of:
+           - a gml:Point
+           - a gml:MultiGeometry that consists of:
+               - a gml:Point
+               - a gml:MultiPoint
+               - a gml:LineString
+               - a gml:MultiLineString
+               - a gml:Surface
+               - a gml:MultiSurface
+               - a gml:Polygon
+               - a gml:MultiPolygon
+    -->
+  <gml:geometryMembers>
+    <!-- Point -->
+    <gml:Point>
+      <gml:coordinates>2,-1</gml:coordinates>
+    </gml:Point>
+    <!-- MultiPoint -->
+    <gml:MultiPoint>
+      <gml:pointMember>
+        <gml:Point>
+          <gml:pos>1 1</gml:pos>
+        </gml:Point>
+      </gml:pointMember>
+      <gml:pointMember>
+        <gml:Point>
+          <gml:pos>2 2</gml:pos>
+        </gml:Point>
+      </gml:pointMember>
+      <gml:pointMember>
+        <gml:Point>
+          <gml:pos>3 3</gml:pos>
+        </gml:Point>
+      </gml:pointMember>
+      <gml:pointMember>
+        <gml:Point>
+          <gml:pos>4 4</gml:pos>
+        </gml:Point>
+      </gml:pointMember>
+    </gml:MultiPoint>
+    <!-- LineString -->
+    <gml:LineString>
+      <gml:coordinates>10,20 22,33 -1,-1</gml:coordinates>
+    </gml:LineString>
+    <!-- MultiLineString -->
+    <gml:MultiLineString>
+      <gml:lineStringMember>
+        <gml:LineString>
+          <gml:coordinates> 4586.790988700565,2604.7224576271187 393.268333333333,2315.6079378531076 5301.969011299436,1509.130593220339 4647.657203389831,2011.2768644067799 5591.0835310734465,2011.2768644067799</gml:coordinates>
+        </gml:LineString>
+      </gml:lineStringMember>
+      <gml:lineStringMember>
+        <gml:LineString>
+          <gml:coordinates>4525.9247740113,3426.4163559322037 5317.185564971752,3167.734943502825 4632.440649717514,2924.2700847457627 5332.402118644068,2756.8879943502825</gml:coordinates>
+        </gml:LineString>
+      </gml:lineStringMember>
+    </gml:MultiLineString>
+    <!-- Surface -->
+    <gml:Surface>
+      <gml:patches>
+        <gml:PolygonPatch>
+          <!-- floor -->
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:PolygonPatch>
+        <gml:PolygonPatch>
+          <!-- north wall -->
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>37.41188 -121.93243 37.41188 -121.93243 37.41188 -121.93132 37.41188 -121.93132 37.41188 -121.93243</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:PolygonPatch>
+        <gml:PolygonPatch>
+          <!-- east wall -->
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>37.41188 -121.93132 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93132 37.41188 -121.93132</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:PolygonPatch>
+        <gml:PolygonPatch>
+          <!-- south wall -->
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>37.41142 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41142 -121.93242 37.41142 -121.93132</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:PolygonPatch>
+        <gml:PolygonPatch>
+          <!-- west wall -->
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>37.41142 -121.93243 37.41142 -121.93243 37.41188 -121.93243 37.41188 -121.93243 37.41142 -121.93243</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:PolygonPatch>
+        <gml:PolygonPatch>
+          <!-- roof -->
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:PolygonPatch>
+      </gml:patches>
+    </gml:Surface>
+    <!-- Polygon -->
+    <gml:Polygon>
+      <gml:outerBoundaryIs>
+        <gml:LinearRing>
+          <gml:coordinates>100,100 99,-99 -88,-88 -77,77 100,100</gml:coordinates>
+        </gml:LinearRing>
+      </gml:outerBoundaryIs>
+      <gml:innerBoundaryIs>
+        <gml:LinearRing>
+          <gml:coordinates> 1,1 9,-9 -8,-8 -7,7 1,1</gml:coordinates>
+        </gml:LinearRing>
+      </gml:innerBoundaryIs>
+    </gml:Polygon>
+    <!-- MultiPolygon -->
+    <gml:MultiPolygon>
+      <gml:polygonMember>
+        <gml:Polygon>
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates>111,111 111,1000 999,1000 999,111 111,111</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+        </gml:Polygon>
+      </gml:polygonMember>
+      <gml:polygonMember>
+        <gml:Polygon>
+          <gml:outerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates>100,100 99,-99 -88,-88 -77,77 100,100</gml:coordinates>
+            </gml:LinearRing>
+          </gml:outerBoundaryIs>
+          <gml:innerBoundaryIs>
+            <gml:LinearRing>
+              <gml:coordinates>1,1 9,-9 -8,-8 -7,7 1,1</gml:coordinates>
+            </gml:LinearRing>
+          </gml:innerBoundaryIs>
+        </gml:Polygon>
+      </gml:polygonMember>
+    </gml:MultiPolygon>
+    <!-- MultiSurface -->
+    <gml:MultiSurface>
+      <gml:surfaceMembers>
+        <gml:Surface>
+          <gml:patches>
+            <gml:PolygonPatch>
+              <!-- floor -->
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.41188 -121.93243 37.41188 -121.93132  37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+            <gml:PolygonPatch>
+              <!-- north wall -->
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.41188 -121.93243 37.41188 -121.93243 37.41188 -121.93132 37.41188 -121.93132 37.41188 -121.93243</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+            <gml:PolygonPatch>
+              <!-- east wall -->
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.41188 -121.93132 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93132 37.41188 -121.93132</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+            <gml:PolygonPatch>
+              <!-- south wall -->
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.41142 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41142 -121.93242 37.41142 -121.93132</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+            <gml:PolygonPatch>
+              <!-- west wall -->
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.41142 -121.93243 37.41142 -121.93243 37.41188 -121.93243 37.41188 -121.93243 37.41142 -121.93243</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+            <gml:PolygonPatch>
+              <!-- roof -->
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList>37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:PolygonPatch>
+          </gml:patches>
+        </gml:Surface>
+      </gml:surfaceMembers>
+    </gml:MultiSurface>
+    <gml:MultiGeometry>
+      <gml:geometryMember>
+        <gml:Point>
+          <gml:coordinates>2,-1</gml:coordinates>
+        </gml:Point>
+      </gml:geometryMember>
+      <gml:geometryMembers>
+        <gml:MultiGeometry>
+          <gml:geometryMembers>
+            <!-- Point -->
+            <gml:Point>
+              <gml:coordinates>2,-1</gml:coordinates>
+            </gml:Point>
+            <!-- MultiPoint -->
+            <gml:MultiPoint>
+              <gml:pointMember>
+                <gml:Point>
+                  <gml:pos>1 1</gml:pos>
+                </gml:Point>
+              </gml:pointMember>
+              <gml:pointMember>
+                <gml:Point>
+                  <gml:pos>2 2</gml:pos>
+                </gml:Point>
+              </gml:pointMember>
+              <gml:pointMember>
+                <gml:Point>
+                  <gml:pos>3 3</gml:pos>
+                </gml:Point>
+              </gml:pointMember>
+              <gml:pointMember>
+                <gml:Point>
+                  <gml:pos>4 4</gml:pos>
+                </gml:Point>
+              </gml:pointMember>
+            </gml:MultiPoint>
+            <!-- LineString -->
+            <gml:LineString>
+              <gml:coordinates>10,20 22,33 -1,-1</gml:coordinates>
+            </gml:LineString>
+            <!-- MultiLineString -->
+            <gml:MultiLineString>
+              <gml:lineStringMember>
+                <gml:LineString>
+                  <gml:coordinates> 4586.790988700565,2604.7224576271187 393.268333333333,2315.6079378531076 5301.969011299436,1509.130593220339 4647.657203389831,2011.2768644067799 5591.0835310734465,2011.2768644067799</gml:coordinates>
+                </gml:LineString>
+              </gml:lineStringMember>
+              <gml:lineStringMember>
+                <gml:LineString>
+                  <gml:coordinates>4525.9247740113,3426.4163559322037 5317.185564971752,3167.734943502825 4632.440649717514,2924.2700847457627 5332.402118644068,2756.8879943502825</gml:coordinates>
+                </gml:LineString>
+              </gml:lineStringMember>
+            </gml:MultiLineString>
+            <!-- Surface -->
+            <gml:Surface>
+              <gml:patches>
+                <gml:PolygonPatch>
+                  <!-- floor -->
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:PolygonPatch>
+                <gml:PolygonPatch>
+                  <!-- north wall -->
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>37.41188 -121.93243 37.41188 -121.93243 37.41188 -121.93132 37.41188 -121.93132 37.41188 -121.93243</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:PolygonPatch>
+                <gml:PolygonPatch>
+                  <!-- east wall -->
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>37.41188 -121.93132 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93132 37.41188 -121.93132</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:PolygonPatch>
+                <gml:PolygonPatch>
+                  <!-- south wall -->
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>37.41142 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41142 -121.93242 37.41142 -121.93132</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:PolygonPatch>
+                <gml:PolygonPatch>
+                  <!-- west wall -->
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>37.41142 -121.93243 37.41142 -121.93243 37.41188 -121.93243 37.41188 -121.93243 37.41142 -121.93243</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:PolygonPatch>
+                <gml:PolygonPatch>
+                  <!-- roof -->
+                  <gml:exterior>
+                    <gml:LinearRing>
+                      <gml:posList>37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+                    </gml:LinearRing>
+                  </gml:exterior>
+                </gml:PolygonPatch>
+              </gml:patches>
+            </gml:Surface>
+            <!-- Polygon -->
+            <gml:Polygon>
+              <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                  <gml:coordinates>100,100 99,-99 -88,-88 -77,77 100,100</gml:coordinates>
+                </gml:LinearRing>
+              </gml:outerBoundaryIs>
+              <gml:innerBoundaryIs>
+                <gml:LinearRing>
+                  <gml:coordinates> 1,1 9,-9 -8,-8 -7,7 1,1</gml:coordinates>
+                </gml:LinearRing>
+              </gml:innerBoundaryIs>
+            </gml:Polygon>
+            <!-- MultiPolygon -->
+            <gml:MultiPolygon>
+              <gml:polygonMember>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>111,111 111,1000 999,1000 999,111 111,111</gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                </gml:Polygon>
+              </gml:polygonMember>
+              <gml:polygonMember>
+                <gml:Polygon>
+                  <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>100,100 99,-99 -88,-88 -77,77 100,100</gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:outerBoundaryIs>
+                  <gml:innerBoundaryIs>
+                    <gml:LinearRing>
+                      <gml:coordinates>1,1 9,-9 -8,-8 -7,7 1,1</gml:coordinates>
+                    </gml:LinearRing>
+                  </gml:innerBoundaryIs>
+                </gml:Polygon>
+              </gml:polygonMember>
+            </gml:MultiPolygon>
+            <!-- MultiSurface -->
+            <gml:MultiSurface>
+              <gml:surfaceMembers>
+                <gml:Surface>
+                  <gml:patches>
+                    <gml:PolygonPatch>
+                      <!-- floor -->
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList>37.41188 -121.93243 37.41188 -121.93132  37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </gml:PolygonPatch>
+                    <gml:PolygonPatch>
+                      <!-- north wall -->
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList>37.41188 -121.93243 37.41188 -121.93243 37.41188 -121.93132 37.41188 -121.93132 37.41188 -121.93243</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </gml:PolygonPatch>
+                    <gml:PolygonPatch>
+                      <!-- east wall -->
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList>37.41188 -121.93132 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93132 37.41188 -121.93132</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </gml:PolygonPatch>
+                    <gml:PolygonPatch>
+                      <!-- south wall -->
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList>37.41142 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41142 -121.93242 37.41142 -121.93132</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </gml:PolygonPatch>
+                    <gml:PolygonPatch>
+                      <!-- west wall -->
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList>37.41142 -121.93243 37.41142 -121.93243 37.41188 -121.93243 37.41188 -121.93243 37.41142 -121.93243</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </gml:PolygonPatch>
+                    <gml:PolygonPatch>
+                      <!-- roof -->
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList>37.41188 -121.93243 37.41188 -121.93132 37.41142 -121.93132 37.41142 -121.93242 37.41188 -121.93243</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </gml:PolygonPatch>
+                  </gml:patches>
+                </gml:Surface>
+              </gml:surfaceMembers>
+            </gml:MultiSurface>
+          </gml:geometryMembers>
+        </gml:MultiGeometry>
+      </gml:geometryMembers>
+    </gml:MultiGeometry>
+  </gml:geometryMembers>
+</gml:MultiGeometry>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Normalize>
+    <!-- 
+    DO NOT CHANGE THE RULES FOR LOCALE "de", unless you know what you're doing! 
+    They are needed for wfs gazetteer string normalisation.
+    -->
+   <Locale name="de" case="toUpper" removeDoubles="ABCDEFGHIJKLMNOPQRSTUVWXYZ">
+       <Rule>
+           <Source>Ä</Source>
+           <Target>A</Target>
+       </Rule>
+       <Rule>
+           <Source>Ö</Source>
+           <Target>O</Target>
+       </Rule>
+       <Rule>
+           <Source>Ü</Source>
+           <Target>U</Target>
+       </Rule>
+       <Rule>
+           <Source>ß</Source>
+           <Target>S</Target>
+       </Rule>
+       <Rule>
+           <Source>-</Source>
+           <Target></Target>
+       </Rule>
+       <Rule>
+           <Source>\.</Source>
+           <Target></Target>
+       </Rule>
+       <Rule>
+           <Source>'</Source>
+           <Target></Target>
+       </Rule>
+       <Rule>
+           <Source> </Source>
+           <Target></Target>
+       </Rule>
+       <Rule>
+           <Source>STR$</Source>
+           <Target>STRASE</Target>
+       </Rule>
+       <Rule>
+           <Source>PL$</Source>
+           <Target>PLATZ</Target>
+       </Rule>
+       <Rule>
+           <Source>SIEDL$</Source>
+           <Target>SIEDLUNG</Target>
+       </Rule>
+   </Locale>
+   <Locale name="en" case="toLower">
+   </Locale>
+</Normalize>

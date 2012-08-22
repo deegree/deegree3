@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.deegree.org/wcts" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:d_wcts="http://www.deegree.org/wcts" xmlns:wcts="http://www.opengis.net/wcts/0.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="http://www.opengis.net/ows/1.1" schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsGetCapabilities.xsd" />
+  <xs:import namespace="http://www.opengis.net/wcts/0.0" schemaLocation="wctsContents.xsd" />
+  <xs:element name="Configuration" type="d_wcts:deegreeConfigurationType" />
+  <xs:complexType name="deegreeConfigurationType">
+    <xs:sequence>
+      <xs:element name="deegreeParams" type="d_wcts:deegreeParamsType" />
+      <xs:element ref="ows:ServiceIdentification" minOccurs="0" />
+      <xs:element ref="ows:ServiceProvider" minOccurs="0" />
+      <xs:element ref="ows:OperationsMetadata" minOccurs="0" />
+      <xs:element ref="wcts:Contents" />
+    </xs:sequence>
+    <xs:attribute name="version" type="ows:VersionType" use="required" />
+    <xs:attribute name="updateSequence" type="ows:UpdateSequenceType" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Service metadata document version, having values that are "increased" whenever any change is made in service metadata document. Values are selected by each server, and
+          are always opaque to clients. When not supported by server, server shall not return this attribute.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="deegreeParamsType">
+    <xs:annotation>
+      <xs:documentation>Additional parameters for the configuration of the wcts</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <!--The CRS Provider to use with this wcts, overwriting the default crs configuration -->
+      <xs:element name="crsProvider" type="xs:string" minOccurs="0" />
+      <!-- If [true|omitted] the deegree response to a transform operation will add two additional elements beneath the OperationResponse element i.e.  InlineData/[SimpleData|GeometryData|FeatureCollectionData], else the response will contain the gml:_geometry directly -->
+      <xs:element name="useDeegreeTransformResponse" type="xs:boolean" minOccurs="0" default="true" />
+      <!-- If true default transformations for all source/target combinations will be created and described in the capabilities document.-->
+      <xs:element name="createDefaultTransformationDescriptions" type="xs:boolean" minOccurs="0" default="false" />
+      <xs:element name="transformationIDPrefix" type="xs:string" minOccurs="0" default="urn:deegree:wcts:transformation:" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

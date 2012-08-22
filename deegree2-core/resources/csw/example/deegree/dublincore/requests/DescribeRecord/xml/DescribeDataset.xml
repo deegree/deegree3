@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw" xmlns:ogc="http://www.opengis.net/ogc" version="2.0.0" service="CSW" outputFormat="text/xml" schemaLanguage="XMLSCHEMA" xmlns="http://www.opengis.net/cat/csw" xmlns:ows="http://www.opengis.net/ows" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw
+http://schemas.opengis.net/csw/2.0.0/CSW-discovery.xsd">
+	<csw:TypeName targetNamespace="http://www.opengis.net/cat/csw">dataset</csw:TypeName>
+</csw:DescribeRecord>

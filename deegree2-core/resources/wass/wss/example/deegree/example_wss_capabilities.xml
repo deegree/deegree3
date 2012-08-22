@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wss:WSS_Capabilities xmlns:authn="http://www.gdi-nrw.org/authentication" xmlns="http://www.opengis.net/ows" xmlns:wss="http://www.gdi-nrw.org/wss" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:deegreewss="http://www.deegree.org/wss" version="1.0" updateSequence="0">
+  <deegreewss:deegreeParam>
+    <!--
+                        The DefaultOnlineResource will be used if a required OnlineResource is
+                        not defined
+                -->
+    <deegreewss:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8081/deegree/ogcwebservice"/>
+    <!-- maximum time for the execution of a request until an exception of time-exceed is thrown.
+                        optional; default 15 seconds -->
+    <deegreewss:RequestTimeLimit>15</deegreewss:RequestTimeLimit>
+    <!-- maximum session lifetime in seconds, default is 1200 -->
+    <deegreewss:SessionLifetime>1200</deegreewss:SessionLifetime>
+    <deegreewss:SecuredServiceAddress>
+      <!--
+                                mandatory element with online resource for accessing the capabilities of the hidden service
+                        -->
+      <!-- deegreewss:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree/ogcwebservice"/-->
+      <deegreewss:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wfs/services"/>
+    </deegreewss:SecuredServiceAddress>
+    <deegreewss:AuthenticationServiceAddress>
+      <!--
+                                mandatory element with online resource for accessing a WAS to authenticate users
+                        -->
+      <deegreewss:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8081/deegree/was"/>
+    </deegreewss:AuthenticationServiceAddress>
+    <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+      <Driver>org.postgresql.Driver</Driver>
+      <Url>jdbc:postgresql://hurricane:5432/wssusers</Url>
+      <User>postgres</User>
+      <Password></Password>
+      <SecurityConstraints/>
+      <Encoding>UTF-8</Encoding>
+    </JDBCConnection>
+  </deegreewss:deegreeParam>
+  <ServiceIdentification>
+    <Title>Deegree WSS</Title>
+    <Abstract>
+                        A Web Security Service that secures a restricted WFS
+                </Abstract>
+    <Keywords>
+      <Keyword>WSS</Keyword>
+    </Keywords>
+    <ServiceType>WSS</ServiceType>
+    <ServiceTypeVersion>1.0</ServiceTypeVersion>
+    <Fees>Free Access</Fees>
+    <AccessConstraints>None</AccessConstraints>
+  </ServiceIdentification>
+  <ServiceProvider>
+    <ProviderName>My Compagny</ProviderName>
+    <ProviderSite xlink:href="http://www.lat-lon.de"/>
+    <ServiceContact>
+      <IndividualName>Andreas Poth</IndividualName>
+      <PositionName>Research Associate</PositionName>
+      <ContactInfo>
+        <Phone>
+          <Voice>+49 228 18496 0</Voice>
+        </Phone>
+        <Address>
+          <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
+          <City>Bonn</City>
+          <AdministrativeArea>NRW</AdministrativeArea>
+          <PostalCode>53177</PostalCode>
+          <Country>Germany</Country>
+          <ElectronicMailAddress>info@www.lat-lon.de</ElectronicMailAddress>
+        </Address>
+        <OnlineResource xlink:href="http://www.lat-lon.de/"/>
+      </ContactInfo>
+    </ServiceContact>
+  </ServiceProvider>
+  <OperationsMetadata>
+    <Operation name="GetCapabilities">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://www.lat-lon.de:8080/WSS?"/>
+          <Post xlink:href="http://www.lat-lon.de:8080/WSS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="GetSession">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://www.lat-lon.de:8080/WSS?"/>
+          <Post xlink:href="http://www.lat-lon.de:8080/WSS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="CloseSession">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://www.lat-lon.de:8080/WSS?"/>
+          <Post xlink:href="http://www.lat-lon.de:8080/WSS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="DoService">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://www.lat-lon.de:8080/WSS?"/>
+          <Post xlink:href="http://www.lat-lon.de:8080/WSS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="DescribeUser">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://www.lat-lon.de:8080/WSS?"/>
+          <Post xlink:href="http://www.lat-lon.de:8080/WSS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+  </OperationsMetadata>
+  <wss:Capability>
+    <wss:SecuredServiceType>WFS</wss:SecuredServiceType>
+    <wss:SupportedAuthenticationMethodList>
+      <!--authentication method #1 password-->
+      <authn:SupportedAuthenticationMethod>
+        <authn:AuthenticationMethod id="urn:x-gdi-nrw:authnMethod:1.0:password"/>
+      </authn:SupportedAuthenticationMethod>
+      <!--authentication method #2 session-->
+      <authn:SupportedAuthenticationMethod>
+        <authn:AuthenticationMethod id="urn:x-gdi-nrw:authnMethod:1.0:session"/>
+      </authn:SupportedAuthenticationMethod>
+      <!--authentication method #3 anonymous-->
+      <authn:SupportedAuthenticationMethod>
+        <authn:AuthenticationMethod id="urn:x-gdi-nrw:authnMethod:1.0:anonymous"/>
+      </authn:SupportedAuthenticationMethod>
+    </wss:SupportedAuthenticationMethodList>
+  </wss:Capability>
+</wss:WSS_Capabilities>

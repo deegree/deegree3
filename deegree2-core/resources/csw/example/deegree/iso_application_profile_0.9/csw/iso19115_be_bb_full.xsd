@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://schemas.opengis.net/iso19115full" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:tns="http://schemas.opengis.net/iso19115full" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- ================================================================
+    * Topic:        Metadataschema for CS-W 2.0/ISO Profile for GIB
+    * Filename:     iso19115_be_bb_full.xsd    
+    * Description:  XML Schema of full resultset as diescribed by.              
+    *                      Berlin/Brandenburgisches Profil der ISO 19115/19119   GIB 06-002
+    *                      based on Metadataschema for CS-W 2.0/ISO Profile; iso19115_full.xsd 
+    *                      
+    * Last update:  20.06.2006
+    * Editor(s):    lat/lon GmbH                                     
+    *                    Andreas Poth (poth@latlon.de)
+    *                                                                   
+    * (referenced types are taken from smXML v0.9, available under      
+    *    http://metadata.dgiwg.org/ISO19115/ISO19139_v0_9.htm)          
+    ================================================================= -->
+	<!-- ================= imports ================= -->
+	<xs:import namespace="http://metadata.dgiwg.org/smXML" schemaLocation="./smXML/metadataEntity.xsd"/>
+	<xs:import namespace="http://www.opengis.net/cat/csw" schemaLocation="./csw2.0/record.xsd"/>
+	<xs:import namespace="http://schemas.opengis.net/iso19119" schemaLocation="./iso19119.xsd"/>
+	<!--	================= imports ================= -->
+	<!-- ===============================================
+    MD_Metadata
+    =============================================== -->
+	<xs:complexType name="MD_Metadata_Type">
+		<xs:complexContent>
+			<xs:extension base="csw:AbstractRecordType">
+				<xs:sequence>
+					<xs:element name="fileIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="language" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="characterSet" type="smXML:MD_CharacterSetCode_PropertyType" minOccurs="0"/>
+					<xs:element name="parentIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="hierarchyLevel" type="smXML:MD_ScopeCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="hierarchyLevelName" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contact" type="smXML:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="dateStamp" type="smXML:Date_PropertyType"/>
+					<xs:element name="metadataStandardName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="metadataStandardVersion" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="identificationInfo" type="smXML:_MD_Identification_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="dataQualityInfo" type="smXML:DQ_DataQuality_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="spatialRepresentationInfo" type="smXML:_MD_SpatialRepresentation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="referenceSystemInfo" type="smXML:MD_ReferenceSystem_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contentInfo" type="smXML:_MD_ContentInformation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="distributionInfo" type="smXML:MD_Distribution_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Metadata" type="tns:MD_Metadata_Type" substitutionGroup="csw:AbstractRecord"/>
+	<xs:complexType name="MD_Metadata_PropertyType">
+		<xs:choice>
+			<xs:element ref="tns:MD_Metadata"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

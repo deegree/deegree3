@@ -1,0 +1,22 @@
+.pNominatim_search {
+    margin: 5px;
+}
+
+.pNominatim_searchQueryLine {
+	margin-bottom: 10px;
+}
+
+#queryString {
+	width: 60%;
+}
+
+.pNominatim_searchResult {
+	margin-bottom: 10px;
+}
+
+.pNominatim_searchLI {	
+	margin: 5px;	
+	width: 95%;
+	border: #99BBE8 2px solid; 
+    -moz-border-radius: 3px;
+}

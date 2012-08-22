@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><templates><template autoinsert="false" context="typecomment_context" deleted="false" description="Comment for created types" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.typecomment" name="typecomment">/**
+ * TODO add class documentation here
+ * 
+ * @author &lt;a href="mailto:name@deegree.org"&gt;Your Name&lt;/a&gt;
+ * @author last edited by: $$Author${user} $$
+ * 
+ * @version $$Revision$$, $$Date$$
+ */</template></templates>

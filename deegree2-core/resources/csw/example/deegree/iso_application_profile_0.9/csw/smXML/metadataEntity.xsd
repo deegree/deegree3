@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+	<!-- ================== Includes================== -->
+	<xs:include schemaLocation="./dataQuality.xsd"/>
+	<xs:include schemaLocation="./spatialRepresentation.xsd"/>
+	<xs:include schemaLocation="./content.xsd"/>
+	<xs:include schemaLocation="./metadataExtension.xsd"/>
+	<xs:include schemaLocation="./applicationSchema.xsd"/>
+	<xs:include schemaLocation="./portrayalCatalogue.xsd"/>
+	<xs:include schemaLocation="./MDAppInfo.xsd"/>
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="MD_Metadata_Type">
+		<xs:annotation>
+			<xs:documentation>Information about the metadata</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="fileIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="language" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="characterSet" type="smXML:MD_CharacterSetCode_PropertyType" minOccurs="0"/>
+					<xs:element name="parentIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="hierarchyLevel" type="smXML:MD_ScopeCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="hierarchyLevelName" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contact" type="smXML:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="dateStamp" type="smXML:Date_PropertyType"/>
+					<xs:element name="metadataStandardName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="metadataStandardVersion" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="dataSet" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="featureAttribute" type="smXML:GF_AttributeType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="featureType" type="smXML:GF_FeatureType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="identificationInfo" type="smXML:_MD_Identification_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="metadataConstraints" type="smXML:MD_Constraints_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="dataQualityInfo" type="smXML:DQ_DataQuality_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="metadataMaintenance" type="smXML:MD_MaintenanceInformation_PropertyType" minOccurs="0"/>
+					<xs:element name="spatialRepresentationInfo" type="smXML:_MD_SpatialRepresentation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="referenceSystemInfo" type="smXML:MD_ReferenceSystem_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contentInfo" type="smXML:_MD_ContentInformation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="distributionInfo" type="smXML:MD_Distribution_PropertyType" minOccurs="0"/>
+					<xs:element name="metadataExtensionInfo" type="smXML:MD_MetadataExtensionInformation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="applicationSchemaInfo" type="smXML:MD_ApplicationSchemaInformation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="series" type="smXML:_DS_Aggregate_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="describes" type="smXML:DS_DataSet_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="propertyType" type="smXML:GF_PropertyType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<!--<xs:element name="featureType" type="smXML:GF_FeatureType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>-->
+					<xs:element name="featureAttributeMetadata" type="smXML:GF_AttributeType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Metadata" type="smXML:MD_Metadata_Type">
+		<xs:annotation>
+			<xs:documentation>
+   ***   Conditional statements:
+   ***   language: documented if not defined by the encoding standard
+   ***   characterSet: documented if ISO 10646-1 not used and not defined by the encoding standard
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="MD_Metadata_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_Metadata"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

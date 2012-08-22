@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:Module xmlns:deegree="http://www.deegree.org/context" hidden="false" type="toolbar" width="1700"
+  height="35">
+  <deegree:Name>Toolbar</deegree:Name>
+  <deegree:Content>./modules/gui/toolbar.html</deegree:Content>
+  <deegree:ModuleJS>./modules/gui/toolbar.js</deegree:ModuleJS>
+  <deegree:ModuleJS>./javascript/gui/buttongroup.js</deegree:ModuleJS>
+  <deegree:ParameterList>
+    <deegree:Parameter>
+      <deegree:Name>fullextent|Zoom to full extent</deegree:Name>
+      <deegree:Value>PushButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>move|verschieben mit gedrückter linker Maustaste</deegree:Name>
+      <deegree:Value>ToggleButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>movetoprevious|Move to previous map</deegree:Name>
+      <deegree:Value>PushButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>movetonext|Move to next map</deegree:Name>
+      <deegree:Value>PushButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>zoomin|Zoomin by mouse click or mouse drag</deegree:Name>
+      <deegree:Value>ToggleButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>zoomout|Zoomout by mouse click</deegree:Name>
+      <deegree:Value>ToggleButton</deegree:Value>
+    </deegree:Parameter>
+    <!-- zoom2layer: make sure, the WMS supports proper BBoxes and scale hints for the requested layer as these are used 
+      to zoom to. Refer Documentation for details -->
+    <!-- <deegree:Parameter> <deegree:Name>zoom2layer|zoomtolayer by mouse click</deegree:Name> <deegree:Value>PushButton</deegree:Value> 
+      </deegree:Parameter> -->
+    <deegree:Parameter>
+      <deegree:Name>featureinfo|Get info to an object within the map</deegree:Name>
+      <deegree:Value>ToggleButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>recenter|Recenter the map by mouse click</deegree:Name>
+      <deegree:Value>ToggleButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>addwms|Add additonal WMS to the map</deegree:Name>
+      <deegree:Value>PushButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>pdfprint|Generate pdf</deegree:Name>
+      <deegree:Value>PushButton</deegree:Value>
+    </deegree:Parameter>
+    <deegree:Parameter>
+      <deegree:Name>download|Download data</deegree:Name>
+      <deegree:Value>PushButton</deegree:Value>
+    </deegree:Parameter>
+  </deegree:ParameterList>
+</deegree:Module>

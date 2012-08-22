@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:app="http://www.deegree.org/csw/dc" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.deegree.org/csw/dc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+  <!-- configuration of the persistence backend to be used -->
+  <annotation>
+    <appinfo>
+      <deegreewfs:Prefix>dc</deegreewfs:Prefix>
+      <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.postgresql.Driver</Driver>
+        <Url>jdbc:postgresql://hurricane:5432/deegreetest</Url>
+        <User>deegreetest</User>
+        <Password>deegreetest</Password>
+        <SecurityConstraints/>
+        <Encoding>UTF-8</Encoding>
+      </JDBCConnection>
+      <deegreewfs:SuppressXLinkOutput>true</deegreewfs:SuppressXLinkOutput>
+    </appinfo>
+  </annotation>
+  <!-- ====================================================================== -->
+  <element name="Dataset" type="app:DatasetType" substitutionGroup="gml:_Feature">
+    <annotation>
+      <appinfo>
+        <deegreewfs:table>DC_FEATURE</deegreewfs:table>
+        <deegreewfs:gmlId prefix="DC_">
+          <deegreewfs:MappingField field="FID" type="INTEGER"/>
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">DC_FID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:transaction update="true" delete="true" insert="true"/>
+      </appinfo>
+    </annotation>
+  </element>
+  <!-- ====================================================================== -->
+  <complexType name="DatasetType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="abstract" type="xs:string" minOccurs="0" maxOccurs="1">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DCT_ABSTRACT" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="contributor" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_CONTRIBUTOR" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_CONTRIBUTOR"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="coverage" type="gml:GeometryPropertyType">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_COVERAGE" type="GEOMETRY"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="creator" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_CREATOR" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_CREATOR"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="date" type="xs:date" minOccurs="0">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_DATE" type="DATE"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="description" type="xs:string">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_DESCRIPTION" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_DESCRIPTION"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="format" type="xs:string" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_FORMAT" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_FORMAT"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="identifier" type="xs:string">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_IDENTIFIER" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="language" type="xs:string" minOccurs="0">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_LANGUAGE" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="publisher" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_PUBLISHER" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_PUBLISHER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="relation" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_RELATION" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_RELATION"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="rights" type="xs:string" minOccurs="0">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_RIGHTS" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="source" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_SOURCE" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_SOURCE"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="subject" type="xs:string" maxOccurs="unbounded">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_SUBJECT" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="FID" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="FID" type="INTEGER" table="DC_SUBJECT"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="title" type="xs:string">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_TITLE" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+          <element name="type" type="xs:string">
+            <annotation>
+              <appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DC_TYPE" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </appinfo>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- ====================================================================== -->
+</schema>

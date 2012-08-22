@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================== Includes ================== -->
+    <xs:include schemaLocation="./citation.xsd"/>
+    <!-- ########################################################################### -->
+    <!-- ########################################################################### -->
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="MD_PortrayalCatalogueReference_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="portrayalCatalogueCitation" type="smXML:CI_Citation_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_PortrayalCatalogueReference" type="smXML:MD_PortrayalCatalogueReference_Type"/>
+    <xs:complexType name="MD_PortrayalCatalogueReference_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_PortrayalCatalogueReference"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

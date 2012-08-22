@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+</head>
+<body bgcolor="white">
+The wcts (Web-Coordinate-Transformation-Service) package contains the deegree implementation of the wcts described in
+the draft version (0.4.0) of the ogc.
+<p>(Partly quoted from the specification document 07-055-r1)</p>
+<p>Introduction:<br />
+A Web Coordinate Transformation Service (WCTS), can be used by geospatial applications and other services to transform
+geospatial data from one reference system into another.</p>
+<p>Geospatial data is often stored in different coordinate reference systems (CRSs). To use together data stored in
+different CRSs, such data must be transformed into the same CRS. Not all applications or services are capable of
+performing such transformations. The deegree-WCTS is an implementation of the OGC Web Service interface. This is a type
+of interface to a service that performs coordinate transformations. Such transformations include all the types of
+coordinate operations, including both ―transformations and ―conversions</p>
+<p>The deegree-WCTS can handle inputs of digital features (and will in the future be able to handle coverages) in
+one CRS and outputs the same features in a different CRS. The service inputs include identifications of the input and
+output CRSs, and optionally the coordinate transformation between these CRSs, the latter is not yet implemented.</p>
+<p>This WCTS interface specifies five operations that can be requested by a client and performed by a WCTS server.
+Those operations are:
+<ul>
+  <li>Transform (required implementation) – This operation allows a client to request transformation of the
+  coordinates in a specified set of features, and to receive back the transformed features. This operation allows the
+  client to identify the CRS of the input features and the desired CRS of the output features. Each feature can be a
+  single feature, a feature collection containing multiple features, and in the future a coverage</li>
+  <li>GetCapabilities (required implementation) – This operation allows a client to request and receive back a
+  service metadata (or Capabilities) document that describes the abilities of the specific server implementation.</li>
+  <li>IsTransformable (optional implementation) – This operation allows a client to ask a server if it can perform
+  any coordinate transformation from one identified CRS into another. This operation also allows the client to ask if
+  this transformation can be performed on specified geometric primitive or (in the future) coverage types. The response
+  back is binary, plus problem information when the answer is false</li>
+  <li>GetTransfomation (optional implementation) – not implemented (and probably never will be)</li>
+  <li>GetResourceByID (optional implementation) – This operation allows a client to request and receive back
+  XML-encoded definitions of one or more identified abilities provided by the WCTS server. Those abilities can be
+  coordinate transformations, coordinate reference systems (CRSs), or operation methods.</li>
+</ul>
+</p>
+<p>Since the original spec does not allow the sending of inline data (encoded inside a post(soap)-xml request)
+deegree supplies this possibility. Clients are allowed to send a {http://www.deegree.org/wcts}:InlineData element. In
+which three kinds of data can be inserted
+<ol>
+  <li>gml:FeatureCollections</li>
+  <li>gml:Geometries</li>
+  <li>SimpleData -- a complex element which contains the attributes, 'srsDimension' and 'cs' and is expected to
+  hold a list of coordinates separated by the 'cs' value and tupled by the 'srsDimension'.</li>
+</ol>
+</p>
+@author
+<a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+@author last edited by: $Author$ @version $Revision$, $Date: 2007-03-20 10:15:15 +0100 (Di, 20 Mrz
+2007)$
+</body>
+</html>

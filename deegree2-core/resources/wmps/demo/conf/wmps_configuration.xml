@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMT_PS_Capabilities xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:deegree="http://www.deegree.org/wmps" xmlns:app="http://www.deegree.org/app">
+  <DeegreeParam xmlns="http://www.deegree.org/wmps">
+    <DefaultOnlineResource xlink:href="${default.online.resource}" xlink:type="simple" />
+    <CacheSize>100</CacheSize>
+    <MaxLifeTime>3600</MaxLifeTime>
+    <RequestTimeLimit>45</RequestTimeLimit>
+    <MapQuality>0.95</MapQuality>
+    <MaxMapWidth>1000</MaxMapWidth>
+    <MaxMapHeight>1000</MaxMapHeight>
+    <AntiAliased>true</AntiAliased>
+    <CacheDatabase>
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.hsqldb.jdbcDriver</Driver>
+        <Url>jdbc:hsqldb:${docRoot}/../../../data/plotjobs/hsqldb/wmps-jobs</Url> 
+        <User>sa</User>
+        <Password></Password>
+        <SecurityConstraints />
+        <Encoding>UTF-8</Encoding>
+      </JDBCConnection>
+    </CacheDatabase>
+    <PrintMapParam>
+      <!-- default: 300 (dpi) -->
+      <!-- TargetResolution>300</TargetResolution-->
+      <Format>pdf</Format>
+      <PlotDirectory>../../../plots</PlotDirectory>
+      <OnlineResource>${default.webapp.url}/plots</OnlineResource>
+      <PlotImageDirectory>../../../tmp</PlotImageDirectory>
+      <!-- Please add any MailHost for sending Print Map Notifications -->
+      <MailHost>mail.deegree.org</MailHost>
+      <!--MailHostUser>MyMailHostUserName</MailHostUser>
+      <MailHostPassword>MyMailHostPassword</MailHostPassword-->
+      <MailTextTemplate>you can access the printMap result at {0}/{1}</MailTextTemplate>
+      <AdministratorEMailAddress>info@lat-lon.de</AdministratorEMailAddress>
+      <Template>
+        <Directory>templates</Directory>
+      </Template>
+    </PrintMapParam>
+  </DeegreeParam>
+  <Service>
+    <Name>deegree wmps</Name>
+    <Title>deegree wmps</Title>
+    <KeywordList>
+      <Keyword>deegree</Keyword>
+      <Keyword>wmps</Keyword>
+    </KeywordList>
+    <OnlineResource xlink:href="${default.online.resource}" xlink:type="simple" />
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson></ContactPerson>
+        <ContactOrganization></ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition></ContactPosition>
+      <ContactAddress>
+        <AddressType>XXXX</AddressType>
+        <Address>Aennchenstr. 19</Address>
+        <City>Bonn</City>
+        <StateOrProvince>NRW</StateOrProvince>
+        <PostCode>53177</PostCode>
+        <Country>Germany</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone>0049228184960</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>00492281849629</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>none</Fees>
+    <AccessConstraints>none</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" xlink:type="simple" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <PrintMap>
+        <Format>image/gif</Format>
+        <Format>image/png</Format>
+        <Format>image/tif</Format>
+        <Format>image/bmp</Format>
+        <Format>image/jpg</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" xlink:type="simple" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:href="${default.online.resource}?" xlink:type="simple" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </PrintMap>
+      <GetAvailableTemplates>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" xlink:type="simple" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetAvailableTemplates>
+      <DescribeTemplate>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" xlink:type="simple" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </DescribeTemplate>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/vnd.ogc.se_inimage</Format>
+      <Format>application/vnd.ogc.se_blank</Format>
+    </Exception>
+    <UserDefinedSymbolization RemoteWFS="1" SupportSLD="1" UserLayer="1" UserStyle="1" />
+    <Layer cascaded="0" noSubsets="0" queryable="0">
+      <Title>deegree 2.4 WMPS</Title>
+      <Abstract>deegree WMPS</Abstract>
+      <KeywordList>
+        <Keyword>deegree</Keyword>
+        <Keyword>layer</Keyword>
+      </KeywordList>
+      <SRS>EPSG:4326</SRS>
+      <SRS>EPSG:26912</SRS>
+      <LatLonBoundingBox maxx="180" maxy="90" minx="-180" miny="-90" />
+      <ScaleHint max="100000000" min="0.001" />
+      <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+        <Name>dem_saltlake</Name>
+        <Title>90m DEM Salt Lake City NW</Title>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:4326</SRS>
+        <LatLonBoundingBox miny="40.69239810940439" maxy="40.875836280377996" minx="-111.9779040644908" maxx="-111.750633647006" />
+        <BoundingBox SRS="EPSG:26912" miny="4505071" maxy="4525245" minx="417375" maxx="436751.978" />
+        <BoundingBox SRS="EPSG:4326" miny="40.69239810940439" maxy="40.875836280377996" minx="-111.9779040644908" maxx="-111.750633647006" />
+        <deegree:DataSource failOnException="1" queryable="1">
+          <deegree:Name>dem_saltlake</deegree:Name>
+          <deegree:Type>LOCALWCS</deegree:Type>
+          <deegree:OWSCapabilities>
+            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWCS_configuration.xml" />
+          </deegree:OWSCapabilities>
+          <deegree:FilterCondition>
+            <deegree:WCSRequest><![CDATA[VERSION=1.0.0&coverage=dem_saltlake&TRANSPARENT=TRUE&FORMAT=TIFF&EXCEPTIONS=application/vnd.ogc.se_xml]]></deegree:WCSRequest>
+          </deegree:FilterCondition>
+        </deegree:DataSource>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <deegree:StyleResource>styles/utah_dem_saltlake.xml</deegree:StyleResource>
+          <LegendURL width="50" height="50">
+            <Format>image/png</Format>
+            <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/dummy.png"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+        <Name>orthoimage</Name>
+        <Title>Ortho Imagery of Salt Lake City</Title>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:4326</SRS>
+        <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <Name>orthoimage1</Name>
+          <Title>Ortho Imagery of Salt Lake City no Bbox</Title>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:4326</SRS>
+          <LatLonBoundingBox miny="40.719021928792515" maxy="40.82820182642026" minx="-111.94721360400128" maxx="-111.80644038553243" />
+          <BoundingBox SRS="EPSG:26912" miny="4507998.0" maxy="4519999.0" minx="420000.0" maxx="432001.0" />
+          <BoundingBox SRS="EPSG:4326" miny="40.719021928792515" maxy="40.82820182642026" minx="-111.94721360400128" maxx="-111.80644038553243" />
+          <deegree:DataSource failOnException="1" queryable="0">
+            <deegree:Name>saltlakesatellite</deegree:Name>
+            <deegree:Type>LOCALWCS</deegree:Type>
+            <deegree:OWSCapabilities>
+              <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWCS_configuration.xml" />
+            </deegree:OWSCapabilities>
+            <deegree:FilterCondition>
+              <deegree:WCSRequest><![CDATA[VERSION=1.0.0&coverage=saltlakesatellite&TRANSPARENT=TRUE&FORMAT=jpg&EXCEPTIONS=application/vnd.ogc.se_xml]]></deegree:WCSRequest>
+              </deegree:FilterCondition>
+            </deegree:DataSource>
+            <Style>
+              <LegendURL width="50" height="50">
+                <Format>image/png</Format>
+                <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/dummy.png"/>
+              </LegendURL>
+            </Style>
+          </Layer>
+          <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+            <Name>bbox</Name>
+            <Title>BBox of Ortho Imagery of Salt Lake City</Title>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:4326</SRS>
+            <deegree:DataSource failOnException="1" queryable="0">
+              <deegree:Name>app:Bbox_ortho_image</deegree:Name>
+              <deegree:Type>LOCALWFS</deegree:Type>
+              <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+            </deegree:DataSource>
+            <Style>
+              <Name>default:bbox</Name>
+              <Title>default:bbox</Title>
+              <deegree:StyleResource>styles/utah_bbox.xml</deegree:StyleResource>
+              <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/bbox.png"/>
+             </LegendURL>
+            </Style>
+          </Layer>
+        </Layer>
+        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <Name>StateBoundary</Name>
+          <Title>StateBoundary</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <LatLonBoundingBox miny="36" maxy="43" minx="-115" maxx="-108" />
+          <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:StateBoundary</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>           
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:StateBoundary</Name>
+             <Title>default:StateBoundary</Title>
+             <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+               <Format>image/png</Format>
+               <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/StateBoundary.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>StateOverview</Name>
+           <Title>StateOverview</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:StateBoundary</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:CountyBoundaries_edited</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:StateOverview</Name>
+             <Title>default:StateOverview</Title>
+             <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+               <Format>image/png</Format>
+               <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/StateOverview.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Title>Administration</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <MetadataURL type="ISO19115:2003">
+             <Format>text/html</Format>
+             <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+           </MetadataURL>
+           <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+             <Name>Counties</Name>
+             <Title>County Boundaries</Title>
+             <Abstract>deegree demo WMS</Abstract>
+             <KeywordList>
+               <Keyword>deegree</Keyword>
+               <Keyword>layer</Keyword>
+             </KeywordList>
+             <deegree:DataSource failOnException="0" queryable="1">
+               <deegree:Name>app:CountyBoundaries_edited</deegree:Name>
+               <deegree:Type>LOCALWFS</deegree:Type>
+               <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+             </deegree:DataSource>
+             <Style>
+               <Name>default:Counties</Name>
+               <Title>default:Counties</Title>
+               <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Counties.png"/>
+               </LegendURL>
+             </Style>
+             <Style>
+               <Name>GreyCounties</Name>
+               <Title>GreyCounties</Title>
+               <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Counties.png"/>
+               </LegendURL>
+             </Style>
+             <Style>
+               <Name>ColourfulCounties</Name>
+               <Title>ColourfulCounties</Title>
+               <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Counties.png"/>
+               </LegendURL>
+             </Style>
+           </Layer>
+           <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+             <Name>ZipCodes</Name>
+             <Title>Zip Codes</Title>
+             <Abstract>deegree demo WMS</Abstract>
+             <KeywordList>
+               <Keyword>deegree</Keyword>
+               <Keyword>layer</Keyword>
+             </KeywordList>
+             <deegree:DataSource failOnException="0" queryable="1">
+               <deegree:Name>app:SGID500_ZipCodes</deegree:Name>
+               <deegree:Type>LOCALWFS</deegree:Type>
+               <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+             </deegree:DataSource>
+             <Style>
+               <Name>default:ZipCodes</Name>
+               <Title>default:ZipCodes</Title>
+               <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/ZipCodes.png"/>
+               </LegendURL>
+             </Style>
+             <Style>
+               <Name>ZipCodesPop</Name>
+               <Title>ZipCodes Population</Title>
+               <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/ZipCodes.png"/>
+               </LegendURL>
+             </Style>
+           </Layer>
+           <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+             <Name>Municipalities</Name>
+             <Title>Municipalities</Title>
+             <Abstract>deegree demo WMS</Abstract>
+             <KeywordList>
+               <Keyword>deegree</Keyword>
+               <Keyword>layer</Keyword>
+             </KeywordList>
+             <deegree:DataSource failOnException="0" queryable="1">
+               <deegree:Name>app:Municipalities_edited</deegree:Name>
+               <deegree:Type>LOCALWFS</deegree:Type>
+               <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+             </deegree:DataSource>
+             <Style>
+               <Name>default:Municipalities</Name>
+               <Title>default:Municipalities</Title>
+               <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Municipalities.png"/>
+               </LegendURL>
+             </Style>
+           </Layer>
+           <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+             <Name>Cities</Name>
+             <Title>Cities</Title>
+             <Abstract>deegree demo WMS</Abstract>
+             <KeywordList>
+               <Keyword>deegree</Keyword>
+               <Keyword>layer</Keyword>
+             </KeywordList>
+             <deegree:DataSource failOnException="0" queryable="1">
+               <deegree:Name>app:SGID93_TownDemographics2000</deegree:Name>
+               <deegree:Type>LOCALWFS</deegree:Type>
+               <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+             </deegree:DataSource>
+             <Style>
+               <Name>default:Cities</Name>
+               <Title>default:Cities</Title>
+               <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+               <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Cities.png"/>
+               </LegendURL>
+             </Style>
+           </Layer>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Title>Geology</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+             <Name>EnergyResources</Name>
+             <Title>Energy Resources</Title>
+             <Abstract>deegree demo WMS</Abstract>
+             <KeywordList>
+               <Keyword>deegree</Keyword>
+               <Keyword>layer</Keyword>
+             </KeywordList>
+             <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:EnergyResources</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+             <deegree:FilterCondition>
+               <wfs:Query typeName="app:EnergyResources" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs">
+                 <wfs:PropertyName>app:code</wfs:PropertyName>
+                 <wfs:PropertyName>app:shape_len</wfs:PropertyName>
+                 <ogc:Filter>
+                   <ogc:Or>
+                     <ogc:Or>
+                       <ogc:PropertyIsEqualTo>
+                         <ogc:PropertyName>app:code</ogc:PropertyName>
+                         <ogc:Literal>PC</ogc:Literal>
+                       </ogc:PropertyIsEqualTo>
+                       <ogc:PropertyIsEqualTo>
+                         <ogc:PropertyName>app:code</ogc:PropertyName>
+                         <ogc:Literal>GF</ogc:Literal>
+                       </ogc:PropertyIsEqualTo>
+                     </ogc:Or>
+                     <ogc:PropertyIsLike wildCard="*" singleChar="?" escape="\">
+                       <ogc:PropertyName>app:code</ogc:PropertyName>
+                       <ogc:Literal>COAL*</ogc:Literal>
+                     </ogc:PropertyIsLike>
+                   </ogc:Or>
+                 </ogc:Filter>
+               </wfs:Query>
+              </deegree:FilterCondition>
+            </deegree:DataSource>
+           <Style>
+             <Name>default:EnergyResources</Name>
+             <Title>default:EnergyResources</Title>
+             <deegree:StyleResource>styles/utah_geology.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/EnergyResources.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+       </Layer>
+       <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+         <Title>Hydrology</Title>
+         <Abstract>deegree demo WMS</Abstract>
+         <KeywordList>
+           <Keyword>deegree</Keyword>
+           <Keyword>layer</Keyword>
+         </KeywordList>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>Springs</Name>
+           <Title>Springs of Utah</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:Springs</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default</Name>
+             <Title>default:Springs</Title>
+             <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Springs.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>Lake</Name>
+           <Title>Lakes of Utah</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:Lake</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:Lake</Name>
+             <Title>default:Lake</Title>
+             <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Lake.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>Rivers</Name>
+           <Title>Rivers of Utah</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+             <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:SGID93_WATER_UtahMajorRivers</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:Rivers</Name>
+             <Title>default:Rivers</Title>
+             <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Rivers.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>Groundwater</Name>
+           <Title>Groundwater of Utah</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:SGID93_GEOSCIENCE_ShallowGroundWater</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>               
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:Groundwater</Name>
+             <Title>default:Groundwater</Title>
+             <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Groundwater.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+       </Layer>
+       <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+         <Title>Land Use</Title>
+         <Abstract>deegree demo WMS</Abstract>
+         <KeywordList>
+           <Keyword>deegree</Keyword>
+           <Keyword>layer</Keyword>
+         </KeywordList>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>Vegetation</Name>
+           <Title>Dominant Vegetation</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:Vegetation</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:Vegetation</Name>
+             <Title>default:Vegetation</Title>
+             <deegree:StyleResource>styles/utah_vegetation.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Vegetation.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+       </Layer>
+       <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+         <Title>Infrastructure</Title>
+         <Abstract>deegree demo WMS</Abstract>
+         <KeywordList>
+           <Keyword>deegree</Keyword>
+           <Keyword>layer</Keyword>
+         </KeywordList>         
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+           <Name>Airports</Name>
+           <Title>Airports of Utah</Title>
+           <Abstract>deegree demo WMS</Abstract>
+           <KeywordList>
+             <Keyword>deegree</Keyword>
+             <Keyword>layer</Keyword>
+           </KeywordList>
+           <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:Airports</deegree:Name>
+             <deegree:Type>LOCALWFS</deegree:Type>
+             <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+           </deegree:DataSource>
+           <Style>
+             <Name>default:Airports</Name>
+             <Title>default:Airports</Title>
+             <deegree:StyleResource>styles/utah_infra.xml</deegree:StyleResource>
+             <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Airports.png"/>
+             </LegendURL>
+           </Style>
+         </Layer>
+         <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <Name>Roads</Name>
+          <Title>Roads of Utah</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>            
+          <deegree:ScaleHint min="0.0" max="2800000" />
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Roads</deegree:Name>
+            <deegree:Type>LOCALWFS</deegree:Type>
+            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+            <deegree:ScaleHint min="0.0" max="50" />
+          </deegree:DataSource>
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Roads500</deegree:Name>
+            <deegree:Type>LOCALWFS</deegree:Type>
+            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+            <deegree:ScaleHint min="50.0" max="2000000000" />
+          </deegree:DataSource>
+          <Style>
+            <Name>default:Roads</Name>
+            <Title>default:Roads</Title>
+            <deegree:StyleResource>styles/utah_roads.xml</deegree:StyleResource>
+            <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Roads.png"/>
+             </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <Name>Railroads</Name>
+          <Title>Railroads of Utah</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Railroads</deegree:Name>
+            <deegree:Type>LOCALWFS</deegree:Type>
+            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <Style>
+            <Name>default:Railroads</Name>
+            <Title>default:Railroads</Title>
+            <deegree:StyleResource>styles/utah_infra.xml</deegree:StyleResource>
+            <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Railroads.png"/>
+             </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+      <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+        <Title>Elevation</Title>
+        <Abstract>deegree demo WMS</Abstract>
+        <KeywordList>
+          <Keyword>deegree</Keyword>
+          <Keyword>layer</Keyword>
+        </KeywordList>
+        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <Name>ElevationContours</Name>
+          <Title>Elevation Contours</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>            
+          <deegree:DataSource failOnException="0" queryable="1">
+             <deegree:Name>app:Contours500Ft</deegree:Name>
+            <deegree:Type>LOCALWFS</deegree:Type>
+            <deegree:GeometryProperty>app:contourLine</deegree:GeometryProperty>
+            <deegree:ScaleHint min="0.001" max="150" />
+          </deegree:DataSource>
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Contours1000Ft</deegree:Name>
+            <deegree:Type>LOCALWFS</deegree:Type>
+            <deegree:GeometryProperty>app:contourLine</deegree:GeometryProperty>
+            <deegree:ScaleHint min="150" max="500" />
+          </deegree:DataSource>
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Contours2500Ft</deegree:Name>
+            <deegree:Type>LOCALWFS</deegree:Type>
+            <deegree:GeometryProperty>app:contourLine</deegree:GeometryProperty>
+            <deegree:ScaleHint min="500" max="200000000" />
+          </deegree:DataSource>
+          <Style>
+            <Name>default:ElevationContours</Name>
+            <Title>default:ElevationContours</Title>
+            <deegree:StyleResource>styles/utah_general.xml</deegree:StyleResource>
+            <LegendURL width="50" height="50">
+                 <Format>image/png</Format>
+                 <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="legend/Elevation.png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMT_PS_Capabilities>

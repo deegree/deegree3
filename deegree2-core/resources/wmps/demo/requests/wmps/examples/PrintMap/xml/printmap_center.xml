@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewmps:PrintMap xmlns:deegree="http://www.deegree.org/wmps" xmlns:deegreewmps="http://www.deegree.org/wmps" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+  <deegreewmps:Layers>
+    <sld:NamedLayer>
+      <sld:Name>ZipCodes</sld:Name>
+      <sld:NamedStyle>
+        <sld:Name>default</sld:Name>
+      </sld:NamedStyle>
+    </sld:NamedLayer>
+  </deegreewmps:Layers>
+
+  <deegreewmps:Center srsName="EPSG:26912">
+    <gml:pos>15250 4039616</gml:pos>
+  </deegreewmps:Center>
+  
+  <deegreewmps:DPI>100</deegreewmps:DPI>
+  <deegreewmps:ScaleDenominator>100000</deegreewmps:ScaleDenominator>
+
+
+  <deegreewmps:Transparent>true</deegreewmps:Transparent>
+  <deegreewmps:BGColor>#FFFFFF</deegreewmps:BGColor>
+  <deegreewmps:Legend>true</deegreewmps:Legend>
+  <deegreewmps:ScaleBar>true</deegreewmps:ScaleBar>
+  <deegreewmps:Template>template_1</deegreewmps:Template>
+  <deegreewmps:EMailAddress>goerke@lat-lon.de</deegreewmps:EMailAddress>
+  <deegreewmps:TextAreas>
+    <deegreewmps:TextArea>
+      <deegreewmps:Name>Title</deegreewmps:Name>
+      <deegreewmps:Text>lat/lon gesellschaft für raumbezogene Informationssysteme mbH</deegreewmps:Text>
+    </deegreewmps:TextArea>
+    <deegreewmps:TextArea>
+      <deegreewmps:Name>Copyright</deegreewmps:Name>
+      <deegreewmps:Text>(c) deegree 2010</deegreewmps:Text>
+    </deegreewmps:TextArea>
+    <deegreewmps:TextArea>
+      <deegreewmps:Name>Description</deegreewmps:Name>
+      <deegreewmps:Text>Dies ist meine erste gedruckte Karte</deegreewmps:Text>
+    </deegreewmps:TextArea>
+    <deegreewmps:TextArea>
+      <deegreewmps:Name>Author</deegreewmps:Name>
+      <deegreewmps:Text>Authors Name</deegreewmps:Text>
+    </deegreewmps:TextArea>
+    <deegreewmps:TextArea>
+      <deegreewmps:Name>Date</deegreewmps:Name>
+      <deegreewmps:Text>2010-04-15</deegreewmps:Text>
+    </deegreewmps:TextArea>
+  </deegreewmps:TextAreas>
+</deegreewmps:PrintMap>

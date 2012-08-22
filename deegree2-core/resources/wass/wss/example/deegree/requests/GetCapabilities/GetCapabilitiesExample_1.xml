@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCapabilities xmlns="http://www.gdi-nrw.org/was" xmlns:authn="http://www.gdi-nrw.org/authentication" xmlns:ows="http://www.opengis.net/ows" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gdi-nrw.org/was
+..\schemas_gdinrw_ac\wasOperations.xsd" service="WSS">
+	<ows:AcceptVersions>
+		<ows:Version>1.0</ows:Version>
+	</ows:AcceptVersions>
+</GetCapabilities>

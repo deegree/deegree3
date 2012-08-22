@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewcts:Transform xmlns="http://www.deegree.org/wcts" xmlns:wcts="http://www.opengis.net/wcts/0.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:deegreewcts="http://www.deegree.org/wcts" service="WCTS" version="0.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/wcts ../../../../../../../../resources/schema/deegreeTransform.xsd">
+  <!-- Shows the usage of the deegree specific inline data element and simple data-->
+  <wcts:SourceCRS>urn:ogc:def:crs:EPSG::4314</wcts:SourceCRS>
+  <wcts:TargetCRS>urn:ogc:def:crs:EPSG::31466</wcts:TargetCRS>
+  <deegreewcts:InputData>
+    <ows:ReferenceGroup>
+      <ows:Title>Very simple coordinates</ows:Title>
+      <ows:Reference xlink:href="none" />
+    </ows:ReferenceGroup>
+    <deegreewcts:InlineData>
+      <!-- Simple data is very simple, just a list of  coordinates separtated by the cs attribute, the tuples should be separated by the ts attribute.  -->
+      <deegreewcts:SimpleData cs="," ts=" ">
+        8.83319047,54.90017335 8.87995937,54.90022855 8.89554903,54.90024295 8.83319047,54.90017335
+        <!-- 2681710.05 6089164.17
+          2684708.53 6089292.73
+          2685708.03 6089335.59
+        -->
+      </deegreewcts:SimpleData>
+    </deegreewcts:InlineData>
+  </deegreewcts:InputData>
+  <OutputFormat>text/xml; gmlVersion=3.1.1</OutputFormat>
+</deegreewcts:Transform>

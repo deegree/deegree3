@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================== Imports ================================== -->
+    <xs:include schemaLocation="./citation.xsd"/>
+    <xs:include schemaLocation="./External/generalFeatureModel.xsd"/>
+    <xs:include schemaLocation="./External/temporalObjects.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="MD_MaintenanceInformation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="maintenanceAndUpdateFrequency" type="smXML:MD_MaintenanceFrequencyCode_PropertyType"/>
+                    <xs:element name="dateOfNextUpdate" type="smXML:Date_PropertyType" minOccurs="0"/>
+                    <xs:element name="userDefinedMaintenanceFrequency" type="smXML:TM_PeriodDuration_PropertyType" minOccurs="0"/>
+                    <xs:element name="updateScope" type="smXML:MD_ScopeCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="updateScopeDescription" type="smXML:MD_ScopeDescription_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="maintenanceNote" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="contact" type="smXML:CI_ResponsibleParty_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_MaintenanceInformation" type="smXML:MD_MaintenanceInformation_Type"/>
+    <xs:complexType name="MD_MaintenanceInformation_PropertyType">
+
+        <xs:choice>
+            <xs:element ref="smXML:MD_MaintenanceInformation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+
+    </xs:complexType>
+    <xs:complexType name="MD_MaintenanceFrequencyCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_MaintenanceFrequencyCode" type="smXML:MD_MaintenanceFrequencyCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_MaintenanceFrequencyCode_PropertyType">
+
+        <xs:choice>
+            <xs:element ref="smXML:MD_MaintenanceFrequencyCode"/>
+        </xs:choice>
+
+    </xs:complexType>
+    <xs:complexType name="MD_ScopeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_ScopeCode" type="smXML:MD_ScopeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_ScopeCode_PropertyType">
+
+        <xs:choice>
+            <xs:element ref="smXML:MD_ScopeCode"/>
+        </xs:choice>
+
+    </xs:complexType>
+    <xs:complexType name="MD_ScopeDescription_Type">
+        <xs:annotation>
+            <xs:documentation>Description of the class of information covered by the information</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="attributes" type="smXML:GF_AttributeType_PropertyType" maxOccurs="unbounded"/>
+            <xs:element name="features" type="smXML:GF_FeatureType_PropertyType" maxOccurs="unbounded"/>
+            <xs:element name="featureInstances" type="smXML:GF_FeatureType_PropertyType" maxOccurs="unbounded"/>
+            <xs:element name="attributeInstances" type="smXML:GF_AttributeType_PropertyType" maxOccurs="unbounded"/>
+            <xs:element name="dataset" type="smXML:CharacterString_PropertyType"/>
+            <xs:element name="other" type="smXML:CharacterString_PropertyType"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:element name="MD_ScopeDescription" type="smXML:MD_ScopeDescription_Type"/>
+    <xs:complexType name="MD_ScopeDescription_PropertyType">
+
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:MD_MaintenanceInformation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+
+    </xs:complexType>
+</xs:schema>

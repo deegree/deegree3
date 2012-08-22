@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/wfs" xmlns:app="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <wfs:Prefix>app</wfs:Prefix>
+            <wfs:Backend>GENERICSQL</wfs:Backend>
+            <wfs:DefaultSRS>EPSG:4326</wfs:DefaultSRS>
+            <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+                <Driver>com.microsoft.jdbc.sqlserver.SQLServerDriver</Driver>
+                <Url>jdbc:microsoft:sqlserver://localhost:1433;DatabaseName=xpos</Url>
+                <User>sa</User>
+                <Password>sqlserver</Password>
+                <SecurityConstraints/>
+                <Encoding>iso-8859-1</Encoding>
+            </JDBCConnection>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:element name="major_urban_places" substitutionGroup="gml:_Feature">
+        <xsd:complexType>
+            <xsd:annotation>
+                <xsd:appinfo>
+                    <wfs:table>major_urban_places</wfs:table>
+                    <wfs:gmlId prefix="ID_">
+                        <wfs:MappingField field="FEATURE_ID" type="VARCHAR"/>
+                    </wfs:gmlId>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexContent>
+                <xsd:extension base="gml:AbstractFeatureType">
+                    <xsd:sequence>
+                        <xsd:element name="id" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <wfs:Content>
+                                        <wfs:MappingField field="FEATURE_ID" type="VARCHAR"/>
+                                    </wfs:Content>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="name" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <wfs:Content>
+                                        <wfs:MappingField field="NAME" type="VARCHAR"/>
+                                    </wfs:Content>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="description" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <wfs:Content>
+                                        <wfs:MappingField field="TYPE_DESC" type="VARCHAR"/>
+                                    </wfs:Content>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="geometry" type="gml:GeometryPropertyType">
+                            <xsd:annotation>
+                                <xsd:appinfo>
+                                    <wfs:Content>
+                                        <wfs:MappingField field="geom" type="GEOMETRY"/>
+                                    </wfs:Content>
+                                </xsd:appinfo>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

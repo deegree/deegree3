@@ -1,0 +1,180 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>deegree featureService</title>
+<link rel="stylesheet" type="text/css" href="css/deegree.css" />
+</head>
+<body>
+<table cellpadding="5" cellspacing="5" background="#CECECE">
+    <tr>
+        <td><a name="MENU"></a>
+        <table border="0" cellspacing="0" cellpadding="2" width="100%">
+            <tr valign="top">
+                <td colspan="3">
+                <p>Below are some examples to explain transactional
+                requests</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><strong><em>transactional
+                requests for deegree WFS</em></strong></td>
+                <td>
+                <ul>
+                    <li><a href="#insert">WFS-T Insert</a></li>
+                    <li><a href="#update">WFS-T Update</a></li>
+                    <li><a href="#delete">WFS-T Delete</a></li>
+                </ul>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><strong>To try these requests, please
+                use the generic client</strong></td>
+            </tr>
+        </table>
+        <br>
+        </td>
+    </tr>
+</table>
+<table border="1" cellspacing="0" cellpadding="2">
+    <colgroup>
+        <col width="95%">
+        <col width="5%">
+    </colgroup>
+    <tr valign="top" bgcolor="#d7deed">
+        <td width="95%><a name="insert"></a> <b>WFS-T Insert</b><br />
+        <p>Create new feature instances</p>
+        </td>
+        <td width="5%"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+    </tr>
+    <tr valign="top">
+        <td colspan="2">&lt;?xml version="1.0"
+        encoding="UTF-8"?&gt;<br />
+        &lt;wfs:Transaction version="1.1.0" service="WFS"
+        xmlns:app="http://www.deegree.org/app"<br />
+        xmlns:sch="http://www.ascc.net/xml/schematron"
+        xmlns:dgjdbc="http://www.deegree.org/jdbc"<br />
+        xmlns:deegreewfs="http://www.deegree.org/wfs"
+        xmlns:gml="http://www.opengis.net/gml"<br />
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:wfs="http://www.opengis.net/wfs"
+        xmlns:xlink="http://www.w3.org/1999/xlink"<br />
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.deegree.org/app<br />
+        ../../../featuretypes/Philosopher.xsd http://www.opengis.net/wfs
+        http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"&gt;<br />
+        &lt;wfs:Insert handle="insert" idgen="GenerateNew"&gt;<br />
+        &lt;wfs:FeatureCollection&gt;<br />
+        &lt;gml:featureMember&gt;<br />
+        &lt;app:Country gml:id="COUNTRY_2"&gt;<br />
+        &lt;app:name&gt;Part of Germany&lt;/app:name&gt;<br />
+        &lt;app:geom&gt;<br />
+        &lt;gml:MultiPolygon srsName="EPSG:4326"&gt;<br />
+        &lt;gml:polygonMember&gt;<br />
+        &lt;gml:Polygon srsName="EPSG:4326"&gt;<br />
+        &lt;gml:outerBoundaryIs&gt;<br />
+        &lt;gml:LinearRing&gt;<br />
+        &lt;gml:coordinates cs="," decimal="." ts="
+        "&gt;-1.2825000286102295,50.578887939453125<br />
+        -1.3675000667572021,50.61860656738281
+        -1.4730556011199951,50.66082763671875
+        -1.4963890314102173,50.66791534423828<br />
+        -1.5122222900390625,50.66888427734375
+        -1.5233335494995117,50.66749572753906
+        -1.538055658340454,50.663604736328125<br />
+        -1.569583535194397,50.65902328491211
+        -1.5508334636688232,50.67527770996094
+        -1.5233335494995117,50.695274353027344<br />
+        -1.3088889122009277,50.77111053466797
+        -1.2941668033599854,50.771663665771484
+        -1.1159722805023193,50.736385345458984<br />
+        -1.0938889980316162,50.720550537109375
+        -1.0597224235534668,50.68749237060547
+        -1.1683335304260254,50.60194396972656<br />
+        -1.1913890838623047,50.593605041503906
+        -1.215277910232544,50.58721923828125
+        -1.2416667938232422,50.582496643066406<br />
+        -1.2825000286102295,50.578887939453125&lt;/gml:coordinates&gt;<br />
+        &lt;/gml:LinearRing&gt;<br />
+        &lt;/gml:outerBoundaryIs&gt;<br />
+        &lt;/gml:Polygon&gt;<br />
+        &lt;/gml:polygonMember&gt;<br />
+        &lt;/gml:MultiPolygon&gt;<br />
+        &lt;/app:geom&gt;<br />
+        &lt;/app:Country&gt;<br />
+        &lt;/gml:featureMember&gt;<br />
+        &lt;/wfs:FeatureCollection&gt;<br />
+        &lt;/wfs:Insert&gt;<br />
+        &lt;/wfs:Transaction&gt; <br />
+        </td>
+    </tr>
+    <tr valign="top" bgcolor="#d7deed">
+        <td><a name="update"></a> <b>WFS-T Update</b><br />
+        <p>Update a single feature instance or a set of features for a single featuretype</p>
+        </td>
+        <td width="5%"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+    </tr>
+    <tr valign="top">
+        <td colspan="2">&lt;?xml version="1.0"
+        encoding="UTF-8"?&gt;<br />
+        &lt;wfs:Transaction version="1.1.0" service="WFS"
+        xmlns:app="http://www.deegree.org/app"<br />
+        xmlns:sch="http://www.ascc.net/xml/schematron"
+        xmlns:dgjdbc="http://www.deegree.org/jdbc"<br />
+        xmlns:deegreewfs="http://www.deegree.org/wfs"
+        xmlns:gml="http://www.opengis.net/gml"<br />
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:wfs="http://www.opengis.net/wfs"
+        xmlns:xlink="http://www.w3.org/1999/xlink"<br />
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.deegree.org/app<br />
+        ../../../featuretypes/Philosopher.xsd http://www.opengis.net/wfs
+        http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"&gt;<br />
+        &lt;wfs:Update handle="update1" typeName="app:Country"&gt;<br />
+        &lt;wfs:Property&gt;<br />
+        &lt;wfs:Name&gt;app:name&lt;/wfs:Name&gt;<br />
+        &lt;wfs:Value&gt;Netherlands&lt;/wfs:Value&gt;<br />
+        &lt;/wfs:Property&gt;<br />
+        &lt;Filter xmlns="http://www.opengis.net/ogc"&gt;<br />
+        &lt;PropertyIsEqualTo&gt;<br />
+        &lt;PropertyName&gt;app:Country/app:name&lt;/PropertyName&gt;<br />
+        &lt;Literal&gt;France&lt;/Literal&gt;<br />
+        &lt;/PropertyIsEqualTo&gt;<br />
+        &lt;/Filter&gt;<br />
+        &lt;/wfs:Update&gt;<br />
+        &lt;/wfs:Transaction&gt;<br />
+        </td>
+    </tr>
+    <tr valign="top" bgcolor="#d7deed">
+        <td><a name="delete"></a> <b>WFS-T Delete</b><br />
+        <p>Delete one or more feature instances</p>
+        </td>
+        <td width="5%"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+    </tr>
+    <tr valign="top">
+        <td colspan="2">&lt;?xml version="1.0"
+        encoding="UTF-8"?&gt;<br />
+        &lt;wfs:Transaction version="1.1.0" service="WFS"
+        xmlns:app="http://www.deegree.org/app"
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:wfs="http://www.opengis.net/wfs"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.deegree.org/app<br />
+        ../../../featuretypes/Philosopher.xsd http://www.opengis.net/wfs
+        http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"&gt;<br />
+        &lt;wfs:Delete handle="delete1" typeName="app:Philosopher"&gt;<br />
+        &lt;ogc:Filter&gt;<br />
+        &lt;ogc:PropertyIsLike wildCard="*" singleChar="#"
+        escapeChar="!"&gt;<br />
+        &lt;ogc:PropertyName&gt;app:name&lt;/ogc:PropertyName&gt;<br />
+        &lt;ogc:Literal&gt;*&lt;/ogc:Literal&gt;<br />
+        &lt;/ogc:PropertyIsLike&gt;<br />
+        &lt;/ogc:Filter&gt;<br />
+        &lt;/wfs:Delete&gt;<br />
+        &lt;/wfs:Transaction&gt;<br />
+        </td>
+    </tr>
+</table>
+</body>
+</html>

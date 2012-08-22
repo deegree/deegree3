@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreewmps:PrintMap xmlns:deegree="http://www.deegree.org/wmps" xmlns:deegreewmps="http://www.deegree.org/wmps" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+	<deegreewmps:Layers>
+		<sld:NamedLayer>
+			<sld:Name>R102:stadtplan</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+		<sld:NamedLayer>
+			<sld:Name>stadtbezirke</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/><!--default:stadtbezirke</sld:Name>-->
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+		<sld:NamedLayer>
+			<sld:Name>gewerbegebiete</sld:Name>
+			<sld:NamedStyle>
+				<sld:Name/>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</deegreewmps:Layers>	
+	<gml:Envelope srsName="EPSG:31466">
+		<gml:pos>2570000 5668000</gml:pos>
+		<gml:pos>2593000 5691000</gml:pos>
+		<!--<gml:pos>2538900 5656400</gml:pos>
+		<gml:pos>2619500 5797000</gml:pos>-->
+	</gml:Envelope>
+	<!--
+	<deegreewmps:Center srsName="EPSG:31467">
+		<gml:pos dimension='2'>2548900 5655400</gml:pos>
+	</deegreewmps:Center>
+	<deegreewmps:ScaleDenominator>10000</deegreewmps:ScaleDenominator>
+	-->
+	<deegreewmps:Transparent>true</deegreewmps:Transparent>
+	<deegreewmps:BGColor>#FFFFFF</deegreewmps:BGColor>
+	<deegreewmps:Legend>true</deegreewmps:Legend>
+	<deegreewmps:ScaleBar>true</deegreewmps:ScaleBar>
+	<deegreewmps:Template>mit_legende</deegreewmps:Template>
+	<deegreewmps:EMailAddress>poth@lat-lon.de</deegreewmps:EMailAddress>
+	<deegreewmps:TextAreas>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>Title</deegreewmps:Name>
+			<deegreewmps:Text>lat/lon gesellschaft für raumbezogenes Informationssysteme mbH</deegreewmps:Text>
+		</deegreewmps:TextArea>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>Copyright</deegreewmps:Name>
+			<deegreewmps:Text>(c) deegree 2006</deegreewmps:Text>
+		</deegreewmps:TextArea>
+		<deegreewmps:TextArea>
+			<deegreewmps:Name>MeineBeschreibung1</deegreewmps:Name>
+			<deegreewmps:Text>Know-how und Software für Geodateninfrastrukturen
+</deegreewmps:Text>
+		</deegreewmps:TextArea>		
+	</deegreewmps:TextAreas>
+</deegreewmps:PrintMap>

@@ -1,0 +1,8 @@
+<csw:Constraint version="1.1.0">
+	<ogc:Filter xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
+		<ogc:PropertyIsEqualTo>
+			<ogc:PropertyName>$xPath$</ogc:PropertyName>
+			<ogc:Literal>$identifier$</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+	</ogc:Filter>
+</csw:Constraint>

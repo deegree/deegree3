@@ -1,0 +1,321 @@
+<!-- HeadURL -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree mapService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" width="100%">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="3">
+                    <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td width="30%"><strong><em>Special WMS GetMap Requests</em></strong></td>
+                <td>
+                    <ul>
+                        <li><a href="#special_gm_style">GetMap and Styles</a></li>
+                        <li><a href="#special_gm_exc">GetMap and Exceptions</a></li>
+                        <li><a href="#special_gm_sld">GetMap and SLD (client styles)</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2" width="100%">
+            <tr valign="top">
+                <th>Request / Description</th>
+                <th>Result</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="special_gm_style"></a>
+                    <b>GetMap and Styles</b><br />
+                    <p>Four examples of a simple GetMap request, using the same LAYERS information but different STYLES:</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=">WMS 1.1.1 GetMap Counties (default style)</a><br />
+                    <p>
+                    Layer Counties using the default style
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    LAYERS=Counties<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=210625.44883700498,4175983.9939139457, 697811.8183418702,4663170.363418811<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=</p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES="  border="0"></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=ColourfulCounties">WMS 1.1.1 GetMap Colourful Counties</a><br />
+                    <p>
+                    Layer Counties using the colourful style
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    <strong>LAYERS=Counties<br />
+                    STYLES=ColourfulCounties</strong><br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=210625.44883700498,4175983.9939139457, 697811.8183418702,4663170.363418811<br />
+                    SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=ColourfulCounties" border="0"></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=GreyCounties">WMS 1.1.1 GetMap Grey Counties large BoundingBox</a><br />
+                    <p>
+                    Layer Counties using a grey style with a large bounding box
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    <strong>LAYERS=Counties<br />
+                    STYLES=GreyCounties</strong><br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=210625.44883700498,4175983.9939139457, 697811.8183418702,4663170.363418811<br />
+                    SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=GreyCounties" border="0"></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=293847.54992102366,4335102.2992424965,542327.5141219841,4583582.263443457&SRS=EPSG:26912&STYLES=GreyCounties">WMS 1.1.1 GetMap Grey Counties small BoundingBox</a><br />
+                    <p>
+                    Layer Counties using a grey style with a <strong>smaller bounding box</strong> and scale dependent labeling
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    <strong>LAYERS=Counties<br />
+                    STYLES=GreyCounties</strong><br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    <strong>BBOX=200617.8008048307,4108598.501136663, 717074.4769238816,4625055.177255713</strong><br />
+                    SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=293847.54992102366,4335102.2992424965,542327.5141219841,4583582.263443457&SRS=EPSG:26912&STYLES=GreyCounties" border="0"></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=StateOverview,Roads&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=default,default">WMS 1.1.1 GetMap State Boundaries with Roads</a><br />
+                    <p>
+                    Layers StateBoundaries and Roads with styles in just one request
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    <strong>LAYERS=StateOverview,Roads<br />
+                    STYLES=default,default</strong><br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=210625.44883700498,4175983.9939139457, 697811.8183418702,4663170.363418811<br />
+                    SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=StateOverview,Roads&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=default,default" border="0"></td>
+            </tr>
+             <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="special_gm_exc"></a>
+                    <b>GetMap and Exceptions</b><br />
+                    <p>GetMap requests demonstrating the different kinds of exception formats by using a faulty style name</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+             <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&EXCEPTIONS=application/vnd.ogc.se_xml&SERVICE=WMS&VERSION=1.1.1&WIDTH=742&HEIGHT=667&LAYERS=StateOverview&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=60820.47151152167,4027931.6904921234,836022.1595806566,4724777.412786076&SRS=EPSG:26912&STYLES=stail">WMS 1.1.1 GetMap demonstrating Exceptions format application/application/vnd.ogc.se_xml</a><br />
+                    <p><strong><em>application/application/vnd.ogc.se_xml</em></strong>
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    <strong>EXCEPTIONS=application/vnd.ogc.se_xml</strong><br />
+                    WIDTH=742<br />
+                    HEIGHT=667<br />
+                    LAYERS=StateOverview<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=60820.47151152167,4027931.6904921234, 836022.1595806566,4724777.412786076<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=stail<br />
+                    </p>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&EXCEPTIONS=application/vnd.ogc.se_inimage&SERVICE=WMS&VERSION=1.1.1&WIDTH=742&HEIGHT=667&LAYERS=StateOverview&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=60820.47151152167,4027931.6904921234,836022.1595806566,4724777.412786076&SRS=EPSG:26912&STYLES=stail">WMS 1.1.1 GetMap demonstrating Exceptions format application/vnd.ogc.se_inimage</a><br />
+                    <p><strong><em>application/vnd.ogc.se_inimage</em></strong>
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    <strong>EXCEPTIONS=application/vnd.ogc.se_inimage</strong><br />
+                    WIDTH=742<br />
+                    HEIGHT=667<br />
+                    LAYERS=StateOverview<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=60820.47151152167,4027931.6904921234, 836022.1595806566,4724777.412786076<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=stail<br />
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&EXCEPTIONS=application/vnd.ogc.se_inimage&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=270&LAYERS=StateOverview&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=60820.47151152167,4027931.6904921234,836022.1595806566,4724777.412786076&SRS=EPSG:26912&STYLES=stail" border="0"></td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="special_gm_sld"></a>
+                    <b>GetMap and SLD</b><br />
+                    <p>Example of component WMS (style definition by client)</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&SLD_BODY=%3Csld%3AStyledLayerDescriptor%20version%3D%221.0.0%22%0Axmlns%3Axsi%3D%22http%3A//www.w3.org/2001/XMLSchema-instance%22%0A%20xmlns%3Asld%3D%22http%3A//www.opengis.net/sld%22%0A%20xsi%3AschemaLocation%3D%22http%3A//www.opengis.net/sld%0Ahttp%3A//schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd%22%0A%20xmlns%3Aapp%3D%22http%3A//www.deegree.org/app%22%0Axmlns%3Agml%3D%22http%3A//www.opengis.net/gml%22%0A%20xmlns%3Aogc%3D%22http%3A//www.opengis.net/ogc%22%3E%0A%3Csld%3AUserLayer%3E%0A%3Csld%3AName%3EMyLayer%3C/sld%3AName%3E%0A%3Csld%3ALayerFeatureConstraints%3E%0A%3Csld%3AFeatureTypeConstraint%3E%0A%3Csld%3AFeatureTypeName%3Eapp%3ARailroads%3C/sld%3AFeatureTypeName%3E%0A%3C/sld%3AFeatureTypeConstraint%3E%0A%3C/sld%3ALayerFeatureConstraints%3E%0A%3Csld%3AUserStyle%3E%0A%3Csld%3AFeatureTypeStyle%3E%0A%3Csld%3ARule%3E%0A%3Csld%3AMinScaleDenominator%3E0%3C/sld%3AMinScaleDenominator%3E%0A%3Csld%3AMaxScaleDenominator%3E999999999%3C/sld%3AMaxScaleDenominator%3E%0A%3Csld%3ALineSymbolizer%3E%0A%3Csld%3AStroke%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke%22%3E%23ff0000%3C/sld%3ACssParameter%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke-opacity%22%3E1.0%3C/sld%3ACssParameter%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke-width%22%3E1.0%3C/sld%3ACssParameter%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke-dasharray%22%3E1%3C/sld%3ACssParameter%3E%0A%3C/sld%3AStroke%3E%0A%3C/sld%3ALineSymbolizer%3E%0A%3C/sld%3ARule%3E%0A%3C/sld%3AFeatureTypeStyle%3E%0A%3C/sld%3AUserStyle%3E%0A%3C/sld%3AUserLayer%3E%0A%3C/sld%3AStyledLayerDescriptor%3E">WMS 1.1.1 GetMap with SLD HTTP GET (red railroads)</a><br />
+                    <p>A GetMap request sending <strong>SLD UserLayer and user defined style</strong> information via HTTP GET and an <strong>SLD_BODY</strong></p>
+                    <p>Please note: the SLD_BODY needs to get URL encoded before being send to the service</p>
+                    <p>
+                    HTTP KVP Request:<br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=372233.9342431239,4460438,489069,4552689<br />
+                    SRS=EPSG:26912<br />
+                    <strong>SLD_BODY=<br />
+                    &lt;sld:StyledLayerDescriptor version="1.0.0"<br />
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"<br />
+                    xmlns:sld="http://www.opengis.net/sld"<br />
+                    xsi:schemaLocation="http://www.opengis.net/sld<br />
+                    http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"<br />
+                    xmlns:app="http://www.deegree.org/app"<br />
+                    xmlns:gml="http://www.opengis.net/gml"<br />
+                    xmlns:ogc="http://www.opengis.net/ogc"&gt;<br />
+                    &lt;sld:UserLayer&gt;<br />
+                    &lt;sld:Name&gt;MyLayer&lt;/sld:Name&gt;<br />
+                    &lt;sld:LayerFeatureConstraints&gt;<br />
+                    &lt;sld:FeatureTypeConstraint&gt;<br />
+                    &lt;sld:FeatureTypeName&gt;app:Railroads&lt;/sld:FeatureTypeName&gt;<br />
+                    &lt;/sld:FeatureTypeConstraint&gt;<br />
+                    &lt;/sld:LayerFeatureConstraints&gt;<br />
+                    &lt;sld:UserStyle&gt;<br />
+                    &lt;sld:FeatureTypeStyle&gt;<br />
+                    &lt;sld:Rule&gt;<br />
+                    &lt;sld:MinScaleDenominator&gt;0&lt;/sld:MinScaleDenominator&gt;<br />
+                    &lt;sld:MaxScaleDenominator&gt;999999999&lt;/sld:MaxScaleDenominator&gt;<br />
+                    &lt;sld:LineSymbolizer&gt;<br />
+                    &lt;sld:Stroke&gt;<br />
+                    &lt;sld:CssParameter name="stroke"&gt;#ff0000&lt;/sld:CssParameter&gt;<br />
+                    &lt;sld:CssParameter name="stroke-opacity"&gt;1.0&lt;/sld:CssParameter&gt;<br />
+                    &lt;sld:CssParameter name="stroke-width"&gt;1.0&lt;/sld:CssParameter&gt;<br />
+                    &lt;sld:CssParameter name="stroke-dasharray"&gt;1&lt;/sld:CssParameter&gt;<br />
+                    &lt;/sld:Stroke&gt;<br />
+                    &lt;/sld:LineSymbolizer&gt;<br />
+                    &lt;/sld:Rule&gt;<br />
+                    &lt;/sld:FeatureTypeStyle&gt;<br />
+                    &lt;/sld:UserStyle&gt;<br />
+                    &lt;/sld:UserLayer&gt;<br />
+                    &lt;/sld:StyledLayerDescriptor&gt;</strong>
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&SLD_BODY=%3Csld%3AStyledLayerDescriptor%20version%3D%221.0.0%22%0Axmlns%3Axsi%3D%22http%3A//www.w3.org/2001/XMLSchema-instance%22%0A%20xmlns%3Asld%3D%22http%3A//www.opengis.net/sld%22%0A%20xsi%3AschemaLocation%3D%22http%3A//www.opengis.net/sld%0Ahttp%3A//schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd%22%0A%20xmlns%3Aapp%3D%22http%3A//www.deegree.org/app%22%0Axmlns%3Agml%3D%22http%3A//www.opengis.net/gml%22%0A%20xmlns%3Aogc%3D%22http%3A//www.opengis.net/ogc%22%3E%0A%3Csld%3AUserLayer%3E%0A%3Csld%3AName%3EMyLayer%3C/sld%3AName%3E%0A%3Csld%3ALayerFeatureConstraints%3E%0A%3Csld%3AFeatureTypeConstraint%3E%0A%3Csld%3AFeatureTypeName%3Eapp%3ARailroads%3C/sld%3AFeatureTypeName%3E%0A%3C/sld%3AFeatureTypeConstraint%3E%0A%3C/sld%3ALayerFeatureConstraints%3E%0A%3Csld%3AUserStyle%3E%0A%3Csld%3AFeatureTypeStyle%3E%0A%3Csld%3ARule%3E%0A%3Csld%3AMinScaleDenominator%3E0%3C/sld%3AMinScaleDenominator%3E%0A%3Csld%3AMaxScaleDenominator%3E999999999%3C/sld%3AMaxScaleDenominator%3E%0A%3Csld%3ALineSymbolizer%3E%0A%3Csld%3AStroke%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke%22%3E%23ff0000%3C/sld%3ACssParameter%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke-opacity%22%3E1.0%3C/sld%3ACssParameter%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke-width%22%3E1.0%3C/sld%3ACssParameter%3E%0A%3Csld%3ACssParameter%20name%3D%22stroke-dasharray%22%3E1%3C/sld%3ACssParameter%3E%0A%3C/sld%3AStroke%3E%0A%3C/sld%3ALineSymbolizer%3E%0A%3C/sld%3ARule%3E%0A%3C/sld%3AFeatureTypeStyle%3E%0A%3C/sld%3AUserStyle%3E%0A%3C/sld%3AUserLayer%3E%0A%3C/sld%3AStyledLayerDescriptor%3E" border="0"></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&SLD=${default.webapp.url}/sld/user_layer_style.xml">WMS 1.1.1 GetMap client style with UserLayer</a>
+                    <p>A GetMap request sending <strong>SLD UserLayer and user defined style</strong> information via HTTP GET and an <strong>SLD reference</strong> (<a href="${default.webapp.url}/sld/user_layer_style.xml" target="_blank">user_layer_style.xml</a>).</p>
+                    <br />
+                    <p>
+                    HTTP KVP Request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=372233.9342431239,4460438,489069,4552689<br />
+                    SRS=EPSG:26912<br />
+                    <strong>SLD=${default.webapp.url}/sld/user_layer_style.xml</strong>
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&SLD=${default.webapp.url}/sld/user_layer_style.xml" border="0"></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&SLD=${default.webapp.url}/sld/named_layer_user_style.xml">WMS 1.1.1 GetMap client style with NamedLayer and UserStyle</a>
+                    <p>A GetMap request sending <strong>SLD NamedLayer and user style</strong> information via HTTP GET and an <strong>SLD reference</strong> (<a href="${default.webapp.url}/sld/named_layer_user_style.xml" target="_blank">named_layer_user_style.xml</a>).</p>                    
+                    In addition to the above request, a filter has been added to only return objects with id &lt;= 842.
+                    <br /><br />
+                    HTTP KVP Request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=372233.9342431239,4460438,489069,4552689<br />
+                    SRS=EPSG:26912<br />
+                    <strong>SLD=${default.webapp.url}/sld/named_layer_user_style.xml</strong>
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&SLD=${default.webapp.url}/sld/named_layer_user_style.xml" border="0"></td>
+            </tr>
+        </table>
+    </body>
+</html>

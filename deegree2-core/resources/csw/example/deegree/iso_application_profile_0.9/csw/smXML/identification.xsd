@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================== Includes================================== -->
+    <xs:include schemaLocation="./constraints.xsd"/>
+    <xs:include schemaLocation="./maintenance.xsd"/>
+    <xs:include schemaLocation="./distribution.xsd"/>
+    <!-- ########################################################################### -->
+    <!-- ########################################################################### -->
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="_MD_Identification_Type" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="citation" type="smXML:CI_Citation_PropertyType"/>
+                    <xs:element name="abstract" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="purpose" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="credit" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="status" type="smXML:MD_ProgressCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="pointOfContact" type="smXML:CI_ResponsibleParty_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="resourceSpecificUsage" type="smXML:MD_Usage_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="descriptiveKeywords" type="smXML:MD_Keywords_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="graphicOverview" type="smXML:MD_BrowseGraphic_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="resourceConstraints" type="smXML:MD_Constraints_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="resourceMaintenance" type="smXML:MD_MaintenanceInformation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="resourceFormat" type="smXML:MD_Format_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="_MD_Identification" type="smXML:_MD_Identification_Type" abstract="true"/>
+    <xs:complexType name="_MD_Identification_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_MD_Identification"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_BrowseGraphic_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="fileName" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="fileDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="fileType" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_BrowseGraphic" type="smXML:MD_BrowseGraphic_Type"/>
+    <xs:complexType name="MD_BrowseGraphic_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_BrowseGraphic"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_DataIdentification_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_MD_Identification_Type">
+                <xs:sequence>
+                    <xs:element name="spatialRepresentationType" type="smXML:MD_SpatialRepresentationTypeCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="spatialResolution" type="smXML:MD_Resolution_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="language" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="characterSet" type="smXML:MD_CharacterSetCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="topicCategory" type="smXML:MD_TopicCategoryCode_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="environmentDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="extent" type="smXML:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="supplementalInformation" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_DataIdentification" type="smXML:MD_DataIdentification_Type" substitutionGroup="smXML:_MD_Identification">
+        <xs:annotation>
+            <xs:documentation>
+   ***   characterSet: documented if ISO 10646-1 is not used
+   ***   {MD_Metadata.hierarchyLevel = "dataset" implies count (extent.geographicElement.EX_GeographicBoundingBox) + count (extent.geographicElement.EX_GeographicDescription) &gt;=1}
+   ***   {MD_Metadata.hierarchyLevel notEqual "dataset" implies topicCategory is not mandatory}
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_DataIdentification_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_DataIdentification"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_ServiceIdentification_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_MD_Identification_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_ServiceIdentification" type="smXML:MD_ServiceIdentification_Type" substitutionGroup="smXML:_MD_Identification"/>
+    <xs:complexType name="MD_ServiceIdentification_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_ServiceIdentification"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_RepresentativeFraction_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="denominator" type="smXML:positiveInteger_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_RepresentativeFraction" type="smXML:MD_RepresentativeFraction_Type"/>
+    <xs:complexType name="MD_RepresentativeFraction_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_RepresentativeFraction"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Usage_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="specificUsage" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="usageDateTime" type="smXML:DateTime_PropertyType" minOccurs="0"/>
+                    <xs:element name="userDeterminedLimitations" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="userContactInfo" type="smXML:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Usage" type="smXML:MD_Usage_Type"/>
+    <xs:complexType name="MD_Usage_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Usage"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Keywords_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="keyword" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="type" type="smXML:MD_KeywordTypeCode_PropertyType" minOccurs="0"/>
+                    <xs:element name="thesaurusName" type="smXML:CI_Citation_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Keywords" type="smXML:MD_Keywords_Type"/>
+    <xs:complexType name="MD_Keywords_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Keywords"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DS_Association_Type"/>
+    <xs:element name="DS_Association" type="smXML:DS_Association_Type"/>
+    <xs:complexType name="DS_Association_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_Association"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_AggregateInformation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="aggregateDataSetName" type="smXML:CI_Citation_PropertyType" minOccurs="0"/>
+                    <xs:element name="aggregateDataSetIdentifier" type="smXML:MD_Identifier_PropertyType" minOccurs="0"/>
+                    <xs:element name="associationType" type="smXML:DS_AssociationTypeCode_PropertyType"/>
+                    <xs:element name="initiativeType" type="smXML:DS_InitiativeTypeCode_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_AggregateInformation" type="smXML:MD_AggregateInformation_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   Either "aggregateDataSetName" or "aggregateDataSetIdentifier" must be documented
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_AggregateInformation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_AggregateInformation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Resolution_Type">
+        <xs:choice>
+            <xs:element name="equivalentScale" type="smXML:MD_RepresentativeFraction_PropertyType"/>
+            <xs:element name="distance" type="smXML:Distance_PropertyType"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="MD_Resolution" type="smXML:MD_Resolution_Type"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="MD_Resolution_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Resolution"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_CharacterSetCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_CharacterSetCode" type="smXML:MD_CharacterSetCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_CharacterSetCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_CharacterSetCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_SpatialRepresentationTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_SpatialRepresentationTypeCode" type="smXML:MD_SpatialRepresentationTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_SpatialRepresentationTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_SpatialRepresentationTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:simpleType name="MD_TopicCategoryCode_Type">
+        <xs:annotation>
+            <xs:documentation>High-level geospatial data thematic classification to assist in the grouping and search of available geospatial datasets</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="farming"/>
+            <xs:enumeration value="biota"/>
+            <xs:enumeration value="boundaries"/>
+            <xs:enumeration value="climatologyMeteorologyAtmosphere"/>
+            <xs:enumeration value="economy"/>
+            <xs:enumeration value="elevation"/>
+            <xs:enumeration value="environment"/>
+            <xs:enumeration value="geoscientificInformation"/>
+            <xs:enumeration value="health"/>
+            <xs:enumeration value="imageryBaseMapsEarthCover"/>
+            <xs:enumeration value="intelligenceMilitary"/>
+            <xs:enumeration value="inlandWaters"/>
+            <xs:enumeration value="location"/>
+            <xs:enumeration value="oceans"/>
+            <xs:enumeration value="planningCadastre"/>
+            <xs:enumeration value="society"/>
+            <xs:enumeration value="structure"/>
+            <xs:enumeration value="transportation"/>
+            <xs:enumeration value="utilitiesCommunication"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- ........................................................................ -->
+    <xs:element name="MD_TopicCategoryCode" type="smXML:MD_TopicCategoryCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="MD_TopicCategoryCode_PropertyType">
+        <xs:sequence>
+            <xs:element ref="smXML:MD_TopicCategoryCode"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="MD_ProgressCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_ProgressCode" type="smXML:MD_ProgressCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_ProgressCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_ProgressCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_KeywordTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_KeywordTypeCode" type="smXML:MD_KeywordTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_KeywordTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_KeywordTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DS_AssociationTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="DS_AssociationTypeCode" type="smXML:DS_AssociationTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="DS_AssociationTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_AssociationTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DS_InitiativeTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="DS_InitiativeTypeCode" type="smXML:DS_InitiativeTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="DS_InitiativeTypeCode_PropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:DS_InitiativeTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>
+

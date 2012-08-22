@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc">
+  <!-- NOTE: this file is not valid according to the schema file available from schemas.opengis.net, but IS valid according to the specification documentation!!! -->
+  <!-- request all philosophers which where born in a country that has a distance of 3 (meters) or less from point (8,47) -->
+  <wfs:Query typeName="app:Philosopher">
+    <ogc:Filter>
+      <ogc:DWithin>
+        <ogc:PropertyName>app:placeOfBirth/app:Place/app:country/app:Country/app:geom</ogc:PropertyName>
+        <gml:Point>
+          <gml:coord>
+            <gml:X>8</gml:X>
+            <gml:Y>47</gml:Y>
+          </gml:coord>
+        </gml:Point>
+        <ogc:Distance>3</ogc:Distance>
+      </ogc:DWithin>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

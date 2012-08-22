@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.purl.org/dc/elements/1.1/" xmlns:dc="http://www.purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1" id="dcmes">
+	<xs:complexType name="SimpleLiteral" mixed="true">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+      This is the default type for all of the DC elements. It defines a 
+      complexType SimpleLiteral which permits mixed content but disallows 
+      child elements by use of minOcccurs/maxOccurs. However, this complexType 
+      does permit the derivation of other types which would permit child 
+      elements. The scheme attribute may be used as a qualifier to reference 
+      an encoding scheme that describes the value domain for a given property.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent mixed="true">
+			<xs:restriction base="xs:anyType">
+				<xs:sequence>
+					<xs:any processContents="lax" minOccurs="0" maxOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="scheme" type="xs:anyURI" use="optional"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DC-element" type="dc:SimpleLiteral" abstract="true"/>
+	<xs:element name="title" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="creator" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="subject" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="description" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="publisher" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="contributor" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="date" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="type" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="format" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="identifier" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="source" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="language" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="relation" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="coverage" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:element name="rights" type="dc:SimpleLiteral" substitutionGroup="dc:DC-element"/>
+	<xs:group name="DC-element-set">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+      This group is included as a convenience for schema authors who need 
+      to refer to all the elements in the http://www.purl.org/dc/elements/1.1/ 
+      namespace.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="dc:DC-element"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="elementContainer">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+      This complexType is included as a convenience for schema authors who 
+      need to define a root or container element for all of the DC elements.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:group ref="dc:DC-element-set"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

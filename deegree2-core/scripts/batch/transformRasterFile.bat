@@ -1,0 +1,3 @@
+set clp=D:\java\projekte\deegree2
+C:\Programme\Java\jre1.5.0_06\bin\java -Xmx800m -classpath .;%clp%\classes;%clp%\lib\jts\jts-1.8.jar;%clp%\lib\log4j\log4j-1.2.9.jar;%clp%\lib\commons\commons-logging.jar;%clp%\lib\xml\jaxen-1.1-beta-8.jar;%clp%\lib\jai\mlibwrapper_jai.jar;%clp%\lib\jai\jai_core.jar;%clp%\lib\jai\jai_codec.jar;%clp%\lib\commons\commons-httpclient-2.0.2-deegreeversion.jar;%clp%\lib\batik\batik-transcoder.jar;%clp%\lib\batik\batik-util.jar;%clp%\lib\batik\batik-gvt.jar;%clp%\lib\batik\batik-extension.jar;%clp%\lib\batik\batik-ext.jar;%clp%\lib\batik\batik-awt-util.jar org.deegree.tools.srs.TransformRasterFile -inFile D:\data\raster\sid\tiles\salt_lake_city_north_west.jpg -inCRS EPSG:26912 -outFile ./out.jpg -outCRS EPSG:4326 -imageQuality 0.95
+pause

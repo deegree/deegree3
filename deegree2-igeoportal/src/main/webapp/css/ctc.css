@@ -1,0 +1,163 @@
+.clsBody
+{
+	BORDER-RIGHT: #C6D7DA thin solid;
+	BORDER-TOP: #C6D7DA thin solid;
+	BORDER-LEFT: #C6D7DA thin solid;
+	BORDER-BOTTOM: #C6D7DA thin solid;
+	background-color:#ffffff;
+}
+.clsCurrentWeek {
+	color: #ffffff;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+        BORDER-TOP: #C6D7DA thin solid;
+        BORDER-BOTTOM: #C6D7DA thin solid;
+	BACKGROUND-COLOR: #8CC6FF;
+        FONT-WEIGHT: bolder;
+        font-weight: bold
+}
+.clsCurrentWeek2 {
+	color: #000000;
+	background-color:#ffffff;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+        BORDER-TOP: #C6D7DA thin solid;
+        BORDER-BOTTOM: #C6D7DA thin solid;
+        FONT-WEIGHT: bolder;
+        font-weight: bold;
+}
+.clsDayName{
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	background-color:#efefff;
+}
+.clsCurrentDay {
+	color: #ffffff;
+	BACKGROUND-COLOR: #398CE7;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+	FONT-WEIGHT: bolder;
+        font-weight: bold
+}
+.clsWorkDay{
+	color: #000000;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWorkDay:hover{
+	color: #009400;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 12px;
+	text-decoration : underline;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWorkDayOtherMonth{
+	color: #000000;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+	background-color:#ffffff;
+}
+.clsWeekEnd{
+	color: #FF0000;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWeekEnd:hover{
+	color: #009400;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 12px;
+	text-decoration : underline;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWeekEndOtherMonth{
+	color: #FF0000;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+	background-color:#ffffff;
+}
+.clsHighLight{
+	color: #ffffff;
+	background-color: #cc0000;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;	
+        font-weight: bold
+}
+.clsPreview{
+	color: #000080;
+	background-color: #efefef;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;	
+        font-weight: bold;
+	width: 100%;
+	padding: 1px 5px 1px 12px;
+}
+.clsTime{
+	color: #000080;
+	background-color: #ffffff;
+	font-size : 12px;
+	text-decoration : none;
+	font-family : Times New Roman;
+	font-style:italic;
+}
+.clsWeekEndCurDay{
+	color: #ffcccc;
+	background-color: #398ce7;
+	font-size: 12px;
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+	font-weight: bolder;
+        font-weight: bold
+}
+.clsWeekEndCurWeek{
+	color: #ff0000;
+	font-size : 12px;
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap;
+        border-top: #c6d7da thin solid;
+        border-bottom: #c6d7da thin solid;
+	background-color: #8cc6ff;
+        font-weight: bolder;
+        font-weight: bold
+}
+.clsWorkDayOthMonthCurWeek{
+	background-color: #ace6ff;
+	color: #000000;
+	font-size: 12px;
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWeekEndOthMonthCurWeek{
+	background-color: #ace6ff;
+	color: #ff0000;
+	font-size: 12px;
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}

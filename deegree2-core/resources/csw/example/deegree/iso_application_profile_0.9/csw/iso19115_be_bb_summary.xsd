@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://schemas.opengis.net/iso19115summary" xmlns="http://schemas.opengis.net/iso19115summary" xmlns:iso19119summary="http://schemas.opengis.net/iso19119" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified">
+	<!-- ================================================================
+    * Topic:        Metadataschema for CS-W 2.0/ISO Profile for GIB
+    * Filename:     iso19115_be_bb_summary.xsd    
+    * Description:  XML Schema of summary resultset as described by.              
+    *                      Berlin/Brandenburgisches Profil der ISO 19115/19119   GIB 06-002
+    *                      based on Metadataschema for CS-W 2.0/ISO Profile; iso19115_summary.xsd 
+    *                      
+    * Last update:  20.06.2006
+    * Editor(s):    lat/lon GmbH                                     
+    *                    Andreas Poth (poth@latlon.de)
+    *                                                                   
+    * (referenced types are taken from smXML v0.9, available under      
+    *    http://metadata.dgiwg.org/ISO19115/ISO19139_v0_9.htm)          
+    ================================================================= -->
+	<!-- ===============================================
+    Imported namespaces
+    =============================================== -->
+	<xs:import namespace="http://metadata.dgiwg.org/smXML" schemaLocation="./smXML/metadataEntity.xsd"/>
+	<xs:import namespace="http://www.opengis.net/cat/csw" schemaLocation="./csw2.0/record.xsd"/>
+	<xs:import namespace="http://schemas.opengis.net/iso19119" schemaLocation="./iso19119.xsd"/>
+	<!-- ===============================================
+    MD_Metadata
+    =============================================== -->
+	<xs:complexType name="MD_Metadata_Type">
+		<xs:complexContent>
+			<xs:extension base="csw:AbstractRecordType">
+				<xs:sequence>
+					<xs:element name="fileIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="language" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="characterSet" type="smXML:MD_CharacterSetCode_PropertyType" minOccurs="0"/>
+					<xs:element name="parentIdentifier" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="hierarchyLevel" type="smXML:MD_ScopeCode_PropertyType" minOccurs="0"/>
+					<xs:element name="hierarchyLevelName" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contact" type="smXML:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="dateStamp" type="smXML:Date_PropertyType"/>
+					<xs:element name="metadataStandardName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="metadataStandardVersion" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="identificationInfo" type="_MD_Identification_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="dataQualityInfo" type="DQ_DataQuality_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="referenceSystemInfo" type="smXML:MD_ReferenceSystem_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="distributionInfo" type="MD_Distribution_PropertyType" minOccurs="0"/>
+					<xs:element name="federatedCatalog" type="smXML:CI_OnlineResource_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Metadata" type="MD_Metadata_Type" substitutionGroup="csw:AbstractRecord"/>
+	<xs:complexType name="MD_Metadata_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_Metadata"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    _MD_Identification
+    =============================================== -->
+	<xs:complexType name="_MD_Identification_Type" abstract="true">
+		<xs:sequence>
+			<xs:element name="citation" type="CI_Citation_PropertyType"/>
+			<xs:element name="abstract" type="smXML:CharacterString_PropertyType"/>
+			<xs:element name="pointOfContact" type="smXML:CI_ResponsibleParty_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="resourceConstraints" type="smXML:MD_Constraints_PropertyType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="_MD_Identification" type="_MD_Identification_Type" abstract="true"/>
+	<xs:complexType name="_MD_Identification_PropertyType">
+		<xs:choice>
+			<xs:element ref="_MD_Identification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    MD_DataIdentification
+    =============================================== -->
+	<xs:complexType name="MD_DataIdentification_Type">
+		<xs:complexContent>
+			<xs:extension base="_MD_Identification_Type">
+				<xs:sequence>
+					<xs:element name="spatialRepresentationType" type="smXML:MD_SpatialRepresentationTypeCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="spatialResolution" type="smXML:MD_Resolution_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="language" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="characterSet" type="smXML:MD_CharacterSetCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="topicCategory" type="smXML:MD_TopicCategoryCode_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="extent" type="EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_DataIdentification" type="MD_DataIdentification_Type" substitutionGroup="_MD_Identification"/>
+	<xs:complexType name="MD_DataIdentification_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_DataIdentification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    CI_Citation
+    =============================================== -->
+	<xs:complexType name="CI_Citation_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="title" type="smXML:CharacterString_PropertyType"/>
+					<xs:element name="date" type="smXML:CI_Date_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="identifier" type="smXML:MD_Identifier_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="citedResponsibleParty" type="smXML:CI_ResponsibleParty_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CI_Citation" type="CI_Citation_Type"/>
+	<xs:complexType name="CI_Citation_PropertyType">
+		<xs:choice>
+			<xs:element ref="CI_Citation"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    MD_Distribution
+    =============================================== -->
+	<xs:complexType name="MD_Distribution_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="distributionFormat" type="MD_Format_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="transferOptions" type="MD_DigitalTransferOptions_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Distribution" type="MD_Distribution_Type"/>
+	<xs:complexType name="MD_Distribution_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_Distribution"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    MD_DigitalTransferOptions
+    =============================================== -->
+	<xs:complexType name="MD_DigitalTransferOptions_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="onLine" type="smXML:CI_OnlineResource_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_DigitalTransferOptions" type="MD_DigitalTransferOptions_Type"/>
+	<xs:complexType name="MD_DigitalTransferOptions_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_DigitalTransferOptions"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    MD_Format
+    =============================================== -->
+	<xs:complexType name="MD_Format_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="name" type="smXML:CharacterString_PropertyType"/>
+					<xs:element name="version" type="smXML:CharacterString_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Format" type="MD_Format_Type"/>
+	<xs:complexType name="MD_Format_PropertyType">
+		<xs:choice>
+			<xs:element ref="MD_Format"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    DQ_DataQuality
+    =============================================== -->
+	<xs:complexType name="DQ_DataQuality_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="lineage" type="smXML:LI_Lineage_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="DQ_DataQuality" type="DQ_DataQuality_Type"/>
+	<xs:complexType name="DQ_DataQuality_PropertyType">
+		<xs:choice>
+			<xs:element ref="DQ_DataQuality"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    EX_Extent
+    =============================================== -->
+	<xs:complexType name="EX_Extent_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="verticalElement" type="smXML:EX_VerticalExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="temporalElement" type="smXML:EX_TemporalExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="geographicElement" type="smXML:_EX_GeographicExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="EX_Extent" type="EX_Extent_Type"/>
+	<xs:complexType name="EX_Extent_PropertyType">
+		<xs:choice>
+			<xs:element ref="EX_Extent"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

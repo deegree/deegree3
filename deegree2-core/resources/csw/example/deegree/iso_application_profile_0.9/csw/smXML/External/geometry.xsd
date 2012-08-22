@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" version="0.9">
+    <!-- ================== Imports================== -->
+    <xs:import namespace="http://www.opengis.net/gml" schemaLocation="../../gml3.1/base/geometryComplexes.xsd"/>
+    <!-- ================== Includes ================== -->
+    <xs:include schemaLocation="./../smXMLbase.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <!-- ........................................................................ -->
+    <xs:element name="GM_Point" type="gml:PointType" substitutionGroup="smXML:_GM_Primitive"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GM_Point_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GM_Point"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <!-- ........................................................................ -->
+    <xs:element name="_GM_Primitive" type="gml:AbstractGeometricPrimitiveType" abstract="true" substitutionGroup="smXML:_GM_Object"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="_GM_Primitive_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_GM_Primitive"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <!-- ........................................................................ -->
+    <xs:element name="_GM_Object" type="gml:AbstractGeometryType" abstract="true"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="_GM_Object_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_GM_Object"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <!-- ........................................................................ -->
+    <xs:element name="GM_CurveInterpolation" type="smXML:CodeListValue_Type" substitutionGroup="smXML:CharacterString"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GM_CurveInterpolation_PropertyType">
+        <xs:sequence>
+            <xs:element ref="smXML:GM_CurveInterpolation"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <!-- ........................................................................ -->
+    <xs:element name="GM_BSplineSurfaceForm" type="smXML:CodeListValue_Type" substitutionGroup="smXML:CharacterString"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GM_BSplineSurfaceForm_PropertyType">
+        <xs:sequence>
+            <xs:element ref="smXML:GM_BSplineSurfaceForm"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+</xs:schema>

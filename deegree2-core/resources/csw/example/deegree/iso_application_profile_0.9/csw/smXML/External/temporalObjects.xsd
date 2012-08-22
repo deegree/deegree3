@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" version="0.9">
+    <!-- ================================== Imports ================================== -->
+    <xs:import namespace="http://www.opengis.net/gml" schemaLocation="../../gml3.1/base/temporal.xsd"/>
+    <!-- ================== Includes ================== -->
+    <xs:include schemaLocation="./../smXMLbase.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <!-- ........................................................................ -->
+    <xs:element name="TM_Primitive" type="gml:AbstractTimePrimitiveType" substitutionGroup="smXML:TM_Object"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="TM_Primitive_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:TM_Primitive"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <!-- ........................................................................ -->
+    <xs:element name="TM_Object" type="gml:AbstractTimeObjectType"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="TM_Object_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:TM_Object"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <!-- ........................................................................ -->
+    <xs:element name="TM_PeriodDuration" type="xs:duration"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="TM_PeriodDuration_PropertyType">
+        <xs:sequence>
+            <xs:element ref="smXML:TM_PeriodDuration"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+</xs:schema>

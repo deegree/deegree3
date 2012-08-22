@@ -1,0 +1,2 @@
+C:\Programme\Java\jre1.5.0_06\bin\java -Xmx200m -classpath .;deegree2.jar;..\..\lib\jts\jts-1.8.jar;..\..\lib\log4j\log4j-1.2.9.jar;..\..\lib\commons\commons-logging.jar;..\..\lib\xml\jaxen-1.1-beta-8.jar;..\..\lib\jai\jai_core.jar org.deegree.tools.srs.TransformShapeFile -inFile D:\data\shapes\utah\adminstration\SGID100_CountyBoundaries -inCRS EPSG:26912 -outFile ./out -outCRS EPSG:4326
+pause

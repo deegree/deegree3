@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<deegreeSec:OWSPolicy service="WFS" xmlns:deegreeSec="http://www.deegree.org/security" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/security
+D:\java\source\deegree2\resources\owsproxy\schema\wfspolicy.xsd">
+	<deegreeSec:Security>
+		<deegreeSec:RegistryClass>org.deegree.security.drm.SQLRegistry</deegreeSec:RegistryClass>
+		<deegreeSec:ReadWriteTimeout>300</deegreeSec:ReadWriteTimeout>
+		<deegreeSec:RegistryConfig>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>oracle.jdbc.driver.OracleDriver</Driver>
+				<Url>jdbc:oracle:thin:@localhost:1521:latlon</Url>
+				<User>security</User>
+				<Password>security</Password>
+			</JDBCConnection>
+		</deegreeSec:RegistryConfig>
+		<deegreeSec:AuthentificationSettings>
+			<deegreeSec:AuthentificationService>
+				<deegreeSec:OnlineResource xlink:type="simple" xlink:href="http://localhost:8081/wss/wss"/>
+			</deegreeSec:AuthentificationService>
+		</deegreeSec:AuthentificationSettings>
+	</deegreeSec:Security>
+	<deegreeSec:GeneralConditions>
+		<deegreeSec:Conditions>
+			<deegreeSec:Parameter name="getContentLength" userCoupled="false">
+				<deegreeSec:Value>1000</deegreeSec:Value>
+			</deegreeSec:Parameter>
+			<deegreeSec:Parameter name="postContentLength" userCoupled="false">
+				<deegreeSec:Value>10000</deegreeSec:Value>
+			</deegreeSec:Parameter>
+			<deegreeSec:Parameter name="header" userCoupled="false">
+				<deegreeSec:Any/>
+			</deegreeSec:Parameter>
+			<deegreeSec:Parameter name="requestMethod" userCoupled="false">
+				<deegreeSec:Value>GET,POST</deegreeSec:Value>
+			</deegreeSec:Parameter>
+		</deegreeSec:Conditions>
+	</deegreeSec:GeneralConditions>
+	<deegreeSec:Requests>
+		<deegreeSec:GetCapabilities>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter name="request" userCoupled="false">
+					<deegreeSec:Value>GetCapabilities</deegreeSec:Value>
+					<deegreeSec:Value>capabilities</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="version" userCoupled="false">
+					<deegreeSec:Value>1.0.0</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="updatesequence" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Parameter name="featureTypes" userCoupled="false">
+					<deegreeSec:Value>{http://www.deegree.org}:TestType</deegreeSec:Value>
+				</deegreeSec:Parameter>
+			</deegreeSec:PostConditions>
+		</deegreeSec:GetCapabilities>
+		<deegreeSec:GetFeature>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter name="request" userCoupled="false">
+					<deegreeSec:Value>GetFeature</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="version" userCoupled="false">
+					<deegreeSec:Value>1.1.0</deegreeSec:Value>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="featureTypes" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="format" userCoupled="false">
+					<deegreeSec:Any/>
+					<!-- 
+					<deegreeSec:Value>text/xml; subtype=gml/3.1.1</deegreeSec:Value>
+					-->
+				</deegreeSec:Parameter>
+				<deegreeSec:Parameter name="maxFeatures" userCoupled="false">
+					<deegreeSec:Any/>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Parameter name="instanceFilter" userCoupled="false">
+					<deegreeSec:ComplexValue>
+						<wfs:Query typeName="app:WPVS" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc">
+							<ogc:Filter>
+								<ogc:Or>
+									<ogc:PropertyIsEqualTo>
+										<ogc:PropertyName>app:texturetype</ogc:PropertyName>
+										<ogc:Literal>specific</ogc:Literal>
+									</ogc:PropertyIsEqualTo>
+									<ogc:PropertyIsGreaterThanOrEqualTo>
+										<ogc:PropertyName>app:diffusecolor</ogc:PropertyName>
+										<ogc:Literal>0 0 1</ogc:Literal>
+									</ogc:PropertyIsGreaterThanOrEqualTo>
+								</ogc:Or>
+							</ogc:Filter>
+						</wfs:Query>
+					</deegreeSec:ComplexValue>
+				</deegreeSec:Parameter>
+			</deegreeSec:PostConditions>
+		</deegreeSec:GetFeature>
+		<deegreeSec:DescribeFeatureType>
+            <deegreeSec:PreConditions>
+                <deegreeSec:Parameter name="request" userCoupled="false">
+                    <deegreeSec:Value>DescribeFeatureType</deegreeSec:Value>
+                </deegreeSec:Parameter>
+                <deegreeSec:Parameter name="version" userCoupled="false">
+                    <deegreeSec:Value>1.1.0</deegreeSec:Value>
+                </deegreeSec:Parameter>
+                <deegreeSec:Parameter name="featureTypes" userCoupled="true">                  
+                </deegreeSec:Parameter>
+                <deegreeSec:Parameter name="format" userCoupled="false">
+                    <deegreeSec:Any/>
+                </deegreeSec:Parameter>
+            </deegreeSec:PreConditions>
+        </deegreeSec:DescribeFeatureType>
+		<deegreeSec:WFS_Insert>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter userCoupled="false" name="typeName">
+					<deegreeSec:Value>{http://www.deegree.org}:TestType</deegreeSec:Value>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Any/>
+			</deegreeSec:PostConditions>
+		</deegreeSec:WFS_Insert>
+		<deegreeSec:WFS_Delete>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter userCoupled="false" name="typeName">
+					<deegreeSec:Value>{http://www.deegree.org}:TestType</deegreeSec:Value>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Any/>
+			</deegreeSec:PostConditions>
+		</deegreeSec:WFS_Delete>
+		<deegreeSec:WFS_Update>
+			<deegreeSec:PreConditions>
+				<deegreeSec:Parameter userCoupled="false" name="typeName">
+					<deegreeSec:Value>{http://www.deegree.org}:TestType</deegreeSec:Value>
+				</deegreeSec:Parameter>
+			</deegreeSec:PreConditions>
+			<deegreeSec:PostConditions>
+				<deegreeSec:Any/>
+			</deegreeSec:PostConditions>
+		</deegreeSec:WFS_Update>
+	</deegreeSec:Requests>
+</deegreeSec:OWSPolicy>

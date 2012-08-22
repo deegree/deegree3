@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc">
+	<!-- NOTE: this file is not valid according to the schema file available from schemas.opengis.net, but IS valid according to the specification documentation!!! -->
+  <!-- request all philosophers which died in a country which has a distance greater than 1 from point (0,52) -->	
+	<wfs:Query typeName="app:Philosopher">
+		<ogc:Filter>
+			<ogc:Beyond>
+				<ogc:PropertyName>app:placeOfDeath/app:Place/app:country/app:Country/app:geom</ogc:PropertyName>
+				<gml:Point>
+					<gml:coord>
+						<gml:X>0</gml:X>
+						<gml:Y>52</gml:Y>
+					</gml:coord>
+				</gml:Point>
+				<ogc:Distance>1</ogc:Distance>
+			</ogc:Beyond>
+		</ogc:Filter>
+	</wfs:Query>
+</wfs:GetFeature>

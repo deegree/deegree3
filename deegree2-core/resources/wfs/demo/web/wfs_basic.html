@@ -1,0 +1,108 @@
+<!-- $HeadURL$ -->
+<!-- $Id$ -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree featureService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" background="#CECECE">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+                        <tr valign="top">
+                            <td colspan="3">
+                                <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td width="30%"><strong><em>Basic WFS Requests</em></strong></td>
+                            <td>
+                                <ul>
+                                    <li><a href="#basic_gc">GetCapabilities</a></li>
+                                    <li><a href="#basic_dft">DescribeFeatureType</a></li>
+                                    <li><a href="#basic_gf">GetFeature</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2">
+            <colgroup>
+                <col width="30%">
+                <col width="65%">
+                <col width="5%">
+            </colgroup>
+            <tr valign="top">
+                <th>Request</th>
+                <th colspan="2">Description</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td colspan="2">
+                    <a name="basic_gc"></a>
+                    <b>GetCapabilities</b><br />
+                    <p>Retrieve capabilities information</p>
+                </td>
+                <td width="5%"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetCapabilities">WFS 1.1.0 GetCapabilities</a></td>
+                <td colspan="2">
+                    <p>Retrieve capabilities information by using the following parameters.<br/><br/>
+                    HTTP KVP Request:<br/>
+                    .../services?<br/>
+                    request=GetCapabilities<br/>
+                    version=1.1.1<br/>
+                    service=WFS</p>
+                </td>
+            </tr>
+            <tr valign="top"  bgcolor="#d7deed">
+                <td colspan="2">
+                    <a name="basic_dft"></a>
+                    <b>DescribeFeatureType</b><br />
+                    <p>Retrieve schema description of a FeatureType</p>
+                </td>
+                <td><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=DescribeFeatureType">WFS 1.1.0 DescribeFeatureType</a>
+                <td colspan="2">
+                    A DescribeFeatureType request, which results the WFS FeatureTypes.<br/><br/>
+                    HTTP KVP Request:<br/>
+                    .../services?<br/>
+                    service=WFS<br/>
+                    version=1.1.0<br/>
+                    request=DescribeFeatureType<br/>
+                </td>
+            </tr>
+            <tr valign="top"  bgcolor="#d7deed">
+                <td colspan="2">
+                    <a name="basic_gf"></a>
+                    <b>GetFeature</b><br />
+                    <p>Retrieve feature instances by featuretype name. Optional constraints may be added.</p>
+                </td>
+                <td><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:StateBoundary&NAMESPACE=xmlns(app=http://www.deegree.org/app)">WFS 1.1.0 GetFeature StateBoundary</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, which retrieves all features of a type (example: StateBoundary)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     service=WFS<br/>
+                     version=1.1.0<br/>
+                     request=GetFeature<br/>
+                     typename=app:StateBoundary<br/>
+                     namespace=xmlns(app=http://www.deegree.org/app)<br/>
+                     </p>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

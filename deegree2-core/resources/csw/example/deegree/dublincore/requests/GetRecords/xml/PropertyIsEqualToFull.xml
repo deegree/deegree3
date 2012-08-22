@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:GetRecords version="2.0.0" service="CSW" outputFormat="text/xml" outputSchema="OGCCORE" resultType="results" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://www.purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw http://schemas.opengis.net/csw/2.0.0/CSW-discovery.xsd">
+	<csw:Query typeNames="csw:dataset">
+		<csw:ElementSetName>full</csw:ElementSetName>
+		<csw:Constraint version="1.0.0">
+			<Filter xmlns="http://www.opengis.net/ogc">
+				<PropertyIsEqualTo>
+					<PropertyName>dc:identifier</PropertyName>
+					<Literal>{42AE2814-FCC1-4BC2-BAF4-CA3E55514997}</Literal>
+				</PropertyIsEqualTo>
+			</Filter>
+		</csw:Constraint>
+	</csw:Query>
+</csw:GetRecords>

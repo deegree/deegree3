@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <!-- request all philosophers that where born after 1820 and in Germany -->
+  <wfs:Query typeName="app:Philosopher">
+    <ogc:Filter>
+      <ogc:And>
+        <ogc:PropertyIsGreaterThan>
+          <ogc:PropertyName>app:dateOfBirth</ogc:PropertyName>
+          <ogc:Literal>1820</ogc:Literal>
+        </ogc:PropertyIsGreaterThan>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:placeOfBirth/app:Place/app:country/app:Country/app:name</ogc:PropertyName>
+          <ogc:Literal>Germany</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+      </ogc:And>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

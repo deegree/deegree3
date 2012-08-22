@@ -1,0 +1,1152 @@
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>deegree: Help</title>
+        <link href="../../css/deegree.css" rel="stylesheet" type="text/css" />
+        <style>
+            .classlink:link {color:#000000; text-decoration:none}
+            .classlink:visited {color:#000000; text-decoration:none}
+            .classlink:active {color:#000000; text-decoration:none}
+            .classlink:hover {color:#000000; text-decoration:underline}
+        </style>        
+    </head>
+    <body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+    	<table border="0" width="625" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="left" valign="bottom" colspan="3">
+                    <br>
+                    <h1><a href="http://www.deegree.org" class="classlink" name="about" id="about" target="_blank">
+                        <font size="5"><b>&Uuml;ber deegr</b></font><font class="orange" size="5"><b>ee</b></font>
+                    </a></h1>
+                </td>
+            </tr>
+            <tr>
+                <td align="left" width="5%">&nbsp;</td>
+                <td width="225">
+                    <b>Copyright by:</b><br /><br />
+                    <a href="http://www.giub.uni-bonn.de" target="_blank"><img src="../../images/logo-unibonn.gif" alt="Uni Bonn" 
+                       border="0" /></a>
+                </td>
+                <td align="center">
+                    <a href="http://www.lat-lon.de" target="_blank"><img src="../../images/logo-latlon.gif" alt="lat/lon" 
+                       border="0" /></a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <br>
+                    <p>deegr<font class="orange">ee</font> ist eine freie Software Initiative, die von der 
+                    Arbeitsgruppe GIS des <a href="http://www.giub.uni-bonn.de/" 
+                    target="_blank">Geographischen Instituts</a> der Universit&auml;t Bonn, und der Firma <a 
+                    href="http://www.lat-lon.de/" target="_blank">lat/lon</a> gegr&uuml;ndet wurde.
+                    <a href="mailto:info -AT- deegree.org">Unterst&uuml;tzung</a> bei der Weiterenticklung wird 
+                    sehr begr&uuml;&szlig;t.</p>
+            
+                    <p>Das freie Software Projekt deegr<font class="orange">ee</font> bietet die derzeit umfangreichste 
+                    Umsetzung von Bausteinen zum Aufbau einer Geodateninfrastruktur, in der die Standards von Open GIS 
+                    Consortium (OGC) und ISO/TC 211 implementiert sind. Da die gesamte Architektur von 
+                    deegr<font class="orange">ee</font> auf OGC Spezifikationen und Konzepten basiert, gibt es keine 
+                    Probleme bei der Integration standardisierter Produkte anderer Anbieter (z.B. ArcIMS von ESRI(c)).
+                    </p>
+            
+                    <p>Alle der genannten Server-seitigen Dienste und das Client Framework werden vom Open Source 
+                    Projekt deegr<font class="orange">ee</font> bereitgestellt. deegr<font class="orange">ee</font> ist 
+                    freie Software, f&uuml;r dessen Nutzung keine Lizenzkosten anfallen. 
+                    Es kann frei kopiert und verteilt werden, auch die Erweiterung des Systemumfangs ist nicht mit 
+                    Lizenzkosten verbunden. Die Offenheit des Quellcodes unterstreicht die Kostensicherheit des Systems. 
+                    Da deegr<font class="orange">ee</font> in Java implementiert ist, ist es plattformunabh&auml;ngig 
+                    und kann in heterogenen Netzwerken verwendet werden.
+                    Installationen sind auf Windows XP/2000/NT, LINUX, Macintosh OS X and Solaris
+                    Servers lauff&auml;hig.</p>
+            
+                    <p>deegr<font class="orange">ee</font> ist freie Software, die der
+                    <a href="http://www.gnu.org/copyleft/lesser.html" target="_blank">GNU Lesser General Public License</a> 
+                    unterliegt.</p><br><br>
+                </td>
+            </tr>
+        </table>
+        <hr>
+    	<table border="0" cellpadding="0" cellspacing="0" width="400"> 
+            <tbody>
+                <tr>
+                    <td width="82%"><a name="TOP"></a>
+                        <table style="width: 100%;" border="0" cellpadding="15"	cellspacing="3">
+                            <tbody>
+                                <!-- ############### ÜBERSICHTSKARTE ############### -->
+                                <tr>
+                                    <td colspan="2" align="center" valign="top">
+                                        <h2 style="text-align: left;">
+                                            <a name="Uebersichtskarte" id="Uebersichtskarte"></a>&Uuml;bersichtskarte 
+                                            <a href="#TOP"><img style="border: 0px solid; width: 16px; height: 16px;" 
+                                               src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                        </h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top" width="18%">
+                                        <img src="../../overview_utah.gif" style="width: 160px; height: 178px;"
+                                             alt="">
+                                    </td>
+                                    <td valign="top" width="82%">
+                                        <h3><a name="Lagedarstellung" id="Lagedarstellung"></a>Lagedarstellung</h3>
+                                        <p>In der &uuml;bersichtskarte werden Position und Gr&ouml;&szlig;e des
+                                        aktuellen Kartenfensters bezogen auf die festgehaltene Darstellung des 
+                                        Raumausschnitts durch einen rechteckigen Rahmen angezeigt. Bei der Betrachtung 
+                                        sehr kleiner Kartenausschnitte (gro&szlig;ma&szlig;st&auml;bige Darstellungen) 
+                                        wird der Rahmen durch ein Fadenkreuz 
+                                        <img src="../pics/cross.gif" height="15" width="15">ersetzt.</p>
+                                        <p>Das Kartenfenster kann durch Anklicken einer beliebigen Stelle der 
+                                        &uuml;bersichtskarte zentrisch neu positioniert werden,	wobei seine 
+                                        Gr&ouml;&szlig;e nicht ver&auml;ndert wird.<br></p>
+                                    </td>
+                                </tr>
+                                <!-- ############### WERKZEUGLEISTE ############### -->
+                                <tr>
+                                    <td colspan="2" align="center" valign="top">
+                                        <h2 align="left">
+                                            <a name="Werkzeugleiste"></a>Werkzeugleiste
+                                            <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;"
+                                               src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                        </h2>
+                                        <p align="left">Einige Werkzeuge l&ouml;sen direkt eine Aktion aus oder 
+                                        &ouml;ffnen einen Dialog f&uuml;r weitere Eingaben.<br>
+                                        Die anderen Werkzeuge steuern die Funktion eines Mausklicks im Kartenfenster. 
+                                        Den jeweils aktiven Modus erkennt man an einer Farb&auml;nderung 
+                                        des zugeh&ouml;rigen Symbols.<br>
+                                        Ein einmal ausgew&auml;hlter Modus bleibt bestehen, bis ein anderes	
+                                        Modus-Werkzeug ausgew&auml;hlt wird.<br></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/refresh.gif" 
+                                             style="width: 25px; height: 25px;"	alt="" border="0">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="Karte_neu_zeichnen"></a>Karte neu zeichnen</h3>
+                                        <p>Der aktuelle Kartenausschnitt wird neu gezeichnet.<br></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/fullextent.gif" 
+                                             style="width: 25px; height: 25px;"	alt="" border="0">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="Anfangsansicht"></a>Anfangsansicht</h3>
+                                        <p>Die aktuell <a href="#themeselect">ausgew&auml;hlte Karte</a> wird in 
+                                        ihrem Anfangszustand geladen. Dazu wird das Kartenfenster wieder auf den 
+                                        Ausschnitt positioniert, mit dem die Karte urspr&uuml;nglich geladen worden 
+                                        ist. Die <a href="#Sichtbar_Thema">Sichtbarkeit von Themen</a> und die 
+                                        <a href="#ZuordSachdatabfr">Zuordnung von Sachdatenabfragen</a> werden auf die 
+                                        voreingestellten Werte zur&uuml;ckgesetzt. &uuml;ber den Dialog	
+                                        <a href="#Themenliste_erweitern">Themenliste erweitern</a> hinzugeladene Themen 
+                                        werden aus der Themenliste entfernt.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/movetoprevious.gif" 
+                                             style="width: 25px; height: 25px;"	alt="">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h3><a name="histback"></a>Vorherige Ansicht</h3>
+                                        <p>Ruft die aktuelle Kartenansicht mit der letzten Boundingbox der Historie auf
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/movetonext.gif" 
+                                             style="width: 25px; height: 25px;"	alt="">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h3><a name="histnext"></a>N&auml;chste Ansicht</h3>
+                                        <p>Ruft die aktuelle Kartenansicht mit der n&auml;chsten Boundingbox der 
+                                        Historie auf</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/zoomin.gif" 
+                                             style="width: 25px; height: 25px;"	alt="">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="vergroessern" id="vergroessern"></a>Vergr&ouml;&szlig;ern</h3>
+                                        <p>Ein Klicken an eine beliebige Stelle innerhalb des Kartenfensters f&uuml;hrt 
+                                        in diesem Modus zu einer Zentrierung der Karte auf diese Position und einer 
+                                        Vergr&ouml;&szlig;erung des Darstellungsma&szlig;stabs um 25 % (z.B. von 1:5000 
+                                        auf 1:3750).<br>
+                                        Alternativ kann mit gedr&uuml;ckter linker Maustaste ein rechteckiger Bereich 
+                                        im Kartenfenster aufgezogen werden, der dann formatf&uuml;llend dargestellt 
+                                        wird.<br></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/zoomout.gif" 
+                                             style="width: 25px; height: 25px;"	alt="">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="verkleinern" id="verkleinern"></a>Verkleinern</h3>
+                                        <p>In diesem Modus bewirkt ein Klicken an eine beliebige Stelle innerhalb des 
+                                        Kartenfensters eine Zentrierung der Karte auf diese Position und eine 
+                                        Verkleinerung des Darstellungsma&szlig;stabs um 25% (z.B. von 1:5000 auf 1:6250).
+                                        <br></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/zoom2layer.gif" 
+                                             style="width: 25px; height: 25px;" alt="">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="zoom2layer" id="zoom2layer"></a>Zur Kartenebene zoomen (Zoom to layer)</h3>
+                                        <p>Dieses Werkzeug zoomt zur Standard-BoundingBox des ausgew&auml;hlten Themas.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/featureinfo.gif" 
+                                             style="width: 25px; height: 25px;"	alt="">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="Sachinformation_abfragen"></a>Sachinformation abfragen</h3>
+                                        <p>In diesem Modus l&ouml;st ein Klick innerhalb des Kartenfensters eine 
+                                        Sachdatenabfrage aus, deren Ergebnis in einem eigenen Fenster angezeigt wird.
+                                        </p>
+                                        <!-- ++++++ Comment in <p>-block for extjs version using layertree ++++++-->
+                                        <!-- 
+                                        <p>Die Sachdatenabfrage bezieht sich auf das aktuell im Themenbaum selektierte 
+                                        (blau hinterlegte) Thema.
+                                        </p>
+                                        -->
+                                        <!-- ++++++ Comment out <table>-block for extjs version using layertree ++++++-->
+                                        <table border="0" cellspacing="10">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <img src="../pics/layer.gif" 
+                                                             style="width: 185px; height: 23px; float: left;" alt="">
+                                                    </td>
+                                                    <td valign="top">
+                                                        <p>Die Sachdatenabfrage bezieht sich auf das aktuell bei der 
+                                                        <a href="#ZuordSachdatabfr">Zuordnung von Sachdatenabfragen</a> 
+                                                        ausgew&auml;hlte Thema.</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <div class="buttonIconHelp"><img src="../../images/recenter.gif" 
+                                             style="width: 25px; height: 25px;"	alt="">
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h3><a name="recenter" id="recenter"></a>Neu zentrieren</h3>
+                                        <p>Der Kartenausschnitt wird auf die Position, die im Kartenfenster	angeklickt 
+                                        wird, zentriert.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/move.gif" 
+                                         style="width: 25px; height: 25px;" alt="">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="Karte_verschieben" id="Karte_verschieben"></a>Karte verschieben</h3>
+                                    <p>In diesem Modus kann die Karte an einem beliebigen Punkt angeklickt und mit 
+                                    gedr&uuml;ckter linker Maustaste verschoben werden. Durch Loslassen der Maustaste 
+                                    wird die Verschiebung abgeschlossen, die fehlenden Teile des Kartenbildes werden 
+                                    automatisch nachgeladen. Der Darstellungsma&szlig;stab wird dabei nicht 
+                                    ver&auml;ndert.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/addwms.gif" 
+                                         style="width: 25px; height: 25px;"	alt="">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="Themenliste_erweitern"></a>Themenliste / Themenbaum erweitern</h3>
+                                    <p>Mit diesem Werkzeug wird ein Dialog ge&ouml;ffnet, der die M&ouml;glichkeit 
+                                    bietet, weitere im Internet verf&uuml;gbare	Kartenangebote hinzuzuladen. In dem 
+                                    Dialog ausgew&auml;hlte Themen dieser Angebote werden als Erweiterung der 
+                                    Themenliste bzw. des Themenbaums dargestellt.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/print.gif" 
+                                         style="width: 25px; height: 25px;" alt="">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="Karte_drucken"></a>Karte drucken</h3>
+                                    <p>Ein Mausklick auf dieses Symbol &ouml;ffnet ein Fenster, &uuml;ber das ein 
+                                    PDF-Dokument der aktuellen Kartenansicht erstellt werden kann. Zus&auml;tzlich 
+                                    k&ouml;nnen Sie &nbsp;&uuml;ber drei Textfelder, den Titel, eine Beschreibung und 
+                                    den Autor der Karte	angeben.</p>
+                                    Zur Auswahl stehen zwei Kartenvorlagen; eine mit horizontaler und eine mit 
+                                    vertikaler Seitenausrichtung.
+                                </td>
+                            </tr>
+                            <!-- ++++++ Comment out fullScreen and normalScreen for extjs version ++++++-->
+                            <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/fullScreen.gif" 
+                                         style="width: 25px; height: 25px;" alt="">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="fullscreen" id="fullscreen"></a>Kartenfenster vergr&ouml;&szlig;ern</h3>
+                                    <p>Der Kartenausschnitt wird auf die gesamte Portalbreite vergr&ouml;&szlig;ert.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/normalScreen.gif" 
+                                         style="width: 25px; height: 25px;" alt="">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="normalscreen" id="normalscreen"></a>Kartenfenster verkleinern</h3>
+                                    <p>Der Kartenausschnitt wird auf die Ausgangsgr&ouml;&szlig;e verkleinert.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### MENUELEISTE ############### -->
+                            <tr>
+                                <td colspan="2" align="center" valign="top">
+                                    <h2 align="left">
+                                        <a name="Menueleiste"></a>Men&uuml;leiste
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;"
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- ++++++ Comment in <td>-block for extjs version ++++++-->
+                                <!-- 
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/saveContext.gif" style="width: 177px; height: 82px;" alt="" 
+                                         align="left">
+                                </td>
+                                -->
+                                <!-- ++++++ Comment out <td>-block for extjs version ++++++-->
+                                <td align="center" valign="top"> 
+                                    <div class="buttonIconHelp"><img src="../../images/mt_save.gif" 
+                                         style="width: 25px; height: 25px;"	alt="">
+                                    </div>
+                                </td> 
+                                <td>
+                                    <h3><a name="saveContext"></a>Kontext Speichern</h3>
+                                    <p>Mit dieser Funktion ist es Ihnen m&ouml;glich, den aktuellen	
+                                    Bearbeitungszustand einer Karte zu speichern. Dazu geh&ouml;ren neben der aktuellen 
+                                    Boundingbox auch die sichtbaren Layer sowie deren Reihenfolge.</p><br>
+									<img src="../pics/saveCntxtDialog.gif"	style="width: 330px; height: 130px;" alt="" 
+                                         border="1"><br><br>
+                                    &Uuml;ber ein Textfeld wird der Name des zu speichernden Kontextes angegeben; 
+                                    existiert bereits ein Kontext mit dem angegebenen Namen, so wird dieser 
+                                    &uuml;berschrieben.
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- ++++++ Comment in <td>-block for extjs version ++++++-->
+                                <!-- 
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/loadContext.gif" style="width: 177px; height: 82px;" alt="" 
+                                         align="left">
+                                </td>
+                                -->
+                                <!-- ++++++ Comment out <td>-block for extjs version ++++++-->
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/mt_load.gif" 
+                                         style="width: 25px; height: 25px;"	alt="">
+                                    </div>
+                                </td>
+                                <td>
+                                    <h3><a name="loadContext"></a>Kontext Laden</h3>
+                                    <p>Gespeicherte oder vom Administrator bereitgestellte Kontexte k&ouml;nnen 
+                                    &uuml;ber einen Mausklick auf diese Funktion geladen werden. Es &ouml;ffnet sich 
+                                    zun&auml;chst ein Dialog in dem in einer Klappliste alle verf&uuml;gbaren Kontexte 
+                                    aufgelistet sind.</p><br>
+                                    <img src="../pics/loadCntxtDialog.gif"	style="width: 270px; height: 104px;" alt="" 
+                                         border="1"><br><br>
+                                    Nach Auswahl eines Kontextes und Klick auf den '&uuml;bernehmen'-Button wird dieser 
+                                    in den Geoeditor geladen.
+                                </td>
+                            </tr>
+                            <!-- ++++++ Comment in <tr>-block for extjs version ++++++-->
+                            <!-- 
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/help_menu.gif" style="width: 161px; height: 104px;" alt="" 
+                                         align="left">
+                                </td>
+                                <td>
+                                    <h3><a name="help"></a>Hilfe</h3>
+                                    <p>Ein Mausklick auf 'help &gt; help' &ouml;ffnet diese Hilfeseite.</p>
+                                    <p>Durch einen Klick auf den Men&uuml;eintrag 'help &gt; legal note' werden 
+                                    Copyright- und Lizenzinformationen angezeigt.</p>
+                                    <p>&uuml;ber 'help &gt; deegree home' gelangt man zur deegree-Homepage.</p>
+                                </td>
+                            </tr> -->
+                            <!-- ++++++ Comment out <tr>-block for extjs version ++++++-->
+                            <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/mt_help.gif" 
+                                         style="width: 25px; height: 25px;"	alt="">
+                                    </div>
+                                </td>
+                                <td>
+                                    <h3><a name="help"></a>Hilfe</h3>
+                                    <p>Ein Mausklick auf diesen Button &ouml;ffnet diese Hilfeseite.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- ++++++ Comment in <td>-block for extjs version ++++++-->
+                                <!-- 
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/login.gif" style="width: 128px; height: 80px;" alt="" 
+                                         align="left">
+                                </td>
+                                -->
+                                <!-- ++++++ Comment out <td>-block for extjs version ++++++-->
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/mt_login.gif" 
+                                         style="width: 25px; height: 25px;"	alt="">
+                                    </div>
+                                </td>
+                                <td>
+                                    <h3><a name="login"></a>Login</h3>
+                                    <p>Um nur registrierten Nutzern die vollst&auml;ndige Nutzung des Portals zu 
+                                    gew&auml;hren, kann dem Nutzer durch die Eingabe von Login-Name und Passwort eine 
+                                    Session-ID zugewiesen werden. Diese wird bei jedem Request mitgesendet und 
+                                    verifiziert.
+                                    Um diese Funktion nutzen zu k&ouml;nnen, m&uuml;ssen zuvor Konfigurationen an 
+                                    deegree.security vorgenommen werden.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- ++++++ Comment in <td>-block for extjs version ++++++-->
+                                <!-- 
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/logout.gif" style="width: 128px; height: 80px;" alt="" 
+                                         align="left">
+                                </td>
+                                -->
+                                <!-- ++++++ Comment out <td>-block for extjs version ++++++-->
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/mt_logout.gif" 
+                                         style="width: 25px; height: 25px;"	alt="">
+                                    </div>
+                                </td>
+                                <td>
+                                    <h3><a name="logout"></a>Logout</h3>
+                                    <p>Wenn ein Nutzer angemeldet ist, kann er sich mit der Logout-Funktion von der 
+                                    Session wieder abmelden</p>
+                                </td>
+                            </tr>
+                            <!-- ############### SKALIERUNG ############### -->
+                            <tr>
+                                <td colspan="2" align="center" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="scaleswitcher"></a>Skalierung 
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/scaleswitcher.gif" style="width: 172px; height: 39px;" alt="" 
+                                         align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="scale"></a>Skalierungsstufen</h3>
+                                    <p>&uuml;ber eine Klappliste kann hier aus vorgegebenen Skalierungsstufen 
+                                    gew&auml;hlt werden.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### CONTEXT-SWITCH ############### -->
+                            <tr>
+                                <td colspan="2" align="center" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="themeselect"></a>Kontext-Auswahl 
+                                        <a href="#TOP"><img style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/contextswitcher.gif"	style="width: 256px; height: 107px;" alt="" 
+                                         align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="themeselection"></a>Theme selection</h3>
+                                    <p>&uuml;ber die Klappliste kann ein anderer Kontext geladen werden</p>
+                                </td>
+                            </tr>
+                            <!-- ############### DEFAULT-CONTENT-SWITCH ############### -->
+                            <!-- ++++++ Comment out for extjs version ++++++-->
+                            <tr>
+                                <td colspan="2" align="center" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="Umsch_leg_themenlst"></a>Umschalten zwischen Legende u. Themenliste 
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/defaultcontentswitch.gif" style="width: 121px; height: 62px;" 
+                                    alt="" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="DropDownList"></a>Drop-Down-Liste</h3>
+                                    <p>Mit Hilfe dieses Bedienelementes kann zwischen der Darstellung der 
+                                    <a href="#Themenliste">Themenliste</a> und der <a href="#Legende">Legende</a> 
+                                    gewechselt werden. Unterhalb des Umschalters wird das zugeh&ouml;rige Element 
+                                    (Themenliste oder Legende) angezeigt.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### CONTENT-SWITCH ############### -->
+                            <!-- Comment out for extjs version if using layertree-->
+                            <tr>
+                                <td colspan="2" align="center" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="Themenliste"></a>Themenliste 
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;"
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/visibility.gif" style="width: 137px; height: 100px;"	alt="" 
+                                         border="1" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="Sichtbar_Thema"></a>Sichtbarkeit von Themen</h3>
+                                    <p>Die Sichtbarkeit eines Themas wird durch das	Kontrollk&auml;stchen vor seinem 
+                                    Namen gesteuert. Nur die angehakten	(="sichtbaren") Themen werden vom jeweiligen 
+                                    Web Map Service	angefordert und so beim Aufbau des Kartenbildes 
+                                    ber&uuml;cksichtigt. Eine &Auml;nderung dieser Einstellung f&uuml;hrt <u>nicht</u> 
+                                    automatisch zu einer neuen Kartenanfrage, diese Aktion muss vom Nutzer durch 
+                                    Anklicken des Werkzeugs	<a href="#Karte_neu_zeichnen">Karte	neu zeichnen</a> 
+                                    ausgel&ouml;st werden.</p>
+                                    <p>Grau hinterlegte Themen k&ouml;nnen in dem aktuell eingestellten	
+                                    Kartenausschnitt nicht dargestellt werden. F&uuml;r Themen, die &uuml;ber den 
+                                    Dialog <a href="#Themenliste_erweitern">Themenliste	erweitern</a> zu einer Karte 
+                                    hinzugeladen worden sind, ist diese	Funktion nicht verf&uuml;gbar.&nbsp;</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/select4fi.gif" style="width: 206px; height: 62px;" alt="" 
+                                    border="1" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="ZuordSachdatabfr"></a>Zuordnung von Sachdatenabfragen</h3>
+                                    <p>Durch diese Auswahlkn&ouml;pfe (&nbsp;
+                                    <img src="../pics/radio_off.gif" height="18" width="18"> / 
+                                    <img src="../pics/radio_on.gif" height="18" width="18">&nbsp;) wird gesteuert, auf 
+                                    welches Thema sich die <a href="#Sachinformation_abfragen">Sachdatenabfrage</a> 
+                                    bezieht. Die Sachdatenabfrage kann sich nur auf ein einziges Thema beziehen, die 
+                                    Auswahl eines neuen Themas setzt daher eine zuvor getroffene Auswahl zur&uuml;ck.
+                                    </p>
+                                    <p>Bei Themen, f&uuml;r die keine Sachdatenabfrage m&ouml;glich ist, wird kein 
+                                    Auswahlknopf angeboten.</p>
+                                    <p>Wird ein bei der <a href="#Sichtbar_Thema">Sichtbarkeit von Themen</a> auf 
+                                    "nicht-sichtbar" (&nbsp;<img src="../pics/radio_off.gif" height="18" width="18">
+                                    &nbsp;)	eingestelltes Thema ausgew&auml;hlt, wird es dadurch zus&auml;tzlich auf 
+                                    sichtbar" (&nbsp;<img src="../pics/radio_on.gif" height="18" width="18">&nbsp;) 
+                                    gesetzt.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/layersort.gif" style="width: 223px; height: 98px;" alt="" 
+                                    border="1" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="umsort_themenlst"></a>Umsortieren der Themenliste</h3>
+                                    <p>Die Einzelthemen werden beim Aufbau des Kartenbildes in der Reihenfolge 
+                                    dargestellt, in der sie in der Themenliste aufgef&uuml;hrt sind. Das oberste Thema 
+                                    in der Themenliste wird dabei im Kartenfenster logisch als letztes "gezeichnet" und 
+                                    &uuml;berdeckt daher u.U. Inhalte der darunter liegenden Themen. Der Nutzer kann 
+                                    die	Einzelthemen aber innerhalb der Themenliste verschieben und die Liste so nach 
+                                    seinen eigenen W&uuml;nschen sortieren, um nicht gew&uuml;nsche 
+                                    &uuml;berdeckungseffekte zu vermeiden.</p>
+                                    <p>Das Einzelthema, das verschoben werden soll, muss zuvor durch Anklicken seiner 
+                                    Bezeichnung ausgew&auml;hlt werden. Die	zugeh&ouml;rige Zeile wird dann gelb 
+                                    hinterlegt (siehe Abb. links). Durch Anklicken der Befehlsschaltfl&auml;chen 
+                                    <img src="../../images/up.gif" height="16" width="16"> oder 
+                                    <img src="../../images/down.gif" height="16" width="16"> am	unteren Ende der 
+                                    Themenliste wird das ausgew&auml;hlte Thema	innerhalb der Themenliste eine Position 
+                                    nach oben bzw. nach unten geschoben. Ein Umsortieren der Themenliste f&uuml;hrt 
+                                    nicht automatisch zu einer neuen Kartenanfrage, diese Aktion muss vom Nutzer durch 
+                                    Anklicken des Werkzeugs <a href="#Karte_neu_zeichnen">Karte neu zeichnen</a> 
+                                    ausgel&ouml;st werden. Einzelthemen k&ouml;nnen auf diese Weise nur	innerhalb ihrer 
+                                    Themengruppe verschoben werden.&nbsp;</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/themengrp_versch.gif" style="width: 232px; height: 226px;" alt="" 
+                                         border="1" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3>
+                                        <a name="entf_sort_themengrp"></a>Entfernen und	Umsortieren von Themengruppen
+                                    </h3>
+                                    <p>F&uuml;r jedes zus&auml;tzliche Kartenangebot, das der Nutzer &uuml;ber den 
+                                    Dialog <a href="#Themenliste_erweitern">Themenliste	erweitern</a> hinzugeladen hat, 
+                                    wird ihm in der Themenliste eine weitere Themengruppe pr&auml;sentiert. Dabei kann 
+                                    derselbe WMS auch mehrfach (z.B. mit unterschiedlichen Themen) hinzugeladen werden 
+                                    - in diesem Fall werden mehrere Themengruppen mit demselben Namen angezeigt.</p>
+                                    <p>Wenn mehrere Themengruppen in der Themenliste vorhanden sind, erscheinen hinter 
+                                    den Bezeichnungen der Themengruppen	zus&auml;tzliche Befehlsschaltfl&auml;chen: Mit 
+                                    der Schaltfl&auml;che "Themengruppe entfernen" 
+                                    <img src="../pics/remove.gif" style="width: 16px; height: 16px;" alt=""> wird eine
+                                    Themengruppe aus der Themenliste herausgenommen. Nach dieser Aktion erfolgt 
+                                    automatisch ein neuer Kartenaufbau ohne	Ber&uuml;cksichtigung der Themen des 
+                                    entfernten WMS.</p>
+                                    <p>Mit den Schaltfl&auml;chen "Themengruppe nach oben schieben" 
+                                    <img src="../../images/up.gif" style="width: 16px; height: 16px;" alt=""> bzw. 
+                                    "Themengruppe nach unten schieben" 
+                                    <img src="../../images/down.gif" style="width: 16px; height: 16px;"alt=""> kann die 
+                                    jeweilige Themengruppe innerhalb der Themenliste um eine Position nach oben bzw. 
+                                    nach unten geschoben werden. Auf diese Weise k&ouml;nnen ungewollte 
+                                    &Uuml;berdeckungseffekte auch zwischen Themen aus unterschiedlichen Gruppen 
+                                    verhindert werden. Es werden nur Schaltfl&auml;chen f&uuml;r diejenigen Richtungen 
+                                    angezeigt, in die eine Verschiebung m&ouml;glich ist. Nach dem Verschieben einer 
+                                    Themengruppe wird automatisch ein neuer Kartenaufbau mit der ge&auml;nderten 
+                                    Darstellungsreihenfolge durchgef&uuml;hrt.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### THEMENBAUM ############### -->
+                            <!-- Comment in for extjs version if using layertree-->
+                            <!-- 
+                            <tr>
+                                <td colspan="2" align="left" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="layertree"></a>Themenbaum 
+                                        <a href="#TOP"><img style="border: 0px solid; width: 16px; height: 16px;"
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/layertree.gif" style="width: 182px; height: 152px;"  alt="" 
+                                         border="1" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="Sichtbar_Thema"></a>Sichtbarkeit von Themen</h3>
+                                    <p>Die Sichtbarkeit eines Themas wird durch das Kontrollk&auml;stchen vor seinem 
+                                    Namen gesteuert. Nur die angehakten (="sichtbaren") Themen werden vom jeweiligen Web 
+                                    Map Service angefordert und beim Aufbau des Kartenbildes ber&uuml;cksichtigt. Eine 
+                                    &Auml;nderung dieser Einstellung f&uuml;hrt automatisch zu einer neuen Kartenanfrage. 
+                                    Mit grauer Schrift dargestellte Themen k&ouml;nnen in dem aktuell eingestellten	
+                                    Kartenausschnitt nicht dargestellt werden.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    &nbsp;
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="umsort_themenbaum"></a>Umsortieren des Themenbaums</h3>
+                                    <p>Die Einzelthemen werden beim Aufbau des Kartenbildes in der Reihenfolge 
+                                    dargestellt, in der sie in der Themenliste aufgef&uuml;hrt sind. Das oberste Thema 
+                                    im Themenbaum wird dabei im Kartenfenster logisch als letztes "gezeichnet" und 
+                                    &uuml;berdeckt daher u.U. Inhalte der darunter liegenden Themen. Der Nutzer kann 
+                                    die Einzelthemen aber innerhalb des Themenbaums verschieben und die Ebenen so nach 
+                                    seinen eigenen W&uuml;nschen sortieren, um nicht gew&uuml;nsche 
+                                    &uuml;berdeckungseffekte zu vermeiden.</p>
+                                    <p>Das Einzelthema oder die Themengruppe, welche verschoben werden soll, muss bei 
+                                    gedr&uuml;ckter linker Maustaste an die gew&uuml;nschte Position bewegt werden.
+                                    L&auml;sst man die Maustaste zwischen zwei Themen los, wird das selektierte Thema, 
+                                    bzw. die Themengruppe an dieser Stelle platziert.
+                                    Beim Loslassen der Maustaste &uuml;ber einem Gruppennamen, erfolgt eine Platzierung 
+                                    an unterster Stelle innerhalb der entsprechenden Themengruppe.
+                                    Einzelthemen und Themengruppen k&ouml;nnen auf diese Weise sowohl innerhalb ihrer 
+                                    Themengruppe, als auch in andere Themengruppen verschoben werden.</p>
+                                    <p>Ein Umsortieren des Themenbaums f&uuml;hrt automatisch zu einer neuen 
+                                    Kartenanfrage und einer entsprechend ge&auml;nderten Reihenfolge der dargestellten 
+                                    Ebenen.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    &nbsp;
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="add_layergroup"></a>Themengruppe hinzuf&uuml;gen</h3>
+                                    <p>&uuml;ber die Schaltfl&auml;che 'hinzuf&uuml;gen' kann eine neue Themengruppe in 
+                                    den Themenbaum eingef&uuml;gt werden. Beim Klick auf 'hinzuf&uuml;gen' &ouml;ffnet 
+                                    sich ein Dialogfenster, in dem der gew&uuml;nschte Gruppenname einzutragen ist. Nach 
+                                    Best&auml;tigung durch den OK-Button wird die neue Themengruppe an erster Stelle 
+                                    innerhalb der zuvor selektierten Themengruppe bzw. innerhalb der Themengruppe, in 
+                                    welcher das zuvor selektierte Thema enthalten ist, eingef&uuml;gt.
+                                    Wurde zuvor kein Thema oder keine Themengruppe selektiert, wird die neue 
+                                    Themengruppe an oberster Stelle im Themenbaum eingef&uuml;gt</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    &nbsp;
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="remove_layer"></a>Thema entfernen</h3>
+                                    <p>Um ein Thema oder eine Themengruppe zu entfernen, muss diese zuvor selektiert 
+                                    werden. 
+                                    Nach einem Klick auf 'Entfernen' muss der Nutzer mit OK best&auml;tigen, ob er diese 
+                                    wirklich l&ouml;schen m&ouml;chte.
+                                    Daraufhin wird das Thema bzw. die Themengruppe einschlie&szlig;lich der in ihr 
+                                    enthaltenen Themen aus dem Themenbaum entfernt.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    &nbsp;
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="rename_layer"></a>Thema umbenennen</h3>
+                                    <p>Um ein Thema oder eine Themengruppe umzubenennen muss diese zuvor selektiert 
+                                    werden. 
+                                    Nach einem Klick auf 'Umbenennen', wird der Nutzer in einem sich &ouml;ffnenden 
+                                    Dialog aufgefordert einen neuen Namen f&uuml;r das Thema bzw. die Themengruppe 
+                                    einzugeben. 
+                                    Klickt der Nutzer auf OK, wird im Themenbaum der urspr&uuml;ngliche Name durch den 
+                                    neuen Namen ersetzt.</p>
+                                </td>
+                            </tr>
+                            -->
+                            <!-- ############### LEGENDE ############### -->
+                            <tr>
+                                <td colspan="2" align="center" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="Legende"></a>Legende&nbsp;
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/legend.gif" height="362" width="252" align="left">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="leg_grafiken"></a>Legendengrafiken</h3>
+                                    <p>Im Legendenbereich wird grunds&auml;tzlich f&uuml;r jedes sichtbar geschaltete 
+                                    Thema (<a href="#Sichtbar_Thema">Sichtbarkeit von Themen</a>) eine Legendengrafik 
+                                    angezeigt, die die kartographische Darstellung des jeweiligen Themas 
+                                    erl&auml;utert. Nebenstehend ist eine exemplarische Legendengrafik abgebildet.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">
+                                    <img src="../pics/notfound.gif" style="width: 66px; height: 21px;" alt="" border="1">
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="leg_platzhalter"></a>Platzhalter</h3>
+                                    <p>F&uuml;r zus&auml;tzliche Kartenangebote, die der Nutzer &uuml;ber den Dialog 
+                                    <a href="#Themenliste_erweitern">Themenliste erweitern</a> hinzugeladen hat, kann 
+                                    nicht immer eine Legende angezeigt werden. Ursache: der Abruf einer Legende von 
+                                    einem WMS ist zwar standardisiert, die tats&auml;chliche Auslieferung einer	
+                                    Legendengrafik ist aber nicht verpflichtend. Daher unterst&uuml;tzen zzt. viele WMS 
+                                    den Abruf von Legenden noch nicht.</p>
+                                    <p>In diesen F&auml;llen wird, wie in dem nebenstehenden Beispiel dargestellt, eine 
+                                    Platzhaltergrafik zusammen mit dem Titel (<em>Title</em>) des Kartenthemas 
+                                    (<em>Layer</em>) angezeigt.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### COORDINATE-DISPLAY ############### -->
+                            <tr>
+                                <td colspan="2" align="left" valign="top">
+                                    <h2>
+                                        <a name="coordinatedisplay"></a>Koordinaten-Anzeige
+                                        <a href="#TOP"><img style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/coordinatedisplay.gif" height="25" width="193" align="left" 
+                                         border="1">
+                                </td>
+                                <td valign="top">
+                                    <p>Je nach Position des Mauszeigers, werden die zugeh&ouml;rigen Koordinaten 
+                                    angezeigt.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### WMPS-PLOT ############### -->
+                            <!-- Comment in for extjs version -->
+                            <!-- 
+                            <tr>
+                                <td colspan="2" align="left" valign="top">
+                                    <h2 style="text-align: left;">
+                                        <a name="wmpsplot"></a>Plot-Modul 
+                                        <a href="#TOP"><img style="border: 0px solid; width: 16px; height: 16px;"
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                    <p>Der deegree Web Map Print Service (WMPS) liefert f&uuml;r die Druckausgabe 
+                                    optimierte Karten.
+                                    Das Plot-Modul erstellt basierend auf WMPS-Anfragen pdf-Dokumente.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left;">
+                                    &nbsp;
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="wmps_plot_settings"></a>Einstellungen</h3>
+                                    <p>Im Plot-Modul stehen folgende Einstellungsm&ouml;glichkeiten zur Verf&uuml;gung.
+                                    <br><br> 
+                                    <img src="../pics/extjs/plot_module.gif" style="width: 356px; height: 298px;" alt="" 
+                                         border="1"><br><br></p>
+                                    <p>In dieser Eingabemaske w&auml;hlt der Nutzer zun&auml;chst eine Druckvorlage aus 
+                                    der Klappliste aus. Je nach ausgew&auml;hlter Vorlage erscheinen Eingabefelder, in 
+                                    denen der Nutzer Informationen wie zum Beispiel, Titel, Copyright oder eine 
+                                    Beschreibung angeben kann.</p>
+                                    <p>Der Nutzer kann durch Ankreuzen der Checkboxen bestimmen, ob die Legende und der 
+                                    Ma&szlig;stab gedruckt werden sollen.</p>
+                                    <p>In den darunterliegenden Klapplisten kann er eine Aufl&ouml;sung und einen 
+                                    Ma&szlig;stabsbereich f&uuml;r den zu druckenden Kartenausschnitt angeben. Innerhalb 
+                                    der Karte verschiebt der Nutzer bei gedr&uuml;ckter Maustaste die rechteckige 
+                                    Markierung so, dass sie den f&uuml;r den Druck vorgesehenen Bereich 
+                                    einschlie&szlig;t.</p>
+                                    <p>Um den Druckauftrag bearbeiten zu k&ouml;nnen, muss der Nutzer in das 
+                                    entsprechende Textfeld eine g&uuml;ltige E-Mail-Adresse eingeben. 
+                                    An diese wird nach dem Klick auf 'Print map' ein Link zu einer pdf-Datei gesendet.
+                                    Die pdf-Datei enth&auml;lt den gew&auml;hlten Kartenausschnitt sowie die zuvor 
+                                    gemachten Angaben.
+                                    </p> 
+                                </td>
+                            </tr>
+                            -->
+                            <!-- ############### TIME-SELECT ############### -->
+                            <tr>
+                                <td colspan="2" align="left" valign="top">
+                                    <h2>
+                                        <a name="timeselect" id="timeselect"></a>Timeselect
+                                        <a href="#TOP"><img style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">
+                                    <div class="buttonIconHelp"><img src="../../images/timeselect.gif" 
+                                         style="width: 25px; height: 25px;" alt="" border="0">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="time_select" id="time-select"></a>Timeselect</h3>
+                                    <p>Das Timeselect-Modul bietet die M&ouml;glichkeit zeitabh&auml;ngige Daten 
+                                    anzufragen und darzustellen.</p>
+                                    <p>Ein Klick auf die Schaltfl&auml;che des Timeselect-Moduls &ouml;ffnet ein neues 
+                                    Fenster in dem der Zeitparameter f&uuml;r die Kartenanfrage gesetzt wird.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">
+                                    <img src="../pics/timeselect.gif" alt="timeselect" border="1">
+                                </td>
+                                <td valign="top">
+                                    <h3 align="left">
+                                        <a name="timeselect_menu" id="timeselect_menu"></a>Die Eingabemaske
+                                    </h3>
+                                    <p> In der Eingabemaske des Timeselect-Moduls kann ein Datum und eine Uhrzeit 
+                                    f&uuml;r die Erzeugung des Time-Parameters angegeben werden. Au&szlig;erdem werden 
+                                    in der Auswahlliste die Layergruppen selektiert, f&uuml;r die der Time-Parameter 
+                                    gelten soll.</p>
+                                    <p>Das Datum kann dabei &uuml;ber die Tastatur eingegeben oder mit einem Klick auf 
+                                    das Kalendersymbol &uuml;ber einen Kalender ausgew&auml;hlt werden. &uuml;ber die 
+                                    Drop-down-Listen kann eine Uhrzeit (Stunden und Minuten) selektiert werden.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### METADATA SEARCH ############### -->
+                            <tr>
+                                <td colspan="2" align="left" valign="top">
+                                    <h2>
+                                        <a name="metadatasearch" id="metadatasearch"></a>Metadatensuche
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                    <p>Mit diesem Modul k&ouml;nnen Metadaten gesucht werden.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- ++++++ Comment in <td>-block for extjs version ++++++-->
+                                <!-- 
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/metadatasearch.gif" style="width: 153px; height: 56px;" alt="" 
+                                         align="left">
+                                </td>
+                                -->
+                                <!-- ++++++ Comment out <td>-block for extjs version ++++++-->
+                                <td align="center" valign="top">
+                                    <h3>&nbsp;</h3>
+                                    <div class="buttonIconHelp">
+                                        <img src="../../images/mt_metadata.gif" style="width: 25px; height: 25px;"	
+                                        alt="" border="0">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3 align="left">
+                                        <a name="meta_search" id="meta_search"></a>Einfache &amp; Detaillierte Suche
+                                    </h3>
+                                    <p> Nach dem Starten des Moduls zur Metadatensuche, kann zwischen einfacher und 
+                                        detaillierter Suche unterschieden werden. Bei der einfachen Suche wird 
+                                        lediglich ein Suchstring eingegeben und ausgewertet. Bei der detaillierten 
+                                        Suche kann die Suche z.B. durch Angabe von Themen-, Zeit- und Raumparametern 
+                                        eingeschr&auml;nkt werden.</p>
+                                </td>
+                            </tr>
+                            <!-- ++++++ Comment out <tr>-block for extjs version im using layertree++++++-->
+                            <tr>
+                                <td align="center" valign="top">
+                                    <h3>&nbsp;</h3>
+                                    <div class="buttonIconHelp"><img src="../../images/md_info_a.gif" 
+                                         style="width: 25px; height: 25px;" alt="" border="0">
+                                    </div>
+                                    <br>
+                                    <div class="buttonIconHelp"><img src="../../images/md_info.gif" 
+                                         style="width: 25px; height: 25px;" alt="" border="0">
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h3><a name="meta_singleSearch" id="meta_singleSearch"></a>Layerbasierte Suche</h3>
+                                    <p>Sie finden diesen Knopf am unteren Ende der Themenliste. Wenn ein Layer durch 
+                                    Klick auf den Layernamen ausgew&auml;hlt wurde, wechselt das Symbol in 
+                                    Abh&auml;ngigkeit von der Verf&uuml;gbarkeit von Metadaten f&uuml;r den selektierten 
+                                    Layer von inaktiv (gr&auml;ulich) zu aktiv (bl&auml;ulich).</p>
+                                    <p>Ein Klick auf das (aktive) Symbol wird ein neues Fenster mit den Metadaten des 
+                                    gew&auml;hlten Layers &ouml;ffnen.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### GAZETTEER SEARCH ############### -->
+                            <tr>
+                                <td colspan="2" align="left" valign="top">
+                                    <h2>
+                                        <a name="Suchkataloge" id="Suchkataloge"></a>Suchkataloge 
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           src="../pics/top.gif" alt="nach oben" title="nach oben"></a>
+                                    </h2>
+                                    <p>Die Suchkataloge bieten eine einfache M&ouml;glichkeit, nach raumbezogenen 
+                                    Begriffen zu suchen und das Kartenfenster auf den zugeh&ouml;rigen Ausschnitt zu 
+                                    positionieren. Dazu werden Klapplisten bzw. Eingabefelder verwendet, die je nach 
+                                    ausgew&auml;hltem Raumtyp variieren.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <!-- ++++++ Comment in <td>-block for extjs version ++++++-->
+                                <!-- 
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/extjs/gazetteer.gif" height="140" width="216" border="1" align="left">
+                                </td>
+                                -->
+                                <!-- ++++++ Comment out <td>-block for extjs version ++++++-->
+                                <td style="vertical-align: top; text-align: left;">
+                                    <img src="../pics/gazetteer.gif" height="211" width="216" border="1" align="left">
+                                </td>
+                                <td align="center" valign="top">
+                                    <h3 align="left">
+                                        <a name="KL_sucheueber" id="KL_sucheueber"></a>Klappliste "Suche &uuml;ber..."
+                                    </h3>
+                                    <p align="left">Hier kann ein Katalog mit raumbezogenen	Begriffen, nach denen 
+                                    gesucht werden soll, ausgew&auml;hlt werden. 
+                                    </p>
+                                    <!-- ++++++ Comment in <p>-block for extjs version ++++++-->
+                                    <!-- 
+                                    <p align="left">Das Verhalten der weiteren Steuerungselemente ist vom 
+                                    ausgew&auml;hlten Raumtyp abh&auml;ngig.</p>
+                                    <p>Wenn der Nutzer die Checkbox 'Highlight' ankreuzt, wird das gesuchte Objekt in 
+                                    der Kartenansicht hervorgehoben.</p>
+                                    -->
+                                </td>
+                            </tr>
+                            <!-- ############### DIGITIZER ############### -->
+                            <tr align="center">
+                                <td colspan="2" rowspan="1">
+                                    <h2 style="text-align: left;">
+                                        <a name="digitize"></a>Digitalisierung&nbsp;
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           alt="" src="../pics/top.gif"></a>
+                                    </h2>
+                                    <p align="left">Das deegree iGeoPortal bietet, neben den g&auml;ngigen Funktionen 
+                                    zur Navigation auf einer Karte, ein Modul zum Digitalisieren und &uuml;bertragen 
+                                    eigener Daten mittels WFS-Transaktion. Um das Digitalisierungs-Modul nutzen zu 
+                                    k&ouml;nnen, muss, neben einigen Anpassungen im Digitalisierungs-Modul selbst, ein 
+                                    WFS und WMS f&uuml;r die digitalisierten Features konfiguriert werden. Weitere 
+                                    Details dazu sind in der Dokumentation zu finden.</p>
+                                </td>
+                            </tr>
+                            <!-- ############### MAP EDITOR ############### -->
+                            <!-- 
+                            <tr align="center">
+                                <td colspan="2" rowspan="1">
+                                    <h2 style="text-align: left;">
+                                        <a name="digitize"></a>Digitalisierung&nbsp;
+                                        <a href="#TOP"><img	style="border: 0px solid; width: 16px; height: 16px;" 
+                                           alt="" src="../pics/top.gif"></a>
+                                    </h2>
+                                    <div style="text-align: left;"><br>
+                                        Das deegree iGeoPortal bietet &nbsp;neben den g&auml;ngigen Funktionen zur 
+                                        Navigation auf einer Karte ein Modul, um neue Geometrien zu erfassen oder 
+                                        bestehende Geometrien zu ver&auml;ndern. Die Oberfl&auml;che des Moduls bietet 
+                                        neben Funktionen zum Arbeiten mit der Maus auch	die M&ouml;glichkeit Geometrien 
+                                        &uuml;ber Textfelder zu erfassen oder zu ver&auml;ndern.<br><br>
+                                        <table style="text-align: left; height: 530px;" border="0" cellpadding="2" 
+                                               cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="width: 260px;">
+                                                        <img style="width: 252px; height: 518px;" alt="" 
+                                                             src="../pics/mapeditorgui.gif">
+                                                    </td>
+                                                    <td style="vertical-align: top;">
+                                                        Je nach gew&auml;hltem Digitalisiermodus (Punkt, Polygon, 
+                                                        Box/Rechteck) werden unter der Button-Leiste Textfelder 
+                                                        eingeblendet &uuml;ber die eine	Geometrie durch direkte Eingabe 
+                                                        von Koordinaten erfasst &nbsp;bzw. ge&auml;ndert werden kann. 
+                                                        Die Textfelder f&uuml;r	Punkte und Boxen/Rechtecke erfordern 
+                                                        die Eingabe von	7-stelligen Koordinaten. Polygone werden 
+                                                        &uuml;ber eine durch Kommata getrennte Koordinatenliste 
+                                                        dargestellt:<br>
+                                                        <img style="width: 244px; height: 207px;" alt="" 
+                                                             src="../pics/polygonfield.gif"><br>
+                                                        Im Polygon-Modus werden zus&auml;tzlich zu einem Textfeld zur 
+                                                        Eingabe der Polygonkoordinaten zwei Textfelder zur 
+                                                        Anzeige/Eingabe des Polygon-Mittelpunkts angezeigt:<br>
+                                                        <img style="width: 215px; height: 97px;" alt=""	
+                                                             src="../pics/polygoncenter.gif">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <br>
+                                        Im Unteren Bereich &nbsp;befindet sich eine drop-down Liste zur Auswahl des 
+                                        Koordinatensystems bei Eingabe von Koordinaten &uuml;ber die Textfelder, drei 
+                                        Radio-Buttons zur Auswahl des Digitalisier-Modus sowie zwei Buttons. Der erste 
+                                        Button (Vorschau) dient zur visuellen Kontrolle der &uuml;ber die Textfelder 
+                                        eingegebenen Koordinaten. Dies ist insbesondere dann sinnvoll, wenn	das	
+                                        Referenzsystem der Koordinaten nicht bekannt ist. Durch einen Klick auf den 
+                                        Button 'Speichern' wird die augenblick sichtbare Geometrie in der Datenbank 
+                                        gespeichert und dabei mit dem aktuellen	Datum versehen. Handelt es sich bei der 
+                                        Geometrie um ein Polygon, f&uuml;r kein Mittelpunkt angegeben ist, wird dieser 
+                                        automatisch	berechnet.<br>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/drawpoint.gif" style="width: 25px; height: 25px;" alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="drawPoint"></a>Punkt zeichnen</h3>
+                                    Nach aktivieren dieser Funktion wird eine neue Punkt-Geometrie durch Mausklick in 
+                                    die Karte erzeugt.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/drawpolygon.gif" style="width: 25px; height: 25px;" alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="drawPolygon"></a>Polygon zeichnen</h3>
+                                    Nach aktivieren dieser Funktion kann in der Karte ein neues Polygon erfasst werden. 
+                                    St&uuml;tzpunkte eines Polygons werden durch Klick mit der linken Maustaste 
+                                    erzeugt. Die Erfassung wird	durch einen Doppelklick mit der linken Maustaste 
+                                    beendet; dabei wird das Polygon automatisch geschlossen.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/movevertex.gif" style="width: 25px; height: 25px;" alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="moveVertex"></a>St&uuml;tzpunkte verschieben</h3>
+                                    St&uuml;tzpunkte eines erfassten bzw. geladenen Polygons k&ouml;nnen &uuml;ber 
+                                    diese Funktion verschoben werden. Hierzu klicken Sie mit der linken Maustaste auf 
+                                    einen St&uuml;tzpunkt und verschieben diesen bei gedr&uuml;ckt gehaltener 
+                                    Maustaste. Der verschobene St&uuml;tzpunkt wird dort neu positioniert, wo Sie die 
+                                    Maustaste loslassen. Diese Funktion steht nur f&uuml;r Polygone zur	Verf&uuml;gung.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/insertvertex.gif" style="width: 25px; height: 25px;"	alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="insertVertex"></a>St&uuml;tzpunke hinzuf&uuml;gen</h3>
+                                    Sie k&ouml;nnen einem bereits erfassten Polygon weiter St&uuml;tzpunkte 
+                                    hinzuf&uuml;gen indem Sie nach Auswahl dieser Funktion mit der linken Maustaste in 
+                                    die N&auml;he einer Kante des Polygons klicken. Der neue St&uuml;tzpunkt wird an 
+                                    der Stelle positioniert an der Sie die Maustaste loslassen Diese Funktion steht nur 
+                                    f&uuml;r Polygone zur Verf&uuml;gung.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/deletevertex.gif" style="width: 25px; height: 25px;" alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="deleteVertex"></a>St&uuml;tzpunkte l&ouml;schen</h3>
+                                    Aus Polygonen k&ouml;nnen St&uuml;tzpunkte entfernt werden, indem nach Aktivieren 
+                                    der Funktion mit der Maus auf&nbsp;den zu l&ouml;schenden Punkt geklickt wird.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/deletegeom.gif" style="width: 25px; height: 25px;" alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="deleteGeometry"></a>Geometrie L&ouml;schen</h3>
+                                    Durch einen Klick auf diesen Button wird die aktuell editierte Geometrie in der 
+                                    Darstellung gel&ouml;scht. Das heisst, sie bleibt in der Datenbank erhalten. Ein 
+                                    L&ouml;schen hier ist nicht	vorgesehen! 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; vertical-align: top;">
+                                    <img src="../pics/polygon_centroid.gif" style="width: 25px; height: 25px;" alt="">
+                                </td>
+                                <td>
+                                    <h3><a name="setPolygonCenter"></a>Polygonmittelpunkt setzen</h3>
+						      		Ist die augenblicklich editierte Geometrie ein Polygon, k&ouml;nnen Sie nach 
+                                    Aktivieren dieser Funktion den Mittelpunkt des Polygons	manuell setzen. Dies kann 
+                                    dann sinnvoll sein, wenn sich der automatisch bestimmte Mittelpunkt 
+                                    (Centroid/Schwerpunkt) aufgrund	der Polygonform ausserhalb desselben befindet.
+                                </td>
+                            </tr>
+                            -->
+                        </table> 
+                    </td>
+                </tr> 
+            </tbody> 
+        </table>
+    </body>
+</html>

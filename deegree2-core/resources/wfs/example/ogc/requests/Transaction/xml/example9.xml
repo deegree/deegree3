@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 75-78 -->
+<wfs:Transaction version="1.1.0" service="WFS" handle="Transaction 01" xmlns="http://www.someserver.com/myns" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.someserver.com/myns http://www.someserver.com/wfs/cwwfs.cgi?request=DESCRIBEFEATURETYPE&amp;typename=ELEVP_1M,RoadL_1M,BuiltUpA_1Mhttp://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">
+  <!-- Create a new instance of feature type ELEVP_1M -->
+  <wfs:Insert handle="Statement 1">
+    <ElevP_1M>
+      <id>167928</id>
+      <f_code>CA</f_code>
+      <acc>2</acc>
+      <ela>1</ela>
+      <ZV2>152</ZV2>
+      <tileId>250</tileId>
+      <end_id>111</end_id>
+      <location>
+        <gml:Point gid="e33" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:pos>-98.5485 24.2633</gml:pos>
+        </gml:Point>
+      </location>
+    </ElevP_1M>
+  </wfs:Insert>
+  <!-- Create a new instance of feature type RoadL_1M
+       which has complex properties segment and roadType. -->
+  <wfs:Insert handle="ComplexInsert">
+    <RoadL_1M>
+      <name>Highway 401</name>
+      <segment>
+        <designation>SEG_A41</designation>
+        <geometry>
+          <gml:LineString gid="e3" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+            <gml:posList>...</gml:posList>
+          </gml:LineString>
+        </geometry>
+      </segment>
+      <roadType>
+        <surfaceType>Asphalt</surfaceType>
+        <nLanes>12</nLanes>
+        <grade>15</grade>
+      </roadType>
+    </RoadL_1M>
+  </wfs:Insert>
+  <!-- Update the designation of a particular range of segments
+       which are now being collapsed into a single segment.
+       The filter uses an XPath expression to reference the
+       designation property -->
+  <wfs:Update typeName="RoadL_1M">
+    <wfs:Property>
+      <wfs:Name>RoadL_1M/segment/designation</wfs:Name>
+      <wfs:Value>SEG_A60</wfs:Value>
+    </wfs:Property>
+    <ogc:Filter>
+      <ogc:PropertyIsBetween>
+        <ogc:PropertyName>RoadL_1M/segment/designation</ogc:PropertyName>
+        <ogc:LowerBoundary>
+          <ogc:Literal>SEG_A60</ogc:Literal>
+        </ogc:LowerBoundary>
+        <ogc:UpperBoundary>
+          <ogc:Literal>SEG_A69</ogc:Literal>
+        </ogc:UpperBoundary>
+      </ogc:PropertyIsBetween>
+    </ogc:Filter>
+  </wfs:Update>
+  <!-- Create 2 feature instances of feature type BuiltUpA_1M -->
+  <wfs:Insert handle="Statement 2">
+    <BuiltUpA_1M>
+      <placeId>4070</placeId>
+      <name>Toronto</name>
+      <population>4000000</population>
+      <bndry>
+        <gml:Polygon gid="g3" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-95.7 38.1 -97.8 -38.2 ...</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </bndry>
+    </BuiltUpA_1M>
+    <BuiltUpA_1M>
+      <placeId>1725</placeId>
+      <name>Montreal</name>
+      <population>2000000</population>
+      <bndry>
+        <gml:Polygon gid="e4" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-89.8 44.3 -89.9 44.4 ...</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </bndry>
+    </BuiltUpA_1M>
+  </wfs:Insert>
+  <!-- Update the name property of the feature instance BuiltUpA_1M.1210 -->
+  <wfs:Update typeName="BuiltUpA_1M">
+    <wfs:Property>
+      <wfs:Name>name</wfs:Name>
+      <wfs:Value>SMALLVILLE</wfs:Value>
+    </wfs:Property>
+    <ogc:Filter>
+      <ogc:GmlObjectId gml:id="BuiltUpA_1M.1210"/>
+    </ogc:Filter>
+  </wfs:Update>
+  <!-- Update the geometry of the feature BuiltUpA_1M.1725. -->
+  <wfs:Update typeName="BuiltUpA_1M">
+    <wfs:Property>
+      <wfs:Name>bndry</wfs:Name>
+      <wfs:Value>
+        <gml:Polygon gid="g5" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-89.8 44.3 -89.9 44.4 ...</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </wfs:Value>
+    </wfs:Property>
+    <ogc:Filter>
+      <ogc:GmlObjectId gml:id="BuiltUpA_1M.1725"/>
+    </ogc:Filter>
+  </wfs:Update>
+  <!-- Delete the feature instance BuiltUpA_1M.1013. -->
+  <wfs:Delete typeName="BuiltUpA_1M">
+    <ogc:Filter>
+      <ogc:GmlObjectId gml:id="BuiltUpA_1M.1013"/>
+    </ogc:Filter>
+  </wfs:Delete>
+  <!-- Delete all instances of the feature type
+       BuiltUpA_1M where:
+       1. the geometry is INSIDE a polygonal window
+       2. where the POPULATION is between 100 and 2000 -->
+  <wfs:Delete typeName="BuiltUpA_1M">
+    <ogc:Filter>
+      <ogc:And>
+        <ogc:Within>
+          <ogc:PropertyName>BuiltUpA_1M/bndry</ogc:PropertyName>
+          <gml:Polygon gid="WINDOW" srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>0,0 0,5 5,5 5,0 ...</gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ogc:Within>
+        <ogc:And>
+          <ogc:PropertyIsGreaterThanOrEqualTo>
+            <ogc:PropertyName>BuiltUpA_1M/population</ogc:PropertyName>
+            <ogc:Literal>100</ogc:Literal>
+          </ogc:PropertyIsGreaterThanOrEqualTo>
+          <ogc:PropertyIsLessThanOrEqualTo>
+            <ogc:PropertyName>BuiltUpA_1M/population</ogc:PropertyName>
+            <ogc:Literal>2000</ogc:Literal>
+          </ogc:PropertyIsLessThanOrEqualTo>
+        </ogc:And>
+      </ogc:And>
+    </ogc:Filter>
+  </wfs:Delete>
+</wfs:Transaction>

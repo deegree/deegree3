@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scs:GetObservation version="0.8.0" service="SCS" outputFormat="SWEObservation" xmlns:scs="http://www.opengis.net/scs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc">
+	<!-- optional parameter that allows a client to request observations from a
+specific platform or sensor -->
+	<scs:platformID>Platform1</scs:platformID>
+	<scs:sensorID>Sensor2</scs:sensorID>
+	<!-- is a required parameter that allows a client to request observations from
+a specific geographic area of interest -->
+	<scs:BoundingBox srsName="EPSG:4326">
+		<gml:coord>
+			<gml:X>0</gml:X>
+			<gml:Y>0</gml:Y>
+		</gml:coord>
+		<gml:coord>
+			<gml:X>5</gml:X>
+			<gml:Y>5</gml:Y>
+		</gml:coord>
+	</scs:BoundingBox>
+	<!--is an optional parameter that allows a client to
+request observations from a specific instant, multiple instances or periods of time in the past, present and future -->
+	<scs:time>
+		<gml:TPeriod>
+			<gml:begin>
+				<gml:TInstant>
+					<gml:tPosition>19.01.2005 14:00:00</gml:tPosition>
+				</gml:TInstant>
+			</gml:begin>
+			<gml:end>
+				<gml:TInstant>
+					<gml:tPosition>19.01.2005 15:00:00</gml:tPosition>
+				</gml:TInstant>
+			</gml:end>
+		</gml:TPeriod>
+	</scs:time>
+	<scs:time>
+		<gml:TInstant>
+			<gml:tPosition>19.01.2005 17:00:00</gml:tPosition>
+		</gml:TInstant>
+	</scs:time>
+	<!-- is an optional parameter that allows a client to query on specific properties
+(i.e., observables) that are measured by sensors published by the SCS -->
+	<scs:Query typeName="Windspeed Observation 30min">
+		<ogc:Filter>
+			<ogc:PropertyIsLike wildCard="*" singleChar="#" escape="!">
+				<ogc:PropertyName>windspeed</ogc:PropertyName>
+				<ogc:Literal>16</ogc:Literal>
+			</ogc:PropertyIsLike>
+		</ogc:Filter>
+	</scs:Query>
+</scs:GetObservation>

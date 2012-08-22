@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================== Includes ================================== -->
+    <xs:include schemaLocation="./citation.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="MD_ExtendedElementInformation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="name" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="shortName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="definition" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="obligation" type="smXML:MD_ObligationCode_PropertyType" minOccurs="0"/>
+                    <xs:element name="condition" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="dataType" type="smXML:MD_DatatypeCode_PropertyType"/>
+                    <xs:element name="maximumOccurrence" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="domainValue" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="parentEntity" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="rule" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="rationale" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="source" type="smXML:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="domainCode" type="smXML:nonNegativeInteger_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_ExtendedElementInformation" type="smXML:MD_ExtendedElementInformation_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   if "dataType" = 'codelistElement' then "domainCode" is mandatory
+   ***   if "dataType" notEqual 'codelistElement' then "shortName" is mandatory
+   ***   if "dataType" notEqual 'codelist', 'enumeration' or 'codelistElement' then "obligation", "maximumOccurence" and "domainValue"  are mandatory
+   ***   if "obligation" = 'conditional' then "condition" is mandatory
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_ExtendedElementInformation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_ExtendedElementInformation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_MetadataExtensionInformation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="extensionOnLineResource" type="smXML:CI_OnlineResource_PropertyType" minOccurs="0"/>
+                    <xs:element name="extendedElementInformation" type="smXML:MD_ExtendedElementInformation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_MetadataExtensionInformation" type="smXML:MD_MetadataExtensionInformation_Type"/>
+    <xs:complexType name="MD_MetadataExtensionInformation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_MetadataExtensionInformation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_ObligationCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_ObligationCode" type="smXML:MD_ObligationCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_ObligationCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_ObligationCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_DatatypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_DatatypeCode" type="smXML:MD_DatatypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_DatatypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_DatatypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

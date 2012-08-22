@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
+	<csw:Insert>
+		<MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink">
+			<fileIdentifier>
+				<gco:CharacterString>{E3B4E9FC-F6A6-4763-9628-4D4880EC3B83}</gco:CharacterString>
+			</fileIdentifier>
+			<language>
+				<gco:CharacterString>en</gco:CharacterString>
+			</language>
+			<characterSet>
+				<MD_CharacterSetCode codeList="MD_CharacterSetCode" codeListValue="utf8"/>
+			</characterSet>
+			<hierarchyLevel>
+				<MD_ScopeCode codeList="MD_ScopeCode" codeListValue="dataset"/>
+			</hierarchyLevel>
+			<hierarchyLevelName>
+				<gco:CharacterString>dataset</gco:CharacterString>
+			</hierarchyLevelName>
+			<contact>
+				<CI_ResponsibleParty>
+					<positionName>
+						<gco:CharacterString>SGID Administrator</gco:CharacterString>
+					</positionName>
+					<contactInfo>
+						<CI_Contact>
+							<phone>
+								<CI_Telephone>
+									<voice>
+										<gco:CharacterString>(801) 537-9201</gco:CharacterString>
+									</voice>
+									<facsimile>
+										<gco:CharacterString>(801) 538-3317</gco:CharacterString>
+									</facsimile>
+								</CI_Telephone>
+							</phone>
+							<address>
+								<CI_Address>
+									<deliveryPoint>
+										<gco:CharacterString>5130 State Office Building</gco:CharacterString>
+									</deliveryPoint>
+									<city>
+										<gco:CharacterString>Salt Lake City</gco:CharacterString>
+									</city>
+									<administrativeArea>
+										<gco:CharacterString>UT</gco:CharacterString>
+									</administrativeArea>
+									<postalCode>
+										<gco:CharacterString>84114</gco:CharacterString>
+									</postalCode>
+									<country>
+										<gco:CharacterString>USA</gco:CharacterString>
+									</country>
+									<electronicMailAddress>
+										<gco:CharacterString>cclark@utah.gov</gco:CharacterString>
+									</electronicMailAddress>
+								</CI_Address>
+							</address>
+						</CI_Contact>
+					</contactInfo>
+					<role>
+						<CI_RoleCode codeList="MD_ScopeCode" codeListValue="pointOfContact"/>
+					</role>
+				</CI_ResponsibleParty>
+			</contact>
+			<dateStamp>
+				<gco:DateTime>2003-01-01T00:00:00</gco:DateTime>
+			</dateStamp>
+			<metadataStandardName>
+				<gco:CharacterString>ISO 19115 Geographic Information Metadata</gco:CharacterString>
+			</metadataStandardName>
+			<metadataStandardVersion>
+				<gco:CharacterString>DIS</gco:CharacterString>
+			</metadataStandardVersion>
+			<spatialRepresentationInfo>
+				<MD_VectorSpatialRepresentation>
+					<topologyLevel>
+						<MD_TopologyLevelCode codeList="MD_TopologyLevelCode" codeListValue="geometryOnly"/>
+					</topologyLevel>
+					<geometricObjects>
+						<MD_GeometricObjects>
+							<geometricObjectType>
+								<MD_GeometricObjectTypeCode codeList="MD_GeometricObjectTypeCode" codeListValue="surface"/>
+							</geometricObjectType>
+						</MD_GeometricObjects>
+					</geometricObjects>
+				</MD_VectorSpatialRepresentation>
+			</spatialRepresentationInfo>
+			<referenceSystemInfo>
+				<MD_ReferenceSystem>
+					<referenceSystemIdentifier>
+						<RS_Identifier>
+							<code>
+								<gco:CharacterString>NAD_1983_UTM_Zone_12N</gco:CharacterString>
+							</code>
+						</RS_Identifier>
+					</referenceSystemIdentifier>
+				</MD_ReferenceSystem>
+			</referenceSystemInfo>
+			<referenceSystemInfo>
+				<MD_ReferenceSystem>
+					<referenceSystemIdentifier>
+						<RS_Identifier>
+							<code>
+								<gco:CharacterString>GCS_North_American_1983</gco:CharacterString>
+							</code>
+						</RS_Identifier>
+					</referenceSystemIdentifier>
+				</MD_ReferenceSystem>
+			</referenceSystemInfo>
+			<identificationInfo>
+				<MD_DataIdentification>
+					<citation>
+						<CI_Citation>
+							<title>
+								<gco:CharacterString>Lakes in Utah</gco:CharacterString>
+							</title>
+							<date>
+								<CI_Date>
+									<date>
+										<gco:DateTime>2001-01-01T00:00:00</gco:DateTime>
+									</date>
+									<dateType>
+										<CI_DateTypeCode codeList="CI_DateTypeCode" codeListValue="publication"/>
+									</dateType>
+								</CI_Date>
+							</date>
+							<identifier>
+                                <MD_Identifier>
+                                    <code>
+                                        <gco:CharacterString>{E3B4E9FC-F6A6-4763-9628-4D4880EC3B83}</gco:CharacterString>
+                                    </code>
+                                </MD_Identifier>
+                            </identifier>
+							<series>
+								<CI_Series>
+									<name>
+										<gco:CharacterString>State of Utah SGID</gco:CharacterString>
+									</name>
+									<issueIdentification>
+										<gco:CharacterString>None</gco:CharacterString>
+									</issueIdentification>
+								</CI_Series>
+							</series>
+							<!-- not mapped
+							<otherCitationDetails>
+								<gco:CharacterString>Digital data at 1:100,000</gco:CharacterString>
+							</otherCitationDetails>
+							-->
+						</CI_Citation>
+					</citation>
+					<abstract>
+						<gco:CharacterString>This data set represents water bodies in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</gco:CharacterString>
+					</abstract>
+					<purpose>
+						<gco:CharacterString>To show the water bodies in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</gco:CharacterString>
+					</purpose>
+					<status>
+						<MD_ProgressCode codeList="MD_ProgressCode" codeListValue="completed"/>
+					</status>
+					<pointOfContact>
+						<CI_ResponsibleParty>
+							<individualName>
+								<gco:CharacterString>Cindy Clark</gco:CharacterString>
+							</individualName>
+							<organisationName>
+								<gco:CharacterString>Automated Geographic Reference Center</gco:CharacterString>
+							</organisationName>
+							<positionName>
+								<gco:CharacterString>SGID Administrator</gco:CharacterString>
+							</positionName>
+							<contactInfo>
+								<CI_Contact>
+									<phone>
+										<CI_Telephone>
+											<voice>
+												<gco:CharacterString>(801) 537-9201</gco:CharacterString>
+											</voice>
+											<facsimile>
+												<gco:CharacterString>(801) 538-3317</gco:CharacterString>
+											</facsimile>
+										</CI_Telephone>
+									</phone>
+									<address>
+										<CI_Address>
+											<deliveryPoint>
+												<gco:CharacterString>5130 State Office Building</gco:CharacterString>
+											</deliveryPoint>
+											<city>
+												<gco:CharacterString>Salt Lake City</gco:CharacterString>
+											</city>
+											<administrativeArea>
+												<gco:CharacterString>UT</gco:CharacterString>
+											</administrativeArea>
+											<postalCode>
+												<gco:CharacterString>84114</gco:CharacterString>
+											</postalCode>
+											<country>
+												<gco:CharacterString>USA</gco:CharacterString>
+											</country>
+											<electronicMailAddress>
+												<gco:CharacterString>cclark@utah.gov</gco:CharacterString>
+											</electronicMailAddress>
+										</CI_Address>
+									</address>
+								</CI_Contact>
+							</contactInfo>
+							<role>
+								<CI_RoleCode codeList="MD_ScopeCode" codeListValue="pointOfContact"/>
+							</role>
+						</CI_ResponsibleParty>
+					</pointOfContact>
+					<!-- not mapped
+					<resourceFormat>
+						<MD_Format>
+							<name>
+								<gco:CharacterString>SDE Feature Class</gco:CharacterString>
+							</name>
+							<version>
+								<gco:CharacterString>1.0.0</gco:CharacterString>
+							</version>
+						</MD_Format>
+					</resourceFormat>
+					-->
+					<descriptiveKeywords>
+						<MD_Keywords>
+							<keyword>
+								<gco:CharacterString>Hydrography</gco:CharacterString>
+							</keyword>
+							<keyword>
+								<gco:CharacterString>Water Bodies</gco:CharacterString>
+							</keyword>
+							<keyword>
+								<gco:CharacterString>boundaries</gco:CharacterString>
+							</keyword>
+							<keyword>
+								<gco:CharacterString>environment</gco:CharacterString>
+							</keyword>
+							<keyword>
+								<gco:CharacterString>inlandWaters</gco:CharacterString>
+							</keyword>
+							<keyword>
+								<gco:CharacterString>Inland Waters</gco:CharacterString>
+							</keyword>
+							<keyword>
+								<gco:CharacterString>farming</gco:CharacterString>
+							</keyword>
+							<type>
+								<MD_KeywordTypeCode codeList="MD_KeywordTypeCode" codeListValue="theme"/>
+							</type>
+							<thesaurusName>
+								<CI_Citation>
+									<title>
+										<gco:CharacterString>None</gco:CharacterString>
+									</title>
+									<date>
+										<CI_Date>
+											<date>
+												<gco:Date>2003-01-01</gco:Date>
+											</date>
+											<dateType>
+												<CI_DateTypeCode codeList="CI_DateTypeCode" codeListValue="creation"/>
+											</dateType>
+										</CI_Date>
+									</date>
+								</CI_Citation>
+							</thesaurusName>
+						</MD_Keywords>
+					</descriptiveKeywords>
+					<descriptiveKeywords>
+						<MD_Keywords>
+							<keyword>
+								<gco:CharacterString>Utah</gco:CharacterString>
+							</keyword>
+							<type>
+								<MD_KeywordTypeCode codeList="MD_KeywordTypeCode" codeListValue="place"/>
+							</type>
+						</MD_Keywords>
+					</descriptiveKeywords>
+					<resourceConstraints>
+						<MD_LegalConstraints>
+							<useLimitation>
+								<gco:CharacterString>For use at 1:100,000. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source.  Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source.  If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map.  RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</gco:CharacterString>
+							</useLimitation>
+							<otherConstraints>
+								<gco:CharacterString>None</gco:CharacterString>
+							</otherConstraints>
+						</MD_LegalConstraints>
+					</resourceConstraints>
+					<language>
+						<gco:CharacterString>en</gco:CharacterString>
+					</language>
+					<topicCategory>
+						<MD_TopicCategoryCode>geoscientificInformation</MD_TopicCategoryCode>
+					</topicCategory>
+					<!-- not mapped
+					<environmentDescription>
+						<gco:CharacterString>Microsoft Windows 2000 Version 5.1 (Build 2600) ; ESRI ArcCatalog 8.2.0.700</gco:CharacterString>
+					</environmentDescription>
+					-->
+					<extent>
+						<EX_Extent>
+							<geographicElement>
+								<EX_GeographicBoundingBox>
+									<westBoundLongitude>
+										<gco:Decimal>-114.1</gco:Decimal>
+									</westBoundLongitude>
+									<eastBoundLongitude>
+										<gco:Decimal>-109.21</gco:Decimal>
+									</eastBoundLongitude>
+									<southBoundLatitude>
+										<gco:Decimal>36.98</gco:Decimal>
+									</southBoundLatitude>
+									<northBoundLatitude>
+										<gco:Decimal>42.01</gco:Decimal>
+									</northBoundLatitude>
+								</EX_GeographicBoundingBox>
+							</geographicElement>
+						</EX_Extent>
+					</extent>
+					<supplementalInformation>
+						<gco:CharacterString>The data set was converted from the USGS Digital Line Graph files to ARC/INFO format by the AGRC.</gco:CharacterString>
+					</supplementalInformation>
+				</MD_DataIdentification>
+			</identificationInfo>
+			<dataQualityInfo>
+				<DQ_DataQuality>
+					<scope>
+						<DQ_Scope>
+							<level>
+								<MD_ScopeCode codeList="MD_ScopeCode" codeListValue="dataset"/>
+							</level>
+						</DQ_Scope>
+					</scope>
+					<report>
+						<DQ_CompletenessCommission>
+							<nameOfMeasure>
+								<gco:CharacterString>%</gco:CharacterString>
+							</nameOfMeasure>
+							<result>
+								<DQ_QuantitativeResult>
+								<!-- not mapped
+									<valueUnit uuidref="uom"/> -->
+									<value>
+										<gco:Record>ein wert</gco:Record>
+									</value>
+								</DQ_QuantitativeResult>
+							</result>
+						</DQ_CompletenessCommission>
+					</report>
+					<lineage>
+						<LI_Lineage>
+							<processStep>
+								<LI_ProcessStep>
+									<description>
+										<gco:CharacterString>Metadata imported.</gco:CharacterString>
+									</description>
+								</LI_ProcessStep>
+							</processStep>
+							<processStep>
+								<LI_ProcessStep>
+									<description>
+										<gco:CharacterString>Dataset copied.</gco:CharacterString>
+									</description>
+								</LI_ProcessStep>
+							</processStep>
+							<source>
+								<LI_Source>
+									<description>
+										<gco:CharacterString> |  |  | </gco:CharacterString>
+									</description>
+									<scaleDenominator>
+										<MD_RepresentativeFraction>
+											<denominator>
+												<gco:Integer>100000</gco:Integer>
+											</denominator>
+										</MD_RepresentativeFraction>
+									</scaleDenominator>
+								</LI_Source>
+							</source>
+						</LI_Lineage>
+					</lineage>
+				</DQ_DataQuality>
+			</dataQualityInfo>
+			<metadataConstraints>
+				<MD_LegalConstraints>
+					<otherConstraints>
+						<gco:CharacterString>accessConstraint: None; useConstraint: None</gco:CharacterString>
+					</otherConstraints>
+				</MD_LegalConstraints>
+			</metadataConstraints>
+			<!-- not mapped
+			<metadataMaintenance>
+				<MD_MaintenanceInformation>
+					<maintenanceAndUpdateFrequency>
+						<MD_MaintenanceFrequencyCode codeList="MD_MaintenanceFrequencyCode" codeListValue="asNeeded"/>
+					</maintenanceAndUpdateFrequency>
+				</MD_MaintenanceInformation>
+			</metadataMaintenance>
+			-->
+		</MD_Metadata>
+	</csw:Insert>
+</csw:Transaction>

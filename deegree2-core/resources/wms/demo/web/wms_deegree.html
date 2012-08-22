@@ -1,0 +1,197 @@
+<!-- HeadURL -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree mapService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" width="100%">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="3">
+                    <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td width="30%"><strong><em>Special Features of deegree WMS</em></strong></td>
+                <td>
+                    <ul>
+                        <li><a href="#sf_osm">OpenStreetMap slippy maps</a></li>
+                        <li><a href="#sf_charts">deegree Charts</a></li>
+                        <li><a href="#sf_time">Time Parameter</a></li>
+                        <li><a href="#sf_vsp">Vendor Specific Parameters</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2" width="100%">
+            <tr valign="top">
+                <th>Request / Description</th>
+                <th>Result</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="sf_osm"></a>
+                    <b>OpenStreetMap slippy map</b><br>
+                    <p>OpenStreetMap data can easily be accessed with a deegree WMS.</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><!-- a href="./services?VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&BBOX=359943.13,5608417.22,374133.34,5629556.28&WIDTH=500&HEIGHT=500&BGCOLOR=0xFFFFFF&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=TRUE&LAYERS=OSMSlippyMapMN&SRS=EPSG:25832" -->WMS 1.1.1 GetMap with OpenStreetMap slippy map<!-- /a --><br />
+                <p><strong>Please note: OpenStreetMap slippy map layers are only available by activating them in the wms_configuration.xml. Please have a look into the readme file and the wms_configuration.xml.</strong><br /></p>
+                    <p><strong><em>Please note:</em></strong> OpenStreetMap data: &copy; <a href="http://wiki.openstreetmap.org/wiki/License" target="_blank">OSM contributors</a>, License: <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png"/></a>.</p>
+                </td>
+                <td>&nbsp;<!-- img src="./services?VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&BBOX=359943.13,5608417.22,374133.34,5629556.28&WIDTH=250&HEIGHT=250&BGCOLOR=0xFFFFFF&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=TRUE&LAYERS=OSMSlippyMapMN&SRS=EPSG:25832" border="0" --></td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="sf_charts"></a>
+                    <b>deegree Charts</b><br />
+                    <p>deegree WMS is able to use deegree Charts. With deegree Charts, data can be visualized in diagrams on the map.</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+             <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties,weatherstationPie&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=301998.22085477994,4212557.410972418,424816.9128746998,4335376.102992338&SRS=EPSG:26912&STYLES=">WMS 1.1.1 GetMap with deegree Charts</a><br />
+                    <p>GetMap request which uses deegree Charts.
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=250<br />
+                    HEIGHT=250<br />
+                    LAYERS=Counties,weatherstationPie<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=301998.22085477994,4212557.410972418,424816.9128746998,4335376.102992338<br />
+                    SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties,weatherstationPie&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=301998.22085477994,4212557.410972418,424816.9128746998,4335376.102992338&SRS=EPSG:26912&STYLES=" border="0"></td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="sf_time"></a>
+                    <b>Time Parameter</b><br />
+                    <p>With the Time Parameter, you can send requests for each point in time supported by the requested layer. In our example, the points of the layer WeatherTime change their colour by changing the date.</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+             <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties,WeatherTime&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=391906.70503368945,4483130.760810544,457946.65747126535,4549170.71324812&SRS=EPSG:26912&STYLES=default,default&TIME=2009-01-01">WMS 1.1.1 GetMap Time Parameter for 2009-01-01</a><br />
+                    <p> GetMap request which uses a <strong>Time</strong> Parameter.<br /><br />
+                    <strong>Request for 2009-01-01</strong><br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=460<br />
+                    HEIGHT=348<br />
+                    LAYERS=Counties,WeatherTime<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=216040.0644853472,4288835.113675533,609178.7323286751,4586253.06239179<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=default,default<br />
+                    <strong>TIME=2009-01-01T00:00:00Z</strong><br />
+                    </p>
+                </td>
+                <td>
+                    <img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties,WeatherTime&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=391906.70503368945,4483130.760810544,457946.65747126535,4549170.71324812&SRS=EPSG:26912&STYLES=default,default&TIME=2009-01-01T00:00:00Z" border="0">
+                </td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Counties,WeatherTime&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=391906.70503368945,4483130.760810544,457946.65747126535,4549170.71324812&SRS=EPSG:26912&STYLES=default,default&TIME=2009-01-04T00:00:00Z">WMS 1.1.1 GetMap Time Parameter for 2009-01-04</a><br />
+                    <p> GetMap request which uses a <strong>Time</strong> Parameter.
+                    <br /><br />
+                    <strong>Request for 2009-01-04</strong><br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=460<br />
+                    HEIGHT=348<br />
+                    LAYERS=Counties,WeatherTime<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=216040.0644853472,4288835.113675533,609178.7323286751,4586253.06239179<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=default,default<br />
+                    <strong>TIME=2009-01-04T00:00:00Z</strong>
+                    </p>
+                </td>
+                <td>
+                    <img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Counties,WeatherTime&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=391906.70503368945,4483130.760810544,457946.65747126535,4549170.71324812&SRS=EPSG:26912&STYLES=default,default&TIME=2009-01-04T00:00:00Z" border="0">
+                </td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="sf_vsp"></a>
+                    <b>Vendor specific parameters</b><br />
+                    <p>deegree WMS supports several vendor specific parameters. You find some example requests for vendor specific parameters below.</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><!-- <a href="./services?VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&BBOX=7.08257,50.72333,7.11402,50.74511&WIDTH=500&HEIGHT=500&BGCOLOR=0xFFFFFF&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=TRUE&STYLES=default:gastrobonn&LAYERS=gastrobonn&SRS=EPSG:4326&sqltemplates=select%20*%20from%20bonn_gastro%20where%20type%20=%20%27pub%27"> -->WMS 1.1.1 GetMap SQL Template<!-- </a> --><br />
+                    <p>
+                    <strong>Please note: This request needs an SQL database connection. Our example will work by enabling the OpenStreetMap layers and the needed database. Please have a look into the readme file and the advice in the wms_configuration.xml. You can find more information about the SQL template in the deegree WMS documentation in chapter 4.3 (support for additional and vendorspecific parameters)</strong><br /><br />
+                    GetMap request which uses <strong>SQL Templates</strong> to filter all pubs in Bonn from layer GastronomyBonn.
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    VERSION=1.1.1<br />
+                    REQUEST=GetMap<br />
+                    FORMAT=image/png<br />
+                    BBOX=7.08257,50.72333,7.11402,50.74511<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    BGCOLOR=0xFFFFFF<br />
+                    EXCEPTIONS=application/vnd.ogc.se_inimage<br />
+                    TRANSPARENT=TRUE<br />
+                    STYLES=default:gastrobonn<br />
+                    LAYERS=gastrobonn<br />
+                    SRS=EPSG:4326<br />
+                    <strong>SQLTEMPLATES=select%20*%20from%20wms_bonn_gastro%20where%20type%20=%20%27pub%27</strong>
+                    </p>
+                </td>
+                <td>&nbsp;<!-- <img src="./services?VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&BBOX=7.08257,50.72333,7.11402,50.74511&WIDTH=250&HEIGHT=250&BGCOLOR=0xFFFFFF&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=TRUE&STYLES=default:gastrobonn&LAYERS=gastrobonn&SRS=EPSG:4326&sqltemplates=select%20*%20from%20bonn_gastro%20where%20type%20=%20%27pub%27" border="0"> --></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Roads,target,position&STYLES=default,default,default&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=425857.48722366645,4511035.048362487,426739.98338053055,4511917.544519351&SRS=EPSG:26912&WKT1=POINT(425998.7 4511829.3)&WKT2=POINT(426217.5 4511278.6)">WMS 1.1.1 GetMap WKT</a><br />
+                    <p>
+                    GetMap request which uses <strong>WKT</strong> ...
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    LAYERS=Roads,target,position<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=425857.48722366645,4511035.048362487,426739.98338053055,4511917.544519351<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=default,default,default<br />
+                    <strong>WKT1=POINT(425998.7 4511829.3)<br />
+                    WKT2=POINT(426217.5 4511278.6)</strong>
+                    </p>
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=Roads,target,position&STYLES=default,default,default&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=425857.48722366645,4511035.048362487,426739.98338053055,4511917.544519351&SRS=EPSG:26912&WKT1=POINT(425998.7 4511829.3)&WKT2=POINT(426217.5 4511278.6)" border="0"></td>
+            </tr>
+        </table>
+    </body>
+</html>

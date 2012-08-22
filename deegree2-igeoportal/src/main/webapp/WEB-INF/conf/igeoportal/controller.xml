@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<controller>
+	<event name="GetWMSLayer" class="org.deegree.portal.standard.wms.control.GetWMSLayerListener" next="./modules/addservice/wmslayerselect.jsp"/>
+	<event name="mapClient:contextSwitch" class="org.deegree.portal.standard.context.control.ContextSwitchListener" next="container.jsp" alternativeNext="container.jsp"/>
+	<event name="mapClient:contextSave" class="org.deegree.portal.standard.context.control.ContextSaveListener" next="message.jsp" alternativeNext="container.jsp">
+        <!-- optional parameter. 
+             If ommitted, any character will be accepted. WARNING: this may lead to WMC files unreachable for loading. 
+             If set, and value is empty, then only [a-zA-Z_0-9] will be used as file name. 
+             If other characters shall be accepted as well, they need to be specified as value.
+             All characters not specified below (incl. a-zA-Z_0-9) will be replaced with an underscore ("_").  -->
+        <!-- 
+        <parameter>
+            <name>RESTRICT_CHARS</name>
+            <value>.-äöüßÄÖÜ</value>            
+        </parameter>
+        -->
+        <!-- optional parameter, defaults to false. 
+             If true, the stored context will have the file ending ".xml", even if the user did not specify this.
+             Setting this value to true is highly recommended, as otherwise the stored context may not be loadable again. -->
+        <parameter>
+            <name>ADD_XML_SUFFIX</name>
+            <value>true</value>
+        </parameter>
+    </event>
+	<event name="mapClient:listContexts" class="org.deegree.portal.standard.context.control.ContextLoadListener" next="./modules/wmc/loadcontext.jsp" alternativeNext="container.jsp"/>
+    <event name="mapClient:deleteContext" class="org.deegree.portal.standard.context.control.ContextDeleteListener" next="./modules/wmc/deletecontext_note.jsp" alternativeNext="deletecontext_note.jsp"/>
+	<event name="mapClient:fullScreen" class="org.deegree.portal.standard.context.control.FullScreenListener" next="container.jsp" alternativeNext="container.jsp"/>
+	<event name="mapClient:normalScreen" class="org.deegree.portal.standard.context.control.NormalScreenListener" next="container.jsp" alternativeNext="container.jsp"/>    	
+	<event name="mapView:print" class="org.deegree.portal.standard.wms.control.PrintListener" next="printview.jsp" alternativeNext="printview.jsp"/>
+	<event name="mapView:changeScale" class="org.deegree.portal.standard.wms.control.ScaleSwitcherListener" next="scaleswitcherproxy.jsp"/>
+    <event name="mapView:recenterToLayer" class="org.deegree.portal.standard.wms.control.RecenterToLayerListener" next="recentertolayerproxy.jsp"/>
+    
+    <event name="mapView:initDownload" class="org.deegree.portal.standard.context.control.InitDownloadListener" next="./modules/download/downloadlayerlist.jsp" alternativeNext="message.jsp">
+    	<!-- settings for security component. not needed, if download shall be used without user rights management. -->
+        <!-- 
+        <parameter>
+            <name>driver</name>
+            <value>org.postgresql.Driver</value>
+        </parameter>
+        <parameter>
+            <name>url</name>
+            <value>jdbc:postgresql://localhost:5432/ndsml_rop_sec</value>
+        </parameter>
+        <parameter>
+            <name>user</name>
+            <value>postgres</value>
+        </parameter>
+        <parameter>
+            <name>password</name>
+            <value></value>
+        </parameter>
+        -->
+        <!-- optional parameter to choose between different download formats. if ommitted, "SHP" will be used. 
+             Supported formats are: SHP, GML. multiple formats are separated with a colon (SHP,GML) -->
+       
+        <parameter>
+            <name>DOWNLOAD_FORMAT</name>
+            <value>SHP,GML</value>
+        </parameter>
+        
+    </event>
+    <event name="mapView:downloadFeatures" class="org.deegree.portal.standard.context.control.DownloadListener" next="message.jsp" alternativeNext="container.jsp">
+        <!-- DEFAULT_MAX_FEATURES is used as default value for WFS/DefaultMaxFeatures. This value is used, if a WFS does 
+             not provide this info in its capabilities. If not specified here, then the default value is 0. -->
+        <parameter>
+            <name>DEFAULT_MAX_FEATURES</name>
+            <value>10000</value>
+        </parameter>
+        <!-- If TEST_MAX_HITS is true, then a featuretype is not provided for download, when the number of requested 
+             features exceeds the number of features a WFS is able to provide. Default value is false. -->        
+        <parameter>
+            <name>TEST_MAX_HITS</name>
+            <value>false</value>
+        </parameter>
+    </event>
+    
+    <event name="mapView:pdfprint" class="org.deegree.portal.standard.wms.control.SimplePrintListener" next="modules/pdfprint/printresult.jsp" alternativeNext="modules/pdfprint/printresult.jsp">
+        <parameter>
+            <name>WIDTH</name>
+            <value>1499</value>
+        </parameter>
+        <parameter>
+            <name>HEIGHT</name>
+            <value>1499</value>
+        </parameter>
+        <parameter>
+            <name>LEGENDWIDTH</name>
+            <value>300</value>
+        </parameter>
+        <parameter>
+            <name>LEGENDHEIGHT</name>
+            <value>1000</value>
+        </parameter>
+        <parameter>
+            <name>TEMPDIR</name>
+            <value>print</value>
+        </parameter>
+      <!-- optional parameter; defaults to: "WEB-INF/igeoportal/print" -->
+        <parameter>
+            <name>TEMPLATE_DIR</name>
+            <value>WEB-INF/conf/igeoportal/printtemplates</value>
+        </parameter>
+        <!-- defines the spacing between the layertrees entries -->
+        <parameter>
+            <name>SPACING</name>
+            <value>10</value>
+        </parameter>
+         <parameter>
+            <name>ScaleBoundaries</name>
+            <value>100, 250, 500, 1000, 2500, 5000, 10000, 15000, 25000, 50000, 100000, 200000, 250000, 500000, 1000000, 2500000, 5000000, 10000000, 50000000</value>
+        </parameter>
+    </event>
+    <!-- event for dynamic legend generation. comment in, if needed -->    
+    <event name="mapClient:drawLegend" class="org.deegree.portal.standard.wms.control.DynLegendListener" next="./modules/legend/legend_dyn.jsp" alternativeNext="container.jsp">
+       <parameter>
+            <name>leftMargin</name>
+            <value>0</value>
+        </parameter>
+        <parameter>
+            <name>rightMargin</name>
+            <value>0</value>
+        </parameter>
+        <parameter>
+            <name>topMargin</name>
+            <value>10</value>
+        </parameter>
+        <parameter>
+            <name>bottomMargin</name>
+            <value>10</value>
+        </parameter>
+        <parameter>
+            <name>useLayerTitle</name>
+            <value>false</value>
+        </parameter>
+        <parameter>
+            <name>maxNNLegendSize</name>
+            <value>50</value>
+        </parameter>
+        <parameter>
+            <name>separator</name>
+            <value>images/legendSeparator.gif</value>
+        </parameter>
+        <parameter>
+            <name>missingImage</name>
+            <value>images/missingLegend.gif</value>
+        </parameter>
+        <parameter>
+            <!-- for iGeoSecurity only: list of servers which need to be accessed through an owsproxy to get a LegendGraphic -->
+            <name>users</name>
+            <!-- the value *must* be adjusted to your system -->
+            <value>http://localhost:8080/wms/services;default;default|http://localhost:8080/owsproxy/proxy;default;default</value>
+        </parameter>
+        
+    </event>
+    
+    <!-- event name="mapView:switchScaleBarValue" class="org.deegree.portal.standard.wms.control.ScaleBarSwitcherListener" next="scalebarswitcherproxy.jsp"/ -->
+    
+	<!-- Listeners for CSW Client Module -->
+    <event name="cswClient:initClient" class="org.deegree.portal.standard.csw.control.InitCSWModuleListener" next="modules/csw/csw_main.html" alternativeNext="modules/csw/csw_main.html"/>
+    <event name="cswClient:simpleSearch" class="org.deegree.portal.standard.csw.control.SimpleSearchListener" next="modules/csw/csw_search_result.jsp" alternativeNext="modules/csw/csw_search_result.jsp"/>
+    <event name="cswClient:detailedSearch" class="org.deegree.portal.standard.csw.control.DetailedSearchListener" next="modules/csw/csw_search_result.jsp" alternativeNext="modules/csw/csw_search_result.jsp"/>
+    <event name="cswClient:singleLayerSearch" class="org.deegree.portal.standard.csw.control.SingleLayerSearchListener" next="modules/csw/csw_item_overview.jsp" alternativeNext="modules/csw/csw_item_overview.jsp"/>
+    <event name="cswClient:turnPage" class="org.deegree.portal.standard.csw.control.TurnPageListener" next="modules/csw/csw_search_result.jsp" alternativeNext="modules/csw/csw_search_result.jsp"/>
+    <event name="cswClient:showMetadataOverview" class="org.deegree.portal.standard.csw.control.OverviewMetadataListener" next="modules/csw/csw_item_overview.jsp" alternativeNext="modules/csw/csw_item_overview.jsp"/>
+    <event name="cswClient:showMetadataDetails" class="org.deegree.portal.standard.csw.control.DetailedMetadataListener" next="modules/csw/csw_item_details.jsp" alternativeNext="modules/csw/csw_item_details.jsp"/>
+    <event name="cswClient:addToShoppingCart" class="org.deegree.portal.standard.csw.control.AddToShoppingCartListener" next="modules/csw/csw_info.jsp" alternativeNext="modules/csw/csw_info.jsp"/>
+    <event name="cswClient:shoppingCart" class="org.deegree.portal.standard.csw.control.ShoppingCartListener" next="modules/csw/csw_shopping_cart.jsp" alternativeNext="modules/csw/csw_shopping_cart.jsp"/>
+    <event name="cswClient:deleteFromShoppingCart" class="org.deegree.portal.standard.csw.control.DeleteFromShoppingCartListener" next="modules/csw/csw_shopping_cart.jsp" alternativeNext="modules/csw/csw_shopping_cart.jsp"/>
+    <event name="cswClient:displayMap" class="org.deegree.portal.standard.csw.control.DisplayMapListener" next="modules/csw/csw_close_window.jsp" alternativeNext="modules/csw/csw_close_window.jsp"/>
+    <event name="cswClient:childrenSearch" class="org.deegree.portal.standard.csw.control.SeriesChildrenSearchListener" next="modules/csw/csw_search_result.jsp" alternativeNext="modules/csw/csw_search_result.jsp"/>
+    
+    <!-- Listeners for Security -->
+    <event name="security:login" class="org.deegree.portal.standard.security.control.LoginListener" next="./modules/authentication/loginnotice.jsp" alternativeNext="message.jsp"/>
+    <event name="security:logout" class="org.deegree.portal.standard.security.control.LogoutListener" next="./modules/authentication/logoutnotice.jsp" alternativeNext="logoutnotice.jsp"/>
+    <event name="security:getSessionID" class="org.deegree.portal.standard.security.control.GetSessionIDListener" next="./modules/authentication/getSessionId.jsp" alternativeNext="message.jsp"/>
+    
+    <!-- Listeners for WFS-Gazetteer Client Module -->
+    <event name="wfs:gazetteer" class="org.deegree.portal.standard.wfs.control.WFSClientListener" next="modules/gazetteer/gaz_if.jsp" alternativeNext="modules/gazetteer/gaz_if.jsp"/>
+    <event name="wfs:take" class="org.deegree.portal.standard.wfs.control.WFSClientListener" next="modules/gazetteer/gaz_take.jsp" alternativeNext="modules/gazetteer/gaz_if.jsp"/>
+    
+    <!-- Listeners for Digitizer Module -->
+    <event name="dig:initClient" class="org.deegree.portal.standard.wfs.control.InitDigitizerModuleListener" next="modules/digitizer/geom_checker_proxy.jsp" alternativeNext="message.jsp"/>
+    <event name="dig:checkGeometry" class="org.deegree.portal.standard.wfs.control.GeometryValidator" next="modules/digitizer/geom_checker_proxy.jsp" alternativeNext="message.jsp"/>
+    <event name="dig:digitizeFeature" class="org.deegree.portal.standard.wfs.control.DigitizeListener" next="message.jsp" />
+</controller>

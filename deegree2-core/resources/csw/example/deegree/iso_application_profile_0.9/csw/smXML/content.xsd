@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================== Includes================== -->
+    <xs:include schemaLocation="./citation.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="MD_FeatureCatalogueDescription_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_MD_ContentInformation_Type">
+                <xs:sequence>
+                    <xs:element name="complianceCode" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                    <xs:element name="language" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="includedWithDataset" type="smXML:Boolean_PropertyType"/>
+                    <xs:element ref="smXML:_GenericName" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="featureCatalogueCitation" type="smXML:CI_Citation_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_FeatureCatalogueDescription" type="smXML:MD_FeatureCatalogueDescription_Type" substitutionGroup="smXML:_MD_ContentInformation"/>
+    <xs:complexType name="MD_FeatureCatalogueDescription_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_FeatureCatalogueDescription"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_CoverageDescription_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_MD_ContentInformation_Type">
+                <xs:sequence>
+                    <xs:element name="attributeDescription" type="smXML:RecordType_PropertyType"/>
+                    <xs:element name="contentType" type="smXML:MD_CoverageContentTypeCode_PropertyType"/>
+                    <xs:element name="dimension" type="smXML:MD_RangeDimension_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_CoverageDescription" type="smXML:MD_CoverageDescription_Type" substitutionGroup="smXML:_MD_ContentInformation"/>
+    <xs:complexType name="MD_CoverageDescription_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_CoverageDescription"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_ImageDescription_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:MD_CoverageDescription_Type">
+                <xs:sequence>
+                    <xs:element name="illuminationElevationAngle" type="smXML:Real_PropertyType" minOccurs="0"/>
+                    <xs:element name="imagingCondition" type="smXML:MD_ImagingConditionCode_PropertyType" minOccurs="0"/>
+                    <xs:element name="imageQualityCode" type="smXML:MD_Identifier_PropertyType" minOccurs="0"/>
+                    <xs:element name="processingLevelCode" type="smXML:MD_Identifier_PropertyType" minOccurs="0"/>
+                    <xs:element name="triangulationIndicator" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                    <xs:element name="radiometricCalibrationDataAvailability" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                    <xs:element name="cameraCalibrationInformationAvailability" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                    <xs:element name="filmDistortionInformationAvailability" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                    <xs:element name="lensDistortionInformationAvailability" type="smXML:Boolean_PropertyType" minOccurs="0"/>
+                    <xs:element name="illuminationAzimuthAngle" type="smXML:nonNegativeReal_PropertyType" minOccurs="0"/>
+                    <xs:element name="cloudCoverPercentage" type="smXML:nonNegativeReal_PropertyType" minOccurs="0"/>
+                    <xs:element name="compressionGenerationQuantity" type="smXML:nonNegativeInteger_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_ImageDescription" type="smXML:MD_ImageDescription_Type" substitutionGroup="smXML:MD_CoverageDescription"/>
+    <xs:complexType name="MD_ImageDescription_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_ImageDescription"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="_MD_ContentInformation_Type" abstract="true"/>
+    <xs:element name="_MD_ContentInformation" type="smXML:_MD_ContentInformation_Type" abstract="true"/>
+    <xs:complexType name="_MD_ContentInformation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_MD_ContentInformation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_RangeDimension_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="sequenceIdentifier" type="smXML:MemberName_PropertyType" minOccurs="0"/>
+                    <xs:element name="descriptor" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_RangeDimension" type="smXML:MD_RangeDimension_Type"/>
+    <xs:complexType name="MD_RangeDimension_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_RangeDimension"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Band_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:MD_RangeDimension_Type">
+                <xs:sequence>
+                    <xs:element name="units" type="smXML:UomLength_PropertyType" minOccurs="0"/>
+                    <xs:element name="scaleFactor" type="smXML:Real_PropertyType" minOccurs="0"/>
+                    <xs:element name="offset" type="smXML:Real_PropertyType" minOccurs="0"/>
+                    <xs:element name="maxValue" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="minValue" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="peakResponse" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="bitsPerValue" type="smXML:nonNegativeInteger_PropertyType" minOccurs="0"/>
+                    <xs:element name="toneGradation" type="smXML:nonNegativeInteger_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Band" type="smXML:MD_Band_Type" substitutionGroup="smXML:MD_RangeDimension">
+        <xs:annotation>
+            <xs:documentation>
+   ***   "units" is mandatory if "maxValue" or "minValue" are provided
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_Band_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Band"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_CoverageContentTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_CoverageContentTypeCode" type="smXML:MD_CoverageContentTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_CoverageContentTypeCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_CoverageContentTypeCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_ImagingConditionCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_ImagingConditionCode" type="smXML:MD_ImagingConditionCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_ImagingConditionCode_PropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:MD_ImagingConditionCode"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

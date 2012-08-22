@@ -1,0 +1,104 @@
+<ehcache>
+	<!-- Sets the path to the directory where cache .data files are created.
+
+         If the path is a Java System Property it is replaced by
+         its value in the running VM. Subdirectories can be specified below the property e.g. java.io.tmpdir/one
+
+         The following properties are translated:
+         user.home - User's home directory
+         user.dir - User's current working directory
+         java.io.tmpdir - Default temp file path -->
+	<diskStore path="java.io.tmpdir"/>
+	<!--
+        Specifies a CacheManagerEventListenerFactory  which will be used to create a CacheManagerPeerProvider, which
+        is notified when Caches are added or removed from the CacheManager.
+
+        The attributes of CacheManagerEventListenerFactory are:
+        - class - a fully qualified factory class name
+        - properties - comma separated properties having meaning only to the factory.
+
+        Sets the fully qualified class name to be registered as the CacheManager event listener.
+
+    The events include:
+    - adding a Cache
+    - removing a Cache
+
+    Callbacks to listener methods are synchronous and unsynchronized. It is the responsibility of the implementer
+    to safely handle the potential performance and thread safety issues depending on what their listener is doing.
+
+    If no class is specified, no listener is created. There is no default.
+    -->
+	<cacheManagerEventListenerFactory class="" properties=""/>
+	<!--Default Cache configuration. These will applied to caches programmatically created through
+    the CacheManager.
+
+    The following attributes are required:
+
+    maxElementsInMemory            - Sets the maximum number of objects that will be created in memory
+    eternal                        - Sets whether elements are eternal. If eternal,  timeouts are ignored and the
+                                     element is never expired.
+    overflowToDisk                 - Sets whether elements can overflow to disk when the in-memory cache
+                                     has reached the maxInMemory limit.
+
+    The following attributes are optional:
+    timeToIdleSeconds              - Sets the time to idle for an element before it expires.
+                                     i.e. The maximum amount of time between accesses before an element expires
+                                     Is only used if the element is not eternal.
+                                     Optional attribute. A value of 0 means that an Element can idle for infinity.
+                                     The default value is 0.
+    timeToLiveSeconds              - Sets the time to live for an element before it expires.
+                                     i.e. The maximum time between creation time and when an element expires.
+                                     Is only used if the element is not eternal.
+                                     Optional attribute. A value of 0 means that and Element can live for infinity.
+                                     The default value is 0.
+    diskPersistent                 - Whether the disk store persists between restarts of the Virtual Machine.
+                                     The default value is false.
+    diskExpiryThreadIntervalSeconds- The number of seconds between runs of the disk expiry thread. The default value
+                                     is 120 seconds.
+    memoryStoreEvictionPolicy      - Policy would be enforced upon reaching the maxElementsInMemory limit. Default
+                                     policy is Least Recently Used (specified as LRU). Other policies available -
+                                     First In First Out (specified as FIFO) and Less Frequently Used
+                                     (specified as LFU)
+
+    Cache elements can also contain zero or more cacheEventListenerFactory elements.
+
+    -->
+	<defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="true" diskPersistent="false" diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU"/>
+	<!--Predefined caches.  Add your cache configuration settings here.
+        If you do not have a configuration for your cache a WARNING will be issued when the
+        CacheManager starts
+
+        The following attributes are required:
+
+        name                           - Sets the name of the cache. This is used to identify the cache.
+                                         It must be unique.
+        maxElementsInMemory            - Sets the maximum number of objects that will be created in memory
+        eternal                        - Sets whether elements are eternal. If eternal,  timeouts are ignored and the
+                                         element is never expired.
+        overflowToDisk                 - Sets whether elements can overflow to disk when the in-memory cache
+                                         has reached the maxInMemory limit.
+
+        The following attributes are optional:
+        timeToIdleSeconds              - Sets the time to idle for an element before it expires.
+                                         i.e. The maximum amount of time between accesses before an element expires
+                                         Is only used if the element is not eternal.
+                                         Optional attribute. A value of 0 means that an Element can idle for infinity.
+                                         The default value is 0.
+        timeToLiveSeconds              - Sets the time to live for an element before it expires.
+                                         i.e. The maximum time between creation time and when an element expires.
+                                         Is only used if the element is not eternal.
+                                         Optional attribute. A value of 0 means that and Element can live for infinity.
+                                         The default value is 0.
+        diskPersistent                 - Whether the disk store persists between restarts of the Virtual Machine.
+                                         The default value is false.
+        diskExpiryThreadIntervalSeconds- The number of seconds between runs of the disk expiry thread. The default value
+                                         is 120 seconds.
+        memoryStoreEvictionPolicy      - Policy would be enforced upon reaching the maxElementsInMemory limit. Default
+                                         policy is Least Recently Used (specified as LRU). Other policies available -
+                                         First In First Out (specified as FIFO) and Less Frequently Used
+                                         (specified as LFU)
+
+    -->
+	<!-- Place configuration for your caches following. Make sure you comment out the above samples -->
+	<cache name="imgCache" maxElementsInMemory="50" eternal="true" overflowToDisk="false" memoryStoreEvictionPolicy="FIFO"/>
+</ehcache>

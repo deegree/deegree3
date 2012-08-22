@@ -1,0 +1,1160 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml"
+    schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <xsd:import namespace="http://www.opengis.net/wfs" schemaLocation="http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" />
+
+  <!-- configuration for the persistence backend to be used -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.postgresql.Driver</Driver>
+        <Url>jdbc:postgresql://hurricane:5432/adv_registry_intern</Url>
+        <!--Url>jdbc:postgresql://hurricane:5432/adv_registry</Url-->
+        <User>adv</User>
+        <Password>adv</Password>
+        <SecurityConstraints />
+        <Encoding>UTF-8</Encoding>
+      </JDBCConnection>
+      <deegreewfs:SuppressXLinkOutput>true</deegreewfs:SuppressXLinkOutput>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <!-- ============================================================== -->
+  <xsd:element name="RegistryObject" type="app:RegistryObjectType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>RegistryObject</deegreewfs:table>
+        <deegreewfs:gmlId prefix="RO_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">RegistryObject_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="RegistryObjectType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="linkedRegistryObject" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart> 
+                <deegreewfs:Content type="app:LINK_RegObj_RegObj">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_source" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="name" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart> 
+                <deegreewfs:Content type="app:Name">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="description" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:Description">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="slots" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:Slot">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobj" type="NUMERIC" table="JT_SLOT_RegistryObj" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="fk_slot" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="type" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+                          <xsd:appinfo>
+                                     <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart> 
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="type" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="iduri" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="iduri" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="home" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="home" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="liduri" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="liduri" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="objectType" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="objecttype" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="status" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="status" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="versionInfo" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:VersionInfo">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="association" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:Association">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="auditableEvent" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:AuditableEvent">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="classification" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:Classification">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="classificationNode" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:ClassificationNode">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="classificationScheme" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:ClassificationScheme">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="externalIdentifier" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:ExternalIdentifier">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="extrinsicObject" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:ExtrinsicObject">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="registryPackage" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+              <deegreewfs:IdentityPart>false</deegreewfs:IdentityPart>               
+                <deegreewfs:Content type="app:RegistryPackage">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_registryobject" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="Association" type="app:AssociationType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>Association</deegreewfs:table>
+        <deegreewfs:gmlId prefix="ASS_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">Association_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="AssociationType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="associationType" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="associationType" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="sourceObject" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="sourceObject" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="targetObject" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="targetObject" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="AuditableEvent" type="app:AuditableEventType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>AuditableEvent</deegreewfs:table>
+        <deegreewfs:gmlId prefix="AUD_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">AuditableEvent_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="AuditableEventType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="eventType" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="eventType" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="timestamp" type="xsd:dateTime">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="timestamp" type="TIMESTAMP" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="username" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="username" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="requestId" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="requestId" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="affectedObjects" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:ObjectRef">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_auditableevent" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="Classification" type="app:ClassificationType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>Classification</deegreewfs:table>
+        <deegreewfs:gmlId prefix="CLASS_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">Classification_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="ClassificationType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="classificationScheme" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="classificationscheme" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="classificationObject" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="classificationobject" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="classificationNode" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="classificationnode" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="nodeRepresentation" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="noderepresentation" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="ClassificationNode" type="app:ClassificationNodeType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>ClassificationNode</deegreewfs:table>
+        <deegreewfs:gmlId prefix="CLNODE_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">ClassificationNode_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="ClassificationNodeType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="parent" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="parent" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="code" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="code" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="path" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="path" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="ClassificationScheme" type="app:ClassificationSchemeType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>ClassificationScheme</deegreewfs:table>
+        <deegreewfs:gmlId prefix="CLSCH_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">ClassificationScheme_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="ClassificationSchemeType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="isInternal" type="xsd:boolean">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="isInternal" type="BIT" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="nodeType" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="nodeType" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="ExternalIdentifier" type="app:ExternalIdentifierType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>ExternalIdentifier</deegreewfs:table>
+        <deegreewfs:gmlId prefix="EI_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">ExternalIdentifier_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="ExternalIdentifierType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="registryObject" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="registryobject" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="identificationScheme" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="identificationscheme" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="value" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="value" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="ExtrinsicObject" type="app:ExtrinsicObjectType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>ExtrinsicObject</deegreewfs:table>
+        <deegreewfs:gmlId prefix="EO_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">ExtrinsicObject_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="ExtrinsicObjectType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="mimeType" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="mimetype" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="isOpaque" type="xsd:boolean">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="isopaque" type="BOOLEAN" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="cntInfoVersionName" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="cntinfoversionname" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="cntInfoVersionComment" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="cntinfoversioncomment" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="object" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="object" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="LINK_RegObj_RegObj" type="app:LINK_RegObj_RegObjType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>LINK_RegObj_RegObj</deegreewfs:table>
+        <deegreewfs:gmlId prefix="RORO_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">LINK_RegObj_RegObj_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="LINK_RegObj_RegObjType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="registryObject" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:RegistryObject">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="fk_target" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="type" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="type" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="Description" type="app:StringType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>Description</deegreewfs:table>
+        <deegreewfs:gmlId prefix="DESC_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">Description_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:element name="Name" type="app:StringType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>Name</deegreewfs:table>
+        <deegreewfs:gmlId prefix="NAME_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">Name_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="StringType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="localizedString" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:LocalizedString">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="fk_locstring" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="LocalizedString" type="app:LocalizedStringType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>LocalizedString</deegreewfs:table>
+        <deegreewfs:gmlId prefix="LS_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">LocalizedString_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="LocalizedStringType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="charset" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="charset" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="value" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="value" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="lang" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="lang" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="VersionInfo" type="app:VersionInfoType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>VersionInfo</deegreewfs:table>
+        <deegreewfs:gmlId prefix="VI_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">VersionInfo_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="VersionInfoType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+            <xsd:element name="versionName" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="versionName" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="comment" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="comment" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>  
+  <!-- ============================================================== -->
+  <xsd:element name="ObjectRef" type="app:ObjectRefType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>ObjectRef</deegreewfs:table>
+        <deegreewfs:gmlId prefix="OR_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">ObjectRef_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="ObjectRefType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="iduri" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="iduri" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="home" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="home" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="createReplica" type="xsd:boolean" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="createReplica" type="BOOLEAN" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="slots" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:Slot">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_objectref" type="NUMERIC" table="JT_SLOT_ObjectRef" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From fk="true">
+                      <deegreewfs:MappingField field="fk_slot" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="RegistryPackage" type="app:RegistryPackageType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>RegistryPackage</deegreewfs:table>
+        <deegreewfs:gmlId prefix="RP_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">RegistryPackage_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="RegistryPackageType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:integer" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="id" type="NUMERIC" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="Slot" type="app:SlotType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>Slot</deegreewfs:table>
+        <deegreewfs:gmlId prefix="SLOT_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">Slot_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="SlotType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="name" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="slotType" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="slottype" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="values" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SlotValues">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="ID" type="NUMERIC" />
+                    </deegreewfs:From>
+                    <deegreewfs:To fk="true">
+                      <deegreewfs:MappingField field="fk_slot" type="NUMERIC" />
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="SlotValues" type="app:SlotValuesType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>SlotValues</deegreewfs:table>
+        <deegreewfs:gmlId prefix="SV_">
+          <deegreewfs:MappingField field="id" type="NUMERIC" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">SlotValues_ID_seq</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="SlotValuesType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="stringValue" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="stringvalue" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geometry" type="gml:GeometryPropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geometry" type="GEOMETRY" srs="4326" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

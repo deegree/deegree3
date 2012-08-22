@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+  <display-name>deegree 2.0</display-name>
+  <description>deegree 2.0 OWS</description>
+
+  <servlet>
+    <servlet-name>owservice</servlet-name>
+    <servlet-class>org.deegree.enterprise.servlet.OGCServletController</servlet-class>
+
+    <init-param>
+      <param-name>services</param-name>
+      <param-value>csw</param-value>
+      <description>list of supported services, e.g.: wfs,wms (comma separated), will be replaced by ant</description>
+    </init-param>   
+
+    <!-- CSW INITIALIZING PARAMETERS -->
+    <init-param>
+      <param-name>csw.handler</param-name>
+      <param-value>org.deegree.enterprise.servlet.CSWHandler</param-value>
+    </init-param>
+    <init-param>
+      <param-name>csw.config</param-name>
+      <param-value>WEB-INF/conf/csw/csw_capabilities.xml</param-value>
+    </init-param>
+
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>owservice</servlet-name>
+    <url-pattern>/services</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>/index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <error-page>
+    <error-code>500</error-code>
+    <location>/error.jsp</location>
+  </error-page>
+
+  <error-page>
+    <exception-type>org.deegree.ogcwebservices.OGCWebServiceException</exception-type>
+    <location>/error.jsp</location>
+  </error-page>
+
+
+  <!--  #######################################################
+    the CSW-Insert servlet filter declaration and configuration
+    #######################################################-->
+
+  <filter>
+    <filter-name>CSWInsertFilter</filter-name>
+    <filter-class>de.latlon.adv.CSWInsertFilter</filter-class>
+    <init-param>
+      <param-name>csw.config</param-name>
+      <param-value>WEB-INF/conf/csw/csw_capabilities.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>CSW:POLICY</param-name>
+      <param-value>WEB-INF/conf/security/cswpolicy.xml</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>CSWInsertFilter</filter-name>
+    <url-pattern>/services</url-pattern>
+  </filter-mapping>
+
+  <!--  ##############################################################
+    the CSW-GetRepository servlet filter declaration and configuration
+    ##################################################################-->
+
+  <filter>
+    <filter-name>CSWGetRepositoryItemFilter</filter-name>
+    <filter-class>de.latlon.adv.CSWGetRepositoryItemFilter</filter-class>
+    <init-param>
+      <param-name>csw.config</param-name>
+      <param-value>WEB-INF/conf/csw/csw_capabilities.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>CSW:POLICY</param-name>
+      <param-value>WEB-INF/conf/security/cswpolicy.xml</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>CSWGetRepositoryItemFilter</filter-name>
+    <url-pattern>/services</url-pattern>
+  </filter-mapping>
+
+
+
+</web-app>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+	<ogc:And>
+		<ogc:PropertyIsEqualTo>
+			<ogc:PropertyName>horizontalAccuracy</ogc:PropertyName>
+			<ogc:Literal>10</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+		<ogc:PropertyIsEqualTo>
+			<ogc:PropertyName>verticalAccuracy</ogc:PropertyName>
+			<ogc:Literal>1</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+		<ogc:PropertyIsEqualTo>
+			<ogc:PropertyName>xslt</ogc:PropertyName>
+			<ogc:Literal>file:/d:/temp/test.xsl</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+		<ogc:PropertyIsEqualTo>
+			<ogc:PropertyName>instanceFilter</ogc:PropertyName>
+			<ogc:Literal><![CDATA[<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"
+               xmlns:app="http://www.deegree.org/app">
+			<ogc:And>
+				<ogc:PropertyIsGreaterThan>
+					<ogc:PropertyName>app:dateOfBirth</ogc:PropertyName>
+					<ogc:Literal>1820</ogc:Literal>
+				</ogc:PropertyIsGreaterThan>
+				<ogc:PropertyIsEqualTo>
+               <ogc:PropertyName>app:placeOfBirth/app:Place/app:country/app:Country/app:name</ogc:PropertyName>
+					<ogc:Literal>Germany</ogc:Literal>
+				</ogc:PropertyIsEqualTo>
+			</ogc:And>
+		</ogc:Filter>]]></ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+	</ogc:And>
+</ogc:Filter>

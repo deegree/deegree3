@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Lara J. Bordick (Northrop Grumman) -->
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================== Includes================== -->
+    <xs:include schemaLocation="./smXMLbase.xsd"/>
+    <!-- ================== Classes  ================== -->
+    <!-- ================== Classes  ================== -->
+    <xs:complexType name="MD_Constraints_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="useLimitation" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Constraints" type="smXML:MD_Constraints_Type"/>
+    <xs:complexType name="MD_Constraints_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Constraints"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_LegalConstraints_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:MD_Constraints_Type">
+                <xs:sequence>
+                    <xs:element name="accessConstraints" type="smXML:MD_RestrictionCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="useConstraints" type="smXML:MD_RestrictionCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="otherConstraints" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_LegalConstraints" type="smXML:MD_LegalConstraints_Type" substitutionGroup="smXML:MD_Constraints">
+        <xs:annotation>
+            <xs:documentation>
+   ***   otherConstraints: documented if accessConstraints or useConstraints = "otherRestrictions"
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_LegalConstraints_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_LegalConstraints"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_SecurityConstraints_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:MD_Constraints_Type">
+                <xs:sequence>
+                    <xs:element name="classification" type="smXML:MD_ClassificationCode_PropertyType"/>
+                    <xs:element name="userNote" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="classificationSystem" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="handlingDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_SecurityConstraints" type="smXML:MD_SecurityConstraints_Type" substitutionGroup="smXML:MD_Constraints"/>
+    <xs:complexType name="MD_SecurityConstraints_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_SecurityConstraints"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_ClassificationCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_ClassificationCode" type="smXML:MD_ClassificationCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_ClassificationCode_PropertyType">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="smXML:MD_ClassificationCode"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="MD_RestrictionCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_RestrictionCode" type="smXML:MD_RestrictionCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_RestrictionCode_PropertyType">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="smXML:MD_RestrictionCode"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

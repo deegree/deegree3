@@ -1,0 +1,7 @@
+# Namespace tolerance testing: prop name appears without a namespace prefix
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+TYPENAME=app:Philosopher&
+FILTER=<Filter xmlns="http://www.opengis.net/ogc"><PropertyIsLike wildCard="*" singleChar="#" escapeChar="!"><PropertyName>name</PropertyName><Literal>*Sartre*</Literal></PropertyIsLike></Filter>

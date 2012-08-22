@@ -1,0 +1,40 @@
+<!--
+'file' storages are similar to 'nameIndexed' storages except that not directories are
+referenced but single files or groups of files.
+-->
+<deegree:Extension type="file">
+    <deegree:Resolution max="99999999" min="1">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+        </deegree:Range>
+        <deegree:File height="2500" width="2500">
+            <deegree:Name>aerial_images/775165/$YEAR/$MONTH/$DAY/bonn$ELEVATION.img</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2677500,5616500 2678000,5617000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:File>
+        <deegree:File height="2500" width="2500">
+            <deegree:Name>aerial_images/780155/$YEAR/$MONTH/$DAY/bonn$ELEVATION.img</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2678000,5615500 2678500,5616000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:File>
+    </deegree:Resolution>
+    <deegree:Resolution max="1" min="0.5">
+        <deegree:Range>
+            <deegree:Name>time</deegree:Name>
+        </deegree:Range>
+        <deegree:File height="2500" width="2500">
+            <deegree:Name>aerial_images/775165/$YEAR/$MONTH/$DAY/bonn$ELEVATION.img</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2677500,5616500 2678000,5617000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:File>
+        <deegree:File height="2500" width="2500">
+            <deegree:Name>aerial_images/780155/$YEAR/$MONTH/$DAY/bonn$ELEVATION.img</deegree:Name>
+            <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466">
+                <gml:coordinates>2678000,5615500 2678500,5616000</gml:coordinates>
+            </gml:Envelope>
+        </deegree:File>
+    </deegree:Resolution>
+</deegree:Extension>

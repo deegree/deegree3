@@ -1,0 +1,4 @@
+http://www.someserver.com/wfs.cgi?
+VERSION=1.1.0&
+SERVICE=WFS&
+REQUEST=GetCapabilities

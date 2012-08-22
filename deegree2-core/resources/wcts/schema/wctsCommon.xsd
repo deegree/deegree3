@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema xmlns:wcts="http://www.opengis.net/wcts/0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.opengis.net/wcts/0.0" elementFormDefault="qualified" version="0.4.0" xml:lang="en">
+ <annotation>
+  <appinfo>wctsCommon.xsd 2007-05-01, vodafone specific version</appinfo>
+  <appinfo>
+   <GMLProfileSchema>
+        http://schemas.opengis.net/gml/3.1.1/profiles/GridCRSs/1.0.0/gmlGridCRSsProfile.xsd
+      </GMLProfileSchema>
+  </appinfo>
+  <documentation>
+      This XML Schema Document encodes the elements and types that are shared by muliple WCTS operations. This XML
+      Schema for WCTS is a GML 3.1.1 Application Schema, that uses the gmlGridCRSsProfile. Copyright (c) 2007 Open
+      Geospatial Consortium, Inc. All Rights Reserved.
+    </documentation>
+ </annotation>
+ <!-- ==============================================================
+    includes and imports
+    ============================================================== -->
+ <import namespace="http://www.opengis.net/ows/1.1" schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+ <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/coordinateOperations.xsd"/>
+ <!-- ==============================================================
+    elements and types
+    ============================================================== -->
+ <element name="Transformation">
+  <annotation>
+   <documentation>A coordinate operation that can transform coordinates from a sourceCRS to a targetCRS. This element is often a reference to a well-known coordinate operation, but can contain the definition of a user-defined coordinate operation that references a well-known operation method. Alternately, this element can contain the definition of a ConcatenatedOperation that combines two or more well-known coordinate operations or coordinate operations that reference a well-known operation method. When the definiton of a coordinate operation is contained, the element shall also include a xlink:href value containing the URN that references this definition. Well-known coordinate operations and operation methods can be defined in documents referenced by the WCTS Implementation Specification. Alternately or in addition, well-known coordinate operations and operation methods can be defined in metadata referenced by or contained in the Contents section of the Capabilities XML document available from this WCTS server. </documentation>
+  </annotation>
+  <complexType>
+   <complexContent>
+    <extension base="gml:CoordinateOperationRefType">
+     <sequence minOccurs="0">
+      <annotation>
+       <documentation>This sourceCRS and targetCRS shall be included only when the referenced or contained coordinate operation is a Conversion, which does not identify its sourceCRS and targetCRS. </documentation>
+      </annotation>
+      <element name="sourceCRS" type="gml:CRSRefType">
+       <annotation>
+        <documentation>Identifier or definition of the coordinate reference system (CRS) used by coordinates input to a Conversion. This element shall uniquely identify the desired CRS, but the definition of that CRS need not be known to the WCTS server. This element is normally a reference to that CRS, but can contain the definition of a user-defined CRS. When this element contains the CRS definition object, it shall also contain a xlink:href containing the URN that references this definition. </documentation>
+       </annotation>
+      </element>
+      <element name="targetCRS" type="gml:CRSRefType">
+       <annotation>
+        <documentation>Identifier or definition of the coordinate reference system (CRS) used by coordinates output from a Conversion. This element shall uniquely identify the desired CRS, but the definition of that CRS need not be known to the WCTS server. This element is normally a reference to that CRS, but can contain the definition of a user-defined CRS. When this element contains the CRS definition object, it shall also contain a xlink:href containing the URN that references this definition. </documentation>
+       </annotation>
+      </element>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+ </element>
+ <complexType name="RequestBaseType">
+  <annotation>
+   <documentation>
+        XML encoded WCTS operation request base, for all operations except Get Capabilities. In this XML encoding, no
+        "request" parameter is included, since the element name specifies the specific operation.
+      </documentation>
+  </annotation>
+  <sequence/>
+  <attribute name="service" type="string" use="required" fixed="WCTS">
+   <annotation>
+    <documentation>Service type identifier.</documentation>
+   </annotation>
+  </attribute>
+  <attribute name="version" type="string" use="required" fixed="0.0.0">
+   <annotation>
+    <documentation>
+          Specification version for this WCTS. See Version parameter Subclause 7.3.1 in OWS Common for more information.
+        </documentation>
+   </annotation>
+  </attribute>
+ </complexType>
+ <!-- =========================================================== -->
+ <group name="SourceAndTargetCRSs">
+  <annotation>
+   <documentation>
+        Group combining SourceCRS and TargetCRS elements, used by some WCTS operation requests.
+      </documentation>
+  </annotation>
+  <sequence>
+   <element name="SourceCRS" type="anyURI">
+    <annotation>
+     <documentation>
+            Identifier of the coordinate reference system (CRS) used by coordinates input to a Transform operation. This
+            element shall uniquely identify the desired CRS, but the definition of that CRS need not be known to the
+            WCTS server.
+          </documentation>
+    </annotation>
+   </element>
+   <element name="TargetCRS" type="anyURI">
+    <annotation>
+     <documentation>
+            Identifier of the coordinate reference system (CRS) used by coordinates output from a Transform operation.
+            This element shall uniquely identify the desired CRS, but the definition of that CRS need not be known to
+            the WCTS server.
+          </documentation>
+    </annotation>
+   </element>
+  </sequence>
+ </group>
+ <!-- ========================================================== -->
+ <complexType name="GeometryTypeType">
+  <annotation>
+   <documentation>
+        Type of geometry primitive possibly handled by an OWS server. The possible values are all names of GML 3.1.1
+        complexTypes, omitting any "Type" suffix.
+      </documentation>
+  </annotation>
+  <simpleContent>
+   <restriction base="ows:CodeType">
+    <attribute name="codeSpace" type="anyURI" use="optional" default="http://schemas.opengis.net/wcts/0.0.0/geometryType.xml">
+     <annotation>
+      <documentation>
+              Reference to a dictionary that specifies allowed values for geometry type identifier strings. This
+              reference defaults to the standard geometry type dictionary specified in WCTS 0.0.0.
+            </documentation>
+     </annotation>
+    </attribute>
+   </restriction>
+  </simpleContent>
+ </complexType>
+ <!-- =========================================================== -->
+</schema>

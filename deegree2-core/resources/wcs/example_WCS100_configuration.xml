@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    sample file for configuration of a WCS data source/storage. In addition to the 
+    elements/parameters used in the first part that are defined by the OGC WCS 1.0.0
+    DescribeCoverage-response deegree specific parameters are defined. These
+    parameters defines the kind of data soure and the storage format.
+-->
+<?xml-stylesheet type="text/xsl" href="C:\java\source\deegree2\deegree\src\org\deegree\ogcwebservices\wcs\configuration\coverage_offering.xsl"?>
+<CoverageDescription xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns:deegree="http://www.deegree.org/wcs" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0" updateSequence="String">
+    <CoverageOffering>
+        <description>none</description>
+        <name>Mapneatline</name>
+        <label>map neatline</label>
+        <lonLatEnvelope srsName="WGS84(DD)">
+            <gml:pos dimension="2">-1,-1</gml:pos>
+            <gml:pos dimension="2">1,1</gml:pos>
+        </lonLatEnvelope>
+        <keywords>
+            <keyword>Mapeatline</keyword>
+            <keyword>cite</keyword>
+            <keyword>CITE</keyword>
+            <keyword>test data</keyword>
+        </keywords>
+        <domainSet>
+            <spatialDomain>
+                <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326">
+                    <gml:pos dimension="2">-1,-1</gml:pos>
+                    <gml:pos dimension="2">1,1</gml:pos>
+                </gml:Envelope>
+            </spatialDomain>
+        </domainSet>
+        <rangeSet>
+            <RangeSet semantic="http://www.deegree.org" refSys="http://www.deegree.org" refSysLabel="String">
+                <description>none</description>
+                <name>default</name>
+                <label>default</label>
+                <nullValues type="xs:integer" semantic="http://www.deegree.org">
+                    <interval semantic="http://www.deegree.org" atomic="false" closure="closed">
+                        <min>-99</min>
+                        <max>0</max>
+                        <res>1</res>
+                    </interval>
+                    <singleValue>-9999</singleValue>
+                </nullValues>
+            </RangeSet>
+        </rangeSet>
+        <supportedCRSs>
+            <requestResponseCRSs codeSpace="http://www.epsg.org">EPSG:4326</requestResponseCRSs>
+            <nativeCRSs codeSpace="http://www.epsg.org">EPSG:4326</nativeCRSs>
+        </supportedCRSs>
+        <supportedFormats nativeFormat="image/tiff">
+            <formats>image/jpeg</formats>
+            <formats>image/GeoTiff</formats>
+            <formats>imagepng</formats>
+        </supportedFormats>
+        <supportedInterpolations default="nearest neighbor">
+            <interpolationMethod>nearest neighbor</interpolationMethod>
+        </supportedInterpolations>
+        <deegree:Extension type="file">
+            <deegree:Resolution max="99999999" min="0">
+                <deegree:Range>
+                    <deegree:Name>default</deegree:Name>
+                </deegree:Range>
+                <deegree:File height="2500" width="2500">
+                    <deegree:Name>tile_111.jpg</deegree:Name>
+                    <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326">
+                        <gml:coordinates>-1,-1 1,1</gml:coordinates>
+                    </gml:Envelope>
+                </deegree:File>
+            </deegree:Resolution>
+        </deegree:Extension>
+    </CoverageOffering>
+</CoverageDescription>

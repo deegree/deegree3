@@ -1,0 +1,837 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="D:\java\projekte\lgv_3d\scripts\xslt\gml3TOcitygml.xsl"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:citygml="http://www.citygml.org/citygml/1/0/0" xmlns:xlink="http://www.w3.org/1999/xlink" numberOfFeatures="1">
+	<gml:boundedBy>
+		<gml:Envelope srsName="EPSG:4326">
+			<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+			<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<gml:featureMember>
+		<citygml:Feature>
+			<gml:boundedBy>
+				<gml:Envelope srsName="EPSG:4326">
+					<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+					<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<citygml:id>1</citygml:id>
+			<citygml:building>
+				<citygml:Building>
+					<citygml:id>1</citygml:id>
+					<citygml:address>
+						<citygml:Address>
+							<citygml:code>string</citygml:code>
+							<citygml:street>string</citygml:street>
+							<citygml:postalcode>string</citygml:postalcode>
+							<citygml:citydistrict>string</citygml:citydistrict>
+							<citygml:city>string</citygml:city>
+							<citygml:administrativearea>string</citygml:administrativearea>
+							<citygml:country>string</citygml:country>
+						</citygml:Address>
+					</citygml:address>
+					<citygml:class>string</citygml:class>
+					<citygml:roofType>
+						<citygml:RoofType>
+							<citygml:roofType>string</citygml:roofType>
+							<citygml:codespace>string</citygml:codespace>
+							<citygml:listname>string</citygml:listname>
+						</citygml:RoofType>
+					</citygml:roofType>
+					<citygml:yearOfConstruction>2006</citygml:yearOfConstruction>
+					<citygml:measuredheight>29</citygml:measuredheight>
+					<citygml:storeysaboveground>43</citygml:storeysaboveground>
+					<citygml:storeysbelowground>63</citygml:storeysbelowground>
+					<citygml:storeyheightsaboveground>2.5 2.3 2.5</citygml:storeyheightsaboveground>
+					<citygml:storeyheightsbelowground>2.6</citygml:storeyheightsbelowground>
+				</citygml:Building>
+			</citygml:building>
+			<citygml:fk_type>1</citygml:fk_type>
+			<citygml:creation>2006-09-13</citygml:creation>
+			<citygml:revision>2006-09-13</citygml:revision>
+			<citygml:deletion>2006-09-13</citygml:deletion>
+			<citygml:actual>0</citygml:actual>
+			<citygml:envelope>
+				<gml:Polygon srsName="EPSG:4326">
+					<gml:outerBoundaryIs>
+						<gml:LinearRing>
+							<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+						</gml:LinearRing>
+					</gml:outerBoundaryIs>
+				</gml:Polygon>
+			</citygml:envelope>
+			<citygml:featureName>
+				<citygml:Feature_Name>
+					<citygml:name>string</citygml:name>
+					<citygml:namespace>string</citygml:namespace>
+				</citygml:Feature_Name>
+			</citygml:featureName>
+			<citygml:space>
+				<citygml:Space>
+					<citygml:name>string</citygml:name>
+					<citygml:namespace>string</citygml:namespace>
+				</citygml:Space>
+			</citygml:space>
+			<citygml:externalReference>
+				<citygml:Externalref>
+					<citygml:name>string</citygml:name>
+					<citygml:uri>string</citygml:uri>
+					<citygml:informationsystem>string</citygml:informationsystem>
+				</citygml:Externalref>
+			</citygml:externalReference>
+			<citygml:terrainIntersection>
+				<citygml:TerrainIntersection>
+					<gml:boundedBy>
+						<gml:Envelope srsName="EPSG:4326">
+							<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+							<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+						</gml:Envelope>
+					</gml:boundedBy>
+					<citygml:lod>2</citygml:lod>
+					<citygml:geom>
+						<gml:Polygon srsName="EPSG:4326">
+							<gml:outerBoundaryIs>
+								<gml:LinearRing>
+									<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+								</gml:LinearRing>
+							</gml:outerBoundaryIs>
+						</gml:Polygon>
+					</citygml:geom>
+				</citygml:TerrainIntersection>
+			</citygml:terrainIntersection>
+			<citygml:function>
+				<citygml:Function>
+					<citygml:function>string</citygml:function>
+					<citygml:codespace>string</citygml:codespace>
+					<citygml:listname>string</citygml:listname>
+				</citygml:Function>
+			</citygml:function>
+			<citygml:usage>
+				<citygml:Usage>
+					<citygml:usage>string</citygml:usage>
+					<citygml:codespace>string</citygml:codespace>
+					<citygml:listname>string</citygml:listname>
+				</citygml:Usage>
+			</citygml:usage>
+			<citygml:linkedFeature>
+				<citygml:LINK_FEAT_FEAT>
+					<citygml:feature>
+						<citygml:Feature>
+							<gml:boundedBy>
+								<gml:Envelope srsName="EPSG:4326">
+									<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+									<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+								</gml:Envelope>
+							</gml:boundedBy>
+							<citygml:linkedGeometry>
+								<citygml:LINK_FEAT_GEOM>
+									<citygml:geometry>
+										<citygml:Geometry>
+											<citygml:id>1</citygml:id>
+											<citygml:type>12</citygml:type>
+											<citygml:function>string</citygml:function>
+											<citygml:polygon>
+												<citygml:Polygon>
+													<gml:boundedBy>
+														<gml:Envelope srsName="EPSG:4326">
+															<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+															<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+														</gml:Envelope>
+													</gml:boundedBy>
+													<citygml:geom>
+														<gml:Polygon srsName="EPSG:4326">
+															<gml:exterior>
+																<gml:LinearRing>
+																	<gml:pos srsDimension="3">2542306.275 5688349.341 33.4189099999983</gml:pos>
+																	<gml:pos srsDimension="3">2542308.467 5688353.453 33.423200000003</gml:pos>
+																	<gml:pos srsDimension="3">2542314.474 5688350.25 33.3185400000028</gml:pos>
+																	<gml:pos srsDimension="3">2542312.281 5688346.138 33.3701400000043</gml:pos>
+																	<gml:pos srsDimension="3">2542306.275 5688349.341 33.4189099999983</gml:pos>
+																</gml:LinearRing>
+															</gml:exterior>
+														</gml:Polygon>
+													</citygml:geom>
+													<citygml:creation>2006-09-13</citygml:creation>
+													<citygml:deletion>2006-09-13</citygml:deletion>
+													<citygml:revision>2006-09-13</citygml:revision>
+													<citygml:function>string</citygml:function>
+													<citygml:theme>
+														<citygml:Theme>
+															<citygml:theme>string</citygml:theme>
+														</citygml:Theme>
+													</citygml:theme>
+												</citygml:Polygon>
+											</citygml:polygon>
+										</citygml:Geometry>
+									</citygml:geometry>
+									<citygml:lod>2</citygml:lod>
+									<citygml:type>1</citygml:type>
+									<citygml:function>string</citygml:function>
+								</citygml:LINK_FEAT_GEOM>
+							</citygml:linkedGeometry>
+						</citygml:Feature>
+					</citygml:feature>
+					<citygml:creation>2006-09-13</citygml:creation>
+					<citygml:deletion>2006-09-13</citygml:deletion>
+					<citygml:role>CeilingSurface</citygml:role>
+					<citygml:context>
+						<citygml:Context>
+							<citygml:name>string</citygml:name>
+							<citygml:namespace>string</citygml:namespace>
+						</citygml:Context>
+					</citygml:context>
+				</citygml:LINK_FEAT_FEAT>
+			</citygml:linkedFeature>
+			<citygml:linkedFeature>
+				<citygml:LINK_FEAT_FEAT>
+					<citygml:feature>
+						<citygml:Feature>
+							<gml:boundedBy>
+								<gml:Envelope srsName="EPSG:4326">
+									<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+									<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+								</gml:Envelope>
+							</gml:boundedBy>
+							<citygml:building>
+								<citygml:Building>
+									<citygml:id>1</citygml:id>
+									<citygml:address>
+										<citygml:Address>
+											<citygml:code>string</citygml:code>
+											<citygml:street>string</citygml:street>
+											<citygml:postalcode>string</citygml:postalcode>
+											<citygml:citydistrict>string</citygml:citydistrict>
+											<citygml:city>string</citygml:city>
+											<citygml:administrativearea>string</citygml:administrativearea>
+											<citygml:country>string</citygml:country>
+										</citygml:Address>
+									</citygml:address>
+									<citygml:class>string</citygml:class>
+									<citygml:roofType>
+										<citygml:RoofType>
+											<citygml:roofType>string</citygml:roofType>
+											<citygml:codespace>string</citygml:codespace>
+											<citygml:listname>string</citygml:listname>
+										</citygml:RoofType>
+									</citygml:roofType>
+									<citygml:yearOfConstruction>2006</citygml:yearOfConstruction>
+									<citygml:measuredheight>29</citygml:measuredheight>
+									<citygml:storeysaboveground>43</citygml:storeysaboveground>
+									<citygml:storeysbelowground>63</citygml:storeysbelowground>
+									<citygml:storeyheightsaboveground>2.5 2.3 2.5</citygml:storeyheightsaboveground>
+									<citygml:storeyheightsbelowground>2.6</citygml:storeyheightsbelowground>
+								</citygml:Building>
+							</citygml:building>
+							<citygml:linkedGeometry>
+								<citygml:LINK_FEAT_GEOM>
+									<citygml:geometry>
+										<citygml:Geometry>
+											<citygml:id>1</citygml:id>
+											<citygml:type>12</citygml:type>
+											<citygml:function>string</citygml:function>
+											<citygml:solid>
+												<citygml:Solid>
+													<citygml:function>string</citygml:function>
+													<citygml:exteriorComposite>
+														<citygml:Composite>
+															<citygml:function>string</citygml:function>
+															<citygml:polygon>
+																<citygml:Polygon>
+																	<gml:boundedBy>
+																		<gml:Envelope srsName="EPSG:4326">
+																			<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+																			<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+																		</gml:Envelope>
+																	</gml:boundedBy>
+																	<citygml:geom>
+																		<gml:Polygon srsName="EPSG:4326">
+																			<gml:exterior>
+																				<gml:LinearRing>
+																					<gml:pos srsDimension="3">2542306.275 5688349.341 33.4189099999983</gml:pos>
+																					<gml:pos srsDimension="3">2542308.467 5688353.453 33.423200000003</gml:pos>
+																					<gml:pos srsDimension="3">2542314.474 5688350.25 33.3185400000028</gml:pos>
+																					<gml:pos srsDimension="3">2542312.281 5688346.138 33.3701400000043</gml:pos>
+																					<gml:pos srsDimension="3">2542306.275 5688349.341 33.4189099999983</gml:pos>
+																				</gml:LinearRing>
+																			</gml:exterior>
+																		</gml:Polygon>
+																	</citygml:geom>
+																	<citygml:creation>2006-09-13</citygml:creation>
+																	<citygml:deletion>2006-09-13</citygml:deletion>
+																	<citygml:revision>2006-09-13</citygml:revision>
+																	<citygml:function>string</citygml:function>
+																	<citygml:theme>
+																		<citygml:Theme>
+																			<citygml:theme>string</citygml:theme>
+																		</citygml:Theme>
+																	</citygml:theme>
+																</citygml:Polygon>
+															</citygml:polygon>
+														</citygml:Composite>
+													</citygml:exteriorComposite>
+													<citygml:interiorComposite>
+														<citygml:Composite>
+															<citygml:function>string</citygml:function>
+															<citygml:polygon>
+																<citygml:Polygon>
+																	<gml:boundedBy>
+																		<gml:Envelope srsName="EPSG:4326">
+																			<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+																			<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+																		</gml:Envelope>
+																	</gml:boundedBy>
+																	<citygml:geom>
+																		<gml:Polygon srsName="EPSG:4326">
+																			<gml:outerBoundaryIs>
+																				<gml:LinearRing>
+																					<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+																				</gml:LinearRing>
+																			</gml:outerBoundaryIs>
+																		</gml:Polygon>
+																	</citygml:geom>
+																	<citygml:creation>2006-09-13</citygml:creation>
+																	<citygml:deletion>2006-09-13</citygml:deletion>
+																	<citygml:revision>2006-09-13</citygml:revision>
+																	<citygml:function>string</citygml:function>
+																	<citygml:theme>
+																		<citygml:Theme>
+																			<citygml:theme>string</citygml:theme>
+																		</citygml:Theme>
+																	</citygml:theme>
+																</citygml:Polygon>
+															</citygml:polygon>
+														</citygml:Composite>
+													</citygml:interiorComposite>
+												</citygml:Solid>
+											</citygml:solid>
+										</citygml:Geometry>
+									</citygml:geometry>
+									<citygml:lod>2</citygml:lod>
+									<citygml:type>0</citygml:type>
+									<citygml:function>string</citygml:function>
+								</citygml:LINK_FEAT_GEOM>
+							</citygml:linkedGeometry>
+						</citygml:Feature>
+					</citygml:feature>
+					<citygml:creation>2006-09-13</citygml:creation>
+					<citygml:deletion>2006-09-13</citygml:deletion>
+					<citygml:role>generalizesTo</citygml:role>
+					<citygml:context>
+						<citygml:Context>
+							<citygml:name>string</citygml:name>
+							<citygml:namespace>string</citygml:namespace>
+						</citygml:Context>
+					</citygml:context>
+				</citygml:LINK_FEAT_FEAT>
+			</citygml:linkedFeature>
+			<citygml:linkedFeature>
+				<citygml:LINK_FEAT_FEAT>
+					<citygml:feature>
+						<citygml:Feature>
+							<gml:boundedBy>
+								<gml:Envelope srsName="EPSG:4326">
+									<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+									<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+								</gml:Envelope>
+							</gml:boundedBy>
+							<citygml:linkedGeometry>
+								<citygml:LINK_FEAT_GEOM>
+									<citygml:geometry>
+										<citygml:Geometry>
+											<citygml:id>1</citygml:id>
+											<citygml:type>12</citygml:type>
+											<citygml:function>string</citygml:function>
+											<citygml:solid>
+												<citygml:Solid>
+													<citygml:function>string</citygml:function>
+													<citygml:exteriorComposite>
+														<citygml:Composite>
+															<citygml:function>string</citygml:function>
+															<citygml:polygon>
+																<citygml:Polygon>
+																	<citygml:geom>
+																		<gml:Polygon srsName="EPSG:4326">
+																			<gml:exterior>
+																				<gml:LinearRing>
+																					<gml:posList srsDimension="3">1.0 1.0 0.0 3.0 1.0 0.0 3.0 1.0 1.5 2.0 1.0 2.5 1.0 1.0 1.5 1.0 1.0 0.0</gml:posList>
+																				</gml:LinearRing>
+																			</gml:exterior>
+																		</gml:Polygon>
+																	</citygml:geom>
+																	<citygml:creation>2006-09-13</citygml:creation>
+																	<citygml:deletion>2006-09-13</citygml:deletion>
+																	<citygml:revision>2006-09-13</citygml:revision>
+																	<citygml:function>string</citygml:function>
+																	<citygml:theme>
+																		<citygml:Theme>
+																			<citygml:theme>string</citygml:theme>
+																		</citygml:Theme>
+																	</citygml:theme>
+																</citygml:Polygon>
+															</citygml:polygon>
+														</citygml:Composite>
+													</citygml:exteriorComposite>
+													<citygml:interiorComposite>
+														<citygml:Composite>
+															<citygml:function>string</citygml:function>
+															<citygml:polygon>
+																<citygml:Polygon>
+																	<gml:boundedBy>
+																		<gml:Envelope srsName="EPSG:4326">
+																			<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+																			<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+																		</gml:Envelope>
+																	</gml:boundedBy>
+																	<citygml:geom>
+																		<gml:Polygon srsName="EPSG:4326">
+																			<gml:outerBoundaryIs>
+																				<gml:LinearRing>
+																					<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+																				</gml:LinearRing>
+																			</gml:outerBoundaryIs>
+																		</gml:Polygon>
+																	</citygml:geom>
+																	<citygml:creation>2006-09-13</citygml:creation>
+																	<citygml:deletion>2006-09-13</citygml:deletion>
+																	<citygml:revision>2006-09-13</citygml:revision>
+																	<citygml:function>string</citygml:function>
+																	<citygml:theme>
+																		<citygml:Theme>
+																			<citygml:theme>string</citygml:theme>
+																		</citygml:Theme>
+																	</citygml:theme>
+																</citygml:Polygon>
+															</citygml:polygon>
+														</citygml:Composite>
+													</citygml:interiorComposite>
+												</citygml:Solid>
+											</citygml:solid>
+										</citygml:Geometry>
+									</citygml:geometry>
+									<citygml:lod>2</citygml:lod>
+									<citygml:type>0</citygml:type>
+									<citygml:function>string</citygml:function>
+								</citygml:LINK_FEAT_GEOM>
+							</citygml:linkedGeometry>
+						</citygml:Feature>
+					</citygml:feature>
+					<citygml:creation>2006-09-13</citygml:creation>
+					<citygml:deletion>2006-09-13</citygml:deletion>
+					<citygml:role>outerBuildingInstallation</citygml:role>
+					<citygml:context>
+						<citygml:Context>
+							<citygml:name>string</citygml:name>
+							<citygml:namespace>string</citygml:namespace>
+						</citygml:Context>
+					</citygml:context>
+				</citygml:LINK_FEAT_FEAT>
+			</citygml:linkedFeature>
+			<citygml:linkedFeature>
+				<citygml:LINK_FEAT_FEAT>
+					<citygml:feature>
+						<citygml:Feature>
+							<gml:boundedBy>
+								<gml:Envelope srsName="EPSG:4326">
+									<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+									<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+								</gml:Envelope>
+							</gml:boundedBy>
+							<citygml:building>
+								<citygml:Building>
+									<citygml:id>1</citygml:id>
+									<citygml:address>
+										<citygml:Address>
+											<citygml:code>string</citygml:code>
+											<citygml:street>string</citygml:street>
+											<citygml:postalcode>string</citygml:postalcode>
+											<citygml:citydistrict>string</citygml:citydistrict>
+											<citygml:city>string</citygml:city>
+											<citygml:administrativearea>string</citygml:administrativearea>
+											<citygml:country>string</citygml:country>
+										</citygml:Address>
+									</citygml:address>
+									<citygml:class>string</citygml:class>
+									<citygml:roofType>
+										<citygml:RoofType>
+											<citygml:roofType>string</citygml:roofType>
+											<citygml:codespace>string</citygml:codespace>
+											<citygml:listname>string</citygml:listname>
+										</citygml:RoofType>
+									</citygml:roofType>
+									<citygml:yearOfConstruction>2006</citygml:yearOfConstruction>
+									<citygml:measuredheight>29</citygml:measuredheight>
+									<citygml:storeysaboveground>43</citygml:storeysaboveground>
+									<citygml:storeysbelowground>63</citygml:storeysbelowground>
+									<citygml:storeyheightsaboveground>2.5 2.3 2.5</citygml:storeyheightsaboveground>
+									<citygml:storeyheightsbelowground>2.6</citygml:storeyheightsbelowground>
+								</citygml:Building>
+							</citygml:building>
+							<citygml:linkedGeometry>
+								<citygml:LINK_FEAT_GEOM>
+									<citygml:geometry>
+										<citygml:Geometry>
+											<citygml:id>1</citygml:id>
+											<citygml:type>12</citygml:type>
+											<citygml:function>string</citygml:function>
+											<citygml:solid>
+												<citygml:Solid>
+													<citygml:function>string</citygml:function>
+													<citygml:exteriorComposite>
+														<citygml:Composite>
+															<citygml:function>string</citygml:function>
+															<citygml:polygon>
+																<citygml:Polygon>
+																	<gml:boundedBy>
+																		<gml:Envelope srsName="EPSG:4326">
+																			<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+																			<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+																		</gml:Envelope>
+																	</gml:boundedBy>
+																	<citygml:geom>
+																		<gml:Polygon srsName="EPSG:4326">
+																			<gml:outerBoundaryIs>
+																				<gml:LinearRing>
+																					<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+																				</gml:LinearRing>
+																			</gml:outerBoundaryIs>
+																		</gml:Polygon>
+																	</citygml:geom>
+																	<citygml:creation>2006-09-13</citygml:creation>
+																	<citygml:deletion>2006-09-13</citygml:deletion>
+																	<citygml:revision>2006-09-13</citygml:revision>
+																	<citygml:function>string</citygml:function>
+																	<citygml:theme>
+																		<citygml:Theme>
+																			<citygml:theme>string</citygml:theme>
+																		</citygml:Theme>
+																	</citygml:theme>
+																</citygml:Polygon>
+															</citygml:polygon>
+														</citygml:Composite>
+													</citygml:exteriorComposite>
+													<citygml:interiorComposite>
+														<citygml:Composite>
+															<citygml:function>string</citygml:function>
+															<citygml:polygon>
+																<citygml:Polygon>
+																	<gml:boundedBy>
+																		<gml:Envelope srsName="EPSG:4326">
+																			<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+																			<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+																		</gml:Envelope>
+																	</gml:boundedBy>
+																	<citygml:geom>
+																		<gml:Polygon srsName="EPSG:4326">
+																			<gml:outerBoundaryIs>
+																				<gml:LinearRing>
+																					<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+																				</gml:LinearRing>
+																			</gml:outerBoundaryIs>
+																		</gml:Polygon>
+																	</citygml:geom>
+																	<citygml:creation>2006-09-13</citygml:creation>
+																	<citygml:deletion>2006-09-13</citygml:deletion>
+																	<citygml:revision>2006-09-13</citygml:revision>
+																	<citygml:function>string</citygml:function>
+																	<citygml:theme>
+																		<citygml:Theme>
+																			<citygml:theme>string</citygml:theme>
+																		</citygml:Theme>
+																	</citygml:theme>
+																</citygml:Polygon>
+															</citygml:polygon>
+														</citygml:Composite>
+													</citygml:interiorComposite>
+												</citygml:Solid>
+											</citygml:solid>
+										</citygml:Geometry>
+									</citygml:geometry>
+									<citygml:lod>2</citygml:lod>
+									<citygml:type>0</citygml:type>
+									<citygml:function>string</citygml:function>
+								</citygml:LINK_FEAT_GEOM>
+							</citygml:linkedGeometry>
+						</citygml:Feature>
+					</citygml:feature>
+					<citygml:creation>2006-09-13</citygml:creation>
+					<citygml:deletion>2006-09-13</citygml:deletion>
+					<citygml:role>consistsOfBuildingPart</citygml:role>
+					<citygml:context>
+						<citygml:Context>
+							<citygml:name>string</citygml:name>
+							<citygml:namespace>string</citygml:namespace>
+						</citygml:Context>
+					</citygml:context>
+				</citygml:LINK_FEAT_FEAT>
+			</citygml:linkedFeature>
+			<citygml:linkedGeometry>
+				<citygml:LINK_FEAT_GEOM>
+					<citygml:geometry>
+						<citygml:Geometry>
+							<citygml:id>1</citygml:id>
+							<citygml:type>12</citygml:type>
+							<citygml:function>string</citygml:function>
+							<citygml:curve>
+								<citygml:Curve>
+									<gml:boundedBy>
+										<gml:Envelope srsName="EPSG:4326">
+											<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+											<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+										</gml:Envelope>
+									</gml:boundedBy>
+									<citygml:geom>
+										<gml:Polygon srsName="EPSG:4326">
+											<gml:outerBoundaryIs>
+												<gml:LinearRing>
+													<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+												</gml:LinearRing>
+											</gml:outerBoundaryIs>
+										</gml:Polygon>
+									</citygml:geom>
+									<citygml:function>string</citygml:function>
+								</citygml:Curve>
+							</citygml:curve>
+							<citygml:polygon>
+								<citygml:Polygon>
+									<gml:boundedBy>
+										<gml:Envelope srsName="EPSG:4326">
+											<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+											<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+										</gml:Envelope>
+									</gml:boundedBy>
+									<citygml:geom>
+										<gml:Polygon srsName="EPSG:4326">
+											<gml:outerBoundaryIs>
+												<gml:LinearRing>
+													<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+												</gml:LinearRing>
+											</gml:outerBoundaryIs>
+										</gml:Polygon>
+									</citygml:geom>
+									<citygml:material>
+										<citygml:Material>
+											<citygml:shininess>29</citygml:shininess>
+											<citygml:transparency>32</citygml:transparency>
+											<citygml:ambientintensity>26</citygml:ambientintensity>
+											<citygml:specularcolor>string</citygml:specularcolor>
+											<citygml:diffusecolor>string</citygml:diffusecolor>
+											<citygml:emissivecolor>string</citygml:emissivecolor>
+										</citygml:Material>
+									</citygml:material>
+									<citygml:texture>
+										<citygml:Texture>
+											<citygml:texturemap>testmap</citygml:texturemap>
+											<citygml:texturecoordinates>1 0 0 1 0 1 0 1 </citygml:texturecoordinates>
+											<citygml:texturetype>wert</citygml:texturetype>
+											<citygml:repeat>0</citygml:repeat>
+										</citygml:Texture>
+									</citygml:texture>
+									<citygml:creation>2006-09-13</citygml:creation>
+									<citygml:deletion>2006-09-13</citygml:deletion>
+									<citygml:revision>2006-09-13</citygml:revision>
+									<citygml:function>string</citygml:function>
+									<citygml:theme>
+										<citygml:Theme>
+											<citygml:theme>string</citygml:theme>
+										</citygml:Theme>
+									</citygml:theme>
+								</citygml:Polygon>
+							</citygml:polygon>
+							<citygml:solid>
+								<citygml:Solid>
+									<citygml:function>string</citygml:function>
+									<citygml:exteriorComposite>
+										<citygml:Composite>
+											<citygml:function>string</citygml:function>
+											<citygml:polygon>
+												<citygml:Polygon>
+													<gml:boundedBy>
+														<gml:Envelope srsName="EPSG:4326">
+															<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+															<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+														</gml:Envelope>
+													</gml:boundedBy>
+													<citygml:geom>
+														<gml:Polygon srsName="EPSG:4326">
+															<gml:outerBoundaryIs>
+																<gml:LinearRing>
+																	<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+																</gml:LinearRing>
+															</gml:outerBoundaryIs>
+														</gml:Polygon>
+													</citygml:geom>
+													<citygml:material>
+														<citygml:Material>
+															<citygml:shininess>29</citygml:shininess>
+															<citygml:transparency>32</citygml:transparency>
+															<citygml:ambientintensity>26</citygml:ambientintensity>
+															<citygml:specularcolor>string</citygml:specularcolor>
+															<citygml:diffusecolor>string</citygml:diffusecolor>
+															<citygml:emissivecolor>string</citygml:emissivecolor>
+														</citygml:Material>
+													</citygml:material>
+													<citygml:texture>
+														<citygml:Texture>
+															<citygml:texturemap>testmap</citygml:texturemap>
+															<citygml:texturecoordinates>1 0 0 1 0 1 0 1 </citygml:texturecoordinates>
+															<citygml:texturetype>wert</citygml:texturetype>
+															<citygml:repeat>0</citygml:repeat>
+														</citygml:Texture>
+													</citygml:texture>
+													<citygml:creation>2006-09-13</citygml:creation>
+													<citygml:deletion>2006-09-13</citygml:deletion>
+													<citygml:revision>2006-09-13</citygml:revision>
+													<citygml:function>string</citygml:function>
+													<citygml:theme>
+														<citygml:Theme>
+															<citygml:theme>string</citygml:theme>
+														</citygml:Theme>
+													</citygml:theme>
+												</citygml:Polygon>
+											</citygml:polygon>
+										</citygml:Composite>
+									</citygml:exteriorComposite>
+									<citygml:interiorComposite>
+										<citygml:Composite>
+											<citygml:function>string</citygml:function>
+											<citygml:polygon>
+												<citygml:Polygon>
+													<gml:boundedBy>
+														<gml:Envelope srsName="EPSG:4326">
+															<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+															<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+														</gml:Envelope>
+													</gml:boundedBy>
+													<citygml:geom>
+														<gml:Polygon srsName="EPSG:4326">
+															<gml:outerBoundaryIs>
+																<gml:LinearRing>
+																	<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+																</gml:LinearRing>
+															</gml:outerBoundaryIs>
+														</gml:Polygon>
+													</citygml:geom>
+													<citygml:material>
+														<citygml:Material>
+															<citygml:shininess>29</citygml:shininess>
+															<citygml:transparency>32</citygml:transparency>
+															<citygml:ambientintensity>26</citygml:ambientintensity>
+															<citygml:specularcolor>string</citygml:specularcolor>
+															<citygml:diffusecolor>string</citygml:diffusecolor>
+															<citygml:emissivecolor>string</citygml:emissivecolor>
+														</citygml:Material>
+													</citygml:material>
+													<citygml:texture>
+														<citygml:Texture>
+															<citygml:texturemap>testmap</citygml:texturemap>
+															<citygml:texturecoordinates>1 0 0 1 0 1 0 1 </citygml:texturecoordinates>
+															<citygml:texturetype>wert</citygml:texturetype>
+															<citygml:repeat>0</citygml:repeat>
+														</citygml:Texture>
+													</citygml:texture>
+													<citygml:creation>2006-09-13</citygml:creation>
+													<citygml:deletion>2006-09-13</citygml:deletion>
+													<citygml:revision>2006-09-13</citygml:revision>
+													<citygml:function>string</citygml:function>
+													<citygml:theme>
+														<citygml:Theme>
+															<citygml:theme>string</citygml:theme>
+														</citygml:Theme>
+													</citygml:theme>
+												</citygml:Polygon>
+											</citygml:polygon>
+										</citygml:Composite>
+									</citygml:interiorComposite>
+								</citygml:Solid>
+							</citygml:solid>
+							<citygml:composite>
+								<citygml:Composite>
+									<citygml:function>string</citygml:function>
+									<citygml:polygon>
+										<citygml:Polygon>
+											<gml:boundedBy>
+												<gml:Envelope srsName="EPSG:4326">
+													<gml:pos srsDimension="2">0.0 0.0</gml:pos>
+													<gml:pos srsDimension="2">1.0 1.0</gml:pos>
+												</gml:Envelope>
+											</gml:boundedBy>
+											<citygml:geom>
+												<gml:Polygon srsName="EPSG:4326">
+													<gml:outerBoundaryIs>
+														<gml:LinearRing>
+															<gml:coordinates cs="," decimal="." ts=" ">0.0,0.0 0.0,1.0 1.0,1.0 1.0,0.0 0.0,0.0</gml:coordinates>
+														</gml:LinearRing>
+													</gml:outerBoundaryIs>
+												</gml:Polygon>
+											</citygml:geom>
+											<citygml:material>
+												<citygml:Material>
+													<citygml:shininess>29</citygml:shininess>
+													<citygml:transparency>32</citygml:transparency>
+													<citygml:ambientintensity>26</citygml:ambientintensity>
+													<citygml:specularcolor>string</citygml:specularcolor>
+													<citygml:diffusecolor>string</citygml:diffusecolor>
+													<citygml:emissivecolor>string</citygml:emissivecolor>
+												</citygml:Material>
+											</citygml:material>
+											<citygml:texture>
+												<citygml:Texture>
+													<citygml:texturemap>testmap</citygml:texturemap>
+													<citygml:texturecoordinates>1 0 0 1 0 1 0 1 </citygml:texturecoordinates>
+													<citygml:texturetype>wert</citygml:texturetype>
+													<citygml:repeat>0</citygml:repeat>
+												</citygml:Texture>
+											</citygml:texture>
+											<citygml:creation>2006-09-13</citygml:creation>
+											<citygml:deletion>2006-09-13</citygml:deletion>
+											<citygml:revision>2006-09-13</citygml:revision>
+											<citygml:function>string</citygml:function>
+											<citygml:theme>
+												<citygml:Theme>
+													<citygml:theme>string</citygml:theme>
+												</citygml:Theme>
+											</citygml:theme>
+										</citygml:Polygon>
+									</citygml:polygon>
+								</citygml:Composite>
+							</citygml:composite>
+						</citygml:Geometry>
+					</citygml:geometry>
+					<citygml:lod>2</citygml:lod>
+					<citygml:type>1</citygml:type>
+					<citygml:function>string</citygml:function>
+				</citygml:LINK_FEAT_GEOM>
+			</citygml:linkedGeometry>
+			<citygml:dateAttribute>
+				<citygml:Date_Attribute>
+					<citygml:name>string</citygml:name>
+					<citygml:value>2006-09-13</citygml:value>
+				</citygml:Date_Attribute>
+			</citygml:dateAttribute>
+			<citygml:intAttribute>
+				<citygml:Int_Attribute>
+					<citygml:name>string</citygml:name>
+					<citygml:value>21</citygml:value>
+				</citygml:Int_Attribute>
+			</citygml:intAttribute>
+			<citygml:stringAttribute>
+				<citygml:Text_Attribute>
+					<citygml:name>string</citygml:name>
+					<citygml:value>string</citygml:value>
+				</citygml:Text_Attribute>
+			</citygml:stringAttribute>
+			<citygml:uriAttribute>
+				<citygml:URI_Attribute>
+					<citygml:name>string</citygml:name>
+					<citygml:value>string</citygml:value>
+				</citygml:URI_Attribute>
+			</citygml:uriAttribute>
+			<citygml:doubleAttribute>
+				<citygml:Float_Attribute>
+					<citygml:name>string</citygml:name>
+					<citygml:value>25</citygml:value>
+				</citygml:Float_Attribute>
+			</citygml:doubleAttribute>
+		</citygml:Feature>
+	</gml:featureMember>
+</wfs:FeatureCollection>

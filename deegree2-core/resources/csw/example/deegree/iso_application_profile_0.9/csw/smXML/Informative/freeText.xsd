@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================= Annotation ================================ -->
+    <xsd:annotation>
+        <xsd:documentation>01-12-2004 12:27:54</xsd:documentation>
+    </xsd:annotation>
+    <!-- ================== Includes - same namespace================== -->
+    <xsd:include schemaLocation="../smXMLbase.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xsd:complexType name="PT_FreeText_Type">
+        <xsd:complexContent>
+            <xsd:extension base="smXML:_Object_Type">
+                <xsd:sequence>
+                    <xsd:element name="textGroup" type="smXML:PT_Group_Type" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- ........................................................................ -->
+    <xsd:element name="PT_FreeText" type="smXML:PT_FreeText_Type"/>
+    <!-- ........................................................................ -->
+    <!-- =========================================================================== -->
+    <xsd:complexType name="PT_Group_Type">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="locale" type="xsd:anyURI"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <!-- =========================================================================== -->
+    <!-- ===============Extended type from CharacterString_PropertyType================== -->
+    <!-- ....................................Multilingual support.................................... -->
+    <xsd:complexType name="FreeText_CharacterString_PropertyType">
+        <xsd:complexContent>
+            <xsd:extension base="smXML:CharacterString_PropertyType">
+                <xsd:sequence>
+                    <xsd:element ref="smXML:PT_FreeText"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!--==End==-->
+</xsd:schema>

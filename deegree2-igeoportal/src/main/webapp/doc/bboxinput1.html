@@ -1,0 +1,64 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="author" content="lat/lon GmbH">
+        <meta name="KeyWords" content="deegree iGeoPortal lat/lon" />
+        <title>deegree iGeoPortal - bboxinput1 module</title>
+        <link href="css/deegree.css" rel="stylesheet" type="text/css"/>
+        <script LANGUAGE="JavaScript1.2" TYPE="text/javascript">
+			<!--
+			function register() {
+				if ( parent.controller == null ) {
+					parent.controller = new parent.Controller();
+					parent.controller.init();
+				}
+			}
+			
+			function initBBoxInput1() {
+				parent.controller.initBBoxInput1(document);
+			}
+			
+			function updateMap() {
+				var minx = document.getElementById( 'WEST' ).value;
+				var maxx = document.getElementById( 'EAST' ).value;
+				var miny = document.getElementById( 'SOUTH' ).value;
+				var maxy = document.getElementById( 'NORTH' ).value;
+				parent.controller.vBBoxInput1.updateMap( minx, miny, maxx, maxy );
+			}
+			-->
+		</script>
+	</head>
+	<body onload="register(); initBBoxInput1();">
+		<table>
+			<tbody>
+				<tr>
+					<td>north: </td>
+					<td>
+						<input type="text" id="NORTH" size="8" />
+					</td>
+				</tr>
+				<tr>
+					<td>west: </td>
+					<td>
+						<input type="text" id="WEST" size="8" />
+					</td>
+				</tr>
+				<tr>
+					<td>south: </td>
+					<td>
+						<input type="text" id="SOUTH" size="8"/>
+					</td>
+				</tr>
+				<tr>
+					<td>east: </td>
+					<td>
+						<input type="text" id="EAST" size="8"/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<input type="button" value="set bbox" onclick="updateMap();"></input>
+	</body>
+</html>

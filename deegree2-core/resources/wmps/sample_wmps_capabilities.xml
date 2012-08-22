@@ -1,0 +1,779 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMT_PS_Capabilities xmlns:deegree="http://www.deegree.org/wmps" xmlns:deegreewmps="http://www.deegree.org/wmps" xmlns:gml="http://www.opengis.net/gml" version="1.1.1" updateSequence="1.1.0">
+	<deegreewmps:DeegreeParam>
+		<deegreewmps:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8083/owsproxy/proxy"/>
+		<!-- default = 100 (MB) -->
+		<deegreewmps:CacheSize>100</deegreewmps:CacheSize>
+		<!-- maximum lifetime of the processes in the wmps; default = 3600 (sec)-->
+		<deegreewmps:MaxLifeTime>3600</deegreewmps:MaxLifeTime>
+		<!-- maximum time for the execution of a request until an exception of time-exceed is thrown
+	      default 15 Sekunden -->
+		<deegreewmps:RequestTimeLimit>35</deegreewmps:RequestTimeLimit>
+		<!-- determines the quality of the map/image generated from a PrintMap request.
+	      the parameter only will be evaluated if the desired format is able to handle it.
+	      the range of values is 0 ... 1, where 1 is best and 0 is worst. default is 0.95 -->
+		<deegreewmps:MapQuality>1.00</deegreewmps:MapQuality>
+		<!-- maximum map width that can be requested. default = 1000 -->
+		<deegreewmps:MaxMapWidth>5000</deegreewmps:MaxMapWidth>
+		<!-- maximum map height that can be requested. default = 1000 -->
+		<deegreewmps:MaxMapHeight>5000</deegreewmps:MaxMapHeight>
+		<!-- copyright note that will be  drawed at the letf side of the maps bottom -->
+		<!--Copyright>(c) deegreewmps wmps 2003</Copyright-->
+		<!-- returns the URl where the DTD for OGC wmps capabilities DOCTYPE definiton
+			  is located. default = http://schemas.opengis.net/wmps/1.1.1/wmps_MS_Capabilities.dtd -->
+		<deegreewmps:DTDLocation>
+			<deegreewmps:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://schemas.opengis.net/wmps/1.1.1/WMS_MS_Capabilities.dtd"/>
+		</deegreewmps:DTDLocation>
+		<!-- define a proxy server if the wmps is seperated by a firewall from the DTD-location or the
+		       locations of connected REMOTEWFS, REMOTEWCS and REMOTEWMS 
+		       as an alternative you can set commandline parameters at the call of the java
+		       interpreter like this: java -DproxyHost=131.220.106.104 -DproxyPort=1234 -classpath ...
+		       -->
+		<!--Proxy proxyHost="131.220.106.104" proxyPort="1234"/-->
+		
+		<deegreewmps:CacheDatabase>
+			<deegreewmps:JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<deegreewmps:Driver>org.hsqldb.jdbcDriver</deegreewmps:Driver>
+				<deegreewmps:Url>jdbc:hsqldb:file://Deploy/wmps_dmz1/database/wmpsPrintMap</deegreewmps:Url>				
+				<deegreewmps:User>sa</deegreewmps:User>
+				<deegreewmps:Password></deegreewmps:Password>
+			</deegreewmps:JDBCConnection>
+		</deegreewmps:CacheDatabase>
+		
+		<deegreewmps:PrintMapParam>
+			<deegreewmps:Format>pdf</deegreewmps:Format>
+			<deegreewmps:Template>
+				<deegreewmps:Directory>../../Template</deegreewmps:Directory>
+			</deegreewmps:Template>
+			<deegreewmps:PlotDirectory>file://D:/Java/Projekte/wuppertal-portal/webapps/portal_dmz1/download</deegreewmps:PlotDirectory>
+			<deegreewmps:OnlineResource>http://10.19.1.222:8081/portal</deegreewmps:OnlineResource>
+			<deegreewmps:PlotImageDirectory>file://D:/Java/Projekte/wuppertal-portal/webapps/portal_dmz1/download\image</deegreewmps:PlotImageDirectory>
+			<deegreewmps:MailHost>scott2.lat-lon.de</deegreewmps:MailHost>
+            <deegreewmps:MailHostUser></deegreewmps:MailHostUser>
+            <deegreewmps:MailHostPassword></deegreewmps:MailHostPassword>
+			<deegreewmps:AdministratorEMailAddress>poth@lat-lon.de</deegreewmps:AdministratorEMailAddress>
+		</deegreewmps:PrintMapParam>
+		
+	</deegreewmps:DeegreeParam>
+	<Service>
+		<Name>deegree wmps</Name>
+		<Title>deegree wmps</Title>
+		<!-- abstract und keywords are optional -->
+		<Abstract>wmps reference implementation</Abstract>
+		<KeywordList>
+			<Keyword>deegree wmps</Keyword>
+			<Keyword>WMPS</Keyword>
+		</KeywordList>
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wmps/services"/>
+		<!-- the following service information is optional -->
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>Andreas Poth</ContactPerson>
+				<ContactOrganization>lat/lon</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactPosition>Developer</ContactPosition>
+			<ContactAddress>
+				<AddressType>Office</AddressType>
+				<Address>Aennchenstr. 19</Address>
+				<City>Bonn</City>
+				<StateOrProvince>NRW</StateOrProvince>
+				<PostCode>53177</PostCode>
+				<Country>Germany</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>0049 228 18496-0</ContactVoiceTelephone>
+			<ContactFacsimileTelephone>0049 228 18496-29</ContactFacsimileTelephone>
+			<ContactElectronicMailAddress>poth@lat-lon.de</ContactElectronicMailAddress>
+		</ContactInformation>
+		<Fees>none</Fees>
+		<AccessConstraints>none</AccessConstraints>
+	</Service>
+	<Capability>
+		<Request>
+			<!-- by default available -->
+			<GetCapabilities>
+				<!-- default and mandatory = application/vnd.ogc.wmps_xml -->
+				<Format>application/vnd.ogc.wmps_xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegreewmps/ogcwebservice?"/>
+						</Get>
+						<!-- POST isn't supported -->
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<!-- by default available -->
+			<PrintMap>
+				<!-- default = image/gif; image/png; image/jpg -->
+				<!-- mandatory = image/png -->
+				<Format>image/gif</Format>
+				<Format>image/png</Format>
+				<Format>image/jpg</Format>
+				<Format>image/tif</Format>
+				<Format>image/bmp</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegreewmps/ogcwebservice?"/>
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegreewmps/ogcwebservice?"/>
+						</Post>
+					</HTTP>
+				</DCPType>
+			</PrintMap>
+		</Request>
+		<Exception>
+			<!-- default & mandatory= application/vnd.ogc.se_xml -->
+			<Format>application/vnd.ogc.se_xml</Format>
+			<Format>application/vnd.ogc.se_inimage</Format>
+			<Format>application/vnd.ogc.se_blank</Format>
+		</Exception>
+		<!-- optional; default = all false -->
+		<UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="0"/>
+		<!-- cascaded is optional and default=false -->
+		<!-- TOP LAYER -->
+		<Layer queryable="0" cascaded="0" noSubsets="0">
+			<Name>TopLevel</Name>
+			<Title>deegree demo-CD top-level-layer</Title>
+			<!-- abstract and keyword are optonal -->
+			<Abstract>the top-level-layer of the deegree demo-CD</Abstract>
+			<KeywordList>
+				<Keyword>deegree</Keyword>
+				<Keyword>demo-CD</Keyword>
+				<Keyword>layer</Keyword>
+			</KeywordList>
+			<SRS>EPSG:4326</SRS>
+			<SRS>EPSG:31466</SRS>
+			<SRS>EPSG:31467</SRS>
+			<!--<LatLonBoundingBox minx="-10" miny="-10" maxx="10" maxy="10"/>-->
+			<LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>
+			<!-- default 0 ; 9E99  -->
+			<ScaleHint min="0" max="999999999"/>
+			<!-- Wuppertal daten -->
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>r102:fnp</Name>
+				<Title>Flaechen Nutz.Plan</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=r102:fnp&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:fnp</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" 
+						xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>r102:fnp</Name>
+				<Title>nocheiner</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=r102:fnp&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:fnp</Name>
+					<Title>Legend</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+
+			<Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>R102:stadtplan</Name>
+				<Title>stadtplan wuppertals</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/jpeg&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=R102:stadtplan&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:R102:stadtplan</Name>
+					<Title>Legend</Title>
+					<LegendURL width="190" height="630">
+						<Format>image/png</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.wuppertal.de/geoportal/legenden/default_R102_stadtplan.gif"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			
+			<Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>Boden:Bap</Name>
+				<Title>Boden Bap</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/jpeg&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=Boden:Bap&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>Boden:Bap</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.jrtc-polk.army.mil/ACS/map%20legend.gif"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>Boden:Blei</Name>
+				<Title>Boden Blei</Title>
+				<SRS>EPSG:31466</SRS>
+				<DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<Type>REMOTEWMS</Type>
+					<OWSCapabilities>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</OWSCapabilities>
+					<FilterCondition>
+						<WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=Boden:Blei&STYLES=]]></WMSRequest>
+					</FilterCondition>
+				</DataSource>
+				<Style>
+					<Name>default:Boden:Blei</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" 
+						xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>boden:bbk:vorsorge</Name>
+				<Title>boden bbk vorsorge</Title>
+				<SRS>EPSG:31466</SRS>
+				<DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<Type>REMOTEWMS</Type>
+					<OWSCapabilities>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</OWSCapabilities>
+					<FilterCondition>
+						<WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=boden:bbk:vorsorge&STYLES=]]></WMSRequest>
+					</FilterCondition>
+				</DataSource>
+				<Style>
+					<Name>default:boden:bbk:vorsorge</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" 
+						xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<!-- geoserver nrw -->
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>Raster:NRW_Uebersicht:NRW</Name>
+				<Title>NRW Uebersicht</Title>
+				<SRS>EPSG:31466</SRS>
+				<DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<Type>REMOTEWMS</Type>
+					<OWSCapabilities>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</OWSCapabilities>
+					<FilterCondition>
+						<WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=Raster:NRW_Uebersicht:NRW&STYLES=]]></WMSRequest>
+					</FilterCondition>
+				</DataSource>
+				<Style>
+					<Name>Raster:NRW_Uebersicht:NRW</Name>
+					<Title>Legend</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" 
+						xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>hangneigung</Name>
+				<Title>Hangneigung</Title>
+				<SRS>EPSG:31466</SRS>
+				<DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<Type>REMOTEWMS</Type>
+					<OWSCapabilities>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</OWSCapabilities>
+					<FilterCondition>
+						<WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=hangneigung&STYLES=]]></WMSRequest>
+					</FilterCondition>
+				</DataSource>
+				<Style>
+					<Name>hangneigung</Name>
+					<Title>Legend</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" 
+						xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<!-- Bonner daten -->
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>gemischte_bauflaeche</Name>
+				<Title>Bonn</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>LOCALWFS</deegree:Type>
+					<deegree:Name>app:gemischte_bauflaeche</deegree:Name>
+					<deegree:GeometryProperty>app:GEOM</deegree:GeometryProperty>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:gemischte_bauflaeche</Name>
+					<Title>Legend</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>gruenflaechen</Name>
+				<Title>Bonn</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>LOCALWFS</deegree:Type>
+					<deegree:Name>app:gruenflaechen</deegree:Name>
+					<deegree:GeometryProperty>app:GEOM</deegree:GeometryProperty>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:gruenflaechen</Name>
+					<Title>Legend</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>hw105_region</Name>
+				<Title>Bonn</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>LOCALWFS</deegree:Type>
+					<deegree:Name>app:hw105_region</deegree:Name>
+					<deegree:GeometryProperty>app:GEOM</deegree:GeometryProperty>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:hw105_region</Name>
+					<Title>Legend</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>hw10_region</Name>
+				<Title>Bonn</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>LOCALWFS</deegree:Type>
+					<deegree:Name>app:hw10_region</deegree:Name>
+					<deegree:GeometryProperty>app:GEOM</deegree:GeometryProperty>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:hw10_region</Name>
+					<Title>Legend</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<!-- Bonner daten -->
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>DD_Luftbildkarte_2003</Name>
+				<Title>Luftbild Bonn</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=DD_Luftbildkarte_2003&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" 
+						xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_75000schrift_t</Name>
+				<Title>stadtplan_75000schrift_t</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_75000schrift_t&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_25000schrift_t</Name>
+				<Title>stadtplan_25000schrift_t</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_25000schrift_t&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_15000schrift_t</Name>
+				<Title>stadtplan_15000schrift_t</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_15000schrift_t&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_12500schrift_t</Name>
+				<Title>stadtplan_12500schrift_t</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_12500schrift_t&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_2500schrift_t</Name>
+				<Title>stadtplan_2500schrift_t</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_2500schrift_t&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>DD_DGK</Name>
+				<Title>DD_DGK</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=DD_DGK&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>DD_Stadtplan</Name>
+				<Title>DD_Stadtplan</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=DD_Stadtplan&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>DD_Hintergrundkarte</Name>
+				<Title>DD_Hintergrundkarte</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=DD_Hintergrundkarte&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>DD_rak_geb_10000</Name>
+				<Title>DD_rak_geb_10000</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=DD_rak_geb_10000&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:rak_geb</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>bahnnetz_l</Name>
+				<Title>bahnnetz_l</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=bahnnetz_l&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:rak_geb</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_2500point</Name>
+				<Title>stadtplan_2500point</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_2500point&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtplan_12500point</Name>
+				<Title>stadtplan_12500point</Title>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=stadtplan_12500point&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:luftbild</Name>
+					<Title>Road atlas style</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<!-- Demo CD layers -->
+			<Layer queryable="1" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>europe:country</Name>
+				<Title>Country border</Title>
+				<SRS>EPSG:4326</SRS>
+				<deegree:DataSouce failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8082/deegreewms/wms?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=country&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSouce>
+				<Style>
+					<Name>default:country</Name>
+					<Title>country border</Title>
+					<!--LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL-->
+				</Style>
+			</Layer>
+			<!--
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>stadtbezirke</Name>
+				<Title>bezirke wuppertals</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>LOCALWFS</deegree:Type>
+					<deegree:Name>app:stadtbezirke</deegree:Name>
+					<deegree:GeometryProperty>app:GEOM</deegree:GeometryProperty>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="file:///C:/Anup/Projects/deegree2/Resources/wmps/example/deegree/conf/wfs/WEB-INF/conf/wfs/sample_wfs_capabilities.xml"/>
+					</deegree:OWSCapabilities>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:stadtbezirke</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.exploremaps.com/Media/Legend%20for%20web.jpg"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>gewerbegebiete</Name>
+				<Title>bezirke wuppertals</Title>
+				<SRS>EPSG:31466</SRS>
+				<SRS>EPSG:31467</SRS>
+				<deegree:DataSource failOnException="1" queryable="1" xmlns:app="http://www.deegree.org/app">
+					<deegree:Type>LOCALWFS</deegree:Type>
+					<deegree:Name>app:gewerbegebiete</deegree:Name>
+					<deegree:GeometryProperty>app:GEOM</deegree:GeometryProperty>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="file:///C:/Anup/Projects/deegree2/Resources/wmps/example/deegree/conf/wfs/WEB-INF/conf/wfs/sample_wfs_capabilities.xml"/>
+					</deegree:OWSCapabilities>
+				</deegree:DataSource>
+				<Style>
+					<Name>default:gewerbegebiete</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://wibikeroutes.net/County%20Maps/Bike%20Map%20Legend.gif"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+			<Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+				<Name>R102:stadtplan</Name>
+				<Title>stadtplan wuppertals</Title>
+				<SRS>EPSG:31466</SRS>
+				<deegree:DataSource failOnException="1" queryable="1">
+					<deegree:Type>REMOTEWMS</deegree:Type>
+					<deegree:OWSCapabilities>
+						<deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geoportal.wuppertal.de/deegree/wms?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities"/>
+					</deegree:OWSCapabilities>
+					<deegree:FilterCondition>
+						<deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/jpeg&TRANSPARENT=false&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=R102:stadtplan&STYLES=]]></deegree:WMSRequest>
+					</deegree:FilterCondition>
+				</deegree:DataSource>
+				<Style>
+					<Name>R102:stadtplan</Name>
+					<Title>Road atlas style</Title>
+					<LegendURL width="72" height="72">
+						<Format>image/gif</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.jrtc-polk.army.mil/ACS/map%20legend.gif"/>
+					</LegendURL>
+				</Style>
+			</Layer>
+-->
+		</Layer>
+	</Capability>
+</WMT_PS_Capabilities>

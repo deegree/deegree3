@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:GetRecords xmlns:ogc="http://www.opengis.net/ogc" xmlns:csw="http://www.opengis.net/cat/csw" version="2.0.0" service="CSW" resultType="results" outputFormat="text/xml" outputSchema="OGCCORE" startPosition="1" maxRecords="10" xmlns="http://www.opengis.net/cat/csw" xmlns:ows="http://www.opengis.net/ows" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw
+http://schemas.opengis.net/csw/2.0.0/CSW-discovery.xsd">
+	<csw:Query typeNames="csw:dataset">
+		<csw:ElementSetName>full</csw:ElementSetName>
+	</csw:Query>
+</csw:GetRecords>

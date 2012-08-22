@@ -1,0 +1,177 @@
+<!-- HeadURL -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree mapPrintingService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" width="100%">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="3">
+                    <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td width="30%"><strong><em>Basic WMPS requests</em></strong></td>
+                <td>
+                    <ul>
+                        <li><a href="#basic_gc">GetCapabilities</a></li>
+                        <li><a href="#basic_pm">PrintMap</a></li>
+                        <li><a href="#basic_gat">GetAvailableTemplates</a></li>
+                        <li><a href="#basic_dt">DescribeTemplate</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2" width="100%">
+        <colgroup>
+                <col width="35%">
+                <col width="65%">
+                <col width="5%">
+            </colgroup>
+        
+            <tr valign="top" bgcolor="#a3b4d9">
+                <th>Request</th>
+                <th>Description</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gc"></a>
+                    <b>GetCapabilities</b><br />
+                    <p>Retrieve capabilities information</p>
+                </td>
+                <td width="5%" align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="services?REQUEST=GetCapabilities&version=1.1.1&service=WMPS">WMPS 1.1.1 GetCapabilities</a>
+                </td>
+                <td>
+                  Retrieve capabilities information by using the following parameters.<br /><br />
+                  ...services?<br />
+                  REQUEST=GetCapabilities<br />
+                  version=1.1.1<br />
+                  service=WMPS<br />
+                </td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_pm"></a>
+                    <b>PrintMap</b><br />
+                    <p>Print a map with a WMPS</p>
+                </td>
+                <td width="5%" align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=PrintMap&SERVICE=WMPS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=StateBoundary&TRANSPARENT=TRUE&BBOX=408430.8964418412,4490191.868920919,532143.0330999622,4583782.789697062&SRS=EPSG:26912&STYLES=default&TEMPLATE=template_1&EMAIL=crashtest@dummy.com&TITLE=The%20State%20of%20Utah&TEXTAREAS=AUTHOR:deegree,DESCRIPTION:This%20is%20Utah,NOTES:just%20a%20little%20example,Date:2010-04-16,LOGO_URL:http://localhost:8080/deegree-wmps/images/logo-deegree.png&COPYRIGHT=deegree">WMPS 1.1.1 PrintMap using BBOX</a>
+                </td>
+                <td>
+                    A simple PrintMap Request using a Bounding Box:<br /><br />
+                    ...services?<br />
+                    REQUEST=PrintMap<br />
+                    SERVICE=WMPS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=500<br />
+                    HEIGHT=500<br />
+                    LAYERS=StateBoundary<br />
+                    TRANSPARENT=TRUE<br />
+                    <b>BBOX=408430.8964418412,4490191.868920919,532143.0330999622,4583782.789697062</b><br />
+                    SRS=EPSG:26912<br />
+                    STYLES=default<br />
+                    TEMPLATE=template_1<br />
+                    EMAIL=crashtest@dummy.com<br />
+                    TITLE=The State of Utah<br />
+                    TEXTAREAS=<br />
+                    AUTHOR:deegree<br />
+                    DESCRIPTION:This is Utah<br />
+                    NOTES:just a little example<br />
+                    Date:2010-04-16<br />
+                    LOGO_URL:http://localhost:8080/deegree-wmps/images/logo-deegree.png<br />
+                    COPYRIGHT=deegree<br />
+                </td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=PrintMap&SERVICE=WMPS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=Municipalities&TRANSPARENT=TRUE&CENTER=427538,4497780&SCALE=50000&SRS=EPSG:26912&STYLES=default&TEMPLATE=template_1&EMAIL=crashtest@dummy.com&TITLE=The%20Municipalities%20in%20Utah&TEXTAREAS=AUTHOR:deegree,DESCRIPTION:This%20is%20Utah,NOTES:just%20a%20little%20example,Date:2010-04-16,LOGO_URL:http://localhost:8080/deegree-wmps/images/logo-deegree.png&COPYRIGHT=deegree&SCALEBAR=TRUE&LEGEND=TRUE">WMPS 1.1.1 PrintMap using CENTER<br /> and a SCALEBAR</a>
+                </td>
+                <td>
+                  A simple PrintMap Request using the Center Parameter, a Legend and a Scalebar:<br /><br />
+                  ...services?<br />
+                  REQUEST=PrintMap<br />
+                  SERVICE=WMPS<br />
+                  VERSION=1.1.1<br />
+                  WIDTH=500<br />
+                  HEIGHT=500<br />
+                  LAYERS=Municipalities<br />
+                  TRANSPARENT=TRUE<br />
+                  <b>CENTER=427538,4497780</b><br />
+                  SCALE=50000<br />
+                  SRS=EPSG:26912<br />
+                  STYLES=default<br />
+                  TEMPLATE=template_1<br />
+                  EMAIL=crashtest@dummy.com<br />
+                  TITLE=The Municipalities in Utah<br />
+                  TEXTAREAS=<br />
+                  AUTHOR:deegree<br />
+                  DESCRIPTION:This is Utah<br />
+                  NOTES:just a little example<br />
+                  Date:2010-04-16<br />
+                  LOGO_URL:http://localhost:8080/deegree-wmps/images/logo-deegree.png<br />
+                  COPYRIGHT=deegree<br />
+                  <b>SCALEBAR=TRUE</b><br />
+                  <b>LEGEND=TRUE</b><br />
+                </td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gat"></a>
+                    <b>GetAvailableTemplates</b><br />
+                    <p>Get a list of available templates<br /></p>
+                </td>
+                <td width="5%" align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?SERVICE=WMPS&REQUEST=GetAvailableTemplates&version=1.1.1">WMPS 1.1.1 GetAvailableTemplates</a>
+                </td>
+                <td>
+                  GetAvailableTemplates Request, which receives a list of all available templates for the WMPS<br /><br /> 
+                  ...services?<br />
+                  SERVICE=WMPS<br />
+                  REQUEST=GetAvailableTemplates<br />
+                  version=1.1.1<br />
+                </td>
+            </tr>
+            
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_dt"></a>
+                    <b>DescribeTemplate</b><br />
+                    <p>Get detailed information about a template</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?SERVICE=WMPS&REQUEST=DescribeTemplate&version=1.1.1&template=template_1">WMPS 1.1.1 DescribeTemplate</a>
+                </td>
+                <td>
+                  DescripeTemplate Request, which receives detailed informations about the template named template_1<br /><br />
+                  ...services?<br />
+                  SERVICE=WMPS<br />
+                  REQUEST=DescribeTemplate<br />
+                  version=1.1.1<br />
+                  template=template_1<br />
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

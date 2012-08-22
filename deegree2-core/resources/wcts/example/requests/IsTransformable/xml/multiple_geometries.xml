@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<IsTransformable xmlns="http://www.opengis.net/wcts/0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcts ../../wctsIsTransformable.xsd" service="WCTS" version="0.0.0">
+  <!-- Check if a given geometries can be converted from EPSG:23032 to EPSG:31466-->
+  <SourceCRS>urn:ogc:def:crs:EPSG::23032</SourceCRS>
+  <TargetCRS>urn:ogc:def:crs:EPSG::31466</TargetCRS>
+  <GeometryType>LineString</GeometryType>
+  <GeometryType>Surface</GeometryType>
+  <GeometryType>Point</GeometryType>
+</IsTransformable>

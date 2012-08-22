@@ -1,0 +1,7 @@
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=Transaction&
+OPERATION=Delete&
+TYPENAME=InWaterA_1M,BuiltUpA_1M&
+BBOX=10,10,20,20

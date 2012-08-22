@@ -1,0 +1,503 @@
+<?xml-stylesheet type="text/xsl" href="D:\java\projekte\lbgr_lgb_catalog\webapps\csw\WEB-INF\conf\csw\out_csw_profile.xsl"?>
+<xsd:schema xmlns="http://www.deegree.org/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--
+		<xsd:import namespace="http://www.opengis.net/gml"
+		schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+		<xsd:import namespace="http://www.opengis.net/gml"
+		schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+	-->
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../schema/gml/3.1.1/base/feature.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../schema/gml/3.1.1/base/geometryAggregates.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<deegreewfs:Prefix>app</deegreewfs:Prefix>
+			<deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+			<deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+			<JDBCConnection xmlns="http://www.deegree.org/jdbc">
+				<Driver>org.postgresql.Driver</Driver>
+				<Url>jdbc:postgresql://localhost:5432/csw_blob</Url>
+				<User>postgres</User>
+				<Password>postgres</Password>
+				<SecurityConstraints/>
+				<Encoding>iso-8859-1</Encoding>
+			</JDBCConnection>
+			<deegreewfs:SuppressXLinkOutput>true</deegreewfs:SuppressXLinkOutput>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ============================================================== -->
+	<xsd:element name="CQP_Main" type="app:CQP_MainType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>CQP_Main</deegreewfs:table>
+				<deegreewfs:gmlId prefix="CQP_Main_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CQP_Main_ID_seq</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+					<deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+				</deegreewfs:gmlId>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="CQP_MainType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="subject" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="subject" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="title" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="title" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="abstract" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="abstract" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="anyText" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="anyText" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="identifier" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="identifier" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="modified" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="modified" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="type" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="type" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="extentBegin" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="extentBegin" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="extentEnd" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="extentEnd" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="revisionDate" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="revisionDate" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="creationDate" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="creationDate" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="publicationDate" type="xsd:dateTime" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="publicationDate" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="alternateTitle" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="alternateTitle" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="resourceIdentifier" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="resourceIdentifier" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="resourceLanguage" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="resourceLanguage" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="geographicDescripionCode" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="geographicDescripionCode" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="serviceType" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="serviceType" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="bbox" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="app:CQP_BBOX">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="FK_CQP_MAIN" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="topicCategory" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="topicCategory" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="parentIdentifier" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="parentId" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="language" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="language" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="lineage" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="lineage" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="condAppToAccAndUse" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="condAppToAccAndUse" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="accessConstraints" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="accessConstraints" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="otherConstraints" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="otherConstraints" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="classification" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="classification" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="couplingType" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="couplingType" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="operation" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="operation" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="operatesOn" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="operatesOn" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="operatesOnIdentifier" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="operatesOnIdentifier" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="operatesOnName" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="operatesOnName" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="domainConsistency" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="app:CQP_DomainConsistency">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="FK_CQP_MAIN" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="metadataset" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="metadataset" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="CQP_BBOX" type="app:CQP_BBOXType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>CQP_BBOX</deegreewfs:table>
+				<deegreewfs:gmlId prefix="CQP_BBOX_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CQP_BBOX_ID_seq
+						</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+					<deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+				</deegreewfs:gmlId>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="CQP_BBOXType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="geom" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="geom" type="GEOMETRY" srs="4326"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="CQP_DomainConsistency" type="app:CQP_DomainConsistencyType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>CQP_DomainConsistency</deegreewfs:table>
+				<deegreewfs:gmlId prefix="CQP_DomainConsistency_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CQP_DomainConsistency_ID_seq
+						</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+					<deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+				</deegreewfs:gmlId>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="CQP_DomainConsistencyType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="specificationTitle" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="specificationTitle" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="degree" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="degree" type="BOOLEAN"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="specificationDate" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content type="app:CQP_SpecificationDate">
+									<deegreewfs:Relation>
+										<deegreewfs:From>
+											<deegreewfs:MappingField field="ID" type="INTEGER"/>
+										</deegreewfs:From>
+										<deegreewfs:To fk="true">
+											<deegreewfs:MappingField field="FK_CQP_DomainConsistency" type="INTEGER"/>
+										</deegreewfs:To>
+									</deegreewfs:Relation>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ============================================================== -->
+	<xsd:element name="CQP_SpecificationDate" type="app:CQP_SpecificationDateType" substitutionGroup="gml:_Feature">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<deegreewfs:table>CQP_SpecificationDate</deegreewfs:table>
+				<deegreewfs:gmlId prefix="CQP_SpecificationDate_">
+					<deegreewfs:MappingField field="ID" type="INTEGER"/>
+					<deegreewfs:IdGenerator type="DB_SEQ">
+						<deegreewfs:param name="sequence">CQP_SpecificationDate_ID_seq
+						</deegreewfs:param>
+					</deegreewfs:IdGenerator>
+					<deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+				</deegreewfs:gmlId>
+				<deegreewfs:transaction update="true" delete="true" insert="true"/>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ============================================================== -->
+	<xsd:complexType name="CQP_SpecificationDateType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="dateStamp" type="xsd:dateTime" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="dateStamp" type="TIMESTAMP"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="datetype" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<deegreewfs:Content>
+									<deegreewfs:MappingField field="datetype" type="VARCHAR"/>
+								</deegreewfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

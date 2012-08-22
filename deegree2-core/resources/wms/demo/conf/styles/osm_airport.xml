@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/database" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <sld:NamedLayer>
+        <sld:Name>OSMAirport</sld:Name>
+        <sld:UserStyle>
+            <sld:Name>default:airport</sld:Name>
+            <sld:Title>Airport</sld:Title>
+            <sld:IsDefault>1</sld:IsDefault>
+            <sld:FeatureTypeStyle>
+                <sld:Name>airport</sld:Name>
+                <sld:Rule>
+                    <sld:Name>Airport</sld:Name>
+                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>3.622047244058267E14</sld:MaxScaleDenominator>
+                    <sld:PointSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:location</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Graphic>
+                            <sld:ExternalGraphic>
+                                <OnlineResource xlink:type="simple" xlink:href="../symbols/osm_airport.png"/>
+                                <sld:Format>image/png</sld:Format>
+                            </sld:ExternalGraphic>
+                            <sld:Size>25</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
+                </sld:Rule>
+                <sld:Rule>
+                    <sld:Name>labelStyle</sld:Name>
+                    <ogc:Filter>
+                        <ogc:Not>
+                            <ogc:PropertyIsNull>
+                                <ogc:PropertyName>app:name</ogc:PropertyName>
+                            </ogc:PropertyIsNull>
+                        </ogc:Not>
+                    </ogc:Filter>
+                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
+                    <sld:MaxScaleDenominator>500000</sld:MaxScaleDenominator>
+                    <sld:TextSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>app:location</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Label>
+                            <ogc:PropertyName>app:name</ogc:PropertyName>
+                        </sld:Label>
+                        <sld:Font>
+                            <sld:CssParameter name="font-family">Dialog</sld:CssParameter>
+                            <sld:CssParameter name="font-style">normal</sld:CssParameter>
+                            <sld:CssParameter name="font-size">12.0</sld:CssParameter>
+                            <sld:CssParameter name="font-color">#000000</sld:CssParameter>
+                        </sld:Font>
+                        <sld:LabelPlacement>
+                            <sld:PointPlacement>
+                                <sld:Displacement>
+                                    <sld:DisplacementX>7</sld:DisplacementX>
+                                    <sld:DisplacementY>0</sld:DisplacementY>
+                                </sld:Displacement>
+                            </sld:PointPlacement>
+                        </sld:LabelPlacement>
+                    </sld:TextSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+    </sld:NamedLayer>
+</sld:StyledLayerDescriptor>

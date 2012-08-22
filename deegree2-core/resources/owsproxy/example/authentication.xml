@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Authentications>
+	<Method name="user:password">
+		<class>org.deegree.security.UserPasswordAuthentication</class>
+	</Method>
+	<Method name="WAS">
+		<class>org.deegree.security.WASAuthentication</class>
+		<init-param>
+			<name>WAS</name>
+			<value><![CDATA[http://localhost:8081/was/was?REQUEST=DescribeUser&Service=WAS&version=1.0.0&SESSIONID=[SESSIONID]]]></value>
+		</init-param>		
+	</Method>
+	<Method name="UserPrincipal">
+		<class>org.deegree.security.UserPrincipalAuthentication</class>
+	</Method>
+	<!--
+	<Method name="IP-Address">
+		<class>org.deegree.security.IPAddressAuthentication</class>
+		<init-param>
+			<name>pattern</name>
+			<value>127.0.0.*,localhost,19.1.10.21</value>
+		</init-param>
+	</Method>
+	-->
+</Authentications>

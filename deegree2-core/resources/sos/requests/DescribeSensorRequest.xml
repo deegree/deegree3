@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scs:DescribeSensor service="SCS" outputFormat="SensorML" xmlns:scs="http://www.opengis.net/scs">
+	<scs:TypeName>Sensor1</scs:TypeName>
+</scs:DescribeSensor>

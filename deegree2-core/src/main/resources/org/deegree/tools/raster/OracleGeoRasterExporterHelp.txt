@@ -1,0 +1,14 @@
+-driver : Oracle database driver class (usualy oracle.jdbc.OracleDriver)
+-url : connection information too a Oracle database (
+		e.g. jdbc:oracle:thin:@127.0.0.1:1521:deegree)
+-user : user name for database connection
+-password : user's password
+-rdtName : name of the RDTable to be used for importing georaster
+-imageTableName : name of the table to be used for importing georaster
+-georColName : name of the georaster column of -imageTableName 
+-envelope : bounding box of the image subset to be exported
+-level : Oracle GeoRaster pyramid level. If no pyramid has been created 
+		'-level 1' must be used
+-outFile : name of the result image file
+-identification : SQL where clause which identifies the raster of the 
+				  imageTable to be exported (e.g. "ID = 1"

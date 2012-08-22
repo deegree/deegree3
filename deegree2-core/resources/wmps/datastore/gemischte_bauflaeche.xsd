@@ -1,0 +1,109 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns:deegreewfs="http://www.deegree.org/wfs" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Prefix>app</deegreewfs:Prefix>
+            <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+            <deegreewfs:DefaultSRS>EPSG:31466</deegreewfs:DefaultSRS>
+            <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+                <Driver>org.postgresql.Driver</Driver>
+                <Url>jdbc:postgresql://hurricane:5432/bonn</Url>
+                <User>dev</User>
+                <Password>dev</Password>
+                <SecurityConstraints/>
+                <Encoding>iso-8859-1</Encoding>
+            </JDBCConnection>
+        </xsd:appinfo>
+    </xsd:annotation><!-- ============================================================== --><xsd:element name='gemischte_bauflaeche' type='app:gemischte_bauflaecheType' substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <deegreewfs:table>gemischte_bauflaeche</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+                    <deegreewfs:MappingField field='gid' type="INTEGER"/>
+                </deegreewfs:gmlId>
+            </xsd:appinfo>
+        </xsd:annotation>
+</xsd:element>
+<!-- ============================================================== -->    <xsd:complexType name='gemischte_bauflaecheType'>
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+<xsd:element name='gid' type='xsd:integer'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='gid' type='INTEGER'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fnp' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='fnp' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fnp1' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='fnp1' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fnp2' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='fnp2' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fnp3' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='fnp3' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fnp4' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='fnp4' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fnp5' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='fnp5' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='GEOM' type='gml:GeometryPropertyType'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='the_geom' type='GEOMETRY'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+ </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

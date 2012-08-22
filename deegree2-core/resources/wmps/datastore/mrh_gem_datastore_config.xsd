@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.deegree.org/wfs" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+	<!-- configuration for the persistence backend to be used -->
+	<xsd:annotation>
+		<xsd:appinfo>
+			<wfs:Prefix>app</wfs:Prefix>
+			<wfs:Backend>ORACLE</wfs:Backend>
+			<wfs:DefaultSRS>EPSG:31467</wfs:DefaultSRS>
+			<jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+				<jdbc:Driver>oracle.jdbc.OracleDriver</jdbc:Driver>
+				<jdbc:Url>jdbc:oracle:thin:@hurricane:1521:devs</jdbc:Url>
+				<jdbc:User>gdimrh</jdbc:User>
+				<jdbc:Password>gdimrh</jdbc:Password>
+				<jdbc:SecurityConstraints/>
+				<jdbc:Encoding>iso-8859-1</jdbc:Encoding>
+			</jdbc:JDBCConnection>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ====================================================================== -->
+	<xsd:element name="MRH-GEM" type="app:MRH-GEM_Type" substitutionGroup="gml:_Feature"/>
+	<!-- ====================================================================== -->
+	<xsd:complexType name="MRH-GEM_Type">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<wfs:table>MRH_GEM_NEU</wfs:table>
+				<wfs:gmlId prefix="ID_">
+					<wfs:MappingField field="KEY" type="VARCHAR"/>
+				</wfs:gmlId>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element name="AREA" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="AREA" type="VARCHAR"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="KEY" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="KEY" type="VARCHAR"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="GEN" type="xsd:string">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="GEN" type="VARCHAR"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="GEOM" type="gml:GeometryPropertyType">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<wfs:Content>
+									<wfs:MappingField field="geom" type="GEOMETRY"/>
+								</wfs:Content>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

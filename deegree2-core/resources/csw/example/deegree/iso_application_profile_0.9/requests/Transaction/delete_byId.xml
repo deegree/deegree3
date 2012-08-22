@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:Transaction service="CSW" version="2.0.0" 
+xmlns:csw="http://www.opengis.net/cat/csw" 
+xmlns:gml="http://www.opengis.net/gml" 
+xmlns:iso19115="http://schemas.opengis.net/iso19115full" 
+xmlns:iso19115brief="http://schemas.opengis.net/iso19115brief" 
+xmlns:smXML="http://metadata.dgiwg.org/smXML" 
+xmlns:ogc="http://www.opengis.net/ogc">
+	<csw:Delete>
+		<csw:Constraint version="1.0.0">
+			<ogc:Filter>
+				<ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+					<ogc:PropertyName>./iso19115:fileIdentifier/smXML:CharacterString</ogc:PropertyName>
+					<ogc:Literal>Example_2007_10_18</ogc:Literal>
+				</ogc:PropertyIsLike>
+			</ogc:Filter>
+		</csw:Constraint>
+	</csw:Delete>
+</csw:Transaction>

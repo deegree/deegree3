@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dgp:Module xmlns:dgp="http://www.deegree.org/project" xmlns:set="http://www.deegree.org/settings" xmlns:cmm="http://www.deegree.org/coremapmodel" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/project ../schema/jaxbschema/project.xsd">
+	<dgp:name>IVModule</dgp:name>
+	<cmm:identifier>
+		<cmm:value>imageview</cmm:value>
+	</cmm:identifier>
+	<dgp:className>org.deegree.igeo.modules.StartExternalProgramModule
+	</dgp:className>
+	<dgp:ViewForm>
+		<dgp:PaneViewForm>
+			<dgp:containerClass viewPlatform="Application">org.deegree.igeo.views</dgp:containerClass>
+			<dgp:ComponentState active="false" modal="false">
+				<dgp:windowState>closed</dgp:windowState>
+			</dgp:ComponentState>
+			<dgp:paneTitle>$F4.FrameTitle</dgp:paneTitle>
+		</dgp:PaneViewForm>
+		<dgp:Layout>
+			<dgp:NoneLayout/>
+		</dgp:Layout>
+	</dgp:ViewForm>
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>384321</cmm:value>
+		</cmm:identifier>
+		<dgp:name />
+		<dgp:tooltip>$OpenImage.tooltip</dgp:tooltip>
+		<dgp:assignedAction>startProgram</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/picture_show.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<!-- set:HelpContext>
+		<set:page mainPage="true">
+			<cmm:OnlineResource xlink:href="./help/externalprogrammodule/external_programs.de.html"/>
+			<set:keyword>Externe Programme starten</set:keyword>
+		</set:page>
+	</set:HelpContext-->
+	<dgp:init-param>
+		<dgp:name>programName</dgp:name>
+		<dgp:value>cmd</dgp:value>
+	</dgp:init-param>
+	<dgp:init-param>
+		<dgp:name>programParameters</dgp:name>
+		<dgp:value>/c,start,$PROPERTY</dgp:value>
+	</dgp:init-param>
+	<dgp:init-param>
+		<dgp:name>property</dgp:name>
+		<dgp:value>imageLocation</dgp:value>
+	</dgp:init-param>
+</dgp:Module>

@@ -1,0 +1,6 @@
+# Namespace tolerance test: typename appears without a namespace 
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+TYPENAME=Philosopher

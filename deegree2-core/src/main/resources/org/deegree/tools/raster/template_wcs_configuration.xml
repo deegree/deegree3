@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  ======================================================================================
+
+This file is part of deegree.
+Copyright (C) 2001-2008 by:
+EXSE, Department of Geography, University of Bonn
+http://www.giub.uni-bonn.de/deegree/
+lat/lon GmbH
+http://www.lat-lon.de
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Contact:
+
+Andreas Poth
+lat/lon GmbH
+Aennchenstr. 19
+53177 Bonn
+Germany
+E-Mail: poth@lat-lon.de
+
+Prof. Dr. Klaus Greve
+Department of Geography
+University of Bonn
+Meckenheimer Allee 166
+53115 Bonn
+Germany
+E-Mail: greve@giub.uni-bonn.de
+
+@version $Revision$
+@author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
+@author last edited by: $Author$
+
+@version 1.0. $Revision$, $Date$
+                 
+====================================================================================== -->
+<!--
+    sample file for configuration of a WCS data source/storage. In addition to the 
+    elements/parameters used in the first part that are defined by the OGC WCS 1.0.0
+    DescribeCoverage-response deegree specific parameters are defined. These
+    parameters defines the kind of data soure and the storage format.    
+-->
+<CoverageDescription xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns:deegree="http://www.deegree.org/wcs" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0" updateSequence="String">
+    <CoverageOffering>
+        <description>none</description>
+        <name>europe</name>
+        <label>europe</label>
+        <lonLatEnvelope srsName="WGS84(DD)">
+            <gml:pos dimension="2">-20,40</gml:pos>
+            <gml:pos dimension="2">20,90</gml:pos>
+        </lonLatEnvelope>
+        <keywords>
+            <keyword>Mapeatline</keyword>
+            <keyword>cite</keyword>
+            <keyword>CITE</keyword>
+            <keyword>test data</keyword>
+        </keywords>
+        <domainSet>
+            <spatialDomain>
+                <gml:Envelope srsName="HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326">
+                    <gml:pos dimension="2">-20,40</gml:pos>
+                    <gml:pos dimension="2">20,90</gml:pos>
+                </gml:Envelope>
+            </spatialDomain>
+        </domainSet>
+        <rangeSet>
+            <RangeSet semantic="http://www.deegree.org" refSys="http://www.deegree.org" refSysLabel="String">
+                <description>none</description>
+                <name>default</name>
+                <label>default</label>
+                <nullValues type="xs:integer" semantic="http://www.deegree.org">
+                    <interval semantic="http://www.deegree.org" atomic="false" closure="closed">
+                        <min>-99</min>
+                        <max>0</max>
+                        <res>1</res>
+                    </interval>
+                    <singleValue>-9999</singleValue>
+                </nullValues>
+            </RangeSet>
+        </rangeSet>
+        <supportedCRSs>
+            <requestCRSs>EPSG:4326</requestCRSs>
+            <requestResponseCRSs>EPSG:4326</requestResponseCRSs>
+            <nativeCRSs>EPSG:4326</nativeCRSs>
+        </supportedCRSs>
+        <supportedFormats nativeFormat="tiff">
+            <formats>jpeg</formats>
+            <formats>GeoTiff</formats>
+            <formats>png</formats>
+            <formats>XYZ</formats>
+        </supportedFormats>
+        <supportedInterpolations default="nearest neighbor">
+            <interpolationMethod>nearest neighbor</interpolationMethod>
+        </supportedInterpolations>
+        <deegree:Extension type="shapeIndexed">
+
+        </deegree:Extension>
+    </CoverageOffering>
+</CoverageDescription>

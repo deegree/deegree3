@@ -1,0 +1,87 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Prefix>app</deegreewfs:Prefix>
+            <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+            <deegreewfs:File>../../../data/utah/vector/SGID100_CountyBoundaries_edited</deegreewfs:File>
+            <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <!-- ============================================================== -->
+    <xsd:element name='CountyBoundaries_edited' type='app:CountyBoundaries_editedType' substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <deegreewfs:table>SGID100_COUNTYBOUNDARIES_EDITED</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+                    <deegreewfs:MappingField field='OBJECTID' type="VARCHAR" />
+                </deegreewfs:gmlId>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!-- ============================================================== -->
+    <xsd:complexType name='CountyBoundaries_editedType'>
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+                    <xsd:element name='objectid' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='OBJECTID' type='INTEGER' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='name' type='xsd:string'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='NAME' type='VARCHAR' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='fips' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='FIPS' type='INTEGER' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='shape_area' type='xsd:float'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='SHAPE_AREA' type='FLOAT' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='shape_len' type='xsd:float'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='SHAPE_LEN' type='FLOAT' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='geometry' type='gml:GeometryPropertyType'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='GEOMETRY' type='GEOMETRY' srs="-1" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

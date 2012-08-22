@@ -1,0 +1,2720 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ViewContext xmlns="http://www.opengis.net/context" xmlns:deegree="http://www.deegree.org/context" xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="viewContext_id" version="1.0.0">
+	<General>
+		<Window height="425" width="649"/>		
+		<BoundingBox SRS="EPSG:31467" maxx="3944962.7227107" maxy="6203666.7878718" minx="3550733.7689277" miny="5761812.8598062"/>
+		<Title>.:. Deutschland .:. deegree iGeoPortal</Title>
+		<KeywordList>
+			<Keyword>deegree</Keyword>
+			<Keyword>iGeoPortal</Keyword>
+			<Keyword>SDI</Keyword>
+			<Keyword>GDI</Keyword>
+			<Keyword>lat/lon</Keyword>
+			<Keyword>utah</Keyword>
+		</KeywordList>
+		<DescriptionURL format="text/html">
+			<OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple"/>
+		</DescriptionURL>
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>Andreas Poth</ContactPerson>
+				<ContactOrganization>lat/lon</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactPosition>developer</ContactPosition>
+			<ContactAddress>
+				<AddressType>postal</AddressType>
+				<Address>Aennchenstr. 19</Address>
+				<City>Bonn</City>
+				<StateOrProvince>NRW</StateOrProvince>
+				<PostCode>53177</PostCode>
+				<Country>Germany</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>++49 228 184960</ContactVoiceTelephone>
+			<ContactElectronicMailAddress>poth@lat-lon.de</ContactElectronicMailAddress>
+		</ContactInformation>
+		<Extension>
+			<deegree:Mode>ZOOMIN</deegree:Mode>
+			<deegree:IOSettings>
+                <deegree:TempDirectory>
+                    <deegree:Name>../../../../../tmp</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std"/>
+                    </deegree:Access>
+                </deegree:TempDirectory>
+                <deegree:DownloadDirectory>
+                    <deegree:Name>../../../../../downloads</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std" />
+                    </deegree:Access>
+                </deegree:DownloadDirectory>
+                <deegree:SLDDirectory>
+                    <deegree:Name>../../../../../</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std"/>
+                    </deegree:Access>
+                </deegree:SLDDirectory>
+                <deegree:PrintDirectory>
+                    <deegree:Name>../../../../../print</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std/print"/>
+                    </deegree:Access>
+                </deegree:PrintDirectory>
+            </deegree:IOSettings>
+			<deegree:Frontend scope="JSP">
+				<deegree:Controller>./controller.jsp</deegree:Controller>
+				<deegree:Style>./css/deegree.css</deegree:Style>
+				<deegree:CommonJS>
+					<deegree:Name>./javascript/model/layerlist.js</deegree:Name>
+					<deegree:Name>./javascript/model/layergroup.js</deegree:Name>
+					<deegree:Name>./javascript/gui/pushbutton.js</deegree:Name>
+					<deegree:Name>./modules/recentertolayer/recentertolayer.js</deegree:Name>
+					<deegree:Name>./javascript/gui/togglebutton.js</deegree:Name>
+					<deegree:Name>./javascript/model/wmsrequestfactory.js</deegree:Name>
+					<deegree:Name>./javascript/envelope.js</deegree:Name>
+					<deegree:Name>./javascript/event.js</deegree:Name>
+					<deegree:Name>./javascript/exception.js</deegree:Name>
+					<deegree:Name>./javascript/feature.js</deegree:Name>
+					<deegree:Name>./javascript/geometries.js</deegree:Name>
+					<deegree:Name>./javascript/geometryfactory.js</deegree:Name>
+					<deegree:Name>./javascript/geometryutils.js</deegree:Name>
+					<deegree:Name>./javascript/geotransform.js</deegree:Name>
+					<deegree:Name>./javascript/json2.js</deegree:Name>
+					<deegree:Name>./javascript/layerutils.js</deegree:Name>
+					<deegree:Name>./javascript/rpc.js</deegree:Name>
+					<deegree:Name>./javascript/rendering.js</deegree:Name>
+					<deegree:Name>./javascript/request_handler.js</deegree:Name>
+					<deegree:Name>./javascript/utils.js</deegree:Name>
+					<deegree:Name>./javascript/wktadapter.js</deegree:Name>
+					<deegree:Name>./javascript/openlayers/lib/OpenLayers.js</deegree:Name>
+				</deegree:CommonJS>
+				<deegree:North closable="false" header="false" hidden="false" overlay="false"/>
+				<deegree:West closable="false" header="false" hidden="false" overlay="false" width="300">
+					<deegree:Module closeable="false" collapsed="false" header="false" height="670" hidden="false" overlay="false" scrolling="no" type="content" width="250">
+						<deegree:Name>MapOverview</deegree:Name>
+						<deegree:Title>Map overview</deegree:Title>
+						<deegree:Content>./modules/mapoverview/mapoverview.html</deegree:Content>
+						<deegree:ModuleJS>./modules/mapoverview/mapoverview.js</deegree:ModuleJS>
+						<deegree:ModuleConfiguration>
+							<OnlineResource xlink:href="../../modules/overview_meckpom.xml" xlink:type="simple"/>
+						</deegree:ModuleConfiguration>
+						<deegree:ParameterList>
+							<deegree:Parameter>
+								<deegree:Name>src</deegree:Name>
+								<deegree:Value>'./overview_utah.gif'</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>minx</deegree:Name>
+								<deegree:Value>161923</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>miny</deegree:Name>
+								<deegree:Value>4094621</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>maxx</deegree:Name>
+								<deegree:Value>725119</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>maxy</deegree:Name>
+								<deegree:Value>4657817</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>foregroundColor</deegree:Name>
+								<deegree:Value>'#0000ff'</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>width</deegree:Name>
+								<deegree:Value>150</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>height</deegree:Name>
+								<deegree:Value>150</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>offset</deegree:Name>
+								<deegree:Value>45</deegree:Value>
+							</deegree:Parameter>
+						</deegree:ParameterList>
+					</deegree:Module>
+					<deegree:Module hidden="false" type="content" width="350" height="600" header="false" top="42" left="510" scrolling="auto">
+                        <deegree:Name>Routing</deegree:Name>
+                        <deegree:Content>./modules/routing/routing.jsp</deegree:Content>
+                        <deegree:ModuleJS>./modules/routing/javascript/routing.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>./modules/routing/javascript/routepoint.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>./modules/routing/javascript/gui.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>./modules/routing/javascript/actionhandler.js</deegree:ModuleJS>
+                    </deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="100%" hidden="false" overlay="false" type="content" width="300">
+                        <deegree:Name>Nominatim_search</deegree:Name>
+                        <deegree:Title>Nominatim Gazetteer</deegree:Title>
+                        <deegree:Content>./modules/nominatim/nominatim_search.jsp</deegree:Content>
+                        <deegree:ModuleJS>./modules/nominatim/nominatim_search.js</deegree:ModuleJS>
+                    </deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="200" hidden="false" overlay="false" type="content" width="300">
+						<deegree:Name>ContextSwitcher</deegree:Name>
+						<deegree:Title>Switch context</deegree:Title>
+						<deegree:Content>./modules/wmc/contextswitcher.html</deegree:Content>
+						<deegree:ModuleJS>./modules/wmc/contextswitcher.js</deegree:ModuleJS>
+						<deegree:ParameterList>
+							<deegree:Parameter>
+								<deegree:Name>label</deegree:Name>
+								<deegree:Value>'Choose context:'</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>listOfContexts</deegree:Name>
+								<deegree:Value>'Utah|./users/default/wmc_start_utah.xml;Utah Windows|./users/default/wmc_utah_windows.xml'</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>size</deegree:Name>
+								<deegree:Value>1</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>keepBBOX</deegree:Name>
+								<deegree:Value>false</deegree:Value>
+							</deegree:Parameter>
+						</deegree:ParameterList>
+					</deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="400" hidden="false" overlay="false" scrolling="no" type="content" width="300">
+						<deegree:Name>Measurement</deegree:Name>
+						<deegree:Title>Measurement</deegree:Title>
+						<deegree:Content>./modules/measurement/measurement.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/measurement/measurement.js</deegree:ModuleJS>
+						<deegree:ModuleJS>./javascript/wktadapter.js</deegree:ModuleJS>
+					</deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="400" hidden="false" overlay="false" scrolling="no" type="content" width="300">
+						<deegree:Name>ScaleSwitcher</deegree:Name>
+						<deegree:Title>Scale switcher</deegree:Title>
+						<deegree:Content>./modules/scaleswitcher/scaleswitcher.html</deegree:Content>
+						<deegree:ModuleJS>./modules/scaleswitcher/scaleswitcher.js</deegree:ModuleJS>
+						<deegree:ModuleConfiguration>
+							<OnlineResource xlink:href="../../modules/scaleswitcher.xml" xlink:type="simple"/>
+						</deegree:ModuleConfiguration>
+						<deegree:ParameterList>
+							<deegree:Parameter>
+								<deegree:Name>label</deegree:Name>
+								<deegree:Value>'Scale:'</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>listOfScales</deegree:Name>
+								<deegree:Value>'1:100;1:5000;1:10000;1:25000;1:50000;1:100000;1:500000;1:1000000;1:5000000'</deegree:Value>
+							</deegree:Parameter>
+						</deegree:ParameterList>
+					</deegree:Module>
+				</deegree:West>
+				<deegree:Center closable="false" header="false" hidden="false" overlay="false">
+					<deegree:Module closeable="false" collapsed="false" header="false" height="35" hidden="false" overlay="false" scrolling="null" type="toolbar" width="1700">
+						<deegree:Name>Toolbar</deegree:Name>
+						<deegree:Title>Toolbar</deegree:Title>
+						<deegree:Content>./modules/gui/toolbar.html</deegree:Content>
+						<deegree:ModuleJS>./modules/gui/toolbar.js</deegree:ModuleJS>
+						<deegree:ModuleJS>./javascript/gui/buttongroup.js</deegree:ModuleJS>
+						<deegree:ModuleConfiguration>
+							<OnlineResource xlink:href="../../modules/toolbar.xml" xlink:type="simple"/>
+						</deegree:ModuleConfiguration>
+						<deegree:ParameterList>
+							<deegree:Parameter>
+								<deegree:Name>fullextent|Zoom to full extent</deegree:Name>
+								<deegree:Value>PushButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>movetoprevious|Move to previous map</deegree:Name>
+								<deegree:Value>PushButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>movetonext|Move to next map</deegree:Name>
+								<deegree:Value>PushButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>zoomin|Zoomin by mouse click or mouse drag</deegree:Name>
+								<deegree:Value>ToggleButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>zoomout|Zoomout by mouse click</deegree:Name>
+								<deegree:Value>ToggleButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>featureinfo|Get info to an object within the map</deegree:Name>
+								<deegree:Value>ToggleButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>recenter|Recenter the map by mouse click</deegree:Name>
+								<deegree:Value>ToggleButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>addwms|Add additonal WMS to the map</deegree:Name>
+								<deegree:Value>PushButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>pdfprint|Generate pdf</deegree:Name>
+								<deegree:Value>PushButton</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>download|Download data</deegree:Name>
+								<deegree:Value>PushButton</deegree:Value>
+							</deegree:Parameter>
+						</deegree:ParameterList>
+					</deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="1550" hidden="false" overlay="false" scrolling="no" type="content" width="1700">
+						<deegree:Name>OLMap</deegree:Name>
+						<deegree:Title>OLMap</deegree:Title>
+						<deegree:Content>./modules/olmap/olmap.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/olmap/olmap.js</deegree:ModuleJS>
+						<deegree:ModuleJS>./javascript/model/mapcontroller.js</deegree:ModuleJS>
+						<deegree:ModuleJS>./javascript/model/mapmodel.js</deegree:ModuleJS>
+						<deegree:ModuleJS>./javascript/model/wmslayer.js</deegree:ModuleJS>
+						<deegree:ParameterList>
+							<deegree:Parameter>
+								<deegree:Name>model</deegree:Name>
+								<deegree:Value>this.mapModel</deegree:Value>
+							</deegree:Parameter>
+						</deegree:ParameterList>
+					</deegree:Module>
+				</deegree:Center>
+				<deegree:East closable="false" header="false" hidden="false" overlay="false" width="250">
+					<deegree:Module closeable="false" collapsed="false" header="false" height="100%" hidden="false" overlay="false" scrolling="auto" type="content" width="250">
+						<deegree:Name>LayerTree</deegree:Name>
+						<deegree:Title>Layertree</deegree:Title>
+						<deegree:Content>./modules/layertree/layertree.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/layertree/layertree.js</deegree:ModuleJS>
+					</deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="100%" hidden="false" overlay="false" scrolling="auto" type="content" width="250">
+						<deegree:Name>Legend</deegree:Name>
+						<deegree:Title>Legend</deegree:Title>
+						<deegree:Content>./modules/legend/legend_dyn.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/legend/legend_dyn.js</deegree:ModuleJS>
+						<deegree:ModuleConfiguration>
+							<OnlineResource xlink:href="../../modules/legend.xml" xlink:type="simple"/>
+						</deegree:ModuleConfiguration>
+						<deegree:ParameterList>
+							<deegree:Parameter>
+								<deegree:Name>label</deegree:Name>
+								<deegree:Value>'Legend'</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>bgcolor</deegree:Name>
+								<deegree:Value>''</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>layerlist</deegree:Name>
+								<deegree:Value>this.layerList</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>width</deegree:Name>
+								<deegree:Value>20</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>height</deegree:Name>
+								<deegree:Value>20</deegree:Value>
+							</deegree:Parameter>
+							<deegree:Parameter>
+								<deegree:Name>offset</deegree:Name>
+								<deegree:Value>20</deegree:Value>
+							</deegree:Parameter>
+						</deegree:ParameterList>
+					</deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="250" hidden="false" overlay="false" scrolling="no" type="content" width="250">
+						<deegree:Name>Timeselect</deegree:Name>
+						<deegree:Title>Timeselect</deegree:Title>
+						<deegree:Content>./modules/timeselect/timeselect_mw.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/timeselect/timeselect_mw.js</deegree:ModuleJS>
+					</deegree:Module>
+				</deegree:East>
+				<deegree:South closable="false" header="false" hidden="false" overlay="false">
+					<deegree:Module closeable="false" collapsed="false" header="false" height="0" hidden="false" overlay="false" scrolling="no" type="content" width="0">
+						<deegree:Name>MenuBarTop</deegree:Name>
+						<deegree:Title>MenuBarTop</deegree:Title>
+						<deegree:Content>./modules/menubar/menubar.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/menubar/menubar.js</deegree:ModuleJS>
+						<deegree:ModuleJS>./modules/menubar/menubar_eventhandler.js</deegree:ModuleJS>
+					</deegree:Module>
+					<deegree:Module closeable="false" collapsed="false" header="false" height="680" hidden="true" left="100" overlay="true" scrolling="auto" top="50" type="content" width="610">
+						<deegree:Name>AdminConsole</deegree:Name>
+						<deegree:Title>AdminConsole</deegree:Title>
+						<deegree:Content>./modules/admin/admin.jsp</deegree:Content>
+						<deegree:ModuleJS>./modules/admin/adminconsole.js</deegree:ModuleJS>
+					</deegree:Module>
+				</deegree:South>
+			</deegree:Frontend>
+			<deegree:MapParameter>
+				<deegree:OfferedInfoFormats>
+					<deegree:Format>application/vnd.ogc.gml</deegree:Format>
+					<deegree:Format selected="true">text/html</deegree:Format>
+				</deegree:OfferedInfoFormats>
+				<deegree:OfferedZoomFactor>
+					<deegree:Factor selected="true">25.0</deegree:Factor>
+				</deegree:OfferedZoomFactor>
+				<deegree:OfferedPanFactor>
+					<deegree:Factor selected="true">15.0</deegree:Factor>
+				</deegree:OfferedPanFactor>
+				<deegree:MinScale>1.0</deegree:MinScale>
+				<deegree:MaxScale>100000.0</deegree:MaxScale>
+			</deegree:MapParameter>
+			<deegree:LayerTree>
+				<deegree:Node id="0" title="root">
+					<deegree:Node id="1" title="deegree"/>
+				</deegree:Node>
+			</deegree:LayerTree>
+			<deegree:MapModel>
+				<deegree:LayerGroup expanded="true" hidden="false" identifier="Deutschland" title="Deutschland">
+					<deegree:LayerGroup expanded="true" hidden="false" identifier="LUNG WMS Geotourismus" title="LUNG WMS Geotourismus">
+						<deegree:LayerGroup expanded="false" hidden="false" identifier="Geotope Naturdenkmaeler" title="Geotope Naturdenkmaeler">
+							<deegree:Layer layerId="e858611e-6dae-4533-8247-0fd41500f19d"/>
+							<deegree:Layer layerId="9ac38a2f-e7c1-485c-a13f-8639b548aea4"/>
+							<deegree:Layer layerId="d2d4e4f4-521e-4905-b8e0-c49a8c1fbbd8"/>
+							<deegree:Layer layerId="62e0127c-9b1c-4620-83db-a788be2766a9"/>
+							<deegree:Layer layerId="e4608220-c4ed-4935-aa4b-1b45491cab13"/>
+							<deegree:Layer layerId="8c534517-b351-4697-8306-fe2f036f17e6"/>
+							<deegree:Layer layerId="1deb33cd-c5a8-4f15-82fa-9eb6ac1bf33d"/>
+							<deegree:Layer layerId="63da7fe8-0d1e-473d-9703-b94d508c7d0a"/>
+							<deegree:Layer layerId="688787f8-4330-47db-ba5a-82ebc2e63c53"/>
+							<deegree:Layer layerId="698a7e09-3684-4be5-8aa2-1d670d1de2fe"/>
+							<deegree:Layer layerId="7d61cad9-d338-430a-bd42-79839b25e573"/>
+							<deegree:Layer layerId="d616fca9-6889-42f8-87c0-6b7a3f92b6bb"/>
+						</deegree:LayerGroup>
+						<deegree:LayerGroup expanded="false" hidden="false" identifier="Touren" title="Touren">
+							<deegree:Layer layerId="ccfc077b-041c-4ee2-9774-fff12b6c6970"/>
+							<deegree:Layer layerId="9623fa95-3e37-4df0-bfa1-5755e9683589"/>
+							<deegree:Layer layerId="27de7a7f-5062-4fab-bd4b-df5939126c7d"/>
+							<deegree:Layer layerId="fa1d8e00-55f9-46b2-b775-5a0f78b38219"/>
+							<deegree:Layer layerId="1cba5e2e-997d-43ce-855c-bbf51a7309c1"/>
+							<deegree:Layer layerId="20b782a3-0c52-4e97-b9a9-d33753c5ef55"/>
+							<deegree:Layer layerId="e4a2ccf3-4692-44d5-bb87-508087b18ac9"/>
+							<deegree:Layer layerId="a686e2e2-cb25-400a-b013-633316a11546"/>
+							<deegree:Layer layerId="80ef9bff-b3a4-4f00-b9e8-839d2c4d5531"/>
+							<deegree:Layer layerId="99131a73-bf0b-4be2-aa52-9cfc5495acec"/>
+							<deegree:Layer layerId="c2327313-a73a-40ab-bf2f-f19291beecf5"/>
+							<deegree:Layer layerId="143cade8-3d2d-4dc1-b442-b3c8e5bb6521"/>
+							<deegree:Layer layerId="1140b209-0da2-49b0-9453-4748577a28fe"/>
+							<deegree:Layer layerId="c317d4bd-7e91-416b-a2a6-3ac4c2f5fec8"/>
+							<deegree:Layer layerId="ecee2683-e46a-4bad-beb2-6ace03ec5e89"/>
+							<deegree:Layer layerId="243ff981-39b2-4921-9d32-304794ee7675"/>
+							<deegree:Layer layerId="e87bff3e-15b0-41d2-ab00-cc382786f722"/>
+							<deegree:Layer layerId="8d060e05-185f-4159-853c-603f515cadac"/>
+							<deegree:Layer layerId="6fef4f73-df3d-4f99-a6ca-cdb5dcfce641"/>
+							<deegree:Layer layerId="cadb980d-e9c1-4e64-93d7-1af0bfde94e9"/>
+							<deegree:Layer layerId="25e9afc6-040a-450c-882c-1bb93b77854b"/>
+							<deegree:Layer layerId="323b7920-728f-4a1a-b17f-70219c720d69"/>
+							<deegree:Layer layerId="1a9abe40-9db1-4bae-a405-d98f8cec43c7"/>
+							<deegree:Layer layerId="7f65c18e-67f5-4f8d-a982-d7a7a359d9ff"/>
+							<deegree:Layer layerId="e0f70595-bab9-4cb4-bf8a-13b8e4eb9e93"/>
+							<deegree:Layer layerId="b93f0a6c-06f6-4f81-be45-a7c457a71cdc"/>
+							<deegree:Layer layerId="2837b811-8c0d-4914-96e2-c6ca4241e629"/>
+							<deegree:Layer layerId="b8444ed9-6d97-461b-8b30-f6bf455c00a3"/>
+							<deegree:Layer layerId="a281ee65-c32a-45af-a255-ceba0421a8c4"/>
+							<deegree:Layer layerId="749004ae-91f2-41e8-a89e-7a0aaf5d4ccf"/>
+						</deegree:LayerGroup>
+						<deegree:LayerGroup expanded="false" hidden="false" identifier="Geologische Sehenswuerdigkeiten" title="Geologische Sehenswuerdigkeiten">
+							<deegree:Layer layerId="09bad35c-2741-4f55-9dc0-733e9b7080c1"/>
+							<deegree:Layer layerId="1c9e70d6-24bd-46b2-ba96-8972c87ce3b3"/>
+							<deegree:Layer layerId="b078d224-7e6c-40e4-8143-ec9e966129e9"/>
+							<deegree:Layer layerId="50a00eb1-ce01-469c-b4b5-2b08f20cd86b"/>
+							<deegree:Layer layerId="f4939955-d028-4a73-b1d7-713fe3005f1d"/>
+							<deegree:Layer layerId="bc86590c-2bcb-48ab-b662-db4aa8b48a1b"/>
+							<deegree:Layer layerId="699ec707-32af-45d8-84d8-ac647351556c"/>
+							<deegree:Layer layerId="45180462-e0cd-46d4-a556-3278f82c3018"/>
+							<deegree:Layer layerId="8ea298ef-20a9-41d6-8640-b563890a3150"/>
+							<deegree:Layer layerId="60c88c57-500c-440c-98ea-fbae97931a22"/>
+							<deegree:Layer layerId="8ee4be28-51e1-4af5-a450-8e2d91eeb10e"/>
+							<deegree:Layer layerId="f435af49-cbf5-465e-9831-3b883f5a25f9"/>
+							<deegree:Layer layerId="edd60fc9-c5e4-44b7-ae12-a1f78f441f18"/>
+							<deegree:Layer layerId="2734e8bd-0cba-4843-bf2b-749caa6d1451"/>
+							<deegree:Layer layerId="e9a078ee-4f1a-4123-ada1-90c7b77415c7"/>
+							<deegree:Layer layerId="1587639c-ddc4-494e-8bd6-2ae3644d63c0"/>
+							<deegree:Layer layerId="26e73dc6-b194-4b4f-b9c0-ceaefa2bb4c0"/>
+							<deegree:Layer layerId="2e0302cc-f16d-4138-8eed-4061cae87aec"/>
+							<deegree:Layer layerId="609f9af9-f828-4b67-b354-c87000999cb8"/>
+							<deegree:Layer layerId="52d23066-15ad-43a2-bafa-082c5e85922a"/>
+							<deegree:Layer layerId="bcdda7e2-3523-44ed-a4c4-340cc4a0bb29"/>
+							<deegree:Layer layerId="cadda9af-59bf-4d10-beb6-27816d03c4b1"/>
+						</deegree:LayerGroup>
+					</deegree:LayerGroup>
+					<deegree:LayerGroup expanded="false" hidden="true" identifier="LUNG WMS Biotope" title="LUNG WMS Biotope">
+						<deegree:Layer layerId="a4c850ce-a710-4ae0-bbe8-ed8adc12ae25"/>
+						<deegree:Layer layerId="a3bb7616-f95a-4eb0-abc1-116db94c1388"/>
+						<deegree:Layer layerId="df657e60-dce4-43b8-be98-f1fc47fe2742"/>
+						<deegree:Layer layerId="d8e0d992-2e05-4fe3-a4e1-68e1e19e550f"/>
+						<deegree:Layer layerId="38e53528-256a-4730-a32d-db20dd292964"/>
+					</deegree:LayerGroup>
+					<deegree:LayerGroup expanded="false" hidden="true" identifier="LUNG WMS Gewaesser" title="LUNG WMS Gewaesser">
+						<deegree:Layer layerId="74cd0c92-f03b-49ce-ab59-13bceeb2b19d"/>
+						<deegree:Layer layerId="0c9657fc-2760-4d15-9467-a3e32be7d564"/>
+						<deegree:Layer layerId="1a95540f-d54d-4735-8e65-58f06cd450cf"/>
+						<deegree:Layer layerId="ead38726-7c67-4d7a-8814-afce8ed440ff"/>
+						<deegree:Layer layerId="c4fca577-945f-475c-93f6-9081357bda28"/>
+						<deegree:Layer layerId="1f9a6433-ce57-458e-bcd4-374c1c1cdb87"/>
+						<deegree:Layer layerId="6128c87e-6a06-4df5-be08-ef0da9980b8d"/>
+						<deegree:Layer layerId="52190063-cef0-4024-a2c1-5b23b2b9cff9"/>
+						<deegree:Layer layerId="59c5a457-f156-4f2c-98c5-72f45fd97cc1"/>
+						<deegree:Layer layerId="d4ef0afe-8fb1-4396-a99c-6995b11de039"/>
+						<deegree:Layer layerId="74ff40a3-aa06-48b4-8603-99e953fa6a81"/>
+						<deegree:Layer layerId="236f1641-86df-4291-bf95-8f5fedc12a0e"/>
+						<deegree:Layer layerId="da2807a0-0e6a-40f4-8b12-708fedee6662"/>
+					</deegree:LayerGroup>
+					<deegree:LayerGroup expanded="false" hidden="false" identifier="LUNG WMS Landschaft" title="LUNG WMS Landschaft">
+						<deegree:Layer layerId="5b092d6c-fafc-4c28-819d-c37335ab0a53"/>
+						<deegree:Layer layerId="733153a5-8cda-48fb-8f3f-7425f6f7fde2"/>
+						<deegree:Layer layerId="edd4c500-7c44-41f4-9414-57dda9de2888"/>
+						<deegree:Layer layerId="80a46be7-74ef-4fe7-96a7-6c6758be3ead"/>
+						<deegree:Layer layerId="3368581b-2895-407f-9fff-be82b380897f"/>
+						<deegree:Layer layerId="f6be496b-08af-4f30-9815-b77d18ebfaaa"/>
+						<deegree:Layer layerId="f2a6b495-26f4-489e-aa44-7fed3a1d01de"/>
+						<deegree:Layer layerId="ca467aba-901c-44d1-b887-6357ade211a0"/>
+					</deegree:LayerGroup>
+				</deegree:LayerGroup>
+			</deegree:MapModel>
+			<deegree:XSLT>context2HTML_accordionLayout_tabs.xsl</deegree:XSLT>
+		</Extension>
+	</General>
+	<LayerList>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_nehrungen_pom</Name>
+			<Title>Randmarine Haken und Nehrungen (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="249">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_nehrungen_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>e858611e-6dae-4533-8247-0fd41500f19d</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_findlingsgruppe_pom</Name>
+			<Title>Findlingsgruppe (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_findlingsgruppe_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>9ac38a2f-e7c1-485c-a13f-8639b548aea4</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_findlinge_pom</Name>
+			<Title>Findlinge/Grossgeschiebe (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="208">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_findlinge_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>d2d4e4f4-521e-4905-b8e0-c49a8c1fbbd8</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_schollen_pom</Name>
+			<Title>Glaziale Schollen (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_schollen_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>62e0127c-9b1c-4620-83db-a788be2766a9</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_moore_pom</Name>
+			<Title>Besondere Moore (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_moore_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>e4608220-c4ed-4935-aa4b-1b45491cab13</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_klifflinien_pom</Name>
+			<Title>Klifflinien (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_klifflinien_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>8c534517-b351-4697-8306-fe2f036f17e6</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_aufschluss_pom</Name>
+			<Title>Geologische Aufschluesse/Gruben (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="197">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_aufschluss_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>1deb33cd-c5a8-4f15-82fa-9eb6ac1bf33d</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_tunneltal_pom</Name>
+			<Title>Besonderes Tunneltal (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="172">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_tunneltal_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>63da7fe8-0d1e-473d-9703-b94d508c7d0a</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_oser_pom</Name>
+			<Title>Oser (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_oser_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>688787f8-4330-47db-ba5a-82ebc2e63c53</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_duenen_pom</Name>
+			<Title>Besondere Duenen (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_duenen_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>698a7e09-3684-4be5-8aa2-1d670d1de2fe</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_blockpackung_pom</Name>
+			<Title>Blockpackungen der Endmoraene (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="236">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_blockpackung_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>7d61cad9-d338-430a-bd42-79839b25e573</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_kliffe_pom</Name>
+			<Title>Kliffe (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_kliffe_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>d616fca9-6889-42f8-87c0-6b7a3f92b6bb</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege01_pom</Name>
+			<Title>[01] Ueberregionale Radwege (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="185">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege01_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>ccfc077b-041c-4ee2-9774-fff12b6c6970</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege02_pom</Name>
+			<Title>[02] Uckermaerkischer Radrundweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="226">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege02_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>9623fa95-3e37-4df0-bfa1-5755e9683589</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege03_pom</Name>
+			<Title>[03] Radweg Berlin - Usedom (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="177">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege03_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>27de7a7f-5062-4fab-bd4b-df5939126c7d</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege04_pom</Name>
+			<Title>[04] Oder-Neisse-Radfernweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="190">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege04_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>fa1d8e00-55f9-46b2-b775-5a0f78b38219</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege05_pom</Name>
+			<Title>[05] Randow-Radweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege05_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>1cba5e2e-997d-43ce-855c-bbf51a7309c1</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege06_pom</Name>
+			<Title>[06] Ostseekuesten-Radweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="174">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege06_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>20b782a3-0c52-4e97-b9a9-d33753c5ef55</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege07_pom</Name>
+			<Title>[07] Haff-Radfernweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege07_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>e4a2ccf3-4692-44d5-bb87-508087b18ac9</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege08_pom</Name>
+			<Title>[08] Haff-Tollense-Radfernweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="202">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege08_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>a686e2e2-cb25-400a-b013-633316a11546</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege10_pom</Name>
+			<Title>[10] Neubrandenburg-Tollensetal-Radweg (Pomerania) </Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="270">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege10_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>80ef9bff-b3a4-4f00-b9e8-839d2c4d5531</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege11_pom</Name>
+			<Title>[11] Radfernweg Mecklenburgische Seenplatte (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="300">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege11_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>99131a73-bf0b-4be2-aa52-9cfc5495acec</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege12_pom</Name>
+			<Title>[12] Tollensesee-Rundweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="172">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege12_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>c2327313-a73a-40ab-bf2f-f19291beecf5</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege13_pom</Name>
+			<Title>[13] Mecklenburgischer Seen - Radweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="250">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege13_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>143cade8-3d2d-4dc1-b442-b3c8e5bb6521</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege14_pom</Name>
+			<Title>[14] Mecklenburgische Eiszeitstrasse (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="246">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege14_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>1140b209-0da2-49b0-9453-4748577a28fe</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege15_pom</Name>
+			<Title>[15] Rundweg Haff - Eggesin (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="184">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege15_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>c317d4bd-7e91-416b-a2a6-3ac4c2f5fec8</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege16_pom</Name>
+			<Title>[16] Rundweg Bugewitz-Heidemuehl (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="222">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege16_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>ecee2683-e46a-4bad-beb2-6ace03ec5e89</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege17_pom</Name>
+			<Title>[17] Naturlehrpfad August Bartelt (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="224">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege17_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>243ff981-39b2-4921-9d32-304794ee7675</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege18_pom</Name>
+			<Title>[18] Rundweg Ahlbecker Seegrund (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="222">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege18_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>e87bff3e-15b0-41d2-ab00-cc382786f722</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege19_pom</Name>
+			<Title>[19] Rundweg Altwarper Binnenduenen (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="243">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege19_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>8d060e05-185f-4159-853c-603f515cadac</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege20_pom</Name>
+			<Title>[20] Rundweg Ueckermuender Heide (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="222">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege20_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>6fef4f73-df3d-4f99-a6ca-cdb5dcfce641</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege21_pom</Name>
+			<Title>[21] Rundwe[21] Rundweg Bugewitz - Bargischow (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="234">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege21_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>cadb980d-e9c1-4e64-93d7-1af0bfde94e9</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege22_pom</Name>
+			<Title>[22] Rundweg Moenkebude - Meiersberg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="239">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege22_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>25e9afc6-040a-450c-882c-1bb93b77854b</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege23_pom</Name>
+			<Title>[23] Rundweg Moenkebude - Ueckermuende (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="251">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege23_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>323b7920-728f-4a1a-b17f-70219c720d69</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege24_pom</Name>
+			<Title>[24] Friedlaender Grosse Wiese (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="198">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege24_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>1a9abe40-9db1-4bae-a405-d98f8cec43c7</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege25_pom</Name>
+			<Title>[25] Rundweg Galenbecker See (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="198">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege25_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>7f65c18e-67f5-4f8d-a982-d7a7a359d9ff</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege26_pom</Name>
+			<Title>[26] Radtour Ueckermuender Heide (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="217">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege26_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>e0f70595-bab9-4cb4-bf8a-13b8e4eb9e93</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege27_pom</Name>
+			<Title>[27] Radtour Woliner Nationalpark (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="173">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege27_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>b93f0a6c-06f6-4f81-be45-a7c457a71cdc</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege28_pom</Name>
+			<Title>[28] Radtour Stettiner Landschaftspark (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="260">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege28_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>2837b811-8c0d-4914-96e2-c6ca4241e629</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege29_pom</Name>
+			<Title>[29] Radtour von Wolin zum Meer (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="215">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege29_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>b8444ed9-6d97-461b-8b30-f6bf455c00a3</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege30_pom</Name>
+			<Title>[30] Radtour Rund um das Stettiner Haff (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="184">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege30_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>a281ee65-c32a-45af-a255-ceba0421a8c4</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_radwege09_pom</Name>
+			<Title>[09] Stettiner Grenzweg (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a7_geotourismus_pomerania_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_radwege09_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>749004ae-91f2-41e8-a89e-7a0aaf5d4ccf</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_flusstal_gp</Name>
+			<Title>Besonderes Flusstal (Geotourismuskarte Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="172">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_flusstal_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>09bad35c-2741-4f55-9dc0-733e9b7080c1</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_flusstal_pom</Name>
+			<Title>Besondere Flusstaeler (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="172">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_flusstal_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>1c9e70d6-24bd-46b2-ba96-8972c87ce3b3</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_nat_eingang_gp</Name>
+			<Title>Eingangsbereiche von Nationalpark und Naturpark (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="284">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_nat_eingang_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>b078d224-7e6c-40e4-8143-ec9e966129e9</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_eiszeitroute_pom</Name>
+			<Title>Eiszeitroute (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_eiszeitroute_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>50a00eb1-ce01-469c-b4b5-2b08f20cd86b</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_info_perm_gp</Name>
+			<Title>Ganzjaehrige Informationsstellen (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="226">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_info_perm_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>f4939955-d028-4a73-b1d7-713fe3005f1d</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_gedenkstein_pom</Name>
+			<Title>Gedenksteine (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_gedenkstein_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>bc86590c-2bcb-48ab-b662-db4aa8b48a1b</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_geopark_pom</Name>
+			<Title>Geopark Mecklenburgische Eiszeitlandschaft (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_geopark_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>699ec707-32af-45d8-84d8-ac647351556c</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_geopark_gp</Name>
+			<Title>Geopark Mecklenburgische Eiszeitlandschaft</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_geopark_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>45180462-e0cd-46d4-a556-3278f82c3018</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_geoparkobj_pom</Name>
+			<Title>Geoparkobjekte (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="195">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_geoparkobj_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>8ea298ef-20a9-41d6-8640-b563890a3150</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_ggarten_gp</Name>
+			<Title>Geschiebegaerten (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_ggarten_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>60c88c57-500c-440c-98ea-fbae97931a22</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_ggarten_pom</Name>
+			<Title>Geschiebegaerten (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_ggarten_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>8ee4be28-51e1-4af5-a450-8e2d91eeb10e</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_info_nat_gp</Name>
+			<Title>Informationszentren von Nationalpark und der Naturpark (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="312">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_info_nat_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>f435af49-cbf5-465e-9831-3b883f5a25f9</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_kalktuff_gp</Name>
+			<Title>Kalktuffvorkommen (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_kalktuff_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>edd60fc9-c5e4-44b7-ae12-a1f78f441f18</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_mueritz_nlp_gp</Name>
+			<Title>Mueritz-Nationalpark (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_mueritz_nlp_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>2734e8bd-0cba-4843-bf2b-749caa6d1451</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_mueritz_nlp_pom</Name>
+			<Title>Mueritz-Nationalpark (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="41" width="194">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_mueritz_nlp_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>e9a078ee-4f1a-4123-ada1-90c7b77415c7</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_nlp_kern_gp</Name>
+			<Title>Nationalpark-Kernzone (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="543">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_nlp_kern_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>1587639c-ddc4-494e-8bd6-2ae3644d63c0</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_natpark_gp</Name>
+			<Title>Naturparke (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_natpark_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>26e73dc6-b194-4b4f-b9c0-ceaefa2bb4c0</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_geoparkobj_gp</Name>
+			<Title>Objekte des Geoparks Mecklenburgische Eiszeitlandschaft</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="90" width="195">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_geoparkobj_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>2e0302cc-f16d-4138-8eed-4061cae87aec</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_quellen_gp</Name>
+			<Title>Quellen (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_quellen_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>609f9af9-f828-4b67-b354-c87000999cb8</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_quellen_pom</Name>
+			<Title>Quellen (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_quellen_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>52d23066-15ad-43a2-bafa-082c5e85922a</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_info_sais_gp</Name>
+			<Title>Saisonale Informationsstellen (Geopark Mecklenburgische Eiszeitlandschaft)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="213">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_info_sais_gp&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>bcdda7e2-3523-44ed-a4c4-340cc4a0bb29</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_sprl_stein_pom</Name>
+			<Title>Sprenglochsteine (Pomerania)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_sprl_stein_pom&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="11111.0" min="0.0"/>
+				<deegree:identifier>cadda9af-59bf-4d10-beb6-27816d03c4b1</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php" xlink:type="simple"/>
+			</Server>
+			<Name>t2_bntk91f</Name>
+			<Title>Biotop- und Nutzungstypen (Flaechen)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="413" width="246">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_bntk91f&amp;format=image/png&amp;STYLE=default" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="24.9451424214819" min="0.498902848429637"/>
+				<deegree:identifier>a4c850ce-a710-4ae0-bbe8-ed8adc12ae25</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php" xlink:type="simple"/>
+			</Server>
+			<Name>t2_bntk91l</Name>
+			<Title>Biotop- und Nutzungstypen (Linien)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="413" width="237">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_bntk91l&amp;format=image/png&amp;STYLE=default" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="24.9451424214819" min="0.498902848429637"/>
+				<deegree:identifier>a3bb7616-f95a-4eb0-abc1-116db94c1388</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php" xlink:type="simple"/>
+			</Server>
+			<Name>t2_bk_ueb</Name>
+			<Title>Biotopkartierung, Uebersicht</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="260" width="211">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_bk_ueb&amp;format=image/png&amp;STYLE=default" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>df657e60-dce4-43b8-be98-f1fc47fe2742</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php" xlink:type="simple"/>
+			</Server>
+			<Name>t2_bk_mv</Name>
+			<Title>ges. gesch. Biotope</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="141" width="202">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_bk_mv&amp;format=image/png&amp;STYLE=default" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="124.726211010258" min="0.0"/>
+				<deegree:identifier>d8e0d992-2e05-4fe3-a4e1-68e1e19e550f</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php" xlink:type="simple"/>
+			</Server>
+			<Name>t2_nkb_mv</Name>
+			<Title>Biotopkartierung, nicht kartierte Bereiche</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="274">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_nkb_mv&amp;format=image/png&amp;STYLE=default" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>38e53528-256a-4730-a32d-db20dd292964</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="0">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_artesik</Name>
+			<Title>Artesik</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_artesik&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="0.0" min="2.49451424214819"/>
+				<deegree:identifier>74cd0c92-f03b-49ce-ab59-13bceeb2b19d</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_dlm25w_f</Name>
+			<Title>Gewaesserflaechen</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="90" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_dlm25w_f&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>0c9657fc-2760-4d15-9467-a3e32be7d564</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_dlm25w_l</Name>
+			<Title>Gewaesserlinien</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="90" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_dlm25w_l&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>1a95540f-d54d-4735-8e65-58f06cd450cf</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_dlm25w_route_gwk</Name>
+			<Title>Gewaesserrouten LAWA</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="73" width="189">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_dlm25w_route_gwk&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>ead38726-7c67-4d7a-8814-afce8ed440ff</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_dlm25w_route_wbv</Name>
+			<Title>Gewaesserrouten WBV</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_dlm25w_route_wbv&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>c4fca577-945f-475c-93f6-9081357bda28</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_flurabstand</Name>
+			<Title>Grundwasserflurabstand</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="226" width="235">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_flurabstand&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="0.0" min="2.49451424214819"/>
+				<deegree:identifier>1f9a6433-ce57-458e-bcd4-374c1c1cdb87</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t7_dynamik</Name>
+			<Title>Grundwasserhoehengleichen</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="214">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t7_dynamik&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="1247.25712107409" min="2.49451424214819"/>
+				<deegree:identifier>6128c87e-6a06-4df5-be08-ef0da9980b8d</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_dlm25w_pegel</Name>
+			<Title>Pegel OW</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_dlm25w_pegel&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>52190063-cef0-4024-a2c1-5b23b2b9cff9</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_uesg</Name>
+			<Title>Ueberschwemmungsgebiete</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="41" width="178">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_uesg&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>59c5a457-f156-4f2c-98c5-72f45fd97cc1</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_dlm25w_ezg_ws_no</Name>
+			<Title>Wasserscheide Nord-/Ostsee</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="188">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_dlm25w_ezg_ws_no&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>d4ef0afe-8fb1-4396-a99c-6995b11de039</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_wbu_ben</Name>
+			<Title>Wasserbuch Benutzungen</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="141" width="221">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_wbu_ben&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>74ff40a3-aa06-48b4-8603-99e953fa6a81</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_wbu_aus</Name>
+			<Title>Wasserbuch Ausbau</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_wbu_aus&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>236f1641-86df-4291-bf95-8f5fedc12a0e</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t3_wsg</Name>
+			<Title>Wasserschutzgebiete</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="192" width="169">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t3_wsg&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>da2807a0-0e6a-40f4-8b12-708fedee6662</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t2_lpv_a_07</Name>
+			<Title>Kommunale Landschaftsplaene</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="90" width="217">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_lpv_a_07&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>5b092d6c-fafc-4c28-819d-c37335ab0a53</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t2_lb_a_f</Name>
+			<Title>Landschaftsbildpotenzial (Flaechen)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="141" width="252">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_lb_a_f&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>733153a5-8cda-48fb-8f3f-7425f6f7fde2</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t2_lb_a_l</Name>
+			<Title>Landschaftsbildpotenzial (Linien)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="277" width="242">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_lb_a_l&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>edd4c500-7c44-41f4-9414-57dda9de2888</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t2_lb_a_p</Name>
+			<Title>Landschaftsbildpotenzial (Punkte)</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="226" width="265">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_lb_a_p&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="124.725712107409" min="0.0"/>
+				<deegree:identifier>80a46be7-74ef-4fe7-96a7-6c6758be3ead</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t2_lb_raum</Name>
+			<Title>Landschaftsbildraeume - Bewertung</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="124" width="250">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_lb_raum&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>3368581b-2895-407f-9fff-be82b380897f</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_l_einh_f</Name>
+			<Title>Landschaftseinheiten</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="1127" width="172">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_l_einh_f&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>f6be496b-08af-4f30-9815-b77d18ebfaaa</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="1" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t2_lsg_f</Name>
+			<Title>Landschaftsschutzgebiete</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="39" width="234">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t2_lsg_f&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>f2a6b495-26f4-489e-aa44-7fed3a1d01de</deegree:identifier>
+				<deegree:tiled>true</deegree:tiled>
+			</Extension>
+		</Layer>
+		<Layer hidden="0" queryable="1">
+			<Server service="OGC:WMS" title="LUNG WMS Server" version="1.1.1">
+				<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?" xlink:type="simple"/>
+			</Server>
+			<Name>t4_l_zon_f</Name>
+			<Title>Landschaftszonen</Title>
+			<SRS>EPSG:31467</SRS>
+			<FormatList>
+				<Format current="1">image/png</Format>
+			</FormatList>
+			<StyleList>
+				<Style current="1">
+					<Name>default</Name>
+					<Title>default</Title>
+					<LegendURL height="175" width="316">
+						<OnlineResource xlink:href="http://www.umweltkarten.mv-regierung.de/script/lung_wms_wms.php?version=1.1.1&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=t4_l_zon_f&amp;format=image/png&amp;STYLE=default&amp;" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+			</StyleList>
+			<Extension>
+				<deegree:ScaleHint max="748.354272644456" min="0.249451424214819"/>
+				<deegree:identifier>ca467aba-901c-44d1-b887-6357ade211a0</deegree:identifier>
+				<deegree:tiled>false</deegree:tiled>
+			</Extension>
+		</Layer>
+	</LayerList>
+</ViewContext>

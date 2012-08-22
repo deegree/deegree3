@@ -1,0 +1,120 @@
+CREATE OR REPLACE TRIGGER SET_quantRes_value_id
+BEFORE INSERT
+ON QuantitativeRes_Value
+FOR EACH ROW
+BEGIN
+  SELECT QuantitativeRes_Value_ID_seq.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_language_id
+BEFORE INSERT
+ON Language
+FOR EACH ROW
+BEGIN
+  SELECT language_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_publicationdate_id
+BEFORE INSERT
+ON PublicationDate
+FOR EACH ROW
+BEGIN
+  SELECT publicationdate_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_otherconstraints_id
+BEFORE INSERT
+ON otherconstraints
+FOR EACH ROW
+BEGIN
+  SELECT otherconstraints_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_voice_id
+BEFORE INSERT
+ON voice
+FOR EACH ROW
+BEGIN
+  SELECT voice_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_facsimile_id
+BEFORE INSERT
+ON facsimile
+FOR EACH ROW
+BEGIN
+  SELECT facsimile_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_alternatetitle_id
+BEFORE INSERT
+ON alternatetitle
+FOR EACH ROW
+BEGIN
+  SELECT alternatetitle_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_ServiceVersion_id
+BEFORE INSERT
+ON ServiceVersion
+FOR EACH ROW
+BEGIN
+  SELECT ServiceVersion_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+ 
+CREATE OR REPLACE TRIGGER SET_EX_GeoDesc_id
+BEFORE INSERT
+ON EX_GeographicDescription
+FOR EACH ROW
+BEGIN
+  SELECT EX_GeographicDescriptio_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+   
+CREATE OR REPLACE TRIGGER SET_harvestsource_id
+BEFORE INSERT
+ON harvestsource
+FOR EACH ROW
+BEGIN
+  SELECT harvestsource_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_metadatacache_id
+BEFORE INSERT
+ON metadatacache
+FOR EACH ROW
+BEGIN
+  SELECT metadatacache_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+
+CREATE OR REPLACE TRIGGER SET_responsehandler_id
+BEFORE INSERT
+ON responsehandler
+FOR EACH ROW
+BEGIN
+  SELECT responsehandler_id_SEQ.NEXTVAL
+  INTO :NEW.id
+  FROM DUAL;
+END;
+

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================== Includes================================== -->
+    <xs:include schemaLocation="./metadataEntity.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="_DS_Aggregate_Type" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Identifiable collection of datasets</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="composedOf" type="smXML:DS_DataSet_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="seriesMetadata" type="smXML:MD_Metadata_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="subset" type="smXML:_DS_Aggregate_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="_DS_Aggregate" type="smXML:_DS_Aggregate_Type" abstract="true"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="_DS_Aggregate_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:_DS_Aggregate"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_DataSet_Type">
+        <xs:annotation>
+            <xs:documentation>Identifiable collection of data</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="has" type="smXML:MD_Metadata_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_DataSet" type="smXML:DS_DataSet_Type"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_DataSet_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_DataSet"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_OtherAggregate_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DS_Aggregate_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_OtherAggregate" type="smXML:DS_OtherAggregate_Type" substitutionGroup="smXML:_DS_Aggregate"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_OtherAggregate_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_OtherAggregate"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_Series_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DS_Aggregate_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_Series" type="smXML:DS_Series_Type" substitutionGroup="smXML:_DS_Aggregate"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_Series_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_Series"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_Initiative_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_DS_Aggregate_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_Initiative" type="smXML:DS_Initiative_Type" substitutionGroup="smXML:_DS_Aggregate"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_Initiative_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_Initiative"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_Platform_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:DS_Series_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_Platform" type="smXML:DS_Platform_Type" substitutionGroup="smXML:DS_Series"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_Platform_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_Platform"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_Sensor_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:DS_Series_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_Sensor" type="smXML:DS_Sensor_Type" substitutionGroup="smXML:DS_Series"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_Sensor_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_Sensor"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_ProductionSeries_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:DS_Series_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_ProductionSeries" type="smXML:DS_ProductionSeries_Type" substitutionGroup="smXML:DS_Series"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_ProductionSeries_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_ProductionSeries"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="DS_StereoMate_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:DS_OtherAggregate_Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="DS_StereoMate" type="smXML:DS_StereoMate_Type" substitutionGroup="smXML:DS_OtherAggregate"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="DS_StereoMate_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:DS_StereoMate"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+</xs:schema>

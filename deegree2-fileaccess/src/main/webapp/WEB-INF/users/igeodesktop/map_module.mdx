@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dgp:Module xmlns:dgp="http://www.deegree.org/project" xmlns:cmm="http://www.deegree.org/coremapmodel" xmlns:set="http://www.deegree.org/settings" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/project ../schema/jaxbschema/project.xsd">
+	<dgp:name>MapModule</dgp:name>
+	<cmm:identifier>
+		<cmm:value>F2</cmm:value>
+	</cmm:identifier>
+	<dgp:className>org.deegree.igeo.modules.DefaultMapModule</dgp:className>
+	<dgp:ViewForm>
+		<dgp:PaneViewForm>
+			<dgp:containerClass viewPlatform="Application">org.deegree.igeo.views.swing.map.DefaultMapComponent</dgp:containerClass>
+			<dgp:ComponentState active="false" modal="false">
+				<dgp:windowState>normal</dgp:windowState>
+			</dgp:ComponentState>
+			<dgp:paneTitle>$F4.FrameTitle</dgp:paneTitle>
+		</dgp:PaneViewForm>
+		<dgp:Layout>
+			<dgp:NoneLayout />
+		</dgp:Layout>
+	</dgp:ViewForm>
+	<dgp:Menu>
+		<cmm:identifier>
+			<cmm:value>MM_B15</cmm:value>
+		</cmm:identifier>
+		<dgp:parent>
+			<cmm:value>MB1</cmm:value>
+		</dgp:parent>
+		<dgp:name/>	
+		<dgp:MenuItem>
+			<dgp:name>$ExportLayer</dgp:name>
+			<dgp:assignedAction>exportLayer</dgp:assignedAction>
+			<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/export_layer.png"/>
+		</dgp:MenuItem>
+		<dgp:MenuItem>
+			<dgp:name>$CommitSelected</dgp:name>
+			<dgp:assignedAction>commitSelected</dgp:assignedAction>
+			<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/commit_selected.png"/>
+		</dgp:MenuItem>
+		<dgp:MenuItem>
+			<dgp:name>$CommitAll</dgp:name>
+			<dgp:assignedAction>commitAll</dgp:assignedAction>
+			<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/s_commit_all.png"/>
+		</dgp:MenuItem>
+		<dgp:MenuItem>
+			<dgp:name>$ExportMapAsImage</dgp:name>
+			<dgp:assignedAction>exportAsImage</dgp:assignedAction>
+			<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/map_export.png"/>
+		</dgp:MenuItem>
+		<dgp:MenuItem>
+			<dgp:name>$ExportMapToClipboard</dgp:name>
+			<dgp:assignedAction>exportToClipBoard</dgp:assignedAction>
+			<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/map_copy.png"/>
+		</dgp:MenuItem>
+	</dgp:Menu>
+	<dgp:Menu>
+		<cmm:identifier>
+			<cmm:value>MM1_MB19</cmm:value>
+		</cmm:identifier>
+		<dgp:parent>
+			<cmm:value>MB1tools</cmm:value>
+		</dgp:parent>
+		<dgp:name/>
+		<dgp:MenuItem>
+			<dgp:name>$HyperlinkTool</dgp:name>
+			<dgp:assignedAction>activateHyperlink</dgp:assignedAction>
+			<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/link_go.png"/>
+		</dgp:MenuItem>
+	</dgp:Menu>
+	<dgp:PopUpEntry assignedGroup="PUZoomGroup">
+		<cmm:identifier>
+			<cmm:value>PUMM42</cmm:value>
+		</cmm:identifier>
+		<dgp:name>$MB31.name</dgp:name>
+		<dgp:assignedAction>zoomIn</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomin.png" />
+		<dgp:entryType>RadioButtonItem</dgp:entryType>
+	</dgp:PopUpEntry>
+	<dgp:PopUpEntry assignedGroup="PUZoomGroup">
+		<cmm:identifier>
+			<cmm:value>PUMM43</cmm:value>
+		</cmm:identifier>
+		<dgp:name>$MB32.name</dgp:name>
+		<dgp:assignedAction>zoomOut</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomout.png" />
+		<dgp:entryType>RadioButtonItem</dgp:entryType>
+	</dgp:PopUpEntry>
+	<dgp:PopUpEntry assignedGroup="PUZoomGroup">
+		<cmm:identifier>
+			<cmm:value>PUMM44</cmm:value>
+		</cmm:identifier>
+		<dgp:name>$MB33.name</dgp:name>
+		<dgp:assignedAction>pan</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/pan.png" />
+		<dgp:entryType>RadioButtonItem</dgp:entryType>
+	</dgp:PopUpEntry>
+	<dgp:PopUpEntry assignedGroup="PUZoomGroup">
+		<cmm:identifier>
+			<cmm:value>PUMM45</cmm:value>
+		</cmm:identifier>
+		<dgp:name>$MB34.name</dgp:name>
+		<dgp:assignedAction>center</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/s_center.png" />
+		<dgp:entryType>RadioButtonItem</dgp:entryType>
+	</dgp:PopUpEntry>
+	<dgp:PopUpEntry>
+		<cmm:identifier>
+			<cmm:value>PUMM41</cmm:value>
+		</cmm:identifier>
+		<dgp:name>$ZoomExtent</dgp:name>
+		<dgp:assignedAction>zoomToFullExtent</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/s_zoomtofullextent.png" />
+	</dgp:PopUpEntry>
+	
+    <dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>MB3967</cmm:value>
+		</cmm:identifier>
+		<!--dgp:name>addLinkedTable</dgp:name-->
+		<dgp:tooltip>$addLinkedTable.tooltip</dgp:tooltip>
+		<dgp:assignedAction>addLinkedTable</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/table_add.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>		
+	
+	<dgp:ToolBarEntry assignedGroup="ZoomGroup">
+		<cmm:identifier>
+			<cmm:value>MB39</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$pan.tooltip</dgp:tooltip>
+		<dgp:assignedAction>pan</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/pan.png"/>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="ZoomGroup">
+		<cmm:identifier>
+			<cmm:value>MB35</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$zoomin.tooltip</dgp:tooltip>
+		<dgp:assignedAction>zoomIn</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomin.png"/>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="ZoomGroup">
+		<cmm:identifier>
+			<cmm:value>MB36</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$zoomout.tooltip</dgp:tooltip>
+		<dgp:assignedAction>zoomOut</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomout.png"/>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="ZoomGroup">
+		<cmm:identifier>
+			<cmm:value>MB38</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$center.tooltip</dgp:tooltip>
+		<dgp:assignedAction>center</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/center.png"/>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>MB37</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$zoomToFullExtent.tooltip</dgp:tooltip>
+		<dgp:assignedAction>zoomToFullExtent</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomtofullextent.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>TB42</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$historyBackward.tooltip</dgp:tooltip>
+		<dgp:assignedAction>historyBackward</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/arrow_left.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>TB41</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$historyForward.tooltip</dgp:tooltip>
+		<dgp:assignedAction>historyForward</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/arrow_right.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>MB307</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$zoomToLayers.tooltip</dgp:tooltip>
+		<dgp:assignedAction>zoomToSelectedLayers</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomToLayers.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry>
+		<cmm:identifier>
+			<cmm:value>exportLayer</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$exportLayer.tooltip</dgp:tooltip>
+		<dgp:assignedAction>exportLayer</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/export_layer.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="ZoomGroup">
+		<cmm:identifier>
+			<cmm:value>MB34</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$selectAnObject.tooltip</dgp:tooltip>
+		<dgp:assignedAction>select</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/selectObject.png"/>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="TBSelectGroup">
+		<cmm:identifier>
+			<cmm:value>identifier765</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$ZoomToSelectedFeatures.tooltip</dgp:tooltip>
+		<dgp:assignedAction>zoomToSelectedFeatures</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/zoomtofeature.png"/>
+		<dgp:entryType>PushButton</dgp:entryType>
+	</dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="ZoomGroup">
+		<cmm:identifier>
+			<cmm:value>MB40</cmm:value>
+		</cmm:identifier>
+		<dgp:name/>
+		<dgp:tooltip>$ObjectInfo.tooltip</dgp:tooltip>
+		<dgp:assignedAction>objectInfo</dgp:assignedAction>
+		<dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/objectInfo.png"/>
+	</dgp:ToolBarEntry>	
+   <set:HelpContext>
+    <set:page mainPage="true">
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer.de.html"/>
+      <set:keyword>Kartenebene: Allgemein</set:keyword>
+    </set:page>
+  </set:HelpContext>
+   <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer_delete.de.html"/>
+      <set:keyword>Kartenebene löschen</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer_rename.de.html"/>
+      <set:keyword>Kartenebene umbenennen</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer_new.de.html"/>
+      <set:keyword>Ordnungs-Ebene einfügen</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer_move.de.html"/>
+      <set:keyword>Kartenebene verschieben</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer_info.de.html"/>
+      <set:keyword>Kartenebene: Metadaten </set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/layer_save_export.de.html"/>
+      <set:keyword>Kartenebene: Datenbestand sichern</set:keyword>
+      <set:keyword>Kartenebene exportiern</set:keyword>
+    </set:page>
+  </set:HelpContext>
+   <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/map_pan.de.html"/>
+      <set:keyword>Kartenansicht: verschieben </set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/map_recenter.de.html"/>
+      <set:keyword>Kartenansicht: zentrieren </set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/map_zoom.de.html"/>
+      <set:keyword>Kartenansicht: zoom </set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/map_scale.de.html"/>
+      <set:keyword>Kartenansicht: Maßstab ändern</set:keyword>
+    </set:page>
+  </set:HelpContext>
+ <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/mapmodule/hotlink.de.html"/>
+      <set:keyword>Hotlink öffnen </set:keyword>
+    </set:page>
+  </set:HelpContext>
+</dgp:Module>

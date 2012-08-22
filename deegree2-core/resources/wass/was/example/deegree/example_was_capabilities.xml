@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<was:WAS_Capabilities xmlns:was="http://www.gdi-nrw.org/was" xmlns:authn="http://www.gdi-nrw.org/authentication" xmlns="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:deegreewas="http://www.deegree.org/was" version="1.1">
+  <deegreewas:deegreeParam>
+    <!--
+        The DefaultOnlineResource will be used if a required OnlineResource is
+        not defined
+      -->
+    <deegreewas:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegree/services"/>
+    <!-- maximum time for the execution of a request until an exception of time-exceed is thrown.
+         optional; default 15 seconds -->
+    <deegreewas:RequestTimeLimit>15</deegreewas:RequestTimeLimit>
+    <!-- maximum lifetime for a session, default 1200 seconds -->
+    <deegreewas:SessionLifetime>1200</deegreewas:SessionLifetime>
+    <deegreewas:AuthenticationServiceAddress>
+      <!--
+          mandatory element with online resource for accessing a WAS to authenticate users
+        -->
+      <deegreewas:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8081/deegree/was"/>
+    </deegreewas:AuthenticationServiceAddress>
+    <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+      <Driver>org.postgresql.Driver</Driver>
+      <Url>jdbc:postgresql://hurricane:5432/wssusers</Url>
+      <User>postgres</User>
+      <Password></Password>
+      <SecurityConstraints/>
+      <Encoding>UTF-8</Encoding>
+    </JDBCConnection>
+  </deegreewas:deegreeParam>
+  <ServiceIdentification>
+    <Title>deegree WAS</Title>
+    <Abstract>
+      A Web Security Service that secures the secret WMS
+    </Abstract>
+    <Keywords>
+      <Keyword>WAS</Keyword>
+    </Keywords>
+    <ServiceType>WAS</ServiceType>
+    <ServiceTypeVersion>1.1</ServiceTypeVersion>
+    <Fees>NONE</Fees>
+    <AccessConstraints>NONE</AccessConstraints>
+  </ServiceIdentification>
+  <ServiceProvider>
+    <ProviderName>lat/lon</ProviderName>
+    <ProviderSite xlink:href="http://www.lat-lon.de"/>
+    <ServiceContact>
+      <IndividualName>Andreas Poth</IndividualName>
+      <PositionName>none</PositionName>
+      <ContactInfo>
+        <Phone>
+          <Voice>+49 0228 18496 0</Voice>
+        </Phone>
+        <Address>
+          <DeliveryPoint>Annchenstr. 19</DeliveryPoint>
+          <City>Bonn</City>
+          <AdministrativeArea>NRW</AdministrativeArea>
+          <PostalCode>53177</PostalCode>
+          <Country>Germany</Country>
+          <ElectronicMailAddress>info@www.lat-lon.de</ElectronicMailAddress>
+        </Address>
+        <OnlineResource xlink:href="http://www.lat-lon.de"/>
+      </ContactInfo>
+    </ServiceContact>
+  </ServiceProvider>
+  <OperationsMetadata>
+    <Operation name="GetCapabilities">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://localhost/WAS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="GetSession">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://localhost/WAS?"/>
+          <Post xlink:href="http://localhost/WAS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="CloseSession">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://localhost/WAS?"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <Operation name="DescribeUser">
+      <DCP>
+        <HTTP>
+          <Get xlink:href="http://www.lat-lon.de:8080/WSS?"/>
+          <Post xlink:href="http://www.lat-lon.de:8080/WSS"/>
+        </HTTP>
+      </DCP>
+      <Parameter name="Format">
+        <Value>text/xml</Value>
+      </Parameter>
+    </Operation>
+    <!--   Currently not supported by deegree -->
+    <!--
+                        <Operation name="GetSAMLResponse">
+                        <DCP>
+                        <HTTP>
+                        <Get xlink:href="http://localhost/WAS?"/>
+                        <Post xlink:href="http://localhost/WAS"/>
+                        </HTTP>
+                        </DCP>
+                        </Operation>
+                -->
+  </OperationsMetadata>
+  <was:Capability>
+    <was:SupportedAuthenticationMethodList>
+      <!--authentication method #1-->
+      <authn:SupportedAuthenticationMethod>
+        <authn:AuthenticationMethod id="urn:x-gdi-nrw:authnMethod:1.0:password"/>
+      </authn:SupportedAuthenticationMethod>
+      <!--authentication method #2-->
+      <authn:SupportedAuthenticationMethod>
+        <authn:AuthenticationMethod id="urn:x-gdi-nrw:authnMethod:1.0:session"/>
+      </authn:SupportedAuthenticationMethod>
+    </was:SupportedAuthenticationMethodList>
+  </was:Capability>
+</was:WAS_Capabilities>

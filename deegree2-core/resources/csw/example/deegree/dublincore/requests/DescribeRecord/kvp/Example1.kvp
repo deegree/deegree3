@@ -1,0 +1,4 @@
+http://www.someserver.com/csw.cgi?
+REQUEST=DescribeRecord&
+SERVICE=CSW&
+VERSION=2.0.0

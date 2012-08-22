@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================================== Includes ================================== -->
+    <xs:include schemaLocation="./citation.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="MD_Medium_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="name" type="smXML:MD_MediumNameCode_PropertyType" minOccurs="0"/>
+                    <xs:element name="densityUnits" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="mediumFormat" type="smXML:MD_MediumFormatCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="mediumNote" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="density" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="volumes" type="smXML:nonNegativeInteger_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Medium" type="smXML:MD_Medium_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   "densityUnits" is mandatory if "density" is provided
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_Medium_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Medium"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_DigitalTransferOptions_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="unitsOfDistribution" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="onLine" type="smXML:CI_OnlineResource_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="offLine" type="smXML:MD_Medium_PropertyType" minOccurs="0"/>
+                    <xs:element name="transferSize" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_DigitalTransferOptions" type="smXML:MD_DigitalTransferOptions_Type"/>
+    <xs:complexType name="MD_DigitalTransferOptions_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_DigitalTransferOptions"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_StandardOrderProcess_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="fees" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="plannedAvailableDateTime" type="smXML:DateTime_PropertyType" minOccurs="0"/>
+                    <xs:element name="orderingInstructions" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="turnaround" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_StandardOrderProcess" type="smXML:MD_StandardOrderProcess_Type"/>
+    <xs:complexType name="MD_StandardOrderProcess_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_StandardOrderProcess"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Distributor_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="distributorContact" type="smXML:CI_ResponsibleParty_PropertyType"/>
+                    <xs:element name="distributorFormat" type="smXML:MD_Format_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="distributionOrderProcess" type="smXML:MD_StandardOrderProcess_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="distributorTransferOptions" type="smXML:MD_DigitalTransferOptions_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Distributor" type="smXML:MD_Distributor_Type"/>
+    <xs:complexType name="MD_Distributor_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Distributor"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Distribution_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="distributionFormat" type="smXML:MD_Format_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="distributor" type="smXML:MD_Distributor_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="transferOptions" type="smXML:MD_DigitalTransferOptions_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Distribution" type="smXML:MD_Distribution_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   count (distributionFormat + distributorFormat) &gt; 0
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_Distribution_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Distribution"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_Format_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="name" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="version" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="amendmentNumber" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="specification" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="fileDecompressionTechnique" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="formatDistributor" type="smXML:MD_Distributor_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="MD_Format" type="smXML:MD_Format_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   count (distributionFormat + distributorFormat) &gt; 0
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="MD_Format_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_Format"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_DistributionUnits_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_DistributionUnits" type="smXML:MD_DistributionUnits_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_DistributionUnits_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_DistributionUnits"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_MediumFormatCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_MediumFormatCode" type="smXML:MD_MediumFormatCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_MediumFormatCode_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:MD_MediumFormatCode"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="MD_MediumNameCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="MD_MediumNameCode" type="smXML:MD_MediumNameCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="MD_MediumNameCode_PropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:MD_MediumNameCode"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>

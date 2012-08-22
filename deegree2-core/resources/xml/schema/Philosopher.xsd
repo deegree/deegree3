@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.deegree.org/app" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.deegree.org/wfs" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+  <!-- ====================================================================== -->
+  <element name="Philosopher" type="app:PhilosopherType" substitutionGroup="gml:_Feature"/>
+  <!-- ====================================================================== -->
+  <complexType name="PhilosopherType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <!-- simple (integer) valued property 'id' -->
+          <element name="id" type="xsd:integer"/>
+          <!-- simple (string) valued property 'name' -->
+          <element name="name" type="xsd:string"/>
+          <!-- simple (string) valued property 'subject', located in related table -->
+          <element name="subject" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+          <!-- complex valued property 'subjects' -->
+          <element name="subjects" type="gml:FeatureArrayPropertyType" minOccurs="0" maxOccurs="1"/>
+          <!-- simple (date) valued property 'dateOfBirth' -->
+          <element name="dateOfBirth" type="xsd:date"/>
+          <!-- complex valued property 'placeOfBirth' -->
+          <element name="placeOfBirth" type="gml:FeaturePropertyType"/>
+          <!-- simple (date) valued property 'dateOfDeath' -->
+          <element name="dateOfDeath" type="xsd:date"/>
+          <!-- complex valued property 'placeOfDeath' -->
+          <element name="placeOfDeath" type="gml:FeaturePropertyType"/>
+          <!-- complex valued property 'friend' -->
+          <element name="friend" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+          <!-- complex valued property 'property' -->
+          <element name="property" type="gml:FeatureArrayPropertyType" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- ====================================================================== -->
+  <element name="Subject" type="app:SubjectType" substitutionGroup="gml:_Feature"/>
+  <!-- ====================================================================== -->
+  <complexType name="SubjectType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="subjectName" type="xsd:string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- ====================================================================== -->
+  <element name="Place" type="app:PlaceType" substitutionGroup="gml:_Feature"/>
+  <!-- ====================================================================== -->
+  <complexType name="PlaceType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="id" type="xsd:string" nillable="false"/>
+          <element name="name" type="xsd:string"/>
+          <element name="country" type="gml:FeaturePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- ====================================================================== -->
+  <element name="Country" substitutionGroup="gml:_Feature">
+    <!-- anonymous types are allowed as well -->
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="id" type="xsd:string"/>
+            <element name="name" type="xsd:string"/>
+            <element name="geom" type="gml:GeometryPropertyType"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- ====================================================================== -->
+</schema>

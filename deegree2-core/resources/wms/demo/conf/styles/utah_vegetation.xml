@@ -1,0 +1,1470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+	<sld:NamedLayer>
+		<sld:Name>Vegetation</sld:Name>
+		<sld:UserStyle>
+			<sld:Name>default:Vegetation</sld:Name>
+			<sld:Title>default:Vegetation</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>Vegetation</sld:Name>
+				<sld:Rule>
+					<sld:Name>dom_A1</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#003300</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#003300</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A11</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A11</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#334C33</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#334C33</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A12</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A12</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#4C664C</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#4C664C</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A14</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A14</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#667F66</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#667F66</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A4</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A4</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#7F997F</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#7F997F</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A5</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A5</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#99B299</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#99B299</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A6</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A6</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#B2C0B2</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#B2C0B2</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A7</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A7</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#C0CCC0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#C0CCC0</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A8</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A8</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_A9</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>A9</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#B2B299</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#B2B299</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B1</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#C0C0B2</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#C0C0B2</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B11</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B11</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#4C4C4C</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#4C4C4C</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B2</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#4C4C4C</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#4C4C4C</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B3</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B3</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#666666</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B4</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B4</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#666666</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B5</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B5</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#7fc97f</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#588c58</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B6</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B6</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#beaed4</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#857994</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_B7</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>B7</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#fdc086</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#b1865d</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C1</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C10</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C10</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#386cb0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#274b7b</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C11</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C11</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#f0027f</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#a80158</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C12</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C12</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#bf5b17</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#853f10</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C14</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C14</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#474747</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C15</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C15</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#7fc97f</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#588c58</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C17</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C17</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#beaed4</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#857994</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C2</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#fdc086</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#b1865d</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C3</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C3</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C4</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C4</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#386cb0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#274b7b</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C5</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C5</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C6</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C6</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#bf5b17</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#853f10</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C7</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C7</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#474747</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C8</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C8</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#7fc97f</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#588c58</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_C9</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>C9</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#beaed4</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#857994</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D1</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#fdc086</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#b1865d</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D10</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D10</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D12</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D12</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#386cb0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#274b7b</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D15</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D15</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D16</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D16</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#bf5b17</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#853f10</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D19</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D19</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#474747</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D2</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#7fc97f</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#588c58</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D3</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D3</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#beaed4</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#857994</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D4</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D4</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#fdc086</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#b1865d</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D5</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D5</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#ffff99</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#b2b26b</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D6</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D6</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#386cb0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#274b7b</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D7</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D7</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_D9</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>D9</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_E1</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>E1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#B2C0C0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#B2C0C0</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_E2</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>E2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#B2C0C0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#B2C0C0</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_E3</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>E3</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#beaed4</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#857994</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_E4</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>E4</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#8C9999</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#8C9999</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_F1</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>F1</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#8C9999</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#8C9999</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_F2</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>F2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#CCD9CC</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#274b7b</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_G2</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>G2</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#666666</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_G3</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>G3</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#666666</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_G4</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>G4</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#666666</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#474747</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+				<sld:Rule>
+					<sld:Name>dom_G5</sld:Name>
+					<ogc:Filter>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>app:dom</ogc:PropertyName>
+							<ogc:Literal>G5</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+					<sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>3.7795275590173225E14</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geometry</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#7fc97f</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#588c58</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+	</sld:NamedLayer>
+</sld:StyledLayerDescriptor>

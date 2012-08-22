@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities xmlns:deegree="http://www.deegree.org/wfs" xmlns:ows="http://www.opengis.net/ows" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.0" updateSequence="0">
+	<!--
+		except the deegree-section and the Service section all other settings are optional and will
+		be set by default if not available. As a result of this a user is able to up a WFS with minimal 
+		definitions as 'DefaultOnlineResource' and 'DataDirectory'
+	-->
+	<deegree:deegreeParams>
+		<!--
+			The DefaultOnlineResource will be used if a required OnlineResource is
+			not defined
+		-->
+		<deegree:DefaultOnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://127.0.0.1:8080/deegreewfs"/>
+		<!-- optional; default = 100 (MB) -->
+		<deegree:CacheSize>250</deegree:CacheSize>
+		<!-- maximum time for the execution of a request until an exception of time-exceed is thrown.
+	      optional; default 30 seconds -->
+		<deegree:RequestTimeLimit>120</deegree:RequestTimeLimit>
+		<!--
+			list of directories to be scanned for featuretypes/datastores to be served by a WFS.  deegree will
+			look for datastore configuration files in these directories and add the contained feature types
+			to the featuretype list if not already present.
+			optional; default: same directory as configuration
+		-->
+		<deegree:DataDirectoryList>
+			<deegree:DataDirectory>featuretypes</deegree:DataDirectory>
+		</deegree:DataDirectoryList>
+	</deegree:deegreeParams>
+	<!-- ================================================================== -->
+	<!-- SERVICE IDENTIFICATION SECTION -->
+	<!-- ================================================================== -->
+	<ows:ServiceIdentification>
+		<ows:ServiceType>WFS</ows:ServiceType>
+		<ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+		<ows:Title>deegree WFS 2 Test</ows:Title>
+		<ows:Abstract>Test Web Feature Service</ows:Abstract>
+		<ows:Keywords>
+			<ows:Keyword>Persons</ows:Keyword>
+			<ows:Keyword>deegree</ows:Keyword>
+			<ows:Keyword>Test</ows:Keyword>
+			<ows:Type>String</ows:Type>
+		</ows:Keywords>
+		<ows:Fees>None</ows:Fees>
+		<ows:AccessConstraints>None</ows:AccessConstraints>
+	</ows:ServiceIdentification>
+	<!-- ================================================================== -->
+	<!-- SERVICE PROVIDER SECTION -->
+	<!-- ================================================================== -->
+	<ows:ServiceProvider>
+		<ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+		<ows:ProviderSite xlink:href="http://www.lat-lon.de"/>
+		<ows:ServiceContact>
+			<ows:IndividualName>Markus Schneider</ows:IndividualName>
+			<ows:PositionName>deegree core developer</ows:PositionName>
+			<ows:ContactInfo>
+				<ows:Phone>
+					<ows:Voice>+49 228 184960</ows:Voice>
+					<ows:Facsimile>+49 228 1849629</ows:Facsimile>
+				</ows:Phone>
+				<ows:Address>
+					<ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+					<ows:City>Bonn</ows:City>
+					<ows:AdministrativeArea>Northrhine-Westfalia</ows:AdministrativeArea>
+					<ows:PostalCode>53177</ows:PostalCode>
+					<ows:Country>Germany</ows:Country>
+					<ows:ElectronicMailAddress>mschneider@lat-lon.de</ows:ElectronicMailAddress>
+				</ows:Address>
+				<ows:OnlineResource xlink:href="http://www.lat-lon.de"/>
+				<ows:HoursOfService>24x7</ows:HoursOfService>
+				<ows:ContactInstructions>Don't call us. We'll call you.</ows:ContactInstructions>
+			</ows:ContactInfo>
+			<ows:Role>PointOfContact</ows:Role>
+		</ows:ServiceContact>
+	</ows:ServiceProvider>
+	<!-- ================================================================== -->
+	<!-- OPERATIONS METADATA SECTION -->
+	<!-- ================================================================== -->
+	<ows:OperationsMetadata>
+		<ows:Operation name="GetCapabilities">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:href="http://127.0.0.1:8080/deegreewfs?"/>
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="AcceptVersions">
+				<ows:Value>1.1.0</ows:Value>
+				<ows:Value>1.0.0</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="AcceptFormats">
+				<ows:Value>text/xml</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="Sections">
+				<ows:Value>ServiceIdentification</ows:Value>
+				<ows:Value>ServiceProvider</ows:Value>
+				<ows:Value>OperationsMetadata</ows:Value>
+				<ows:Value>FeatureTypeList</ows:Value>
+				<ows:Value>ServesGMLObjectTypeList</ows:Value>
+				<ows:Value>SupportsGMLObjectTypeList</ows:Value>
+				<ows:Value>Filter_Capabilities</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="DescribeFeatureType">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:href="http://127.0.0.1:8080/deegreewfs?"/>
+					<ows:Post xlink:href="http://127.0.0.1:8080/deegreewfs"/>
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="GetFeature">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get xlink:href="http://127.0.0.1:8080/deegreewfs?"/>
+					<ows:Post xlink:href="http://127.0.0.1:8080/deegreewfs"/>
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="resultType">
+				<ows:Value>results</ows:Value>
+				<ows:Value>hits</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Parameter name="srsName">
+			<ows:Value>EPSG:31467</ows:Value>
+		</ows:Parameter>
+		<ows:Constraint name="DefaultMaxFeatures">
+			<ows:Value>10</ows:Value>
+		</ows:Constraint>
+		<ows:Constraint name="LocalTraverseXLinkScope">
+			<ows:Value>0</ows:Value>
+			<ows:Value>*</ows:Value>
+		</ows:Constraint>
+		<ows:Constraint name="RemoteTraverseXLinkScope">
+			<ows:Value>0</ows:Value>
+			<ows:Value>*</ows:Value>
+		</ows:Constraint>
+		<ows:Constraint name="DefaultLockExpiry">
+			<ows:Value>5</ows:Value>
+		</ows:Constraint>
+	</ows:OperationsMetadata>
+	<!-- ================================================================== -->
+	<!-- FEATURE TYPE LIST SECTION -->
+	<!-- ================================================================== -->
+	<wfs:FeatureTypeList xmlns:app="http://www.deegree.org/app">
+	</wfs:FeatureTypeList>
+	<!-- ================================================================== -->
+	<!-- FILTER CAPABILITIES SECTION -->
+	<!-- ================================================================== -->
+	<ogc:Filter_Capabilities>
+		<ogc:Spatial_Capabilities>
+			<ogc:GeometryOperands>
+				<ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+				<ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+				<ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+				<ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+			</ogc:GeometryOperands>
+			<ogc:SpatialOperators>
+				<ogc:SpatialOperator name="BBOX"/>
+				<ogc:SpatialOperator name="Equals"/>
+				<ogc:SpatialOperator name="Disjoint"/>
+				<ogc:SpatialOperator name="Intersects"/>
+				<ogc:SpatialOperator name="Touches"/>
+				<ogc:SpatialOperator name="Crosses"/>
+				<ogc:SpatialOperator name="Within"/>
+				<ogc:SpatialOperator name="Contains"/>
+				<ogc:SpatialOperator name="Overlaps"/>
+				<ogc:SpatialOperator name="Beyond"/>
+			</ogc:SpatialOperators>
+		</ogc:Spatial_Capabilities>
+		<ogc:Scalar_Capabilities>
+			<ogc:LogicalOperators/>
+			<ogc:ComparisonOperators>
+				<ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+			</ogc:ComparisonOperators>
+			<ogc:ArithmeticOperators>
+				<ogc:SimpleArithmetic>
+					<ogc:Mul/>
+					<ogc:Add/>
+					<ogc:Div/>
+					<ogc:Sub/>
+				</ogc:SimpleArithmetic>
+			</ogc:ArithmeticOperators>
+		</ogc:Scalar_Capabilities>
+		<ogc:Id_Capabilities>
+			<ogc:EID/>
+			<ogc:FID/>
+		</ogc:Id_Capabilities>
+	</ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

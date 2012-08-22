@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+    <!-- ================== Includes ================== -->
+    <xs:include schemaLocation="./smXMLbase.xsd"/>
+    <xs:include schemaLocation="./referenceSystem.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="CI_ResponsibleParty_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="individualName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="organisationName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="positionName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="contactInfo" type="smXML:CI_Contact_PropertyType" minOccurs="0"/>
+                    <xs:element name="role" type="smXML:CI_RoleCode_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_ResponsibleParty" type="smXML:CI_ResponsibleParty_Type">
+        <xs:annotation>
+            <xs:documentation>
+   ***   count of (individualName + organisationName + positionName) &gt; 0
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="CI_ResponsibleParty_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_ResponsibleParty"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_Citation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="title" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="alternateTitle" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="date" type="smXML:CI_Date_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="edition" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="editionDate" type="smXML:Date_PropertyType" minOccurs="0"/>
+                    <xs:element name="identifier" type="smXML:MD_Identifier_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="citedResponsibleParty" type="smXML:CI_ResponsibleParty_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="presentationForm" type="smXML:CI_PresentationFormCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="series" type="smXML:CI_Series_PropertyType" minOccurs="0"/>
+                    <xs:element name="otherCitationDetails" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="collectiveTitle" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="ISBN" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="ISSN" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_Citation" type="smXML:CI_Citation_Type"/>
+    <xs:complexType name="CI_Citation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_Citation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_Address_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="deliveryPoint" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="city" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="administrativeArea" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="postalCode" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="country" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="electronicMailAddress" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_Address" type="smXML:CI_Address_Type"/>
+    <xs:complexType name="CI_Address_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_Address"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_OnlineResource_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="linkage" type="smXML:URL_PropertyType"/>
+                    <xs:element name="protocol" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="applicationProfile" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="name" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="description" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="function" type="smXML:CI_OnLineFunctionCode_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_OnlineResource" type="smXML:CI_OnlineResource_Type"/>
+    <xs:complexType name="CI_OnlineResource_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_OnlineResource"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_Contact_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="phone" type="smXML:CI_Telephone_PropertyType" minOccurs="0"/>
+                    <xs:element name="address" type="smXML:CI_Address_PropertyType" minOccurs="0"/>
+                    <xs:element name="onlineResource" type="smXML:CI_OnlineResource_PropertyType" minOccurs="0"/>
+                    <xs:element name="hoursOfService" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="contactInstructions" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_Contact" type="smXML:CI_Contact_Type"/>
+    <xs:complexType name="CI_Contact_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_Contact"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_Telephone_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="voice" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="facsimile" type="smXML:CharacterString_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_Telephone" type="smXML:CI_Telephone_Type"/>
+    <xs:complexType name="CI_Telephone_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_Telephone"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:element name="URL" type="xs:anyURI"/>
+    <xs:complexType name="URL_PropertyType">
+        <xs:sequence>
+            <xs:element ref="smXML:URL"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CI_Date_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="date" type="smXML:Date_PropertyType"/>
+                    <xs:element name="dateType" type="smXML:CI_DateTypeCode_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_Date" type="smXML:CI_Date_Type"/>
+    <xs:complexType name="CI_Date_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:CI_Date"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_Series_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="name" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="issueIdentification" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                    <xs:element name="page" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CI_Series" type="smXML:CI_Series_Type"/>
+    <xs:complexType name="CI_Series_PropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="smXML:CI_Series"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="CI_RoleCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="CI_RoleCode" type="smXML:CI_RoleCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="CI_RoleCode_PropertyType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element ref="smXML:CI_RoleCode"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CI_PresentationFormCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="CI_PresentationFormCode" type="smXML:CI_PresentationFormCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="CI_PresentationFormCode_PropertyType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element ref="smXML:CI_PresentationFormCode"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CI_OnLineFunctionCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="CI_OnLineFunctionCode" type="smXML:CI_OnLineFunctionCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="CI_OnLineFunctionCode_PropertyType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element ref="smXML:CI_OnLineFunctionCode"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CI_DateTypeCode_Type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+                <xs:attribute name="codeListValue" type="xs:string" use="required"/>
+                <xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:element name="CI_DateTypeCode" type="smXML:CI_DateTypeCode_Type" substitutionGroup="smXML:CharacterString"/>
+    <xs:complexType name="CI_DateTypeCode_PropertyType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element ref="smXML:CI_DateTypeCode"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

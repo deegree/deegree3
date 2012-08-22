@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:GetRecords xmlns:ogc="http://www.opengis.net/ogc" xmlns:csw="http://www.opengis.net/cat/csw" version="2.0.0" service="CSW" outputFormat="text/xml" outputSchema="DublinCore" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://www.purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw http://schemas.opengis.net/csw/2.0.0/CSW-discovery.xsd">
+	<csw:Query typeNames="csw:dataset">
+		<csw:ElementSetName>brief</csw:ElementSetName>
+		<csw:Constraint version="1.0.0">
+			<ogc:Filter>
+				<ogc:Contains>
+					<ogc:PropertyName>dc:coverage</ogc:PropertyName>
+					<gml:Box xmlns:gml="http://www.opengis.net/gml">
+						<gml:coord>
+							<gml:X>-108.855801</gml:X>
+							<gml:Y>42.13749</gml:Y>
+						</gml:coord>
+						<gml:coord>
+							<gml:X>-114.268948</gml:X>
+							<gml:Y>36.962853</gml:Y>
+						</gml:coord>
+					</gml:Box>
+				</ogc:Contains>
+			</ogc:Filter>
+		</csw:Constraint>
+	</csw:Query>
+</csw:GetRecords>

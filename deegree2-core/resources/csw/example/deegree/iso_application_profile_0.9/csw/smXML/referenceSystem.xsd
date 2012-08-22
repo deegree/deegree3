@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+	<!-- ================== Includes ================== -->
+	<xs:include schemaLocation="./citation.xsd"/>
+	<xs:include schemaLocation="./extent.xsd"/>
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="RS_Identifier_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:MD_Identifier_Type">
+				<xs:sequence>
+					<xs:element name="codeSpace" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="version" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="RS_Identifier" type="smXML:RS_Identifier_Type" substitutionGroup="smXML:MD_Identifier"/>
+	<xs:complexType name="RS_Identifier_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:RS_Identifier"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_ReferenceSystem_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="referenceSystemIdentifier" type="smXML:RS_Identifier_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_ReferenceSystem" type="smXML:MD_ReferenceSystem_Type">
+		<xs:annotation>
+			<xs:documentation>
+   ***   "referenceSystemIdentifier" is mandatory if MD_CRS.projection, MD_CRS.ellipsoid and MD_CRS.datum are not documented
+            </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="MD_ReferenceSystem_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_ReferenceSystem"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_CRS_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:MD_ReferenceSystem_Type">
+				<xs:sequence>
+					<xs:element name="projection" type="smXML:RS_Identifier_PropertyType" minOccurs="0"/>
+					<xs:element name="ellipsoid" type="smXML:RS_Identifier_PropertyType" minOccurs="0"/>
+					<xs:element name="datum" type="smXML:RS_Identifier_PropertyType" minOccurs="0"/>
+					<xs:element name="projectionParameters" type="smXML:MD_ProjectionParameters_PropertyType" minOccurs="0"/>
+					<xs:element name="ellipsoidParameters" type="smXML:MD_EllipsoidParameters_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_CRS" type="smXML:MD_CRS_Type" substitutionGroup="smXML:MD_ReferenceSystem"/>
+	<xs:complexType name="MD_CRS_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_CRS"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_ProjectionParameters_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="zone" type="smXML:Integer_PropertyType" minOccurs="0"/>
+					<xs:element name="falseEastingNorthingUnits" type="smXML:UomLength_PropertyType" minOccurs="0"/>
+					<xs:element name="standardParallel" type="smXML:realLatitude_PropertyType" minOccurs="0" maxOccurs="2"/>
+					<xs:element name="longitudeOfCentralMeridian" type="smXML:realLongitude_PropertyType" minOccurs="0"/>
+					<xs:element name="latitudeOfProjectionOrigin" type="smXML:realLatitude_PropertyType" minOccurs="0"/>
+					<xs:element name="falseEasting" type="smXML:nonNegativeReal_PropertyType" minOccurs="0"/>
+					<xs:element name="falseNorthing" type="smXML:nonNegativeReal_PropertyType" minOccurs="0"/>
+					<xs:element name="scaleFactorAtEquator" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="heightOfProspectivePointAboveSurface" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="longitudeOfProjectionCenter" type="smXML:realLongitude_PropertyType" minOccurs="0"/>
+					<xs:element name="latitudeOfProjectionCenter" type="smXML:realLatitude_PropertyType" minOccurs="0"/>
+					<xs:element name="scaleFactorAtCenterLine" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="straightVerticalLongitudeFromPole" type="smXML:realLongitude_PropertyType" minOccurs="0"/>
+					<xs:element name="scaleFactorAtProjectionOrigin" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="obliqueLineAzimuthParameter" type="smXML:MD_ObliqueLineAzimuth_PropertyType" minOccurs="0"/>
+					<xs:element name="obliqueLinePointParameter" type="smXML:MD_ObliqueLinePoint_PropertyType" minOccurs="0" maxOccurs="2"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_ProjectionParameters" type="smXML:MD_ProjectionParameters_Type"/>
+	<xs:complexType name="MD_ProjectionParameters_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_ProjectionParameters"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_ObliqueLineAzimuth_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="azimuthAngle" type="smXML:nonNegativeReal_PropertyType"/>
+					<xs:element name="azimuthMeasurePointLongitude" type="smXML:realLongitude_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_ObliqueLineAzimuth" type="smXML:MD_ObliqueLineAzimuth_Type"/>
+	<xs:complexType name="MD_ObliqueLineAzimuth_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_ObliqueLineAzimuth"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_ObliqueLinePoint_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="obliqueLineLatitude" type="smXML:realLatitude_PropertyType"/>
+					<xs:element name="obliqueLineLongitude" type="smXML:realLongitude_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_ObliqueLinePoint" type="smXML:MD_ObliqueLinePoint_Type"/>
+	<xs:complexType name="MD_ObliqueLinePoint_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_ObliqueLinePoint"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_EllipsoidParameters_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="axisUnits" type="smXML:UomLength_PropertyType"/>
+					<xs:element name="semiMajorAxis" type="smXML:CharacterString_PropertyType"/>
+					<xs:element name="denominatorOfFlatteningRatio" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_EllipsoidParameters" type="smXML:MD_EllipsoidParameters_Type">
+		<xs:annotation>
+			<xs:documentation>
+   ***   "denominatorOfFlatteningRatio" is mandatory if not a spheroid
+            </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="MD_EllipsoidParameters_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_EllipsoidParameters"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="MD_Identifier_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="authority" type="smXML:CI_Citation_PropertyType" minOccurs="0"/>
+					<xs:element name="code" type="smXML:CharacterString_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="MD_Identifier" type="smXML:MD_Identifier_Type"/>
+	<xs:complexType name="MD_Identifier_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:MD_Identifier"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="_RS_ReferenceSystem_Type" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="smXML:_Object_Type">
+				<xs:sequence>
+					<xs:element name="name" type="smXML:RS_Identifier_PropertyType"/>
+					<xs:element name="domainOfValidity" type="smXML:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="_RS_ReferenceSystem" type="smXML:_RS_ReferenceSystem_Type" abstract="true"/>
+	<xs:complexType name="_RS_ReferenceSystem_PropertyType">
+		<xs:choice>
+			<xs:element ref="smXML:_RS_ReferenceSystem"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

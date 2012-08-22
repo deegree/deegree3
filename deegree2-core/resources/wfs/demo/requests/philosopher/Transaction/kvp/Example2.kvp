@@ -1,0 +1,7 @@
+http://www.someserver.com/wfs.cgi?
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=Transaction&
+NAMESPACE=xmlns(app=http://www.deegree.org/app)&
+OPERATION=Delete&
+TYPENAME=app:Philosopher,app:Subject&

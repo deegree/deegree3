@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+  <!-- configuration for the persistence backend to be used -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <deegreewfs:Backend>GENERICSQL</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.hsqldb.jdbcDriver</Driver>
+        <Url>jdbc:hsqldb:${docRoot}../../../data/utah/vector/buildings/wpvs</Url>
+        <User>sa</User>
+        <Password />
+        <SecurityConstraints />
+        <Encoding>iso-8859-1</Encoding>
+      </JDBCConnection>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <!-- ============================================================== -->
+  <xsd:element name="WPVS" type="app:WPVSType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>buildings</deegreewfs:table>
+        <deegreewfs:gmlId prefix="ID_">
+          <deegreewfs:MappingField field="FEATURE_ID" type="INTEGER" />
+          <deegreewfs:IdGenerator type="DB_SEQ">
+            <deegreewfs:param name="sequence">WPVSData_ID_SEQ</deegreewfs:param>
+          </deegreewfs:IdGenerator>
+          <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:transaction update="true" delete="true" insert="true" />
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="WPVSType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="fk_feature" type="xsd:double">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="FK_FEATURE" type="NUMERIC" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geometry" type="gml:GeometryPropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="GEOMETRY" type="GEOMETRY" srs="26912" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="transparency" type="xsd:float" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="TRANSPARENCY" type="NUMERIC" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ambientintensity" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="AMBIENTINTENSITY" type="NUMERIC" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="diffusecolor" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="DIFFUSECOLOR" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="repeat" type="xsd:integer" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="REPEAT" type="NUMERIC" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

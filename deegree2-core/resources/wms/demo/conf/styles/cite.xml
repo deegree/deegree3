@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:java="java" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xslutil="de.latlon.deejump.plugin.style.XSLUtility" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+	<!-- Please be aware, that namespaces are used. So if you use featuretypes which are bound to app
+  the property names in this document must use them too. e.g.  <ogc:PropertyName>app:geom</ogc:PropertyName> -->
+	<sld:NamedLayer>
+		<sld:Name>cite:BasicPolygons</sld:Name>
+		<sld:UserStyle>
+			<!-- The <sld:Name> of the <sld:UserStyle> must be identical to the one referenced in the
+        wms_configuration.xml  -->
+			<sld:Name>default:cite:BasicPolygons</sld:Name>
+			<sld:Title>default:cite:BasicPolygons</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:BasicPolygons</sld:Name>
+				<sld:Rule>
+					<sld:Name>BasicPolygons</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#00b400</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#007d00</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:Bridges</sld:Name>
+			<sld:Title>default:cite:Bridges</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:Bridges</sld:Name>
+				<sld:Rule>
+					<sld:Name>Bridges</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>50000000000</sld:MaxScaleDenominator>
+					<sld:PointSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Graphic>
+							<sld:Mark>
+								<sld:WellKnownName>square</sld:WellKnownName>
+								<sld:Fill>
+									<sld:CssParameter name="fill">#660000</sld:CssParameter>
+									<sld:CssParameter name="fill-opacity">0.5</sld:CssParameter>
+								</sld:Fill>
+							</sld:Mark>
+							<sld:Size>13</sld:Size>
+							<sld:Rotation>0</sld:Rotation>
+						</sld:Graphic>
+					</sld:PointSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:Buildings</sld:Name>
+			<sld:Title>default:cite:Buildings</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:Buildings</sld:Name>
+				<sld:Rule>
+					<sld:Name>Buildings</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#800040</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#007d00</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:BuildingCenters</sld:Name>
+			<sld:Title>default:cite:BuildingCenters</sld:Title>
+			<sld:IsDefault>1</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:BuildingCenters</sld:Name>
+				<sld:Rule>
+					<sld:Name>BuildingCenters</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>50000000000</sld:MaxScaleDenominator>
+					<sld:PointSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Graphic>
+							<sld:Mark>
+								<sld:WellKnownName>square</sld:WellKnownName>
+								<sld:Fill>
+									<sld:CssParameter name="fill">#000000</sld:CssParameter>
+									<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+								</sld:Fill>
+							</sld:Mark>
+							<sld:Size>4</sld:Size>
+							<sld:Rotation>0</sld:Rotation>
+						</sld:Graphic>
+					</sld:PointSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:DividedRoutes</sld:Name>
+			<sld:Title>default:cite:DividedRoutes</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:DividedRoutes</sld:Name>
+				<sld:Rule>
+					<sld:Name>DividedRoutes</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">3</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:Forests</sld:Name>
+			<sld:Title>default:cite:Forests</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:Forests</sld:Name>
+				<sld:Rule>
+					<sld:Name>Forests</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#004000</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:Lakes</sld:Name>
+			<sld:Title>default:cite:Lakes</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:Lakes</sld:Name>
+				<sld:Rule>
+					<sld:Name>Lakes</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#004080</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#0080C0</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:MapNeatline</sld:Name>
+			<sld:Title>default:cite:MapNeatline</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:MapNeatline</sld:Name>
+				<sld:Rule>
+					<sld:Name>MapNeatline</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:NamedPlaces</sld:Name>
+			<sld:Title>default:cite:NamedPlaces</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:NamedPlaces</sld:Name>
+				<sld:Rule>
+					<sld:Name>NamedPlaces</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#C0C0C0</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:Ponds</sld:Name>
+			<sld:Title>default:cite:Ponds</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:Ponds</sld:Name>
+				<sld:Rule>
+					<sld:Name>Ponds</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:PolygonSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Fill>
+							<sld:CssParameter name="fill">#00FFFF</sld:CssParameter>
+							<sld:CssParameter name="fill-opacity">1.0</sld:CssParameter>
+						</sld:Fill>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">1</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:PolygonSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:RoadSegments</sld:Name>
+			<sld:Title>default:cite:RoadSegments</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>cite:RoadSegments</sld:Name>
+				<sld:Rule>
+					<sld:Name>RoadSegments</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#000000</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">2</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+		<sld:UserStyle>
+			<sld:Name>default:cite:Streams</sld:Name>
+			<sld:Title>default:cite:Streams</sld:Title>
+			<sld:IsDefault>0</sld:IsDefault>
+			<sld:FeatureTypeStyle>
+				<sld:Name>Streams</sld:Name>
+				<sld:Rule>
+					<sld:Name>Streams</sld:Name>
+					<sld:MinScaleDenominator>1</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>99999999</sld:MaxScaleDenominator>
+					<sld:LineSymbolizer>
+						<sld:Geometry>
+							<ogc:PropertyName>app:geom</ogc:PropertyName>
+						</sld:Geometry>
+						<sld:Stroke>
+							<sld:CssParameter name="stroke">#004080</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">2</sld:CssParameter>
+							<sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+						</sld:Stroke>
+					</sld:LineSymbolizer>
+				</sld:Rule>
+			</sld:FeatureTypeStyle>
+		</sld:UserStyle>
+	</sld:NamedLayer>
+</sld:StyledLayerDescriptor>

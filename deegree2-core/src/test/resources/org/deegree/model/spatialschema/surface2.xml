@@ -1,0 +1,54 @@
+<gml:Surface xmlns:gml="http://www.opengis.net/gml" srsName="ePSg:28992">
+    <gml:patches>
+        <gml:PolygonPatch>
+            <gml:exterior>
+                <gml:Ring>
+                    <gml:curveMember>
+                        <gml:Curve>
+                            <gml:segments>
+                                <gml:LineStringSegment>
+                                    <gml:posList srsDimension="2" count="2">
+                                        154474.4 473438.75 154477.215 473448.65
+                                    </gml:posList>
+                                </gml:LineStringSegment>
+                                <gml:LineStringSegment>
+                                    <gml:posList srsDimension="2" count="3">
+                                        154477.215 473448.65 154475.537 473448.044 154474.552 473446.556
+                                    </gml:posList>
+                                </gml:LineStringSegment>
+                                <gml:LineStringSegment>
+                                    <gml:posList srsDimension="2" count="23">
+                                        154474.552 473446.556 154450.59 473359.33 154438.44 473314.91 154431.267
+                                        473288.277 154430.193 473284.277 154427.374 473273.763 154425.424 473266.499
+                                        154418.01 473239.33 154413 473220.26 154408.68 473202.76 154406.398 473192.028
+                                        154399.03 473155.576 154398.479 473152.741 154397.896 473149.743 154393.79
+                                        473128.1 154387.34 473090.69 154383.24 473064.61 154370.67 472972.28 154366.98
+                                        472939.78 154363.33 472907.28 154359.8 472867.58 154357.4 472832.23 154357.233
+                                        472825.103
+                                    </gml:posList>
+                                </gml:LineStringSegment>
+                                <gml:LineStringSegment>
+                                    <gml:posList srsDimension="2" count="3">
+                                        154357.233 472825.103 154357.534 472824.547 154358.104 472824.274
+                                    </gml:posList>
+                                </gml:LineStringSegment>
+                                <gml:LineStringSegment>
+                                    <gml:posList srsDimension="2" count="29">
+                                        154358.104 472824.274 154360.109 472823.776 154364.26 472878.08 154368.91
+                                        472926.2 154377.98 473000 154379.3 473010.79 154385.34 473053.2 154391.4
+                                        473089.03 154397.96 473124.87 154401.566 473143.604 154402.33 473148.81
+                                        154403.57 473154.97 154407.91 473174.97 154408.85 473179.79 154412.58 473197.75
+                                        154415.32 473209.12 154417.01 473217.93 154419.58 473226.83 154428.29 473262.8
+                                        154430.108 473269.558 154432 473276.59 154432.49 473278 154437.9 473299.09
+                                        154442.712 473318.719 154445.21 473328.95 154450.05 473346.685 154459.592
+                                        473382.484 154467.223 473411.117 154474.4 473438.75
+                                    </gml:posList>
+                                </gml:LineStringSegment>
+                            </gml:segments>
+                        </gml:Curve>
+                    </gml:curveMember>
+                </gml:Ring>
+            </gml:exterior>
+        </gml:PolygonPatch>
+    </gml:patches>
+</gml:Surface>

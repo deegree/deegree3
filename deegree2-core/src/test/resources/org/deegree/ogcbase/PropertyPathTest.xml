@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PropertyPathTest xmlns:gml="http://www.opengis.net/gml">
+	<WFSSpecification>
+		<PropertyName>lastName</PropertyName>		
+		<PropertyName>mailAddress/Address</PropertyName>
+		<PropertyName>mailAddress/Address/streetName98</PropertyName>
+		<PropertyName>mailAddress[1]/Address/streetName</PropertyName>
+		<PropertyName>mailAddress/Address/@gml:id</PropertyName>		
+	</WFSSpecification>
+	<BrokenWFSSpecification>
+		<!--<PropertyName>lastName[</PropertyName>-->
+		<PropertyName>lastName[]</PropertyName>	
+		<PropertyName>mailAddress/Address]/streetName[1]</PropertyName>		
+	</BrokenWFSSpecification>
+</PropertyPathTest>

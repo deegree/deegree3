@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<controller>
+	<!--
+        layer tree listener 
+     -->
+	<event name="getTreeData"
+		class="org.deegree.portal.standard.wms.control.layertree.LayerTreeListener" />
+	<event name="ADDNODE"
+		class="org.deegree.portal.standard.wms.control.layertree.AddTreeNodeListener" />
+	<event name="REMOVENODE"
+		class="org.deegree.portal.standard.wms.control.layertree.RemoveTreeNodeListener" />
+	<event name="RENAMENODE"
+		class="org.deegree.portal.standard.wms.control.layertree.RenameTreeNodeListener" />
+	<event name="SETVISIBILITY"
+		class="org.deegree.portal.standard.wms.control.layertree.SetVisibilityTreeNodeListener" />
+	<event name="MOVENODE"
+		class="org.deegree.portal.standard.wms.control.layertree.MoveTreeNodeListener" />
+	<event name="collapseNode"
+		class="org.deegree.portal.standard.wms.control.layertree.CollapseNodeListener" />
+	<event name="expandNode"
+		class="org.deegree.portal.standard.wms.control.layertree.ExpandNodeListener" />
+	<event name="GETLAYERSINFO"
+        class="org.deegree.portal.standard.wms.control.layertree.GetLayersInformationListener" />
+    <!--
+        WMPS Print listener 
+     -->
+	<event name="loadTemplateList"
+		class="org.deegree.portal.standard.wmps.GetTemplatesListener">
+		<parameter>
+			<name>WMPS</name>
+			<value>http://localhost:8082/deegree-wmps/services</value>
+		</parameter>
+	</event>
+	<event name="loadTemplateDescription"
+        class="org.deegree.portal.standard.wmps.DescribeTemplatesListener">
+        <parameter>
+            <name>WMPS</name>
+            <value>http://localhost:8082/deegree-wmps/services</value>
+        </parameter>
+    </event>
+    <event name="printWMPS"
+        class="org.deegree.portal.standard.wmps.PrintWMPSListener">
+        <parameter>
+            <name>WMPS</name>
+            <value>http://localhost:8082/deegree-wmps/services</value>
+        </parameter>
+    </event>
+    <!--
+        gazetteer listener 
+     -->
+    <event name="loadHierarchyList"
+        class="org.deegree.portal.standard.gazetteer.LoadHierarchyListListener" />
+    <event name="loadHierarchy"
+        class="org.deegree.portal.standard.gazetteer.LoadHierarchyListener" />
+    <event name="performFreeGazetteerSearch"
+        class="org.deegree.portal.standard.gazetteer.FreeSearchListener" />
+    <event name="performGazetteerLoadList"
+        class="org.deegree.portal.standard.gazetteer.LoadItemsListListener" />
+    <event name="loadGazetteerItemBBox"
+        class="org.deegree.portal.standard.gazetteer.LoadBBOXListener" />
+    <!--
+        add layer from WMS
+     -->
+     <event name="addLayer"
+        class="org.deegree.portal.standard.wms.control.AddLayerListener" />
+        
+    <!-- 
+        user info
+     -->        
+     <event name="getUserInfo"
+        class="org.deegree.portal.standard.security.control.GetUserInfoListener" />
+        
+     <event name="getFullMetadataset"
+        class="org.deegree.portal.standard.csw.control.FullMetadataSetListener">
+        <parameter>
+            <name>XSLT</name>
+            <value>WEB-INF/conf/igeoportal/csw/metadata2htmlFull.xsl</value>
+        </parameter>
+    </event>
+    
+    <!--
+    digitizer 
+     -->
+    <event name="getEditableLayer"
+        class="org.deegree.portal.standard.digitizer.control.GetEditableLayerListener" />
+        
+    <event name="getFeatureType"
+        class="org.deegree.portal.standard.digitizer.control.GetFeatureTypeListener" />
+        
+    <event name="saveFeature"
+        class="org.deegree.portal.standard.digitizer.control.SaveFeatureListener" />
+        
+   <!--
+   GetFeatureInfo 
+    -->
+    <event name="getFeatureInfo"
+        class="org.deegree.portal.standard.wms.control.GetFeatureInfoListener" >
+        <parameter>
+            <name>XSLT</name>
+            <value>WEB-INF/conf/igeoportal/feature2gml.xsl</value>
+        </parameter>
+   </event>
+        
+   <!--
+   store Frame 
+    -->
+    <event name="storeFrame"
+        class="org.deegree.portal.standard.context.control.StoreFrameListener" />
+        
+   <!--
+   admin component 
+    -->        
+    <event name="getModules"
+        class="org.deegree.portal.standard.admin.control.GetModulesListener" />
+    <event name="createWMC"
+        class="org.deegree.portal.standard.admin.control.CreateWMCListener" />
+    <event name="getUserGroups"
+        class="org.deegree.portal.standard.admin.control.GetGroupsListener" >
+         <parameter>
+            <name>secAdminPassword</name>
+            <value>JOSE67</value>
+        </parameter>
+    </event>
+    <event name="getUsersForGroup"
+        class="org.deegree.portal.standard.admin.control.GetUsersForGroupListener">
+        <parameter>
+            <name>secAdminPassword</name>
+            <value>JOSE67</value>
+        </parameter>
+    </event>
+    
+    <!--
+        Nominatim gazetteer 
+     -->
+    <event name="searchNominatim" class="org.deegree.portal.standard.nominatim.control.SearchNominatimListener">
+        <parameter>
+            <name>address</name>
+            <value>http://open.mapquestapi.com/nominatim/v1/search.php</value>
+        </parameter>
+    </event>
+    <event name="getBBOX4OSM_ID" class="org.deegree.portal.standard.nominatim.control.GetBBOX4OSM_IDListener"/>
+    
+    <!--
+        Routing 
+     -->
+    <event name="checkGeographicName" class="org.deegree.portal.standard.routing.control.ValidateGeographicNameListener">
+        <parameter>
+            <name>address</name>
+            <value>http://open.mapquestapi.com/nominatim/v1/search.php</value>
+        </parameter>
+    </event>
+    <event name="calculateRoute" class="org.deegree.portal.standard.routing.control.CalculateRouteListener">
+        <parameter>
+            <name>address</name>
+            <value>http://www.yournavigation.org/api/1.0/gosmore.php</value>
+        </parameter>
+    </event>
+    
+    <!--
+         
+     -->
+     <event name="getMessages"
+        class="org.deegree.portal.common.control.GetMessagesListener" />
+     
+</controller>

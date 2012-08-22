@@ -1,0 +1,447 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Prefix>app</deegreewfs:Prefix>
+            <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+            <deegreewfs:File>../../../data/utah/vector/SGID100_RailroadsTIGER1990</deegreewfs:File>
+            <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <!-- ============================================================== -->
+    <xsd:element name="sgid100_railroadstiger1990" type="app:sgid100_railroadstiger1990Type" substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <deegreewfs:table>SGID100_RailroadsTIGER1990</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+                    <deegreewfs:MappingField field="ID" type="INTEGER" />
+                </deegreewfs:gmlId>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!-- ============================================================== -->
+    <xsd:complexType name="sgid100_railroadstiger1990Type">
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+                    <xsd:element name="geometry" type="gml:GeometryPropertyType">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="GEOM" type="GEOMETRY" srs="-1" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="tlid" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TLID" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="rt" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="RT" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="version" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="VERSION" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="side1" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="SIDE1" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="source" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="SOURCE" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fedirp" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FEDIRP" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fename" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FENAME" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fetype" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FETYPE" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fedirs" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FEDIRS" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="cfcc" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="CFCC" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fraddl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FRADDL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="toaddl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TOADDL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fraddr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FRADDR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="toaddr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TOADDR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="friaddl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FRIADDL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="toiaddl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TOIADDL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="friaddr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FRIADDR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="toiaddr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TOIADDR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="zipl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="ZIPL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="zipr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="ZIPR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fairl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FAIRL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fairr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FAIRR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="trustl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TRUSTL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="trustr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TRUSTR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="cenbbsel" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="CENBBSEL" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="bbsppart" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="BBSPPART" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="statel" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="STATEL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="stater" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="STATER" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="countyl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="COUNTYL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="countyr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="COUNTYR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fmcdl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FMCDL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fmcdr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FMCDR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fsmcdl" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FSMCDL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fsmcdr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FSMCDR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fpll" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FPLL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="fplr" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FPLR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="ctbnal" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="CTBNAL" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="ctbnar" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="CTBNAR" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="blkl" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="BLKL" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="blkr" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="BLKR" type="VARCHAR" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="frlong" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FRLONG" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="frlat" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="FRLAT" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="tolong" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TOLONG" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="tolat" type="xsd:integer">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="TOLAT" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="shape_len" type="xsd:double">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field="SHAPE_LEN" type="NUMERIC" />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

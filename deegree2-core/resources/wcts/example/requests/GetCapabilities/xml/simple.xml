@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCapabilities xmlns="http://www.opengis.net/wcts/0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcts ../../wctsGetCapabilities.xsd" service="WCTS" version="0.0.0"/>

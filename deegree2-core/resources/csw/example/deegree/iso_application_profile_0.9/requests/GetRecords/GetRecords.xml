@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:GetRecords xmlns:ogc="http://www.opengis.net/ogc" service="CSW" version="2.0.0" requestId="testingCSW" resultType="hits" outputFormat="text/xml" outputSchema="csw:profile" startPosition="1" maxRecords="10"
+xmlns:csw="http://www.opengis.net/cat/csw">
+	<csw:Query typeNames="csw:dataset">
+		<csw:ElementSetName>full</csw:ElementSetName>
+	</csw:Query>
+</csw:GetRecords>

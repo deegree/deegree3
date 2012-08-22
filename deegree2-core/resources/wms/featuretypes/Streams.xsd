@@ -1,0 +1,59 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+    <!-- configuration for the persistence backend to be used -->
+  <xsd:annotation>   <xsd:appinfo>
+  <deegreewfs:Prefix>app</deegreewfs:Prefix>
+  <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+  <deegreewfs:File>../shapefile/Streams</deegreewfs:File>
+  <deegreewfs:DefaultSRS>EPSG:4326</deegreewfs:DefaultSRS>
+  </xsd:appinfo>
+  </xsd:annotation>
+<!-- ============================================================== -->
+<xsd:element name='Streams' type='app:StreamsType' substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+       <xsd:appinfo>
+          <deegreewfs:table>Streams</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+          <deegreewfs:MappingField field='ID' type="INTEGER"/>
+                </deegreewfs:gmlId>
+      </xsd:appinfo>
+   </xsd:annotation>
+</xsd:element>
+<!-- ============================================================== -->
+    <xsd:complexType name='StreamsType'>
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+<xsd:element name='geom' type='gml:GeometryPropertyType'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='GEOM' type='GEOMETRY' srs='-1'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='fid' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='FID' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+<xsd:element name='name' type='xsd:string'>
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Content>
+                <deegreewfs:MappingField field='NAME' type='VARCHAR'/>
+            </deegreewfs:Content>
+        </xsd:appinfo>
+    </xsd:annotation>
+</xsd:element>
+ </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

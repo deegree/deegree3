@@ -1,0 +1,6 @@
+<?xml-stylesheet type="text/xsl"?>
+<csw:GetRecordById service="CSW" version="2.0.0" outputFormat="text/xml" outputSchema="csw:profile"
+	xmlns:csw="http://www.opengis.net/cat/csw">
+	<csw:Id>Example_2007_10_18</csw:Id>
+	<csw:ElementSetName>full</csw:ElementSetName>
+</csw:GetRecordById>

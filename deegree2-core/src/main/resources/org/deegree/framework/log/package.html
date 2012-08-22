@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+
+   $HeadURL$
+
+   
+-->
+</head>
+<body bgcolor="white">
+
+The log package provides classes and interfaces implementing logging capabilities.
+
+<P>It encapsulates the Jakarta log4j service, 
+the Java 1.4 logging features and JBoss logging service.</P>
+<P>The logging service is configured by the properties file 
+<code>LoggerService.properties</code>. The most important entry is:</p>
+<code>
+log.class=org.deegree.framework.log.JBossLogger<BR></br>
+</code>
+
+<P>
+The log system configuration files are:
+<ul>
+<li>LoggerService.properties - configures the deegree internal log system, set
+the property log.class to the prefered log system, this file is required.</li>
+<b>supported log systems are:</B>
+<li>log4j: log.class=org.deegree.framework.log.Log4JLogger,  required config
+file is  log4j.properties</li>
+<li>JBoss logger: log.class=org.deegree.framework.log.JBossLogger, use
+%JBOSS_HOME/server/default/conf/log4j.xml to configure the log system</li>
+<li>Java 1.4 logging API: log.class=org.deegree.framework.log.JavaLogger,
+required config file is logging.properties</li>
+</ul>
+</p>
+
+<P>
+Note: Remove the <code>log4j.properties</code> file from the deegree jar or
+within the class path of the application if you use JBoss as your application
+server.
+</p>
+
+<h2>Package Specification</h2>
+
+Please read the following documentation for using the framework package
+<ul>
+  <li><a href="http://jakarta.apache.org/log4j/">Jakarta log4j</a>
+</ul>
+
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation, please see:
+<ul>
+  <li><a href="http://jakarta.apache.org/log4j/docs/manual.html">Tutorial "Short introduction to log4j" by Ceki Gülcü</a>
+</ul>
+
+<HR>
+
+<H2>Used Design Patterns</H2>
+<ul>
+  <LI><A HREF="http://sern.ucalgary.ca/courses/SENG/609.04/W98/notes/facade.html">Facade</A>
+</ul>
+<HR>
+
+<H2>Developer pair</H2>
+<ul>
+  <LI><A HREF="mailto:tfr@users.sourceforge.net">Torsten Friebe</A> (Owner)
+  <LI><A HREF="mailto:">N.N.</A> (Reviewer)
+</ul>
+<HR>
+
+@author $Author$
+
+@version $Revision$, $Date$
+
+<!-- Put @see and @since tags down here. -->
+@since 2.0
+</body>
+</html>

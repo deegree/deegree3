@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://metadata.dgiwg.org/smXML" xmlns:smXML="http://metadata.dgiwg.org/smXML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.9">
+    <!-- ================== Includes================== -->
+    <xs:include schemaLocation="./../smXMLbase.xsd"/>
+    <!-- ================================== Classes ================================= -->
+    <xs:complexType name="GF_Constraint_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="description" type="smXML:CharacterString_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_Constraint" type="smXML:GF_Constraint_Type"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_Constraint_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_Constraint"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_InheritanceRelation_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="name" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="description" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="exhaustive" type="smXML:Boolean_PropertyType"/>
+                    <xs:element name="uniqueInstance" type="smXML:Boolean_PropertyType"/>
+                    <xs:element name="subtype" type="smXML:GF_FeatureType_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="supertype" type="smXML:GF_FeatureType_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_InheritanceRelation" type="smXML:GF_InheritanceRelation_Type"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_InheritanceRelation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_InheritanceRelation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_AssociationRole_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:GF_PropertyType_Type">
+                <xs:sequence>
+                    <xs:element name="valueType" type="smXML:TypeName_PropertyType"/>
+                    <xs:element name="cardinality" type="smXML:Multiplicity_PropertyType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_AssociationRole" type="smXML:GF_AssociationRole_Type" substitutionGroup="smXML:GF_PropertyType"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_AssociationRole_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_AssociationRole"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_AssociationType_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:GF_FeatureType_Type">
+                <xs:sequence>
+                    <xs:element name="theGF_Operation" type="smXML:GF_Operation_PropertyType"/>
+                    <xs:element name="memberOf" type="smXML:GF_FeatureType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="role" type="smXML:GF_AssociationRole_PropertyType" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_AssociationType" type="smXML:GF_AssociationType_Type" substitutionGroup="smXML:GF_FeatureType"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_AssociationType_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_AssociationType"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_AttributeType_Type">
+        <xs:annotation>
+            <xs:documentation>feature attribute -  characteristic of a feature -  - NOTE: A feature attribute has a name, a data type, and a value domain associated to it.  A feature attribute for a feature instance also has an attribute value taken from the value domain.   - EXAMPLE: A feature attribute named 'color' may have an attribute value 'green' which belongs to the data type 'text'.  A feature attribute named 'length' may have an attribute value '82.4' which belongs to the data type 'real'. - [Victoria Terminology Harmonization Meeting]</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="smXML:GF_PropertyType_Type">
+                <xs:sequence>
+                    <xs:element name="valueType" type="smXML:TypeName_PropertyType"/>
+                    <xs:element name="valueDomain" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="cardinality" type="smXML:Multiplicity_PropertyType"/>
+                    <xs:element name="characterizedBy" type="smXML:GF_AttributeType_PropertyType" minOccurs="0"/>
+                    <xs:element name="characterizes" type="smXML:GF_AttributeType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_AttributeType" type="smXML:GF_AttributeType_Type" substitutionGroup="smXML:GF_PropertyType"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_AttributeType_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_AttributeType"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_Operation_Type">
+        <xs:annotation>
+            <xs:documentation>feature operation or class operation - operation associated to a particular class or set of classes of feature</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="smXML:GF_PropertyType_Type">
+                <xs:sequence>
+                    <xs:element name="signature" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="observesValuesOf" type="smXML:GF_AttributeType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="triggeredByValuesOf" type="smXML:GF_AttributeType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="affectsValuesOf" type="smXML:GF_AttributeType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="dependsOn" type="smXML:GF_AssociationType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_Operation" type="smXML:GF_Operation_Type" substitutionGroup="smXML:GF_PropertyType"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_Operation_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_Operation"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_FeatureType_Type">
+        <xs:annotation>
+            <xs:documentation>feature: abstraction of real world phenomena  - NOTE: A feature may occur as a type or an instance. Feature type or feature instance should be used when only one is meant. - [Victoria Terminology Harmonization Meeting] -  - This class describes how a feature class shall be constructed in an Application Schema. In accordance with the conformance clause of the standard, instances of this class are instanciated as feature classes in an Application Schema</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="typeName" type="smXML:LocalName_PropertyType"/>
+                    <xs:element name="definition" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="theSpecialization" type="smXML:GF_InheritanceRelation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="theGeneralization" type="smXML:GF_InheritanceRelation_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="constrainedBy" type="smXML:GF_Constraint_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="linkBetween" type="smXML:GF_AssociationType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="carrierOfCharacteristics" type="smXML:GF_PropertyType_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_FeatureType" type="smXML:GF_FeatureType_Type"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_FeatureType_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_FeatureType"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+    <xs:complexType name="GF_PropertyType_Type">
+        <xs:complexContent>
+            <xs:extension base="smXML:_Object_Type">
+                <xs:sequence>
+                    <xs:element name="memberName" type="smXML:LocalName_PropertyType"/>
+                    <xs:element name="definition" type="smXML:CharacterString_PropertyType"/>
+                    <xs:element name="theGF_FeatureType" type="smXML:GF_FeatureType_PropertyType" maxOccurs="unbounded"/>
+                    <xs:element name="constrainedBy" type="smXML:GF_Constraint_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ........................................................................ -->
+    <xs:element name="GF_PropertyType" type="smXML:GF_PropertyType_Type"/>
+    <!-- ........................................................................ -->
+    <xs:complexType name="GF_PropertyType_PropertyType">
+        <xs:choice>
+            <xs:element ref="smXML:GF_PropertyType"/>
+            <xs:element ref="smXML:Reference"/>
+        </xs:choice>
+    </xs:complexType>
+    <!-- =========================================================================== -->
+</xs:schema>

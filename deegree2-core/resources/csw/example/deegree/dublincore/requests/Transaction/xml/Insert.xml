@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:Transaction version="2.0.0" service="CSW" verboseResponse="true" xmlns:csw="http://www.opengis.net/cat/csw" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://www.purl.org/dc/terms/" xmlns:dcmiBox="http://dublincore.org/documents/2000/07/11/dcmi-box/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw
+http://schemas.opengis.net/csw/2.0.0/CSW-publication.xsd">
+	<csw:Delete handle="delete1" typeName="csw:Record">
+		<csw:Constraint version="1.0.0">
+			<ogc:Filter>
+				<ogc:PropertyIsLike wildCard="%" singleChar="_" escape="\">
+					<ogc:PropertyName>identifier</ogc:PropertyName>
+					<ogc:Literal>%</ogc:Literal>
+				</ogc:PropertyIsLike>
+			</ogc:Filter>
+		</csw:Constraint>
+	</csw:Delete>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents county boundaries in Utah at 1:24,000 scale.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.03573</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.899214</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.959843</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.276502</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents county boundaries in Utah at 1:24,000 scale.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{42AE2814-FCC1-4BC2-BAF4-CA3E55514997}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:24,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Administrative</dc:subject>
+			<dc:subject>County</dc:subject>
+			<dc:subject>boundaries</dc:subject>
+			<dc:title>County Boundaries of Utah</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This dataset represents electrical generation and distribution facilities for portions of Davis, Salt Lake, Utah, Wasatch, and Weber Counties. These data were digitized as part of State of Utah Comprehensive Emergency Earthquake Preparedness Program, 1986-1989.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.13749</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.855801</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.962853</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.268948</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center (AGRC)</dc:creator>
+			<dc:description>This dataset represents electrical generation and distribution facilities for portions of Davis, Salt Lake, Utah, Wasatch, and Weber Counties. These data were digitized as part of State of Utah Comprehensive Emergency Earthquake Preparedness Program, 1986-1989.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{E370DE6C-DAB9-432B-9FB8-E33ECB1F2597}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:24,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by AGRC.</dc:rights>
+			<dc:source>Utah Power Light</dc:source>
+			<dc:subject>Utilities</dc:subject>
+			<dc:subject>Electrical Generation</dc:subject>
+			<dc:subject>Transmission Facilities</dc:subject>
+			<dc:subject>Electrical Distribution</dc:subject>
+			<dc:subject>Power Lines</dc:subject>
+			<dc:subject>structure</dc:subject>
+			<dc:subject>utilitiesCommunication</dc:subject>
+			<dc:subject>Utilities Communication</dc:subject>
+			<dc:title>Electrical Generation &amp; Transmission Facilities in Utah</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents springs in Utah. Several methods and agencies produced the data. The data represents Cartographic Feature Files (CFF) and Digital Line Graph (DLG) data collected by the US Forest Service and US Geological Survey.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.132021</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.859218</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.960539</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.350342</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center (AGRC)</dc:creator>
+			<dc:description>This data set represents springs in Utah. Several methods and agencies produced the data. The data represents Cartographic Feature Files (CFF) and Digital Line Graph (DLG) data collected by the US Forest Service and US Geological Survey.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{7D680FEF-25AB-4021-8312-F34496CAEE6D}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:24,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Hydrography</dc:subject>
+			<dc:subject>Springs</dc:subject>
+			<dc:subject>InlandWaters</dc:subject>
+			<dc:subject>inlandWaters</dc:subject>
+			<dc:title>Springs</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This dataset depicts the Utah State Boundary as digitized from USGS 7.5 minute quad map series. The boundary should be coincident with the outer boundary of the SGID024.CountyBoundaries dataset.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.274495</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.38152</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.554478</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.598732</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>USGS/AGRC</dc:creator>
+			<dc:description>This dataset depicts the Utah State Boundary as digitized from USGS 7.5 minute quad map series. The boundary should be coincident with the outer boundary of the SGID024.CountyBoundaries dataset.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{B4B76194-B1FB-40A6-A533-FE474E3C4B8E}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:rights>none</dc:rights>
+			<dc:subject>Utah</dc:subject>
+			<dc:subject>State</dc:subject>
+			<dc:subject>Boundary</dc:subject>
+			<dc:subject>Outline</dc:subject>
+			<dc:title>SGID024.StateBoundary</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">41.848333</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-109.000844</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.966742</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.171217</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>REQUIRED: The name of an organization or individual that developed the data set.</dc:creator>
+			<dc:description>REQUIRED: A brief narrative summary of the data set.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{44649B50-860C-4C08-A8AE-2FCF1F8264DA}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:rights>REQUIRED: Restrictions and legal prerequisites for using the data set after access is granted.</dc:rights>
+			<dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data set.</dc:subject>
+			<dc:title>SGID100.Airports</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents water bodies in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">43.060813</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-107.694625</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">35.435405</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-115.400279</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents water bodies in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{E3B4E9FC-F6A6-4763-9628-4D4880EC3B83}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Hydrography</dc:subject>
+			<dc:subject>Water Bodies</dc:subject>
+			<dc:subject>boundaries</dc:subject>
+			<dc:subject>environment</dc:subject>
+			<dc:subject>inlandWaters</dc:subject>
+			<dc:subject>Inland Waters</dc:subject>
+			<dc:subject>farming</dc:subject>
+			<dc:title>Lakes in Utah</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This layer contains data from the Geographic Names Information System (GNIS) which was developed by the USGS "to meet major national needs regarding geographic names and their standardization and dissemination". The data consist of point locations with corresponding feature names. All point entities are categorized by feature type. This data is representative of data from 2000 for mapping feature names</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">49.773578</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-103.143657</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">9.68146</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-144.736564</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center (AGRC)</dc:creator>
+			<dc:description>This layer contains data from the Geographic Names Information System (GNIS) which was developed by the USGS "to meet major national needs regarding geographic names and their standardization and dissemination". The data consist of point locations with corresponding feature names. All point entities are categorized by feature type. This data is representative of data from 2000 for mapping feature names</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{3660BCC5-8BCD-43DE-82F5-E4F87AF8CC3D}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by AGRC.</dc:rights>
+			<dc:source>US Geological Survey (USGS)</dc:source>
+			<dc:subject>Geographic Features</dc:subject>
+			<dc:subject>Feature Names</dc:subject>
+			<dc:title>gnis00</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the railroads in Utah and portions of Arizona, Colorado, Idaho, Nevada and New Mexico that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.006901</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.968947</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">37.203525</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.248327</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the railroads in Utah and portions of Arizona, Colorado, Idaho, Nevada and New Mexico that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{FBC5EEA2-6160-4B64-BBC5-3B4B6D3782E5}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>transportation</dc:subject>
+			<dc:subject>Railroads</dc:subject>
+			<dc:subject>structure</dc:subject>
+			<dc:title>Railroads in Utah</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the railroads from the 1990 TIGER/Line files.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.007754</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.966482</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">37.203575</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.246265</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the railroads from the 1990 TIGER/Line files.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{C6E36703-299C-4975-9729-10132135D624}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) adn cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>transportation</dc:subject>
+			<dc:subject>Railroads</dc:subject>
+			<dc:subject>structure</dc:subject>
+			<dc:title>Railroads in Utah TIGER 1990</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the roads and trails in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map eries from the U. S. Geological Survey (USGS).</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.031871</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.897921</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.959887</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.278967</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the roads and trails in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map eries from the U. S. Geological Survey (USGS).</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{53F6B59D-F064-4809-B9B7-30F9A0F16FE4}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>transportation</dc:subject>
+			<dc:subject>Roads</dc:subject>
+			<dc:subject>Trails</dc:subject>
+			<dc:subject>location</dc:subject>
+			<dc:subject>structure</dc:subject>
+			<dc:title>Roads, DLG</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the water courses in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">43.061913</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-107.661786</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">35.433768</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-115.450338</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the water courses in Utah and portions of Arizona, Colorado, Idaho, Nevada, New Mexico and Wyoming that appear on the 1:100,000 scale topographical map series from the U. S. Geological Survey (USGS).</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{DA945A91-916A-4B49-8FEE-F0CFF87EEC73}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Hydrography</dc:subject>
+			<dc:subject>Water courses</dc:subject>
+			<dc:subject>Streams</dc:subject>
+			<dc:subject>Rivers</dc:subject>
+			<dc:subject>inlandWaters</dc:subject>
+			<dc:subject>Inland Waters</dc:subject>
+			<dc:subject>environment</dc:subject>
+			<dc:subject>farming</dc:subject>
+			<dc:title>Streams in Utah</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents water courses converted from 2000 updated TIGER/Line Census files.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.031811</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.899796</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.960036</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.276458</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Autoamted Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents water courses converted from 2000 updated TIGER/Line Census files.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{D5A26CA2-E847-467E-BDA0-DB20BAD7258E}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:100,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Hydrography</dc:subject>
+			<dc:subject>Water Courses (TIGER)</dc:subject>
+			<dc:subject>environment</dc:subject>
+			<dc:subject>farming</dc:subject>
+			<dc:subject>inlandWaters</dc:subject>
+			<dc:subject>Inland Waters</dc:subject>
+			<dc:title>Streams in Utah TIGER 2000</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>REQUIRED: A brief narrative summary of the data set.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.032617</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.899243</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.959981</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.276375</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>REQUIRED: The name of an organization or individual that developed the data set.</dc:creator>
+			<dc:description>REQUIRED: A brief narrative summary of the data set.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{454FC148-FEDB-498A-87D8-667678314F61}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:rights>REQUIRED: Restrictions and legal prerequisites for using the data set after access is granted.</dc:rights>
+			<dc:subject>REQUIRED: Common-use word or phrase used to describe the subject of the data set.</dc:subject>
+			<dc:title>SGID500.Contours500Ft</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the statewide distribution of dominant vegetation species in Utah.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.032929</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.89918</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.958371</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.278911</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the statewide distribution of dominant vegetation species in Utah.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{374B959D-FB69-403A-A8F8-6D9D1A6DF0A2}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:500,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Vegetation</dc:subject>
+			<dc:subject>Distribution</dc:subject>
+			<dc:subject>biota</dc:subject>
+			<dc:subject>boundaries</dc:subject>
+			<dc:subject>environment</dc:subject>
+			<dc:subject>farming</dc:subject>
+			<dc:title>Vegetation Distribution in Utah</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents energy resources depicted as polygons on the Energy Resources Map of Utah from which the data were digitized.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.030335</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.898945</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.972845</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.15602</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents energy resources depicted as polygons on the Energy Resources Map of Utah from which the data were digitized.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{82076D9F-BC4D-4352-8AEF-871595E7FF21}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:500,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Geology</dc:subject>
+			<dc:subject>Energy Resources (Polygons)</dc:subject>
+			<dc:subject>Physical and Biological</dc:subject>
+			<dc:subject>Geoscientific Information</dc:subject>
+			<dc:subject>GeoscientificInformation</dc:subject>
+			<dc:title>Energy Resources poly</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents engineering geologic problem sites depicted as polygons on the map published in Soil and Rock Causing Engineering Geologic Problems in Utah (W.E. Mulvey, UGS Special tudy 80, 1992).</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.02122</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.900565</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.96281</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.156328</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents engineering geologic problem sites depicted as polygons on the map published in Soil and Rock Causing Engineering Geologic Problems in Utah (W.E. Mulvey, UGS Special tudy 80, 1992).</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{134F7E2E-371C-42EA-BEA2-C5CEDCE587C1}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:500,000. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Geology</dc:subject>
+			<dc:subject>Engineering Problems</dc:subject>
+			<dc:subject>Soil &amp; Rock Causing (Polygon)</dc:subject>
+			<dc:subject>Physical and Biological</dc:subject>
+			<dc:subject>geoscientificInformation</dc:subject>
+			<dc:subject>Geoscientific Information</dc:subject>
+			<dc:title>Engineering Problems poly</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the railroads in Utah.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.006967</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.969028</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">37.59509</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.248354</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the railroads in Utah.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{FD280F84-0C13-423D-B708-0AAFF4133C64}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:500,000 scale. Data released to the Receiving Agency (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>transportation</dc:subject>
+			<dc:subject>Railroads</dc:subject>
+			<dc:title>Railroads, DLG</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+	<csw:Insert>
+		<csw:Record>
+			<dct:abstract>This data set represents the zip code areas of Utah.</dct:abstract>
+			<dc:coverage>
+				<dcmiBox:Box projection="EPSG:4326" name="Geographic">
+					<dcmiBox:northlimit units="decimal degrees">42.034028</dcmiBox:northlimit>
+					<dcmiBox:eastlimit units="decimal degrees">-108.899282</dcmiBox:eastlimit>
+					<dcmiBox:southlimit units="decimal degrees">36.960025</dcmiBox:southlimit>
+					<dcmiBox:westlimit units="decimal degrees">-114.277014</dcmiBox:westlimit>
+				</dcmiBox:Box>
+			</dc:coverage>
+			<dc:creator>Automated Geographic Reference Center</dc:creator>
+			<dc:description>This data set represents the zip code areas of Utah.</dc:description>
+			<dc:format>text/gml; subtype=gml/3.1.1</dc:format>
+			<dc:identifier>{A214DA28-D93D-4B00-9680-2650982AAC3C}</dc:identifier>
+			<dc:language>en</dc:language>
+			<dc:publisher>AGRC</dc:publisher>
+			<dc:rights>For use at 1:500,000 scale. Data released to the Receiving Agench (RA) remains the property of the originating data source (see Source_Information) and cannot be reproduced for sale by the RA without the written consent of that data source. Redistribution of datasets unchanged as obtained from the AGRC and without fee is allowed. Any hardcopies utilizing these data sets shall clearly indicate their source. If the RA has modified the data in any way, they are obligated to describe the types of modifications they have performed on the hardcopy map. RA specifically agrees not to misrepresent these data sets, nor to imply that changes they made were approved by the AGRC.</dc:rights>
+			<dc:subject>Administrative Boundaries</dc:subject>
+			<dc:subject>Zip Codes</dc:subject>
+			<dc:subject>Administrative</dc:subject>
+			<dc:subject>boundaries</dc:subject>
+			<dc:title>Zip Codes of Utah, 5 digit</dc:title>
+			<dc:type>dataset</dc:type>
+		</csw:Record>
+	</csw:Insert>
+</csw:Transaction>

@@ -1,0 +1,2387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMT_MS_Capabilities xmlns:deegree="http://www.deegree.org/wms" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.1" updateSequence="1.1.0">
+    <deegree:DeegreeParam>
+        <!--
+          The online resource parameter must be set here: The 'deegree-wms' originates form the context file in apache under
+          $Tomcat_home$/conf/Catalina/localhost/deegree-wms.xml or the name of the .war file under $Tomcat_home$/webapps/ depending on where the root
+          directory of the service is located; the services url-pattern originates from the deployment descriptor under $wms_home$/WEB-INF/web.xml
+          <url-pattern>/services</url-pattern>
+        -->
+        <deegree:DefaultOnlineResource xlink:type="simple" xlink:href="${default.online.resource}" />
+        <!-- default = 100 (MB) -->
+        <deegree:CacheSize>100</deegree:CacheSize>
+        <!-- maximum lifetime of the processes in the WMS; default = 3600 (sec)-->
+        <deegree:MaxLifeTime>3600</deegree:MaxLifeTime>
+        <!-- maximum time for the execution of a request until an exception of time-exceed is thrown. default is 15 seconds -->
+        <deegree:RequestTimeLimit>45</deegree:RequestTimeLimit>
+        <!--
+          determines the quality of the map/image generated from a GetMap request. the parameter only will be evaluated if the desired format is able to
+          handle it. the range of values is 0 ... 1, where 1 is best and 0 is worst. default is 0.95
+        -->
+        <deegree:MapQuality>0.95</deegree:MapQuality>
+        <!-- maximum map width that can be requested. default = 1000 -->
+        <deegree:MaxMapWidth>2000</deegree:MaxMapWidth>
+        <!-- maximum map height that can be requested. default = 1000 -->
+        <deegree:MaxMapHeight>2000</deegree:MaxMapHeight>
+        <deegree:AntiAliased>true</deegree:AntiAliased>
+        <!--
+          copyright note that will be drawn to the left bottom side of the maps; 
+          you can also reference a graphic file using absolute path to file e.g. c:/images/mylogo.jpg
+        -->
+        <deegree:Copyright></deegree:Copyright>
+        <!--
+          radius of the circle around the point a user has clicked to that will be considered for creating a search area for a GetFeatureInfo request;
+          default = 5
+        -->
+        <deegree:FeatureInfoRadius>10</deegree:FeatureInfoRadius>
+        <!--
+          returns the URl where the DTD for OGC WMS capabilities DOCTYPE definiton is located. default =
+          http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd
+        -->
+        <!--
+        <deegree:DTDLocation>
+            <deegree:OnlineResource xlink:type="simple" xlink:href="http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd"/>
+        </deegree:DTDLocation
+        -->
+        <!--
+          define a proxy server if the WMS is seperated by a firewall from the DTD-location or the locations of connected REMOTEWFS, REMOTEWCS and
+          REMOTEWMS as an alternative you can set commandline parameters at the call of the java interpreter like this: 
+              java -DproxyHost=131.220.106.104 -DproxyPort=1234 -classpath ...
+        -->
+        <!--
+        <Proxy proxyHost="131.220.106.104" proxyPort="1234"/>
+        -->
+        <!-- default color depth for GetMap which will be used for 'image/png'; default is image/png; mode=24bit -->
+        <deegree:DefaultPNGFormat>image/png; mode=24bit</deegree:DefaultPNGFormat>
+    </deegree:DeegreeParam>
+    <Service>
+        <Name>OGC:WMS</Name>
+        <Title>deegree wms</Title>
+        <!-- abstract und keywords are optional -->
+        <Abstract>wms reference implementation</Abstract>
+        <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>wms</Keyword>
+        </KeywordList>
+        <!-- The online resource must be specified here -->
+        <OnlineResource xlink:type="simple" xlink:href="${default.online.resource}" />
+        <!-- the following service information is optional -->
+        <ContactInformation>
+            <ContactPersonPrimary>
+                <ContactPerson>Andreas Poth</ContactPerson>
+                <ContactOrganization>lat/lon</ContactOrganization>
+            </ContactPersonPrimary>
+            <ContactPosition>Technical Director</ContactPosition>
+            <ContactAddress>
+                <AddressType>XXXX</AddressType>
+                <Address>Aennchenstr. 19</Address>
+                <City>Bonn</City>
+                <StateOrProvince>NRW</StateOrProvince>
+                <PostCode>53177</PostCode>
+                <Country>Germany</Country>
+            </ContactAddress>
+            <ContactVoiceTelephone>0049228184960</ContactVoiceTelephone>
+            <ContactFacsimileTelephone>00492281849629</ContactFacsimileTelephone>
+            <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+        </ContactInformation>
+        <Fees>none</Fees>
+        <AccessConstraints>none</AccessConstraints>
+    </Service>
+    <Capability>
+        <Request>
+        <!-- by default available -->
+            <GetCapabilities>
+                <!-- default and mandatory = application/vnd.ogc.wms_xml -->
+                <Format>application/vnd.ogc.wms_xml</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                        <!-- If left emty, it will be automatically filled with the parameters of <deegree:DefaultOnlineResource> -->
+                        <!-- 
+                            <OnlineResource xlink:type="simple" xlink:href="${default.online.resource}?" />
+                        -->
+                        </Get>
+                        <!-- POST isn't supported -->
+                    </HTTP>
+                </DCPType>
+            </GetCapabilities>
+            <!-- by default available -->
+            <GetMap>
+                <!-- default = image/gif; image/png; image/jpg -->
+                <!-- mandatory = image/png -->
+                <Format>image/png</Format>
+                <Format>image/png; mode=8bit</Format>
+                <Format>image/png; mode=24bit</Format>
+                <Format>image/jpg</Format>
+                <Format>image/jpeg</Format>
+                <Format>image/gif</Format>
+                <Format>image/tif</Format>
+                <Format>image/bmp</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                        <!-- If left emty, it will be automatically filled with the parameters of <deegree:DefaultOnlineResource> -->
+                        <!-- 
+                            <OnlineResource xlink:type="simple" xlink:href="${default.online.resource}?" />
+                        -->
+                        </Get>
+                        <Post>
+                        <!-- If left emty, it will be automatically filled with the parameters of <deegree:DefaultOnlineResource> -->
+                        <!--
+                            <OnlineResource  xlink:type="simple" xlink:href="${default.online.resource}" />                        -->
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetMap>
+            <!-- by default available -->
+            <GetFeatureInfo>
+                <!-- default & mandatory = application/vnd.ogc.gml -->
+                <Format>application/vnd.ogc.gml</Format>
+                <Format>text/plain</Format>
+                <Format>text/html</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                        <!-- If left emty, it will be automatically filled with the parameters of <deegree:DefaultOnlineResource> -->
+                        <!--
+                            <OnlineResource xlink:type="simple" xlink:href="${default.online.resource}?" />
+                        -->
+                        </Get>
+                        <!-- POST isn't supported -->
+                    </HTTP>
+                </DCPType>
+            </GetFeatureInfo>
+            <GetLegendGraphic>
+                <!-- default = image/gif; image/png; image/jpg -->
+                <!-- mandatory = image/png -->
+                <Format>image/png</Format>
+                <Format>image/jpeg</Format>
+                <Format>image/jpg</Format>
+                <Format>image/gif</Format>
+                <Format>image/tif</Format>
+                <Format>image/bmp</Format>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                        <!-- If left emty, it will be automatically filled with the parameters of <deegree:DefaultOnlineResource> -->
+                        <!--
+                            <OnlineResource  xlink:type="simple" xlink:href="${default.online.resource}?" />
+                        -->
+                        </Get>
+                        <!-- POST isn't supported -->
+                    </HTTP>
+                </DCPType>
+            </GetLegendGraphic>
+        </Request>
+        <Exception>
+            <!-- default & mandatory= application/vnd.ogc.se_xml -->
+            <Format>application/vnd.ogc.se_xml</Format>
+            <Format>application/vnd.ogc.se_inimage</Format>
+            <Format>application/vnd.ogc.se_blank</Format>
+        </Exception>
+        <!-- optional; default = all false -->
+        <UserDefinedSymbolization SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="1" />
+        <!-- cascaded is optional and default=false -->
+        <!-- TOP LAYER 
+        As you are able to nest Layers as in this example please allways make sure that you have the apporiate number
+        of opening layer tags (<Layer>) and closing layer tags (</Layer>)
+        -->
+        <Layer queryable="0" cascaded="0" noSubsets="0" xmlns:app="http://www.deegree.org/app">
+            <Title>deegree 2.3 Demo WMS</Title>
+            <!-- abstract and keyword are optonal -->
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+            </KeywordList>
+            <!-- Just add the <SRS> you wish to support with your WMS -->
+            <!-- default = EPSG:4326 -->
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <!--
+            It is strongly recommended that you set a LatLonBoundingBox; further <BoundingBox>es are optional. 
+            Each layer inherits the BBoxes of the parent layer as long as no explicit on is set.
+            -->
+            <LatLonBoundingBox miny="-90" maxy="90" minx="-180" maxx="180" />
+            <!-- Setting <BoundingBox>es ist optional but if set be sure to set the correct SRS="EPSG:" -->
+            <BoundingBox SRS="EPSG:26912" miny="3581352" maxy="5432672" minx="0" maxx="1504379" />
+            <BoundingBox SRS="EPSG:4326" miny="-90" maxy="90" minx="-180" maxx="180" />
+            <!-- default 0 ; 9E99  -->
+            <ScaleHint min="0" max="10000000" />
+            <!--
+            This nested layer has a <Name>, but no datasource. You can request this layer anyway as you get all the sub-layers. You even get the
+            GetFeatureInfo but your client must be able to handle the result as each sublayer has it's own properties (attributes). If you don't want this
+            layer to be accessable remove the name tag (<Name>citelayers</Name>).
+            -->
+            <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                <Name>citelayers</Name>
+                <Title>Cite Layers</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                    <Keyword>deegree</Keyword>
+                    <Keyword>layer</Keyword>
+                </KeywordList>
+                <!--
+                <MetadataURL type="ISO19115:2003">
+                    <Format>text/html</Format>
+                    <OnlineResource  xlink:type="simple" xlink:href="http://www.deegree.org" />
+                </MetadataURL>
+                -->
+                <LatLonBoundingBox miny="-1" maxy="1" minx="-1" maxx="1" />
+                <BoundingBox SRS="EPSG:4326" miny="-1" maxy="1" minx="-1" maxx="1" />
+                <!--
+                  queryable="1" sets whether GetFeatureinfo is enabled or not. for this layer if set to "1" at least one datasource must be set to "1" too
+                -->
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                <!-- please choose a unique <name> without spaces and a title which can contain more details  -->
+                    <Name>cite:BasicPolygons</Name>
+                    <Title>cite:BasicPolygons</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <!-- sets the range of WMS scale, where the WMS will serve data for this layer -->
+                    <MinScaleDenominator>0</MinScaleDenominator>
+                    <MaxScaleDenominator>5000</MaxScaleDenominator>
+                    <!-- queryable="1" sets whether GetFeatureinfo is enabled or not  for this datasource -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:BasicPolygons</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <!--
+                        name of the property that contains the geometries for this layer 
+                        this element will only be solved if the data source is a LOCALWFS or a REMOTEWFS 
+                        default = 'app:GEOM'
+                        -->
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <!--
+                        set the name of the style and the location <deegree:StyleResource> where the WMS will find a 
+                        style defintion with the same <UserStyle> name
+                        -->
+                        <Name>default:cite:BasicPolygons</Name>
+                        <Title>default:cite:BasicPolygons</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                        <!-- If LegendURL is set for layers the default automated legend graphic will be overwritten -->
+                        <!--
+                        <LegendURL width="50" height="50">
+                            <Format>image/jpg</Format>
+                            <OnlineResource xlink="http://www.w3.org/1999/xlink" type="simple" xlink:href="http://www.yourdomain.com/legend/teststyle.jpg"/>
+                        </LegendURL>
+                        -->
+                    </Style>
+                </Layer>
+                <!-- The following Layer definition could be uses as default for your own layers -->
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:Bridges</Name>
+                    <Title>cite:Bridges</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" /> 
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Bridges</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:Bridges</Name>
+                        <Title>default:cite:Bridges</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:Buildings</Name>
+                    <Title>cite:Buildings</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Buildings</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:Buildings</Name>
+                        <Title>default:cite:Buildings</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:BuildingCenters</Name>
+                    <Title>cite:BuildingCenters</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Buildings</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:BuildingCenters</Name>
+                        <Title>default:cite:BuildingCenters</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:DividedRoutes</Name>
+                    <Title>cite:DividedRoutes</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:DividedRoutes</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:DividedRoutes</Name>
+                        <Title>default:cite:DividedRoutes</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:Forests</Name>
+                    <Title>cite:Forests</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Forests</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:Forests</Name>
+                        <Title>default:cite:Forests</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:Lakes</Name>
+                    <Title>cite:Lakes</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Lakes</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:Lakes</Name>
+                        <Title>default:cite:Lakes</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:MapNeatline</Name>
+                    <Title>cite:MapNeatline</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:MapNeatline</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:MapNeatline</Name>
+                        <Title>default:cite:MapNeatline</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:NamedPlaces</Name>
+                    <Title>cite:NamedPlaces</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:NamedPlaces</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:NamedPlaces</Name>
+                        <Title>default:cite:NamedPlaces</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:Ponds</Name>
+                    <Title>cite:Ponds</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Ponds</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:Ponds</Name>
+                        <Title>default:cite:Ponds</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:RoadSegments</Name>
+                    <Title>cite:RoadSegments</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:RoadSegments</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:RoadSegments</Name>
+                        <Title>default:cite:RoadSegments</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>cite:Streams</Name>
+                    <Title>cite:Streams</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:Streams</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:cite:Streams</Name>
+                        <Title>default:cite:Streams</Title>
+                        <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+            </Layer>
+
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <!-- +++++++++++++++++++  Utah  ++++++++++++++++++++++ -->
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+            <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                <Title>Utah Demo Data</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                    <Keyword>deegree</Keyword>
+                    <Keyword>layer</Keyword>
+                </KeywordList>
+                <!--
+                <MetadataURL type="ISO19115:2003">
+                    <Format>text/html</Format>
+                    <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                </MetadataURL>
+                -->
+                <!-- 2 Examples for a LOCALWCS -->
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>dem_saltlake</Name>
+                    <Title>90m DEM Salt Lake City NW</Title>
+                    <SRS>EPSG:26912</SRS>
+                    <SRS>EPSG:4326</SRS>
+                    <LatLonBoundingBox miny="40.69239810940439" maxy="40.875836280377996" minx="-111.9779040644908" maxx="-111.750633647006" />
+                    <BoundingBox SRS="EPSG:26912" miny="4505071" maxy="4525245" minx="417375" maxx="436751.978" />
+                    <BoundingBox SRS="EPSG:4326" miny="40.69239810940439" maxy="40.875836280377996" minx="-111.9779040644908" maxx="-111.750633647006" />
+                    <deegree:DataSource failOnException="1" queryable="1">
+                        <deegree:Name>dem_saltlake</deegree:Name>
+                        <deegree:Type>LOCALWCS</deegree:Type>
+                        <deegree:ScaleHint min="0.001" max="2800" />
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWCS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:FilterCondition>
+                            <deegree:WCSRequest>
+                                <![CDATA[VERSION=1.0.0&coverage=dem_saltlake&TRANSPARENT=TRUE&FORMAT=TIFF&EXCEPTIONS=application/vnd.ogc.se_xml]]></deegree:WCSRequest>
+                        </deegree:FilterCondition>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <deegree:StyleResource>styles/utah_dem_saltlake.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>orthoimage</Name>
+                    <Title>Ortho Imagery of Salt Lake City</Title>
+                    <SRS>EPSG:26912</SRS>
+                    <SRS>EPSG:4326</SRS>
+                    <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>orthoimage1</Name>
+                        <Title>Ortho Imagery of Salt Lake City no Bbox</Title>
+                        <SRS>EPSG:26912</SRS>
+                        <SRS>EPSG:4326</SRS>
+                        <LatLonBoundingBox miny="40.719021928792515" maxy="40.82820182642026" minx="-111.94721360400128" maxx="-111.80644038553243" />
+                        <BoundingBox SRS="EPSG:26912" miny="4507998.0" maxy="4519999.0" minx="420000.0" maxx="432001.0" />
+                        <BoundingBox SRS="EPSG:4326" miny="40.719021928792515" maxy="40.82820182642026" minx="-111.94721360400128" maxx="-111.80644038553243" />
+                        <deegree:DataSource failOnException="1" queryable="0">
+                            <deegree:Name>saltlakesatellite</deegree:Name>
+                            <deegree:Type>LOCALWCS</deegree:Type>
+                            <deegree:ScaleHint min="0.0" max="100" />
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWCS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:FilterCondition>
+                                <deegree:WCSRequest>
+                                    <![CDATA[VERSION=1.0.0&coverage=saltlakesatellite&TRANSPARENT=TRUE&FORMAT=jpg&EXCEPTIONS=application/vnd.ogc.se_xml]]></deegree:WCSRequest>
+                            </deegree:FilterCondition>
+                        </deegree:DataSource>
+                    </Layer>
+                    <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>bbox</Name>
+                        <Title>BBox of Ortho Imagery of Salt Lake City</Title>
+                        <SRS>EPSG:26912</SRS>
+                        <SRS>EPSG:4326</SRS>
+                        <deegree:DataSource failOnException="1" queryable="0">
+                            <deegree:Name>app:Bbox_ortho_image</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                            <deegree:ScaleHint min="100" max="50000000" />
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:bbox</Name>
+                            <Title>default:bbox</Title>
+                            <deegree:StyleResource>styles/utah_bbox.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>StateBoundary</Name>
+                    <Title>StateBoundary</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <LatLonBoundingBox miny="36" maxy="43" minx="-115" maxx="-108" />
+                    <ScaleHint min="0" max="2800" />
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:StateBoundary</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:StateBoundary</Name>
+                        <Title>default:StateBoundary</Title>
+                        <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                    </Style>
+                    <Style>
+                        <Name>Utah_Boundary</Name>
+                        <Title>Utah_Boundary</Title>
+                        <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>StateOverview</Name>
+                    <Title>StateOverview</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <ScaleHint min="0" max="2800" />
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:StateBoundary</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                    </deegree:DataSource>
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>app:CountyBoundaries_edited</deegree:Name>
+                        <deegree:Type>LOCALWFS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                        </deegree:OWSCapabilities>
+                        <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                    </deegree:DataSource>
+
+                    <Style>
+                        <Name>default:StateOverview</Name>
+                        <Title>default:StateOverview</Title>
+                        <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <!-- Example for a REMOTEWMS; cascaded="1" indicates, that this layer originates from a remote WMS  -->
+                <!--
+                <Layer queryable="1" cascaded="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Name>landcover</Name>
+                    <Title>National Land Cover Dataset (JUST EPSG:4326 => WGS 84)</Title>
+                    <SRS>EPSG:4326</SRS>
+                    <LatLonBoundingBox miny="37.88970184326172" maxy="42.91960144042969" minx="-115.55139923095703" maxx="-110.41089630126953" />
+                    <deegree:DataSource failOnException="1" queryable="1">
+                        <deegree:Name>3:5</deegree:Name>
+                        <deegree:Type>REMOTEWMS</deegree:Type>
+                        <deegree:OWSCapabilities>
+                            <deegree:OnlineResource xlink:type="simple" xlink:href="http://columbo.nrlssc.navy.mil/ogcwms/servlet/WMSServlet/Utah_State_University_Water_Initiative.wms?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities" />
+                        </deegree:OWSCapabilities>
+                        <deegree:FilterCondition>
+                            <deegree:WMSRequest><![CDATA[Version=1.1.1&FORMAT=image/png&TRANSPARENT=true&EXCEPTIONS=application/vnd.ogc.se_inimage&BGCOLOR=0xffffff&LAYERS=3:5&STYLES=]]></deegree:WMSRequest>
+                        </deegree:FilterCondition>
+                        <deegree:ScaleHint min="0.0" max="9999999999" />
+                        <deegree:TransparentColors>
+                            <deegree:Color>#000000</deegree:Color>
+                            <deegree:Color>#FF0000</deegree:Color>
+                        </deegree:TransparentColors>    
+                    </deegree:DataSource>
+                </Layer>
+                -->
+                <!-- This layer contains several sublayers and is able load these as one as it has a <name> -->
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>Administration</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    <!-- This layer contains 3 style defintions -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Counties</Name>
+                        <Title>County Boundaries</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:CountyBoundaries_edited</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Counties</Name>
+                            <Title>default:Counties</Title>
+                            <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>GreyCounties</Name>
+                            <Title>GreyCounties</Title>
+                            <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>ColourfulCounties</Name>
+                            <Title>ColourfulCounties</Title>
+                            <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>UtahCounties</Name>
+                            <Title>UtahCounties</Title>
+                            <deegree:StyleResource>styles/utah_county.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <!-- This Layer contains 2 style defninitions -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>ZipCodes</Name>
+                        <Title>Zip Codes</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:ZipCodes</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:ZipCodes</Name>
+                            <Title>default:ZipCodes</Title>
+                            <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>ZipCodesPop</Name>
+                            <Title>ZipCodes Population</Title>
+                            <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Municipalities</Name>
+                        <Title>Municipalities</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Municipalities_edited</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Municipalities</Name>
+                            <Title>default:Municipalities</Title>
+                            <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>Municipalities1</Name>
+                            <Title>Municipalities1</Title>
+                            <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Cities</Name>
+                        <Title>Cities</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:SGID93_TownDemographics2000</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Cities</Name>
+                            <Title>default:Cities</Title>
+                            <deegree:StyleResource>styles/utah_state.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>Geology</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <!--
+                    This layer contains OGC filter enconding. The WMS collects just defined WFS propeties (attributs)
+                    as well as selected content (COAL*,PC,GF)
+                    -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>EnergyResources</Name>
+                        <Title>Energy Resources</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:EnergyResources</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                            <deegree:FilterCondition>
+                                <wfs:Query typeName="app:EnergyResources" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs">
+                                    <wfs:PropertyName>app:code</wfs:PropertyName>
+                                    <!-- <wfs:PropertyName>app:shape_area</wfs:PropertyName> -->
+                                    <wfs:PropertyName>app:shape_len</wfs:PropertyName>
+                                    <ogc:Filter>
+                                        <ogc:Or>
+                                            <ogc:Or>
+                                                <ogc:PropertyIsEqualTo>
+                                                    <ogc:PropertyName>app:code</ogc:PropertyName>
+                                                    <ogc:Literal>PC</ogc:Literal>
+                                                </ogc:PropertyIsEqualTo>
+                                                <ogc:PropertyIsEqualTo>
+                                                    <ogc:PropertyName>app:code</ogc:PropertyName>
+                                                    <ogc:Literal>GF</ogc:Literal>
+                                                </ogc:PropertyIsEqualTo>
+                                            </ogc:Or>
+                                            <ogc:PropertyIsLike wildCard="*" singleChar="?" escape="\">
+                                                <ogc:PropertyName>app:code</ogc:PropertyName>
+                                                <ogc:Literal>COAL*</ogc:Literal>
+                                            </ogc:PropertyIsLike>
+                                        </ogc:Or>
+                                    </ogc:Filter>
+                                </wfs:Query>
+                            </deegree:FilterCondition>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:EnergyResources</Name>
+                            <Title>default:EnergyResources</Title>
+                            <deegree:StyleResource>styles/utah_geology.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>Hydrology</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <!-- Layer containing points  -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Springs</Name>
+                        <Title>Springs of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="560" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Springs</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default</Name>
+                            <Title>default:Springs</Title>
+                            <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Lake</Name>
+                        <Title>Lakes of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2100" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Lake</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Lake</Name>
+                            <Title>default:Lake</Title>
+                            <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>Lake1</Name>
+                            <Title>Lake1</Title>
+                            <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Rivers</Name>
+                        <Title>Rivers of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2100" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:SGID93_WATER_UtahMajorRivers</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Rivers</Name>
+                            <Title>default:Rivers</Title>
+                            <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Groundwater</Name>
+                        <Title>Groundwater of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2100" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:SGID93_GEOSCIENCE_ShallowGroundWater</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Groundwater</Name>
+                            <Title>default:Groundwater</Title>
+                            <deegree:StyleResource>styles/utah_hydrology.xml</deegree:StyleResource>
+                        </Style>
+                      </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>Land Use</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Vegetation</Name>
+                        <Title>Dominant Vegetation</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Vegetation</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Vegetation</Name>
+                            <Title>default:Vegetation</Title>
+                            <deegree:StyleResource>styles/utah_vegetation.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>Infrastructure</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Airports</Name>
+                        <Title>Airports of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Airports</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Airports</Name>
+                            <Title>default:Airports</Title>
+                            <deegree:StyleResource>styles/utah_infra.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <!-- This layer has 2 datasources used for different scales -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Roads</Name>
+                        <Title>Roads of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <MinScaleDenominator>0</MinScaleDenominator>
+                        <MaxScaleDenominator>10000000</MaxScaleDenominator>
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Roads</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                            <deegree:ScaleHint min="0.0" max="50" />
+                        </deegree:DataSource>
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Roads500</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                            <deegree:ScaleHint min="50.0" max="2000000000" />
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Roads</Name>
+                            <Title>default:Roads</Title>
+                            <deegree:StyleResource>styles/utah_roads.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>Railroads</Name>
+                        <Title>Railroads of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Railroads</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:Railroads</Name>
+                            <Title>default:Railroads</Title>
+                            <deegree:StyleResource>styles/utah_infra.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>Elevation</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <!--
+                    <MetadataURL type="ISO19115:2003">
+                        <Format>text/html</Format>
+                        <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                    </MetadataURL>
+                    -->
+                    <!--
+                    This layer has 3 datasources used for different scale ranges; additionalY the geometry property is 
+                    renamed in the featuretype definition file to contourLine which also has to be set in the featuretypedefinition
+                    -->
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>ElevationContours</Name>
+                        <Title>Elevation Contours</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <!--
+                        <MetadataURL type="ISO19115:2003">
+                            <Format>text/html</Format>
+                            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+                        </MetadataURL>
+                        -->
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Contours500Ft</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:contourLine</deegree:GeometryProperty>
+                            <deegree:ScaleHint min="0.001" max="150" />
+                        </deegree:DataSource>
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Contours1000Ft</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:contourLine</deegree:GeometryProperty>
+                            <deegree:ScaleHint min="150" max="500" />
+                        </deegree:DataSource>
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:Contours2500Ft</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:contourLine</deegree:GeometryProperty>
+                            <deegree:ScaleHint min="500" max="200000000" />
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:ElevationContours</Name>
+                            <Title>default:ElevationContours</Title>
+                            <deegree:StyleResource>styles/utah_general.xml</deegree:StyleResource>
+                        </Style>
+                        <Style>
+                            <Name>ElevationContours1</Name>
+                            <Title>ElevationContours1</Title>
+                            <deegree:StyleResource>styles/utah_general.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <!--
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>DigitizeFeatures</Name>
+                        <Title>DigitizeFeatures</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <MinScaleDenominator>0</MinScaleDenominator>
+                        <MaxScaleDenominator>10000000</MaxScaleDenominator>
+                        <deegree:DataSource failOnException="0" queryable="1"> 
+                            <deegree:Name>app:DigitizeFeatures</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:DigitizeFeatures</Name>
+                            <Title>default:DigitizeFeatures</Title>
+                            <deegree:StyleResource>styles/utah_digitize.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    -->
+                </Layer>
+                <!--++++++++++++++++++++++++++++++++++++-->
+                <!--+++++++++++ deegree Charts +++++++++-->
+                <!--++++++++++++++++++++++++++++++++++++-->
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>deegree Charts</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <LatLonBoundingBox miny="38.09183267509113" maxy="41.34085515268782" minx="-114.6241536741618" maxx="-109.38905328019734" />
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>weatherstation</Name>
+                        <Title>Weather Stations of Utah</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="2800" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:WeatherStation</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:weatherstation</Name>
+                            <Title>default:weatherstation</Title>
+                            <deegree:StyleResource>styles/utah_weatherstation.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>weatherstationPie</Name>
+                        <Title>Weather Stations PieChart</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <LatLonBoundingBox miny="38.09183267509113" maxy="41.34085515268782" minx="-114.6241536741618" maxx="-109.38905328019734" />
+                        <ScaleHint min="0" max="1694" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:WeatherStation</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:weatherstationPie</Name>
+                            <Title>default:weatherstationPie</Title>
+                            <deegree:StyleResource>styles/utah_weatherstation.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>weatherstationBar</Name>
+                        <Title>Weather Stations BarChart</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="1694" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:WeatherStation</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:weatherstationBar</Name>
+                            <Title>default:weatherstationBar</Title>
+                            <deegree:StyleResource>styles/utah_weatherstation.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>TimeParameter</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>WeatherTime</Name>
+                        <Title>WeatherStationsWithTime</Title>
+                        <ScaleHint min="0.001" max="10000000" />
+                        <Dimension default="2008-12-31T00:00:00Z" name="time" units="ISO8601" multipleValues="true" nearestValue="true">2009-01-01T00:00:00Z/2009-01-07T00:00:00Z/PT5S</Dimension>
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:WeatherTime</deegree:Name>
+                            <deegree:Type>LOCALWFS</deegree:Type>
+                            <deegree:OWSCapabilities>
+                                <deegree:OnlineResource xlink:type="simple" xlink:href="LOCALWFS_configuration.xml" />
+                            </deegree:OWSCapabilities>
+                            <deegree:GeometryProperty>app:geometry</deegree:GeometryProperty>
+                            <deegree:DimensionProperty name="time">app:timestamp</deegree:DimensionProperty>
+                        </deegree:DataSource>
+                        <!--
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>weathertime</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegree2demo</jdbc:Url>
+                                <jdbc:User>postgres</jdbc:User>
+                                <jdbc:Password></jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>the_geom</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from weathertime where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>true</deegree:CustomSQLAllowed>
+                            <deegree:DimensionProperty name="time">timestamp</deegree:DimensionProperty>
+                        </deegree:DataSource>
+                        -->
+                        <Style>
+                            <Name>default:WeatherTime</Name>
+                            <Title>default:weatherstationTime</Title>
+                            <deegree:StyleResource>styles/utah_weathertime.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+            <!--++++++++++++++++++++++++++++++++++++++++++++++++++-->
+            <!--++++++++++++++ OpenStreetMap Layers ++++++++++++++-->
+            <!--++++++++++++++++++++++++++++++++++++++++++++++++++-->
+            <!--
+            OpenStreetMap Slippy Map Layers will just work with an active internet connection. They will also just work without using a proxy.
+            OpenStreetMap Slippy Map Layers uses EXTERNALDATAACCESS as DataSource. Detailed information can be found at the WMS Documentation.
+            OpenStreetMap Bonn & NRW Layers uses database-based Datasources. For further information look at the WMS Documentation, please. To make use
+            of the OpenStreetMap Bonn & NRW Layers you have to import the OSM data to the postgreSQL database as described in the ReadMe file.
+            -->
+            <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                <Title>OpenStreetMap Layers</Title>
+                <Abstract>Contains the OpenStreetMap Slippy Map Layers and the OpenStreetMap Northrhine-Westphalia WMS Data Layers. 
+                          Contained layers are not active by default. Please have a look into the wms_configuration.xml</Abstract>
+                <KeywordList>
+                    <Keyword>deegree</Keyword>
+                    <Keyword>layer</Keyword>
+                    <Keyword>OpenStreetMap</Keyword>
+                    <Keyword>Slippy Map</Keyword>
+                </KeywordList>
+                <!-- The following layers contain the OpenStreetMap slippy maps like described above. -->
+                <!--
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>OpenStreetMap Slippy Map</Title>
+                    <Abstract>Contains the OpenStreetMap Slippy Map Layers</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                        <Keyword>OpenStreetMap</Keyword>
+                        <Keyword>Slippy Map</Keyword>
+                    </KeywordList>
+                    <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>OSMSlippyMapMN</Name>
+                        <Title>OSM Slippy Map Mapnik</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="1400" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>OSMMapnik</deegree:Name>
+                            <deegree:Type>EXTERNALDATAACCESS</deegree:Type>
+                            <deegree:ClassName>org.deegree.ogcwebservices.wms.dataaccess.OSMSlippyMapReader</deegree:ClassName>
+                            <deegree:ConfigurationFile>dataaccess/osm/osmmapnik.properties</deegree:ConfigurationFile>
+                        </deegree:DataSource>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>OSMSlippyMaposma</Name>
+                        <Title>OSM Slippy Map Osmarender</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="1400" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>OSMosma</deegree:Name>
+                            <deegree:Type>EXTERNALDATAACCESS</deegree:Type>
+                            <deegree:ClassName>org.deegree.ogcwebservices.wms.dataaccess.OSMSlippyMapReader</deegree:ClassName>
+                            <deegree:ConfigurationFile>dataaccess/osm/osmarender.properties</deegree:ConfigurationFile>
+                        </deegree:DataSource>
+                    </Layer>
+                    <Layer queryable="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>OSMSlippyMapcycle</Name>
+                        <Title>OSM Slippy Map CycleMap</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="1400" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>OSMcycle</deegree:Name>
+                            <deegree:Type>EXTERNALDATAACCESS</deegree:Type>
+                            <deegree:ClassName>org.deegree.ogcwebservices.wms.dataaccess.OSMSlippyMapReader</deegree:ClassName>
+                            <deegree:ConfigurationFile>dataaccess/osm/cycle.properties</deegree:ConfigurationFile>
+                        </deegree:DataSource>
+                    </Layer>
+                </Layer>
+                -->
+                <!-- The following layers contain the OpenStreetMap Bonn data like described above. -->
+                <!-- 
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>OpenStreetMap Bonn Data Layers</Title>
+                    <Abstract>Contains the more detailed OpenStreetMap Bonn Data</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                        <Keyword>OpenStreetMap</Keyword>
+                        <Keyword>Slippy Map</Keyword>
+                    </KeywordList>
+                    <SRS>EPSG:25832</SRS>
+                    <LatLonBoundingBox miny="50.6415" maxy="50.795" minx="7.0137" maxx="7.2313" />
+                    <BoundingBox SRS="EPSG:25832" miny="5611842.18" maxy="5628519.59" minx="359556.29" maxx="375348.89" />
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>gastrobonn</Name>
+                        <Title>GastronomyBonn</Title>
+                        <Abstract>Layer which allows custom SQL, especially with the SQL Template</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="120" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:gastrobonn</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>location</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from bonn_gastro where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>true</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:gastrobonn</Name>
+                            <Title>GastronomyBonn</Title>
+                            <deegree:StyleResource>styles/osm_gastronomy.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>placeofworship</Name>
+                        <Title>PlacesOfWorshipBonn</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="120" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:placeofworship</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>location</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from bonn_placeofworship where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:placeofworship</Name>
+                            <Title>PlacesOfWorshipBonn</Title>
+                            <deegree:StyleResource>styles/osm_placeofworship.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>roadbonn</Name>
+                        <Title>RoadsBonn</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="120" />
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>roadb</Name>
+                            <Title>RoadsBonn</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:roadb</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from bonn_roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default:roadb</Name>
+                                <Title>Roadb</Title>
+                                <deegree:StyleResource>styles/osm_roadb.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>expressway1b</Name>
+                            <Title>expressway1b</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:expressway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from bonn_roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default:expressway1b</Name>
+                                <Title>expressway1b</Title>
+                                <deegree:StyleResource>styles/osm_roadb.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>expressway2b</Name>
+                            <Title>expressway2b</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:expressway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from bonn_roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default:expressway2b</Name>
+                                <Title>expressway2b</Title>
+                                <deegree:StyleResource>styles/osm_roadb.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>motorway1b</Name>
+                            <Title>MotorwaysBonn</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:motorway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from bonn_roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default:motorway1b</Name>
+                                <Title>motorwayb</Title>
+                                <deegree:StyleResource>styles/osm_roadb.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>motorway2b</Name>
+                            <Title>MotorwaysBonn</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:autobahn</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from bonn_roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default:motorway2b</Name>
+                                <Title>motorway2b</Title>
+                                <deegree:StyleResource>styles/osm_roadb.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>roadlabelb</Name>
+                            <Title>roadlabelb</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:strlabelb</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from bonn_roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default:roadlabelb</Name>
+                                <Title>roadlabelb</Title>
+                                <deegree:StyleResource>styles/osm_roadb.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>building</Name>
+                        <Title>BuildingsBonn</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="120" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:bonn_buildings</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>geometry</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from bonn_buildings where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:building</Name>
+                            <Title>Building</Title>
+                            <deegree:StyleResource>styles/osm_building.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>labelbuilding</Name>
+                        <Title>LabelBuildingBonn</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="120" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:bonn_buildings</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>geometry</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from bonn_buildings where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:labelbuilding</Name>
+                            <Title>LabelBuildingBonn</Title>
+                            <deegree:StyleResource>styles/osm_building.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                -->
+                <!-- The following layers contain the OpenStreetMap NRW data like described above. -->
+                <!--
+                <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                    <Title>OpenStreetMap NRW Data Layers</Title>
+                    <Abstract>Contains the OpenStreetMap NRW Data Layers</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                        <Keyword>OpenStreetMap</Keyword>
+                        <Keyword>Slippy Map</Keyword>
+                    </KeywordList>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>railwaystation</Name>
+                        <Title>RailwayStationsNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:railwaystation</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>location</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from railwaystation where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default</Name>
+                            <Title>RailwayStation</Title>
+                            <deegree:StyleResource>styles/osm_station.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>peak</Name>
+                        <Title>PeaksNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:peak</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>location</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from peak where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:peak</Name>
+                            <Title>Peak</Title>
+                            <deegree:StyleResource>styles/osm_peak.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>airport</Name>
+                        <Title>AirportsNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:airport</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>location</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from airport where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:airport</Name>
+                            <Title>Airport</Title>
+                            <deegree:StyleResource>styles/osm_airport.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>populatedplace</Name>
+                        <Title>PopulatedPlacesNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:orte</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>location</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from populatedplace where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:populatedplace</Name>
+                            <Title>PopulatedPlace</Title>
+                            <deegree:StyleResource>styles/osm_populatedplace.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>adminboundaries</Name>
+                        <Title>AdminBoundariesNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:adminboundary</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>centerline</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from adminboundary where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:adminboundaries</Name>
+                            <Title>admin</Title>
+                            <deegree:StyleResource>styles/osm_admin.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>motorway</Name>
+                        <Title>MotorwaysNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>motorway1</Name>
+                            <Title>MotorwaysNRW</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:motorway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default</Name>
+                                <Title>motorway</Title>
+                                <deegree:StyleResource>styles/osm_motorway.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>motorway2</Name>
+                            <Title>MotorwaysNRW</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:motorway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from roads where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default</Name>
+                                <Title>motorway</Title>
+                                <deegree:StyleResource>styles/osm_motorway.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>railway</Name>
+                        <Title>RailwayNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>railway1</Name>
+                            <Title>RailwayNRW</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:railway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from railway where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default</Name>
+                                <Title>default</Title>
+                                <deegree:StyleResource>styles/osm_railway.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                        <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                            <Name>railway2</Name>
+                            <Title>RailwayNRW</Title>
+                            <Abstract>deegree demo WMS</Abstract>
+                            <KeywordList>
+                                <Keyword>deegree</Keyword>
+                                <Keyword>layer</Keyword>
+                            </KeywordList>
+                            <ScaleHint min="0" max="840" />
+                            <deegree:DataSource failOnException="0" queryable="1">
+                                <deegree:Name>app:railway</deegree:Name>
+                                <deegree:Type>DATABASE</deegree:Type>
+                                <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                    <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                    <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                    <jdbc:User>deegreetest</jdbc:User>
+                                    <jdbc:Password>deegreetest</jdbc:Password>
+                                </jdbc:JDBCConnection>
+                                <deegree:GeometryField>centerline</deegree:GeometryField>
+                                <deegree:SQLTemplate>select * from railway where</deegree:SQLTemplate>
+                                <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                                <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                            </deegree:DataSource>
+                            <Style>
+                                <Name>default</Name>
+                                <Title>default</Title>
+                                <deegree:StyleResource>styles/osm_railway.xml</deegree:StyleResource>
+                            </Style>
+                        </Layer>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>watercourse</Name>
+                        <Title>WaterCoursesNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:watercourse</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>centerline</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from watercourse where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:watercourse</Name>
+                            <Title>watercourse</Title>
+                            <deegree:StyleResource>styles/osm_watercourse.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>bodyofwaters</Name>
+                        <Title>BodyOfWatersNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:bodyofwaters</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>geometry</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from bodyofwaters where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:bodyofwaters</Name>
+                            <Title>bodyofwaters</Title>
+                            <deegree:StyleResource>styles/osm_bodyofwaters.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>hikingway</Name>
+                        <Title>HikingWaysNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:hiking</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>centerline</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from hikingway where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:hiking</Name>
+                            <Title>hiking</Title>
+                            <deegree:StyleResource>styles/osm_hiking.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                    <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                        <Name>cycleway</Name>
+                        <Title>CycleWaysNRW</Title>
+                        <Abstract>deegree demo WMS</Abstract>
+                        <KeywordList>
+                            <Keyword>deegree</Keyword>
+                            <Keyword>layer</Keyword>
+                        </KeywordList>
+                        <ScaleHint min="0" max="840" />
+                        <deegree:DataSource failOnException="0" queryable="1">
+                            <deegree:Name>app:cycleway</deegree:Name>
+                            <deegree:Type>DATABASE</deegree:Type>
+                            <jdbc:JDBCConnection xmlns:jdbc="http://www.deegree.org/jdbc">
+                                <jdbc:Driver>org.postgresql.Driver</jdbc:Driver>
+                                <jdbc:Url>jdbc:postgresql://localhost:5432/deegreeosm</jdbc:Url>
+                                <jdbc:User>deegreetest</jdbc:User>
+                                <jdbc:Password>deegreetest</jdbc:Password>
+                            </jdbc:JDBCConnection>
+                            <deegree:GeometryField>centerline</deegree:GeometryField>
+                            <deegree:SQLTemplate>select * from cycleway where</deegree:SQLTemplate>
+                            <deegree:NativeCRS>EPSG:4326</deegree:NativeCRS>
+                            <deegree:CustomSQLAllowed>false</deegree:CustomSQLAllowed>
+                        </deegree:DataSource>
+                        <Style>
+                            <Name>default:cycle</Name>
+                            <Title>cycle</Title>
+                            <deegree:StyleResource>styles/osm_cycle.xml</deegree:StyleResource>
+                        </Style>
+                    </Layer>
+                </Layer>
+                -->
+            </Layer>
+            <!--++++++++++++++++++++++++++++++++++++-->
+            <!--++++++++++++ WKT Example +++++++++++-->
+            <!--++++++++++++++++++++++++++++++++++++-->
+            <Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+                <Title>WKT Example Layers</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                    <Keyword>deegree</Keyword>
+                    <Keyword>layer</Keyword>
+                </KeywordList>
+                <Layer fixedHeight="0" fixedWidth="0" noSubsets="0" queryable="0">
+                    <Name>target</Name>
+                    <Title>Target</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <ScaleHint min="0" max="2800" />
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>WKT1</deegree:Name>
+                        <deegree:Type>EXTERNALDATAACCESS</deegree:Type>
+                        <deegree:ClassName>org.deegree.ogcwebservices.wms.dataaccess.WKTMarker</deegree:ClassName>
+                        <deegree:ConfigurationFile>./dataaccess/wkt/wkt1.properties</deegree:ConfigurationFile>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:target</Name>
+                        <Title>default:target</Title>
+                        <Abstract>Target</Abstract>
+                        <deegree:StyleResource>styles/wkt_target.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+                <Layer fixedHeight="0" fixedWidth="0" noSubsets="0" queryable="0">
+                    <Name>position</Name>
+                    <Title>Position</Title>
+                    <Abstract>deegree demo WMS</Abstract>
+                    <KeywordList>
+                        <Keyword>deegree</Keyword>
+                        <Keyword>layer</Keyword>
+                    </KeywordList>
+                    <ScaleHint min="0" max="2800" />
+                    <deegree:DataSource failOnException="0" queryable="1">
+                        <deegree:Name>WKT2</deegree:Name>
+                        <deegree:Type>EXTERNALDATAACCESS</deegree:Type>
+                        <deegree:ClassName>org.deegree.ogcwebservices.wms.dataaccess.WKTMarker</deegree:ClassName>
+                        <deegree:ConfigurationFile>./dataaccess/wkt/wkt2.properties</deegree:ConfigurationFile>
+                    </deegree:DataSource>
+                    <Style>
+                        <Name>default:position</Name>
+                        <Title>default:position</Title>
+                        <Abstract>Position</Abstract>
+                        <deegree:StyleResource>styles/wkt_position.xml</deegree:StyleResource>
+                    </Style>
+                </Layer>
+            </Layer>
+        </Layer>
+      </Layer>  
+    </Capability>
+</WMT_MS_Capabilities>

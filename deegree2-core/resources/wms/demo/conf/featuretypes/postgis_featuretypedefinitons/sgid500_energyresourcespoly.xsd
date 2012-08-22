@@ -1,0 +1,94 @@
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+    <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" />
+    <!-- configuration for the persistence backend to be used -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <deegreewfs:Prefix>app</deegreewfs:Prefix>
+            <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+            <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+            <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+                <Driver>org.postgresql.Driver</Driver>
+                <Url>jdbc:postgresql://localhost:5432/deegree2demo</Url>
+                <User>postgres</User>
+                <Password></Password>
+                <SecurityConstraints />
+                <Encoding>iso-8859-1</Encoding>
+            </JDBCConnection>
+        </xsd:appinfo>
+    </xsd:annotation>
+    <!-- ============================================================== -->
+    <xsd:element name='EnergyResources' type='app:EnergyResourcesType' substitutionGroup="gml:_Feature">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <deegreewfs:table>sgid500_energyresourcespoly</deegreewfs:table>
+                <deegreewfs:gmlId prefix="ID_">
+                    <deegreewfs:MappingField field='gid' type="INTEGER" />
+                </deegreewfs:gmlId>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!-- ============================================================== -->
+    <xsd:complexType name='EnergyResourcesType'>
+        <xsd:complexContent>
+            <xsd:extension base="gml:AbstractFeatureType">
+                <xsd:sequence>
+                    <xsd:element name='gid' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='gid' type='INTEGER' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='objectid' type='xsd:integer'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='objectid' type='INTEGER' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='code' type='xsd:string'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='code' type='VARCHAR' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='area' type='xsd:double'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='shape_area' type='NUMERIC' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='perimeter' type='xsd:double'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='shape_len' type='NUMERIC' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name='geometry' type='gml:GeometryPropertyType'>
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <deegreewfs:Content>
+                                    <deegreewfs:MappingField field='the_geom' type='GEOMETRY' srs='26912' />
+                                </deegreewfs:Content>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

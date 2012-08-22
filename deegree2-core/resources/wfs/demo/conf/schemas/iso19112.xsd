@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:iso19112="http://www.opengis.net/iso19112" elementFormDefault="qualified" targetNamespace="http://www.opengis.net/iso19112" version="1.0">
+  <annotation>
+    <documentation>This contains classes which are direct implementations of the ISO19112 model. These have been duplicated because this ISO model is
+      not encoded in a form compatible with automated schema generation. </documentation>
+  </annotation>
+  <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://www.seegrid.csiro.au/xsd/iso19139/gml3.1.1version/gmd/gmd.xsd" />
+  <!--XML Schema document created by ShapeChange-->
+  <element name="SI_LocationInstance" substitutionGroup="gml:_Feature" type="iso19112:SI_LocationInstanceType" />
+  <complexType name="SI_LocationInstanceType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="geographicIdentifier" type="string" />
+          <element maxOccurs="unbounded" minOccurs="0" name="alternativeGeographicIdentifier" type="string" />
+          <element minOccurs="0" name="geographicExtent">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:EX_GeographicExtent_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element minOccurs="0" name="temporalExtent">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:EX_TemporalExtent_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element minOccurs="0" name="position" type="gml:PointPropertyType" />
+          <element minOccurs="0" name="gazetteer" type="iso19112:SI_GazetteerPropertyType" />
+          <element name="locationType" type="iso19112:SI_LocationTypePropertyType" />
+          <element minOccurs="0" name="parent" type="iso19112:SI_LocationInstancePropertyType" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SI_LocationInstancePropertyType">
+    <sequence minOccurs="0">
+      <element ref="iso19112:SI_LocationInstance" />
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup" />
+  </complexType>
+  <element name="SI_Gazetteer" substitutionGroup="gml:_Feature" type="iso19112:SI_GazetteerType" />
+  <complexType name="SI_GazetteerType">
+    <annotation>
+      <documentation>This is an implementation facade for ISO19112 model concepts. </documentation>
+    </annotation>
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="name">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:RS_Identifier_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element minOccurs="0" name="scope" type="string" />
+          <element name="custodian">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:CI_ResponsibleParty_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element name="territoryOfUse">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:EX_GeographicExtent_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element name="isGlobal" type="boolean" />
+          <element name="srsName" type="anyURI" />
+          <element name="featureType" type="iso19112:SI_LocationTypePropertyType" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SI_GazetteerPropertyType">
+    <sequence minOccurs="0">
+      <element ref="iso19112:SI_Gazetteer" />
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup" />
+  </complexType>
+  <element name="SI_LocationType" substitutionGroup="gml:_Feature" type="iso19112:SI_LocationTypeType" />
+  <complexType name="SI_LocationTypeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="name">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:RS_Identifier_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element name="identifier" type="string" />
+          <element name="theme" type="string" />
+          <element name="definition" type="string" />
+          <element name="territoryOfUse">
+            <complexType>
+              <sequence minOccurs="0">
+                <element ref="gmd:EX_GeographicExtent_PropertyType" />
+              </sequence>
+              <attributeGroup ref="gml:AssociationAttributeGroup" />
+            </complexType>
+          </element>
+          <element name="owner" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SI_LocationTypePropertyType">
+    <sequence minOccurs="0">
+      <element ref="iso19112:SI_LocationType" />
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup" />
+  </complexType>
+</schema>

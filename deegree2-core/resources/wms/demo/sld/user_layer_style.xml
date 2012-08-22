@@ -1,0 +1,47 @@
+<sld:StyledLayerDescriptor version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:sld="http://www.opengis.net/sld"
+  xsi:schemaLocation="http://www.opengis.net/sld 
+http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"
+  xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:ogc="http://www.opengis.net/ogc">
+  <sld:UserLayer>
+    <sld:Name>MyLayer</sld:Name>
+    <!-- 
+    <sld:RemoteOWS>
+      <sld:Service>WFS</sld:Service>
+      <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+        xlink:href="http://localhost:8080/deegree-wms/services" />
+    </sld:RemoteOWS>
+    -->
+    <sld:LayerFeatureConstraints>
+      <sld:FeatureTypeConstraint>
+        <sld:FeatureTypeName>app:Railroads</sld:FeatureTypeName>
+        <!-- You may define some filtering here -->
+        <!--  
+        <ogc:Filter>
+          <ogc:PropertyIsLessThanOrEqualTo>
+          <ogc:PropertyName>app:someProperty</ogc:PropertyName>
+          <ogc:Literal>842</ogc:Literal>
+          </ogc:PropertyIsLessThanOrEqualTo>
+        </ogc:Filter>
+        -->
+      </sld:FeatureTypeConstraint>
+    </sld:LayerFeatureConstraints>
+    <sld:UserStyle>
+      <sld:FeatureTypeStyle>
+        <sld:Rule>
+          <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+          <sld:MaxScaleDenominator>999999999</sld:MaxScaleDenominator>
+          <sld:LineSymbolizer>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#0000ff</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">1.0</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:UserLayer>
+</sld:StyledLayerDescriptor>

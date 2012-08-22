@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:GetMap xmlns:ogc="http://www.opengis.net/ows"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:sld="http://www.opengis.net/sld" version="1.1.1" service="WMS">
+	<sld:StyledLayerDescriptor version="1.0.0">
+		<sld:NamedLayer>
+			<sld:Name>citelayers</sld:Name>
+		</sld:NamedLayer>
+	</sld:StyledLayerDescriptor>
+	<sld:BoundingBox
+		srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+		<gml:coord>
+			<gml:X>-0.005</gml:X>
+			<gml:Y>-0.005</gml:Y>
+		</gml:coord>
+		<gml:coord>
+			<gml:X>0.005</gml:X>
+			<gml:Y>0.005</gml:Y>
+		</gml:coord>
+	</sld:BoundingBox>
+	<sld:Output>
+		<sld:Format>image/jpeg</sld:Format>
+		<sld:Transparent>false</sld:Transparent>
+		<sld:Size>
+			<sld:Width>500</sld:Width>
+			<sld:Height>500</sld:Height>
+		</sld:Size>
+	</sld:Output>
+	<sld:Exceptions>application/vnd.ogc.se_xml</sld:Exceptions>
+</ogc:GetMap>

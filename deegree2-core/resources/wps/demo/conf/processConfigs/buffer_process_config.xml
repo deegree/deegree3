@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- This file is part of the deegree wps implementation. It represents an exemplary process configuration document for a buffer process. -->
+  <!--
+    Only wps specific elements will be explained below. The implementation is based on version 0.4.0 of the OGC Web Processing Service Specification.
+  -->
+  <!-- the root element defines the optional parameters store and status, which are currently not supported. -->
+<wps:ProcessDescriptions xmlns:wps="http://www.opengeospatial.net/wps" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:deegree="http://www.deegree.org/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps ..\wpsDescribeProcess.xsd">
+  <wps:ProcessDescription processVersion="1" storeSupported="false" statusSupported="false">
+    <!-- deegreeParams are for internal configuration of the deegree framework-->
+    <deegree:deegreeParams>
+      <!--
+        The responsibleClass represents the actual processImplementing class, identified by it's fully qualified classname. Each process shall only
+        define one responsible class. Although it is of course possible to set up a detailed sub-package structure below the responsible class.
+      -->
+      <deegree:responsibleClass>org.deegree.ogcwebservices.wps.execute.processes.Buffer</deegree:responsibleClass>
+    </deegree:deegreeParams>
+    <ows:Identifier>Buffer</ows:Identifier>
+    <ows:Title>Buffer</ows:Title>
+    <ows:Abstract>Create a buffer around a GML geometry. Accepts a GML geometry and provides a GML geometry output for the buffered feature.
+    </ows:Abstract>
+    <ows:Metadata xlink:title="spatial" />
+    <ows:Metadata xlink:title="geometry" />
+    <ows:Metadata xlink:title="buffer" />
+    <ows:Metadata xlink:title="GML" />
+    <!-- BEGIN OF DATAINPUTS -->
+    <!-- the DataInputs section describes the process inputs for the implementation. -->
+    <wps:DataInputs>
+      <!-- An Input element refers to a single input -->
+      <wps:Input>
+        <!-- The ows:Identifier is the connection between the implementing class and the data input. Therefore a case sensitive use is mandatory. -->
+        <ows:Identifier>InputGeometry</ows:Identifier>
+        <!--Title and abstract are for documentation and metadata purposes. -->
+        <ows:Title>Input Geometry to be buffered</ows:Title>
+        <ows:Abstract>The Geometry to be buffered.</ows:Abstract>
+        <!-- For a detailed definition of possible input data types see the OGC WPS Specification -->
+        <wps:ComplexData defaultSchema="http://schemas.opengis.net/gml/3.0.0/base/gml.xsd">
+          <wps:SupportedComplexData>
+            <wps:Format>text/XML</wps:Format>
+            <wps:Encoding>UTF-8</wps:Encoding>
+            <wps:Schema>http://schemas.opengis.net/gml/3.0.0/base/gml.xsd</wps:Schema>
+          </wps:SupportedComplexData>
+        </wps:ComplexData>
+        <!-- The MinimumOccurs Parameter defines, if the input parameter is optional (0), or required (>0) -->
+        <wps:MinimumOccurs>1</wps:MinimumOccurs>
+      </wps:Input>
+      <wps:Input>
+        <ows:Identifier>BufferDistance</ows:Identifier>
+        <ows:Title>Buffer Distance</ows:Title>
+        <ows:Abstract>The width of the buffer must be beween 1 and 101.</ows:Abstract>
+        <wps:LiteralData>
+          <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.0:Integer">Integer</ows:DataType>
+          <ows:AllowedValues>
+            <ows:Range ows:rangeClosure="closed">
+              <ows:MinimumValue>1</ows:MinimumValue>
+              <ows:MaximumValue>101</ows:MaximumValue>
+            </ows:Range>
+          </ows:AllowedValues>
+        </wps:LiteralData>
+        <wps:MinimumOccurs>0</wps:MinimumOccurs>
+      </wps:Input>
+      <wps:Input>
+        <ows:Identifier>EndCapStyle</ows:Identifier>
+        <ows:Title>End Cap Style</ows:Title>
+        <ows:Abstract>The Style of the generated end caps of the buffer. Possible values are 1 (round caps), 2 (end caps are truncated flat at the
+          line ends), and 3 (End caps are squared off at the buffer distance beyond the line ends).</ows:Abstract>
+        <wps:LiteralData>
+          <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.0:Integer">Integer</ows:DataType>
+          <ows:AllowedValues>
+            <ows:Range ows:rangeClosure="closed">
+              <ows:MinimumValue>1</ows:MinimumValue>
+              <ows:MaximumValue>3</ows:MaximumValue>
+            </ows:Range>
+          </ows:AllowedValues>
+        </wps:LiteralData>
+        <wps:MinimumOccurs>0</wps:MinimumOccurs>
+      </wps:Input>
+      <wps:Input>
+        <!--
+          Since the actual buffer implementation relies on vividsolutions Java Topology Suite implementation, see
+          http://www.vividsolutions.com/JTS/bin/JTS%20Developer%20Guide.pdf for detailed information of input parameters
+        -->
+        <ows:Identifier>ApproximationQuantization</ows:Identifier>
+        <ows:Title>Approximation Quantization</ows:Title>
+        <ows:Abstract>The number of quadrant segments for different curve approximation levels of end caps. An integer between 8 (dafault) and 20.
+        </ows:Abstract>
+        <wps:LiteralData>
+          <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.0:Integer">Integer</ows:DataType>
+          <wps:SupportedUOMs defaultUOM="urn:ogc:def:dataType:OGC:1.0:metre">
+            <ows:UOM ows:reference="urn:ogc:def:dataType:OGC:1.0:metre" />
+          </wps:SupportedUOMs>
+          <ows:AllowedValues>
+            <ows:Range ows:rangeClosure="closed">
+              <ows:MinimumValue>8</ows:MinimumValue>
+              <ows:MaximumValue>20</ows:MaximumValue>
+            </ows:Range>
+          </ows:AllowedValues>
+        </wps:LiteralData>
+        <wps:MinimumOccurs>0</wps:MinimumOccurs>
+      </wps:Input>
+    </wps:DataInputs>
+    <!-- END OF DATAINPUTS -->
+    <!-- BEGIN OF PROCESSOUTPUTS-->
+    <wps:ProcessOutputs>
+      <!-- A process may define several outputs-->
+      <wps:Output>
+        <ows:Identifier>Buffered Geometry</ows:Identifier>
+        <ows:Title>Buffered Geometry</ows:Title>
+        <ows:Abstract>GML stream describing the buffered Geometry.</ows:Abstract>
+        <!-- The data type of the process output -->
+        <wps:ComplexOutput defaultSchema="http://schemas.opengis.net/gml/3.0.0/base/gml.xsd">
+        </wps:ComplexOutput>
+      </wps:Output>
+    </wps:ProcessOutputs>
+    <!-- END OF PROCESSOUTPUTS-->
+  </wps:ProcessDescription>
+</wps:ProcessDescriptions>

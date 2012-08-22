@@ -1,0 +1,167 @@
+<!-- $HeadURL$ -->
+<!-- $Id$ -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree featureService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" background="#CECECE">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+                        <tr valign="top">
+                            <td colspan="3">
+                                <p>Below are some examples to explain WFS GetFeature requests by using HTTP/GET and KVP encoding.</p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td width="30%"><strong><em>WFS Get Feature Requests</em></strong></td>
+                            <td>
+                                <ul>
+                                    <li><a href="#special_gf">GetFeature</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2">
+            <colgroup>
+                <col width="30%">
+                <col width="65%">
+                <col width="5%">
+            </colgroup>
+            <tr valign="top">
+                <th>Request</th>
+                <th colspan="2">Description</th>
+            </tr>
+            <tr valign="top"  bgcolor="#d7deed">
+                <td colspan="2">
+                    <a name="special_gf"></a>
+                    <b>GetFeature</b><br />
+                    <p>There are some examples for WFS GetFeature requests below. They explain the use of additional parameters.</p>
+                </td>
+                <td><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:ZipCodes&NAMESPACE=xmlns(app=http://www.deegree.org/app)&resultType=hits">WFS 1.1.0 GetFeature ZipCodes hits</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, which retrieves feature count of a type (example: ZipCodes)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     SERVICE=WFS<br/>
+                     VERSION=1.1.0<br/>
+                     REQUEST=GetFeature<br/>
+                     TYPENAME=app:ZipCodes<br/>
+                     NAMESPACE=xmlns(app=http://www.deegree.org/app)<br/>
+                     <b>RESULTTYPE=hits</b><br/>
+                     </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:Municipalities_edited&NAMESPACE=xmlns(app=http://www.deegree.org/app)&MAXFEATURES=10">WFS 1.1.0 GetFeature Municipalities_edited maxfeatures</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, which retrieves only 10 features of a type (example: Municipalities_edited)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     SERVICE=WFS<br/>
+                     VERSION=1.1.0<br/>
+                     REQUEST=GetFeature<br/>
+                     TYPENAME=app:Municipalities_edited<br/>
+                     NAMESPACE=xmlns(app=http://www.deegree.org/app)<br/>
+                     <b>MAXFEATURES=10</b><br/>
+                     </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:Springs&NAMESPACE=xmlns(app=http://www.deegree.org/app)&MAXFEATURES=10&srsname=EPSG:4326">WFS 1.1.0 GetFeature Springs different coordinate reference system</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, using a different response coordinate reference system (example: Springs)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     SERVICE=WFS<br/>
+                     VERSION=1.1.0<br/>
+                     REQUEST=GetFeature<br/>
+                     TYPENAME=app:Springs<br/>
+                     NAMESPACE=xmlns(app=http://www.deegree.org/app)<br/>
+                     MAXFEATURES=10<br/>
+                     <b>SRSNAME=EPSG:4326</b><br/>
+                     </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:Springs&NAMESPACE=xmlns%28app=http://www.deegree.org/app%29&featureid=SGID024_Springs1,SGID024_Springs6853">WFS 1.1.0 GetFeature Springs just some features with ID</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, which retrieves only some features identified by their ID (CAUTION! IDs may change within the database from time to time) (example: Springs)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     SERVICE=WFS<br/>
+                     VERSION=1.1.0<br/>
+                     REQUEST=GetFeature<br/>
+                     TYPENAME=app:Springs<br/>
+                     NAMESPACE=xmlns(app=http://www.deegree.org/app)<br/>
+                     <b>FEATUREID=SGID024_Springs1,SGID024_Springs6853</b><br/>
+                     </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:Springs&NAMESPACE=xmlns(app=http://www.deegree.org/app)&PROPERTYNAME=app:objectid,app:code&maxfeatures=10">WFS 1.1.0 GetFeature Springs just some properties</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, which retrieves some properties of some features (Note that the "geom" property is additionally delivered as it is a mandatory property as per the feature type definition) (example: Springs)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     SERVICE=WFS<br/>
+                     VERSION=1.1.0<br/>
+                     REQUEST=GetFeature<br/>
+                     TYPENAME=app:Springs<br/>
+                     NAMESPACE=xmlns(app=http://www.deegree.org/app)<br/>
+                     <b>PROPERTYNAME=app:objectid,app:code</b><br/>
+                     MAXFEATURES=10<br/>
+                     </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td><a href="services?service=WFS&version=1.1.0&request=GetFeature&typename=app:Springs&NAMESPACE=xmlns(app=http://www.deegree.org/app)&PROPERTYNAME=app:objectid,app:code&sortby=app:objectid&FILTER=%3Cogc:Filter%20xmlns:app=%22http://www.deegree.org/app%22%20xmlns:gml=%22http://www.opengis.net/gml%22%20xmlns:ogc=%22http://www.opengis.net/ogc%22%3E%3Cogc:BBOX%3E%3Cogc:PropertyName%3Eapp:geometry%3C/ogc:PropertyName%3E%3Cgml:Envelope%3E%3Cgml:coord%3E%3Cgml:X%3E343720%3C/gml:X%3E%3Cgml:Y%3E4374533%3C/gml:Y%3E%3C/gml:coord%3E%3Cgml:coord%3E%3Cgml:X%3E444136%3C/gml:X%3E%3Cgml:Y%3E4433308%3C/gml:Y%3E%3C/gml:coord%3E%3C/gml:Envelope%3E%3C/ogc:BBOX%3E%3C/ogc:Filter%3E">WFS 1.1.0 GetFeature Springs bbox-based filter</a></td>
+                <td colspan="2">
+                     <p>
+                     A GetFeature request, which retrieves features sorted by a property, combined with a BBOX-based filter (example: Springs)<br/><br/>
+                     HTTP KVP Request:<br/>
+                     ...services?<br/>
+                     SERVICE=WFS<br/>
+                     VERSION=1.1.0<br/>
+                     REQUEST=GetFeature<br/>
+                     TYPENAME=app:Springs<br/>
+                     NAMESPACE=xmlns(app=http://www.deegree.org/app)<br/>
+                     <b>PROPERTYNAME=app:objectid,app:code</b><br/>
+                     <b>SORTBY=app:objectid</b><br/>
+                     <b>FILTER=&lt;ogc:Filter xmlns:app=&quot;http://www.deegree.org/app&quot; xmlns:gml=&quot;http://www.opengis.net/gml&quot; xmlns:ogc=&quot;http://www.opengis.net/ogc&quot;&gt;<br/>
+                     &lt;ogc:BBOX&gt;<br/>
+                     &lt;ogc:PropertyName&gt;app:geometry&lt;/ogc:PropertyName&gt;<br/>
+                     &lt;gml:Envelope&gt;<br/>
+                     &lt;gml:coord&gt;<br/>
+                     &lt;gml:X&gt;343720&lt;/gml:X&gt;<br/>
+                     &lt;gml:Y&gt;4374533&lt;/gml:Y&gt;<br/>
+                     &lt;/gml:coord&gt;<br/>
+                     &lt;gml:coord&gt;<br/>
+                     &lt;gml:X&gt;444136&lt;/gml:X&gt;<br/>
+                     &lt;gml:Y&gt;4433308&lt;/gml:Y&gt;<br/>
+                     &lt;/gml:coord&gt;<br/>
+                     &lt;/gml:Envelope&gt;<br/>
+                     &lt;/ogc:BBOX&gt;<br/>
+                     &lt;/ogc:Filter&gt;</b><br/>
+                     </p>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

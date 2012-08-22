@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 42-->
+<GetFeature version="1.1.0" service="WFS" xmlns="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:myns="http://www.someserver.com/myns" xmlns:yourns="http://demo.cubewerx.com/yourns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <Query typeName="myns:InWaterA_1M"/>
+  <Query typeName="myns:BuiltUpA_1M"/>
+  <Query typeName="yourns:RoadL_1M"/>
+</GetFeature>

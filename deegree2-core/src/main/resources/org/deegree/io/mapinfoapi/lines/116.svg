@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="50"
+   height="25"
+   id="svg1931"
+   sodipodi:version="0.32"
+   inkscape:version="0.44.1"
+   version="1.0"
+   sodipodi:docbase="/home/hanko/projekte/prvlimburg_configtool2/resources/graphics/latlon_symbol/linie"
+   sodipodi:docname="halbkreis_dreieck_halb.svg">
+  <defs
+     id="defs1933" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="15.08"
+     inkscape:cx="25"
+     inkscape:cy="11.507641"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     width="35px"
+     height="25px"
+     showguides="true"
+     showgrid="true"
+     inkscape:guide-bbox="true"
+     objecttolerance="4.2"
+     gridtolerance="4.2"
+     guidetolerance="4.2"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="1163"
+     inkscape:window-height="927"
+     inkscape:window-x="0"
+     inkscape:window-y="26" />
+  <metadata
+     id="metadata1936">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:black;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:15.5;stroke-opacity:1"
+       id="path2053"
+       sodipodi:sides="3"
+       sodipodi:cx="-0.066312999"
+       sodipodi:cy="-3.5527137e-15"
+       sodipodi:r1="20.420204"
+       sodipodi:r2="10.210102"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 17.618103,10.210102 L -0.066312725,10.210102 L -17.750729,10.210102 L -8.9085209,-5.1050508 L -0.066312909,-20.420204 L 8.7758946,-5.1050513 L 17.618103,10.210102 z "
+       transform="matrix(0.407532,0,0,0.407532,32.40368,8.251184)" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:black;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:15.5;stroke-opacity:1"
+       id="path3970"
+       sodipodi:cx="12.135279"
+       sodipodi:cy="12.334217"
+       sodipodi:rx="12.135279"
+       sodipodi:ry="12.135279"
+       d="M 12.120348,0.19894756 A 12.135279,12.135279 0 1 1 12.135279,24.469496"
+       sodipodi:start="4.7111586"
+       sodipodi:end="7.8539816"
+       transform="matrix(0,-1.019126,1.019126,0,-0.103283,24.77688)"
+       sodipodi:open="true" />
+  </g>
+</svg>

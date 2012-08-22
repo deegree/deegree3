@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wmc:ViewContext xmlns:wmc="http://www.opengis.net/context" xmlns:deegreeWMC="http://www.deegree.org/context" xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0" id="String">
+	<wmc:General>
+		[...]
+		<wmc:Extension>
+			<deegreeWMC:LayerTree>
+				<deegreeWMC:Root name="PenB" selectable="0" id="1">
+					<deegreeWMC:Node name="Netherland" selectable="1" collapsed="0"  id="2">
+						<deegreeWMC:Node name="Limburg" selectable="1" collapsed="0"  id="3"/>
+					</deegreeWMC:Node>
+					<deegreeWMC:Node name="Germany" selectable="1" collapsed="1"  id="4">
+						<deegreeWMC:Node name="Aachen" selectable="1" collapsed="0"  id="5"/>
+						<deegreeWMC:Node name="Heinsberg" selectable="1" collapsed="0"  id="6"/>
+					</deegreeWMC:Node>
+				</deegreeWMC:Root>
+			</deegreeWMC:LayerTree>
+		</wmc:Extension>
+	</wmc:General>
+	<wmc:LayerList>
+		<wmc:Layer queryable="1" hidden="1">
+			<wmc:Name>GermanBorder</wmc:Name>
+			[...]
+			<wmc:Extension>
+				<deegreeWMC:parentNodeId>4</deegreeWMC:parentNodeId>
+			</wmc:Extension>
+		</wmc:Layer>
+		<wmc:Layer queryable="1" hidden="1">
+			<wmc:Name>RegionBorder</wmc:Name>
+			[...]
+			<wmc:Extension>
+				<deegreeWMC:parentLayerName>GermanBorder</deegreeWMC:parentLayerName>
+			</wmc:Extension>
+		</wmc:Layer>
+		<wmc:Layer queryable="1" hidden="1">
+			<wmc:Name>RegionBorder</wmc:Name>
+			[...]
+			<wmc:Extension>
+				<deegreeWMC:parentNodeId>5</deegreeWMC:parentNodeId>
+				<deegreeWMC:parentNodeId>6</deegreeWMC:parentNodeId>
+			</wmc:Extension>
+		</wmc:Layer>
+	</wmc:LayerList>
+
+</wmc:ViewContext>

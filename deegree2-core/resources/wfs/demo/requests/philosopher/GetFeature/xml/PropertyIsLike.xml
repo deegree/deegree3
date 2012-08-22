@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:app="http://www.deegree.org/app" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <!-- request all philosophers which have a name that matches the pattern *Sartre* -->	
+	<wfs:Query typeName="app:Philosopher">
+		<ogc:Filter>
+			<ogc:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
+				<ogc:PropertyName>app:name</ogc:PropertyName>
+				<ogc:Literal>*Sartre*</ogc:Literal>
+			</ogc:PropertyIsLike>
+		</ogc:Filter>
+	</wfs:Query>
+</wfs:GetFeature>

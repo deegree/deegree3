@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:PrintMap xmlns:deegree="http://www.deegree.org/wmps" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" version="1.0.0">
+  <deegree:Layers>
+    <sld:NamedLayer>
+      <sld:Name>StateOverview</sld:Name>
+      <sld:NamedStyle>
+        <sld:Name>default</sld:Name>
+      </sld:NamedStyle>
+    </sld:NamedLayer>
+    <sld:NamedLayer>
+      <sld:Name>ZipCodes</sld:Name>
+      <sld:NamedStyle>
+        <sld:Name>default</sld:Name>
+      </sld:NamedStyle>
+    </sld:NamedLayer>
+  </deegree:Layers>
+  <gml:Envelope srsName="EPSG:26912">
+    <gml:pos>15250 4039616</gml:pos>
+    <gml:pos>886250 4697045</gml:pos>
+  </gml:Envelope>
+  <deegree:Transparent>false</deegree:Transparent>
+  <deegree:BGColor>0xFF34F2</deegree:BGColor>
+  <deegree:Legend>true</deegree:Legend>
+  <deegree:ScaleBar>true</deegree:ScaleBar>
+  <deegree:Template>template_1</deegree:Template>
+  <deegree:EMailAddress>goerke@lat-lon.de</deegree:EMailAddress>
+  <deegree:TextAreas>
+    <deegree:TextArea>
+      <deegree:Name>Title</deegree:Name>
+      <deegree:Text>Meine Karte</deegree:Text>
+    </deegree:TextArea>
+    <deegree:TextArea>
+      <deegree:Name>Author</deegree:Name>
+      <deegree:Text>Authors Name</deegree:Text>
+    </deegree:TextArea>
+    <deegree:TextArea>
+      <deegree:Name>Copyright</deegree:Name>
+      <deegree:Text>(c) deegree 2010</deegree:Text>
+    </deegree:TextArea>
+    <deegree:TextArea>
+      <deegree:Name>Date</deegree:Name>
+      <deegree:Text>15.04.2010</deegree:Text>
+    </deegree:TextArea>
+    <deegree:TextArea>
+      <deegree:Name>Description</deegree:Name>
+      <deegree:Text>Meine Beschreibung</deegree:Text>
+    </deegree:TextArea>
+    <deegree:TextArea>
+      <deegree:Name>Notes</deegree:Name>
+      <deegree:Text>Meine Notes</deegree:Text>
+    </deegree:TextArea>
+    <deegree:TextArea>
+      <deegree:Name>Logo_url</deegree:Name>
+      <deegree:Text>http://localhost:8080/deegree-wmps/images/logo-deegree.png</deegree:Text>
+    </deegree:TextArea>
+  </deegree:TextAreas>
+</deegree:PrintMap>

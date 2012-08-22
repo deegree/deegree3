@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema targetNamespace="http://www.opengis.net/wcts/0.0" xmlns:wcts="http://www.opengis.net/wcts/0.0"
+  xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="0.4.0" xml:lang="en">
+  <annotation>
+    <appinfo>wctsGetTransformation.xsd 2007-04-28, vodafone specific version</appinfo>
+    <documentation>
+      This XML Schema Document encodes the GetTransformation operation request. The GetTransformation operation response
+      is encoding in a gml;Dictionary. Copyright (c) 2007 Open Geospatial Consortium, Inc. All Rights Reserved.
+    </documentation>
+  </annotation>
+  <!-- ==============================================================
+    includes and imports
+    ============================================================== -->
+  <include schemaLocation="./wctsCommon.xsd" />
+  <!-- ==============================================================
+    elements and types
+    ============================================================== -->
+  <element name="GetTransformation">
+    <annotation>
+      <documentation>
+        Request to a WCTS to perform the GetTransformation operation. This operation allows a client to retrieve the
+        descriptions of all server-known transformations from the identified source CRS to the target CRS.
+      </documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wcts:RequestBaseType">
+          <sequence>
+            <group ref="wcts:SourceAndTargetCRSs" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- =========================================================== -->
+</schema>

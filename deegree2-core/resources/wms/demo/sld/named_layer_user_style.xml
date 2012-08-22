@@ -1,0 +1,38 @@
+<sld:StyledLayerDescriptor version="1.0.0" xmlns:sld="http://www.opengis.net/sld" xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <!-- named layer -->
+      <sld:NamedLayer>
+        <!-- known WMS layer name -->
+        <sld:Name>Railroads</sld:Name>
+        <!-- optional section for filtering -->
+        <sld:LayerFeatureConstraints>
+          <sld:FeatureTypeConstraint>
+            <sld:FeatureTypeName>app:Railroads</sld:FeatureTypeName>
+            <!-- for different filter options refer to the filter specification -->
+            <ogc:Filter>
+              <ogc:PropertyIsLessThanOrEqualTo>
+              <ogc:PropertyName>app:objectid</ogc:PropertyName>
+              <ogc:Literal>842</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:Filter>
+          </sld:FeatureTypeConstraint>
+        </sld:LayerFeatureConstraints>
+        <!-- define a user style for the layer -->
+        <sld:UserStyle>
+          <sld:FeatureTypeStyle>
+            <sld:Rule>
+              <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
+              <sld:MaxScaleDenominator>999999999</sld:MaxScaleDenominator>
+              <sld:LineSymbolizer>
+                <sld:Stroke>
+                  <sld:CssParameter name="stroke">#ff00ff</sld:CssParameter>
+                  <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
+                  <sld:CssParameter name="stroke-width">1.0</sld:CssParameter>
+                  <sld:CssParameter name="stroke-dasharray">1</sld:CssParameter>
+                </sld:Stroke>
+              </sld:LineSymbolizer>
+            </sld:Rule>
+          </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+      </sld:NamedLayer>
+      <!-- add more NamedLayer elements or UserLayer elements here, if needed -->
+    </sld:StyledLayerDescriptor>

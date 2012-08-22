@@ -1,0 +1,6 @@
+http://www.someserver.com/wfs.cgi&
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+PROPERTYNAME=(InWaterA_1M/wkbGeom,InWaterA_1M/tileId)(BuiltUpA_1M/*)&
+TYPENAME=InWaterA_1M,BuiltUpA_1M

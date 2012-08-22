@@ -1,0 +1,32 @@
+# simple test
+theid /WMT_MS_Capabilities
+
+# test only fails, if ...Capability exists AND ...Request does not exist
+theid2 if /WMT_MS_Capabilities/Capability
+       then theid2_then /WMT_MS_Capabilities/Capability/Request
+
+# only fails, if ...Capability exists, then Request exists and then
+# GetMap NOT exists
+3 if /WMT_MS_Capabilities/Capability
+  then 4 if Request then 5 GetMap
+
+# fails once for every format node
+_ if /WMT_MS_Capabilities/Capability/Request/GetMap/Format
+  then 6 nonexistant
+
+# fails, if neither GetMap nor GetCapabilities nodes exist under ... Request
+7 OneOf /WMT_MS_Capabilities/Capability/Request
+choice GetMap
+choice GetCapabilities
+
+# same deal, but with absolute XPath expressions
+8 oneOf /
+choice /WMT_MS_Capabilities/Capability
+choice /Nix
+
+9 If /WMT_MS_Capabilities Then
+     10 Capability
+
+10 IsTrue count(/WMT_MS_Capabilities)=1
+
+20 istrue false()

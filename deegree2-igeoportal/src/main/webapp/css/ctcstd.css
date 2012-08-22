@@ -1,0 +1,99 @@
+TD
+{
+    BORDER-RIGHT: #3C5B98 thin solid;
+    BORDER-TOP: #3C5B98 thin solid;
+    BORDER-LEFT: #3C5B98 thin solid;
+    BORDER-BOTTOM: #3C5B98 thin solid;
+    PADDING-RIGHT: 2px;
+    PADDING-LEFT: 2px;
+    PADDING-TOP: 1px;
+    PADDING-BOTTOM: 2px;
+    FONT-FAMILY: Verdana, Arial;
+    TEXT-ALIGN: center;
+    color: #000000;
+    FONT-SIZE: 8pt;
+    BACKGROUND-COLOR: #C6D7DA;
+}
+
+a
+{
+    FONT-SIZE: 7pt;
+    COLOR: #284281;
+    FONT-FAMILY: Verdana, Arial;
+    TEXT-DECORATION: none;
+    TEXT-ALIGN: left
+
+}
+
+select
+{
+    FONT-SIZE: 7pt;
+    COLOR: #284281;
+    FONT-FAMILY: Verdana, Arial;
+    TEXT-DECORATION: none;
+    TEXT-ALIGN: left
+
+}
+
+.clsDayName{
+	color: #000000;
+	BACKGROUND-COLOR: #bbbaf5;
+	font-size : 14px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsCurrentDay {
+	color: #000000;
+	BACKGROUND-COLOR: #f5babb;
+	font-size : 14px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWorkDay{
+	color: #000000;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 14px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWorkDay:hover{
+	color: #009400;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 14px;
+	text-decoration : underline;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWorkDayOtherMonth{
+	color: #000000;
+	font-size : 14px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWeekEnd{
+	color: #FF0000;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 14px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWeekEnd:hover{
+	color: #009400;
+	BACKGROUND-COLOR: #dbeaf5;
+	font-size : 14px;
+	text-decoration : underline;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}
+.clsWeekEndOtherMonth{
+	color: #FF0000;
+	font-size : 14px;
+	text-decoration : none;
+	font-family : Tahoma, Arial, Helvetica, sans-serif;
+	white-space: nowrap
+}

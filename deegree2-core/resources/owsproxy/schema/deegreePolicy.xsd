@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==================================================================
+
+ This file is part of deegree.
+ Copyright (C) 2001-2006 by:
+ EXSE, Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+ 
+ =================================================================
+ 
+@author <a href="mailto:poth@lat-lon.de">Andreas Poth </a>
+@author last edited by: $Author: aschmitz $
+ 
+@version 1.1, $Revision: 31356 $, $Date: 2011-07-26 09:19:13 +0200 (Di, 26 Jul 2011) $
+ 
+@since 1.1
+
+================================================================== -->
+<!-- ==================================================================================
+Changes to this class. What the people have been up to:
+$Log$
+Revision 1.2  2007/02/07 13:21:47  poth
+*** empty log message ***
+
+
+ ====================================================================================== -->
+<xs:schema targetNamespace="http://www.deegree.org/security" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:deegree="http://www.deegree.org/security" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jdbc="http://www.deegree.org/jdbc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- import OGC commons to use some basic types-->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="./xlinks.xsd"/>
+	<xs:import namespace="http://www.deegree.org/jdbc" schemaLocation="./jdbc_connection.xsd"/>
+	<xs:element name="Policy" type="deegree:PolicyType">
+		<xs:annotation>
+			<xs:documentation>root element of the deegree policy document for protecting Web map Services</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="PolicyType">
+		<xs:sequence>
+			<xs:element name="Security" type="deegree:SecurityType" minOccurs="0"/>
+			<xs:element name="GeneralConditions" type="deegree:GeneralConditionsType" minOccurs="0"/>
+			<xs:element name="Requests" type="deegree:RequestsType" minOccurs="0"/>
+            <xs:element name="Whitelist" type="deegree:WhitelistType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="service" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="RequestsType">
+		<xs:sequence>
+			<xs:element ref="deegree:_Request" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SecurityType">
+		<xs:annotation>
+			<xs:documentation>configuration off the access to the security management system/database</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RegistryClass" type="xs:string"/>
+			<xs:element name="ReadWriteTimeout" type="xs:int" default="500"/>
+			<xs:element name="RegistryConfig" type="deegree:RegistryConfigType"/>
+			<xs:element name="AuthentificationSettings" type="deegree:AuthentificationSettingsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RegistryConfigType">
+		<xs:sequence>
+			<xs:element ref="jdbc:JDBCConnection" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GeneralConditionsType">
+		<xs:choice minOccurs="0">
+			<xs:element name="Conditions" type="deegree:ConditionType" minOccurs="0"/>
+			<xs:element name="any" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the presents of this element indicates that no constraints are made</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="_RequestType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>A concrete _requestType will encapsulate and describe the conditions for 
+			a request and the response to it for a OWS.  Also a concrete _requestType must be named like
+			the request which conditions will be described</xs:documentation>
+		</xs:annotation>
+		<xs:choice minOccurs="0">
+			<xs:sequence>
+				<xs:element name="PreConditions" type="deegree:ConditionType" minOccurs="0"/>
+				<xs:element name="PostConditions" type="deegree:ConditionType" minOccurs="0"/>
+			</xs:sequence>
+			<xs:element name="Any" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the presents of this element indicates that no constraints are made</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:element name="_Request" type="deegree:_RequestType" abstract="true"/>
+	<xs:complexType name="AuthentificationSettingsType">
+		<xs:sequence>
+			<xs:element name="AuthentificationService" type="deegree:AuthentificationServiceType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AuthentificationServiceType">
+		<xs:sequence>
+			<xs:element name="OnlineResource" type="deegree:OnlineResourceType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnlineResourceType">
+		<xs:attributeGroup ref="xlink:simpleLink"/>
+	</xs:complexType>
+	<xs:complexType name="GetCapabilitiesType">
+		<xs:annotation>
+			<xs:documentation>GetCapabilties will be used by all OWS so it defined in the base schema</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="deegree:_RequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="GetCapabilities" type="deegree:GetCapabilitiesType" substitutionGroup="deegree:_Request"/>
+	<xs:complexType name="ConditionType">
+		<xs:annotation>
+			<xs:documentation>If nor parameter or any is defined no request will fulfill a condition. This realizes
+			the concept that a security filter will block everything except it especially allowed</xs:documentation>
+		</xs:annotation>
+		<xs:choice minOccurs="0">
+			<xs:element ref="deegree:_Parameter" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Any" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the presents of this element indicates that no constraints are made</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:element name="_Condition" type="deegree:ConditionType" abstract="true"/>
+	<xs:complexType name="ParameterType">
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="Value" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Unordered list of all the valid values for this parameter or other quantity. 
+								For those parameters that contain a list or sequence of values, these values shall be for 
+								individual values in the list. The allowed set of values and the allowed server restrictions 
+								on that set of values shall be specified in the Implementation Specification for this service. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ComplexValue" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							a condition may contains complex values like filter expressions that can be put
+							into a ComplexValue element as part of a condition
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:any namespace="##any"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:element name="Any" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the presents of this element indicates that no constraints are made on a parameter</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="userCoupled" type="xs:boolean" default="false"/>
+	</xs:complexType>
+	<xs:element name="_Parameter" type="deegree:ParameterType" abstract="true"/>
+  <xs:complexType name="WhitelistType">
+  <xs:sequence>
+    <xs:element name="PassedParameter" type="xs:string" maxOccurs="unbounded"/>
+  </xs:sequence>
+  </xs:complexType>
+</xs:schema>

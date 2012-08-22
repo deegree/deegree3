@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wms:WMS_Capabilities xmlns:deegree="http://www.deegree.org/wms" xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:wms="http://www.opengis.net/wms" version="1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sld="http://www.opengis.net/sld"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.20/StyledLayerDescriptor.xsd"
+  updateSequence="1.1.0">
+
+  <!--
+    This file is a configuration that can be used to set up a WMS 1.1.1 conform reference implementation. It can be used as a drop-in replacement for
+    the example_wms_configuration_1_3_0.xml.
+  -->
+
+  <!--
+    The above schema location for the sld namespace will be updated in the future, so that validation will be possible again with the GetLegendGraphic
+    operation.
+  -->
+  <deegree:DeegreeParam>
+    <!--
+      The default online resource will be used for the following: If no LegendURL is provided, a GetLegendGraphic request with this URL will be
+      created automatically. If no OnlineResource element is specified within the Service element, this one will be inserted automatically. The
+      operation specific online resources will NOT be filled automatically, since they also specify the HTTP method to be used.
+    -->
+    <deegree:DefaultOnlineResource xlink:type="simple" xlink:href="${default.online.resource}" />
+    <!-- default = 100 (MB) -->
+    <deegree:CacheSize>100</deegree:CacheSize>
+    <!-- maximum lifetime of the processes in the WMS; default = 3600 (sec)-->
+    <deegree:MaxLifeTime>3600</deegree:MaxLifeTime>
+    <!-- maximum time for the execution of a request until an exception of time-exceed is thrown
+      default 15 seconds -->
+    <deegree:RequestTimeLimit>5</deegree:RequestTimeLimit>
+    <!--
+      determines the quality of the map/image generated from a GetMap request. the parameter only will be evaluated if the desired format is able to
+      handle it. the range of values is 0 ... 1, where 1 is best and 0 is worst. default is 0.95
+    -->
+    <deegree:MapQuality>1.00</deegree:MapQuality>
+
+    <deegree:AntiAliased>true</deegree:AntiAliased>
+    <!-- DefaultPNGFormat defines the default bit mode if image/png is requested  -->
+    <!-- Can be 24bit or 8bit mode -->
+    <deegree:DefaultPNGFormat>image/png; mode=24bit</deegree:DefaultPNGFormat>
+    <!-- copyright note that will be drawen at the left side of the map's bottom -->
+    <!-- Commented out because of testsuite pixel counting. -->
+    <!--                <deegree:Copyright>deegree 2006</deegree:Copyright>-->
+    <!--
+      This parameters are used to be able to validate GML GetFeatureInfo responses. The values provided here will be used as an xsi:schemaLocation
+      pair in the GML documents. Please note that the namespace should currently always be http://www.lat-lon.de.
+    -->
+    <deegree:FeatureInfoSchema>
+      <deegree:Namespace>http://www.lat-lon.de</deegree:Namespace>
+      <deegree:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+        xlink:href="http://web.lat-lon.de/~schmitz/featureschema.xsd" />
+    </deegree:FeatureInfoSchema>
+    <!--
+      define a proxy server if the WMS is seperated by a firewall from the DTD-location or the locations of connected REMOTEWFS, REMOTEWCS and
+      REMOTEWMS as an alternative you can set commandline parameters at the call of the java interpreter like this: java -DproxyHost=131.220.106.104
+      -DproxyPort=1234 -classpath ...
+    -->
+    <!--Proxy proxyHost="131.220.106.104" proxyPort="1234"/-->
+    <!-- Only the two values 1.1.1 and 1.3.0 are actually useful here. -->
+    <deegree:SupportedVersion>1.1.1</deegree:SupportedVersion>
+    <deegree:SupportedVersion>1.3.0</deegree:SupportedVersion>
+  </deegree:DeegreeParam>
+  <wms:Service>
+    <wms:Name>WMS</wms:Name>
+    <wms:Title>cite:deegree wms</wms:Title>
+    <!-- abstract and keywords are optional -->
+    <wms:Abstract>WMS reference implementation</wms:Abstract>
+    <wms:KeywordList>
+      <wms:Keyword>deegree</wms:Keyword>
+      <wms:Keyword>wms</wms:Keyword>
+    </wms:KeywordList>
+    <!-- The default online resource above will fill this one in for us, as well as more below. -->
+    <!--
+      <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="${default.online.resource}?" />
+    -->
+    <!-- the following service information is optional -->
+    <wms:ContactInformation>
+      <wms:ContactPersonPrimary>
+        <wms:ContactPerson>Andreas Poth</wms:ContactPerson>
+        <wms:ContactOrganization>lat/lon</wms:ContactOrganization>
+      </wms:ContactPersonPrimary>
+      <wms:ContactPosition>Technical Director</wms:ContactPosition>
+      <wms:ContactAddress>
+        <wms:AddressType>Postal</wms:AddressType>
+        <wms:Address>Aennchenstr. 19</wms:Address>
+        <wms:City>Bonn</wms:City>
+        <wms:StateOrProvince>NRW</wms:StateOrProvince>
+        <wms:PostCode>53177</wms:PostCode>
+        <wms:Country>Germany</wms:Country>
+      </wms:ContactAddress>
+      <wms:ContactVoiceTelephone>0049228184960</wms:ContactVoiceTelephone>
+      <wms:ContactFacsimileTelephone>00492281849629</wms:ContactFacsimileTelephone>
+      <wms:ContactElectronicMailAddress>info@lat-lon.de</wms:ContactElectronicMailAddress>
+    </wms:ContactInformation>
+    <wms:Fees>none</wms:Fees>
+    <wms:AccessConstraints>none</wms:AccessConstraints>
+    <!-- These options define some limits concerning GetMap requests. -->
+    <wms:LayerLimit>25</wms:LayerLimit>
+    <wms:MaxWidth>1024</wms:MaxWidth>
+    <wms:MaxHeight>768</wms:MaxHeight>
+  </wms:Service>
+
+  <wms:Capability>
+    <!--
+      The requests that are defined here are the ones the server understands. If, for example, the GetLegendGraphic section is removed,
+      GetLegendGraphic will not be available as operation. The details like format etc. should be self-explanatory.
+    -->
+    <wms:Request>
+      <!-- by default available -->
+      <wms:GetCapabilities>
+        <!-- default and mandatory = application/vnd.ogc.wms_xml -->
+        <wms:Format>application/vnd.ogc.wms_xml</wms:Format>
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get>
+              <!--              <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"-->
+              <!--                xlink:href="${default.online.resource}?" />-->
+            </wms:Get>
+          </wms:HTTP>
+        </wms:DCPType>
+      </wms:GetCapabilities>
+      <!-- by default available -->
+      <wms:GetMap>
+        <!-- default = image/gif; image/png; image/jpg -->
+        <!-- mandatory = image/png -->
+        <wms:Format>image/gif</wms:Format>
+        <wms:Format>image/png</wms:Format>
+        <wms:Format>image/png; mode=8bit</wms:Format>
+        <wms:Format>image/png; mode=24bit</wms:Format>
+        <wms:Format>image/jpeg</wms:Format>
+        <!--wms:Format>image/tif</wms:Format-->
+        <!--wms:Format>image/bmp</wms:Format-->
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get>
+              <!--              <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"-->
+              <!--                xlink:href="${default.online.resource}?" />-->
+            </wms:Get>
+            <wms:Post>
+              <!--              <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"-->
+              <!--                xlink:href="${default.online.resource}?" />-->
+            </wms:Post>
+            <wms:Post />
+          </wms:HTTP>
+        </wms:DCPType>
+      </wms:GetMap>
+      <!-- by default available -->
+      <wms:GetFeatureInfo>
+        <!-- default & mandatory = application/vnd.ogc.gml -->
+        <wms:Format>application/vnd.ogc.gml</wms:Format>
+        <wms:Format>text/plain</wms:Format>
+        <wms:Format>text/html</wms:Format>
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get />
+          </wms:HTTP>
+        </wms:DCPType>
+      </wms:GetFeatureInfo>
+      <sld:GetLegendGraphic>
+        <wms:Format>image/gif</wms:Format>
+        <wms:Format>image/png</wms:Format>
+        <wms:Format>image/jpeg</wms:Format>
+        <wms:Format>image/jpg</wms:Format>
+        <wms:Format>image/tif</wms:Format>
+        <wms:Format>image/bmp</wms:Format>
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get />
+          </wms:HTTP>
+        </wms:DCPType>
+      </sld:GetLegendGraphic>
+    </wms:Request>
+    <wms:Exception>
+      <wms:Format>XML</wms:Format>
+      <wms:Format>INIMAGE</wms:Format>
+      <wms:Format>BLANK</wms:Format>
+    </wms:Exception>
+
+    <!--
+      TOP LAYER. Each configuration has this top level layer that has no data source and no name. To define layers for this WMS, you create them as
+      subnodes of this layer.
+    -->
+    <wms:Layer queryable="0" cascaded="0" noSubsets="0">
+      <wms:Title>cite:deegree 2 Demo WMS</wms:Title>
+      <!-- abstract and keywords are optional -->
+      <wms:Abstract>deegree demo WMS</wms:Abstract>
+      <wms:KeywordList>
+        <wms:Keyword>deegree</wms:Keyword>
+        <wms:Keyword>layer</wms:Keyword>
+      </wms:KeywordList>
+
+      <!--
+        Most of the following sections can be overridden in the specific layer tags below. For more information on what is inherited and what not, the
+        specification is the place to look.
+      -->
+
+      <!-- Supported CRSs and bounding boxes are defined here. -->
+      <wms:CRS>EPSG:4326</wms:CRS>
+      <wms:CRS>CRS:84</wms:CRS>
+
+      <wms:EX_GeographicBoundingBox>
+        <wms:westBoundLongitude>-180</wms:westBoundLongitude>
+        <wms:eastBoundLongitude>180</wms:eastBoundLongitude>
+        <wms:southBoundLatitude>-90</wms:southBoundLatitude>
+        <wms:northBoundLatitude>90</wms:northBoundLatitude>
+      </wms:EX_GeographicBoundingBox>
+
+      <wms:BoundingBox CRS="EPSG:4326" minx="-90" maxx="90" miny="-180" maxy="180" />
+      <wms:BoundingBox CRS="CRS:84" miny="-90" maxy="90" minx="-180" maxx="180" />
+
+      <!-- Scale denominators define for which bounding boxes and width/heights the map is actually shown. -->
+      <wms:MinScaleDenominator>1</wms:MinScaleDenominator>
+      <wms:MaxScaleDenominator>100000</wms:MaxScaleDenominator>
+
+      <!-- To use a remote WMS as datasource: -->
+      <!--
+        wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0"> <wms:Name>luftbild</wms:Name> <wms:Title>luftbild</wms:Title>
+        <wms:Abstract>deegree demo WMS</wms:Abstract> <wms:KeywordList> <wms:Keyword>deegree</wms:Keyword> <wms:Keyword>layer</wms:Keyword>
+        </wms:KeywordList> <wms:MetadataURL type="ISO19115:2003"> <wms:Format>text/html</wms:Format> <wms:OnlineResource
+        xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.university.edu/metadata/roads.xml" /> </wms:MetadataURL>
+        <wms:MinScaleDenominator>0</wms:MinScaleDenominator> <wms:MaxScaleDenominator>10000000</wms:MaxScaleDenominator> <deegree:DataSource
+        failOnException="0" queryable="0"> <deegree:Name>TK500</deegree:Name> <deegree:Type>REMOTEWMS</deegree:Type> <deegree:OWSCapabilities>
+        <deegree:OnlineResource xlink:href="file:///tmp/cap.xml" xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" />
+        </deegree:OWSCapabilities> <deegree:FilterCondition> <deegree:WMSRequest>
+        <![CDATA[SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/gif&TRANSPARENT=true&BGCOLOR=0xFFFFFF&EXCEPTIONS=application/vnd.ogc.se_inimage&STYLES=&LAYERS=cite:BasicPolygons&SRS=EPSG:4326]]>
+        </deegree:WMSRequest> <deegree:VendorspecificParameterDefinition> <deegree:PassedVendorspecificParameter>
+        <deegree:Name>sessionid</deegree:Name> <deegree:Name>another</deegree:Name> </deegree:PassedVendorspecificParameter>
+        <deegree:AddedVendorspecificParameter> <deegree:VendorspecificParameter> <deegree:Name>user</deegree:Name>
+        <deegree:Value>aUser</deegree:Value> </deegree:VendorspecificParameter> <deegree:VendorspecificParameter>
+        <deegree:Name>password</deegree:Name> <deegree:Value>aPassword</deegree:Value> </deegree:VendorspecificParameter>
+        </deegree:AddedVendorspecificParameter> </deegree:VendorspecificParameterDefinition> </deegree:FilterCondition> </deegree:DataSource>
+        </wms:Layer
+      -->
+
+      <!--
+        This layer has a name, but no datasource. Requesting this layer will get you all sublayers.
+      -->
+      <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+        <wms:Name>citelayers</wms:Name>
+        <wms:Title>citetitle</wms:Title>
+        <wms:Abstract>deegree demo WMS</wms:Abstract>
+        <wms:KeywordList>
+          <wms:Keyword>deegree</wms:Keyword>
+          <wms:Keyword>layer</wms:Keyword>
+        </wms:KeywordList>
+        <wms:MetadataURL type="ISO19115:2003">
+          <wms:Format>text/html</wms:Format>
+          <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+        </wms:MetadataURL>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:BasicPolygons</wms:Name>
+          <wms:Title>cite:BasicPolygons</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+          <wms:MinScaleDenominator>0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>10000000</wms:MaxScaleDenominator>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:BasicPolygons</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:BasicPolygons</wms:Name>
+            <wms:Title>default:cite:BasicPolygons</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:Bridges</wms:Name>
+          <wms:Title>cite:Bridges</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Bridges</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:Bridges</wms:Name>
+            <wms:Title>default:cite:Bridges</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:BuildingCenters</wms:Name>
+          <wms:Title>cite:BuildingCenters</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:BuildingCenters</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:BuildingCenters</wms:Name>
+            <wms:Title>default:cite:BuildingCenters</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:Buildings</wms:Name>
+          <wms:Title>cite:Buildings</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Buildings</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:Buildings</wms:Name>
+            <wms:Title>default:cite:Buildings</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:DividedRoutes</wms:Name>
+          <wms:Title>cite:DividedRoutes</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:DividedRoutes</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:DividedRoutes</wms:Name>
+            <wms:Title>default:cite:DividedRoutes</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:Forests</wms:Name>
+          <wms:Title>cite:Forests</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Forests</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:Forests</wms:Name>
+            <wms:Title>default:cite:Forests</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:Lakes</wms:Name>
+          <wms:Title>cite:Lakes</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Lakes</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:Lakes</wms:Name>
+            <wms:Title>default:cite:Lakes</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:MapNeatline</wms:Name>
+          <wms:Title>cite:MapNeatline</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:MapNeatline</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:MapNeatline</wms:Name>
+            <wms:Title>default:cite:MapNeatline</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:NamedPlaces</wms:Name>
+          <wms:Title>cite:NamedPlaces</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:NamedPlaces</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:e></wms:Name>
+            <wms:Title>default:e></wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:Ponds</wms:Name>
+          <wms:Title>cite:Ponds</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Ponds</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:Ponds</wms:Name>
+            <wms:Title>default:cite:Ponds</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:RoadSegments</wms:Name>
+          <wms:Title>cite:RoadSegments</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:RoadSegments</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:RoadSegments</wms:Name>
+            <wms:Title>default:cite:RoadSegments</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+        <wms:Layer queryable="1" noSubsets="0" fixedWidth="0" fixedHeight="0">
+          <wms:Name>cite:Streams</wms:Name>
+          <wms:Title>cite:Streams</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org" />
+          </wms:MetadataURL>
+
+          <deegree:DataSource failOnException="0" queryable="1">
+            <deegree:Name>app:Streams</deegree:Name>
+            <deegree:GeometryProperty>app:geom</deegree:GeometryProperty>
+          </deegree:DataSource>
+          <wms:Style>
+            <wms:Name>default:cite:Streams</wms:Name>
+            <wms:Title>default:cite:Streams</wms:Title>
+            <deegree:StyleResource>styles/cite.xml</deegree:StyleResource>
+          </wms:Style>
+        </wms:Layer>
+
+      </wms:Layer>
+
+    </wms:Layer>
+  </wms:Capability>
+</wms:WMS_Capabilities>

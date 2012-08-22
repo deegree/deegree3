@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://schemas.opengis.net/iso19119" xmlns="http://schemas.opengis.net/iso19119" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smXML="http://metadata.dgiwg.org/smXML" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- ================================================================
+    * Topic:        Metadataschema for CS-W 2.0/ISO Profile             *
+    * Filename:     iso19119.xsd                                        *
+    * Description:  XML Schema encoding of ISO 19119:2003.             *
+    * Last update:  01.10.2004                                          *
+    * Editor(s):    con terra GmbH                                      *
+    *               Kristian Senkler (senkler@conterra.de)              *
+    *               Uwe Voges (voges@conterra.de)                       *
+    *                                                                   *
+    * (referenced types are taken from smXML v0.9, available under      *
+    *    http://metadata.dgiwg.org/ISO19115/ISO19139_v0_9.htm)          *
+    ===================================================================== -->
+	<!-- ===============================================
+    Import schemas
+    =============================================== -->
+	<xs:import namespace="http://metadata.dgiwg.org/smXML" schemaLocation="./smXML/metadataEntity.xsd"/>
+	<!-- ===============================================
+    SV_ServiceIdentification
+    =============================================== -->
+	<xs:complexType name="SV_ServiceIdentification_Type">
+		<xs:complexContent>
+			<xs:extension base="smXML:_MD_Identification_Type">
+				<xs:sequence>
+					<xs:element name="serviceType" type="smXML:CharacterString_PropertyType"/>
+					<xs:element name="serviceTypeVersion" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="accessProperties" type="smXML:MD_StandardOrderProcess_Type" minOccurs="0"/>
+					<xs:element name="restrictions" type="smXML:MD_Constraints_PropertyType" minOccurs="0"/>
+					<xs:element name="operationMetadata" type="SV_OperationMetadata_PropertyType" maxOccurs="unbounded"/>
+					<xs:element name="operatesOn" type="smXML:MD_DataIdentification_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="SV_ServiceIdentification" type="SV_ServiceIdentification_Type" substitutionGroup="smXML:_MD_Identification"/>
+	<xs:complexType name="SV_ServiceIdentification_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_ServiceIdentification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    SV_OperationMetadata
+    =============================================== -->
+	<xs:complexType name="SV_OperationMetadata_Type">
+		<xs:sequence>
+			<xs:element name="operationName" type="smXML:CharacterString_PropertyType"/>
+			<xs:element name="DCP" type="SV_DCPList_PropertyType" maxOccurs="unbounded"/>
+			<xs:element name="operationDescription" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+			<xs:element name="invocationName" type="smXML:CharacterString_PropertyType" minOccurs="0"/>
+			<xs:element name="connectPoint" type="smXML:CI_OnlineResource_PropertyType" maxOccurs="unbounded"/>
+			<xs:element name="parameters" type="SV_Parameter_PropertyType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SV_OperationMetadata" type="SV_OperationMetadata_Type"/>
+	<xs:complexType name="SV_OperationMetadata_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_OperationMetadata"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    SV_ServiceProvider
+    =============================================== -->
+	<xs:complexType name="SV_ServiceProvider_Type">
+		<xs:sequence>
+			<xs:element name="serviceContact" type="smXML:CI_ResponsibleParty_PropertyType"/>
+			<xs:element name="providerName" type="smXML:CharacterString_PropertyType"/>
+			<xs:element name="services" type="SV_ServiceIdentification_PropertyType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SV_ServiceProvider" type="SV_ServiceProvider_Type"/>
+	<xs:complexType name="SV_ServiceProvider_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_ServiceProvider"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    SV_Parameter
+    =============================================== -->
+	<xs:complexType name="SV_Parameter_Type">
+		<xs:sequence>
+			<xs:element name="name" type="smXML:MemberName_PropertyType"/>
+			<xs:element name="direction" type="SV_ParameterDirection_PropertyType"/>
+			<xs:element name="description" type="smXML:CharacterString_PropertyType"/>
+			<xs:element name="optionality" type="smXML:CharacterString_PropertyType"/>
+			<xs:element name="repeatability" type="smXML:Boolean_PropertyType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SV_Parameter" type="SV_Parameter_Type"/>
+	<xs:complexType name="SV_Parameter_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_Parameter"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    SV_ParameterDirection
+    =============================================== -->
+	<xs:simpleType name="SV_ParameterDirection_Type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="in"/>
+			<xs:enumeration value="out"/>
+			<xs:enumeration value="in/out"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="SV_ParameterDirection" type="SV_ParameterDirection_Type"/>
+	<xs:complexType name="SV_ParameterDirection_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_ParameterDirection"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    SV_DCPList
+    =============================================== -->
+	<xs:complexType name="SV_DCPList_Type">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+				<xs:attribute name="codeListValue" type="xs:string" use="required"/>
+				<xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="SV_DCPList" type="SV_DCPList_Type" substitutionGroup="smXML:CharacterString"/>
+	<xs:complexType name="SV_DCPList_PropertyType">
+		<xs:choice>
+			<xs:element ref="SV_DCPList"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    Profile extensions towards ISO 19119:2003
+    =============================================== -->
+	<!-- ===============================================
+    CSW_ServiceIdentification
+    =============================================== -->
+	<xs:complexType name="CSW_ServiceIdentification_Type">
+		<xs:complexContent>
+			<xs:extension base="SV_ServiceIdentification_Type">
+				<xs:sequence>
+					<xs:element name="extent" type="smXML:EX_Extent_PropertyType" minOccurs="0"/>
+					<xs:element name="coupledResource" type="CSW_CoupledResource_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="couplingType" type="CSW_CouplingType_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CSW_ServiceIdentification" type="CSW_ServiceIdentification_Type" substitutionGroup="SV_ServiceIdentification"/>
+	<xs:complexType name="CSW_ServiceIdentification_PropertyType">
+		<xs:choice>
+			<xs:element ref="CSW_ServiceIdentification"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    CSW_CoupledResource
+    =============================================== -->
+	<xs:complexType name="CSW_CoupledResource_Type">
+		<xs:sequence>
+			<xs:element name="operationName" type="smXML:CharacterString_PropertyType"/>
+			<xs:element name="identifier" type="smXML:CharacterString_PropertyType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="CSW_CoupledResource" type="CSW_CoupledResource_Type">
+		<xs:annotation>
+			<xs:documentation>
+***   operationName should refer to an existing SV_OperationMetadata.operationName provided by this tightly coupled service instance
+***   identifier should refer to an existing MD_DataIdentification.citation.identifier provided by this tightly coupled service instance
+            </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="CSW_CoupledResource_PropertyType">
+		<xs:choice>
+			<xs:element ref="CSW_CoupledResource"/>
+			<xs:element ref="smXML:Reference"/>
+		</xs:choice>
+	</xs:complexType>
+	<!-- ===============================================
+    CSW_CouplingType
+    =============================================== -->
+	<xs:complexType name="CSW_CouplingType_Type">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="codeList" type="xs:anyURI" use="required"/>
+				<xs:attribute name="codeListValue" type="xs:string" use="required"/>
+				<xs:attribute name="codeSpace" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="CSW_CouplingType" type="CSW_CouplingType_Type" substitutionGroup="smXML:CharacterString"/>
+	<xs:complexType name="CSW_CouplingType_PropertyType">
+		<xs:choice>
+			<xs:element ref="CSW_CouplingType"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,7 @@
+#!/bin/bash
+# This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+# This tool generates HSQL Database tables from Shapefiles.
+#java -Xms100m -Xmx300m -cp ../../lib/deegree2.jar org.deegree.tools.shape.GenericSQLShapeImporter -driver org.hsqldb.jdbcDriver -url jdbc:hsqldb:administration -user sa -password "" -indexName SGID024_MUNICIPALITIES2004_EDITED_IDX -table SGID024_MUNICIPALITIES2004_EDITED -shapeFile ../SGID024_Municipalities2004_edited -maxTreeDepth 3 -idType INTEGER
+java -Xms100m -Xmx300m -cp ../../lib/deegree2.jar org.deegree.tools.shape.GenericSQLShapeImporter -driver org.hsqldb.jdbcDriver -url jdbc:hsqldb:administration -user sa -password "" -indexName SGID100_COUNTYBOUNDARIES_EDITED_IDX -table SGID100_COUNTYBOUNDARIES_EDITED -shapeFile ../SGID100_CountyBoundaries_edited -maxTreeDepth 3 -idType INTEGER
+java -Xms100m -Xmx300m -cp ../../lib/deegree2.jar org.deegree.tools.shape.GenericSQLShapeImporter -driver org.hsqldb.jdbcDriver -url jdbc:hsqldb:administration -user sa -password "" -indexName SGID500_ZIPCODES_IDX -table SGID500_ZIPCODES -shapeFile ../SGID500_ZipCodes -maxTreeDepth 3 -idType INTEGER
+java -Xms100m -Xmx300m -cp ../../lib/deegree2.jar org.deegree.tools.shape.GenericSQLShapeImporter -driver org.hsqldb.jdbcDriver -url jdbc:hsqldb:administration -user sa -password "" -indexName SGID024_STATEBOUNDARY_IDX -table SGID024_STATEBOUNDARY -shapeFile ../SGID024_StateBoundary -maxTreeDepth 3 -idType INTEGER

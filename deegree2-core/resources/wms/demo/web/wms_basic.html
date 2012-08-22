@@ -1,0 +1,242 @@
+<!-- HeadURL -->
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>deegree mapService</title>
+        <link rel="stylesheet" type="text/css" href="css/deegree.css" />
+    </head>
+    <body>
+        <table cellpadding="5" cellspacing="5" width="100%">
+            <tr>
+                <td>
+                    <a name="MENU"></a>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td colspan="3">
+                    <p>Below are some examples to explain services usage by using HTTP/GET and KVP encoding.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td width="30%"><strong><em>Basic WMS requests</em></strong></td>
+                <td>
+                    <ul>
+                        <li><a href="#basic_gc">GetCapabilities</a></li>
+                        <li><a href="#basic_gm">GetMap</a></li>
+                        <li><a href="#basic_gfi">GetFeatureInfo</a></li>
+                        <li><a href="#basic_dl">DescribeLayer</a></li>
+                        <li><a href="#basic_glg">GetLegendGraphic</a></li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        <table border="1" cellspacing="0" cellpadding="2" width="100%">
+            <tr valign="top" bgcolor="#a3b4d9">
+                <th>Request / Description</th>
+                <th>Result</th>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gc"></a>
+                    <b>GetCapabilities</b><br />
+                    <p>Retrieve capabilities information</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td colspan="2">
+                    <a href="services?REQUEST=GetCapabilities&version=1.1.1&service=WMS">WMS 1.1.1 GetCapabilities</a>
+                    <br /><br />
+                    ${default.online.resource}?request=GetCapabilities&amp;version=1.1.1&amp;service=WMS
+                </td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gm"></a>
+                    <b>GetMap</b><br />
+                    <p>Retrieve a map from a WMS</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=500&HEIGHT=500&LAYERS=StateOverview&TRANSPARENT=TRUE&FORMAT=image/gif&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=">WMS 1.1.1 GetMap</a>
+                    <br /><br />
+                   A simple GetMap Request:
+                    layers = StateOverview <br />
+                    styles = default style<br /><br />
+                    HTTP KVP Request:<br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=250<br />
+                    HEIGHT=250<br />
+                    LAYERS=StateOverview<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/gif<br />
+                    BBOX=210625.44883700498,4175983.9939139457, 697811.8183418702,4663170.363418811<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=<br />
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=250&HEIGHT=250&LAYERS=StateOverview&TRANSPARENT=TRUE&FORMAT=image/gif&BBOX=210625.44883700498,4175983.9939139457,697811.8183418702,4663170.363418811&SRS=EPSG:26912&STYLES=" align="middle"/></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=600&HEIGHT=476&LAYERS=Vegetation,Lake,Roads&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&STYLES=default,default,default">WMS 1.1.1 specialized GetMap</a>
+                    <br /><br />
+                    A specialized GetMap request<br /><br />
+                    layers = StateOverview, Vegetation, Lakes, Roads <br />
+                    styles = default and BasicRoadsStyle<br /><br />
+                    HTTP KVP Request:<br /><br />
+                    ...services?<br />
+                    REQUEST=GetMap<br />
+                    SERVICE=WMS<br />
+                    VERSION=1.1.1<br />
+                    WIDTH=300<br />
+                    HEIGHT=238<br />
+                    LAYERS=Vegetation,Lake,Roads<br />
+                    TRANSPARENT=TRUE<br />
+                    FORMAT=image/png<br />
+                    BBOX=372233.9342431239,4460438,489069,4552689<br />
+                    SRS=EPSG:26912<br />
+                    STYLES=default,default,default<br />
+                </td>
+                <td><img src="./services?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=300&HEIGHT=238&LAYERS=Vegetation,Lake,Roads&TRANSPARENT=TRUE&FORMAT=image/png&BBOX=372233.9342431239,4460438,489069,4552689&SRS=EPSG:26912&STYLES=default,default,default" align="middle"/></td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_gfi"></a>
+                    <b>GetFeatureInfo</b><br />
+                    <p>Some examples for GetFeatureInfo requests <br />
+                       (simulating a "click" on the map of a GetMap request):</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetFeatureInfo&VERSION=1.1.1&X=236&Y=201&WIDTH=404&HEIGHT=369&QUERY_LAYERS=StateBoundary,Counties&LAYERS=StateBoundary,Counties&FORMAT=image/jpeg&INFO_FORMAT=text/html&BBOX=449822.375,4347902.5,457250.9375,4355331.0&SRS=EPSG:26912">WMS 1.1.1 GetFeatureInfo StateBoundary + Counties</a>
+                    <br />
+                    <p>
+                     A GetFeatureInfo request with html output, (Layers 'StateBoundary' and 'Counties')
+                     <br /><br />
+                     HTTP KVP request:
+                     <br /><br />
+                     ...services?<br />
+                     REQUEST=GetFeatureInfo<br />
+                     VERSION=1.1.1<br />
+                     X=236<br />
+                     Y=201<br />
+                     WIDTH=404<br />
+                     HEIGHT=369<br />
+                     QUERY_LAYERS=StateBoundary,Counties<br />
+                     LAYERS=StateBoundary,Counties<br />
+                     FORMAT=image/jpeg<br />
+                     <strong>INFO_FORMAT=text/html</strong><br />
+                     BBOX=449822.375,4347902.5,457250.9375,4355331.0<br />
+                     SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?REQUEST=GetFeatureInfo&VERSION=1.1.1&X=199&Y=123&WIDTH=469&HEIGHT=354&QUERY_LAYERS=StateBoundary,Counties&LAYERS=StateBoundary,Counties&FORMAT=image/jpeg&INFO_FORMAT=application/vnd.ogc.gml&BBOX=273167.28125,4594791.5,285628.8125,4607253.0&SRS=EPSG:26912">WMS 1.1.1 GetFeatureInfo Count Boundaries + StateBoundary</a>
+                    <br />
+                    <p>
+                    A GetFeatureInfo request with GML output, (Layers 'StateBoundary' and 'Counties')
+                    <br /><br />
+                    HTTP KVP request:
+                    <br /><br />
+                    ...services?<br />
+                    REQUEST=GetFeatureInfo<br />
+                    VERSION=1.1.1<br />
+                    X=199<br />
+                    Y=123<br />
+                    WIDTH=469<br />
+                    HEIGHT=354<br />
+                    QUERY_LAYERS=StateBoundary,Counties<br />
+                    LAYERS=StateBoundary,Counties<br />
+                    FORMAT=image/jpeg<br />
+                    <strong>INFO_FORMAT=application/vnd.ogc.gml</strong><br />
+                    BBOX=273167.28125,4594791.5,285628.8125,4607253.0<br />
+                    SRS=EPSG:26912<br />
+                    </p>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_dl"></a>
+                    <b>DescribeLayer</b><br />
+                    <p>Some examples for DescribeLayer requests:</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?service=WMS&version=1.1.1&request=DescribeLayer&Layers=StateBoundary">WMS 1.1.1 DescribeLayer StateBoundary</a>
+                    <br />
+                    <p>
+                     A DescribeLayer request on Layer 'StateBoundary'
+                     <br /><br />
+                     HTTP KVP request:
+                     <br /><br />
+                     ...services?<br />
+                     service=WMS<br />
+                     version=1.1.1<br />
+                     <strong>request=DescribeLayer</strong><br />
+                     Layers=StateBoundary<br />
+                    </p>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?service=WMS&version=1.1.1&request=DescribeLayer&Layers=Roads">WMS 1.1.1 DescribeLayer Roads</a>
+                    <br />
+                    <p>
+                     A DescribeLayer request on Layer 'Roads'
+                     <br /><br />
+                     HTTP KVP request:
+                     <br /><br />
+                     ...services?<br />
+                     service=WMS<br />
+                     version=1.1.1<br />
+                     request=DescribeLayer<br />
+                     layers=Roads<br />
+                    </p>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr valign="top" bgcolor="#d7deed">
+                <td>
+                    <a name="basic_glg"></a>
+                    <b>GetLegendGraphic</b><br />
+                    <p>Get a legend graphic for the chosen layer</p>
+                </td>
+                <td align="right"><a href="#MENU"><b>^&nbsp;up</b></a></td>
+            </tr>
+            <tr valign="top">
+                <td>
+                    <a href="./services?request=GetLegendGraphic&version=1.1.1&service=WMS&layer=Roads&format=image/jpg">WMS 1.1.1 GetLegendGraphic Roads</a>
+                    <br />
+                    <p>
+                     A GetLegendGraphic request on Layer 'Roads'
+                     <br /><br />
+                     HTTP KVP request:
+                     <br /><br />
+                     ...services?<br />
+                     service=WMS<br />
+                     version=1.1.1<br />
+                     request=GetLegendGraphic<br />
+                     layer=Roads<br />
+                     format=image/jpg<br />
+                    </p>
+                </td>
+                <td><img src="./services?request=GetLegendGraphic&version=1.1.1&service=WMS&layer=Roads&format=image/jpg" align="middle"/></td>
+            </tr>
+        </table>
+    </body>
+</html>

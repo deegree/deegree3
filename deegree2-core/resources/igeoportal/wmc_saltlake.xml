@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ViewContext xmlns="http://www.opengis.net/context" xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" id="String">
+    <General>
+        <Window width="500" height="500" />
+        <!--BoundingBox SRS="EPSG:4326" minx="-115" miny="36" maxx="-108" maxy="43"/-->
+        <BoundingBox SRS="EPSG:26912" minx="421454.6" miny="4510134.7" maxx="429722.9" maxy="4518403" />
+        <Title>deegree iGeoPortal standard edition v2.2 rc1</Title>
+        <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>iGeoPortal</Keyword>
+            <Keyword>SDI</Keyword>
+            <Keyword>GDI</Keyword>
+            <Keyword>lat/lon</Keyword>
+            <Keyword>salt_lake_city</Keyword>
+        </KeywordList>
+        <DescriptionURL format="text/html">
+            <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+        </DescriptionURL>
+        <ContactInformation>
+            <ContactPersonPrimary>
+                <ContactPerson>Andreas Poth</ContactPerson>
+                <ContactOrganization>lat/lon</ContactOrganization>
+            </ContactPersonPrimary>
+            <ContactPosition>developer</ContactPosition>
+            <ContactAddress>
+                <AddressType>postal</AddressType>
+                <Address>Aennchenstr. 19</Address>
+                <City>Bonn</City>
+                <StateOrProvince>NRW</StateOrProvince>
+                <PostCode>53177</PostCode>
+                <Country>Germany</Country>
+            </ContactAddress>
+            <ContactVoiceTelephone>++49 228 184960</ContactVoiceTelephone>
+            <ContactElectronicMailAddress>poth@lat-lon.de</ContactElectronicMailAddress>
+        </ContactInformation>
+        <Extension xmlns:deegree="http://www.deegree.org/context">
+            <deegree:IOSettings>
+                <deegree:TempDirectory>
+                    <deegree:Name>./../../../print</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std" />
+                    </deegree:Access>
+                </deegree:TempDirectory>
+                <!-- 
+                    <deegree:DownloadDirectory>
+                    <deegree:Name>../../../print</deegree:Name>
+                    <deegree:Access>
+                    <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std/"/>
+                    </deegree:Access>
+                    </deegree:DownloadDirectory>
+                -->
+                <deegree:SLDDirectory>
+                    <deegree:Name>../../../</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std" />
+                    </deegree:Access>
+                </deegree:SLDDirectory>
+                <deegree:PrintDirectory>
+                    <deegree:Name>./../../../print</deegree:Name>
+                    <deegree:Access>
+                        <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/igeoportal-std/print" />
+                    </deegree:Access>
+                </deegree:PrintDirectory>
+            </deegree:IOSettings>
+            <deegree:Frontend scope="JSP">
+                <deegree:Controller>./modules/controller/controller.jsp</deegree:Controller>
+                <deegree:Style>./css/deegree.css</deegree:Style>
+                <deegree:Header>header.html</deegree:Header>
+                <deegree:Footer>footer.html</deegree:Footer>
+                <deegree:CommonJS>
+                    <deegree:Name>event.js</deegree:Name>
+                    <deegree:Name>envelope.js</deegree:Name>
+                    <deegree:Name>geotransform.js</deegree:Name>
+                    <deegree:Name>pushbutton.js</deegree:Name>
+                    <deegree:Name>togglebutton.js</deegree:Name>
+                    <deegree:Name>layergroup.js</deegree:Name>
+                    <deegree:Name>htmllayer.js</deegree:Name>
+                    <deegree:Name>layerutils.js</deegree:Name>
+                    <deegree:Name>rpc.js</deegree:Name>
+                    <deegree:Name>recentertolayer.js</deegree:Name>
+                </deegree:CommonJS>
+                <!-- NORTH -->
+                <deegree:North hidden="false">
+                    <deegree:Module hidden="false" type="content" width="990" height="35">
+                        <deegree:Name>MenuBarTop</deegree:Name>
+                        <deegree:Content>menubartop.html</deegree:Content>
+                        <deegree:ModuleJS>menubar.js</deegree:ModuleJS>
+                    </deegree:Module>
+                </deegree:North>
+                <!-- EAST -->
+                <deegree:East hidden="false">
+                    <deegree:Module hidden="false" type="content" width="150" height="50">
+                        <deegree:Name>ContextSwitcher</deegree:Name>
+                        <deegree:Content>contextswitcher.html</deegree:Content>
+                        <deegree:ModuleJS>contextswitcher.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>label</deegree:Name>
+                                <deegree:Value>'Theme selection:'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>listOfContexts</deegree:Name>
+                                <deegree:Value>'Salt Lake City|wmc_saltlake.xml;Utah|wmc_start_utah.xml;Playground|wmc_testPlayground.xml'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>size</deegree:Name>
+                                <deegree:Value>1</deegree:Value>
+                            </deegree:Parameter>
+                            <!-- optional param. if not set, value will be taken from deegree.css (.pContextSwitcher) -->
+                            <!--
+                            <deegree:Parameter>
+                                <deegree:Name>bgcolor</deegree:Name>
+                                <deegree:Value>'#cccccc'</deegree:Value>
+                            </deegree:Parameter>
+                            -->
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="150" height="40">
+                        <deegree:Name>DefaultContentSwitch</deegree:Name>
+                        <deegree:Content>defaultcontentswitch.html</deegree:Content>
+                        <deegree:ModuleJS>contentswitch.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>targetIFrame</deegree:Name>
+                                <deegree:Value>'LayerListView'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>sourceModules</deegree:Name>
+                                <deegree:Value>'LayerListView|layerlistview.html;Legend|legend.html'</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="true" type="content" width="250" height="460">
+                        <deegree:Name>Legend</deegree:Name>
+                        <deegree:Content>legend_dyn.jsp</deegree:Content>
+                        <deegree:ModuleJS>legend_dyn.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>label</deegree:Name>
+                                <deegree:Value>'Legend'</deegree:Value>
+                            </deegree:Parameter>
+                            <!--
+                            If you want to use the color set in deegree.css, 
+                            you need to set the value for param bgcolor as ''.
+                            Otherwise, you can overwrite the settings in css file, 
+                            and set the value of bgcolor to any value, like '#CC00CC'.
+                            (Removing the param altogether will cause a javascript error, but we're working on that.) 
+                            -->
+                            <deegree:Parameter>
+                                <deegree:Name>bgcolor</deegree:Name>
+                                <deegree:Value>''</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>layerlist</deegree:Name>
+                                <deegree:Value>this.layerList</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>width</deegree:Name>
+                                <deegree:Value>20</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>height</deegree:Name>
+                                <deegree:Value>20</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="250" height="460">
+                        <deegree:Name>LayerListView</deegree:Name>
+                        <deegree:Content>layerlistview.html</deegree:Content>
+                        <deegree:ModuleJS>layerlist.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>layerlistview_allfi.js</deegree:ModuleJS>
+                        <!-- alternative layerlistview with feature info for selected layer: -->
+                        <!-- <deegree:ModuleJS>layerlistview.js</deegree:ModuleJS> -->
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>name</deegree:Name>
+                                <deegree:Value>'layerlistview'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>layerlist</deegree:Name>
+                                <deegree:Value>this.layerList</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>label</deegree:Name>
+                                <deegree:Value>'Utah'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>bgcolor</deegree:Name>
+                                <deegree:Value>'#cccccc'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>fgcolor</deegree:Name>
+                                <deegree:Value>'#aaaaaa'</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                </deegree:East>
+                <!-- SOUTH -->
+                <deegree:South hidden="false">
+                    <deegree:Module hidden="false" type="content" width="300" height="20">
+                        <deegree:Name>CoordinateDisplay</deegree:Name>
+                        <deegree:Content>coordinatedisplay.html</deegree:Content>
+                        <deegree:ModuleJS>coordinatedisplay.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>digits</deegree:Name>
+                                <deegree:Value>3</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>labelX</deegree:Name>
+                                <deegree:Value>'lon:'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>labelY</deegree:Name>
+                                <deegree:Value>'lat:'</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="685" height="20">
+                        <deegree:Name>MenuBarBottom</deegree:Name>
+                        <deegree:Content>menubarbottom.html</deegree:Content>
+                        <deegree:ModuleJS>menubar.js</deegree:ModuleJS>
+                    </deegree:Module>
+                </deegree:South>
+                <!-- WEST -->
+                <deegree:West hidden="false">
+                    <deegree:Module hidden="false" type="content" width="150" height="150" scrolling="no">
+                        <deegree:Name>MapOverview</deegree:Name>
+                        <deegree:Content>mapoverview.html</deegree:Content>
+                        <deegree:ModuleJS>mapoverview.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>wz_jsgraphics_box.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>src</deegree:Name>
+                                <deegree:Value>'./images/overview_utah.gif'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>minx</deegree:Name>
+                                <deegree:Value>161923</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>miny</deegree:Name>
+                                <deegree:Value>4094621</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>maxx</deegree:Name>
+                                <deegree:Value>725119</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>maxy</deegree:Name>
+                                <deegree:Value>4657817</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>foregroundColor</deegree:Name>
+                                <deegree:Value>'#ff0000'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>width</deegree:Name>
+                                <deegree:Value>150</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>height</deegree:Name>
+                                <deegree:Value>150</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="0" height="30">
+                        <!-- minimum height for spacer in IE is 28  -->
+                        <deegree:Name>Spacer</deegree:Name>
+                        <deegree:Content>spacer.html</deegree:Content>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="150" height="50">
+                        <deegree:Name>ScaleSwitcher</deegree:Name>
+                        <deegree:Content>scaleswitcher.html</deegree:Content>
+                        <deegree:ModuleJS>scaleswitcher.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>label</deegree:Name>
+                                <deegree:Value>'Scale:'</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>listOfScales</deegree:Name>
+                                <!-- <deegree:Value>'1:100;1:5000;1:10000;1:25000;1:50000;1:100000;1:500000;1:1000000;1:5000000'</deegree:Value> -->
+                                <deegree:Value>'1:100|label 100;1:5000|label 5000;1:10000|label 10000;1:25000|label 25000;1:50000|label 50000;1:100000|label 100000;1:500000|label 500000;1:1000000|label 1000000;1:5000000|label 5000000'</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="0" height="180">
+                        <deegree:Name>Spacer</deegree:Name>
+                        <deegree:Content>spacer.html</deegree:Content>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="180" height="180">
+                        <deegree:Name>Note</deegree:Name>
+                        <deegree:Content>note.html</deegree:Content>
+                        <deegree:ModuleJS>dummy.js</deegree:ModuleJS>
+                    </deegree:Module>
+                </deegree:West>
+                <!-- CENTER -->
+                <deegree:Center hidden="false">
+                    <deegree:Module hidden="false" type="toolbar" width="450" height="35">
+                        <deegree:Name>Toolbar</deegree:Name>
+                        <deegree:Content>toolbar.html</deegree:Content>
+                        <deegree:ModuleJS>toolbar.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>buttongroup.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>refresh|refresh map</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>fullextent|zoom to full extent</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>movetoprevious|move to previous map</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>movetonext|move to next map</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>zoomin|zoomin by mouse click or mouse drag</deegree:Name>
+                                <deegree:Value>ToggleButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>zoomout|zoomout by mouse click</deegree:Name>
+                                <deegree:Value>ToggleButton</deegree:Value>
+                            </deegree:Parameter>
+                            <!-- zoom2layer: make sure, the WMS supports proper BBoxes and scale hints  for the 
+                            requested layer as these are used to zoom to. Refer Documentation for details -->
+                            <deegree:Parameter>
+                                <deegree:Name>zoom2layer|zoomtolayer by mouse click</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>featureinfo|get info to a object within the map</deegree:Name>
+                                <deegree:Value>ToggleButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>recenter|recenter the map by mouse click</deegree:Name>
+                                <deegree:Value>ToggleButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>move|drag the map by mouse with pressed mouse button</deegree:Name>
+                                <deegree:Value>ToggleButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>addwms|add additonal WMS to the map</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>print|generate print view</deegree:Name>
+                                <deegree:Value>PushButton</deegree:Value>
+                            </deegree:Parameter>
+                            <!-- optional param. if not set, value will be taken from deegree.css (.pToolbar) -->
+                            <!--
+                            <deegree:Parameter>
+                                <deegree:Name>bgcolor</deegree:Name>
+                                <deegree:Value>'#E9E9E9'</deegree:Value>
+                            </deegree:Parameter>
+                            -->
+                            <!-- 
+                                <deegree:Parameter>
+                                <deegree:Name>selected</deegree:Name>
+                                <deegree:Value>zoomin</deegree:Value>
+                                </deegree:Parameter>
+                            -->
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <deegree:Module hidden="false" type="content" width="550" height="550" scrolling="no">
+                        <deegree:Name>MapView</deegree:Name>
+                        <deegree:Content>mapview.html</deegree:Content>
+                        <deegree:ModuleJS>mapview.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>mapcontroller.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>mapmodel.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>wmsrequestfactory.js</deegree:ModuleJS>
+                        <deegree:ModuleJS>wmslayer.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                            <deegree:Parameter>
+                                <deegree:Name>model</deegree:Name>
+                                <deegree:Value>this.mapModel</deegree:Value>
+                            </deegree:Parameter>
+                            <deegree:Parameter>
+                                <deegree:Name>border</deegree:Name>
+                                <deegree:Value>0</deegree:Value>
+                            </deegree:Parameter>
+                        </deegree:ParameterList>
+                    </deegree:Module>
+                    <!-- 
+                        <deegree:Module hidden="false" type="content" height="550" width="550" scrolling="no">
+                        <deegree:Name>ScaleBarSwitcher</deegree:Name>
+                        <deegree:Content>scalebarswitcher.html</deegree:Content>
+                        <deegree:ModuleJS>scalebarswitcher.js</deegree:ModuleJS>
+                        <deegree:ParameterList>
+                        <deegree:Parameter>
+                        <deegree:Name>scaleBarValues</deegree:Name>
+                        <deegree:Value>'10;50;100;200;250;300;350;400;500;600;700;1000;1500'</deegree:Value>
+                        </deegree:Parameter>
+                        <deegree:Parameter>
+                        <deegree:Name>unit</deegree:Name>
+                        <deegree:Value>'km'</deegree:Value>
+                        </deegree:Parameter>
+                        </deegree:ParameterList>
+                        </deegree:Module>
+                    -->
+                </deegree:Center>
+            </deegree:Frontend>
+            <deegree:MapParameter>
+                <deegree:OfferedInfoFormats>
+                    <deegree:Format>application/vnd.ogc.gml</deegree:Format>
+                    <deegree:Format selected="true">text/html</deegree:Format>
+                </deegree:OfferedInfoFormats>
+                <deegree:OfferedZoomFactor>
+                    <deegree:Factor selected="true">25</deegree:Factor>
+                </deegree:OfferedZoomFactor>
+                <deegree:OfferedPanFactor>
+                    <deegree:Factor selected="true">15</deegree:Factor>
+                </deegree:OfferedPanFactor>
+                <deegree:MinScale>1</deegree:MinScale>
+                <!--deegree:MaxScale>100000</deegree:MaxScale-->
+                <deegree:MaxScale>100000000</deegree:MaxScale>
+            </deegree:MapParameter>
+        </Extension>
+    </General>
+    <LayerList>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Springs</Name>
+            <Title>Springs</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Airports</Name>
+            <Title>Airports</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="0">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Lake</Name>
+            <Title>Lakes</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Vegetation</Name>
+            <Title>Vegetation</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>EnergyResources</Name>
+            <Title>Energy Resources</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+    <Layer queryable="1" hidden="0">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>ElevationContours</Name>
+            <Title>Elevation Contours</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="0">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Railroads</Name>
+            <Title>Railroads</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <!--<Name><OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/user_layer_style.xml?" /></Name>-->
+                    <Title>Remote SLD</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="0">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Roads</Name>
+            <Title>Roads</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Municipalities</Name>
+            <Title>Municipalities</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>Counties</Name>
+            <Title>County Boundary</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>StateBoundary</Name>
+            <Title>State Boundary</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>StateOverview</Name>
+            <Title>State Overview</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>ZipCodes</Name>
+            <Title>ZipCodes</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <Layer queryable="1" hidden="1">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>ZipCodes</Name>
+            <Title>ZipCodes Population</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>ZipCodesPop</Name>
+                    <Title>ZipCodesPop</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+        <!-- Notice that this layer is NOT queryable as the source is raster data -->
+        <Layer queryable="0" hidden="0">
+            <Server service="OGC:WMS" version="1.1.1" title="deegree Demo WMS">
+                <OnlineResource xlink:type="simple" xlink:href="http://demo.deegree.org/deegree-wms/services?" />
+            </Server>
+            <Name>orthoimage</Name>
+            <Title>Ortho image</Title>
+            <SRS>EPSG:26912</SRS>
+            <FormatList>
+                <Format current="1">image/png</Format>
+            </FormatList>
+            <StyleList>
+                <Style current="1">
+                    <Name>default</Name>
+                    <Title>default</Title>
+                </Style>
+            </StyleList>
+            <Extension xmlns:deegree="http://www.deegree.org/context">
+                <deegree:MasterLayer>false</deegree:MasterLayer>
+            </Extension>
+        </Layer>
+    </LayerList>
+</ViewContext>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dgp:Module xmlns:dgp="http://www.deegree.org/project" xmlns:cmm="http://www.deegree.org/coremapmodel" xmlns:set="http://www.deegree.org/settings"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/project ../schema/jaxbschema/project.xsd">
+	<dgp:name>Exif module</dgp:name>
+	<cmm:identifier>
+		<cmm:value>F28z343fg9</cmm:value>
+	</cmm:identifier>
+	<dgp:className>org.deegree.igeo.modules.ExifModule</dgp:className>
+	<dgp:ViewForm>
+		<dgp:PaneViewForm>
+			<dgp:containerClass viewPlatform="Application">org.deegree.igeo.views</dgp:containerClass>
+			<dgp:ComponentState active="false" modal="false">		
+				<dgp:windowState>closed</dgp:windowState>			
+			</dgp:ComponentState>
+			<dgp:paneTitle>ExifModule</dgp:paneTitle>
+		</dgp:PaneViewForm>
+		<dgp:Layout>
+			<dgp:NoneLayout />
+		</dgp:Layout>
+	</dgp:ViewForm>
+	<dgp:Menu>
+    <cmm:identifier>
+      <cmm:value>ExifMB</cmm:value>
+    </cmm:identifier>
+    <dgp:parent>
+      <cmm:value>MB1tools</cmm:value>
+    </dgp:parent>
+    <dgp:name/>
+    <dgp:MenuItem>
+      <dgp:name>$GeoImages</dgp:name>
+      <dgp:tooltip>$GeoImages.tootip</dgp:tooltip>
+      <dgp:assignedAction>addImages</dgp:assignedAction>
+      <dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/picture_add.png"/>
+    </dgp:MenuItem>
+    <dgp:MenuItem>
+      <dgp:name>$LinkImage</dgp:name>
+      <dgp:tooltip>$LinkImage.tooltip</dgp:tooltip>
+      <dgp:assignedAction>linkImage</dgp:assignedAction>
+      <dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/picture_link.png"/>
+    </dgp:MenuItem>
+  </dgp:Menu>
+  
+	<!-- dgp:ToolBarEntry assignedGroup="TBExifGroup">
+        <cmm:identifier>
+            <cmm:value>rtsdafre4dfdg4</cmm:value>
+        </cmm:identifier>
+        <dgp:name />
+        <dgp:tooltip>$GeoImages.tootip</dgp:tooltip>
+        <dgp:assignedAction>addImages</dgp:assignedAction>
+        <dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/picture_add.png" />
+        <dgp:entryType>PushButton</dgp:entryType>
+    </dgp:ToolBarEntry>
+	<dgp:ToolBarEntry assignedGroup="TBExifGroup">
+        <cmm:identifier>
+            <cmm:value>2344dfdg4</cmm:value>
+        </cmm:identifier>
+        <dgp:name />
+        <dgp:tooltip>$LinkImage.tooltip</dgp:tooltip>
+        <dgp:assignedAction>linkImage</dgp:assignedAction>
+        <dgp:icon xlink:href="http://localhost:8080/igeodesktop/resources/icons/picture_link.png" />
+        <dgp:entryType>PushButton</dgp:entryType>
+    </dgp:ToolBarEntry--> 
+    
+    <set:HelpContext>
+    <set:page mainPage="true">
+      <cmm:OnlineResource xlink:href="./help/exifmodule/enhance_with_exif.de.html"/>
+      <set:keyword>Bilddaten mit Exif-Daten anreichern</set:keyword>
+    </set:page>
+  </set:HelpContext>
+  <set:HelpContext>
+    <set:page>
+      <cmm:OnlineResource xlink:href="./help/exifmodule/read_from_exif.de.html"/>
+      <set:keyword>Geodaten aus Exif-Format auslesen</set:keyword>
+    </set:page>
+  </set:HelpContext>
+</dgp:Module>

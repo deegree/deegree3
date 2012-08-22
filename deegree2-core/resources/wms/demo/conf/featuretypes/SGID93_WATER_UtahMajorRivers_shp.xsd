@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:app="http://www.deegree.org/app" xmlns:deegreewfs="http://www.deegree.org/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.deegree.org/app">
+   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
+   <xsd:annotation>
+      <xsd:appinfo>
+         <deegreewfs:Prefix>app</deegreewfs:Prefix>
+         <deegreewfs:Backend>SHAPE</deegreewfs:Backend>
+         <deegreewfs:File>../../../data/utah/vector/SGID93_WATER_UtahMajorRivers</deegreewfs:File>
+         <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+      </xsd:appinfo>
+   </xsd:annotation>
+   <xsd:element name="SGID93_WATER_UtahMajorRivers" substitutionGroup="gml:_Feature" type="app:SGID93_WATER_UtahMajorRiversType">
+      <xsd:annotation>
+         <xsd:appinfo>
+            <deegreewfs:table>SGID93_WATER_UtahMajorRivers</deegreewfs:table>
+            <deegreewfs:gmlId prefix="ID_">
+               <deegreewfs:MappingField field="FID" type="INTEGER"/>
+            </deegreewfs:gmlId>
+            <deegreewfs:visible>true</deegreewfs:visible>
+            <deegreewfs:transaction delete="false" insert="false" update="false"/>
+         </xsd:appinfo>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="SGID93_WATER_UtahMajorRiversType">
+      <xsd:complexContent>
+         <xsd:extension base="gml:AbstractFeatureType">
+            <xsd:sequence>
+               <xsd:element name="geometry" type="gml:GeometryPropertyType">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="GEOM" srs="26912" type="GEOMETRY"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="rch_" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="RCH_" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="rch_id" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="RCH_ID" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="com_id" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="COM_ID" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="rch_code" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="RCH_CODE" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="rch_date" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="RCH_DATE" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="level_" type="xsd:integer">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="LEVEL_" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="meters" type="xsd:double">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="METERS" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="gnis_id" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="GNIS_ID" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="name" type="xsd:string">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="NAME" type="VARCHAR"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element minOccurs="0" name="shape_leng" type="xsd:double">
+                  <xsd:annotation>
+                     <xsd:appinfo>
+                        <deegreewfs:Content>
+                           <deegreewfs:MappingField field="SHAPE_LENG" type="NUMERIC"/>
+                        </deegreewfs:Content>
+                     </xsd:appinfo>
+                  </xsd:annotation>
+               </xsd:element>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WCS_Capabilities xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:deegree="http://www.deegree.org/wcs" version="1.0.0" updateSequence="1.0.0">
+  <deegree:deegreeParam>
+    <!--
+      The DefaultOnlineResource will be used if a required OnlineResource is
+      not defined
+    -->
+    <deegree:DefaultOnlineResource xlink:type="simple" xlink:href="${default.online.resource}" />
+    <!-- optional; default = 100 (MB) -->
+    <deegree:CacheSize>250</deegree:CacheSize>
+    <!-- maximum time for the execution of a request until an exception of time-exceed is thrown.
+      optional; default 5 Minutes -->
+    <deegree:RequestTimeLimit>10</deegree:RequestTimeLimit>
+    <!--
+      list of directories to be scanned for coverages to be served by a WCS. deegree will look for configuration files in this directories and add the
+      corresponding coverages to the ContentMetadata section if not already present.optional; default: $RootDirectory$/WEB-INF/data
+    -->
+    <deegree:DataDirectoryList>
+      <deegree:DataDirectory>./wcsdata/</deegree:DataDirectory>
+    </deegree:DataDirectoryList>
+
+  </deegree:deegreeParam>
+  <Service>
+    <!--
+      optional; no default
+    -->
+    <description>deegree WCS is OGC WCS 1.0.0 reference implementation</description>
+    <!--mandatory; if missing 'deegreewcs' will be used as default        -->
+    <name>deegree demo utah WCS</name>
+    <label>utah demo</label>
+    <responsibleParty>
+      <individualName>Andreas Poth</individualName>
+      <organisationName>lat/lon</organisationName>
+      <positionName>technical director</positionName>
+      <contactInfo>
+        <phone>
+          <voice>+49(0)228/184960</voice>
+          <facsimile>+49(0)228/184960</facsimile>
+        </phone>
+        <address>
+          <deliveryPoint>Aennchenstr. 19</deliveryPoint>
+          <city>Bonn</city>
+          <administrativeArea>NRW</administrativeArea>
+          <postalCode>53177</postalCode>
+          <country>Germany</country>
+          <electronicMailAddress>info@lat-lon.de</electronicMailAddress>
+        </address>
+        <onlineResource xlink:type="simple" xlink:href="http://www.lat-lon.de" xlink:role="http://www.lat-lon.de" xlink:arcrole="http://www.lat-lon.de"
+          xlink:title="lat/lon homepage" xlink:show="new" xlink:actuate="onLoad" />
+      </contactInfo>
+    </responsibleParty>
+    <fees>NONE</fees>
+    <accessConstraints>NONE</accessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <!--
+        GetCapabilities is required and will be set by default if missing
+            -->
+      <GetCapabilities>
+        <DCPType>
+          <HTTP>
+            <!--
+              HTTP Get is required and will be set by default if missing
+                        -->
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:href="${default.online.resource}" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <!--
+        DescribeCoverage is required and will be set by default if missing
+            -->
+      <DescribeCoverage>
+        <DCPType>
+          <HTTP>
+            <!--
+              HTTP Get is required and will be set by default if missing
+                        -->
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:href="${default.online.resource}" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </DescribeCoverage>
+      <!--
+        GetCoverage is required and will be set by default if missing
+            -->
+      <GetCoverage>
+        <DCPType>
+          <HTTP>
+            <!--
+              HTTP Get is required and will be set by default if missing
+                        -->
+            <Get>
+              <OnlineResource xlink:href="${default.online.resource}?" />
+            </Get>
+            <Post>
+              <OnlineResource xlink:href="${default.online.resource}" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCoverage>
+    </Request>
+    <!--
+      mandatory: application/vnd.ogc.se_xml will be set as default if missing
+    -->
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/deegree_xml</Format>
+    </Exception>
+    <VendorSpecificCapabilities />
+  </Capability>
+  <!--
+    mandatory; if missing it will be created by deegree and filled with 'CoverageOfferingBrief' descriptions for all coverages that can be found in
+    directories listed in 'DataDirectoryList'. If 'ContentMetadata' isn't defined or is empty and no coverages that can be found in directories listed
+    in 'DataDirectoryList' the configuration is invalid because a (deegree) WCS at least have to serve one coverage. If 'ContentMetadata' is defined
+    deegree adds all coverages found in directories listed in 'DataDirectoryList' that are not defined ContentMetadata automaticly All attributes of
+    'ContentMetadata' are optional and don't has a default
+  -->
+  <ContentMetadata>
+    <!-- dgm -->
+    <CoverageOfferingBrief gml:id="ID000001">
+      <description>The dgm of salt lake city</description>
+      <name>saltlakedem</name>
+      <label>saltlakecity dgm</label>
+      <lonLatEnvelope srsName="WGS84(DD)">
+        <gml:pos dimension="2">-111.99994823900305,40.62314964494846</gml:pos>
+        <gml:pos dimension="2">-111.75013428464229,40.876830484094945</gml:pos>
+      </lonLatEnvelope>
+      <deegree:Configuration>../../data/utah/raster/dem/wcs_utah_configuration.xml</deegree:Configuration>      
+    </CoverageOfferingBrief>
+    <!-- satellite image -->
+    <CoverageOfferingBrief gml:id="ID000002">
+      <description>The satellite images of utah</description>
+      <name>saltlakesatellite</name>
+      <label>saltlakecity images</label>
+      <lonLatEnvelope xmlns:wcs="http://www.opengis.net/wcs" srsName="WGS84(DD)">
+        <gml:pos dimension="2">-111.94721360400128,40.719021928792515</gml:pos>
+        <gml:pos dimension="2">-111.80644038553243,40.82820182642026</gml:pos>
+      </lonLatEnvelope>
+      <keywords>
+        <keyword>Satellite image</keyword>
+        <keyword>Saltlake City</keyword>
+      </keywords>
+      <deegree:Configuration>../../data/utah/raster/dop/wcs_saltlakesatellite_configuration.xml</deegree:Configuration>
+    </CoverageOfferingBrief>
+  </ContentMetadata>
+</WCS_Capabilities>

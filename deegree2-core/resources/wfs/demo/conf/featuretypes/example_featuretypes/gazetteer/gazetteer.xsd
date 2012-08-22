@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:app="http://www.deegree.org/app" xmlns:deegreewfs="http://www.deegree.org/wfs" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+  <xsd:annotation>
+    <xsd:appinfo>
+      <deegreewfs:Prefix>app</deegreewfs:Prefix>
+      <deegreewfs:Backend>POSTGIS</deegreewfs:Backend>
+      <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+      <deegreewfs:SuppressXLinkOutput>false</deegreewfs:SuppressXLinkOutput>
+      <JDBCConnection xmlns="http://www.deegree.org/jdbc">
+        <Driver>org.postgresql.Driver</Driver>
+        <Url>jdbc:postgresql://localhost:5432/deegreetest</Url>
+        <User>deegreetest</User>
+        <Password>deegreetest</Password>
+        <SecurityConstraints/>
+        <Encoding>UTF-8</Encoding>
+      </JDBCConnection>
+    </xsd:appinfo>
+  </xsd:annotation>
+    <!-- ============================================================== -->
+  <xsd:element name="Counties" type="app:CountiesType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>counties</deegreewfs:table>
+        <deegreewfs:gmlId prefix="CO_ID_">
+          <deegreewfs:MappingField field="gid" type="INTEGER" />
+        </deegreewfs:gmlId>
+        <deegreewfs:DefaultSRS>EPSG:26912</deegreewfs:DefaultSRS>
+        <deegreewfs:OtherSRS>EPSG:4326</deegreewfs:OtherSRS>      
+        <deegreewfs:visible>true</deegreewfs:visible>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="CountiesType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="geographicIdentifier" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geographicIdentifier" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="westBoundLongitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="westboundlongitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="eastBoundLongitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="eastboundlongitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="southBoundLatitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="southboundlatitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="northBoundLatitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="northboundlatitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="position" type="gml:GeometryPropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="position" type="GEOMETRY" srs="26912" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geographicExtent" type="gml:GeometryPropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geographicextent" type="GEOMETRY" srs="26912" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="gazetteer" type="gml:FeaturePropertyType" minOccurs="0">
+                <xsd:annotation>
+                  <xsd:appinfo>
+                    <deegreewfs:Content type="app:SI_Gazetteer">
+                      <deegreewfs:Relation>
+                        <deegreewfs:From>
+                          <deegreewfs:MappingField field="locationtype" type="INTEGER"/>
+                        </deegreewfs:From>
+                        <deegreewfs:To>
+                          <deegreewfs:MappingField field="id" type="INTEGER" table="si_locationtype"/>
+                        </deegreewfs:To>
+                      </deegreewfs:Relation>
+                      <deegreewfs:Relation>
+                        <deegreewfs:From>
+                          <deegreewfs:MappingField field="gaz_id" type="INTEGER"/>
+                        </deegreewfs:From>
+                        <deegreewfs:To>
+                          <deegreewfs:MappingField field="gazetteer_id" type="INTEGER"/>
+                        </deegreewfs:To>
+                      </deegreewfs:Relation>
+                    </deegreewfs:Content>
+                  </xsd:appinfo>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element name="locationType" type="gml:FeaturePropertyType" minOccurs="0">
+                <xsd:annotation>
+                  <xsd:appinfo>
+                    <deegreewfs:Content type="app:SI_LocationType">
+                      <deegreewfs:Relation>
+                        <deegreewfs:From>
+                          <deegreewfs:MappingField field="locationtype" type="INTEGER"/>
+                        </deegreewfs:From>
+                        <deegreewfs:To>
+                          <deegreewfs:MappingField field="id" type="INTEGER"/>
+                        </deegreewfs:To>
+                      </deegreewfs:Relation>
+                    </deegreewfs:Content>
+                  </xsd:appinfo>
+                </xsd:annotation>
+              </xsd:element>        
+          </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+    <!-- ============================================================== -->
+  <xsd:element name="Municipalities" type="app:MunicipalitiesType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>municipalities</deegreewfs:table>
+        <deegreewfs:gmlId prefix="MU_ID_">
+          <deegreewfs:MappingField field="gid" type="INTEGER" />
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="MunicipalitiesType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="geographicIdentifier" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geographicidentifier" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="parent" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="parent" type="VARCHAR" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="westBoundLongitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="westboundlongitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="eastBoundLongitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="eastboundlongitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="southBoundLatitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="southboundlatitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="northBoundLatitude" type="xsd:double" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="northboundlatitude" type="DOUBLE" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="position" type="gml:GeometryPropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="position" type="GEOMETRY" srs="26912" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="geographicExtent" type="gml:GeometryPropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="geographicextent" type="GEOMETRY" srs="26912" />
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="gazetteer" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SI_Gazetteer">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="locationtype" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="INTEGER" table="si_locationtype"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="gaz_id" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="gazetteer_id" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="locationType" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SI_LocationType">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="locationtype" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ======================================================================= -->
+  <xsd:element name="SI_Gazetteer" type="app:SI_GazetteerType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>si_gazetteer</deegreewfs:table>
+        <deegreewfs:gmlId prefix="SIGAZ_">
+          <deegreewfs:MappingField field="gazetteer_id" type="INTEGER"/>
+          <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>true</deegreewfs:visible>
+        <deegreewfs:transaction delete="true" insert="true" update="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ======================================================================= -->
+  <xsd:complexType name="SI_GazetteerType">
+    <xsd:annotation>
+      <xsd:documentation>This is an implementation facade for ISO19112 model concepts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="identifier" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="scope" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="scope" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="custodian" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:CI_ResponsibleParty">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="custodian" type="VARCHAR"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="VARCHAR"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="territoryOfUse" type="gml:FeaturePropertyType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SI_GeographicExtent">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="territoryofuse" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="featureType" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SI_LocationType">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="gazetteer_id" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="gaz_id" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ======================================================================= -->
+  <xsd:element name="SI_LocationType" type="app:SI_LocationTypeType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>si_locationtype</deegreewfs:table>
+        <deegreewfs:gmlId prefix="SILC_">
+          <deegreewfs:MappingField field="id" type="VARCHAR"/>
+          <deegreewfs:IdentityPart>true</deegreewfs:IdentityPart>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction delete="true" insert="true" update="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ======================================================================= -->
+  <xsd:complexType name="SI_LocationTypeType">
+    <xsd:annotation>
+      <xsd:documentation/>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="name" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="identifier" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="identifier" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="theme" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="theme" type="VARCHAR"/>
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="srs_id" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="INTEGER" table="si_spatialreferencesystem"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="definition" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="definition" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="territoryOfUse" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SI_GeographicExtent">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="territoryofuse" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="owner" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:CI_ResponsibleParty">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="owner" type="VARCHAR"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="VARCHAR"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ============================================================== -->
+  <xsd:element name="si_spatialreferencesystem" type="app:si_spatialreferencesystemType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>si_spatialreferencesystem</deegreewfs:table>
+        <deegreewfs:gmlId prefix="SISRS_">
+          <deegreewfs:MappingField field="id" type="INTEGER"/>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction delete="true" insert="true" update="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ============================================================== -->
+  <xsd:complexType name="si_spatialreferencesystemType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="name" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="domainofvalidity" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:SI_GeographicExtent">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="domainofvalidity" type="INTEGER"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="INTEGER"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="theme" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="theme" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="overallowner" type="gml:FeaturePropertyType">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content type="app:CI_ResponsibleParty">
+                  <deegreewfs:Relation>
+                    <deegreewfs:From>
+                      <deegreewfs:MappingField field="overallowner" type="VARCHAR"/>
+                    </deegreewfs:From>
+                    <deegreewfs:To>
+                      <deegreewfs:MappingField field="id" type="VARCHAR"/>
+                    </deegreewfs:To>
+                  </deegreewfs:Relation>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ======================================================================= -->
+  <xsd:element name="CI_ResponsibleParty" type="app:CI_ResponsiblePartyType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>si_responsibleparty</deegreewfs:table>
+        <deegreewfs:gmlId prefix="CIRP_">
+          <deegreewfs:MappingField field="id" type="VARCHAR"/>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction delete="true" insert="true" update="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ======================================================================= -->
+  <xsd:complexType name="CI_ResponsiblePartyType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="name" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="role" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="role" type="VARCHAR"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ======================================================================= -->
+  <xsd:element name="SI_GeographicExtent" type="app:SI_GeographicExtentType" substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <deegreewfs:table>si_geographicextent</deegreewfs:table>
+        <deegreewfs:gmlId prefix="SIGEX_">
+          <deegreewfs:MappingField field="id" type="INTEGER"/>
+        </deegreewfs:gmlId>
+        <deegreewfs:visible>false</deegreewfs:visible>
+        <deegreewfs:transaction delete="true" insert="true" update="true"/>
+      </xsd:appinfo>
+    </xsd:annotation>
+  </xsd:element>
+  <!-- ======================================================================= -->
+  <xsd:complexType name="SI_GeographicExtentType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="westBoundLongitude" type="xsd:double">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="westboundlongitude" type="DOUBLE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="eastBoundLongitude" type="xsd:double">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="eastboundlongitude" type="DOUBLE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="southBoundLatitude" type="xsd:double">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="southboundlatitude" type="DOUBLE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="northBoundLatitude" type="xsd:double">
+            <xsd:annotation>
+              <xsd:appinfo>
+                <deegreewfs:Content>
+                  <deegreewfs:MappingField field="northboundlatitude" type="DOUBLE"/>
+                </deegreewfs:Content>
+              </xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,10 @@
+<specialChars>
+	<german>
+		<umlauts>
+			<uppercase>ÄÖÜ</uppercase>
+			<lowercase>äöü</lowercase>
+		</umlauts>
+		<szet>ß</szet>
+	</german>
+	<portuguese>ÀÁÂÇÉÊÍÓÔÕÚàáâãçéêíóôõ</portuguese>
+</specialChars>

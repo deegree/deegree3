@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd">
+<web-app>
+    <servlet>
+        <servlet-name>fileaccess</servlet-name>
+        <servlet-class>org.deegree.igeo.enterprise.FileAccessServlet</servlet-class>
+        <init-param>
+            <param-name>driver</param-name>
+            <param-value>dummy</param-value>
+            <!-- 
+            <param-value>org.postgresql.Driver</param-value>
+             -->
+        </init-param>
+        <init-param>
+            <param-name>url</param-name>
+            <param-value>jdbc:postgresql://localhost:5432/security</param-value>
+        </init-param>
+        <init-param>
+            <param-name>sec_db_user</param-name>
+            <param-value>postgres</param-value>
+        </init-param>
+        <init-param>
+            <param-name>sec_db_password</param-name>
+            <param-value>postgres</param-value>
+        </init-param>
+        <init-param>
+            <param-name>rootdirectory</param-name>
+            <param-value>WEB-INF/users</param-value>
+        </init-param>
+        <init-param>
+            <param-name>readRootDir</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fileaccess</servlet-name>
+        <url-pattern>/fileaccess</url-pattern>
+    </servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>./index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

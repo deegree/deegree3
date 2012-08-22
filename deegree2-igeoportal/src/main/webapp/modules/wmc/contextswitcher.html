@@ -1,0 +1,35 @@
+<!-- $HeadURL$ -->
+<!-- This file is part of deegree. For copyright/license information, please visit http://www.deegree.org/license. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="author" content="lat/lon GmbH">
+        <meta name="KeyWords" content="deegree iGeoPortal lat/lon" />
+        <title>deegree iGeoPortal - Context Switcher</title>
+        <link href="../../css/deegree.css" rel="stylesheet" type="text/css">
+        <script language="JavaScript1.2" type="text/javascript">
+
+            var url = null;
+            
+            function register() {
+                if ( parent.controller == null ) {
+                    parent.controller = new parent.Controller();
+                    parent.controller.init();
+                }
+            }
+
+            function initContextSwitcher() {
+                parent.controller.initContextSwitcher( document );
+                var tmp = window.location.pathname.split( '/' );
+                var s = '';
+                for ( var i = 0; i < tmp.length-3; i++) {
+                    s += (tmp[i] + '/' ); 
+                } 
+                url = window.location.protocol + '//' + window.location.host + s + 'control';
+                parent.controller.vContextSwitcher.setURL ( url );
+            }
+        </script>
+    </head>
+    <body onload="register(); initContextSwitcher();" class="pContextSwitcher">
+    </body>
+</html>
