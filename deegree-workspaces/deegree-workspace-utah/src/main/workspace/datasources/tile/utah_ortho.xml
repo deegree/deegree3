@@ -5,6 +5,7 @@
     <Identifier>utah_ortho</Identifier>
     <TileMatrixSetId>tilematrixset_utah_ortho</TileMatrixSetId>
     <File>../../data/utah/raster/Satellite_Provo/Satellite_Provo.tif</File>
+    <ImageFormat>image/png</ImageFormat>
  </TileDataSet>
  
 </GeoTIFFTileStore>
