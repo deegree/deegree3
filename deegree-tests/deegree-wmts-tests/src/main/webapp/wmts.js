@@ -119,6 +119,7 @@ OpenLayers.DOTS_PER_INCH = 90.72;
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms130', layer: 'remotewms130', matrixSet: 'utah', format: 'image/png'}));
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_cache', layer: 'remotewms_cache', matrixSet: 'utah', format: 'image/png'}));
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'filesystem', layer: 'filesystem', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewmts', layer: 'remotewmts', matrixSet: 'utah', format: 'image/png'}));
 
     map.setCenter(new OpenLayers.LonLat(0, 0), 0)
     map.addControl(new OpenLayers.Control.LayerSwitcher())

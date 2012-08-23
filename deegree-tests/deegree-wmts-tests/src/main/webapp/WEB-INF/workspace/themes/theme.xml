@@ -56,6 +56,11 @@
       <d:Title>IT test layer remotewms4326</d:Title>
       <Layer>remotewms4326</Layer>
     </Theme>
+    <Theme>
+      <Identifier>remotewmts</Identifier>
+      <d:Title>IT test layer remotewmts</d:Title>
+      <Layer>remotewmts</Layer>
+    </Theme>
   </Theme>
 
 </Themes>
