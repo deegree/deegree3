@@ -835,7 +835,7 @@ public class MapService {
 
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles,
                                            extractFilters( gm ), gm.getParameterMap(), gm.getDimensions(),
-                                           gm.getPixelSize(), options );
+                                           gm.getPixelSize(), options, gm.getQueryBox() );
         for ( LayerRef lr : gm.getLayers() ) {
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
                 if ( l.getMetadata().getScaleDenominators().first > scale
@@ -909,7 +909,7 @@ public class MapService {
         List<LayerData> list = new ArrayList<LayerData>();
         LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(), gfi.getY(),
                                            gfi.getFeatureCount(), extractFilters( gfi ), styles, gfi.getParameterMap(),
-                                           gfi.getDimensions(), new MapOptionsMaps() );
+                                           gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
 
         double scale = calcScaleWMS130( gfi.getWidth(), gfi.getHeight(), gfi.getEnvelope(), gfi.getCoordinateSystem(),
                                         DEFAULT_PIXEL_SIZE );

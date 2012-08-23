@@ -150,7 +150,7 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
         filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
 
-        final Envelope bbox = query.getEnvelope();
+        final Envelope bbox = query.getQueryBox();
 
         Set<Expression> exprs = new HashSet<Expression>( Styles.getGeometryExpressions( style ) );
 

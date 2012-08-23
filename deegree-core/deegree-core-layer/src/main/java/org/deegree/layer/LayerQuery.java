@@ -78,6 +78,8 @@ public class LayerQuery {
 
     private final MapOptionsMaps options;
 
+    private Envelope queryBox;
+
     /**
      * @param envelope
      * @param width
@@ -92,7 +94,7 @@ public class LayerQuery {
      */
     public LayerQuery( Envelope envelope, int width, int height, Map<String, StyleRef> styles,
                        Map<String, OperatorFilter> filters, Map<String, String> parameters,
-                       Map<String, List<?>> dimensions, double pixelSize, MapOptionsMaps options ) {
+                       Map<String, List<?>> dimensions, double pixelSize, MapOptionsMaps options, Envelope queryBox ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -101,13 +103,15 @@ public class LayerQuery {
         this.parameters = parameters;
         this.dimensions = dimensions;
         this.options = options;
+        this.queryBox = queryBox;
         this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(), pixelSize );
         this.resolution = Utils.calcResolution( envelope, width, height );
     }
 
     public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount,
                        Map<String, OperatorFilter> filters, Map<String, StyleRef> styles,
-                       Map<String, String> parameters, Map<String, List<?>> dimensions, MapOptionsMaps options ) {
+                       Map<String, String> parameters, Map<String, List<?>> dimensions, MapOptionsMaps options,
+                       Envelope queryBox ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -119,6 +123,7 @@ public class LayerQuery {
         this.parameters = parameters;
         this.dimensions = dimensions;
         this.options = options;
+        this.queryBox = queryBox;
         this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(),
                                                    DEFAULT_PIXEL_SIZE );
         this.resolution = Utils.calcResolution( envelope, width, height );
@@ -170,6 +175,10 @@ public class LayerQuery {
 
     public double getResolution() {
         return resolution;
+    }
+
+    public Envelope getQueryBox() {
+        return queryBox;
     }
 
     public MapOptionsMaps getRenderingOptions() {

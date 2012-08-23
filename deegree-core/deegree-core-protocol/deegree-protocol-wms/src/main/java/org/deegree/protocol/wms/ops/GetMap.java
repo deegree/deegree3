@@ -126,6 +126,8 @@ public class GetMap extends RequestBase {
 
     private MapOptionsMaps extensions;
 
+    private double queryBoxSize = -1;
+
     private Map<String, String> parameterMap = new HashMap<String, String>();
 
     /**
@@ -379,6 +381,16 @@ public class GetMap extends RequestBase {
         }
 
         dimensions = parseDimensionValues( map );
+
+        String q = map.get( "QUERYBOXSIZE" );
+        if ( q != null ) {
+            try {
+                queryBoxSize = Double.parseDouble( q );
+                System.out.println(queryBoxSize);
+            } catch ( NumberFormatException e ) {
+                LOG.warn( "The QUERYBOXSIZE parameter could not be parsed." );
+            }
+        }
 
         handleVSPs( map, exts );
     }
@@ -658,6 +670,31 @@ public class GetMap extends RequestBase {
      */
     public MapOptionsMaps getRenderingOptions() {
         return extensions;
+    }
+
+    /**
+     * @return the envelope that should be used for backend queries
+     */
+    public Envelope getQueryBox() {
+        if ( queryBoxSize < 0 ) {
+            return bbox;
+        }
+        double minx = bbox.getMin().get0();
+        double miny = bbox.getMin().get1();
+        double maxx = bbox.getMax().get0();
+        double maxy = bbox.getMax().get1();
+
+        double w = bbox.getSpan0();
+        double h = bbox.getSpan1();
+        double dx = ( w * queryBoxSize - w ) / 2;
+        double dy = ( h * queryBoxSize - h ) / 2;
+
+        minx -= dx;
+        miny -= dy;
+        maxx += dx;
+        maxy += dy;
+
+        return new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, bbox.getCoordinateSystem() );
     }
 
     /**
