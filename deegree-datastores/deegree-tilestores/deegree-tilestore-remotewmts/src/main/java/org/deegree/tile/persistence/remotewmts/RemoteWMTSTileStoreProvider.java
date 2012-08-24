@@ -110,7 +110,7 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         } catch ( ResourceInitException e ) {
             throw e;
         } catch ( Throwable e ) {
-            String msg = "Unable to create RemoteWMSTileStore: " + e.getMessage();
+            String msg = "Unable to create RemoteWMTSTileStore: " + e.getMessage();
             LOG.error( msg, e );
             throw new ResourceInitException( msg, e );
         }
