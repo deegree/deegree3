@@ -22,5 +22,6 @@ deegree Webservices
    layers
    themes
    renderstyles
+   serverconnections
    processproviders
    glossary

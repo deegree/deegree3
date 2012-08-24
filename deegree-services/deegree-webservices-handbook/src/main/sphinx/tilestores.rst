@@ -196,5 +196,41 @@ Let's have a look at an example:
 Remote WMTS tile store
 ----------------------
 
-TBD
+The remote WMTS tile store can be used to generate tiles on-the-fly from a WMTS service. This tile store is read-only.
+
+While you can configure multiple tile data sets in one remote WMTS tile store configuration, they will all be based on one WMTS.
+
+Let's have a look at an example:
+
+.. code-block:: xml
+
+  <RemoteWMTSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewmts" configVersion="3.2.0">
+
+    <RemoteWMTSId>wmts1</RemoteWMTSId>
+
+    <TileDataSet>
+      <Identifier>satellite</Identifier>
+      <OutputFormat>image/png</OutputFormat>
+      <TileMatrixSetId>EPSG:4326</TileMatrixSetId>
+      <RequestParams>
+        <Layer>SatelliteProvo</Layer>
+        <Style>default</Style>
+        <Format>image/png</Format>
+        <TileMatrixSet>EPSG:4326</TileMatrixSet>
+      </RequestParams>
+    </TileDataSet>
+
+  </RemoteWMTSTileStore>
+
+* The remote WMTS id is mandatory, and must point to a WMTS type remote OWS resource
+* The identifier for the tile data sets is optional, defaults to the value of the Layer request parameter
+* The output format is relevant if you want to use this tile data set in a WMTS, defaults to the value of the Format request parameter
+* The tile matrix set id references the local tile matrix set you want to use, defaults to the value of the TileMatrixSet request parameter
+* The request params section specifies parameters to be used in the GetTile requests sent to the WMTS:
+ * The layer parameter specifies the layer name to request
+ * The style parameter specifies the style name to request
+ * The format parameter specifies the image format to request
+ * The tile matrix set parameter specifies the tile matrix set to request
+
+Please note that you need a locally configured tile matrix set that corresponds exactly to the tile matrix set of the remote WMTS. They need not have the same identifier(s) (just configure the TileMatrixSetId option if they differ), but the structure (coordinate system, tile size, number of tiles per matrix etc.) needs to be identical.
 
