@@ -823,6 +823,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             List<Domain> constraints = new ArrayList<Domain>();
 
             // Service constraints
+            constraints.add( new Domain( "ImplementsSimpleWFS", "TRUE" ) );
             constraints.add( new Domain( "ImplementsBasicWFS", "TRUE" ) );
             constraints.add( new Domain( "ImplementsTransactionalWFS", "FALSE" ) );
             constraints.add( new Domain( "ImplementsLockingWFS", "FALSE" ) );
