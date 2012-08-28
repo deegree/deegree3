@@ -85,6 +85,8 @@ class StoredQueryHandler {
 
     public static final String GET_FEATURE_BY_ID = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
 
+    public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:stored-query:ogc-wfs::GetFeatureByType";
+
     private final Map<String, StoredQueryDefinition> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDefinition>() );
 
     private WebFeatureService wfs;
@@ -94,6 +96,11 @@ class StoredQueryHandler {
         // add mandatory GetFeatureById query
         URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
         StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
+        xmlAdapter.load( url );
+        addStoredQuery( xmlAdapter.parse() );
+        // add GetFeatureByType query
+        url = StoredQueryHandler.class.getResource( "typequery.xml" );
+        xmlAdapter = new StoredQueryDefinitionXMLAdapter();
         xmlAdapter.load( url );
         addStoredQuery( xmlAdapter.parse() );
     }

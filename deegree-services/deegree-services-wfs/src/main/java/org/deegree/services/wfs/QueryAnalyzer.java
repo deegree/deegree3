@@ -39,6 +39,7 @@ import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_ID;
+import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_TYPE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,8 +128,6 @@ public class QueryAnalyzer {
 
     private final boolean checkAreaOfUse;
 
-    private String requestedId;
-
     /**
      * Creates a new {@link QueryAnalyzer}.
      * 
@@ -173,7 +172,7 @@ public class QueryAnalyzer {
 
             // TODO what about queries with different SRS?
             if ( wfsQuery.getSrsName() != null ) {
-                requestedCrs = ( (AdHocQuery) wfsQuery ).getSrsName();
+                requestedCrs = wfsQuery.getSrsName();
             } else {
                 requestedCrs = controller.getDefaultQueryCrs();
             }
@@ -222,9 +221,18 @@ public class QueryAnalyzer {
                         throw new OWSException( msg, MISSING_PARAMETER_VALUE, "ID" );
                     }
                     LOG.debug( "GetFeatureById query" );
-                    requestedId = literalEl.getText();
+                    String requestedId = literalEl.getText();
                     adHocQueries.add( new FeatureIdQuery( null, null, null, null, null, null,
                                                           new String[] { requestedId } ) );
+                } else if ( storedQuery.getId().equals( GET_FEATURE_BY_TYPE ) ) {
+                    OMElement literalEl = storedQuery.getParams().get( "TYPENAME" );
+                    if ( literalEl == null ) {
+                        String msg = "Stored query '" + storedQuery.getId() + "' requires parameter 'TYPENAME'.";
+                        throw new OWSException( msg, MISSING_PARAMETER_VALUE, "TYPENAME" );
+                    }
+                    QName typeName = literalEl.getTextAsQName();
+                    LOG.debug( "GetFeatureByType query" );
+                    adHocQueries.add( new FilterQuery( typeName, null, null, null ) );
                 } else {
                     String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
@@ -232,16 +240,6 @@ public class QueryAnalyzer {
             }
         }
         return adHocQueries;
-    }
-
-    /**
-     * In case of a WFS 2.0 <code>GetFeatureById</code> request, this returns the requested id.
-     * 
-     * @return id of the requested feature or <code>null</code> if the request is not a <code>GetFeatureById</code>
-     *         request
-     */
-    public String getRequestedFeatureId() {
-        return requestedId;
     }
 
     /**
