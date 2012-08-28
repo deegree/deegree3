@@ -313,7 +313,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<OMElement> paramEls = getElements( queryEl, new XPath( "wfs200:Parameter", nsContext ) );
         for ( OMElement paramEl : paramEls ) {
             String paramName = getRequiredNodeAsString( paramEl, new XPath( "@name", nsContext ) );
-            paramToValue.put( paramName, paramEl );
+            paramToValue.put( paramName.toUpperCase(), paramEl );
         }
         return new StoredQuery( handle, id, paramToValue );
     }
