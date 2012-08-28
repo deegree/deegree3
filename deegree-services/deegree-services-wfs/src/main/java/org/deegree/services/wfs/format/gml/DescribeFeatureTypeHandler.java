@@ -175,7 +175,7 @@ class DescribeFeatureTypeHandler {
 
         LOG.debug( "doDescribeFeatureType: " + request );
 
-        String mimeType = GMLFormat.getContentType( request.getOutputFormat(), request.getVersion() );
+        String mimeType = format.getMimeType();
         GMLVersion version = format.gmlVersion;
 
         LOG.debug( "contentType:" + response.getContentType() );

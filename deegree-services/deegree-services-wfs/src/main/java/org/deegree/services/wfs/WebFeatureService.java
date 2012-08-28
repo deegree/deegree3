@@ -214,6 +214,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
+    private final Map<GMLVersion, Format> gmlVersionToFormat = new HashMap<GMLVersion, Format>();
+
     private int maxFeatures;
 
     private boolean checkAreaOfUse;
@@ -322,13 +324,17 @@ public class WebFeatureService extends AbstractOWS {
 
                                                                                                                      GML_32 );
             mimeTypeToFormat.put( "application/gml+xml; version=2.1", gml21 );
-            mimeTypeToFormat.put( "application/gml+xml; version=3.0", gml21 );
-            mimeTypeToFormat.put( "application/gml+xml; version=3.1", gml21 );
-            mimeTypeToFormat.put( "application/gml+xml; version=3.2", gml21 );
+            mimeTypeToFormat.put( "application/gml+xml; version=3.0", gml30 );
+            mimeTypeToFormat.put( "application/gml+xml; version=3.1", gml31 );
+            mimeTypeToFormat.put( "application/gml+xml; version=3.2", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/2.1.2", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -354,6 +360,12 @@ public class WebFeatureService extends AbstractOWS {
                 for ( String mimeType : mimeTypes ) {
                     mimeTypeToFormat.put( mimeType, format );
                 }
+            }
+        }
+
+        for ( Format f : mimeTypeToFormat.values() ) {
+            if ( f instanceof org.deegree.services.wfs.format.gml.GMLFormat ) {
+                gmlVersionToFormat.put( ( (org.deegree.services.wfs.format.gml.GMLFormat) f ).getGmlVersion(), f );
             }
         }
     }
@@ -949,26 +961,17 @@ public class WebFeatureService extends AbstractOWS {
         if ( format == null ) {
             // default values for the different WFS version
             if ( VERSION_100.equals( requestVersion ) ) {
-                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/2.1.2" );
-                if ( outputFormat == null ) {
-                    format = "text/xml; subtype=gml/2.1.2";
-                }
+                outputFormat = gmlVersionToFormat.get( GMLVersion.GML_2 );
             } else if ( VERSION_110.equals( requestVersion ) ) {
-                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.1.1" );
-                if ( outputFormat == null ) {
-                    format = "text/xml; subtype=gml/3.1.1";
-                }
+                outputFormat = gmlVersionToFormat.get( GMLVersion.GML_31 );
             } else if ( VERSION_200.equals( requestVersion ) ) {
-                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.2.1" );
-                if ( outputFormat == null ) {
-                    format = "text/xml; subtype=gml/3.2.1";
-                }
+                outputFormat = gmlVersionToFormat.get( GMLVersion.GML_32 );
             }
         } else {
             if ( "GML2".equals( format ) || "XMLSCHEMA".equals( format ) ) {
-                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/2.1.2" );
+                outputFormat = gmlVersionToFormat.get( GMLVersion.GML_2 );
             } else if ( "GML3".equals( format ) ) {
-                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.1.1" );
+                outputFormat = gmlVersionToFormat.get( GMLVersion.GML_31 );
             } else {
                 outputFormat = mimeTypeToFormat.get( format );
             }

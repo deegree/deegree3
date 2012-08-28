@@ -188,6 +188,8 @@ public class GMLFormat implements Format {
 
     private String appSchemaBaseURL;
 
+    private String mimeType;
+
     public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.service = master.getStoreManager();
@@ -195,6 +197,7 @@ public class GMLFormat implements Format {
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.gmlVersion = gmlVersion;
+        this.mimeType = gmlVersion.getMimeType();
     }
 
     public GMLFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
@@ -258,6 +261,7 @@ public class GMLFormat implements Format {
         }
 
         this.gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
+        this.mimeType = formatDef.getMimeType().get( 0 );
     }
 
     @Override
@@ -334,7 +338,7 @@ public class GMLFormat implements Format {
             throw new OWSException( msg, OPERATION_NOT_SUPPORTED );
         }
 
-        String contentType = getContentType( outputFormat, version );
+        String contentType = mimeType;
         XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( master.getDefaultQueryCrs() );
@@ -384,7 +388,7 @@ public class GMLFormat implements Format {
         // quick check if local references in the output can be ruled out
         boolean localReferencesPossible = localReferencesPossible( analyzer, traverseXLinkDepth );
 
-        String contentType = getContentType( request.getPresentationParams().getOutputFormat(), request.getVersion() );
+        String contentType = mimeType;
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
@@ -507,7 +511,7 @@ public class GMLFormat implements Format {
         // quick check if local references in the output can be ruled out
         boolean localReferencesPossible = localReferencesPossible( analyzer, traverseXLinkDepth );
 
-        String contentType = getContentType( request.getPresentationParams().getOutputFormat(), request.getVersion() );
+        String contentType = mimeType;
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
@@ -870,7 +874,7 @@ public class GMLFormat implements Format {
             schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
         }
 
-        String contentType = getContentType( request.getPresentationParams().getOutputFormat(), request.getVersion() );
+        String contentType = mimeType;
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
 
         Map<org.deegree.protocol.wfs.query.Query, Integer> wfsQueryToIndex = new HashMap<org.deegree.protocol.wfs.query.Query, Integer>();
@@ -1009,30 +1013,6 @@ public class GMLFormat implements Format {
         return schemaLocation;
     }
 
-    /**
-     * Returns the content type header for the HTTP response.
-     * 
-     * @param outputFormat
-     *            requested output format, may be <code>null</code>
-     * @param version
-     *            request version, must not be <code>null</code>
-     * @return content type for the http header, never <code>null</code>
-     */
-    static String getContentType( String outputFormat, Version version ) {
-
-        String contentType = outputFormat;
-        if ( outputFormat == null ) {
-            if ( VERSION_100.equals( version ) ) {
-                contentType = "text/xml; subtype=\"gml/2.1.2\"";
-            } else if ( VERSION_110.equals( version ) ) {
-                contentType = "text/xml; subtype=\"gml/3.1.1\"";
-            } else if ( VERSION_200.equals( version ) ) {
-                contentType = "text/xml; subtype=\"gml/3.2.1\"";
-            }
-        }
-        return contentType;
-    }
-
     private String acquireLock( GetFeature request, QueryAnalyzer analyzer )
                             throws OWSException {
 
@@ -1165,4 +1145,20 @@ public class GMLFormat implements Format {
         }
         return template;
     }
+
+    /**
+     * @return the GML version this format handler was instantiated for, never <code>null</code>.
+     */
+    public GMLVersion getGmlVersion() {
+        return gmlVersion;
+    }
+
+    /**
+     * @return the first configured mime type, or the default mime type for the GML version (new style), never
+     *         <code>null</code>.
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
 }
