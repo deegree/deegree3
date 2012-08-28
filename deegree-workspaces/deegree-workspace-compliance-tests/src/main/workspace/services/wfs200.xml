@@ -9,4 +9,11 @@
   <FeatureStoreId>streams</FeatureStoreId>
   <EnableTransactions>true</EnableTransactions>
   <QueryCRS>urn:ogc:def:crs:EPSG:6.11.2:4326</QueryCRS>
+  <GMLFormat gmlVersion="GML_32">
+    <MimeType>application/gml+xml; version=3.2</MimeType>
+    <MimeType>application/xml; subtype="gml/3.2.1"</MimeType>
+    <GetFeatureResponse>
+      <DisableStreaming>true</DisableStreaming>
+    </GetFeatureResponse>
+  </GMLFormat>
 </deegreeWFS>
