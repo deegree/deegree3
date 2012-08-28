@@ -762,6 +762,8 @@ public class WebFeatureService extends AbstractOWS {
         try {
             if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
                 baseUrl += "XMLSCHEMA";
+            } else if ( VERSION_200.equals( version ) && gmlVersion == GMLVersion.GML_32 ) {
+                baseUrl += URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" );
             } else {
                 baseUrl += URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" );
             }

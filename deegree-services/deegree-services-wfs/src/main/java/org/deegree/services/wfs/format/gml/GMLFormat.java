@@ -46,6 +46,8 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.protocol.wfs.WFSConstants.GML32_NS;
+import static org.deegree.protocol.wfs.WFSConstants.GML32_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -113,6 +115,7 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.ResultType;
@@ -747,7 +750,7 @@ public class GMLFormat implements Format {
         }
 
         if ( outputFormat == GML_2 || allFeatures.getEnvelope() != null ) {
-            writeBoundedBy( gmlStream, outputFormat, allFeatures.getEnvelope() );
+            writeBoundedBy( wfsVersion, gmlStream, outputFormat, allFeatures.getEnvelope() );
         }
 
         // retrieve and write result features
@@ -794,7 +797,7 @@ public class GMLFormat implements Format {
         }
     }
 
-    private void writeBoundedBy( GMLStreamWriter gmlStream, GMLVersion outputFormat, Envelope env )
+    private void writeBoundedBy( Version wfsVersion, GMLStreamWriter gmlStream, GMLVersion outputFormat, Envelope env )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
@@ -825,15 +828,27 @@ public class GMLFormat implements Format {
             break;
         }
         case GML_32: {
-            xmlStream.writeStartElement( "gml", "boundedBy", GML3_2_NS );
-            if ( env == null ) {
-                xmlStream.writeStartElement( "gml", "Null", GML3_2_NS );
-                xmlStream.writeCharacters( "inapplicable" );
+            if ( wfsVersion.equals( VERSION_200 ) ) {
+                xmlStream.writeStartElement( "wfs", "boundedBy", GML3_2_NS );
+                if ( env == null ) {
+                    xmlStream.writeStartElement( "gml", "Null", GML3_2_NS );
+                    xmlStream.writeCharacters( "inapplicable" );
+                    xmlStream.writeEndElement();
+                } else {
+                    gmlStream.write( env );
+                }
                 xmlStream.writeEndElement();
             } else {
-                gmlStream.write( env );
+                xmlStream.writeStartElement( "gml", "boundedBy", GML3_2_NS );
+                if ( env == null ) {
+                    xmlStream.writeStartElement( "gml", "Null", GML3_2_NS );
+                    xmlStream.writeCharacters( "inapplicable" );
+                    xmlStream.writeEndElement();
+                } else {
+                    gmlStream.write( env );
+                }
+                xmlStream.writeEndElement();
             }
-            xmlStream.writeEndElement();
             break;
         }
         }
@@ -970,7 +985,7 @@ public class GMLFormat implements Format {
         if ( !VERSION_200.equals( requestVersion ) ) {
             schemaLocation = this.schemaLocation;
         } else {
-            schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+            schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL + " " + GML32_NS + " " + GML32_SCHEMA_URL;
         }
         if ( responseContainerEl == null ) {
             // use "wfs:FeatureCollection" then
