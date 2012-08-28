@@ -80,4 +80,9 @@ public class WFSConstants {
 
     /** URL of the WFS 2.0.0 schema */
     public static final String WFS_200_SCHEMA_URL = "http://schemas.opengis.net/wfs/2.0/wfs.xsd";
+
+    public static final String GML32_NS = "http://www.opengis.net/gml/3.2";
+
+    public static final String GML32_SCHEMA_URL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
+
 }
