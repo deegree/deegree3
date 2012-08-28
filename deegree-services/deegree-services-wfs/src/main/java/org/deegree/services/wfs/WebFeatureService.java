@@ -920,7 +920,7 @@ public class WebFeatureService extends AbstractOWS {
         } else if ( VERSION_110.equals( requestVersion ) ) {
             serializer = new OWS100ExceptionReportSerializer();
         } else if ( VERSION_200.equals( requestVersion ) ) {
-            serializer = new OWS110ExceptionReportSerializer();
+            serializer = new OWS110ExceptionReportSerializer( VERSION_200 );
         }
         return serializer;
     }
@@ -928,7 +928,7 @@ public class WebFeatureService extends AbstractOWS {
     private XMLExceptionSerializer<OWSException> getDefaultExceptionSerializer() {
         List<String> offeredVersions = getOfferedVersions();
         if ( offeredVersions.contains( VERSION_200.toString() ) ) {
-            return new OWS110ExceptionReportSerializer();
+            return new OWS110ExceptionReportSerializer( VERSION_200 );
         } else if ( offeredVersions.contains( VERSION_110.toString() ) ) {
             return new OWS100ExceptionReportSerializer();
         }

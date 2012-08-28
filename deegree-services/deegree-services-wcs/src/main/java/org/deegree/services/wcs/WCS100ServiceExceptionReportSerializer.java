@@ -57,7 +57,7 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
  * @version $Revision$, $Date$
  * 
  */
-public class ServiceException120XMLAdapter extends XMLExceptionSerializer<OWSException> {
+public class WCS100ServiceExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 

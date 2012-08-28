@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.csw.exporthandling;
+package org.deegree.services.sos;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
@@ -44,41 +44,53 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for CSW 2.0.2 ExceptionReports.
- * <p>
- * NOTE: The OGC 07-006r1 spec defines the exception version to be (OWS Commons) 1.2.0 but the OWS schema location to be
- * 1.0.0.
- * </p>
+ * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 <code>ExceptionReport</code> documents.
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CSW202ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
+public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows";
+    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
+    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
+
+    private final Version version;
+
+    private int statusCode;
+
+    /**
+     * Creates a new {@link OWS110ExceptionReportSerializer} instance.
+     * 
+     * @param version
+     *            version attribute, must not be <code>null</code>
+     * @param statusCode
+     *            status code to return
+     */
+    public SOS100ExceptionReportSerializer( Version version, int statusCode ) {
+        this.version = version;
+        this.statusCode = statusCode;
+    }
 
     @Override
     public void serializeException( HttpServletResponse response, OWSException exception )
                             throws IOException {
 
         response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/vnd.ogc.se_xml" );
-        response.setStatus( 200 );
+        response.setContentType( "application/xml" );
+        response.setStatus( statusCode );
         ServletOutputStream os = response.getOutputStream();
         serializeException( os, exception, "UTF-8" );
     }
 
-    /**
-     * Export an ExceptionReport to the ows 1.0.0 format.
-     */
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
                             throws XMLStreamException {
@@ -89,7 +101,7 @@ public class CSW202ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
         writer.writeNamespace( "ows", OWS_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.2.0" );
+        writer.writeAttribute( "version", "" + version );
         writer.writeStartElement( OWS_NS, "Exception" );
         writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
@@ -101,5 +113,4 @@ public class CSW202ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
         writer.writeEndElement(); // Exception
         writer.writeEndElement(); // ExceptionReport
     }
-
 }

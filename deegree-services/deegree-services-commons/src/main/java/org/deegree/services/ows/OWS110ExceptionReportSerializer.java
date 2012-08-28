@@ -45,11 +45,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 ExceptionReports.
+ * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 <code>ExceptionReport</code> documents.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -62,12 +63,24 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
 
     private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
 
+    private final Version version;
+
+    /**
+     * Creates a new {@link OWS110ExceptionReportSerializer} instance.
+     * 
+     * @param version
+     *            version attribute, must not be <code>null</code>
+     */
+    public OWS110ExceptionReportSerializer( Version version ) {
+        this.version = version;
+    }
+
     @Override
     public void serializeException( HttpServletResponse response, OWSException exception )
                             throws IOException {
 
         response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/vnd.ogc.se_xml" );
+        response.setContentType( "application/xml" );
         if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
             response.setStatus( 500 );
         } else {
@@ -87,7 +100,7 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
         writer.writeNamespace( "ows", OWS_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.1.0" );
+        writer.writeAttribute( "version", "" + version );
         writer.writeStartElement( OWS_NS, "Exception" );
         writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {

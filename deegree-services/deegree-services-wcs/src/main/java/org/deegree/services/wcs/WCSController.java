@@ -236,10 +236,9 @@ public class WCSController extends AbstractOWS {
                                   response );
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
-        } catch ( XMLStreamException e ) {
+        } catch ( Throwable e ) {
             sendServiceException( new OWSException( "an error occured while processing a request",
-                                                    OWSException.NO_APPLICABLE_CODE ), response );
-            LOG.error( "an error occured while processing a request", e );
+                                                    NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -269,10 +268,9 @@ public class WCSController extends AbstractOWS {
             }
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
-        } catch ( XMLStreamException e ) {
-            sendServiceException( new OWSException( "An error occured while processing a request", NO_APPLICABLE_CODE ),
-                                  response );
-            LOG.error( "an error occured while processing a request", e );
+        } catch ( Throwable e ) {
+            sendServiceException( new OWSException( "an error occured while processing a request",
+                                                    NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -497,7 +495,7 @@ public class WCSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( null, new ServiceException120XMLAdapter(), ex, response );
+        sendException( null, new WCS100ServiceExceptionReportSerializer(), ex, response );
     }
 
     private void checkRequiredKeys( Map<String, String> param )
@@ -545,7 +543,6 @@ public class WCSController extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new ServiceException120XMLAdapter();
+        return new WCS100ServiceExceptionReportSerializer();
     }
-
 }

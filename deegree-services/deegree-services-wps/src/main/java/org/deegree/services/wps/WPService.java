@@ -38,6 +38,7 @@ package org.deegree.services.wps;
 
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
@@ -382,7 +383,7 @@ public class WPService extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWS110ExceptionReportSerializer();
+        return new OWS110ExceptionReportSerializer( VERSION_100 );
     }
 
     private WPSRequestType getRequestTypeByName( String requestName )
@@ -545,7 +546,6 @@ public class WPService extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        // use HTTP status code 400 (according to OGC 06-121r3, A.4.1.5)
-        sendException( null, new OWS110ExceptionReportSerializer(), ex, response );
+        sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), ex, response );
     }
 }

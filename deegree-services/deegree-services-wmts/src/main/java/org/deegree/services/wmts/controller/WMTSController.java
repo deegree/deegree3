@@ -45,6 +45,7 @@ import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.protocol.wmts.WMTSConstants.VERSION_100;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.deegree.services.wmts.WMTSProvider.IMPLEMENTATION_METADATA;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -213,7 +214,7 @@ public class WMTSController extends AbstractOWS {
 
     private void sendException( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( null, new OWS110ExceptionReportSerializer(), e, response );
+        sendException( null, new OWS110ExceptionReportSerializer(VERSION_100), e, response );
     }
 
     private void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map,

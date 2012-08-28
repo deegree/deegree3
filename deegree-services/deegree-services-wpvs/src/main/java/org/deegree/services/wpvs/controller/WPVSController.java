@@ -39,6 +39,7 @@ package org.deegree.services.wpvs.controller;
 import static java.util.Collections.EMPTY_LIST;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_100;
 import static org.deegree.services.wpvs.controller.WPVSProvider.IMPLEMENTATION_METADATA;
 
 import java.awt.image.BufferedImage;
@@ -367,13 +368,13 @@ public class WPVSController extends AbstractOWS {
     private void sendServiceException( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
         LOG.error( "Unable to forfil request, sending exception.", e );
-        sendException( null, new OWS110ExceptionReportSerializer(), e, response );
+        sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), e, response );
 
     }
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWS110ExceptionReportSerializer();
+        return new OWS110ExceptionReportSerializer( VERSION_100 );
     }
 
     @Override

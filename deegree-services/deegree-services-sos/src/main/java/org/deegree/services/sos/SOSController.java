@@ -81,7 +81,6 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -120,7 +119,6 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.sos.DeegreeSOS;
 import org.deegree.services.jaxb.sos.PublishedInformation;
-import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.sos.getobservation.Observation100XMLAdapter;
@@ -146,6 +144,8 @@ import org.slf4j.LoggerFactory;
 public class SOSController extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( SOSController.class );
+
+    private final Version SOS100 = Version.parseVersion( "1.0.0" );
 
     private final String SA_PREFIX = "sa";
 
@@ -273,12 +273,12 @@ public class SOSController extends AbstractOWS {
             sendServiceException( new OWSException( ex.getLocalizedMessage(), VERSION_NEGOTIATION_FAILED ), response );
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
-        } catch ( XMLStreamException e ) {
-            sendServiceException( new OWSException( "an error occured while processing a request", NO_APPLICABLE_CODE ),
-                                  response );
-            LOG.error( "an error occured while processing a request", e );
         } catch ( ObservationDatastoreException e ) {
             sendServiceException( new OWSException( "an error occured while processing a request", "" ), response );
+            LOG.error( "an error occured while processing a request", e );
+        } catch ( Throwable e ) {
+            sendServiceException( new OWSException( "an error occured while processing a request", NO_APPLICABLE_CODE ),
+                                  response );
             LOG.error( "an error occured while processing a request", e );
         }
     }
@@ -328,19 +328,14 @@ public class SOSController extends AbstractOWS {
             LOG.debug( "Stack trace:", e );
             sendServiceException( new OWSException( e.getLocalizedMessage(), OWSException.INVALID_PARAMETER_VALUE,
                                                     "eventTime" ), response );
-        } catch ( XMLStreamException e ) {
-            LOG.error( "an error occured while processing the request", e );
-            sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
-                                  response );
-        } catch ( XMLProcessingException e ) {
-            LOG.error( "an error occured while processing the request", e );
-            sendServiceException( new OWSException( "an error occured while processing the request: " + e.getMessage(),
-                                                    NO_APPLICABLE_CODE ), response );
         } catch ( ObservationDatastoreException e ) {
             sendServiceException( new OWSException( "an error occured while processing a request", "" ), response );
             LOG.error( "an error occured while processing a request", e );
+        } catch ( Throwable e ) {
+            sendServiceException( new OWSException( "an error occured while processing a request", NO_APPLICABLE_CODE ),
+                                  response );
+            LOG.error( "an error occured while processing a request", e );
         }
-
     }
 
     private void doGetFeatureOfInterest( GetFeatureOfInterest foi, HttpResponseBuffer response )
@@ -620,7 +615,7 @@ public class SOSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( null, new OWS110ExceptionReportSerializer(), ex, response );
+        sendException( null, getExceptionSerializer( SOS100 ), ex, response );
     }
 
     /**
@@ -665,7 +660,6 @@ public class SOSController extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWS110ExceptionReportSerializer();
+        return new SOS100ExceptionReportSerializer( requestVersion, httpCodeForExceptions );
     }
-
 }

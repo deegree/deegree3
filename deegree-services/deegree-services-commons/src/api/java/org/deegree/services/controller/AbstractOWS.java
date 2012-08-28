@@ -774,6 +774,6 @@ public abstract class AbstractOWS implements OWS {
      * @return suitable XML serializer, never <code>null</code>
      */
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWS110ExceptionReportSerializer();
+        return new OWS110ExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
     }
 }

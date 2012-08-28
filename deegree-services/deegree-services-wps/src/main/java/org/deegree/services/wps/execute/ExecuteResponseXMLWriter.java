@@ -36,6 +36,8 @@
 
 package org.deegree.services.wps.execute;
 
+import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -460,7 +462,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
             break;
         case FAILED:
             writer.writeStartElement( WPS_NS, "ProcessFailed" );
-            OWS110ExceptionReportSerializer exceptionAdapter = new OWS110ExceptionReportSerializer();
+            OWS110ExceptionReportSerializer exceptionAdapter = new OWS110ExceptionReportSerializer( VERSION_100 );
             exceptionAdapter.serializeExceptionToXML( writer, state.getFailedException() );
             writer.writeEndElement();
             break;

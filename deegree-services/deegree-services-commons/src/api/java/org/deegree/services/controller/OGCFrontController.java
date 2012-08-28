@@ -37,6 +37,7 @@ package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.emptyList;
+import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.reflections.util.ClasspathHelper.forClassLoader;
 import static org.reflections.util.ClasspathHelper.forWebInfLib;
@@ -1446,7 +1447,13 @@ public class OGCFrontController extends HttpServlet {
             ( (AbstractOWS) ows ).sendException( null, serializer, e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
-            AbstractOWS.sendException( null, new OWS110ExceptionReportSerializer(), null, e, res );
+            XMLExceptionSerializer<OWSException> serializer = null;
+            if ( requestVersion == null ) {
+                serializer = new OWS110ExceptionReportSerializer( parseVersion( "1.1.0" ) );
+            } else {
+                serializer = new OWS110ExceptionReportSerializer( requestVersion );
+            }
+            AbstractOWS.sendException( null, serializer, null, e, res );
         }
     }
 
