@@ -1023,11 +1023,11 @@ public class GMLFormat implements Format {
         String contentType = outputFormat;
         if ( outputFormat == null ) {
             if ( VERSION_100.equals( version ) ) {
-                contentType = "text/xml; subtype=gml/2.1.2";
+                contentType = "text/xml; subtype=\"gml/2.1.2\"";
             } else if ( VERSION_110.equals( version ) ) {
-                contentType = "text/xml; subtype=gml/3.1.1";
+                contentType = "text/xml; subtype=\"gml/3.1.1\"";
             } else if ( VERSION_200.equals( version ) ) {
-                contentType = "text/xml; subtype=gml/3.2.1";
+                contentType = "text/xml; subtype=\"gml/3.2.1\"";
             }
         }
         return contentType;
