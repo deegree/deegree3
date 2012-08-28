@@ -474,12 +474,6 @@ public class GMLFormat implements Format {
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
 
-        if ( analyzer.getRequestedFeatureId() != null ) {
-            doSingleObjectResponse( request.getVersion(), request.getPresentationParams().getOutputFormat(),
-                                    request.getResolveParams().getDepth(), analyzer.getRequestedFeatureId(), response );
-            return;
-        }
-
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         int traverseXLinkDepth = 0;
