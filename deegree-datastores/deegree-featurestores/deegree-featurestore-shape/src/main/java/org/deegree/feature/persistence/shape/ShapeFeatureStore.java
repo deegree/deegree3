@@ -428,6 +428,11 @@ public class ShapeFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
+        if ( query.getTypeNames().length == 0 ) {
+            // might have been an ID query (unsupported at the moment)
+            return new MemoryFeatureInputStream( new GenericFeatureCollection() );
+        }
+
         QName featureType = query.getTypeNames()[0].getFeatureTypeName();
         if ( featureType != null && !featureType.equals( ft.getName() ) ) {
             // or null?
