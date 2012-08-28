@@ -160,9 +160,9 @@ import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
-import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
+import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -818,7 +818,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private WFSRequestType getRequestTypeByName( String requestName )
                             throws OWSException {
-        WFSRequestType requestType = (WFSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
+        WFSRequestType requestType = (WFSRequestType) ( (ImplementationMetadata<?>) serviceInfo ).getRequestTypeByName( requestName );
         if ( requestType == null ) {
             String msg = "Request type '" + requestName + "' is not supported.";
             throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );
@@ -906,17 +906,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private void sendServiceException( Version requestVersion, OWSException e, HttpResponseBuffer response )
                             throws ServletException {
-
-        if ( VERSION_110.equals( requestVersion ) ) {
-            LOG.debug( "Sending WFS 1.1.0 service exception " + e );
-            sendException( null, new OWS100ExceptionReportSerializer(), e, response );
-        } else if ( VERSION_200.equals( requestVersion ) ) {
-            LOG.debug( "Sending WFS 2.0.0 service exception " + e );
-            sendException( null, new OWS110ExceptionReportSerializer(), e, response );
-        } else {
-            LOG.debug( "Sending WFS 1.0.0 service exception " + e );
-            sendException( null, new PreOWSExceptionReportSerializer( "text/xml" ), e, response );
-        }
+        XMLExceptionSerializer<OWSException> serializer = getExceptionSerializer( requestVersion );
+        sendException( null, serializer, e, response );
     }
 
     @Override
@@ -934,9 +925,9 @@ public class WebFeatureService extends AbstractOWS {
 
     private XMLExceptionSerializer<OWSException> getDefaultExceptionSerializer() {
         List<String> offeredVersions = getOfferedVersions();
-        if (offeredVersions.contains( VERSION_200.toString() )) {
+        if ( offeredVersions.contains( VERSION_200.toString() ) ) {
             return new OWS110ExceptionReportSerializer();
-        } else if (offeredVersions.contains( VERSION_110.toString() )) {
+        } else if ( offeredVersions.contains( VERSION_110.toString() ) ) {
             return new OWS100ExceptionReportSerializer();
         }
         return new PreOWSExceptionReportSerializer( "application/vnd.ogc.se_xml" );
