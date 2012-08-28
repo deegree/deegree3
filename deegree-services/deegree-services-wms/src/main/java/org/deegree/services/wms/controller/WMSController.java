@@ -997,7 +997,7 @@ public class WMSController extends AbstractOWS {
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
 
         WMSControllerBase controller = requestVersion == null ? null : controllers.get( requestVersion );
         if ( controller == null ) {
@@ -1006,7 +1006,7 @@ public class WMSController extends AbstractOWS {
                 controller = iterator.next();
             }
         }
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( controller.EXCEPTIONS, controller.EXCEPTION_MIME );
+        return controller.exceptionSerializer;
     }
 
     public List<OMElement> getExtendedCapabilities( String version ) {

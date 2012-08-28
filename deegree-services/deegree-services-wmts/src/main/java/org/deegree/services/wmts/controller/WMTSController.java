@@ -213,7 +213,7 @@ public class WMTSController extends AbstractOWS {
 
     private void sendException( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), e, response );
+        sendException( null, new OWSException110XMLAdapter(), e, response );
     }
 
     private void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map,
@@ -273,7 +273,7 @@ public class WMTSController extends AbstractOWS {
         }
 
         try {
-            copy( t.getAsStream(), response.getOutputStream() );            
+            copy( t.getAsStream(), response.getOutputStream() );
         } catch ( Throwable e ) {
             throw new ServletException( e );
         }

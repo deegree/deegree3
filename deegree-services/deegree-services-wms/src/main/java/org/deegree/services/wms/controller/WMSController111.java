@@ -77,7 +77,7 @@ public class WMSController111 extends WMSControllerBase {
         EXCEPTION_BLANK = "application/vnd.ogc.se_blank";
         EXCEPTION_INIMAGE = "application/vnd.ogc.se_inimage";
 
-        EXCEPTIONS = new NamespacelessOWSExceptionXMLAdapter();
+        exceptionSerializer = new NamespacelessOWSExceptionXMLAdapter();
 
         EXCEPTION_MIME = EXCEPTION_DEFAULT;
     }
@@ -85,8 +85,7 @@ public class WMSController111 extends WMSControllerBase {
     @Override
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        AbstractOWS.sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, EXCEPTIONS,
-                                   IMPLEMENTATION_METADATA, ex, response );
+        AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
     }
 
     @Override

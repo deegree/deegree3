@@ -48,7 +48,6 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.Resource;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -148,12 +147,12 @@ public interface OWS extends Resource {
     public ImplementationMetadata<?> getImplementationMetadata();
 
     /**
-     * Returns the {@link ExceptionSerializer} and mime-type suitable for the given request version.
+     * Returns the {@link ExceptionSerializer} for the given request version.
      * 
      * @param requestVersion
      *            version of the request for which the exception has to be produced, may be <code>null</code> (implies
      *            that the serializer and mime type for the highest supported version shall be returned)
      * @return never <code>null</code>
      */
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion );
 }

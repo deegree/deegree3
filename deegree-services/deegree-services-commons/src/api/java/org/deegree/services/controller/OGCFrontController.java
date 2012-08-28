@@ -101,7 +101,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.XMLAdapter;
@@ -1443,12 +1442,11 @@ public class OGCFrontController extends HttpServlet {
         if ( ows != null ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
-            Pair<XMLExceptionSerializer<OWSException>, String> serializerAndMime = ows.getExceptionSerializer( requestVersion );
-            ( (AbstractOWS) ows ).sendException( serializerAndMime.second, "UTF-8", null, 200, serializerAndMime.first,
-                                                 e, res );
+            XMLExceptionSerializer<OWSException> serializer = ows.getExceptionSerializer( requestVersion );
+            ( (AbstractOWS) ows ).sendException( null, serializer, e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
-            AbstractOWS.sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), null, e, res );
+            AbstractOWS.sendException( null, new OWSException110XMLAdapter(), null, e, res );
         }
     }
 

@@ -63,7 +63,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -498,8 +497,7 @@ public class WCSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new ServiceException120XMLAdapter(), ex,
-                       response );
+        sendException( null, new ServiceException120XMLAdapter(), ex, response );
     }
 
     private void checkRequiredKeys( Map<String, String> param )
@@ -546,9 +544,8 @@ public class WCSController extends AbstractOWS {
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( new ServiceException120XMLAdapter(),
-                                                                       "application/vnd.ogc.se_xml" );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        return new ServiceException120XMLAdapter();
     }
 
 }

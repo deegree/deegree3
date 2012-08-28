@@ -39,6 +39,8 @@ package org.deegree.services.controller.exception.serializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -51,7 +53,6 @@ import org.deegree.protocol.ows.exception.OWSException;
  * The <code>XMLExceptionSerializer</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -62,16 +63,17 @@ import org.deegree.protocol.ows.exception.OWSException;
 public abstract class XMLExceptionSerializer<T extends OWSException> extends XMLAdapter implements
                                                                                        ExceptionSerializer<T> {
 
-    /**
-     * Wraps a {@link IndentingXMLStreamWriter} around the given output stream and calls
-     * {@link #serializeExceptionToXML(XMLStreamWriter, ControllerException)}. The writer will prepare namespaces and
-     * will start and end the XML document.
-     * 
-     * @param outputStream
-     *            which will be wrapped.
-     * @param exception
-     *            which must be serialized
-     */
+    @Override
+    public void serializeException( HttpServletResponse response, T exception )
+                            throws IOException {
+
+        response.setCharacterEncoding( "UTF-8" );
+        response.setContentType( "text/xml" );
+        response.setStatus( 200 );
+        ServletOutputStream os = response.getOutputStream();
+        serializeException( os, exception, "UTF-8" );
+    }
+
     @Override
     public final void serializeException( OutputStream outputStream, T exception, String requestedEncoding )
                             throws IOException {
@@ -80,9 +82,8 @@ public abstract class XMLExceptionSerializer<T extends OWSException> extends XML
             if ( requestedEncoding == null ) {
                 requestedEncoding = "UTF-8";
             }
-            IndentingXMLStreamWriter xmlWriter = new IndentingXMLStreamWriter(
-                                                                               factory.createXMLStreamWriter( outputStream,
-                                                                                                              requestedEncoding ) );
+            XMLStreamWriter xmlWriter = factory.createXMLStreamWriter( outputStream, requestedEncoding );
+            xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
             xmlWriter.writeStartDocument( requestedEncoding, "1.0" );
             serializeExceptionToXML( xmlWriter, exception );
             xmlWriter.writeEndDocument();

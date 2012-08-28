@@ -620,8 +620,7 @@ public class SOSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, httpCodeForExceptions,
-                       new OWSException110XMLAdapter(), ex, response );
+        sendException( null, new OWSException110XMLAdapter(), ex, response );
     }
 
     /**
@@ -665,9 +664,8 @@ public class SOSController extends AbstractOWS {
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(),
-                                                                       "application/vnd.ogc.se_xml" );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        return new OWSException110XMLAdapter();
     }
 
 }

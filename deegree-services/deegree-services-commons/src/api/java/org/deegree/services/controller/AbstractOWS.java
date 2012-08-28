@@ -69,7 +69,6 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -504,13 +503,11 @@ public abstract class AbstractOWS implements OWS {
         return agreedVersion;
     }
 
-    public <E extends OWSException> void sendException( String contentType, String encoding,
-                                                        Map<String, String> additionalHeaders, int httpStatusCode,
+    public <E extends OWSException> void sendException( Map<String, String> additionalHeaders,
                                                         ExceptionSerializer<E> serializer, E exception,
                                                         HttpServletResponse response )
                             throws ServletException {
-        sendException( contentType, encoding, additionalHeaders, httpStatusCode, serializer,
-                       getImplementationMetadata(), exception, response );
+        sendException( additionalHeaders, serializer, getImplementationMetadata(), exception, response );
     }
 
     /**
@@ -519,14 +516,8 @@ public abstract class AbstractOWS implements OWS {
      * @param <E>
      *            the type of the Exception, which should be subtype of controller exception
      * 
-     * @param contentType
-     *            of the exception response
-     * @param encoding
-     *            of the exception response
      * @param additionalHeaders
      *            to add to the response.
-     * @param httpStatusCode
-     *            of the exception response
      * @param serializer
      *            responsible for creating the appropriate response format of the exception. Could be overridden by a
      *            matching {@link SerializerProvider} on the classpath.
@@ -537,12 +528,12 @@ public abstract class AbstractOWS implements OWS {
      * @throws ServletException
      *             if the exception could not be sent.
      */
-    public static <E extends OWSException> void sendException( String contentType, String encoding,
-                                                               Map<String, String> additionalHeaders,
-                                                               int httpStatusCode, ExceptionSerializer<E> serializer,
+    public static <E extends OWSException> void sendException( Map<String, String> additionalHeaders,
+                                                               ExceptionSerializer<E> serializer,
                                                                ImplementationMetadata<?> md, E exception,
                                                                HttpServletResponse response )
                             throws ServletException {
+
         for ( SerializerProvider p : exceptionSerializers ) {
             if ( p.matches( md ) ) {
                 serializer = p.getSerializer( md, serializer );
@@ -569,8 +560,6 @@ public abstract class AbstractOWS implements OWS {
                 throw new ServletException( e );
             }
 
-            response.setContentType( contentType );
-            response.setCharacterEncoding( encoding );
             if ( additionalHeaders != null && additionalHeaders.size() > 0 ) {
                 for ( String key : additionalHeaders.keySet() ) {
                     String value = additionalHeaders.get( key );
@@ -579,10 +568,9 @@ public abstract class AbstractOWS implements OWS {
                     }
                 }
             }
-            response.setStatus( httpStatusCode );
 
             try {
-                serializer.serializeException( response.getOutputStream(), exception, encoding );
+                serializer.serializeException( response, exception );
             } catch ( IOException e ) {
                 LOG.error( "An error occurred while trying to send an exception: " + e.getLocalizedMessage(), e );
                 throw new ServletException( e );
@@ -642,15 +630,10 @@ public abstract class AbstractOWS implements OWS {
             action = SOAPaction;
         }
 
-        int statusCode = 200;
-        String contentType = "application/soap+xml; action=" + action;
         if ( "http://schemas.xmlsoap.org/soap/envelope/".equals( factory.getSoapVersionURI() ) ) {
             extraHeaders.put( "SOAPAction", action );
-            statusCode = 500;
-
         }
-        sendException( contentType, characterEncoding, extraHeaders, statusCode,
-                       new SOAPExceptionSerializer( version, header, factory, serializer ),
+        sendException( extraHeaders, new SOAPExceptionSerializer( version, header, factory, serializer ),
                        new SOAPException( message, faultCode, exception ), response );
     }
 
@@ -783,14 +766,14 @@ public abstract class AbstractOWS implements OWS {
     }
 
     /**
-     * Returns the {@link ExceptionSerializer} and mime-type suitable for the given request version.
+     * Returns the {@link ExceptionSerializer} for the given request version.
      * 
      * @param requestVersion
-     *            version of the request for which the exception has to be produced, may be <code>null</code> (implies
-     *            that the serializer and mime type for the highest supported version shall be returned)
-     * @return an OWSCommon 1.1.0 XML adapter by default, never <code>null</code>
+     *            version of the request, may be <code>null</code> (implies that the serializer for the highest
+     *            supported version shall be returned)
+     * @return suitable XML serializer, never <code>null</code>
      */
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(), "text/xml" );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        return new OWSException110XMLAdapter();
     }
 }

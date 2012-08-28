@@ -64,7 +64,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -368,14 +367,13 @@ public class WPVSController extends AbstractOWS {
     private void sendServiceException( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
         LOG.error( "Unable to forfil request, sending exception.", e );
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), e, response );
+        sendException( null, new OWSException110XMLAdapter(), e, response );
 
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(),
-                                                                       "application/vnd.ogc.se_xml" );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        return new OWSException110XMLAdapter();
     }
 
     @Override

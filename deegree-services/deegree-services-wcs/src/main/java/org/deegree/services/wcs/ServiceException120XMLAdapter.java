@@ -38,6 +38,10 @@ package org.deegree.services.wcs;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
+import java.io.IOException;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -58,6 +62,16 @@ public class ServiceException120XMLAdapter extends XMLExceptionSerializer<OWSExc
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
     private static final String OGC_SCHEMA = "http://schemas.opengis.net/wcs/1.0.0/OGC-exception.xsd";
+
+    @Override
+    public void serializeException( HttpServletResponse response, OWSException exception )
+                            throws IOException {
+        response.setCharacterEncoding( "UTF-8" );
+        response.setContentType( "application/vnd.ogc.se_xml" );
+        response.setStatus( 200 );
+        ServletOutputStream os = response.getOutputStream();
+        serializeException( os, exception, "UTF-8" );
+    }
 
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )

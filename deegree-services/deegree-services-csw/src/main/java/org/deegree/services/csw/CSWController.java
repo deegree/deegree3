@@ -71,7 +71,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -576,9 +575,7 @@ public class CSWController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-
-        // TODO correct status code?
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OWSException120XMLAdapter(), ex, response );
+        sendException( null, new OWSException120XMLAdapter(), ex, response );
     }
 
     /**
@@ -629,10 +626,8 @@ public class CSWController extends AbstractOWS {
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        String mime = "application/vnd.ogc.se_xml";
-        XMLExceptionSerializer<OWSException> serializer = new OWSException110XMLAdapter();
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( serializer, mime );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        return new OWSException110XMLAdapter();
     }
 
     private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,

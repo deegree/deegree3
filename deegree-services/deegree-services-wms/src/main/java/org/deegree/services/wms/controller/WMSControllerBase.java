@@ -80,7 +80,7 @@ public abstract class WMSControllerBase implements Controller {
 
     protected String EXCEPTION_DEFAULT, EXCEPTION_INIMAGE, EXCEPTION_BLANK;
 
-    protected XMLExceptionSerializer<OWSException> EXCEPTIONS;
+    protected XMLExceptionSerializer<OWSException> exceptionSerializer;
 
     protected String EXCEPTION_MIME = "text/xml";
 
@@ -123,8 +123,7 @@ public abstract class WMSControllerBase implements Controller {
                                 Color color, boolean transparent, String format, WMSController controller )
                             throws ServletException {
         if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
-            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
-                                       response );
+            AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
         } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             Graphics2D g = img.createGraphics();
@@ -148,26 +147,21 @@ public abstract class WMSControllerBase implements Controller {
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
-                                           response );
+                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
             } catch ( IOException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
-                                           response );
+                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
             }
         } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
-                                           response );
+                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
             } catch ( IOException e ) {
-                AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
-                                           response );
+                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
             }
         } else {
-            AbstractOWS.sendException( EXCEPTION_MIME, "UTF-8", null, 200, EXCEPTIONS, IMPLEMENTATION_METADATA, ex,
-                                       response );
+            AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
         }
     }
 
@@ -202,7 +196,8 @@ public abstract class WMSControllerBase implements Controller {
 
     protected abstract void exportCapas( String getUrl, String postUrl, MapService service,
                                          HttpResponseBuffer response, ServiceIdentification identification,
-                                         ServiceProvider provider, WMSController controller, OWSMetadataProvider metadata )
+                                         ServiceProvider provider, WMSController controller,
+                                         OWSMetadataProvider metadata )
                             throws IOException;
 
 }

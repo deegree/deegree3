@@ -36,7 +36,12 @@
 package org.deegree.services.ows;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
+import java.io.IOException;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -56,6 +61,21 @@ public class OWSException100XMLAdapter extends XMLExceptionSerializer<OWSExcepti
     private static final String OWS_NS = "http://www.opengis.net/ows";
 
     private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
+
+    @Override
+    public void serializeException( HttpServletResponse response, OWSException exception )
+                            throws IOException {
+
+        response.setCharacterEncoding( "UTF-8" );
+        response.setContentType( "application/vnd.ogc.se_xml" );
+        if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
+            response.setStatus( 500 );
+        } else {
+            response.setStatus( 400 );
+        }
+        ServletOutputStream os = response.getOutputStream();
+        serializeException( os, exception, "UTF-8" );
+    }
 
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )

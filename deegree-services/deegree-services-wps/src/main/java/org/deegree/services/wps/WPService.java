@@ -64,7 +64,6 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
@@ -382,8 +381,8 @@ public class WPService extends AbstractOWS {
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(), "text/xml" );
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        return new OWSException110XMLAdapter();
     }
 
     private WPSRequestType getRequestTypeByName( String requestName )
@@ -547,6 +546,6 @@ public class WPService extends AbstractOWS {
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
         // use HTTP status code 400 (according to OGC 06-121r3, A.4.1.5)
-        sendException( "text/xml", "UTF-8", null, 400, new OWSException110XMLAdapter(), ex, response );
+        sendException( null, new OWSException110XMLAdapter(), ex, response );
     }
 }

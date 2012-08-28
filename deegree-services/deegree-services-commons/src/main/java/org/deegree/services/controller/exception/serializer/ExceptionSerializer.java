@@ -39,21 +39,31 @@ package org.deegree.services.controller.exception.serializer;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.deegree.protocol.ows.exception.OWSException;
 
 /**
- * The <code>ExceptionSerializer</code> class TODO add class documentation here.
+ * Writes {@link OWSException}s to the {@link HttpServletResponse}.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * @param <T>
- *            the exception which will be serialized, a subtype of {@link ControllerException}
- * 
  */
 public interface ExceptionSerializer<T extends OWSException> {
+
+    /**
+     * Serializes the given exception using the specified encoding.
+     * 
+     * @param response
+     *            servlet response, must not be <code>null</code>
+     * @param exception
+     *            exception to be serialized, must not be <code>null</code>
+     * @throws IOException
+     */
+    public void serializeException( HttpServletResponse response, T exception )
+                            throws IOException;
 
     /**
      * An implementation of this method shall format the given exception and write it to the stream.
@@ -61,7 +71,7 @@ public interface ExceptionSerializer<T extends OWSException> {
      * @param outputStream
      *            to write the implementation specific format to.
      * @param exception
-     *            to write, must be a subtype of {@link ControllerException}
+     *            exception to write
      * @param requestedEncoding
      *            of the stream
      * @throws IOException

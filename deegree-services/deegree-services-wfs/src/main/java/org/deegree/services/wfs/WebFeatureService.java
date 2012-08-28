@@ -160,7 +160,7 @@ import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
-import org.deegree.services.ows.OGCExceptionXMLAdapter;
+import org.deegree.services.ows.OGCExceptionSerializer;
 import org.deegree.services.ows.OWSException100XMLAdapter;
 import org.deegree.services.ows.OWSException110XMLAdapter;
 import org.deegree.services.wfs.format.Format;
@@ -575,24 +575,19 @@ public class WebFeatureService extends AbstractOWS {
         } catch ( OWSException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
-            if ( requestVersion != null && requestVersion.equals( VERSION_100 ) ) {
-                sendServiceException100( e, response );
-            } else {
-                // for any other version...
-                sendServiceException110( e, response );
-            }
+            sendServiceException( requestVersion, e, response );
         } catch ( MissingParameterException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
-            sendServiceException110( new OWSException( e ), response );
+            sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
-            sendServiceException110( new OWSException( e ), response );
+            sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( Throwable e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
-            sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -602,12 +597,6 @@ public class WebFeatureService extends AbstractOWS {
             throw new OWSException( Messages.get( "WFS_TRANSACTIONS_DISABLED", requestName ),
                                     OWSException.OPERATION_NOT_SUPPORTED );
         }
-    }
-
-    private void sendServiceException100( OWSException e, HttpResponseBuffer response )
-                            throws ServletException {
-        LOG.debug( "Sending WFS 1.0.0 service exception " + e );
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OGCExceptionXMLAdapter(), e, response );
     }
 
     @Override
@@ -725,24 +714,19 @@ public class WebFeatureService extends AbstractOWS {
             }
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
-            if ( requestVersion != null && requestVersion.equals( VERSION_100 ) ) {
-                sendServiceException100( e, response );
-            } else {
-                // for any other version...
-                sendServiceException110( e, response );
-            }
+            sendServiceException( requestVersion, e, response );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException110( new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException110( new OWSException( e ), response );
+            sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException110( new OWSException( e ), response );
+            sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException110( new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
     }
 
@@ -908,25 +892,42 @@ public class WebFeatureService extends AbstractOWS {
         return new SchemaLocationXMLStreamWriter( xmlWriter, schemaLocation );
     }
 
-    private void sendServiceException110( OWSException ex, HttpResponseBuffer response )
+    private void sendServiceException( Version requestVersion, OWSException e, HttpResponseBuffer response )
                             throws ServletException {
 
-        LOG.debug( "Sending WFS 1.1.0 service exception " + ex );
-        sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, new OWSException100XMLAdapter(), ex, response );
+        if ( VERSION_110.equals( requestVersion ) ) {
+            LOG.debug( "Sending WFS 1.1.0 service exception " + e );
+            sendException( null, new OWSException100XMLAdapter(), e, response );
+        } else if ( VERSION_200.equals( requestVersion ) ) {
+            LOG.debug( "Sending WFS 2.0.0 service exception " + e );
+            sendException( null, new OWSException110XMLAdapter(), e, response );
+        } else {
+            LOG.debug( "Sending WFS 1.0.0 service exception " + e );
+            sendException( null, new OGCExceptionSerializer( "text/xml" ), e, response );
+        }
     }
 
     @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        String mime = "application/vnd.ogc.se_xml";
-        XMLExceptionSerializer<OWSException> serializer = new OWSException100XMLAdapter();
+    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+        XMLExceptionSerializer<OWSException> serializer = getDefaultExceptionSerializer();
         if ( VERSION_100.equals( requestVersion ) ) {
-            serializer = new OGCExceptionXMLAdapter();
+            serializer = new OGCExceptionSerializer( "application/vnd.ogc.se_xml" );
         } else if ( VERSION_110.equals( requestVersion ) ) {
             serializer = new OWSException100XMLAdapter();
         } else if ( VERSION_200.equals( requestVersion ) ) {
             serializer = new OWSException110XMLAdapter();
         }
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( serializer, mime );
+        return serializer;
+    }
+
+    private XMLExceptionSerializer<OWSException> getDefaultExceptionSerializer() {
+        List<String> offeredVersions = getOfferedVersions();
+        if (offeredVersions.contains( VERSION_200.toString() )) {
+            return new OWSException110XMLAdapter();
+        } else if (offeredVersions.contains( VERSION_110.toString() )) {
+            return new OWSException100XMLAdapter();
+        }
+        return new OGCExceptionSerializer( "application/vnd.ogc.se_xml" );
     }
 
     /**
