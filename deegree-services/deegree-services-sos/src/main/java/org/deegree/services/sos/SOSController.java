@@ -120,7 +120,7 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.sos.DeegreeSOS;
 import org.deegree.services.jaxb.sos.PublishedInformation;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.sos.getobservation.Observation100XMLAdapter;
@@ -620,7 +620,7 @@ public class SOSController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( null, new OWSException110XMLAdapter(), ex, response );
+        sendException( null, new OWS110ExceptionReportSerializer(), ex, response );
     }
 
     /**
@@ -665,7 +665,7 @@ public class SOSController extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWSException110XMLAdapter();
+        return new OWS110ExceptionReportSerializer();
     }
 
 }

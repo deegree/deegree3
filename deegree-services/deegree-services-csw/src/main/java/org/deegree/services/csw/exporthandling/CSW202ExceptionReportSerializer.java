@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.ows;
+package org.deegree.services.csw.exporthandling;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.io.IOException;
 
@@ -48,34 +48,36 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for pre-OWS <code>ExceptionReports</code>.
+ * {@link XMLExceptionSerializer} for CSW 2.0.2 ExceptionReports.
+ * <p>
+ * NOTE: The OGC 07-006r1 spec defines the exception version to be (OWS Commons) 1.2.0 but the OWS schema location to be
+ * 1.0.0.
+ * </p>
  * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OGCExceptionSerializer extends XMLExceptionSerializer<OWSException> {
+public class CSW202ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
 
-    private final String mimeType;
+    private static final String OWS_NS = "http://www.opengis.net/ows";
 
-    public OGCExceptionSerializer( String mimeType ) {
-        this.mimeType = mimeType;
-    }
+    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
 
     @Override
     public void serializeException( HttpServletResponse response, OWSException exception )
                             throws IOException {
 
         response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( mimeType );
+        response.setContentType( "application/vnd.ogc.se_xml" );
         response.setStatus( 200 );
         ServletOutputStream os = response.getOutputStream();
         serializeException( os, exception, "UTF-8" );
     }
 
     /**
-     * Export an ExceptionReport in WMS 1.3.0 format (and possibly others).
+     * Export an ExceptionReport to the ows 1.0.0 format.
      */
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
@@ -83,16 +85,21 @@ public class OGCExceptionSerializer extends XMLExceptionSerializer<OWSException>
         if ( ex == null || writer == null ) {
             return;
         }
-        writer.setDefaultNamespace( OGCNS );
-        writer.writeStartElement( OGCNS, "ServiceExceptionReport" );
-        writer.writeDefaultNamespace( OGCNS );
-        writer.writeStartElement( OGCNS, "ServiceException" );
-        writer.writeAttribute( "code", ex.getExceptionCode() );
+        writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
+        writer.writeNamespace( "ows", OWS_NS );
+        writer.writeNamespace( "xsi", XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
+        writer.writeAttribute( "version", "1.2.0" );
+        writer.writeStartElement( OWS_NS, "Exception" );
+        writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
             writer.writeAttribute( "locator", ex.getLocator() );
         }
+        writer.writeStartElement( OWS_NS, "ExceptionText" );
         writer.writeCharacters( ex.getMessage() );
-        writer.writeEndElement(); // ServiceException
-        writer.writeEndElement(); // ServiceExceptionReport
+        writer.writeEndElement();
+        writer.writeEndElement(); // Exception
+        writer.writeEndElement(); // ExceptionReport
     }
+
 }

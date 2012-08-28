@@ -55,7 +55,7 @@ import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.BoundingBoxInput;
@@ -460,7 +460,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
             break;
         case FAILED:
             writer.writeStartElement( WPS_NS, "ProcessFailed" );
-            OWSException110XMLAdapter exceptionAdapter = new OWSException110XMLAdapter();
+            OWS110ExceptionReportSerializer exceptionAdapter = new OWS110ExceptionReportSerializer();
             exceptionAdapter.serializeExceptionToXML( writer, state.getFailedException() );
             writer.writeEndElement();
             break;

@@ -36,7 +36,6 @@
 package org.deegree.services.ows;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.IOException;
 
@@ -49,18 +48,22 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 ExceptionReports.
+ * {@link XMLExceptionSerializer} for OWS Commons 1.0.0 ExceptionReports.
+ * <p>
+ * NOTE: In contrast to OWS Commons 1.1.0 and later specifications, the HTTP status code is not defined. WFS 1.1.0 CITE
+ * test expects status code 200, therefore this implementation always uses 200.
+ * </p>
  * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OWSException110XMLAdapter extends XMLExceptionSerializer<OWSException> {
+public class OWS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
+    private static final String OWS_NS = "http://www.opengis.net/ows";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
+    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
 
     @Override
     public void serializeException( HttpServletResponse response, OWSException exception )
@@ -68,18 +71,11 @@ public class OWSException110XMLAdapter extends XMLExceptionSerializer<OWSExcepti
 
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/vnd.ogc.se_xml" );
-        if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( 500 );
-        } else {
-            response.setStatus( 400 );
-        }
+        response.setStatus( 200 );
         ServletOutputStream os = response.getOutputStream();
         serializeException( os, exception, "UTF-8" );
     }
 
-    /**
-     * Export an ExceptionReport to the ows 1.1.0 format.
-     */
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
                             throws XMLStreamException {
@@ -90,14 +86,14 @@ public class OWSException110XMLAdapter extends XMLExceptionSerializer<OWSExcepti
         writer.writeNamespace( "ows", OWS_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.1.0" );
+        writer.writeAttribute( "version", "1.0.0" );
         writer.writeStartElement( OWS_NS, "Exception" );
         writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
             writer.writeAttribute( "locator", ex.getLocator() );
         }
         writer.writeStartElement( OWS_NS, "ExceptionText" );
-        writer.writeCharacters( ex.getMessage() );
+        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
         writer.writeEndElement();
         writer.writeEndElement(); // Exception
         writer.writeEndElement(); // ExceptionReport

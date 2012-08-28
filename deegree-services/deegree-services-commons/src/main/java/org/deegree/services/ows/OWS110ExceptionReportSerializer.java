@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -49,19 +49,18 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for OWS Commons 1.2.0 ExceptionReports. TODO the OGC 07-006r1 spec defines the
- * exception version 1.2.0 but the OWS schema location 1.0.0
+ * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 ExceptionReports.
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OWSException120XMLAdapter extends XMLExceptionSerializer<OWSException> {
+public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows";
+    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
+    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
 
     @Override
     public void serializeException( HttpServletResponse response, OWSException exception )
@@ -78,9 +77,6 @@ public class OWSException120XMLAdapter extends XMLExceptionSerializer<OWSExcepti
         serializeException( os, exception, "UTF-8" );
     }
 
-    /**
-     * Export an ExceptionReport to the ows 1.0.0 format.
-     */
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
                             throws XMLStreamException {
@@ -91,7 +87,7 @@ public class OWSException120XMLAdapter extends XMLExceptionSerializer<OWSExcepti
         writer.writeNamespace( "ows", OWS_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.2.0" );
+        writer.writeAttribute( "version", "1.1.0" );
         writer.writeStartElement( OWS_NS, "Exception" );
         writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
@@ -103,5 +99,4 @@ public class OWSException120XMLAdapter extends XMLExceptionSerializer<OWSExcepti
         writer.writeEndElement(); // Exception
         writer.writeEndElement(); // ExceptionReport
     }
-
 }

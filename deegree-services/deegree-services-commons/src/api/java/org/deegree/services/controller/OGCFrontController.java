@@ -116,7 +116,7 @@ import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.slf4j.Logger;
 
 /**
@@ -1446,7 +1446,7 @@ public class OGCFrontController extends HttpServlet {
             ( (AbstractOWS) ows ).sendException( null, serializer, e, res );
         } else {
             // use the most common serializer (OWS 1.1.0)
-            AbstractOWS.sendException( null, new OWSException110XMLAdapter(), null, e, res );
+            AbstractOWS.sendException( null, new OWS110ExceptionReportSerializer(), null, e, res );
         }
     }
 

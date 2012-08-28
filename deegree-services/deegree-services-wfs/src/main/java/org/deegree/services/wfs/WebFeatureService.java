@@ -160,9 +160,9 @@ import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
-import org.deegree.services.ows.OGCExceptionSerializer;
-import org.deegree.services.ows.OWSException100XMLAdapter;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.PreOWSExceptionReportSerializer;
+import org.deegree.services.ows.OWS100ExceptionReportSerializer;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -909,13 +909,13 @@ public class WebFeatureService extends AbstractOWS {
 
         if ( VERSION_110.equals( requestVersion ) ) {
             LOG.debug( "Sending WFS 1.1.0 service exception " + e );
-            sendException( null, new OWSException100XMLAdapter(), e, response );
+            sendException( null, new OWS100ExceptionReportSerializer(), e, response );
         } else if ( VERSION_200.equals( requestVersion ) ) {
             LOG.debug( "Sending WFS 2.0.0 service exception " + e );
-            sendException( null, new OWSException110XMLAdapter(), e, response );
+            sendException( null, new OWS110ExceptionReportSerializer(), e, response );
         } else {
             LOG.debug( "Sending WFS 1.0.0 service exception " + e );
-            sendException( null, new OGCExceptionSerializer( "text/xml" ), e, response );
+            sendException( null, new PreOWSExceptionReportSerializer( "text/xml" ), e, response );
         }
     }
 
@@ -923,11 +923,11 @@ public class WebFeatureService extends AbstractOWS {
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
         XMLExceptionSerializer<OWSException> serializer = getDefaultExceptionSerializer();
         if ( VERSION_100.equals( requestVersion ) ) {
-            serializer = new OGCExceptionSerializer( "application/vnd.ogc.se_xml" );
+            serializer = new PreOWSExceptionReportSerializer( "application/vnd.ogc.se_xml" );
         } else if ( VERSION_110.equals( requestVersion ) ) {
-            serializer = new OWSException100XMLAdapter();
+            serializer = new OWS100ExceptionReportSerializer();
         } else if ( VERSION_200.equals( requestVersion ) ) {
-            serializer = new OWSException110XMLAdapter();
+            serializer = new OWS110ExceptionReportSerializer();
         }
         return serializer;
     }
@@ -935,11 +935,11 @@ public class WebFeatureService extends AbstractOWS {
     private XMLExceptionSerializer<OWSException> getDefaultExceptionSerializer() {
         List<String> offeredVersions = getOfferedVersions();
         if (offeredVersions.contains( VERSION_200.toString() )) {
-            return new OWSException110XMLAdapter();
+            return new OWS110ExceptionReportSerializer();
         } else if (offeredVersions.contains( VERSION_110.toString() )) {
-            return new OWSException100XMLAdapter();
+            return new OWS100ExceptionReportSerializer();
         }
-        return new OGCExceptionSerializer( "application/vnd.ogc.se_xml" );
+        return new PreOWSExceptionReportSerializer( "application/vnd.ogc.se_xml" );
     }
 
     /**

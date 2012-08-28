@@ -56,7 +56,7 @@ import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
-import org.deegree.services.ows.OGCExceptionSerializer;
+import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
 
@@ -77,7 +77,7 @@ public class WMSController130 extends WMSControllerBase {
         EXCEPTION_DEFAULT = "XML";
         EXCEPTION_BLANK = "BLANK";
         EXCEPTION_INIMAGE = "INIMAGE";
-        exceptionSerializer = new OGCExceptionSerializer( EXCEPTION_MIME );
+        exceptionSerializer = new PreOWSExceptionReportSerializer( EXCEPTION_MIME );
     }
 
     @Override

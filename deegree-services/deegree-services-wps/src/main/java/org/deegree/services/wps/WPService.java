@@ -86,7 +86,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.DeegreeWPS;
 import org.deegree.services.jaxb.wps.DefaultExecutionManager;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wps.capabilities.CapabilitiesXMLWriter;
 import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
 import org.deegree.services.wps.execute.ExecuteRequest;
@@ -382,7 +382,7 @@ public class WPService extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWSException110XMLAdapter();
+        return new OWS110ExceptionReportSerializer();
     }
 
     private WPSRequestType getRequestTypeByName( String requestName )
@@ -546,6 +546,6 @@ public class WPService extends AbstractOWS {
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
         // use HTTP status code 400 (according to OGC 06-121r3, A.4.1.5)
-        sendException( null, new OWSException110XMLAdapter(), ex, response );
+        sendException( null, new OWS110ExceptionReportSerializer(), ex, response );
     }
 }

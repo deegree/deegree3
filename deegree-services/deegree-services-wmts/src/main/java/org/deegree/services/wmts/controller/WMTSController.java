@@ -81,7 +81,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wmts.controller.capabilities.WMTSCapabilitiesWriter;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.theme.Theme;
@@ -213,7 +213,7 @@ public class WMTSController extends AbstractOWS {
 
     private void sendException( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( null, new OWSException110XMLAdapter(), e, response );
+        sendException( null, new OWS110ExceptionReportSerializer(), e, response );
     }
 
     private void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map,

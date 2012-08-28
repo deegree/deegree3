@@ -92,7 +92,7 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
-import org.deegree.services.ows.OWSException110XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -367,13 +367,13 @@ public class WPVSController extends AbstractOWS {
     private void sendServiceException( OWSException e, HttpResponseBuffer response )
                             throws ServletException {
         LOG.error( "Unable to forfil request, sending exception.", e );
-        sendException( null, new OWSException110XMLAdapter(), e, response );
+        sendException( null, new OWS110ExceptionReportSerializer(), e, response );
 
     }
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWSException110XMLAdapter();
+        return new OWS110ExceptionReportSerializer();
     }
 
     @Override

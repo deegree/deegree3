@@ -33,14 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.ows;
+package org.deegree.services.wms.controller;
 
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-
-import java.io.IOException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -48,33 +42,14 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for OWS Commons 1.0.0 ExceptionReports.
- * <p>
- * NOTE: In contrast to OWS Commons 1.1.0 and later specifications, the HTTP status code is not defined. WFS 1.1.0 CITE
- * test expects status code 200, therefore this implementation always uses 200.
- * </p>
+ * {@link XMLExceptionSerializer} for WMS 1.1.1 <code>ServiceExceptionReport</code> documents.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OWSException100XMLAdapter extends XMLExceptionSerializer<OWSException> {
-
-    private static final String OWS_NS = "http://www.opengis.net/ows";
-
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
-
-    @Override
-    public void serializeException( HttpServletResponse response, OWSException exception )
-                            throws IOException {
-
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/vnd.ogc.se_xml" );
-        response.setStatus( 200 );
-        ServletOutputStream os = response.getOutputStream();
-        serializeException( os, exception, "UTF-8" );
-    }
+public class WMS111ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
 
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
@@ -82,20 +57,14 @@ public class OWSException100XMLAdapter extends XMLExceptionSerializer<OWSExcepti
         if ( ex == null || writer == null ) {
             return;
         }
-        writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
-        writer.writeNamespace( "ows", OWS_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.0.0" );
-        writer.writeStartElement( OWS_NS, "Exception" );
-        writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
+        writer.writeStartElement( "ServiceExceptionReport" );
+        writer.writeStartElement( "ServiceException" );
+        writer.writeAttribute( "code", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
             writer.writeAttribute( "locator", ex.getLocator() );
         }
-        writer.writeStartElement( OWS_NS, "ExceptionText" );
-        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
-        writer.writeEndElement();
-        writer.writeEndElement(); // Exception
-        writer.writeEndElement(); // ExceptionReport
+        writer.writeCharacters( ex.getMessage() );
+        writer.writeEndElement(); // ServiceException
+        writer.writeEndElement(); // ServiceExceptionReport
     }
 }

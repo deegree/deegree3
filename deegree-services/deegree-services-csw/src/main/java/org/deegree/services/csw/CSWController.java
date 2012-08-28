@@ -99,6 +99,7 @@ import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.DescribeRecordHandler;
 import org.deegree.services.csw.exporthandling.GetRecordByIdHandler;
 import org.deegree.services.csw.exporthandling.GetRecordsHandler;
+import org.deegree.services.csw.exporthandling.CSW202ExceptionReportSerializer;
 import org.deegree.services.csw.exporthandling.TransactionHandler;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdKVPAdapter;
@@ -120,8 +121,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.csw.ElementName;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.ows.OWSException110XMLAdapter;
-import org.deegree.services.ows.OWSException120XMLAdapter;
+import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -575,7 +575,7 @@ public class CSWController extends AbstractOWS {
 
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        sendException( null, new OWSException120XMLAdapter(), ex, response );
+        sendException( null, new CSW202ExceptionReportSerializer(), ex, response );
     }
 
     /**
@@ -627,7 +627,7 @@ public class CSWController extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        return new OWSException110XMLAdapter();
+        return new OWS110ExceptionReportSerializer();
     }
 
     private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
@@ -635,9 +635,9 @@ public class CSWController extends AbstractOWS {
                             throws OMException, ServletException {
         XMLExceptionSerializer<OWSException> serializer;
         if ( version instanceof SOAP11Version ) {
-            serializer = new OWSException110XMLAdapter();
+            serializer = new OWS110ExceptionReportSerializer();
         } else {
-            serializer = new OWSException120XMLAdapter();
+            serializer = new CSW202ExceptionReportSerializer();
         }
         sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
                            request.getCharacterEncoding() );
