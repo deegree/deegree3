@@ -63,8 +63,6 @@ public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
 
     private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
 
-    private final Version version;
-
     private int statusCode;
 
     /**
@@ -75,8 +73,7 @@ public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
      * @param statusCode
      *            status code to return
      */
-    public SOS100ExceptionReportSerializer( Version version, int statusCode ) {
-        this.version = version;
+    public SOS100ExceptionReportSerializer( int statusCode ) {
         this.statusCode = statusCode;
     }
 
@@ -101,7 +98,7 @@ public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
         writer.writeNamespace( "ows", OWS_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "" + version );
+        writer.writeAttribute( "version", "1.1.0" );
         writer.writeStartElement( OWS_NS, "Exception" );
         writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
