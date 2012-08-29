@@ -443,7 +443,8 @@ public class ShapeFeatureStore implements FeatureStore {
             }
         }
 
-        if ( query.getTypeNames().length == 0 && !( query.getFilter() instanceof IdFilter ) ) {
+        if ( query.getTypeNames().length == 0 && !( query.getFilter() instanceof IdFilter ) || idFilterNums != null
+             && idFilterNums.isEmpty() ) {
             return new MemoryFeatureInputStream( new GenericFeatureCollection() );
         }
 
