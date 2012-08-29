@@ -37,47 +37,32 @@
 package org.deegree.services.controller.exception.serializer;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLStreamException;
 
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
- * Writes {@link OWSException}s to the {@link HttpServletResponse}.
+ * Writes {@link OWSException}s to the {@link HttpResponseBuffer}.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface ExceptionSerializer<T extends OWSException> {
+public interface ExceptionSerializer {
 
     /**
-     * Serializes the given exception using the specified encoding.
+     * Serializes the given exception.
      * 
      * @param response
      *            servlet response, must not be <code>null</code>
      * @param exception
      *            exception to be serialized, must not be <code>null</code>
      * @throws IOException
+     * @throws XMLStreamException
      */
-    public void serializeException( HttpServletResponse response, T exception )
-                            throws IOException;
-
-    /**
-     * An implementation of this method shall format the given exception and write it to the stream.
-     * 
-     * @param outputStream
-     *            to write the implementation specific format to.
-     * @param exception
-     *            exception to write
-     * @param requestedEncoding
-     *            of the stream
-     * @throws IOException
-     *             if an error occurred while writing to the stream.
-     */
-    public void serializeException( OutputStream outputStream, T exception, String requestedEncoding )
-                            throws IOException;
-
+    public void serializeException( HttpResponseBuffer response, OWSException exception )
+                            throws IOException, XMLStreamException;
 }

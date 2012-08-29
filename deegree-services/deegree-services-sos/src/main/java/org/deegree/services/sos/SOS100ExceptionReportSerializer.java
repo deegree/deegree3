@@ -39,14 +39,12 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.io.IOException;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 
 /**
@@ -57,7 +55,7 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
  * 
  * @version $Revision$, $Date$
  */
-public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
+public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer {
 
     private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
@@ -78,14 +76,14 @@ public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
     }
 
     @Override
-    public void serializeException( HttpServletResponse response, OWSException exception )
-                            throws IOException {
+    public void serializeException( HttpResponseBuffer response, OWSException exception )
+                            throws IOException, XMLStreamException {
 
+        response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
         response.setStatus( statusCode );
-        ServletOutputStream os = response.getOutputStream();
-        serializeException( os, exception, "UTF-8" );
+        serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
     @Override

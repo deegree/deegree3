@@ -36,7 +36,6 @@
 package org.deegree.services.controller.exception.serializer;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.ImplementationMetadata;
 
 /**
@@ -65,14 +64,11 @@ public interface SerializerProvider {
     boolean matches( ImplementationMetadata<?> metadata );
 
     /**
-     * @param <T>
      * @param metadata
      * @param originalSerializer
      *            the originally selected serializer
      * @return an exception serializer for the specified service. Must not return null if matches(metadata) would return
      *         true.
      */
-    <T extends OWSException> ExceptionSerializer<T> getSerializer( ImplementationMetadata<?> metadata,
-                                                                   ExceptionSerializer<T> originalSerializer );
-
+    ExceptionSerializer getSerializer( ImplementationMetadata<?> metadata, ExceptionSerializer originalSerializer );
 }

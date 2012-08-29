@@ -35,10 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller;
 
-import java.io.IOException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -53,18 +49,7 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
  * 
  * @version $Revision$, $Date$
  */
-public class WMS111ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
-
-    @Override
-    public void serializeException( HttpServletResponse response, OWSException exception )
-                            throws IOException {
-
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/vnd.ogc.se_xml" );
-        response.setStatus( 200 );
-        ServletOutputStream os = response.getOutputStream();
-        serializeException( os, exception, "UTF-8" );
-    }
+public class WMS111ExceptionReportSerializer extends XMLExceptionSerializer {
 
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )

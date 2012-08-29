@@ -237,8 +237,8 @@ public class WCSController extends AbstractOWS {
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
         } catch ( Throwable e ) {
-            sendServiceException( new OWSException( "an error occured while processing a request",
-                                                    NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( "an error occured while processing a request", NO_APPLICABLE_CODE ),
+                                  response );
         }
     }
 
@@ -269,8 +269,8 @@ public class WCSController extends AbstractOWS {
         } catch ( OWSException ex ) {
             sendServiceException( ex, response );
         } catch ( Throwable e ) {
-            sendServiceException( new OWSException( "an error occured while processing a request",
-                                                    NO_APPLICABLE_CODE ), response );
+            sendServiceException( new OWSException( "an error occured while processing a request", NO_APPLICABLE_CODE ),
+                                  response );
         }
     }
 
@@ -542,7 +542,7 @@ public class WCSController extends AbstractOWS {
     }
 
     @Override
-    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+    public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new WCS100ServiceExceptionReportSerializer();
     }
 }

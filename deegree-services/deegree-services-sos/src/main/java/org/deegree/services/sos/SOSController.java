@@ -659,7 +659,7 @@ public class SOSController extends AbstractOWS {
     }
 
     @Override
-    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+    public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new SOS100ExceptionReportSerializer( httpCodeForExceptions );
     }
 }

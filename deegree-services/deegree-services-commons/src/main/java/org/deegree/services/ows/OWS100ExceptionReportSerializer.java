@@ -37,10 +37,6 @@ package org.deegree.services.ows;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
-import java.io.IOException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -59,22 +55,11 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
  * 
  * @version $Revision$, $Date$
  */
-public class OWS100ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
+public class OWS100ExceptionReportSerializer extends XMLExceptionSerializer {
 
     private static final String OWS_NS = "http://www.opengis.net/ows";
 
     private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
-
-    @Override
-    public void serializeException( HttpServletResponse response, OWSException exception )
-                            throws IOException {
-
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/vnd.ogc.se_xml" );
-        response.setStatus( 200 );
-        ServletOutputStream os = response.getOutputStream();
-        serializeException( os, exception, "UTF-8" );
-    }
 
     @Override
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )

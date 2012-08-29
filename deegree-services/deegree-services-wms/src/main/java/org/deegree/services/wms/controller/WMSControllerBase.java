@@ -43,7 +43,6 @@ import static java.util.Arrays.asList;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 import static org.deegree.style.utils.ImageUtils.prepareImage;
 
 import java.awt.Color;
@@ -61,7 +60,6 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -80,7 +78,7 @@ public abstract class WMSControllerBase implements Controller {
 
     protected String EXCEPTION_DEFAULT, EXCEPTION_INIMAGE, EXCEPTION_BLANK;
 
-    protected XMLExceptionSerializer<OWSException> exceptionSerializer;
+    protected XMLExceptionSerializer exceptionSerializer;
 
     protected String EXCEPTION_MIME = "text/xml";
 
@@ -115,7 +113,7 @@ public abstract class WMSControllerBase implements Controller {
             Color color = map.get( "BGCOLOR" ) == null ? white : decode( map.get( "BGCOLOR" ) );
             sendException( e, response, exceptions, width, height, color, transparent, format, controller );
         } catch ( NumberFormatException _ ) {
-            sendException( e, response );
+            sendException( e, response, controller );
         }
     }
 
@@ -123,7 +121,7 @@ public abstract class WMSControllerBase implements Controller {
                                 Color color, boolean transparent, String format, WMSController controller )
                             throws ServletException {
         if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
-            AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+            controller.sendException( null, exceptionSerializer, ex, response );
         } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             Graphics2D g = img.createGraphics();
@@ -147,21 +145,21 @@ public abstract class WMSControllerBase implements Controller {
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+                controller.sendException( null, exceptionSerializer, ex, response );
             } catch ( IOException e ) {
-                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+                controller.sendException( null, exceptionSerializer, ex, response );
             }
         } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
             BufferedImage img = prepareImage( format, width, height, transparent, color );
             try {
                 controller.sendImage( img, response, format );
             } catch ( OWSException e ) {
-                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+                controller.sendException( null, exceptionSerializer, ex, response );
             } catch ( IOException e ) {
-                AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+                controller.sendException( null, exceptionSerializer, ex, response );
             }
         } else {
-            AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+            controller.sendException( null, exceptionSerializer, ex, response );
         }
     }
 

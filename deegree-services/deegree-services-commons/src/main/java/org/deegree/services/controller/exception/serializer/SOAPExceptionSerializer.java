@@ -69,13 +69,13 @@ import org.deegree.services.controller.exception.SOAPException;
  * 
  * @version $Revision$, $Date$
  */
-public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPException> {
+public class SOAPExceptionSerializer extends XMLExceptionSerializer {
 
     private SOAPFactory factory;
 
     private SOAPEnvelope envelope;
 
-    private final XMLExceptionSerializer<OWSException> detailSerializer;
+    private final XMLExceptionSerializer detailSerializer;
 
     private SOAPHeader header;
 
@@ -88,7 +88,7 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPExceptio
      *            which is designed to receive an OWSException
      */
     public SOAPExceptionSerializer( SOAPVersion version, SOAPHeader header, SOAPFactory factory,
-                                    XMLExceptionSerializer<OWSException> detailSerializer ) {
+                                    XMLExceptionSerializer detailSerializer ) {
         this.detailSerializer = detailSerializer;
         this.factory = factory;
         envelope = factory.getDefaultFaultEnvelope();
@@ -97,12 +97,14 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer<SOAPExceptio
 
     }
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, SOAPException exception )
+    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException owsException )
                             throws XMLStreamException {
-        if ( exception == null || writer == null ) {
+
+        if ( owsException == null || writer == null || !( owsException instanceof SOAPException ) ) {
             return;
         }
+
+        SOAPException exception = (SOAPException) owsException;
 
         String ns = factory.getNamespace().getNamespaceURI();
         String prefix = factory.getNamespace().getPrefix();

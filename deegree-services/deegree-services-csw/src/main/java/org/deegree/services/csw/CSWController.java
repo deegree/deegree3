@@ -626,14 +626,14 @@ public class CSWController extends AbstractOWS {
     }
 
     @Override
-    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
+    public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new OWS110ExceptionReportSerializer( Version.parseVersion( "1.2.0" ) );
     }
 
     private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
                                     OWSException e, ServletRequest request, SOAPVersion version )
                             throws OMException, ServletException {
-        XMLExceptionSerializer<OWSException> serializer;
+        XMLExceptionSerializer serializer;
         if ( version instanceof SOAP11Version ) {
             serializer = new OWS110ExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
         } else {

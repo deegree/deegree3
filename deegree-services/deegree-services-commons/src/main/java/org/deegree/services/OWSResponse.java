@@ -271,7 +271,6 @@ public class OWSResponse {
     /**
      * Sends an {@link OWSException} to the client.
      * 
-     * @param <T>
      * @param contentType
      * @param encoding
      * @param additionalHeaders
@@ -279,9 +278,8 @@ public class OWSResponse {
      * @param serializer
      * @param exception
      */
-    public <T extends OWSException> void sendException( String contentType, Map<String, String> additionalHeaders,
-                                                        int httpStatusCode, ExceptionSerializer<T> serializer,
-                                                        T exception ) {
+    public void sendException( String contentType, Map<String, String> additionalHeaders, int httpStatusCode,
+                               ExceptionSerializer serializer, OWSException exception ) {
         rollback();
     }
 }

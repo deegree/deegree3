@@ -60,6 +60,7 @@ import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.services.controller.Credentials;
 import org.slf4j.Logger;
 
 /**
@@ -289,6 +290,9 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     @Override
     public void flushBuffer()
                             throws IOException {
+        if ( wrappee instanceof LoggingHttpResponseWrapper ) {
+            ( (LoggingHttpResponseWrapper) wrappee ).finalizeLogging();
+        }
         if ( xmlWriter != null ) {
             try {
                 xmlWriter.flush();
@@ -330,6 +334,18 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
      */
     public OutputStream getBuffer() {
         return buffer;
+    }
+
+    public void setExceptionSent() {
+        if ( wrappee instanceof LoggingHttpResponseWrapper ) {
+            ( (LoggingHttpResponseWrapper) wrappee ).setExceptionSent();
+        }
+    }
+
+    public void setCredentials( Credentials creds ) {
+        if ( wrappee instanceof LoggingHttpResponseWrapper ) {
+            ( (LoggingHttpResponseWrapper) wrappee ).setCredentials( creds );
+        }
     }
 
     /**

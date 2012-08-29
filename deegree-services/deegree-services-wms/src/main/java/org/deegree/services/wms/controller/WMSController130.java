@@ -37,7 +37,6 @@
 package org.deegree.services.wms.controller;
 
 import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 
@@ -53,7 +52,6 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
@@ -81,9 +79,9 @@ public class WMSController130 extends WMSControllerBase {
     }
 
     @Override
-    public void sendException( OWSException ex, HttpResponseBuffer response )
+    public void sendException( OWSException ex, HttpResponseBuffer response, WMSController controller )
                             throws ServletException {
-        AbstractOWS.sendException( null, exceptionSerializer, IMPLEMENTATION_METADATA, ex, response );
+        controller.sendException( null, exceptionSerializer, ex, response );
     }
 
     @Override

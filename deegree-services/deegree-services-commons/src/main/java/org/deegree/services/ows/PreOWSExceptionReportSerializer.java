@@ -39,13 +39,12 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 
 import java.io.IOException;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * {@link XMLExceptionSerializer} for pre-OWS <code>ExceptionReports</code>.
@@ -55,7 +54,7 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
  * 
  * @version $Revision$, $Date$
  */
-public class PreOWSExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
+public class PreOWSExceptionReportSerializer extends XMLExceptionSerializer {
 
     private final String mimeType;
 
@@ -64,14 +63,14 @@ public class PreOWSExceptionReportSerializer extends XMLExceptionSerializer<OWSE
     }
 
     @Override
-    public void serializeException( HttpServletResponse response, OWSException exception )
-                            throws IOException {
+    public void serializeException( HttpResponseBuffer response, OWSException exception )
+                            throws IOException, XMLStreamException {
 
+        response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( mimeType );
         response.setStatus( 200 );
-        ServletOutputStream os = response.getOutputStream();
-        serializeException( os, exception, "UTF-8" );
+        serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
     @Override

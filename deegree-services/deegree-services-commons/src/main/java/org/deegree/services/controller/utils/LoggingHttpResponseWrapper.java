@@ -88,23 +88,20 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param response
      * @param requestLog
      * @param successfulOnly
-     * @param entryTime
      * @param creds
      * @param logger
      * @param request
      *            is closed before logging is initiated if not null
      */
     public LoggingHttpResponseWrapper( String address, HttpServletResponse response, File requestLog,
-                                       boolean successfulOnly, long entryTime, Credentials creds, RequestLogger logger,
-                                       InputStream request ) {
+                                       boolean successfulOnly, RequestLogger logger, InputStream request ) {
         super( response );
         this.address = address;
         this.requestLog = requestLog;
         this.successfulOnly = successfulOnly;
-        this.entryTime = entryTime;
-        this.creds = creds;
         this.logger = logger;
         this.request = request;
+        this.entryTime = System.currentTimeMillis();
     }
 
     /**
@@ -114,29 +111,22 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param kvp
      * @param successfulOnly
      * @param entryTime
-     * @param creds
      * @param logger
      * @param request
      *            is closed before logging is initiated if not null
      */
     public LoggingHttpResponseWrapper( HttpServletResponse response, String kvp, boolean successfulOnly,
-                                       long entryTime, Credentials creds, RequestLogger logger, InputStream request ) {
+                                       RequestLogger logger, InputStream request ) {
         super( response );
         this.kvp = kvp;
         this.successfulOnly = successfulOnly;
-        this.entryTime = entryTime;
-        this.creds = creds;
         this.logger = logger;
         this.request = request;
+        this.entryTime = System.currentTimeMillis();
     }
 
-    /**
-     * If no logging is done.
-     * 
-     * @param response
-     */
-    public LoggingHttpResponseWrapper( HttpServletResponse response ) {
-        super( response );
+    public void setCredentials( Credentials creds ) {
+        this.creds = creds;
     }
 
     /**
@@ -175,5 +165,4 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
             }
         }
     }
-
 }

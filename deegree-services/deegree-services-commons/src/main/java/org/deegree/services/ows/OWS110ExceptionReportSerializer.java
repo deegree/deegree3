@@ -40,14 +40,13 @@ import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE
 
 import java.io.IOException;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 <code>ExceptionReport</code> documents.
@@ -57,7 +56,7 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
  * 
  * @version $Revision$, $Date$
  */
-public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer<OWSException> {
+public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
 
     private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
@@ -76,9 +75,10 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
     }
 
     @Override
-    public void serializeException( HttpServletResponse response, OWSException exception )
-                            throws IOException {
+    public void serializeException( HttpResponseBuffer response, OWSException exception )
+                            throws IOException, XMLStreamException {
 
+        response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
         if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
@@ -86,8 +86,7 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer<OWSE
         } else {
             response.setStatus( 400 );
         }
-        ServletOutputStream os = response.getOutputStream();
-        serializeException( os, exception, "UTF-8" );
+        serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
     @Override

@@ -908,13 +908,13 @@ public class WebFeatureService extends AbstractOWS {
 
     private void sendServiceException( Version requestVersion, OWSException e, HttpResponseBuffer response )
                             throws ServletException {
-        XMLExceptionSerializer<OWSException> serializer = getExceptionSerializer( requestVersion );
+        XMLExceptionSerializer serializer = getExceptionSerializer( requestVersion );
         sendException( null, serializer, e, response );
     }
 
     @Override
-    public XMLExceptionSerializer<OWSException> getExceptionSerializer( Version requestVersion ) {
-        XMLExceptionSerializer<OWSException> serializer = getDefaultExceptionSerializer();
+    public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
+        XMLExceptionSerializer serializer = getDefaultExceptionSerializer();
         if ( VERSION_100.equals( requestVersion ) ) {
             serializer = new PreOWSExceptionReportSerializer( "application/vnd.ogc.se_xml" );
         } else if ( VERSION_110.equals( requestVersion ) ) {
@@ -925,7 +925,7 @@ public class WebFeatureService extends AbstractOWS {
         return serializer;
     }
 
-    private XMLExceptionSerializer<OWSException> getDefaultExceptionSerializer() {
+    private XMLExceptionSerializer getDefaultExceptionSerializer() {
         List<String> offeredVersions = getOfferedVersions();
         if ( offeredVersions.contains( VERSION_200.toString() ) ) {
             return new OWS110ExceptionReportSerializer( VERSION_200 );
