@@ -1,4 +1,4 @@
-<wfs:StoredQueryDefinition id="urn:ogc:def:stored-query:ogc-wfs::GetFeatureByType" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<wfs:StoredQueryDefinition id="urn:ogc:def:storedQuery:OGC-WFS::GetFeatureByType" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2">
   <wfs:Title>GetFeatureByType</wfs:Title>
   <wfs:Abstract>Returns a collection of features by type.</wfs:Abstract>
