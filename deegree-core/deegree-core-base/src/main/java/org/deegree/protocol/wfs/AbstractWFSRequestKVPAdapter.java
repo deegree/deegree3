@@ -160,7 +160,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
      * </ul>
      * 
      * @param param
-     *            the parameters of the request, normalized
+     *            the parameters of the request, normalized, may be <code>null</code>
      * @return mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
      *         the binding of the default namespace, or <code>null</code> if no <code>NAMESPACE</code> parameter present
      * @throws InvalidParameterValueException
