@@ -78,6 +78,8 @@ public class KVPUtils {
      * @return the value
      * @throws MissingParameterException
      *             if the kvp map doesn't contain the key
+     * @throws InvalidParameterValueException
+     *             if the map contains the key, but its value is empty
      */
     public static String getRequired( Map<String, String> param, String key )
                             throws MissingParameterException {
