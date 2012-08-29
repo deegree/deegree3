@@ -230,9 +230,12 @@ public class QueryAnalyzer {
                         String msg = "Stored query '" + storedQuery.getId() + "' requires parameter 'TYPENAME'.";
                         throw new OWSException( msg, MISSING_PARAMETER_VALUE, "TYPENAME" );
                     }
-                    QName typeName = literalEl.getTextAsQName();
+                    String tn = literalEl.getText();
+                    if ( tn.contains( ":" ) ) {
+                        tn = tn.split( ":" )[1];
+                    }
                     LOG.debug( "GetFeatureByType query" );
-                    adHocQueries.add( new FilterQuery( typeName, null, null, null ) );
+                    adHocQueries.add( new FilterQuery( new QName( tn ), null, null, null ) );
                 } else {
                     String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
