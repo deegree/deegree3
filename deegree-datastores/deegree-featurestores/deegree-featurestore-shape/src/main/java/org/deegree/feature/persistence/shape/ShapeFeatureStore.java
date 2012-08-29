@@ -99,6 +99,8 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -428,15 +430,29 @@ public class ShapeFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        if ( query.getTypeNames().length == 0 ) {
-            // might have been an ID query (unsupported at the moment)
+        HashSet<Integer> idFilterNums = null;
+        if ( query.getFilter() instanceof IdFilter ) {
+            idFilterNums = new HashSet<Integer>();
+            IdFilter f = (IdFilter) query.getFilter();
+            List<ResourceId> ids = f.getSelectedIds();
+            for ( ResourceId id : ids ) {
+                if ( id.getRid().startsWith( fidPrefix ) ) {
+                    String[] ss = id.getRid().split( "_" );
+                    idFilterNums.add( Integer.valueOf( ss[1] ) );
+                }
+            }
+        }
+
+        if ( query.getTypeNames().length == 0 && !( query.getFilter() instanceof IdFilter ) ) {
             return new MemoryFeatureInputStream( new GenericFeatureCollection() );
         }
 
-        QName featureType = query.getTypeNames()[0].getFeatureTypeName();
-        if ( featureType != null && !featureType.equals( ft.getName() ) ) {
-            // or null?
-            return new MemoryFeatureInputStream( new GenericFeatureCollection() );
+        if ( query.getTypeNames().length > 0 ) {
+            QName featureType = query.getTypeNames()[0].getFeatureTypeName();
+            if ( featureType != null && !featureType.equals( ft.getName() ) ) {
+                // or null?
+                return new MemoryFeatureInputStream( new GenericFeatureCollection() );
+            }
         }
 
         checkForUpdate();
@@ -451,10 +467,17 @@ public class ShapeFeatureStore implements FeatureStore {
         List<Pair<Integer, Long>> recNumsAndPos = new LinkedList<Pair<Integer, Long>>();
         Envelope bbox = getTransformedEnvelope( query.getPrefilterBBoxEnvelope() );
 
+        if ( bbox == null ) {
+            getEnvelope( null );
+        }
+
         boolean queryIndex = filterPair.first == null || !generateAlphanumericIndexes;
         Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filterPair.first,
                                                                              query.getSortProperties() );
         HashSet<Integer> recNums = new HashSet<Integer>( unzipPair( recNumsAndPos ).first );
+        if ( idFilterNums != null ) {
+            recNums.addAll( idFilterNums );
+        }
         recNumsAndPos = shp.query( bbox, filter == null || p == null ? null : recNums );
         LOG.debug( "{} records matching after BBOX filtering", recNumsAndPos.size() );
 
