@@ -78,6 +78,10 @@ public abstract class AbstractWFSRequestKVPAdapter {
 
         QName[] typeNames = null;
         String typeNameString = kvpUC.get( "TYPENAME" );
+        if ( typeNameString == null ) {
+            // probably this is what the spec actually wants to specify, there are typos however...
+            typeNameString = kvpUC.get( "TYPENAMES" );
+        }
         if ( typeNameString != null ) {
             String[] typeNameStrings = typeNameString.split( "," );
             typeNames = new QName[typeNameStrings.length];

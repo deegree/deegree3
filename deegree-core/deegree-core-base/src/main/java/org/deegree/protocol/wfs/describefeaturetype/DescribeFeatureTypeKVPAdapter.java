@@ -175,7 +175,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams.get( "NAMESPACE" ) );
 
-        // optional: 'TYPENAME'
+        // optional: 'TYPENAME'/'TYPENAMES'
         QName[] typeNames = extractTypeNames( kvpParams, nsBindings );
 
         // optional: 'OUTPUTFORMAT'
