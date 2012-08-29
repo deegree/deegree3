@@ -820,7 +820,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private WFSRequestType getRequestTypeByName( String requestName )
                             throws OWSException {
-        WFSRequestType requestType = (WFSRequestType) ( (ImplementationMetadata<?>) serviceInfo ).getRequestTypeByName( requestName );
+        WFSRequestType requestType = (WFSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
         if ( requestType == null ) {
             String msg = "Request type '" + requestName + "' is not supported.";
             throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );
