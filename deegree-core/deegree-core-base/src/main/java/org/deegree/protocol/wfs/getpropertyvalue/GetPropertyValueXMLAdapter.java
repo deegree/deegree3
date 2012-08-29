@@ -36,6 +36,7 @@
 
 package org.deegree.protocol.wfs.getpropertyvalue;
 
+import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
@@ -107,6 +108,10 @@ public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
 
         // <xsd:attribute name="valueReference" type="xsd:string" use="required"/>
         String valueRefStr = getRequiredNodeAsString( rootElement, new XPath( "@valueReference", nsContext ) );
+        if ( valueRefStr.isEmpty() ) {
+            throw new OWSException( "The valueReference attribute was empty.", INVALID_PARAMETER_VALUE,
+                                    "valueReference" );
+        }
         ValueReference valueReference = new ValueReference( valueRefStr, getNamespaceContext( rootElement ) );
 
         // <xsd:attribute name="resolvePath" type="xsd:string"/>
