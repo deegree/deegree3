@@ -34,10 +34,11 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.query;
+package org.deegree.filter;
 
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * A {@link ValueReference} that is requested to be included in a {@link Query} response.

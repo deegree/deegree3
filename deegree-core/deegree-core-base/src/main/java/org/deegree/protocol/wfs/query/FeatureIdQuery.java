@@ -36,6 +36,7 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 

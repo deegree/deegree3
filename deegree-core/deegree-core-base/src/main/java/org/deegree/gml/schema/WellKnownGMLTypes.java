@@ -39,7 +39,6 @@ import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,6 +64,8 @@ import org.slf4j.LoggerFactory;
 public class WellKnownGMLTypes {
 
     private static final Logger LOG = LoggerFactory.getLogger( WellKnownGMLTypes.class );
+
+    private static final String WFS_NS = "http://www.opengis.net/wfs";
 
     private static final Map<QName, FeatureCollectionType> elNameToFt = new HashMap<QName, FeatureCollectionType>();
 

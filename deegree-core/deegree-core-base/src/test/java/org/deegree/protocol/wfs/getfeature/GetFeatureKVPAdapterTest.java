@@ -50,6 +50,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
@@ -58,7 +59,6 @@ import org.deegree.protocol.wfs.query.AdHocQuery;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
-import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.junit.Test;
 

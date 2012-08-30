@@ -43,7 +43,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -87,11 +86,11 @@ import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
+import org.deegree.filter.ProjectionClause;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
-import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,6 +106,8 @@ import org.slf4j.LoggerFactory;
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureWriter.class );
+
+    private static final String WFS_NS = "http://www.opengis.net/wfs";
 
     private final QName fidAttr;
 

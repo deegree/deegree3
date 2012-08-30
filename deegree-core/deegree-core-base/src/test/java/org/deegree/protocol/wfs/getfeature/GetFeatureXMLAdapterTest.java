@@ -57,6 +57,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -69,7 +70,6 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.query.FilterQuery;
-import org.deegree.protocol.wfs.query.ProjectionClause;
 import org.deegree.protocol.wfs.query.Query;
 import org.junit.Test;
 
