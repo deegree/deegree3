@@ -37,7 +37,6 @@ package org.deegree.protocol.wps.client;
 
 import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_NAMESPACE;
 import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_PREFIX;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -101,6 +100,8 @@ public class WPSClientTest {
     private static final String REMOTE_XML_INPUT = "http://demo.deegree.org/deegree-wfs/services?REQUEST=GetCapabilities&version=1.1.0&service=WFS";
 
     private static final String REMOTE_BINARY_INPUT = "http://www.deegree.org/deegree/images/deegree/logo-deegree.png";
+
+    private static final String WFS_NS = "http://www.opengis.net/wfs";
 
     @Test
     public void testMetadata()

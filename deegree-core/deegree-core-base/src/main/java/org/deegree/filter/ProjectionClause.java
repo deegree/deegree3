@@ -38,10 +38,9 @@ package org.deegree.filter;
 
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.protocol.wfs.query.Query;
 
 /**
- * A {@link ValueReference} that is requested to be included in a {@link Query} response.
+ * A {@link ValueReference} that is requested to be included in a Query response.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

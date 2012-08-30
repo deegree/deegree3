@@ -53,6 +53,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-protocol-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>jogl</groupId>
       <artifactId>jogl</artifactId>
     </dependency>
