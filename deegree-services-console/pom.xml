@@ -12,7 +12,7 @@
     <repository>
       <id>deegree-central</id>
       <name>havola.lat-lon.de-releases</name>
-      <url>http://artefacts.deegree.org/repo</url>
+      <url>http://repo.deegree.org/content/groups/public/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -22,11 +22,11 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
+      <url>http://repo.deegree.org/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 

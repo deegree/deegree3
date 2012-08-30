@@ -15,7 +15,7 @@
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
+      <url>http://repo.deegree.org/content/groups/public/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -25,7 +25,7 @@
   <distributionManagement>
     <snapshotRepository>
       <id>deegree-repository</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 

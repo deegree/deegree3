@@ -12,7 +12,7 @@
         <repository>
             <id>ext-releases</id>
             <name>havola.lat-lon.de-releases</name>
-            <url>http://artefacts.deegree.org/ext-releases-local</url>
+            <url>http://repo.deegree.org/content/groups/public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -20,7 +20,7 @@
         <repository>
             <id>ext-snapshots</id>
             <name>havola.lat-lon.de-snapshots</name>
-            <url>http://artefacts.deegree.org/ext-snapshots-local</url>
+            <url>http://repo.deegree.org/content/groups/public/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -28,7 +28,7 @@
         <repository>
             <id>deegree-snapshots</id>
             <name>deegree-snapshots</name>
-            <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+            <url>http://repo.deegree.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
