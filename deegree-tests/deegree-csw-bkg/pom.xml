@@ -8,6 +8,9 @@
 
   <properties>
     <cswUrl>http://localhost:${portnumber}/deegree-csw-bkg/services</cswUrl>
+    <jdbc.url>jdbc:postgresql://localhost:5432/deegree3-cite-csw</jdbc.url>
+    <jdbc.user>postgres</jdbc.user>
+    <jdbc.password>postgres</jdbc.password>
   </properties>
 
   <parent>
@@ -61,9 +64,38 @@
         <executions>
           <execution>
             <id>workspace-inplace</id>
+            <phase>validate</phase>
             <goals>
               <goal>workspace-inplace</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-jdbc</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/workspace/jdbc</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>src/main/config</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>conn1.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -148,7 +180,7 @@
     </profile>
     <profile>
       <id>oracle</id>
-       <repositories>
+      <repositories>
         <repository>
           <id>deegree-restricted</id>
           <name>deegree-restricted</name>
@@ -175,8 +207,8 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-     <groupId>org.deegree</groupId>
-     <artifactId>deegree-workspace-csw-tests</artifactId>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-workspace-csw-tests</artifactId>
       <version>${project.version}</version>
       <type>deegree-workspace</type>
     </dependency>
