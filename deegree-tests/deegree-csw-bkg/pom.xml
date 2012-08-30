@@ -78,13 +78,74 @@
         <version>2.6</version>
         <executions>
           <execution>
-            <id>copy-jdbc</id>
+            <id>copy-jdbc1</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <configuration>
               <outputDirectory>src/main/workspace/jdbc</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>src/main/config</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>conn1.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          
+          <execution>
+            <id>copy-jdbc2</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/workspace/jdbc</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>src/main/config</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>conn1.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-jdbc3</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deegree-workspace-csw-tests/jdbc</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>src/main/config</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>conn1.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-jdbc4</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/webapp/WEB-INF/workspace/jdbc</outputDirectory>
               <overwrite>true</overwrite>
               <resources>
                 <resource>
