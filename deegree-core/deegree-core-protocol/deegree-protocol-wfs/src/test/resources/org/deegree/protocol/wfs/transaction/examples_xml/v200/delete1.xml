@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<wfs:Transaction version="2.0.0" service="WFS" xmlns="http://www.someserver.com/myns" xmlns:fes="http://www.opengis.net/fes/2.0"
+  xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <wfs:Delete typeName="InWaterA_1M">
+    <fes:Filter>
+      <fes:ResourceId rid="InWaterA_1M.1013" />
+    </fes:Filter>
+  </wfs:Delete>
+</wfs:Transaction>

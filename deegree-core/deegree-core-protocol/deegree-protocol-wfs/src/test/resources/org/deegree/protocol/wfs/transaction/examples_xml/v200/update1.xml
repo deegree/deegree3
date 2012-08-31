@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<wfs:Transaction version="2.0.0" service="WFS" xmlns="http://www.someserver.com/myns" xmlns:fes="http://www.opengis.net/fes/2.0"
+  xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <wfs:Update typeName="BuiltUpA_1M">
+    <wfs:Property>
+      <wfs:ValueReference>populationType</wfs:ValueReference>
+      <wfs:Value>CITY</wfs:Value>
+    </wfs:Property>
+    <fes:Filter>
+      <fes:ResourceId rid="BuiltUpA_1M.1013" />
+      <fes:ResourceId rid="BuiltUpA_1M.34" />
+      <fes:ResourceId rid="BuiltUpA_1M.24256" />
+    </fes:Filter>
+  </wfs:Update>
+</wfs:Transaction>
