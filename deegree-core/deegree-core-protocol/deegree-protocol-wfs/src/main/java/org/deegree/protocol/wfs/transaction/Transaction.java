@@ -10,6 +10,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <ul>
  * <li>WFS 1.0.0</li>
  * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
  * 
@@ -51,16 +52,16 @@ public class Transaction extends AbstractWFSRequest {
      * Creates a new {@link Transaction} request.
      * 
      * @param version
-     *            protocol version, must not be null
+     *            protocol version, must not be <code>null</code>
      * @param handle
-     *            client-generated identifier, can be null
+     *            client-generated identifier, can be <code>null</code>
      * @param lockId
-     *            lockd id, can be null
+     *            lockd id, can be <code>null</code>
      * @param releaseAction
-     *            controls how to treat locked features when the transaction has been completed, can be null
-     *            (unspecified)
+     *            controls how to treat locked features when the transaction has been completed, can be
+     *            <code>null</code> (unspecified)
      * @param operations
-     *            operations to be performed as parts of the transaction, can be null
+     *            operations to be performed as parts of the transaction, can be <code>null</code>
      */
     public Transaction( Version version, String handle, String lockId, ReleaseAction releaseAction,
                         Iterable<TransactionOperation> operations ) {
@@ -93,7 +94,7 @@ public class Transaction extends AbstractWFSRequest {
     /**
      * Returns the {@link TransactionOperation}s that are contained in the transaction.
      * 
-     * @return the contained operations, can be null
+     * @return the contained operations, can be <code>null</code>
      */
     public Iterable<TransactionOperation> getOperations() {
         return this.operations;

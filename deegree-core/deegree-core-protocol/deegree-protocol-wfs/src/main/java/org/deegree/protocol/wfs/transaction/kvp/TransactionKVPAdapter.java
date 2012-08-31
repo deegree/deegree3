@@ -34,13 +34,14 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.kvp;
 
 import java.util.Map;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
+import org.deegree.protocol.wfs.transaction.Transaction;
 
 /**
  * Adapter between KVP encoded <code>Transaction</code> requests and {@link Transaction} objects.

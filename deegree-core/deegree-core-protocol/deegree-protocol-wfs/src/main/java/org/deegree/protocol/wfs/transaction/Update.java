@@ -54,6 +54,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
 
 /**
  * Represents a WFS <code>Update</code> operation (part of a {@link Transaction} request).

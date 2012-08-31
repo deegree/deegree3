@@ -57,7 +57,7 @@ public class PropertyReplacement {
      * @param propertyName
      * @param xmlStream
      */
-    PropertyReplacement( QName propertyName, XMLStreamReader xmlStream ) {
+    public PropertyReplacement( QName propertyName, XMLStreamReader xmlStream ) {
         this.propertyName = propertyName;
         this.xmlStream = xmlStream;
     }

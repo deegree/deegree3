@@ -52,19 +52,19 @@ import org.deegree.filter.Filter;
  */
 public class Delete extends TransactionOperation {
 
-    private QName ftName;
+    private final QName ftName;
 
-    private Filter filter;
+    private final Filter filter;
 
     /**
      * Creates a new {@link Delete} instance.
      * 
      * @param handle
-     *            identifier for the operation, can be null
+     *            identifier for the operation, can be <code>null</code>
      * @param typeName
-     *            name of the targeted feature type, must not be null
+     *            name of the targeted feature type, must not be <code>null</code>
      * @param filter
-     *            selects the feature instances to be deleted, must not be null
+     *            selects the feature instances to be deleted, must not be <code>null</code>
      */
     public Delete( String handle, QName typeName, Filter filter ) {
         super( handle );
@@ -85,18 +85,18 @@ public class Delete extends TransactionOperation {
     /**
      * Returns the name of the targeted feature type.
      * 
-     * @return the name of the targeted feature type, never null
+     * @return the name of the targeted feature type, never <code>null</code>
      */
     public QName getTypeName() {
-        return this.ftName;
+        return ftName;
     }
 
     /**
-     * Return the filter that selects the feature instances to be deleted.
+     * Return the filter that determines the feature instances to be deleted.
      * 
-     * @return Filter the filter that selects the feature instances to be deleted, never null
+     * @return Filter the filter that determines the feature instances to be deleted, never <code>null</code>
      */
     public Filter getFilter() {
-        return this.filter;
+        return filter;
     }
 }

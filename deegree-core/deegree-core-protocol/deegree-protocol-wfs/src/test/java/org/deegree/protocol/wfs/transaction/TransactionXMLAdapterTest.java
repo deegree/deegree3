@@ -43,6 +43,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -54,7 +55,10 @@ import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
 import org.junit.Test;
 
 /**
@@ -249,8 +253,8 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( TransactionOperation.Type.DELETE, operation.getType() );
         Delete delete = (Delete) operation;
         assertNull( delete.getHandle() );
-        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
-        assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
+        assertEquals( new QName( "InWaterA_1M" ), delete.getTypeName() );
+        assertNotNull( delete.getFilter() );
 
         assertFalse( iter.hasNext() );
     }

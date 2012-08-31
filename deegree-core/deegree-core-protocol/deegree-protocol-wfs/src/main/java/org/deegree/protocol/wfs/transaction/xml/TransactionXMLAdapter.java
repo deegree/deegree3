@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -34,18 +34,23 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.xml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import javax.xml.namespace.QName;
@@ -57,12 +62,19 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
-import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.transaction.Delete;
+import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.Insert;
+import org.deegree.protocol.wfs.transaction.Native;
+import org.deegree.protocol.wfs.transaction.PropertyReplacement;
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.Update;
 import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 
 /**
@@ -84,7 +96,7 @@ import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
 public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     /**
-     * Parses a WFS <code>Transaction</code> document into a {@link Transaction} request.
+     * Parses a WFS <code>Transaction</code> document.
      * <p>
      * Supported versions:
      * <ul>
@@ -94,7 +106,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * </ul>
      * </p>
      * 
-     * @return parsed {@link Transaction} request
+     * @return parsed {@link Transaction} request, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
@@ -130,7 +142,17 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return result;
     }
 
-    private static Transaction parse100( XMLStreamReader xmlStream )
+    /**
+     * Parses a WFS 1.0.0 <code>Transaction</code> document.
+     * 
+     * @return parsed {@link Transaction} request, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     *             if a syntax error occurs in the XML
+     * @throws InvalidParameterValueException
+     *             if a parameter contains a syntax error
+     */
+    public static Transaction parse100( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         xmlStream.require( START_ELEMENT, WFS_NS, "Transaction" );
 
@@ -138,36 +160,25 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String handle = getAttributeValue( xmlStream, "handle" );
 
         // optional: '@releaseAction'
-        ReleaseAction releaseAction = null;
         String releaseActionString = getAttributeValue( xmlStream, "releaseAction" );
-        if ( releaseActionString != null ) {
-            if ( "SOME".equals( releaseActionString ) ) {
-                releaseAction = ReleaseAction.SOME;
-            } else if ( "ALL".equals( releaseActionString ) ) {
-                releaseAction = ReleaseAction.ALL;
-            } else {
-                String msg = "Invalid value (=" + releaseActionString
-                             + ") for release action parameter. Valid values are 'ALL' or 'SOME'.";
-                throw new InvalidParameterValueException( msg, "releaseAction" );
-            }
-        }
+        ReleaseAction releaseAction = parseReleaseAction( releaseActionString );
 
         // optional: 'wfs:LockId'
         String lockId = null;
         requireNextTag( xmlStream, START_ELEMENT );
-        if ( xmlStream.getName().equals( new QName( WFSConstants.WFS_NS, "LockId" ) ) ) {
+        if ( xmlStream.getName().equals( new QName( WFS_NS, "LockId" ) ) ) {
             lockId = xmlStream.getElementText().trim();
             requireNextTag( xmlStream, START_ELEMENT );
         }
 
-        LazyOperationsIterable iterable = new LazyOperationsIterable( VERSION_100, xmlStream );
+        LazyOperationsParser iterable = new LazyOperationsParser( VERSION_100, xmlStream );
         return new Transaction( VERSION_100, handle, lockId, releaseAction, iterable );
     }
 
     /**
-     * Parses a WFS 1.1.0 <code>Transaction</code> document into a {@link Transaction} request.
+     * Parses a WFS 1.1.0 <code>Transaction</code> document.
      * 
-     * @return parsed {@link Transaction} request
+     * @return parsed {@link Transaction} request, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
@@ -183,8 +194,56 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String handle = getAttributeValue( xmlStream, "handle" );
 
         // optional: '@releaseAction'
-        ReleaseAction releaseAction = null;
         String releaseActionString = getAttributeValue( xmlStream, "releaseAction" );
+        ReleaseAction releaseAction = parseReleaseAction( releaseActionString );
+
+        // optional: 'wfs:LockId'
+        String lockId = null;
+        requireNextTag( xmlStream, START_ELEMENT );
+        if ( xmlStream.getName().equals( new QName( WFS_NS, "LockId" ) ) ) {
+            lockId = xmlStream.getElementText().trim();
+            requireNextTag( xmlStream, START_ELEMENT );
+        }
+
+        LazyOperationsParser iterable = new LazyOperationsParser( VERSION_110, xmlStream );
+        return new Transaction( VERSION_110, handle, lockId, releaseAction, iterable );
+    }
+
+    /**
+     * Parses a WFS 2.0.0 <code>Transaction</code> document.
+     * 
+     * @return parsed {@link Transaction} request, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     *             if a syntax error occurs in the XML
+     * @throws InvalidParameterValueException
+     *             if a parameter contains a syntax error
+     */
+    public static Transaction parse200( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        xmlStream.require( START_ELEMENT, WFS_200_NS, "Transaction" );
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = getAttributeValue( xmlStream, "handle" );
+
+        // <xsd:attribute name="lockId" type="xsd:string"/>
+        String lockId = getAttributeValue( xmlStream, "lockId" );
+
+        // <xsd:attribute name="releaseAction" type="wfs:AllSomeType" default="ALL"/>
+        String releaseActionString = getAttributeValue( xmlStream, "releaseAction" );
+        ReleaseAction releaseAction = parseReleaseAction( releaseActionString );
+
+        // <xsd:attribute name="srsName" type="xsd:anyURI"/>
+        String srsName = getAttributeValue( xmlStream, "srsName" );
+
+        nextElement( xmlStream );
+        LazyOperationsParser iterable = new LazyOperationsParser( VERSION_200, xmlStream );
+        return new Transaction( VERSION_200, handle, lockId, releaseAction, iterable );
+    }
+
+    private static ReleaseAction parseReleaseAction( String releaseActionString ) {
+        ReleaseAction releaseAction = null;
         if ( releaseActionString != null ) {
             if ( "SOME".equals( releaseActionString ) ) {
                 releaseAction = ReleaseAction.SOME;
@@ -196,22 +255,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 throw new InvalidParameterValueException( msg, "releaseAction" );
             }
         }
-
-        // optional: 'wfs:LockId'
-        String lockId = null;
-        requireNextTag( xmlStream, START_ELEMENT );
-        if ( xmlStream.getName().equals( new QName( WFSConstants.WFS_NS, "LockId" ) ) ) {
-            lockId = xmlStream.getElementText().trim();
-            requireNextTag( xmlStream, START_ELEMENT );
-        }
-
-        LazyOperationsIterable iterable = new LazyOperationsIterable( VERSION_110, xmlStream );
-        return new Transaction( VERSION_110, handle, lockId, releaseAction, iterable );
-    }
-
-    private static Transaction parse200( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        throw new UnsupportedOperationException();
+        return releaseAction;
     }
 
     static TransactionOperation parseOperation100( XMLStreamReader xmlStream )
@@ -269,6 +313,34 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return operation;
     }
 
+    static TransactionOperation parseOperation200( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+
+        if ( !WFS_200_NS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Unexpected element: " + xmlStream.getName()
+                         + "' is not a WFS 2.0.0 transaction action element. Not in the WFS 2.0.0 namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        TransactionOperation operation = null;
+        String localName = xmlStream.getLocalName();
+        if ( "Delete".equals( localName ) ) {
+            operation = parseDelete200( xmlStream );
+        } else if ( "Insert".equals( localName ) ) {
+            operation = parseInsert200( xmlStream );
+        } else if ( "Native".equals( localName ) ) {
+            operation = parseNative200( xmlStream );
+        } else if ( "Replace".equals( localName ) ) {
+            operation = parseReplace200( xmlStream );
+        } else if ( "Update".equals( localName ) ) {
+            operation = parseUpdate200( xmlStream );
+        } else {
+            throw new XMLParsingException( xmlStream, "Unexpected operation element " + localName + "." );
+        }
+        nextElement( xmlStream );
+        return operation;
+    }
+
     /**
      * Returns the object representation of a <code>wfs:Delete</code> element. Consumes all corresponding events from
      * the given <code>XMLStream</code>.
@@ -293,7 +365,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         xmlStream.nextTag();
 
         try {
-            xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+            xmlStream.require( START_ELEMENT, OGCNS, "Filter" );
         } catch ( XMLStreamException e ) {
             // CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
             throw new MissingParameterException( "Mandatory 'ogc:Filter' element is missing in request." );
@@ -302,6 +374,55 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Filter filter = Filter110XMLDecoder.parse( xmlStream );
         xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
         return new Delete( handle, ftName, filter );
+    }
+
+    /**
+     * Returns the object representation of a <code>wfs:Delete</code> element. Consumes all corresponding events from
+     * the given <code>XMLStream</code>.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Delete&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Delete&gt;) afterwards
+     * @return corresponding {@link Delete} object, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    static Delete parseDelete200( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = xmlStream.getAttributeValue( null, "handle" );
+
+        // <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+        QName typeName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
+
+        // required: 'fes:Filter'
+        nextElement( xmlStream );
+        try {
+            xmlStream.require( START_ELEMENT, FES_20_NS, "Filter" );
+        } catch ( XMLStreamException e ) {
+            throw new MissingParameterException( "Mandatory 'fes:Filter' element is missing in Delete." );
+        }
+        Filter filter = Filter200XMLDecoder.parse( xmlStream );
+        nextElement( xmlStream );
+        xmlStream.require( END_ELEMENT, WFS_200_NS, "Delete" );
+        return new Delete( handle, typeName, filter );
+    }
+
+    private static TransactionOperation parseNative200( XMLStreamReader xmlStream ) {
+        throw new UnsupportedOperationException();
+    }
+
+    private static TransactionOperation parseReplace200( XMLStreamReader xmlStream ) {
+        throw new UnsupportedOperationException();
+    }
+
+    private static TransactionOperation parseUpdate200( XMLStreamReader xmlStream ) {
+        throw new UnsupportedOperationException();
+    }
+
+    private static TransactionOperation parseInsert200( XMLStreamReader xmlStream ) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -425,7 +546,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return replacement;
     }
 
-    static PropertyReplacement parseProperty110( XMLStreamReader xmlStream )
+    public static PropertyReplacement parseProperty110( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
@@ -452,10 +573,10 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String handle = xmlStream.getAttributeValue( null, "handle" );
 
         // required: '@vendorId'
-        String vendorId = XMLStreamUtils.getRequiredAttributeValue( xmlStream, "vendorId" );
+        String vendorId = getRequiredAttributeValue( xmlStream, "vendorId" );
 
         // required: '@safeToIgnore'
-        boolean safeToIgnore = XMLStreamUtils.getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
+        boolean safeToIgnore = getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
         return new Native( handle, vendorId, safeToIgnore, xmlStream );
     }
 }
