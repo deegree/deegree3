@@ -51,7 +51,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 /**
  * Parser for the actions contained in a WFS <code>Transaction</code> document.
@@ -63,7 +63,7 @@ import org.deegree.protocol.wfs.transaction.TransactionOperation;
  * 
  * @version $Revision$, $Date$
  */
-class LazyOperationsParser implements Iterable<TransactionOperation> {
+class LazyOperationsParser implements Iterable<TransactionAction> {
 
     private final Version version;
 
@@ -73,7 +73,7 @@ class LazyOperationsParser implements Iterable<TransactionOperation> {
 
     /**
      * Creates a new {@link LazyOperationsParser} that provides sequential access to the given XML-encoded
-     * {@link TransactionOperation}s.
+     * {@link TransactionAction}s.
      * 
      * @param wfsVersion
      * @param xmlStream
@@ -84,12 +84,12 @@ class LazyOperationsParser implements Iterable<TransactionOperation> {
     }
 
     @Override
-    public synchronized Iterator<TransactionOperation> iterator() {
+    public synchronized Iterator<TransactionAction> iterator() {
         if ( createdIterator ) {
             throw new RuntimeException( "Iteration over the transaction operations can only be done once." );
         }
         createdIterator = true;
-        return new Iterator<TransactionOperation>() {
+        return new Iterator<TransactionAction>() {
 
             @Override
             public boolean hasNext() {
@@ -97,11 +97,11 @@ class LazyOperationsParser implements Iterable<TransactionOperation> {
             }
 
             @Override
-            public TransactionOperation next() {
+            public TransactionAction next() {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                TransactionOperation operation = null;
+                TransactionAction operation = null;
                 try {
                     if ( version.equals( VERSION_100 ) ) {
                         operation = parseOperation100( xmlStream );

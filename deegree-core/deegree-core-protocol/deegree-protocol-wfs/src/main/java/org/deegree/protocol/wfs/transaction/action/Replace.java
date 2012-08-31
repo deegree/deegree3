@@ -35,14 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.action;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionActionType;
 
 /**
- * Represents a WFS <code>Delete</code> operation (part of a {@link Transaction} request).
+ * A WFS <code>Replace</code> action (part of a {@link Transaction} request).
  * 
  * @see Transaction
  * 
@@ -51,53 +48,25 @@ import org.deegree.protocol.wfs.transaction.TransactionActionType;
  * 
  * @version $Revision$, $Date$
  */
-public class Delete extends AbstractTransactionAction {
-
-    private final QName ftName;
-
-    private final Filter filter;
+public class Replace extends AbstractTransactionAction {
 
     /**
-     * Creates a new {@link Delete} instance.
+     * Creates a new {@link Replace} instance for a stream-based access strategy.
      * 
      * @param handle
-     *            identifier for the operation, can be <code>null</code>
-     * @param typeName
-     *            name of the targeted feature type, must not be <code>null</code>
-     * @param filter
-     *            selects the feature instances to be deleted, must not be <code>null</code>
+     *            identifier for the operation, may be null
      */
-    public Delete( String handle, QName typeName, Filter filter ) {
+    public Replace( String handle ) {
         super( handle );
-        this.ftName = typeName;
-        this.filter = filter;
     }
 
     /**
-     * Always returns {@link TransactionActionType#DELETE}.
+     * Always returns {@link TransactionActionType#REPLACE}.
      * 
-     * @return {@link TransactionActionType#DELETE}
+     * @return {@link TransactionActionType#REPLACE}
      */
     @Override
     public TransactionActionType getType() {
-        return TransactionActionType.DELETE;
-    }
-
-    /**
-     * Returns the name of the targeted feature type.
-     * 
-     * @return the name of the targeted feature type, never <code>null</code>
-     */
-    public QName getTypeName() {
-        return ftName;
-    }
-
-    /**
-     * Return the filter that determines the feature instances to be deleted.
-     * 
-     * @return the filter that determines the feature instances to be deleted, never <code>null</code>
-     */
-    public Filter getFilter() {
-        return filter;
+        return TransactionActionType.REPLACE;
     }
 }

@@ -55,7 +55,7 @@ import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.TransactionActionType;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
 
 /**
@@ -68,7 +68,7 @@ import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
  * 
  * @version $Revision$, $Date$
  */
-public class Update extends TransactionOperation {
+public class Update extends AbstractTransactionAction {
 
     private final Version version;
 
@@ -110,13 +110,13 @@ public class Update extends TransactionOperation {
     }
 
     /**
-     * Always returns {@link TransactionOperation.Type#UPDATE}.
+     * Always returns {@link TransactionActionType#UPDATE}.
      * 
-     * @return {@link TransactionOperation.Type#UPDATE}
+     * @return {@link TransactionActionType#UPDATE}
      */
     @Override
-    public Type getType() {
-        return Type.UPDATE;
+    public TransactionActionType getType() {
+        return TransactionActionType.UPDATE;
     }
 
     /**

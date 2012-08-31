@@ -38,7 +38,7 @@ package org.deegree.protocol.wfs.transaction.action;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.TransactionActionType;
 
 /**
  * Represents a WFS <code>Native</code> operation (part of a {@link Transaction} request).
@@ -50,7 +50,7 @@ import org.deegree.protocol.wfs.transaction.TransactionOperation;
  * 
  * @version $Revision$, $Date$
  */
-public class Native extends TransactionOperation {
+public class Native extends AbstractTransactionAction {
 
     private final String vendorId;
 
@@ -80,13 +80,13 @@ public class Native extends TransactionOperation {
     }
 
     /**
-     * Always returns {@link TransactionOperation.Type#NATIVE}.
+     * Always returns {@link TransactionActionType#NATIVE}.
      * 
-     * @return {@link TransactionOperation.Type#NATIVE}
+     * @return {@link TransactionActionType#NATIVE}
      */
     @Override
-    public Type getType() {
-        return Type.NATIVE;
+    public TransactionActionType getType() {
+        return TransactionActionType.NATIVE;
     }
 
     /**

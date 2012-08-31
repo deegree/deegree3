@@ -43,7 +43,6 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -55,8 +54,6 @@ import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
-import org.deegree.filter.IdFilter;
-import org.deegree.filter.ResourceId;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
@@ -95,9 +92,9 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( "TA_1", ta.getHandle() );
         assertEquals( null, ta.getReleaseAction() );
 
-        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
-        TransactionOperation operation = iter.next();
-        assertEquals( TransactionOperation.Type.DELETE, operation.getType() );
+        Iterator<TransactionAction> iter = ta.getActions().iterator();
+        TransactionAction operation = iter.next();
+        assertEquals( TransactionActionType.DELETE, operation.getType() );
         Delete delete = (Delete) operation;
         assertEquals( "delete1", delete.getHandle() );
         assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
@@ -115,9 +112,9 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( null, ta.getHandle() );
         assertEquals( null, ta.getReleaseAction() );
 
-        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
-        TransactionOperation operation = iter.next();
-        assertEquals( TransactionOperation.Type.INSERT, operation.getType() );
+        Iterator<TransactionAction> iter = ta.getActions().iterator();
+        TransactionAction operation = iter.next();
+        assertEquals( TransactionActionType.INSERT, operation.getType() );
         Insert insert = (Insert) operation;
         assertEquals( "insert", insert.getHandle() );
         assertEquals( IDGenMode.GENERATE_NEW, insert.getIdGen() );
@@ -138,9 +135,9 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( null, ta.getHandle() );
         assertEquals( null, ta.getReleaseAction() );
 
-        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
-        TransactionOperation operation = iter.next();
-        assertEquals( TransactionOperation.Type.UPDATE, operation.getType() );
+        Iterator<TransactionAction> iter = ta.getActions().iterator();
+        TransactionAction operation = iter.next();
+        assertEquals( TransactionActionType.UPDATE, operation.getType() );
         Update update = (Update) operation;
         assertEquals( "update1", update.getHandle() );
         assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), update.getTypeName() );
@@ -175,11 +172,11 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( "COMPLEX", ta.getHandle() );
         assertEquals( null, ta.getReleaseAction() );
 
-        Iterator<TransactionOperation> operationIter = ta.getOperations().iterator();
+        Iterator<TransactionAction> operationIter = ta.getActions().iterator();
 
         // first operation: delete1
-        TransactionOperation operation = operationIter.next();
-        assertEquals( TransactionOperation.Type.DELETE, operation.getType() );
+        TransactionAction operation = operationIter.next();
+        assertEquals( TransactionActionType.DELETE, operation.getType() );
         Delete delete = (Delete) operation;
         assertEquals( "delete1", delete.getHandle() );
         assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
@@ -253,9 +250,9 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertNull( ta.getHandle() );
         assertNull( ta.getReleaseAction() );
 
-        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
-        TransactionOperation operation = iter.next();
-        assertEquals( TransactionOperation.Type.DELETE, operation.getType() );
+        Iterator<TransactionAction> iter = ta.getActions().iterator();
+        TransactionAction operation = iter.next();
+        assertEquals( TransactionActionType.DELETE, operation.getType() );
         Delete delete = (Delete) operation;
         assertNull( delete.getHandle() );
         assertEquals( new QName( "InWaterA_1M" ), delete.getTypeName() );

@@ -69,7 +69,7 @@ import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.TransactionAction;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.action.Insert;
@@ -258,7 +258,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return releaseAction;
     }
 
-    static TransactionOperation parseOperation100( XMLStreamReader xmlStream )
+    static TransactionAction parseOperation100( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         if ( !WFS_NS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Unexpected element: " + xmlStream.getName()
@@ -266,7 +266,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        TransactionOperation operation = null;
+        TransactionAction operation = null;
         String localName = xmlStream.getLocalName();
         if ( "Delete".equals( localName ) ) {
             operation = parseDelete110( xmlStream );
@@ -285,7 +285,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return operation;
     }
 
-    static TransactionOperation parseOperation110( XMLStreamReader xmlStream )
+    static TransactionAction parseOperation110( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
 
         if ( !WFS_NS.equals( xmlStream.getNamespaceURI() ) ) {
@@ -294,7 +294,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        TransactionOperation operation = null;
+        TransactionAction operation = null;
         String localName = xmlStream.getLocalName();
         if ( "Delete".equals( localName ) ) {
             operation = parseDelete110( xmlStream );
@@ -313,7 +313,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return operation;
     }
 
-    static TransactionOperation parseOperation200( XMLStreamReader xmlStream )
+    static TransactionAction parseOperation200( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
 
         if ( !WFS_200_NS.equals( xmlStream.getNamespaceURI() ) ) {
@@ -322,7 +322,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        TransactionOperation operation = null;
+        TransactionAction operation = null;
         String localName = xmlStream.getLocalName();
         if ( "Delete".equals( localName ) ) {
             operation = parseDelete200( xmlStream );
@@ -409,19 +409,19 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new Delete( handle, typeName, filter );
     }
 
-    private static TransactionOperation parseNative200( XMLStreamReader xmlStream ) {
+    private static TransactionAction parseNative200( XMLStreamReader xmlStream ) {
         throw new UnsupportedOperationException();
     }
 
-    private static TransactionOperation parseReplace200( XMLStreamReader xmlStream ) {
+    private static TransactionAction parseReplace200( XMLStreamReader xmlStream ) {
         throw new UnsupportedOperationException();
     }
 
-    private static TransactionOperation parseUpdate200( XMLStreamReader xmlStream ) {
+    private static TransactionAction parseUpdate200( XMLStreamReader xmlStream ) {
         throw new UnsupportedOperationException();
     }
 
-    private static TransactionOperation parseInsert200( XMLStreamReader xmlStream ) {
+    private static TransactionAction parseInsert200( XMLStreamReader xmlStream ) {
         throw new UnsupportedOperationException();
     }
 
@@ -490,7 +490,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new Insert( handle, idGen, inputFormat, srsName, xmlStream );
     }
 
-    private static TransactionOperation parseUpdate100( XMLStreamReader xmlStream )
+    private static TransactionAction parseUpdate100( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         // optional: '@handle'
         String handle = xmlStream.getAttributeValue( null, "handle" );

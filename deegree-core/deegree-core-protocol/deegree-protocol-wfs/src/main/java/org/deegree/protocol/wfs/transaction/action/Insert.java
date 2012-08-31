@@ -38,7 +38,7 @@ package org.deegree.protocol.wfs.transaction.action;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.TransactionActionType;
 
 /**
  * Represents a WFS <code>Insert</code> operation (part of a {@link Transaction} request).
@@ -50,7 +50,7 @@ import org.deegree.protocol.wfs.transaction.TransactionOperation;
  * 
  * @version $Revision$, $Date$
  */
-public class Insert extends TransactionOperation {
+public class Insert extends AbstractTransactionAction {
 
     private final IDGenMode idGenMode;
 
@@ -86,13 +86,13 @@ public class Insert extends TransactionOperation {
     }
 
     /**
-     * Always returns {@link TransactionOperation.Type#INSERT}.
+     * Always returns {@link TransactionActionType#INSERT}.
      * 
-     * @return {@link TransactionOperation.Type#INSERT}
+     * @return {@link TransactionActionType#INSERT}
      */
     @Override
-    public Type getType() {
-        return Type.INSERT;
+    public TransactionActionType getType() {
+        return TransactionActionType.INSERT;
     }
 
     /**

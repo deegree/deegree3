@@ -49,7 +49,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * </ul>
  * </p>
  * 
- * @see TransactionOperation
+ * @see TransactionAction
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
@@ -58,7 +58,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class Transaction extends AbstractWFSRequest {
 
-    private final Iterable<TransactionOperation> operations;
+    private final Iterable<TransactionAction> actions;
 
     private final String lockId;
 
@@ -76,21 +76,21 @@ public class Transaction extends AbstractWFSRequest {
      * @param releaseAction
      *            controls how to treat locked features when the transaction has been completed, can be
      *            <code>null</code> (unspecified)
-     * @param operations
-     *            operations to be performed as parts of the transaction, can be <code>null</code>
+     * @param actions
+     *            actions to be performed as parts of the transaction, must not be <code>null</code>
      */
     public Transaction( Version version, String handle, String lockId, ReleaseAction releaseAction,
-                        Iterable<TransactionOperation> operations ) {
+                        Iterable<TransactionAction> actions ) {
         super( version, handle );
         this.lockId = lockId;
         this.releaseAction = releaseAction;
-        this.operations = operations;
+        this.actions = actions;
     }
 
     /**
      * Returns the lock identifier provided with this transaction.
      * 
-     * @return the lock identifier provided with this transaction, or null if it is unspecified
+     * @return the lock identifier provided with this transaction, or <code>null</code> if it is unspecified
      */
     public String getLockId() {
         return this.lockId;
@@ -99,20 +99,19 @@ public class Transaction extends AbstractWFSRequest {
     /**
      * Returns the release action mode to be applied after the transaction has been executed successfully.
      * 
-     * @see ReleaseAction
-     * @return the release action mode to be applied after the transaction has been executed successfully, or null if it
-     *         is unspecified
+     * @return the release action mode to be applied after the transaction has been executed successfully, or
+     *         <code>null</code> if it is unspecified
      */
     public ReleaseAction getReleaseAction() {
         return this.releaseAction;
     }
 
     /**
-     * Returns the {@link TransactionOperation}s that are contained in the transaction.
+     * Returns the sequence of {@link TransactionAction}s that are contained in the transaction.
      * 
-     * @return the contained operations, can be <code>null</code>
+     * @return sequence of actions, can be empty, but never <code>null</code>
      */
-    public Iterable<TransactionOperation> getOperations() {
-        return this.operations;
+    public Iterable<TransactionAction> getActions() {
+        return this.actions;
     }
 }

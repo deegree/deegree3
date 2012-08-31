@@ -110,7 +110,7 @@ import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
-import org.deegree.protocol.wfs.transaction.TransactionOperation;
+import org.deegree.protocol.wfs.transaction.TransactionAction;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.action.Insert;
@@ -198,7 +198,7 @@ class TransactionHandler {
                 lock = manager.getLock( lockId );
             }
 
-            for ( TransactionOperation operation : request.getOperations() ) {
+            for ( TransactionAction operation : request.getActions() ) {
                 switch ( operation.getType() ) {
                 case DELETE: {
                     doDelete( (Delete) operation, lock );
