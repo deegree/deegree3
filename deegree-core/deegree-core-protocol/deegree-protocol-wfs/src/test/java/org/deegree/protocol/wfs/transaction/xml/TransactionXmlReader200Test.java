@@ -68,7 +68,7 @@ import org.junit.Test;
  */
 public class TransactionXmlReader200Test extends TestCase {
 
-    private final String DELETE1_200 = "v200/delete1.xml";
+    private final String DELETE1_200 = "v200/TransactionWithDeleteAction1.xml";
 
     @Test
     public void testDelete1_200()
