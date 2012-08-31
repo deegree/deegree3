@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,9 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.transaction;
-
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+package org.deegree.protocol.wfs.transaction.xml;
 
 import java.io.IOException;
 import java.net.URL;
@@ -55,33 +53,33 @@ import junit.framework.TestCase;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionAction;
+import org.deegree.protocol.wfs.transaction.TransactionActionType;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.action.Update;
-import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
 import org.junit.Test;
 
 /**
- * Test cases for the {@link TransactionXMLAdapter}.
+ * Test cases for {@link TransactionXmlReader110}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TransactionXMLAdapterTest extends TestCase {
+public class TransactionXmlReader110Test extends TestCase {
 
-    private final String DELETE_110 = "examples_xml/v110/delete.xml";
+    private final String DELETE_110 = "v110/delete.xml";
 
-    private final String INSERT_110 = "examples_xml/v110/insert.invalidxml";
+    private final String INSERT_110 = "v110/insert.invalidxml";
 
-    private final String UPDATE_110 = "examples_xml/v110/update.xml";
+    private final String UPDATE_110 = "v110/update.xml";
 
-    private final String COMPLEX_110 = "examples_xml/v110/complex.invalidxml";
-
-    private final String DELETE1_200 = "examples_xml/v200/delete1.xml";
+    private final String COMPLEX_110 = "v110/complex.invalidxml";
 
     @Test
     public void testDelete110()
@@ -238,26 +236,6 @@ public class TransactionXMLAdapterTest extends TestCase {
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( exampleURL.toString(),
                                                                                          exampleURL.openStream() );
         xmlStream.nextTag();
-        return TransactionXMLAdapter.parse( xmlStream );
-    }
-
-    @Test
-    public void testDelete1_200()
-                            throws Exception {
-
-        Transaction ta = parse( DELETE1_200 );
-        assertEquals( VERSION_200, ta.getVersion() );
-        assertNull( ta.getHandle() );
-        assertNull( ta.getReleaseAction() );
-
-        Iterator<TransactionAction> iter = ta.getActions().iterator();
-        TransactionAction operation = iter.next();
-        assertEquals( TransactionActionType.DELETE, operation.getType() );
-        Delete delete = (Delete) operation;
-        assertNull( delete.getHandle() );
-        assertEquals( new QName( "InWaterA_1M" ), delete.getTypeName() );
-        assertNotNull( delete.getFilter() );
-
-        assertFalse( iter.hasNext() );
+        return new TransactionXmlReader110().read( xmlStream );
     }
 }

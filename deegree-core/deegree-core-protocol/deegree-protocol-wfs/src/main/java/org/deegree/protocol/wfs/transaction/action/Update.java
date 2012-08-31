@@ -56,7 +56,7 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionActionType;
-import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
+import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader100;
 
 /**
  * Represents a WFS <code>Update</code> operation (part of a {@link Transaction} request).
@@ -79,6 +79,8 @@ public class Update extends AbstractTransactionAction {
     private final String srsName;
 
     private final XMLStreamReader xmlStream;
+
+    private final TransactionXmlReader100 transactionReader = new TransactionXmlReader100();
 
     private boolean createdIterator;
 
@@ -166,14 +168,14 @@ public class Update extends AbstractTransactionAction {
                 PropertyReplacement replacement = null;
                 if ( version.equals( WFSConstants.VERSION_100 ) ) {
                     try {
-                        replacement = TransactionXMLAdapter.parseProperty100( xmlStream );
+                        replacement = transactionReader.readProperty( xmlStream );
                     } catch ( XMLStreamException e ) {
                         throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
                                                                   + e.getMessage() );
                     }
                 } else if ( version.equals( WFSConstants.VERSION_110 ) ) {
                     try {
-                        replacement = TransactionXMLAdapter.parseProperty110( xmlStream );
+                        replacement = transactionReader.readProperty( xmlStream );
                     } catch ( XMLStreamException e ) {
                         throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
                                                                   + e.getMessage() );
