@@ -38,6 +38,7 @@
 package org.deegree.protocol.wfs.transaction.xml;
 
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,6 +53,8 @@ import junit.framework.TestCase;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.Insert;
+import org.deegree.protocol.wfs.transaction.action.Native;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -72,10 +75,12 @@ public class TransactionXmlReader200Test extends TestCase {
 
     private final String INSERT_ACTION1_200 = "v200/InsertAction1.xml";
 
+    private final String NATIVE_ACTION1_200 = "v200/Native1.xml";
+
     private final TransactionXmlReader200 reader = new TransactionXmlReader200();
 
     @Test
-    public void testReadDeleteActionWfs200SpecExample1()
+    public void testReadDeleteWfs200SpecExample1()
                             throws Exception {
         XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION1_200 );
         Delete delete = reader.readDelete( xmlStream );
@@ -86,7 +91,7 @@ public class TransactionXmlReader200Test extends TestCase {
     }
 
     @Test
-    public void testReadDeleteActionWfs200SpecExample2()
+    public void testReadDeleteWfs200SpecExample2()
                             throws Exception {
         XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION2_200 );
         Delete delete = reader.readDelete( xmlStream );
@@ -98,7 +103,7 @@ public class TransactionXmlReader200Test extends TestCase {
     }
 
     @Test
-    public void testReadDeleteActionWfs200SpecExample3()
+    public void testReadDeleteWfs200SpecExample3()
                             throws Exception {
         XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION3_200 );
         Delete delete = reader.readDelete( xmlStream );
@@ -110,7 +115,7 @@ public class TransactionXmlReader200Test extends TestCase {
     }
 
     @Test
-    public void testReadInsertActionWfs200SpecExample1()
+    public void testReadInsertWfs200SpecExample1()
                             throws Exception {
         XMLStreamReader xmlStream = getXMLStreamReader( INSERT_ACTION1_200 );
         Insert insert = reader.readInsert( xmlStream );
@@ -120,6 +125,17 @@ public class TransactionXmlReader200Test extends TestCase {
         xmlStream.require( XMLStreamReader.START_ELEMENT, null, "InWaterA_1M" );
         assertNull( insert.getSrsName() );
         assertEquals( xmlStream, insert.getFeatures() );
+    }
+
+    @Test
+    public void testReadNativeWfs200SpecExample1()
+                            throws Exception {
+        XMLStreamReader xmlStream = getXMLStreamReader( NATIVE_ACTION1_200 );
+        Native action = reader.readNative( xmlStream );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Native" );
+        assertNull( action.getHandle() );
+        assertEquals( "BigDbCorp", action.getVendorId() );
+        assertTrue( action.isSafeToIgnore() );
     }
 
     private XMLStreamReader getXMLStreamReader( String resourceName )

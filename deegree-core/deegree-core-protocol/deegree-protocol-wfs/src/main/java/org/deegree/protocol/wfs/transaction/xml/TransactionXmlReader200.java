@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
@@ -60,6 +61,7 @@ import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.Insert;
+import org.deegree.protocol.wfs.transaction.action.Native;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 
 /**
@@ -192,8 +194,33 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         return new Insert( handle, null, inputFormat, srsName, xmlStream );
     }
 
-    private TransactionAction readNative( XMLStreamReader xmlStream ) {
-        throw new UnsupportedOperationException();
+    /**
+     * Returns the object representation for the given <code>wfs:Native</code> element.
+     * <p>
+     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
+     * the <code>wfs:Native</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
+     * stream still points at the <code>START_ELEMENT</code> of the <code>wfs:Native</code> element.
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Native&gt;)
+     * @return corresponding {@link Insert} object, never <code>null</code>
+     * @throws NoSuchElementException
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    Native readNative( XMLStreamReader xmlStream ) {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = xmlStream.getAttributeValue( null, "handle" );
+
+        // <xsd:attribute name="vendorId" type="xsd:string" use="required"/>
+        String vendorId = XMLStreamUtils.getRequiredAttributeValue( xmlStream, "vendorId" );
+
+        // <xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required"/>
+        boolean safeToIgnore = XMLStreamUtils.getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
+
+        return new Native( handle, vendorId, safeToIgnore, xmlStream );
     }
 
     private TransactionAction readReplace( XMLStreamReader xmlStream ) {

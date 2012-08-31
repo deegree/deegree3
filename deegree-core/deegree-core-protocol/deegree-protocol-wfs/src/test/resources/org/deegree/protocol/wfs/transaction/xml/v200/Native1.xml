@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<wfs:Native xmlns="http://www.someserver.com/myns" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:fes="http://www.opengis.net/fes/2.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://www.opengis.net/gml/3.2.1/gml.xsd"
+  vendorId="BigDbCorp" safeToIgnore="true">
+  ALTER SESSION ENABLE PARALLEL DML;
+  <bdbc:SomeXmlCommand xmlns:bdbc="http://www.bigdbcorp.com">
+    <bdbc:Command>allow</bdbc:Command>
+  </bdbc:SomeXmlCommand>
+</wfs:Native>
