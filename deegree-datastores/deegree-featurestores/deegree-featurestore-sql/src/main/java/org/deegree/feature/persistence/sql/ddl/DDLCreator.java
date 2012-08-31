@@ -50,13 +50,12 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
+import org.deegree.feature.persistence.sql.rules.ConstantMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
@@ -68,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DDLCreator {
 
-    private static Logger LOG = LoggerFactory.getLogger( DDLCreator.class );
+    // private static Logger LOG = LoggerFactory.getLogger( DDLCreator.class );
 
     protected final MappedAppSchema schema;
 
@@ -217,6 +216,8 @@ public abstract class DDLCreator {
             for ( Mapping childMapping : compoundMapping.getParticles() ) {
                 ddls.addAll( process( sql, table, childMapping ) );
             }
+        } else if ( mapping instanceof ConstantMapping ) {
+            // skip
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );
         }
