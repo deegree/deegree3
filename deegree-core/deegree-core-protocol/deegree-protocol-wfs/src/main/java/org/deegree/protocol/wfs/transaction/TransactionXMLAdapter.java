@@ -45,6 +45,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeVa
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import javax.xml.namespace.QName;
@@ -71,6 +72,7 @@ import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
  * <ul>
  * <li>WFS 1.0.0</li>
  * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
  * 
@@ -88,6 +90,7 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * <ul>
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * </p>
      * 
@@ -117,8 +120,11 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
             result = parse100( xmlStream );
         } else if ( VERSION_110.equals( version ) ) {
             result = parse110( xmlStream );
+        } else if ( VERSION_200.equals( version ) ) {
+            result = parse200( xmlStream );
         } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
+                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
@@ -201,6 +207,11 @@ public class TransactionXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         LazyOperationsIterable iterable = new LazyOperationsIterable( VERSION_110, xmlStream );
         return new Transaction( VERSION_110, handle, lockId, releaseAction, iterable );
+    }
+
+    private static Transaction parse200( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        throw new UnsupportedOperationException();
     }
 
     static TransactionOperation parseOperation100( XMLStreamReader xmlStream )

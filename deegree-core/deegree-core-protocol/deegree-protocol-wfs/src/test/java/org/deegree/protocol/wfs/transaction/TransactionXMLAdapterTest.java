@@ -38,6 +38,8 @@
 
 package org.deegree.protocol.wfs.transaction;
 
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
@@ -70,8 +72,10 @@ public class TransactionXMLAdapterTest extends TestCase {
     private final String INSERT_110 = "examples_xml/v110/insert.invalidxml";
 
     private final String UPDATE_110 = "examples_xml/v110/update.xml";
-    
+
     private final String COMPLEX_110 = "examples_xml/v110/complex.invalidxml";
+
+    private final String DELETE1_200 = "examples_xml/v200/delete1.xml";
 
     @Test
     public void testDelete110()
@@ -89,7 +93,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( "delete1", delete.getHandle() );
         assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
         assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
-        
+
         assertFalse( iter.hasNext() );
     }
 
@@ -152,7 +156,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
         assertFalse( iter.hasNext() );
     }
-    
+
     @Test
     public void testComplex110()
                             throws Exception {
@@ -187,7 +191,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         // contract: skip to next operation
         xmlStream.nextTag();
         assertTrue( operationIter.hasNext() );
-        
+
         // third operation: update1
         Update update = (Update) operationIter.next();
         assertEquals( "update1", update.getHandle() );
@@ -211,16 +215,16 @@ public class TransactionXMLAdapterTest extends TestCase {
         // contract: skip to next tag
         prop2ValueStream.nextTag();
         Filter filter = update.getFilter();
-        assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );        
+        assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
         assertTrue( operationIter.hasNext() );
-        
+
         // fourth operation: delete2
         delete = (Delete) operationIter.next();
         assertEquals( "delete2", delete.getHandle() );
         assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
         assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
-        assertFalse( operationIter.hasNext() );        
-    }    
+        assertFalse( operationIter.hasNext() );
+    }
 
     private Transaction parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -229,5 +233,25 @@ public class TransactionXMLAdapterTest extends TestCase {
                                                                                          exampleURL.openStream() );
         xmlStream.nextTag();
         return TransactionXMLAdapter.parse( xmlStream );
+    }
+
+    @Test
+    public void testDelete1_200()
+                            throws Exception {
+
+        Transaction ta = parse( DELETE1_200 );
+        assertEquals( VERSION_200, ta.getVersion() );
+        assertNull( ta.getHandle() );
+        assertNull( ta.getReleaseAction() );
+
+        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
+        TransactionOperation operation = iter.next();
+        assertEquals( TransactionOperation.Type.DELETE, operation.getType() );
+        Delete delete = (Delete) operation;
+        assertNull( delete.getHandle() );
+        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
+        assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
+
+        assertFalse( iter.hasNext() );
     }
 }
