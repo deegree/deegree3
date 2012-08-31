@@ -47,6 +47,9 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.REPLACE_DUPLICATE;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.util.NoSuchElementException;
 
@@ -172,7 +175,7 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
      * Returns the object representation for the given <code>wfs:Insert</code> element.
      * <p>
      * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
-     * the <code>wfs:Insert</code> elemetn from the given <code>XMLStream</code>. After a call to this method, the XML
+     * the <code>wfs:Insert</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
      * stream points at the <code>START_ELEMENT</code> of the insert payload.
      * </p>
      * 
@@ -191,11 +194,11 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
         IDGenMode idGen = null;
         if ( idGenString != null ) {
             if ( "GenerateNew".equals( idGenString ) ) {
-                idGen = IDGenMode.GENERATE_NEW;
+                idGen = GENERATE_NEW;
             } else if ( "ReplaceDuplicate".equals( idGenString ) ) {
-                idGen = IDGenMode.REPLACE_DUPLICATE;
+                idGen = REPLACE_DUPLICATE;
             } else if ( "UseExisting".equals( idGenString ) ) {
-                idGen = IDGenMode.USE_EXISTING;
+                idGen = USE_EXISTING;
             } else {
                 String msg = Messages.get( "WFS_UNKNOWN_IDGEN_MODE", idGenString, "1.1.0",
                                            "'GenerateNew', 'ReplaceDuplicate' and 'UseExisting'" );
@@ -263,6 +266,21 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
         return replacement;
     }
 
+    /**
+     * Returns the object representation for the given <code>wfs:Native</code> element.
+     * <p>
+     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
+     * the <code>wfs:Native</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
+     * stream still points at the <code>START_ELEMENT</code> of the <code>wfs:Native</code> element.
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Native&gt;)
+     * @return corresponding {@link Insert} object, never <code>null</code>
+     * @throws NoSuchElementException
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
     Native readNative( XMLStreamReader xmlStream ) {
         // optional: '@handle'
         String handle = xmlStream.getAttributeValue( null, "handle" );

@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.action;
 
+import static org.deegree.protocol.wfs.transaction.TransactionActionType.REPLACE;
+
+import javax.xml.stream.XMLStreamReader;
+
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionActionType;
 
@@ -50,14 +54,20 @@ import org.deegree.protocol.wfs.transaction.TransactionActionType;
  */
 public class Replace extends AbstractTransactionAction {
 
+    private final XMLStreamReader xmlStream;
+
     /**
-     * Creates a new {@link Replace} instance for a stream-based access strategy.
+     * Creates a new {@link Replace} instance.
      * 
      * @param handle
-     *            identifier for the operation, may be null
+     *            identifier for the operation, may be <code>null</code>
+     * @param xmlStream
+     *            provides access to the XML encoded replacement feature and the filter, must point at the
+     *            <code>START_ELEMENT</code> event of the replacement feature, never <code>null</code>
      */
-    public Replace( String handle ) {
+    public Replace( String handle, XMLStreamReader xmlStream ) {
         super( handle );
+        this.xmlStream = xmlStream;
     }
 
     /**
@@ -67,6 +77,16 @@ public class Replace extends AbstractTransactionAction {
      */
     @Override
     public TransactionActionType getType() {
-        return TransactionActionType.REPLACE;
+        return REPLACE;
+    }
+
+    /**
+     * Returns an {@link XMLStreamReader} that provides access to the XML encoded replacement feature and the filter.
+     * 
+     * @return xml stream, never <code>null</code>, points at the <code>START_ELEMENT</code> event of the replacement
+     *         feature
+     */
+    public XMLStreamReader getXmlStream() {
+        return xmlStream;
     }
 }

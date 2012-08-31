@@ -169,7 +169,7 @@ class TransactionXmlReader100 extends AbstractTransactionXmlReader {
      * Returns the object representation for the given <code>wfs:Insert</code> element.
      * <p>
      * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
-     * the <code>wfs:Insert</code> elemetn from the given <code>XMLStream</code>. After a call to this method, the XML
+     * the <code>wfs:Insert</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
      * stream points at the <code>START_ELEMENT</code> of the insert payload.
      * </p>
      * 
