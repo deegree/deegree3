@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,7 +33,6 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.protocol.wfs.transaction;
 
 import javax.xml.stream.XMLStreamReader;
@@ -53,28 +52,29 @@ import javax.xml.stream.XMLStreamReader;
  */
 public class Insert extends TransactionOperation {
 
-    private IDGenMode idGenMode;
+    private final IDGenMode idGenMode;
 
-    private String inputFormat;
+    private final String inputFormat;
 
-    private String srsName;
+    private final String srsName;
 
-    private XMLStreamReader encodedFeatures;
+    private final XMLStreamReader encodedFeatures;
 
     /**
      * Creates a new {@link Insert} instance.
      * 
      * @param handle
-     *            identifier for the operation, can be null
+     *            identifier for the operation, can be <code>null</code>
      * @param idGenMode
-     *            controls how identifiers for newly inserted feature instances are generated, can be null (unspecified)
+     *            controls how identifiers for newly inserted feature instances are generated, can be <code>null</code>
+     *            (unspecified)
      * @param inputFormat
-     *            the format of encoded feature instances, may be null (unspecified)
+     *            the format of encoded feature instances, may be <code>null</code> (unspecified)
      * @param srsName
-     *            the coordinate references system used for the geometries, may be null (unspecified)
+     *            the coordinate references system used for the geometries, may be <code>null</code> (unspecified)
      * @param encodedFeatures
      *            provides access to the XML encoded features, cursor must point at the <code>START_ELEMENT</code> event
-     *            of the first <code>Feature</code> to be inserted, must not be null
+     *            of the first <code>Feature</code> to be inserted, must not be <code>null</code>
      */
     public Insert( String handle, IDGenMode idGenMode, String inputFormat, String srsName,
                    XMLStreamReader encodedFeatures ) {
@@ -98,7 +98,7 @@ public class Insert extends TransactionOperation {
     /**
      * Returns the mode for the generation of feature identifiers.
      * 
-     * @return the mode for id generation, can be null (unspecified)
+     * @return the mode for id generation, can be <code>null</code> (unspecified)
      */
     public IDGenMode getIdGen() {
         return idGenMode;
@@ -107,7 +107,7 @@ public class Insert extends TransactionOperation {
     /**
      * Returns the format of encoded feature instances.
      * 
-     * @return the format of encoded feature instances, may be null (unspecified)
+     * @return the format of encoded feature instances, may be <code>null</code> (unspecified)
      */
     public String getInputFormat() {
         return inputFormat;
@@ -116,9 +116,9 @@ public class Insert extends TransactionOperation {
     /**
      * Returns the specified coordinate system for the geometries to be inserted.
      * 
-     * @return the specified coordinate system, can be null (unspecified)
+     * @return the specified coordinate system, can be <code>null</code> (unspecified)
      */
-    public String getSRSName() {
+    public String getSrsName() {
         return srsName;
     }
 
@@ -126,11 +126,13 @@ public class Insert extends TransactionOperation {
      * Returns an <code>XMLStreamReader</code> that provides access to the encoded features to be inserted.
      * <p>
      * NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the closing
-     * element of the feature/feature collection, i.e. the END_ELEMENT of the surrounding <code>Insert</code> element.
+     * element of the feature/feature collection, i.e. the <code>END_ELEMENT</code> of the surrounding
+     * <code>Insert</code> element.
      * </p>
      * 
      * @return <code>XMLStreamReader</code> that provides access to the XML encoded features, cursor must point at the
-     *         <code>START_ELEMENT</code> event of the first <code>Feature</code> to be inserted, never null
+     *         <code>START_ELEMENT</code> event of the first <code>Feature</code> to be inserted, never
+     *         <code>null</code>
      */
     public XMLStreamReader getFeatures() {
         return encodedFeatures;

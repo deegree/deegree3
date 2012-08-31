@@ -36,7 +36,7 @@
 package org.deegree.protocol.wfs.transaction;
 
 /**
- * Enum type for discriminating the different object id generation policies for inserts.
+ * Enum type for discriminating the different object id generation policies for {@link Insert} actions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -48,7 +48,7 @@ public enum IDGenMode {
     /** Use provided ids. */
     USE_EXISTING,
 
-    /** Use provided ids, generate new id if object with same id already exists in the FeatureStore. */
+    /** Use provided ids, generate new id if object with same id already exists. */
     REPLACE_DUPLICATE,
 
     /** Always generate new ids. */

@@ -347,11 +347,11 @@ class TransactionHandler {
         }
 
         ICRS defaultCRS = null;
-        if ( insert.getSRSName() != null ) {
+        if ( insert.getSrsName() != null ) {
             try {
-                defaultCRS = CRSManager.lookup( insert.getSRSName() );
+                defaultCRS = CRSManager.lookup( insert.getSrsName() );
             } catch ( UnknownCRSException e ) {
-                String msg = "Cannot perform insert. Specified srsName '" + insert.getSRSName()
+                String msg = "Cannot perform insert. Specified srsName '" + insert.getSrsName()
                              + "' is not supported by this WFS.";
                 throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "srsName" );
             }

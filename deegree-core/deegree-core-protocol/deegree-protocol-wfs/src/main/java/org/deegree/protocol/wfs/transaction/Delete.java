@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,7 +33,6 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.protocol.wfs.transaction;
 
 import javax.xml.namespace.QName;
@@ -94,7 +93,7 @@ public class Delete extends TransactionOperation {
     /**
      * Return the filter that determines the feature instances to be deleted.
      * 
-     * @return Filter the filter that determines the feature instances to be deleted, never <code>null</code>
+     * @return the filter that determines the feature instances to be deleted, never <code>null</code>
      */
     public Filter getFilter() {
         return filter;

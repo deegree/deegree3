@@ -117,7 +117,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( "insert", insert.getHandle() );
         assertEquals( IDGenMode.GENERATE_NEW, insert.getIdGen() );
         assertEquals( null, insert.getInputFormat() );
-        assertEquals( null, insert.getSRSName() );
+        assertEquals( null, insert.getSrsName() );
         XMLStreamReader xmlStream = insert.getFeatures();
         XMLStreamUtils.skipElement( xmlStream );
         xmlStream.nextTag();
@@ -186,7 +186,7 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( "insert", insert.getHandle() );
         assertEquals( IDGenMode.GENERATE_NEW, insert.getIdGen() );
         assertEquals( null, insert.getInputFormat() );
-        assertEquals( null, insert.getSRSName() );
+        assertEquals( null, insert.getSrsName() );
         XMLStreamReader xmlStream = insert.getFeatures();
         // contract: read until feature/featureCollection END_ELEMENT
         XMLStreamUtils.skipElement( xmlStream );
