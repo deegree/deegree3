@@ -67,7 +67,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

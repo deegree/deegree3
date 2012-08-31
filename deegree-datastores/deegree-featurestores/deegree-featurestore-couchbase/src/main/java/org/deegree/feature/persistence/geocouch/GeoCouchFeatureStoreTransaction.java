@@ -23,7 +23,7 @@ import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.slf4j.Logger;
 
 import com.couchbase.client.CouchbaseClient;

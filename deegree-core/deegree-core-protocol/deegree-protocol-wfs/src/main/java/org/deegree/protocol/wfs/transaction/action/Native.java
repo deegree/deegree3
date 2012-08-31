@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,10 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.action;
 
 import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionOperation;
 
 /**
  * Represents a WFS <code>Native</code> operation (part of a {@link Transaction} request).
@@ -50,25 +52,25 @@ import javax.xml.stream.XMLStreamReader;
  */
 public class Native extends TransactionOperation {
 
-    private String vendorId;
+    private final String vendorId;
 
-    private boolean safeToIgnore;
+    private final boolean safeToIgnore;
 
-    private XMLStreamReader vendorSpecificData;
+    private final XMLStreamReader vendorSpecificData;
 
     /**
      * Creates a new {@link Native} instance.
      * 
      * @param handle
-     *            identifier for the operation, can be null
+     *            identifier for the operation, can be <code>null</code>
      * @param vendorId
-     *            vendor identifier
+     *            vendor identifier, can be <code>null</code>
      * @param safeToIgnore
-     *            true, if the operation may be ignored without problems, false if the surrounding request depends on it
-     *            (and must fail if the native operation cannot be executed)
+     *            <code>true</code>, if the operation may be ignored without problems, <code>false</code> if the
+     *            surrounding request depends on it (and must fail if the native operation cannot be executed)
      * @param vendorSpecificData
      *            provides access to the XML encoded vendor specific data, cursor must point at the
-     *            <code>START_ELEMENT</code> event of the <code>wfs:Native</code> element, must not be null
+     *            <code>START_ELEMENT</code> event of the <code>wfs:Native</code> element, must not be <code>null</code>
      */
     public Native( String handle, String vendorId, boolean safeToIgnore, XMLStreamReader vendorSpecificData ) {
         super( handle );
@@ -90,32 +92,32 @@ public class Native extends TransactionOperation {
     /**
      * Returns the vendor identifier.
      * 
-     * @return the vendor identifier.
+     * @return the vendor identifier, may be <code>null</code>
      */
     public String getVendorId() {
-        return this.vendorId;
+        return vendorId;
     }
 
     /**
      * Returns whether the whole transaction request should fail if the operation can not be executed.
      * 
-     * @return true, if the operation may be ignored safely, false otherwise
+     * @return <code>true</code>, if the operation may be ignored safely, <code>false</code> otherwise
      */
     public boolean isSafeToIgnore() {
-        return this.safeToIgnore;
+        return safeToIgnore;
     }
 
     /**
      * Returns an <code>XMLStreamReader</code> that provides access to the vendor specific data.
      * <p>
      * NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the closing
-     * element of the feature/feature collection, i.e. the END_ELEMENT of the surrounding <code>Native</code> element.
+     * element, i.e. up to the <code>END_ELEMENT</code> of the surrounding <code>Native</code> element.
      * </p>
      * 
      * @return XML encoded vendor specific data, cursor points at the <code>START_ELEMENT</code> event of the
-     *         <code>wfs:Native</code> element, never null
+     *         <code>wfs:Native</code> element, never <code>null</code>
      */
     public XMLStreamReader getVendorSpecificData() {
-        return this.vendorSpecificData;
+        return vendorSpecificData;
     }
 }

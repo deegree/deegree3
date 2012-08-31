@@ -67,15 +67,15 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
-import org.deegree.protocol.wfs.transaction.Delete;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
-import org.deegree.protocol.wfs.transaction.Insert;
-import org.deegree.protocol.wfs.transaction.Native;
-import org.deegree.protocol.wfs.transaction.PropertyReplacement;
+import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionOperation;
-import org.deegree.protocol.wfs.transaction.Update;
-import org.deegree.protocol.wfs.transaction.Transaction.ReleaseAction;
+import org.deegree.protocol.wfs.transaction.action.Delete;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.Insert;
+import org.deegree.protocol.wfs.transaction.action.Native;
+import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
+import org.deegree.protocol.wfs.transaction.action.Update;
 
 /**
  * Adapter between XML encoded <code>Transaction</code> requests and {@link Transaction} objects.

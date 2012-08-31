@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.action;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -54,6 +54,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionOperation;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
 
 /**

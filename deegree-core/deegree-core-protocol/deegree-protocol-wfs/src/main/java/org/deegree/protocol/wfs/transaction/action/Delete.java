@@ -33,11 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.action;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.filter.Filter;
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionOperation;
 
 /**
  * Represents a WFS <code>Delete</code> operation (part of a {@link Transaction} request).

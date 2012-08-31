@@ -58,6 +58,11 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.ResourceId;
 import org.deegree.protocol.wfs.WFSConstants;
+import org.deegree.protocol.wfs.transaction.action.Delete;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.Insert;
+import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
+import org.deegree.protocol.wfs.transaction.action.Update;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXMLAdapter;
 import org.junit.Test;
 

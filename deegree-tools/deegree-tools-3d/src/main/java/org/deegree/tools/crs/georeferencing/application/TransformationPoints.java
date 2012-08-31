@@ -38,7 +38,7 @@ package org.deegree.tools.crs.georeferencing.application;
 import static java.lang.Double.isNaN;
 import static java.util.Collections.singletonList;
 import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.deegree.services.wms.MapService.fillInheritedInformation;
 
 import java.awt.event.ActionEvent;

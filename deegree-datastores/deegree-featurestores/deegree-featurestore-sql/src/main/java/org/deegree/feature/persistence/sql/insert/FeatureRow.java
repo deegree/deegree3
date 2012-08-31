@@ -51,7 +51,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
  * An {@link InsertRow} for a feature type root table (deals with feature id generation).

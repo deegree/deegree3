@@ -40,7 +40,7 @@ import static org.deegree.commons.tom.primitive.BaseType.DOUBLE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 
 import java.io.IOException;
 import java.net.URL;

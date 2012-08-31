@@ -33,59 +33,55 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.action;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
 
 /**
- * Abstract base class for the operations that can occur inside a {@link Transaction} request.
+ * The <code></code> class TODO add class documentation here.
  * 
- * @see Transaction
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class TransactionOperation {
+public class PropertyReplacement {
 
-    private final String handle;
+    private final QName propertyName;
+
+    private final XMLStreamReader xmlStream;
 
     /**
-     * Convenience enum type for discriminating the different operation types.
+     * @param propertyName
+     * @param xmlStream
      */
-    public enum Type {
-        /** The object is an instance of {@link Delete}. */
-        DELETE,
-        /** The object is an instance of {@link Insert}. */
-        INSERT,
-        /** The object is an instance of {@link Native}. */
-        NATIVE,
-        /** The object is an instance of {@link Update}. */
-        UPDATE
+    public PropertyReplacement( QName propertyName, XMLStreamReader xmlStream ) {
+        this.propertyName = propertyName;
+        this.xmlStream = xmlStream;
     }
 
     /**
-     * Creates a new {@link TransactionOperation} with an optional handle.
+     * Returns the name of the property to be replaced.
      * 
-     * @param handle
-     *            identifier for the operation, may be <code>null</code>
+     * @return the name of the property to be replaced
      */
-    protected TransactionOperation( String handle ) {
-        this.handle = handle;
+    public QName getPropertyName() {
+        return propertyName;
     }
 
     /**
-     * Returns the type of operation. Use this to safely determine the subtype of {@link TransactionOperation}.
+     * Returns an <code>XMLStreamReader</code> that provides access to the encoded replacement value (if such a value is
+     * specified).
+     * <p>
+     * <i>NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the
+     * <code>wfs:Value</code> END_ELEMENT event, i.e. the <code>wfs:Property</code> END_ELEMENT event.</i>
+     * </p>
      * 
-     * @return type of operation, never <code>null</code>
+     * @return <code>XMLStreamReader</code> that provides access to the XML encoded replacement value, cursor points at
+     *         the <code>wfs:Value</code> <code>START_ELEMENT</code> event, or <code>null</code>
      */
-    public abstract Type getType();
-
-    /**
-     * Returns the idenfifier of the operation.
-     * 
-     * @return the idenfifier of the operation, or <code>null</code> if it is unspecified
-     */
-    public String getHandle() {
-        return handle;
+    public XMLStreamReader getReplacementValue() {
+        return xmlStream;
     }
 }

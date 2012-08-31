@@ -69,7 +69,7 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
  * {@link FeatureStore} implementation that keeps the feature instances in memory.

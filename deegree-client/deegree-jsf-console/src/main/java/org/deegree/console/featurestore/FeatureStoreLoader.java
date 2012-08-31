@@ -38,8 +38,8 @@ package org.deegree.console.featurestore;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
-import static org.deegree.protocol.wfs.transaction.IDGenMode.USE_EXISTING;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -57,7 +57,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
  * TODO add class documentation here

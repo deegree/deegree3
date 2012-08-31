@@ -99,7 +99,7 @@ import org.deegree.filter.ResourceId;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;

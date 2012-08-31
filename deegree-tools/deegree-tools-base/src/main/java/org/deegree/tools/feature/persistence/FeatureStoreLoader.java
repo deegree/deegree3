@@ -62,7 +62,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.tools.i18n.Messages;
 
 /**

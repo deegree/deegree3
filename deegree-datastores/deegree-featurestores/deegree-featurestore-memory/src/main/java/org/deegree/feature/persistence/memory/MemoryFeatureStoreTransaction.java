@@ -74,7 +74,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
-import org.deegree.protocol.wfs.transaction.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

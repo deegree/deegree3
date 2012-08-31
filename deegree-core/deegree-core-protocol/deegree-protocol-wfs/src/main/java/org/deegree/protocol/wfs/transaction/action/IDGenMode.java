@@ -33,7 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.action;
+
 
 /**
  * Enum type for discriminating the different object id generation policies for {@link Insert} actions.

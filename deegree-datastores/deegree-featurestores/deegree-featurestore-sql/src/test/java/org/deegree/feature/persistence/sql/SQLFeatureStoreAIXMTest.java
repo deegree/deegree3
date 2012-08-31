@@ -39,7 +39,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.transaction.IDGenMode.GENERATE_NEW;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;

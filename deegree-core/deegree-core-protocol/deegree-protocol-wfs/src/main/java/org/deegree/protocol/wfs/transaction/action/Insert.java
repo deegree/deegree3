@@ -33,15 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.transaction;
+package org.deegree.protocol.wfs.transaction.action;
 
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionOperation;
+
 /**
  * Represents a WFS <code>Insert</code> operation (part of a {@link Transaction} request).
- * <p>
- * NOTE: Due to the possible size of <code>Insert</code> operations, this...
- * </p>
  * 
  * @see Transaction
  * 
