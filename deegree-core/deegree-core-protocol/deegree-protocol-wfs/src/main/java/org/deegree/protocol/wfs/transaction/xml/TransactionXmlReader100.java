@@ -99,7 +99,7 @@ class TransactionXmlReader100 extends AbstractTransactionXmlReader {
         }
 
         LazyTransactionActionsReader iterable = new LazyTransactionActionsReader( xmlStream, this );
-        return new Transaction( VERSION_100, handle, lockId, releaseAction, iterable );
+        return new Transaction( VERSION_100, handle, lockId, releaseAction, iterable, null );
     }
 
     @Override

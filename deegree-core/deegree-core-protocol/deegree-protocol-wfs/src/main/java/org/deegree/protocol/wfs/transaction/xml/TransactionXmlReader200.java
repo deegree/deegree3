@@ -93,7 +93,7 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
 
         nextElement( xmlStream );
         LazyTransactionActionsReader iterable = new LazyTransactionActionsReader( xmlStream, this );
-        return new Transaction( VERSION_200, handle, lockId, releaseAction, iterable );
+        return new Transaction( VERSION_200, handle, lockId, releaseAction, iterable, srsName );
     }
 
     @Override
@@ -125,8 +125,8 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
     }
 
     /**
-     * Returns the object representation of a <code>wfs:Delete</code> element. Consumes all corresponding events from
-     * the given <code>XMLStream</code>.
+     * Returns the object representation for the given <code>wfs:Delete</code> element. Consumes all events
+     * corresponding to the <code>wfs:Delete</code> element from the given <code>XMLStream</code>.
      * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Delete&gt;), points at the

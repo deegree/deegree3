@@ -64,6 +64,8 @@ public class Transaction extends AbstractWFSRequest {
 
     private final ReleaseAction releaseAction;
 
+    private final String srsName;
+
     /**
      * Creates a new {@link Transaction} request.
      * 
@@ -78,13 +80,16 @@ public class Transaction extends AbstractWFSRequest {
      *            <code>null</code> (unspecified)
      * @param actions
      *            actions to be performed as parts of the transaction, must not be <code>null</code>
+     * @param srsName
+     *            identifier of the coordinate reference system for contained geometries, can be <code>null</code>
      */
     public Transaction( Version version, String handle, String lockId, ReleaseAction releaseAction,
-                        Iterable<TransactionAction> actions ) {
+                        Iterable<TransactionAction> actions, String srsName ) {
         super( version, handle );
         this.lockId = lockId;
         this.releaseAction = releaseAction;
         this.actions = actions;
+        this.srsName = srsName;
     }
 
     /**
@@ -93,7 +98,7 @@ public class Transaction extends AbstractWFSRequest {
      * @return the lock identifier provided with this transaction, or <code>null</code> if it is unspecified
      */
     public String getLockId() {
-        return this.lockId;
+        return lockId;
     }
 
     /**
@@ -103,7 +108,16 @@ public class Transaction extends AbstractWFSRequest {
      *         <code>null</code> if it is unspecified
      */
     public ReleaseAction getReleaseAction() {
-        return this.releaseAction;
+        return releaseAction;
+    }
+
+    /**
+     * Returns the identifier of the coordinate reference system for contained geometries.
+     * 
+     * @return identifier of the coordinate reference system, can be <code>null</code>
+     */
+    public String getSrsName() {
+        return srsName;
     }
 
     /**
@@ -112,6 +126,6 @@ public class Transaction extends AbstractWFSRequest {
      * @return sequence of actions, can be empty, but never <code>null</code>
      */
     public Iterable<TransactionAction> getActions() {
-        return this.actions;
+        return actions;
     }
 }
