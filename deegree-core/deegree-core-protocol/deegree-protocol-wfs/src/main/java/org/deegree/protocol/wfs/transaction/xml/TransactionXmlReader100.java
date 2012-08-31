@@ -33,7 +33,6 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.protocol.wfs.transaction.xml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -48,18 +47,18 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
+import java.util.NoSuchElementException;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -70,25 +69,16 @@ import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.action.Update;
 
 /**
- * Reader for XML encoded WFS 1.0.0 <code>Transaction</code> requests.
+ * {@link TransactionXmlReader} for WFS 1.0.0.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TransactionXmlReader100 extends AbstractWFSRequestXMLAdapter implements TransactionActionXmlReader {
+class TransactionXmlReader100 extends AbstractTransactionXmlReader {
 
-    /**
-     * Parses a WFS 1.0.0 <code>Transaction</code> document.
-     * 
-     * @return parsed {@link Transaction} request, never <code>null</code>
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
+    @Override
     public Transaction read( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         xmlStream.require( START_ELEMENT, WFS_NS, "Transaction" );
@@ -140,22 +130,6 @@ public class TransactionXmlReader100 extends AbstractWFSRequestXMLAdapter implem
         return operation;
     }
 
-    private ReleaseAction parseReleaseAction( String releaseActionString ) {
-        ReleaseAction releaseAction = null;
-        if ( releaseActionString != null ) {
-            if ( "SOME".equals( releaseActionString ) ) {
-                releaseAction = ReleaseAction.SOME;
-            } else if ( "ALL".equals( releaseActionString ) ) {
-                releaseAction = ReleaseAction.ALL;
-            } else {
-                String msg = "Invalid value (=" + releaseActionString
-                             + ") for release action parameter. Valid values are 'ALL' or 'SOME'.";
-                throw new InvalidParameterValueException( msg, "releaseAction" );
-            }
-        }
-        return releaseAction;
-    }
-
     /**
      * Returns the object representation of a <code>wfs:Delete</code> element. Consumes all corresponding events from
      * the given <code>XMLStream</code>.
@@ -192,13 +166,19 @@ public class TransactionXmlReader100 extends AbstractWFSRequestXMLAdapter implem
     }
 
     /**
-     * Returns the object representation of a <code>wfs:Insert</code> element. NOTE: Does *not* consume all
-     * corresponding events from the given <code>XMLStream</code>.
+     * Returns the object representation for the given <code>wfs:Insert</code> element.
+     * <p>
+     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
+     * the <code>wfs:Insert</code> elemetn from the given <code>XMLStream</code>. After a call to this method, the XML
+     * stream points at the <code>START_ELEMENT</code> of the insert payload.
+     * </p>
      * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Insert&gt;)
-     * @return corresponding {@link Insert} object
+     * @return corresponding {@link Insert} object, never <code>null</code>
+     * @throws NoSuchElementException
      * @throws XMLStreamException
+     * @throws XMLParsingException
      */
     Insert readInsert( XMLStreamReader xmlStream )
                             throws XMLStreamException {
@@ -235,7 +215,7 @@ public class TransactionXmlReader100 extends AbstractWFSRequestXMLAdapter implem
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
 
-        return new Update( handle, VERSION_100, ftName, null, null, xmlStream );
+        return new Update( handle, VERSION_100, ftName, null, null, xmlStream, this );
     }
 
     public PropertyReplacement readProperty( XMLStreamReader xmlStream )

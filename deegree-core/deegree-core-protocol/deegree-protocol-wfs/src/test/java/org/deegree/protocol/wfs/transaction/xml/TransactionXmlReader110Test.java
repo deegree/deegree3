@@ -35,7 +35,6 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-
 package org.deegree.protocol.wfs.transaction.xml;
 
 import java.io.IOException;

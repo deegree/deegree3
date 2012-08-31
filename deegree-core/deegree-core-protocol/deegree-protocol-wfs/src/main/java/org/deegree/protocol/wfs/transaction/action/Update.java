@@ -56,7 +56,7 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionActionType;
-import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader100;
+import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
 
 /**
  * Represents a WFS <code>Update</code> operation (part of a {@link Transaction} request).
@@ -80,7 +80,7 @@ public class Update extends AbstractTransactionAction {
 
     private final XMLStreamReader xmlStream;
 
-    private final TransactionXmlReader100 transactionReader = new TransactionXmlReader100();
+    private final TransactionXmlReader transactionReader;
 
     private boolean createdIterator;
 
@@ -102,13 +102,14 @@ public class Update extends AbstractTransactionAction {
      *            <code>START_ELEMENT</code> event of the first "wfs:Property"
      */
     public Update( String handle, Version version, QName ftName, String inputFormat, String srsName,
-                   XMLStreamReader xmlStream ) {
+                   XMLStreamReader xmlStream, TransactionXmlReader transactionReader ) {
         super( handle );
         this.version = version;
         this.ftName = ftName;
         this.inputFormat = inputFormat;
         this.srsName = srsName;
         this.xmlStream = xmlStream;
+        this.transactionReader = transactionReader;
     }
 
     /**
@@ -166,23 +167,10 @@ public class Update extends AbstractTransactionAction {
                     throw new NoSuchElementException();
                 }
                 PropertyReplacement replacement = null;
-                if ( version.equals( WFSConstants.VERSION_100 ) ) {
-                    try {
-                        replacement = transactionReader.readProperty( xmlStream );
-                    } catch ( XMLStreamException e ) {
-                        throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
-                                                                  + e.getMessage() );
-                    }
-                } else if ( version.equals( WFSConstants.VERSION_110 ) ) {
-                    try {
-                        replacement = transactionReader.readProperty( xmlStream );
-                    } catch ( XMLStreamException e ) {
-                        throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
-                                                                  + e.getMessage() );
-                    }
-                } else {
-                    throw new UnsupportedOperationException(
-                                                             "Only WFS 1.1.0 transaction are implemented at the moment." );
+                try {
+                    replacement = transactionReader.readProperty( xmlStream );
+                } catch ( XMLStreamException e ) {
+                    throw new XMLParsingException( xmlStream, "Error parsing transaction operation: " + e.getMessage() );
                 }
                 return replacement;
             }

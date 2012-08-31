@@ -59,7 +59,7 @@ class LazyTransactionActionsReader implements Iterable<TransactionAction> {
 
     private final XMLStreamReader xmlStream;
 
-    private final TransactionActionXmlReader transactionReader;
+    private final TransactionXmlReader transactionReader;
 
     private boolean createdIterator;
 
@@ -70,7 +70,7 @@ class LazyTransactionActionsReader implements Iterable<TransactionAction> {
      * @param xmlStream
      * @param transactionReader
      */
-    LazyTransactionActionsReader( XMLStreamReader xmlStream, TransactionActionXmlReader transactionReader ) {
+    LazyTransactionActionsReader( XMLStreamReader xmlStream, TransactionXmlReader transactionReader ) {
         this.xmlStream = xmlStream;
         this.transactionReader = transactionReader;
     }

@@ -139,6 +139,7 @@ import org.deegree.protocol.wfs.storedquery.ListStoredQueriesXMLAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.kvp.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
+import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReaderFactory;
 import org.deegree.services.OWS;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -718,7 +719,8 @@ public class WebFeatureService extends AbstractOWS {
                 break;
             case Transaction:
                 checkTransactionsEnabled( requestName );
-                Transaction transaction = new TransactionXmlReader().read( xmlStream );
+                TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
+                Transaction transaction = transactionReader.read( xmlStream );
                 new TransactionHandler( this, service, transaction ).doTransaction( response );
                 break;
             default:
