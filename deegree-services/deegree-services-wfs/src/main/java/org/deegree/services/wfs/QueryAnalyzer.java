@@ -269,6 +269,7 @@ public class QueryAnalyzer {
                     adHocQueries.add( new FeatureIdQuery( null, null, null, null, null, null,
                                                           new String[] { requestedId } ) );
                 } else if ( storedQuery.getId().equals( GET_FEATURE_BY_TYPE ) ) {
+                    // TODO qualify typeName using NAMESPACES parameter for KVP requests
                     OMElement literalEl = storedQuery.getParams().get( "TYPENAME" );
                     if ( literalEl == null ) {
                         String msg = "Stored query '" + storedQuery.getId() + "' requires parameter 'TYPENAME'.";

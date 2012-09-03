@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/controller/wps/WPSController.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,7 +33,6 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.services.wfs;
 
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;

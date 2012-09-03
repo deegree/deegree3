@@ -116,6 +116,7 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.Native;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
+import org.deegree.protocol.wfs.transaction.action.Replace;
 import org.deegree.protocol.wfs.transaction.action.Update;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -214,6 +215,10 @@ class TransactionHandler {
                 }
                 case UPDATE: {
                     doUpdate( (Update) operation, lock );
+                    break;
+                }
+                case REPLACE: {
+                    doReplace( (Replace) operation, lock );
                     break;
                 }
                 }
@@ -578,6 +583,13 @@ class TransactionHandler {
             }
         }
         return newProperties;
+    }
+
+    private void doReplace( Replace replace, Lock lock )
+                            throws OWSException {
+
+        LOG.debug( "doReplace: " + replace );
+        throw new UnsupportedOperationException();
     }
 
     private FeatureStoreTransaction acquireTransaction( FeatureStore fs )

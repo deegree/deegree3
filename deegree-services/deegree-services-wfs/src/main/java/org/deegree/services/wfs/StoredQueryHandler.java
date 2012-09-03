@@ -83,9 +83,9 @@ class StoredQueryHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredQueryHandler.class );
 
-    public static final String GET_FEATURE_BY_ID = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
+    public static final String GET_FEATURE_BY_ID = "urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById";
 
-    public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:query:OGC-WFS::GetFeatureByType";
+    public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:storedQuery:OGC-WFS::GetFeatureByType";
 
     private final Map<String, StoredQueryDefinition> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDefinition>() );
 

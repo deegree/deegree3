@@ -684,7 +684,7 @@ public class OGCFrontController extends HttpServlet {
             Credentials cred = null;
             if ( credentialsProvider != null ) {
                 cred = credentialsProvider.doKVP( normalizedKVPParams, requestWrapper, response );
-                response.setCredentials (cred);                
+                response.setCredentials( cred );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -830,7 +830,7 @@ public class OGCFrontController extends HttpServlet {
             Credentials cred = null;
             if ( credentialsProvider != null ) {
                 cred = credentialsProvider.doXML( xmlStream, requestWrapper, response );
-                response.setCredentials (cred);                
+                response.setCredentials( cred );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -978,10 +978,9 @@ public class OGCFrontController extends HttpServlet {
             }
 
             LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
-            HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
             long dispatchTime = FrontControllerStats.requestDispatched();
             try {
-                ows.doSOAP( env, requestWrapper, responseWrapper, multiParts, factory );
+                ows.doSOAP( env, requestWrapper, response, multiParts, factory );
             } finally {
                 FrontControllerStats.requestFinished( dispatchTime );
             }

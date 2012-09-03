@@ -1,4 +1,4 @@
-<wfs:StoredQueryDefinition id="urn:ogc:def:query:OGC-WFS::GetFeatureById" xmlns:wfs="http://www.opengis.net/wfs/2.0"
+<wfs:StoredQueryDefinition id="urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById" xmlns:wfs="http://www.opengis.net/wfs/2.0"
   xmlns:fes="http://www.opengis.net/fes/2.0">
   <wfs:Title>GetFeatureById</wfs:Title>
   <wfs:Abstract>Returns the single feature whose value is equal to the specified value of the ID argument</wfs:Abstract>
