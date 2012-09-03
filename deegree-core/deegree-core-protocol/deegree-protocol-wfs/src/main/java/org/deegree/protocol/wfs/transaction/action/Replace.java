@@ -35,15 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.action;
 
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.protocol.wfs.transaction.TransactionActionType.REPLACE;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionActionType;
 
 /**
  * A WFS <code>Replace</code> action (part of a {@link Transaction} request).
+ * <p>
+ * In order to allow stream-based processing, using this class requires a well-defined interaction in order to guarantee
+ * that the stream is positioned correctly:
+ * <ul>
+ * <li>In the first step, the user must call {@link #getReplacementFeatureStream()} exactly once. The returned stream
+ * points at the <code>START_ELEMENT</code> event of the replacement feature. The user must forward the stream up to the
+ * <code>END_ELEMENT</code> event of the replacement feature.</li>
+ * <li>In the second step, the user must call {@link #getFilter()} exactly once.</li>
+ * </ul>
+ * Afterwards the XML stream points at the <code>END_ELEMENT</code> event of the <code>wfs:Replace</code> action.
+ * </p>
  * 
  * @see Transaction
  * 
@@ -86,7 +105,34 @@ public class Replace extends AbstractTransactionAction {
      * @return xml stream, never <code>null</code>, points at the <code>START_ELEMENT</code> event of the replacement
      *         feature
      */
-    public XMLStreamReader getXmlStream() {
+    public XMLStreamReader getReplacementFeatureStream() {
         return xmlStream;
+    }
+
+    /**
+     * Return the filter that determines the feature instance to be replaced.
+     * <p>
+     * NOTE: Before calling this method, the feature element encoded in the XMLStream returned by
+     * {@link #getReplacementFeatureStream()} must be fully read. The stream must be positioned at the
+     * <code>END_ELEMENT</code> of the replacement feature. After a call to this method, the stream points at the
+     * <code>END_ELEMENT</code> event of the <code>wfs:Replace</code> action.
+     * </p>
+     * 
+     * @return the filter that determines the feature instance to be replaced, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Filter getFilter()
+                            throws XMLParsingException, XMLStreamException {
+        XMLStreamUtils.nextElement( xmlStream );
+        try {
+            xmlStream.require( START_ELEMENT, FES_20_NS, "Filter" );
+        } catch ( XMLStreamException e ) {
+            String msg = "Mandatory 'fes:Filter' element is missing in Replace or stream has not been correctly positioned.";
+            throw new MissingParameterException( msg );
+        }
+        Filter filter = Filter200XMLDecoder.parse( xmlStream );
+        XMLStreamUtils.nextElement( xmlStream );
+        return filter;
     }
 }

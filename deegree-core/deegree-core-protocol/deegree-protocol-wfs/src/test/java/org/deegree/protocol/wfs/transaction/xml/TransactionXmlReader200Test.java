@@ -37,8 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.xml;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -51,10 +51,11 @@ import javax.xml.stream.XMLStreamReader;
 import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.Native;
-import org.junit.Assert;
+import org.deegree.protocol.wfs.transaction.action.Replace;
 import org.junit.Test;
 
 /**
@@ -76,6 +77,8 @@ public class TransactionXmlReader200Test extends TestCase {
     private final String INSERT_ACTION1_200 = "v200/InsertAction1.xml";
 
     private final String NATIVE_ACTION1_200 = "v200/Native1.xml";
+
+    private final String REPLACE_ACTION_200 = "v200/Replace1.dontValidate";
 
     private final TransactionXmlReader200 reader = new TransactionXmlReader200();
 
@@ -136,6 +139,20 @@ public class TransactionXmlReader200Test extends TestCase {
         assertNull( action.getHandle() );
         assertEquals( "BigDbCorp", action.getVendorId() );
         assertTrue( action.isSafeToIgnore() );
+    }
+
+    @Test
+    public void testReadReplaceWfs200SpecExample1()
+                            throws Exception {
+        XMLStreamReader xmlStream = getXMLStreamReader( REPLACE_ACTION_200 );
+        Replace action = reader.readReplace( xmlStream );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, null, "BuiltUpA_1M" );
+        assertNull( action.getHandle() );
+        XMLStreamReader featureReader = action.getReplacementFeatureStream();
+        skipElement( featureReader );
+        Filter filter = action.getFilter();
+        assertNotNull( filter );
+        xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Replace" );
     }
 
     private XMLStreamReader getXMLStreamReader( String resourceName )

@@ -63,6 +63,7 @@ import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.Native;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
+import org.deegree.protocol.wfs.transaction.action.Replace;
 
 /**
  * {@link TransactionXmlReader} for WFS 2.0.0.
@@ -204,7 +205,7 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
      * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Native&gt;)
-     * @return corresponding {@link Insert} object, never <code>null</code>
+     * @return corresponding {@link Native} object, never <code>null</code>
      * @throws NoSuchElementException
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -223,10 +224,36 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         return new Native( handle, vendorId, safeToIgnore, xmlStream );
     }
 
-    private TransactionAction readReplace( XMLStreamReader xmlStream ) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Returns the object representation for the given <code>wfs:Replace</code> element.
+     * <p>
+     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
+     * the <code>wfs:Replace</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
+     * stream points at the <code>START_ELEMENT</code> of the replacement feature. The replacement feature is followed
+     * by a <code>fes:Filter</code> element.
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Replace&gt;)
+     * @return corresponding {@link Replace} object, never <code>null</code>
+     * @throws NoSuchElementException
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    Replace readReplace( XMLStreamReader xmlStream )
+                            throws NoSuchElementException, XMLStreamException {
+        
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = xmlStream.getAttributeValue( null, "handle" );
 
+        nextElement( xmlStream );
+        if ( !xmlStream.isStartElement() ) {
+            throw new XMLParsingException( xmlStream, Messages.get( "WFS_REPLACE_MISSING_FEATURE_ELEMENT" ) );
+        }
+        
+        return new Replace( handle, xmlStream );
+    }
+    
     private TransactionAction readUpdate( XMLStreamReader xmlStream ) {
         throw new UnsupportedOperationException();
     }
