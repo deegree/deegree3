@@ -39,7 +39,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Describes the change of a property as part of an {@link Update} action.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,19 +52,23 @@ public class PropertyReplacement {
 
     private final XMLStreamReader xmlStream;
 
+    private final UpdateAction updateAction;
+
     /**
      * @param propertyName
      * @param xmlStream
+     * @param updateAction
      */
-    public PropertyReplacement( QName propertyName, XMLStreamReader xmlStream ) {
+    public PropertyReplacement( QName propertyName, XMLStreamReader xmlStream, UpdateAction updateAction ) {
         this.propertyName = propertyName;
         this.xmlStream = xmlStream;
+        this.updateAction = updateAction;
     }
 
     /**
      * Returns the name of the property to be replaced.
      * 
-     * @return the name of the property to be replaced
+     * @return the name of the property to be replaced, never <code>null</code>
      */
     public QName getPropertyName() {
         return propertyName;
@@ -83,5 +87,9 @@ public class PropertyReplacement {
      */
     public XMLStreamReader getReplacementValue() {
         return xmlStream;
+    }
+
+    public UpdateAction getUpdateAction() {
+        return updateAction;
     }
 }

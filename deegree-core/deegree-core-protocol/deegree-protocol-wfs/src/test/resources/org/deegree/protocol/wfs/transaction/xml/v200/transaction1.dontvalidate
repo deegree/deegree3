@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+<wfs:Transaction version="2.0.0" service="WFS" handle="Transaction 01" xmlns="http://www.someserver.com/myns"
+  xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.someserver.com/myns ./SampleSchema.xsd
+http://www.opengis.net/wfs/2.0
+http://schemas.opengis.net/wfs/2.0/wfs.xsd
+http://www.opengis.net/gml/3.2
+http://www.opengis.net/gml/3.2.1/gml.xsd">
+  <wfs:Native vendorId="BigDbCorp" safeToIgnore="true">
+    ALTER SESSION ENABLE PARALLEL DML;
+    <bdbc:SomeXmlCommand xmlns:bdbc="http://www.bigdbcorp.com">
+      <bdbc:Command>allow</bdbc:Command>
+    </bdbc:SomeXmlCommand>
+  </wfs:Native>
+  <!-- Create a new instance of feature type ELEVP_1M -->
+  <wfs:Insert handle="Statement 1">
+    <ElevP_1M gml:id="E1">
+      <location>
+        <gml:Point srsName="urn:ogc:def:crs:EPSG::4326" gml:id="e33">
+          <gml:pos>24.2633 -68.5485</gml:pos>
+        </gml:Point>
+      </location>
+      <id>167928</id>
+      <fCode>CA030</fCode>
+      <acc>2</acc>
+      <ela>1</ela>
+      <zv2>29999</zv2>
+      <tileId>250</tileId>
+      <endId>111</endId>
+    </ElevP_1M>
+  </wfs:Insert>
+  <!-- Create a new instance of feature type RoadL_1M which has complex properties segment and roadType. -->
+  <wfs:Insert handle="ComplexInsert">
+    <RoadL_1M gml:id="R1">
+      <name>Highway 401</name>
+      <segment>
+        <SegmentDesc>
+          <designation>SEG_A41</designation>
+          <geometry>
+            <gml:LineString gml:id="e3" srsName="urn:ogc:def:crs:EPSG::4326">
+              <gml:posList>-46.32769393920898 168.9116668701172 -46.31716537475586 168.9369659423828 -46.31291580200195
+                168.9402465820312 -46.30877685546875 168.9530792236328 -46.30380630493164 168.9554138183594
+                -46.30014038085938 168.9626159667969 -46.29613876342773 168.9665222167969 -46.28755569458008
+                168.9909210205078
+              </gml:posList>
+            </gml:LineString>
+          </geometry>
+        </SegmentDesc>
+      </segment>
+      <roadType>
+        <RoadDesc>
+          <surfaceType>Asphalt</surfaceType>
+          <nLanes>12</nLanes>
+          <grade>15</grade>
+        </RoadDesc>
+      </roadType>
+    </RoadL_1M>
+  </wfs:Insert>
+  <!-- Update the designation of a particular range of segments which are now being collapsed into a single segment. The 
+    The filter uses an XPath expression to reference the designation property -->
+  <wfs:Update typeName="RoadL_1M">
+    <wfs:Property>
+      <wfs:ValueReference>RoadL_1M/segment/designation</wfs:ValueReference>
+      <wfs:Value>SEG_A60</wfs:Value>
+    </wfs:Property>
+    <fes:Filter>
+      <fes:PropertyIsBetween>
+        <fes:ValueReference>RoadL_1M/segment/designation</fes:ValueReference>
+        <fes:LowerBoundary>
+          <fes:Literal>SEG_A60</fes:Literal>
+        </fes:LowerBoundary>
+        <fes:UpperBoundary>
+          <fes:Literal>SEG_A69</fes:Literal>
+        </fes:UpperBoundary>
+      </fes:PropertyIsBetween>
+    </fes:Filter>
+  </wfs:Update>
+  <!-- Create 2 feature instances of feature type BuiltUpA_1M -->
+  <wfs:Insert handle="Statement 2">
+    <BuiltUpA_1M gml:id="B1">
+      <placeId>4070</placeId>
+      <name>Toronto</name>
+      <population>4000000</population>
+      <bndry>
+        <gml:Polygon gml:id="g3" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-32.49074935913086 137.7553100585938 -32.49797058105469 137.7500762939453 -32.50219345092773
+                137.7501068115234 -32.49538803100586 137.7489929199219 -32.49352645874023 137.748779296875
+                -32.49258422851562 137.7469940185547 -32.4914436340332 137.7448272705078 -32.49761199951172
+                137.7403869628906 -32.49774932861328 137.7377014160156 -32.48825073242188 137.7359161376953
+                -32.47955703735352 137.7342987060547 -32.4787483215332 137.7353668212891 -32.47758483886719
+                137.7368927001953 -32.47419357299805 137.7501678466797 -32.47983169555664 137.7571411132812
+                -32.48297119140625 137.759033203125 -32.48714065551758 137.7578887939453 -32.49074935913086
+                137.7553100585938
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </bndry>
+    </BuiltUpA_1M>
+    <BuiltUpA_1M gml:id="B2">
+      <placeId>1725</placeId>
+      <name>Montreal</name>
+      <population>2000000</population>
+      <bndry>
+        <gml:Polygon gml:id="e4" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-33.20774841308594 138.0020904541016 -33.20772171020508 137.997802734375 -33.20266723632812
+                137.9964141845703 -33.20236206054688 137.9871368408203 -33.19541549682617 137.9859924316406
+                -33.19369506835938 137.9819183349609 -33.17902755737305 137.9871978759766 -33.18127822875977
+                137.9911346435547 -33.17658233642578 137.9950256347656 -33.18086242675781 138.0019378662109
+                -33.18441772460938 138.0037536621094 -33.18713760375977 138.0029144287109 -33.19083404541016
+                137.9978637695312 -33.19633483886719 137.9975280761719 -33.19985961914062 137.9996185302734
+                -33.19947052001953 138.0031127929688 -33.18966674804688 138.01025390625 -33.19049835205078
+                138.0133361816406 -33.19108200073242 138.0155792236328 -33.19660949707031 138.0187530517578
+                -33.20325088500977 138.0167236328125 -33.20430374145508 138.0137481689453 -33.21133422851562
+                138.009033203125 -33.20774841308594 138.0041961669922 -33.20774841308594 138.0020904541016
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </bndry>
+    </BuiltUpA_1M>
+  </wfs:Insert>
+  <!-- Update the name property of the feature instance BuiltUpA_1M.1210 -->
+  <wfs:Update typeName="BuiltUpA_1M">
+    <wfs:Property>
+      <wfs:ValueReference>BuiltUpA_1M/name</wfs:ValueReference>
+      <wfs:Value>SMALLVILLE</wfs:Value>
+    </wfs:Property>
+    <fes:Filter>
+      <fes:ResourceId rid="BuiltUpA_1M.1210" />
+    </fes:Filter>
+  </wfs:Update>
+  <!-- Update the geometry of the feature BuiltUpA_1M.1725. -->
+  <wfs:Update typeName="BuiltUpA_1M">
+    <wfs:Property>
+      <wfs:ValueReference>BuiltUpA_1M/bndry</wfs:ValueReference>
+      <wfs:Value>
+        <gml:Polygon gml:id="g5" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-34.08438873291016 151.1380767822266 -34.08183288574219 151.1435852050781 -34.08427810668945
+                151.1475219726562 -34.08483505249023 151.1522216796875 -34.08349990844727 151.1563110351562
+                -34.09330368041992 151.1546325683594 -34.08549880981445 151.1357269287109 -34.08438873291016
+                151.1380767822266
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </wfs:Value>
+    </wfs:Property>
+    <fes:Filter>
+      <fes:ResourceId rid="BuiltUpA_1M.1725" />
+    </fes:Filter>
+  </wfs:Update>
+  <!-- Delete the feature instance BuiltUpA_1M.1013. -->
+  <wfs:Delete typeName="BuiltUpA_1M">
+    <fes:Filter>
+      <fes:ResourceId rid="BuiltUpA_1M.1013" />
+    </fes:Filter>
+  </wfs:Delete>
+  <!-- Delete all instances of the feature type BuiltUpA_1M where: 1. the geometry is INSIDE a polygonal window 2. where 
+    the POPULATION is between 100 and 2000 -->
+  <wfs:Delete typeName="BuiltUpA_1M">
+    <fes:Filter>
+      <fes:And>
+        <fes:Within>
+          <fes:ValueReference>BuiltUpA_1M/bndry</fes:ValueReference>
+          <gml:Polygon gml:id="WINDOW" srsName="urn:ogc:def:crs:EPSG::4326">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList>-33.9866943359375 150.8492279052734 -33.98172378540039 150.8462829589844 -33.97666549682618
+                  150.8461151123047 -33.97611236572266 150.8504791259766 -33.97283172607422 150.8525543212891
+                  -33.97174835205078 150.8591156005859 -33.97491836547852 150.8614501953125 -33.98274993896484
+                  150.8600769042969 -33.98555374145508 150.857421875 -33.9866943359375 150.8492279052734
+                </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </fes:Within>
+        <fes:And>
+          <fes:PropertyIsGreaterThanOrEqualTo>
+            <fes:ValueReference>BuiltUpA_1M/population</fes:ValueReference>
+            <fes:Literal>100</fes:Literal>
+          </fes:PropertyIsGreaterThanOrEqualTo>
+          <fes:PropertyIsLessThanOrEqualTo>
+            <fes:ValueReference>BuiltUpA_1M/population</fes:ValueReference>
+            <fes:Literal>2000</fes:Literal>
+          </fes:PropertyIsLessThanOrEqualTo>
+        </fes:And>
+      </fes:And>
+    </fes:Filter>
+  </wfs:Delete>
+  <wfs:Replace>
+    <BuiltUpA_1M gml:id="B01a">
+      <placeId>34159</placeId>
+      <name>MyTown</name>
+      <population>14357</population>
+      <bndry>
+        <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326" gml:id="P01a">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-31.121000289917 120.4429473876953 -31.12280464172363 120.444580078125 -31.12605476379395
+                120.442253112793 -31.12794494628907 120.4380264282227 -31.12230491638183 120.4315032958984
+                -31.11816596984863 120.432502746582 -31.11672210693359 120.4361953735352 -31.11802864074707
+                120.4410247802734 -31.121000289917 120.4429473876953
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </bndry>
+    </BuiltUpA_1M>
+    <fes:Filter>
+      <fes:ResourceId rid="BuiltUpA_1M.45783" />
+    </fes:Filter>
+  </wfs:Replace>
+</wfs:Transaction>

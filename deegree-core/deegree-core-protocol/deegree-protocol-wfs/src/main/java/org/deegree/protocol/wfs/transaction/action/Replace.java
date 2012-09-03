@@ -54,7 +54,7 @@ import org.deegree.protocol.wfs.transaction.TransactionActionType;
  * A WFS <code>Replace</code> action (part of a {@link Transaction} request).
  * <p>
  * In order to allow stream-based processing, using this class requires a well-defined interaction in order to guarantee
- * that the stream is positioned correctly:
+ * that the underlying XML stream is positioned correctly:
  * <ul>
  * <li>In the first step, the user must call {@link #getReplacementFeatureStream()} exactly once. The returned stream
  * points at the <code>START_ELEMENT</code> event of the replacement feature. The user must forward the stream up to the

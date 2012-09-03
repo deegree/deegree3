@@ -37,6 +37,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.xml;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
@@ -96,7 +99,6 @@ public class TransactionXmlReader110Test extends TestCase {
         assertEquals( "delete1", delete.getHandle() );
         assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
         assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
-
         assertFalse( iter.hasNext() );
     }
 
@@ -118,8 +120,10 @@ public class TransactionXmlReader110Test extends TestCase {
         assertEquals( null, insert.getInputFormat() );
         assertEquals( null, insert.getSrsName() );
         XMLStreamReader xmlStream = insert.getFeatures();
+        xmlStream.require( XMLStreamReader.START_ELEMENT, "http://www.opengis.net/wfs", "FeatureCollection" );
         XMLStreamUtils.skipElement( xmlStream );
-        xmlStream.nextTag();
+        XMLStreamUtils.nextElement( xmlStream );
+        assertFalse( iter.hasNext() );
         assertFalse( iter.hasNext() );
     }
 
@@ -157,6 +161,7 @@ public class TransactionXmlReader110Test extends TestCase {
 
         Filter filter = update.getFilter();
         assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
+        prop2ValueStream.require( XMLStreamReader.END_ELEMENT, "http://www.opengis.net/wfs", "Update" );
         assertFalse( iter.hasNext() );
     }
 
@@ -188,11 +193,9 @@ public class TransactionXmlReader110Test extends TestCase {
         assertEquals( null, insert.getSrsName() );
         XMLStreamReader xmlStream = insert.getFeatures();
         // contract: read until feature/featureCollection END_ELEMENT
-        XMLStreamUtils.skipElement( xmlStream );
+        skipElement( xmlStream );
         // contract: skip to wfs:Insert END_ELEMENT
-        xmlStream.nextTag();
-        // contract: skip to next operation
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         assertTrue( operationIter.hasNext() );
 
         // third operation: update1
@@ -234,7 +237,7 @@ public class TransactionXmlReader110Test extends TestCase {
         URL exampleURL = this.getClass().getResource( resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( exampleURL.toString(),
                                                                                          exampleURL.openStream() );
-        xmlStream.nextTag();
+        XMLStreamUtils.skipStartDocument( xmlStream );
         return new TransactionXmlReader110().read( xmlStream );
     }
 }

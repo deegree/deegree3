@@ -37,11 +37,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.xml;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -55,7 +57,9 @@ import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.Native;
+import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.action.Replace;
+import org.deegree.protocol.wfs.transaction.action.Update;
 import org.junit.Test;
 
 /**
@@ -68,17 +72,27 @@ import org.junit.Test;
  */
 public class TransactionXmlReader200Test extends TestCase {
 
-    private final String DELETE_ACTION1_200 = "v200/DeleteAction1.xml";
+    private final String DELETE_ACTION1_200 = "v200/delete1.xml";
 
-    private final String DELETE_ACTION2_200 = "v200/DeleteAction2.xml";
+    private final String DELETE_ACTION2_200 = "v200/delete2.xml";
 
-    private final String DELETE_ACTION3_200 = "v200/DeleteAction3.xml";
+    private final String DELETE_ACTION3_200 = "v200/delete3.xml";
 
-    private final String INSERT_ACTION1_200 = "v200/InsertAction1.xml";
+    private final String INSERT_ACTION1_200 = "v200/insert1.dontvalidate";
 
-    private final String NATIVE_ACTION1_200 = "v200/Native1.xml";
+    private final String NATIVE_ACTION1_200 = "v200/native1.xml";
 
-    private final String REPLACE_ACTION_200 = "v200/Replace1.dontValidate";
+    private final String REPLACE_ACTION_200 = "v200/replace1.dontvalidate";
+
+    private final String UPDATE_ACTION1_200 = "v200/update1.xml";
+
+    private final String UPDATE_ACTION2_200 = "v200/update2.xml";
+
+    // private final String UPDATE_ACTION3_200 = "v200/update3.xml";
+    //
+    // private final String UPDATE_ACTION4_200 = "v200/update4.xml";
+    //
+    // private final String UPDATE_ACTION5_200 = "v200/update5.xml";
 
     private final TransactionXmlReader200 reader = new TransactionXmlReader200();
 
@@ -128,6 +142,11 @@ public class TransactionXmlReader200Test extends TestCase {
         xmlStream.require( XMLStreamReader.START_ELEMENT, null, "InWaterA_1M" );
         assertNull( insert.getSrsName() );
         assertEquals( xmlStream, insert.getFeatures() );
+        skipElement( xmlStream );
+        nextElement( xmlStream );
+        skipElement( xmlStream );
+        nextElement( xmlStream );
+        xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Insert" );
     }
 
     @Test
@@ -153,6 +172,62 @@ public class TransactionXmlReader200Test extends TestCase {
         Filter filter = action.getFilter();
         assertNotNull( filter );
         xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Replace" );
+    }
+
+    @Test
+    public void testReadUpdateWfs200SpecExample1()
+                            throws Exception {
+        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION1_200 );
+        Update action = reader.readUpdate( xmlStream );
+        assertNull( action.getHandle() );
+        assertNull( action.getInputFormat() );
+        assertNull( action.getSRSName() );
+        Iterator<PropertyReplacement> replacementProps = action.getReplacementProps();
+
+        PropertyReplacement replacement = replacementProps.next();
+        assertNull( replacement.getUpdateAction() );        
+        XMLStreamReader valueStream = replacement.getReplacementValue();
+        valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
+        assertEquals( new QName( "populationType" ), replacement.getPropertyName() );
+        assertEquals( "CITY", valueStream.getElementText() );
+        nextElement( valueStream );
+        valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
+
+        assertFalse( replacementProps.hasNext() );
+
+        nextElement( xmlStream );
+        Filter filter = action.getFilter();
+        assertNotNull( filter );
+
+        xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Update" );
+    }
+
+    @Test
+    public void testReadUpdateWfs200SpecExample2()
+                            throws Exception {
+        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION2_200 );
+        Update action = reader.readUpdate( xmlStream );
+        assertNull( action.getHandle() );
+        assertNull( action.getInputFormat() );
+        assertNull( action.getSRSName() );
+        Iterator<PropertyReplacement> replacementProps = action.getReplacementProps();
+
+        PropertyReplacement replacement = replacementProps.next();
+        assertNull( replacement.getUpdateAction() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "name" ), replacement.getPropertyName() );
+        XMLStreamReader valueStream = replacement.getReplacementValue();
+        valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
+        assertEquals( "somestring", valueStream.getElementText() );
+        nextElement( valueStream );
+        valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
+
+        assertFalse( replacementProps.hasNext() );
+
+        nextElement( xmlStream );
+        Filter filter = action.getFilter();
+        assertNotNull( filter );
+
+        xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Update" );
     }
 
     private XMLStreamReader getXMLStreamReader( String resourceName )

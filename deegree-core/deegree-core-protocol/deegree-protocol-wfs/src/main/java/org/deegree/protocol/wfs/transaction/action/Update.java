@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,12 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.protocol.wfs.transaction.action;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.protocol.wfs.transaction.TransactionActionType.UPDATE;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -48,18 +46,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
-import org.deegree.filter.xml.Filter100XMLDecoder;
-import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionActionType;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
 
 /**
- * Represents a WFS <code>Update</code> operation (part of a {@link Transaction} request).
+ * A WFS <code>Update</code> action (part of a {@link Transaction} request).
  * 
  * @see Transaction
  * 
@@ -69,8 +63,6 @@ import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
  * @version $Revision$, $Date$
  */
 public class Update extends AbstractTransactionAction {
-
-    private final Version version;
 
     private final QName ftName;
 
@@ -88,23 +80,21 @@ public class Update extends AbstractTransactionAction {
      * Creates a new {@link Update} instance for a stream-based access strategy.
      * 
      * @param handle
-     *            identifier for the operation, may be null
-     * @param version
-     *            protocol version, must not be null
+     *            identifier for the operation, may be <code>null</code>
      * @param ftName
-     *            name of the targeted feature type, must not be null
+     *            name of the targeted feature type, must not be <code>null</code>
      * @param inputFormat
-     *            the format of encoded property values, may be null (unspecified)
+     *            the format of encoded property values, may be <code>null</code> (unspecified)
      * @param srsName
-     *            the coordinate references system used for the geometries, may be null (unspecified)
+     *            the coordinate references system used for the geometries, may be <code>null</code> (unspecified)
      * @param xmlStream
      *            provides access to the XML encoded replacement properties and the filter, must point at the
-     *            <code>START_ELEMENT</code> event of the first "wfs:Property"
+     *            <code>START_ELEMENT</code> event of the first <code>wfs:Property</code>
+     * @param transactionReader
      */
     public Update( String handle, Version version, QName ftName, String inputFormat, String srsName,
                    XMLStreamReader xmlStream, TransactionXmlReader transactionReader ) {
         super( handle );
-        this.version = version;
         this.ftName = ftName;
         this.inputFormat = inputFormat;
         this.srsName = srsName;
@@ -119,7 +109,7 @@ public class Update extends AbstractTransactionAction {
      */
     @Override
     public TransactionActionType getType() {
-        return TransactionActionType.UPDATE;
+        return UPDATE;
     }
 
     /**
@@ -128,7 +118,7 @@ public class Update extends AbstractTransactionAction {
      * @return the name of the targeted feature type, never null
      */
     public QName getTypeName() {
-        return this.ftName;
+        return ftName;
     }
 
     /**
@@ -151,14 +141,14 @@ public class Update extends AbstractTransactionAction {
 
     public Iterator<PropertyReplacement> getReplacementProps() {
         if ( createdIterator ) {
-            throw new RuntimeException( "Iteration over the transaction operations can only be done once." );
+            throw new RuntimeException( "Iteration over replacement properties can only be done once." );
         }
         createdIterator = true;
         return new Iterator<PropertyReplacement>() {
 
             @Override
             public boolean hasNext() {
-                return xmlStream.isStartElement() && new QName( WFS_NS, "Property" ).equals( xmlStream.getName() );
+                return xmlStream.isStartElement() && "Property".equals( xmlStream.getName().getLocalPart() );
             }
 
             @Override
@@ -185,7 +175,7 @@ public class Update extends AbstractTransactionAction {
     /**
      * Returns the filter that selects the feature instances to be updated.
      * <p>
-     * NOTE: Due to streaming acccess strategy, there are some rules for using this method:
+     * NOTE: Due to the streaming access strategy, there are some rules for using this method:
      * <ul>
      * <li>#getReplacementProps() must have been called before</li>
      * <li>the client must have iterated over all returned properties</li>
@@ -198,20 +188,15 @@ public class Update extends AbstractTransactionAction {
      */
     public Filter getFilter()
                             throws XMLStreamException {
-        // optional: 'ogc:Filter'
+        // optional: 'ogc:Filter' / 'fes:Filter'
         Filter filter = null;
         if ( xmlStream.isStartElement() ) {
-            xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
-            if ( version.equals( WFSConstants.VERSION_100 ) ) {
-                filter = Filter100XMLDecoder.parse( xmlStream );
-            } else if ( version.equals( WFSConstants.VERSION_110 ) ) {
-                filter = Filter110XMLDecoder.parse( xmlStream );
-            }
-            xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+            filter = transactionReader.readFilter( xmlStream );
+            // xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
             // contract: skip to wfs:Update END_ELEMENT
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             // contract: skip to next operation START_ELEMENT
-            xmlStream.nextTag();
+            // nextElement( xmlStream );
         }
         return filter;
     }

@@ -43,6 +43,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
@@ -54,10 +55,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
-import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
@@ -115,9 +115,6 @@ class TransactionXmlReader100 extends AbstractTransactionXmlReader {
         String localName = xmlStream.getLocalName();
         if ( "Delete".equals( localName ) ) {
             operation = readDelete( xmlStream );
-            xmlStream.nextTag();
-            xmlStream.require( END_ELEMENT, WFS_NS, "Delete" );
-            xmlStream.nextTag();
         } else if ( "Insert".equals( localName ) ) {
             operation = readInsert( xmlStream );
         } else if ( "Native".equals( localName ) ) {
@@ -160,8 +157,10 @@ class TransactionXmlReader100 extends AbstractTransactionXmlReader {
             throw new MissingParameterException( "Mandatory 'ogc:Filter' element is missing in request." );
         }
 
-        Filter filter = Filter110XMLDecoder.parse( xmlStream );
-        xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+        Filter filter = readFilter( xmlStream );
+        xmlStream.require( END_ELEMENT, OGCNS, "Filter" );
+        nextElement( xmlStream );
+        xmlStream.require( END_ELEMENT, WFS_NS, "Delete" );
         return new Delete( handle, ftName, filter );
     }
 
@@ -218,6 +217,13 @@ class TransactionXmlReader100 extends AbstractTransactionXmlReader {
         return new Update( handle, VERSION_100, ftName, null, null, xmlStream, this );
     }
 
+    @Override
+    public Filter readFilter( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+        return Filter100XMLDecoder.parse( xmlStream );
+    }
+
+    @Override
     public PropertyReplacement readProperty( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
@@ -228,10 +234,10 @@ class TransactionXmlReader100 extends AbstractTransactionXmlReader {
 
         PropertyReplacement replacement = null;
         if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
-            replacement = new PropertyReplacement( propName, xmlStream );
+            replacement = new PropertyReplacement( propName, xmlStream, null );
         } else {
             xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
-            replacement = new PropertyReplacement( propName, null );
+            replacement = new PropertyReplacement( propName, null, null );
             xmlStream.nextTag();
         }
         return replacement;

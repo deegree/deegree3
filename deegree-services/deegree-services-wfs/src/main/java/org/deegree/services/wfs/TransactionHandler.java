@@ -41,6 +41,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -385,6 +387,7 @@ class TransactionHandler {
             } else {
                 insertedFidswithoutHandle.addAll( newFids );
             }
+            nextElement( insert.getFeatures() );
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
             String msg = "Cannot perform insert operation: " + e.getMessage();
@@ -490,7 +493,7 @@ class TransactionHandler {
 
         XMLStreamReader xmlStream = nativeOp.getVendorSpecificData();
         try {
-            XMLStreamUtils.skipElement( xmlStream );
+            skipElement( xmlStream );
         } catch ( XMLStreamException e ) {
             String msg = "Error in native operation: " + e.getMessage();
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );

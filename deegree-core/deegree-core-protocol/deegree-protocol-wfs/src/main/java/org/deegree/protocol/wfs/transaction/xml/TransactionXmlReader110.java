@@ -58,7 +58,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -121,9 +120,6 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
         String localName = xmlStream.getLocalName();
         if ( "Delete".equals( localName ) ) {
             operation = readDelete( xmlStream );
-            xmlStream.nextTag();
-            xmlStream.require( END_ELEMENT, WFS_NS, "Delete" );
-            xmlStream.nextTag();
         } else if ( "Insert".equals( localName ) ) {
             operation = readInsert( xmlStream );
         } else if ( "Native".equals( localName ) ) {
@@ -157,8 +153,7 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
         QName ftName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
 
         // required: 'ogc:Filter'
-        xmlStream.nextTag();
-
+        nextElement( xmlStream );
         try {
             xmlStream.require( START_ELEMENT, OGCNS, "Filter" );
         } catch ( XMLStreamException e ) {
@@ -166,8 +161,8 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
             throw new MissingParameterException( "Mandatory 'ogc:Filter' element is missing in request." );
         }
 
-        Filter filter = Filter110XMLDecoder.parse( xmlStream );
-        xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+        Filter filter = readFilter( xmlStream );
+        nextElement( xmlStream );
         return new Delete( handle, ftName, filter );
     }
 
@@ -244,28 +239,6 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
         return new Update( handle, VERSION_110, ftName, inputFormat, srsName, xmlStream, this );
     }
 
-    public PropertyReplacement readProperty( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-
-        xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
-        xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, WFS_NS, "Name" );
-        QName propName = getElementTextAsQName( xmlStream );
-        xmlStream.nextTag();
-
-        PropertyReplacement replacement = null;
-        if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
-            replacement = new PropertyReplacement( propName, xmlStream );
-        } else {
-            // if the wfs:Value element is omitted, the property shall be removed (CITE 1.1.0 test,
-            // wfs:wfs-1.1.0-Transaction-tc11.1)
-            xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
-            replacement = new PropertyReplacement( propName, null );
-            xmlStream.nextTag();
-        }
-        return replacement;
-    }
-
     /**
      * Returns the object representation for the given <code>wfs:Native</code> element.
      * <p>
@@ -291,5 +264,33 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
         // required: '@safeToIgnore'
         boolean safeToIgnore = getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
         return new Native( handle, vendorId, safeToIgnore, xmlStream );
+    }
+
+    @Override
+    public Filter readFilter( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+        return Filter110XMLDecoder.parse( xmlStream );
+    }
+
+    public PropertyReplacement readProperty( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, WFS_NS, "Name" );
+        QName propName = getElementTextAsQName( xmlStream );
+        xmlStream.nextTag();
+
+        PropertyReplacement replacement = null;
+        if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
+            replacement = new PropertyReplacement( propName, xmlStream, null );
+        } else {
+            // if the wfs:Value element is omitted, the property shall be removed (CITE 1.1.0 test,
+            // wfs:wfs-1.1.0-Transaction-tc11.1)
+            xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
+            replacement = new PropertyReplacement( propName, null, null );
+            xmlStream.nextTag();
+        }
+        return replacement;
     }
 }

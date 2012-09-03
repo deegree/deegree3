@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.xml;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -77,13 +79,23 @@ class LazyTransactionActionsReader implements Iterable<TransactionAction> {
     @Override
     public synchronized Iterator<TransactionAction> iterator() {
         if ( createdIterator ) {
-            throw new RuntimeException( "Iteration over the transaction operations can only be done once." );
+            throw new RuntimeException( "Iteration over the transaction actions can only be done once." );
         }
         createdIterator = true;
         return new Iterator<TransactionAction>() {
 
+            boolean needsNextElement = false;
+
             @Override
             public boolean hasNext() {
+                if ( needsNextElement ) {
+                    try {
+                        nextElement( xmlStream );
+                        needsNextElement = false;
+                    } catch ( Exception e ) {
+                        throw new XMLParsingException( xmlStream, "Error parsing transaction action: " + e.getMessage() );
+                    }
+                }
                 return xmlStream.isStartElement();
             }
 
@@ -93,9 +105,11 @@ class LazyTransactionActionsReader implements Iterable<TransactionAction> {
                     throw new NoSuchElementException();
                 }
                 try {
-                    return transactionReader.readAction( xmlStream );
+                    TransactionAction action = transactionReader.readAction( xmlStream );
+                    needsNextElement = true;
+                    return action;
                 } catch ( XMLStreamException e ) {
-                    throw new XMLParsingException( xmlStream, "Error parsing transaction operation: " + e.getMessage() );
+                    throw new XMLParsingException( xmlStream, "Error parsing transaction action: " + e.getMessage() );
                 }
             }
 

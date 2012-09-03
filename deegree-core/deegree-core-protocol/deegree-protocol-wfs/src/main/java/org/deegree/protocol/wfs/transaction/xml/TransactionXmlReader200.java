@@ -39,10 +39,15 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.protocol.wfs.transaction.action.UpdateAction.INSERT_AFTER;
+import static org.deegree.protocol.wfs.transaction.action.UpdateAction.INSERT_BEFORE;
+import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REMOVE;
+import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REPLACE;
 
 import java.util.NoSuchElementException;
 
@@ -64,6 +69,8 @@ import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.Native;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.action.Replace;
+import org.deegree.protocol.wfs.transaction.action.Update;
+import org.deegree.protocol.wfs.transaction.action.UpdateAction;
 
 /**
  * {@link TransactionXmlReader} for WFS 2.0.0.
@@ -154,7 +161,7 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         } catch ( XMLStreamException e ) {
             throw new MissingParameterException( "Mandatory 'fes:Filter' element is missing in Delete." );
         }
-        Filter filter = Filter200XMLDecoder.parse( xmlStream );
+        Filter filter = readFilter( xmlStream );
         nextElement( xmlStream );
         xmlStream.require( END_ELEMENT, WFS_200_NS, "Delete" );
         return new Delete( handle, typeName, filter );
@@ -242,7 +249,7 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
      */
     Replace readReplace( XMLStreamReader xmlStream )
                             throws NoSuchElementException, XMLStreamException {
-        
+
         // <xsd:attribute name="handle" type="xsd:string"/>
         String handle = xmlStream.getAttributeValue( null, "handle" );
 
@@ -250,17 +257,86 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         if ( !xmlStream.isStartElement() ) {
             throw new XMLParsingException( xmlStream, Messages.get( "WFS_REPLACE_MISSING_FEATURE_ELEMENT" ) );
         }
-        
+
         return new Replace( handle, xmlStream );
     }
-    
-    private TransactionAction readUpdate( XMLStreamReader xmlStream ) {
-        throw new UnsupportedOperationException();
+
+    /**
+     * Returns the object representation for the given <code>wfs:Update</code> element.
+     * <p>
+     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
+     * the <code>wfs:Update</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
+     * stream points at the <code>START_ELEMENT</code> event of the first <code>wfs:Property</code> element.
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Update&gt;)
+     * @return corresponding {@link Update} object, never <code>null</code>
+     * @throws NoSuchElementException
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    Update readUpdate( XMLStreamReader xmlStream )
+                            throws NoSuchElementException, XMLStreamException {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = xmlStream.getAttributeValue( null, "handle" );
+
+        // <xsd:attribute name="inputFormat" type="xsd:string" default="application/gml+xml; version=3.2"/>
+        String inputFormat = xmlStream.getAttributeValue( null, "inputFormat" );
+
+        // <xsd:attribute name="srsName" type="xsd:anyURI"/>
+        String srsName = xmlStream.getAttributeValue( null, "srsName" );
+
+        // <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+        QName typeName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
+
+        // skip to first "wfs:Property" element
+        nextElement( xmlStream );
+        xmlStream.require( START_ELEMENT, WFS_200_NS, "Property" );
+
+        return new Update( handle, null, typeName, inputFormat, srsName, xmlStream, this );
+    }
+
+    @Override
+    public Filter readFilter( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+        return Filter200XMLDecoder.parse( xmlStream );
     }
 
     @Override
     public PropertyReplacement readProperty( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        throw new UnsupportedOperationException();
+
+        xmlStream.require( START_ELEMENT, WFS_200_NS, "Property" );
+        nextElement( xmlStream );
+        xmlStream.require( START_ELEMENT, WFS_200_NS, "ValueReference" );
+        UpdateAction updateAction = parseUpdateAction( xmlStream.getAttributeValue( null, "action" ) );
+        // TODO XPath allowed here?
+        QName propName = getElementTextAsQName( xmlStream );
+        nextElement( xmlStream );
+
+        PropertyReplacement replacement = null;
+        if ( new QName( WFS_200_NS, "Value" ).equals( xmlStream.getName() ) ) {
+            replacement = new PropertyReplacement( propName, xmlStream, updateAction );
+        } else {
+            xmlStream.require( END_ELEMENT, WFS_200_NS, "ValueReference" );
+            replacement = new PropertyReplacement( propName, null, updateAction );
+            nextElement( xmlStream );
+        }
+        return replacement;
+    }
+
+    private UpdateAction parseUpdateAction( String action ) {
+        if ( "replace".equals( action ) ) {
+            return REPLACE;
+        } else if ( "insertBefore".equals( action ) ) {
+            return INSERT_BEFORE;
+        } else if ( "insertAfter".equals( action ) ) {
+            return INSERT_AFTER;
+        } else if ( "remove".equals( action ) ) {
+            return REMOVE;
+        }
+        return null;
     }
 }

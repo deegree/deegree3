@@ -39,6 +39,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
@@ -84,6 +85,8 @@ public interface TransactionXmlReader {
      */
     TransactionAction readAction( XMLStreamReader xmlStream )
                             throws XMLStreamException, XMLParsingException;
+
+    Filter readFilter( XMLStreamReader xmlStream ) throws XMLParsingException, XMLStreamException;
 
     PropertyReplacement readProperty( XMLStreamReader xmlStream )
                             throws XMLStreamException;
