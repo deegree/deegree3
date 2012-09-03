@@ -89,25 +89,28 @@ class StoredQueryHandler {
 
     private final Map<String, StoredQueryDefinition> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDefinition>() );
 
+    private final Map<String, URL> idToUrl = Collections.synchronizedMap( new TreeMap<String, URL>() );
+
     private WebFeatureService wfs;
 
-    StoredQueryHandler( WebFeatureService wfs ) {
+    StoredQueryHandler( WebFeatureService wfs, List<URL> storedQueryTemplates ) {
         this.wfs = wfs;
-        // add mandatory GetFeatureById query
         URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
-        StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
-        xmlAdapter.load( url );
-        addStoredQuery( xmlAdapter.parse() );
-        // add GetFeatureByType query
+        storedQueryTemplates.add( url );
         url = StoredQueryHandler.class.getResource( "typequery.xml" );
-        xmlAdapter = new StoredQueryDefinitionXMLAdapter();
-        xmlAdapter.load( url );
-        addStoredQuery( xmlAdapter.parse() );
+        storedQueryTemplates.add( url );
+
+        for ( URL u : storedQueryTemplates ) {
+            StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
+            xmlAdapter.load( u );
+            addStoredQuery( xmlAdapter.parse(), u );
+        }
     }
 
-    private void addStoredQuery( StoredQueryDefinition queryDefinition ) {
+    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
         LOG.info( "Adding stored query definition with id '" + queryDefinition.getId() + "'" );
         idToQuery.put( queryDefinition.getId(), queryDefinition );
+        idToUrl.put( queryDefinition.getId(), u );
     }
 
     /**
@@ -354,4 +357,21 @@ class StoredQueryHandler {
         }
         writer.writeEndElement();
     }
+
+    /**
+     * @param id
+     * @return true, if the stored query is known
+     */
+    public boolean hasStoredQuery( String id ) {
+        return idToUrl.get( id ) != null;
+    }
+
+    /**
+     * @param id
+     * @return <code>null</code>, if the stored query could not be found
+     */
+    public URL getStoredQueryTemplate( String id ) {
+        return idToUrl.get( id );
+    }
+
 }

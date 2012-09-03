@@ -52,6 +52,7 @@ import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -253,7 +254,16 @@ public class WebFeatureService extends AbstractOWS {
         }
 
         lockFeatureHandler = new LockFeatureHandler( this );
-        storedQueryHandler = new StoredQueryHandler( this );
+        List<URL> list = new ArrayList<URL>();
+        for ( String file : jaxbConfig.getStoredQuery() ) {
+            try {
+                list.add( controllerConf.resolve( file ) );
+            } catch ( MalformedURLException e ) {
+                LOG.warn( "Could not resolve {}: {}", file, e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+        storedQueryHandler = new StoredQueryHandler( this, list );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
@@ -478,6 +488,13 @@ public class WebFeatureService extends AbstractOWS {
      */
     public WFSFeatureStoreManager getStoreManager() {
         return service;
+    }
+
+    /**
+     * @return the stored query handler for this service, never <code>null</code>.
+     */
+    public StoredQueryHandler getStoredQueryHandler() {
+        return storedQueryHandler;
     }
 
     @Override

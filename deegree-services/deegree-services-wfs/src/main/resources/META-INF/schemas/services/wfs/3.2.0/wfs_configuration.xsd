@@ -24,6 +24,7 @@
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
+        <element name="StoredQuery" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />
         <element name="MetadataURLTemplate" minOccurs="0" type="string" />
         <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
@@ -51,6 +52,7 @@
           <restriction base="string">
             <enumeration value="3.0.0" />
             <enumeration value="3.1.0" />
+            <enumeration value="3.2.0" />
           </restriction>
         </simpleType>
       </attribute>

@@ -41,6 +41,9 @@ import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_
 import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_ID;
 import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_TYPE;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,12 +52,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -85,7 +91,11 @@ import org.deegree.protocol.wfs.query.AdHocQuery;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 import org.deegree.protocol.wfs.query.StoredQuery;
+import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
+import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+import org.deegree.protocol.wfs.storedquery.StoredQueryDefinitionXMLAdapter;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +216,40 @@ public class QueryAnalyzer {
         }
     }
 
+    private List<AdHocQuery> convertTemplateStoredQuery( StoredQuery query )
+                            throws OWSException {
+        List<AdHocQuery> list = new ArrayList<AdHocQuery>();
+        StoredQueryHandler handler = controller.getStoredQueryHandler();
+        URL u = handler.getStoredQueryTemplate( query.getId() );
+        try {
+            String templ = IOUtils.toString( u.openStream() );
+            for ( Entry<String, OMElement> e : query.getParams().entrySet() ) {
+                String val = e.getValue().getText();
+                Pattern p = Pattern.compile( "[$][{]" + e.getKey() + "[}]", Pattern.CASE_INSENSITIVE );
+                templ = p.matcher( templ ).replaceAll( val );
+            }
+
+            LOG.debug( "Stored query template after replacement: {}", templ );
+
+            StoredQueryDefinitionXMLAdapter parser = new StoredQueryDefinitionXMLAdapter();
+            parser.load( new StringReader( templ ), "http://www.deegree.org/none" );
+            StoredQueryDefinition def = parser.parse();
+            for ( QueryExpressionText text : def.getQueryExpressionTextEls() ) {
+                for ( OMElement elem : text.getChildEls() ) {
+                    org.deegree.protocol.wfs.query.Query q = new QueryXMLAdapter().parseAbstractQuery200( elem );
+                    if ( q instanceof AdHocQuery ) {
+                        list.add( (AdHocQuery) q );
+                    }
+                }
+            }
+            return list;
+        } catch ( IOException e ) {
+            String msg = "An error occurred when trying to convert stored query with id '" + query.getId() + "': '"
+                         + e.getLocalizedMessage() + "'.";
+            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
+        }
+    }
+
     private List<AdHocQuery> convertStoredQueries( List<org.deegree.protocol.wfs.query.Query> wfsQueries )
                             throws OWSException {
         List<AdHocQuery> adHocQueries = new ArrayList<AdHocQuery>();
@@ -236,6 +280,9 @@ public class QueryAnalyzer {
                     }
                     LOG.debug( "GetFeatureByType query" );
                     adHocQueries.add( new FilterQuery( new QName( tn ), null, null, null ) );
+                } else if ( controller.getStoredQueryHandler().hasStoredQuery( storedQuery.getId() ) ) {
+                    List<AdHocQuery> qs = convertTemplateStoredQuery( storedQuery );
+                    adHocQueries.addAll( qs );
                 } else {
                     String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
                     throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
