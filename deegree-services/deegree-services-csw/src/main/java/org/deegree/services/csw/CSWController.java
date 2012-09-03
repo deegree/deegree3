@@ -121,7 +121,6 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.csw.ElementName;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -627,7 +626,7 @@ public class CSWController extends AbstractOWS {
 
     @Override
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
-        return new OWS110ExceptionReportSerializer( Version.parseVersion( "1.2.0" ) );
+        return new CswExceptionReportSerializer( Version.parseVersion( "1.2.0" ) );
     }
 
     private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
@@ -635,9 +634,9 @@ public class CSWController extends AbstractOWS {
                             throws OMException, ServletException {
         XMLExceptionSerializer serializer;
         if ( version instanceof SOAP11Version ) {
-            serializer = new OWS110ExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
+            serializer = new CswExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
         } else {
-            serializer = new OWS110ExceptionReportSerializer( Version.parseVersion( "1.2.0" ) );
+            serializer = new CswExceptionReportSerializer( Version.parseVersion( "1.2.0" ) );
         }
         sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
                            request.getCharacterEncoding() );
