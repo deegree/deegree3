@@ -345,6 +345,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                            String idPrefix )
                             throws SQLException {
 
+        LOG.debug( "Trying to build particle with path {}.", mapping.getPath() );
+
         TypedObjectNode particle = null;
         ParticleConverter<?> converter = fs.getConverter( mapping );
 
@@ -483,9 +485,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
             } else if ( escalateVoid ) {
                 if ( cm.isVoidable() ) {
-                    LOG.debug( "Materializing void by omitting particle." );
+                    LOG.debug( "Materializing void by omitting particle for path {}.", mapping.getPath() );
                 } else if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
-                    LOG.debug( "Materializing void by nilling particle." );
+                    LOG.debug( "Materializing void by nilling particle for path {}.", mapping.getPath() );
                     QName elName = getName( mapping.getPath() );
                     // required attributes must still be present even if element is nilled...
                     Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
@@ -529,6 +531,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
+        }
+
+        if ( particle == null ) {
+            LOG.debug( "Building of particle with path {} resulted in NULL.", mapping.getPath() );
+        } else {
+            LOG.debug( "Built particle with path {}.", mapping.getPath() );
         }
 
         return particle;
