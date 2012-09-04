@@ -62,6 +62,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.CRSUtils;
@@ -169,16 +170,16 @@ public class QueryAnalyzer {
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
         }
 
-        List<AdHocQuery> adHocQueries = convertStoredQueries( wfsQueries );
+        List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> adHocQueries = convertStoredQueries( wfsQueries );
 
         Query[] queries = new Query[adHocQueries.size()];
         for ( int i = 0; i < adHocQueries.size(); i++ ) {
-            AdHocQuery wfsQuery = adHocQueries.get( i );
+            AdHocQuery wfsQuery = adHocQueries.get( i ).first;
             Query query = validateQuery( wfsQuery );
             queries[i] = query;
 
             // yes, use the original WFS query (not necessarily adHoc)
-            queryToWFSQuery.put( query, wfsQueries.get( i ) );
+            queryToWFSQuery.put( query, adHocQueries.get( i ).second );
 
             // TODO what about queries with different SRS?
             if ( wfsQuery.getSrsName() != null ) {
@@ -216,9 +217,9 @@ public class QueryAnalyzer {
         }
     }
 
-    private List<AdHocQuery> convertTemplateStoredQuery( StoredQuery query )
+    private List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> convertTemplateStoredQuery( StoredQuery query )
                             throws OWSException {
-        List<AdHocQuery> list = new ArrayList<AdHocQuery>();
+        List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> list = new ArrayList<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>>();
         StoredQueryHandler handler = controller.getStoredQueryHandler();
         URL u = handler.getStoredQueryTemplate( query.getId() );
         try {
@@ -238,7 +239,7 @@ public class QueryAnalyzer {
                 for ( OMElement elem : text.getChildEls() ) {
                     org.deegree.protocol.wfs.query.Query q = new QueryXMLAdapter().parseAbstractQuery200( elem );
                     if ( q instanceof AdHocQuery ) {
-                        list.add( (AdHocQuery) q );
+                        list.add( new Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>( (AdHocQuery) q, query ) );
                     }
                 }
             }
@@ -250,12 +251,13 @@ public class QueryAnalyzer {
         }
     }
 
-    private List<AdHocQuery> convertStoredQueries( List<org.deegree.protocol.wfs.query.Query> wfsQueries )
+    private List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> convertStoredQueries( List<org.deegree.protocol.wfs.query.Query> wfsQueries )
                             throws OWSException {
-        List<AdHocQuery> adHocQueries = new ArrayList<AdHocQuery>();
+        List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> adHocQueries = new ArrayList<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>>();
         for ( org.deegree.protocol.wfs.query.Query wfsQuery : wfsQueries ) {
             if ( wfsQuery instanceof AdHocQuery ) {
-                adHocQueries.add( (AdHocQuery) wfsQuery );
+                adHocQueries.add( new Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>( (AdHocQuery) wfsQuery,
+                                                                                              wfsQuery ) );
             } else {
                 StoredQuery storedQuery = (StoredQuery) wfsQuery;
                 if ( storedQuery.getId().equals( GET_FEATURE_BY_ID ) ) {
@@ -266,8 +268,9 @@ public class QueryAnalyzer {
                     }
                     LOG.debug( "GetFeatureById query" );
                     String requestedId = literalEl.getText();
-                    adHocQueries.add( new FeatureIdQuery( null, null, null, null, null, null,
-                                                          new String[] { requestedId } ) );
+                    FeatureIdQuery q = new FeatureIdQuery( null, null, null, null, null, null,
+                                                           new String[] { requestedId } );
+                    adHocQueries.add( new Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>( q, wfsQuery ) );
                 } else if ( storedQuery.getId().equals( GET_FEATURE_BY_TYPE ) ) {
                     // TODO qualify typeName using NAMESPACES parameter for KVP requests
                     OMElement literalEl = storedQuery.getParams().get( "TYPENAME" );
@@ -280,9 +283,10 @@ public class QueryAnalyzer {
                         tn = tn.split( ":" )[1];
                     }
                     LOG.debug( "GetFeatureByType query" );
-                    adHocQueries.add( new FilterQuery( new QName( tn ), null, null, null ) );
+                    FilterQuery q = new FilterQuery( new QName( tn ), null, null, null );
+                    adHocQueries.add( new Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>( q, wfsQuery ) );
                 } else if ( controller.getStoredQueryHandler().hasStoredQuery( storedQuery.getId() ) ) {
-                    List<AdHocQuery> qs = convertTemplateStoredQuery( storedQuery );
+                    List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> qs = convertTemplateStoredQuery( storedQuery );
                     adHocQueries.addAll( qs );
                 } else {
                     String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
