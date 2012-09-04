@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -44,8 +44,10 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -62,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -148,12 +149,13 @@ class TransactionHandler {
 
     private final Map<FeatureStore, FeatureStoreTransaction> acquiredTransactions = new HashMap<FeatureStore, FeatureStoreTransaction>();
 
-    // keys: handle of the insert operation, value: list of newly introduced feature ids
-    private final Map<String, List<String>> insertHandleToFids = new LinkedHashMap<String, List<String>>();
+    private final ActionResults inserted = new ActionResults();
 
-    private final List<String> insertedFidsWithoutHandle = new LinkedList<String>();
+    private final ActionResults updated = new ActionResults();
 
-    private int inserted, deleted, replaced, updated;
+    private final ActionResults replaced = new ActionResults();
+
+    private int deleted;
 
     private final IDGenMode idGenMode;
 
@@ -394,15 +396,8 @@ class TransactionHandler {
                 }
             }
             List<String> newFids = ta.performInsert( fc, mode );
-            inserted += newFids.size();
-            if ( insert.getHandle() != null ) {
-                if ( insertHandleToFids.containsKey( insert.getHandle() ) ) {
-                    insertHandleToFids.get( insert.getHandle() ).addAll( newFids );
-                } else {
-                    insertHandleToFids.put( insert.getHandle(), newFids );
-                }
-            } else {
-                insertedFidsWithoutHandle.addAll( newFids );
+            for ( String newFid : newFids ) {
+                inserted.add( newFid, insert.getHandle() );
             }
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
@@ -523,7 +518,7 @@ class TransactionHandler {
         FeatureStore fs = service.getStore( ftName );
         if ( fs == null ) {
             throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                    OWSException.INVALID_PARAMETER_VALUE );
+                                    INVALID_PARAMETER_VALUE );
         }
 
         GMLVersion inputFormat = determineFormat( request.getVersion(), update.getInputFormat() );
@@ -536,11 +531,14 @@ class TransactionHandler {
             // superimpose default query CRS
             Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
         } catch ( Exception e ) {
-            throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
+            throw new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE );
         }
 
         try {
-            updated += ta.performUpdate( ftName, replacementProps, filter, lock );
+            int updated = ta.performUpdate( ftName, replacementProps, filter, lock );
+            for ( int i = 0; i < updated; i++ ) {
+                this.updated.add( "DUMMYFID", update.getHandle() );
+            }
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Error performing update: " + e.getMessage(), e, NO_APPLICABLE_CODE );
         }
@@ -558,7 +556,7 @@ class TransactionHandler {
             if ( pt == null ) {
                 throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
                                         + "'. The feature type does not define this property.",
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+                                        OPERATION_NOT_SUPPORTED );
             }
             XMLStreamReader xmlStream = replacement.getReplacementValue();
             if ( xmlStream != null ) {
@@ -606,7 +604,33 @@ class TransactionHandler {
                             throws OWSException {
 
         LOG.debug( "doReplace: " + replace );
-        throw new UnsupportedOperationException();
+        XMLStreamReader xmlStream = replace.getReplacementFeatureStream();
+        QName ftName = xmlStream.getName();
+        FeatureStore fs = service.getStore( ftName );
+        if ( fs == null ) {
+            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ), INVALID_PARAMETER_VALUE );
+        }
+
+        Feature replacementFeature = null;
+        Filter filter = null;
+        try {
+            GMLStreamReader gmlReader = createGMLStreamReader( GML_32, xmlStream );
+            gmlReader.setApplicationSchema( fs.getSchema() );
+            replacementFeature = gmlReader.readFeature();
+            filter = replace.getFilter();
+            // superimpose default CRS
+            Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
+        } catch ( Exception e ) {
+            throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
+        }
+
+        FeatureStoreTransaction ta = acquireTransaction( fs );
+        try {
+            String newFid = ta.performReplace( replacementFeature, filter, lock );
+            replaced.add( newFid, replace.getHandle() );
+        } catch ( FeatureStoreException e ) {
+            throw new OWSException( "Error performing replace: " + e.getMessage(), e, NO_APPLICABLE_CODE );
+        }
     }
 
     private FeatureStoreTransaction acquireTransaction( FeatureStore fs )
@@ -636,11 +660,11 @@ class TransactionHandler {
         xmlWriter.writeNamespace( "ogc", OGCNS );
         xmlWriter.writeAttribute( "version", VERSION_100.toString() );
 
-        if ( inserted > 0 ) {
-            for ( String handle : insertHandleToFids.keySet() ) {
+        if ( inserted.getTotal() > 0 ) {
+            for ( String handle : inserted.getHandles() ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
                 writeHandle( xmlWriter, handle );
-                Collection<String> fids = insertHandleToFids.get( handle );
+                Collection<String> fids = inserted.getFids( handle );
                 for ( String fid : fids ) {
                     LOG.debug( "Inserted fid: " + fid );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
@@ -649,9 +673,9 @@ class TransactionHandler {
                 }
                 xmlWriter.writeEndElement();
             }
-            if ( insertedFidsWithoutHandle.size() > 0 ) {
+            if ( !inserted.getFidsWithoutHandle().isEmpty() ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
-                for ( String fid : insertedFidsWithoutHandle ) {
+                for ( String fid : inserted.getFidsWithoutHandle() ) {
                     LOG.debug( "Inserted fid: " + fid );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
                     xmlWriter.writeAttribute( "fid", fid );
@@ -700,14 +724,14 @@ class TransactionHandler {
         xmlWriter.writeAttribute( "version", VERSION_110.toString() );
 
         xmlWriter.writeStartElement( WFS_NS, "TransactionSummary" );
-        writeElement( xmlWriter, WFS_NS, "totalInserted", "" + inserted );
-        writeElement( xmlWriter, WFS_NS, "totalUpdated", "" + updated );
+        writeElement( xmlWriter, WFS_NS, "totalInserted", "" + inserted.getTotal() );
+        writeElement( xmlWriter, WFS_NS, "totalUpdated", "" + updated.getTotal() );
         writeElement( xmlWriter, WFS_NS, "totalDeleted", "" + deleted );
         xmlWriter.writeEndElement();
-        if ( inserted > 0 ) {
+        if ( inserted.getTotal() > 0 ) {
             xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
-            for ( String handle : insertHandleToFids.keySet() ) {
-                Collection<String> fids = insertHandleToFids.get( handle );
+            for ( String handle : inserted.getHandles() ) {
+                Collection<String> fids = inserted.getFids( handle );
                 for ( String fid : fids ) {
                     LOG.debug( "Inserted fid: " + fid );
                     xmlWriter.writeStartElement( WFS_NS, "Feature" );
@@ -718,7 +742,7 @@ class TransactionHandler {
                     xmlWriter.writeEndElement();
                 }
             }
-            for ( String fid : insertedFidsWithoutHandle ) {
+            for ( String fid : inserted.getFidsWithoutHandle() ) {
                 LOG.debug( "Inserted fid: " + fid );
                 xmlWriter.writeStartElement( WFS_NS, "Feature" );
                 xmlWriter.writeStartElement( OGCNS, "FeatureId" );
@@ -748,40 +772,49 @@ class TransactionHandler {
         xmlWriter.writeNamespace( "fes", FES_20_NS );
 
         xmlWriter.writeStartElement( WFS_200_NS, "TransactionSummary" );
-        writeElement( xmlWriter, WFS_200_NS, "totalInserted", "" + inserted );
-        writeElement( xmlWriter, WFS_200_NS, "totalUpdated", "" + updated );
-        writeElement( xmlWriter, WFS_200_NS, "totalReplaced", "" + replaced );
+        writeElement( xmlWriter, WFS_200_NS, "totalInserted", "" + inserted.getTotal() );
+        writeElement( xmlWriter, WFS_200_NS, "totalUpdated", "" + updated.getTotal() );
+        writeElement( xmlWriter, WFS_200_NS, "totalReplaced", "" + replaced.getTotal() );
         writeElement( xmlWriter, WFS_200_NS, "totalDeleted", "" + deleted );
         xmlWriter.writeEndElement();
 
-        if ( inserted > 0 ) {
-            xmlWriter.writeStartElement( WFS_200_NS, "InsertResults" );
-            for ( String handle : insertHandleToFids.keySet() ) {
-                Collection<String> fids = insertHandleToFids.get( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
-                    xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
-                    xmlWriter.writeAttribute( "handle", handle );
-                    xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                    xmlWriter.writeAttribute( "rid", fid );
-                    xmlWriter.writeEndElement();
-                    xmlWriter.writeEndElement();
-                }
-            }
-            for ( String fid : insertedFidsWithoutHandle ) {
-                LOG.debug( "Inserted fid: " + fid );
-                xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
-                xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                xmlWriter.writeAttribute( "rid", fid );
-                xmlWriter.writeEndElement();
-                xmlWriter.writeEndElement();
-            }
-            xmlWriter.writeEndElement();
-        }
+        writeActionResults200( xmlWriter, "InsertResults", inserted );
+        writeActionResults200( xmlWriter, "UpdateResults", updated );
+        writeActionResults200( xmlWriter, "ReplaceResults", replaced );
 
         xmlWriter.writeEndElement();
         xmlWriter.writeEndDocument();
         xmlWriter.flush();
+    }
+
+    private void writeActionResults200( XMLStreamWriter xmlWriter, String elName, ActionResults results )
+                            throws XMLStreamException {
+
+        if ( results.getTotal() > 0 ) {
+            xmlWriter.writeStartElement( WFS_200_NS, elName );
+            for ( String handle : results.getHandles() ) {
+                Collection<String> fids = results.getFids( handle );
+                xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
+                xmlWriter.writeAttribute( "handle", handle );
+                for ( String fid : fids ) {
+                    xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
+                    xmlWriter.writeAttribute( "rid", fid );
+                    xmlWriter.writeEndElement();
+                }
+                xmlWriter.writeEndElement();
+            }
+
+            if ( !results.getFidsWithoutHandle().isEmpty() ) {
+                xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
+                for ( String fid : results.getFidsWithoutHandle() ) {
+                    xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
+                    xmlWriter.writeAttribute( "rid", fid );
+                    xmlWriter.writeEndElement();
+                }
+                xmlWriter.writeEndElement();
+            }
+            xmlWriter.writeEndElement();
+        }
     }
 
     private GMLVersion determineFormat( Version requestVersion, String format ) {
