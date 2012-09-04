@@ -517,8 +517,7 @@ class TransactionHandler {
         FeatureType ft = service.lookupFeatureType( ftName );
         FeatureStore fs = service.getStore( ftName );
         if ( fs == null ) {
-            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                    INVALID_PARAMETER_VALUE );
+            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ), INVALID_PARAMETER_VALUE );
         }
 
         GMLVersion inputFormat = determineFormat( request.getVersion(), update.getInputFormat() );
@@ -555,8 +554,7 @@ class TransactionHandler {
             PropertyType pt = ft.getPropertyDeclaration( propName );
             if ( pt == null ) {
                 throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
-                                        + "'. The feature type does not define this property.",
-                                        OPERATION_NOT_SUPPORTED );
+                                        + "'. The feature type does not define this property.", OPERATION_NOT_SUPPORTED );
             }
             XMLStreamReader xmlStream = replacement.getReplacementValue();
             if ( xmlStream != null ) {
@@ -621,7 +619,7 @@ class TransactionHandler {
             // superimpose default CRS
             Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
         } catch ( Exception e ) {
-            throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
+            throw new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE );
         }
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
@@ -794,23 +792,21 @@ class TransactionHandler {
             xmlWriter.writeStartElement( WFS_200_NS, elName );
             for ( String handle : results.getHandles() ) {
                 Collection<String> fids = results.getFids( handle );
-                xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
-                xmlWriter.writeAttribute( "handle", handle );
                 for ( String fid : fids ) {
+                    xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
+                    xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                     xmlWriter.writeAttribute( "rid", fid );
                     xmlWriter.writeEndElement();
+                    xmlWriter.writeEndElement();
                 }
-                xmlWriter.writeEndElement();
             }
 
-            if ( !results.getFidsWithoutHandle().isEmpty() ) {
+            for ( String fid : results.getFidsWithoutHandle() ) {
                 xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
-                for ( String fid : results.getFidsWithoutHandle() ) {
-                    xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                    xmlWriter.writeAttribute( "rid", fid );
-                    xmlWriter.writeEndElement();
-                }
+                xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
+                xmlWriter.writeAttribute( "rid", fid );
+                xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
             xmlWriter.writeEndElement();
