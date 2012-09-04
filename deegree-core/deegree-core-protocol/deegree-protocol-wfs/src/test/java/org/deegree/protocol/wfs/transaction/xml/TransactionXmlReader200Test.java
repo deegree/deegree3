@@ -54,6 +54,8 @@ import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
+import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.TransactionAction;
 import org.deegree.protocol.wfs.transaction.action.Delete;
 import org.deegree.protocol.wfs.transaction.action.Insert;
 import org.deegree.protocol.wfs.transaction.action.Native;
@@ -90,6 +92,8 @@ public class TransactionXmlReader200Test extends TestCase {
     private final String UPDATE_ACTION2_200 = "v200/update2.xml";
 
     private final String UPDATE_ACTION3_200 = "v200/update3.xml";
+
+    private final String MIXED_200 = "v200/transaction1.dontvalidate";
 
     private final TransactionXmlReader200 reader = new TransactionXmlReader200();
 
@@ -286,6 +290,114 @@ public class TransactionXmlReader200Test extends TestCase {
         assertNotNull( filter );
 
         xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Update" );
+    }
+
+    @Test
+    public void testReadUpdateWfs200MixedTransaction()
+                            throws Exception {
+
+        XMLStreamReader xmlStream = getXMLStreamReader( MIXED_200 );
+        Transaction ta = reader.read( xmlStream );
+        Iterator<TransactionAction> taIter = ta.getActions().iterator();
+
+        // 1. action: Native
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Native" );
+        Native nativeAction = (Native) taIter.next();
+        skipElement( nativeAction.getVendorSpecificData() );
+        xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Native" );
+
+        // 2. action: Insert
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Insert" );
+        Insert insert = (Insert) taIter.next();
+        XMLStreamReader features = insert.getFeatures();
+        features.require( XMLStreamReader.START_ELEMENT, "http://www.someserver.com/myns", "ElevP_1M" );
+        skipElement( features );
+        nextElement( features );
+
+        // 3. action: Insert
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Insert" );
+        insert = (Insert) taIter.next();
+        features = insert.getFeatures();
+        features.require( XMLStreamReader.START_ELEMENT, "http://www.someserver.com/myns", "RoadL_1M" );
+        skipElement( features );
+        nextElement( features );
+
+        // 4. action: Update
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Update" );
+        Update update = (Update) taIter.next();
+        Iterator<PropertyReplacement> propIter = update.getReplacementProps();
+        assertTrue( propIter.hasNext() );
+        PropertyReplacement property = propIter.next();
+        XMLStreamReader replacementValue = property.getReplacementValue();
+        skipElement( replacementValue );
+        nextElement( replacementValue );
+        nextElement( replacementValue );
+        assertFalse( propIter.hasNext() );
+        assertNotNull( update.getFilter() );
+
+        // 5. action: Insert
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Insert" );
+        insert = (Insert) taIter.next();
+        features = insert.getFeatures();
+        features.require( XMLStreamReader.START_ELEMENT, "http://www.someserver.com/myns", "BuiltUpA_1M" );
+        skipElement( features );
+        nextElement( features );
+        skipElement( features );
+        nextElement( features );
+
+        // 6. action: Update
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Update" );
+        update = (Update) taIter.next();
+        propIter = update.getReplacementProps();
+        assertTrue( propIter.hasNext() );
+        property = propIter.next();
+        replacementValue = property.getReplacementValue();
+        skipElement( replacementValue );
+        nextElement( replacementValue );
+        nextElement( replacementValue );
+        assertFalse( propIter.hasNext() );
+        assertNotNull( update.getFilter() );
+
+        // 7. action: Update
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Update" );
+        update = (Update) taIter.next();
+        propIter = update.getReplacementProps();
+        assertTrue( propIter.hasNext() );
+        property = propIter.next();
+        replacementValue = property.getReplacementValue();
+        skipElement( replacementValue );
+        nextElement( replacementValue );
+        nextElement( replacementValue );
+        assertFalse( propIter.hasNext() );
+        assertNotNull( update.getFilter() );
+
+        // 8. action: Delete
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Delete" );
+        Delete delete = (Delete) taIter.next();
+        assertNotNull( delete );
+
+        // 9. action: Delete
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Delete" );
+        delete = (Delete) taIter.next();
+        assertNotNull( delete );
+
+        // 10. action: Replace
+        assertTrue( taIter.hasNext() );
+        xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Replace" );
+        Replace replace = (Replace) taIter.next();
+        skipElement( replace.getReplacementFeatureStream() );
+        assertNotNull( replace.getFilter() );
+
+        assertFalse( taIter.hasNext() );
     }
 
     private XMLStreamReader getXMLStreamReader( String resourceName )

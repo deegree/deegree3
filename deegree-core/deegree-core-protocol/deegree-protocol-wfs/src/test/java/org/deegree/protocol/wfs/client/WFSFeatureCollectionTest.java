@@ -61,7 +61,7 @@ public class WFSFeatureCollectionTest {
                             throws Exception {
 
         AppSchema appSchema = getAppSchema( "deegree3_utah_gml2.xsd" );
-        XMLStreamReader xmlStream = getXMLStream( "deegree3_utah_wfs100_gml2.xml" );
+        XMLStreamReader xmlStream = getXMLStream( "deegree3_utah_wfs100_gml2.dontvalidate" );
         GMLVersion gmlVersion = appSchema.getGMLSchema().getVersion();
         WFSFeatureCollection<Feature> fc = new WFSFeatureCollection<Feature>( xmlStream, gmlVersion, appSchema );
 
@@ -87,7 +87,7 @@ public class WFSFeatureCollectionTest {
                             throws Exception {
 
         AppSchema appSchema = getAppSchema( "deegree3_utah_gml31.xsd" );
-        XMLStreamReader xmlStream = getXMLStream( "deegree3_utah_wfs110_gml31.xml" );
+        XMLStreamReader xmlStream = getXMLStream( "deegree3_utah_wfs110_gml31.dontvalidate" );
         GMLVersion gmlVersion = appSchema.getGMLSchema().getVersion();
         WFSFeatureCollection<Feature> fc = new WFSFeatureCollection<Feature>( xmlStream, gmlVersion, appSchema );
 

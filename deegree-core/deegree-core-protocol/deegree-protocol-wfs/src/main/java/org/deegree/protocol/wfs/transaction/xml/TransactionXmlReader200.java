@@ -130,7 +130,6 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         } else {
             throw new XMLParsingException( xmlStream, "Unexpected operation element " + localName + "." );
         }
-        nextElement( xmlStream );
         return operation;
     }
 
