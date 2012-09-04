@@ -61,6 +61,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.FeatureStoreId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +98,7 @@ public class WFSFeatureStoreManager {
                             throws ResourceInitException {
 
         FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        List<String> ids = sc.getFeatureStoreId();
+        List<FeatureStoreId> ids = sc.getFeatureStoreId();
 
         if ( ids.isEmpty() ) {
             LOG.debug( "Feature store ids not configured. Adding all active feature stores." );
@@ -109,14 +110,16 @@ public class WFSFeatureStoreManager {
             }
         } else {
             LOG.debug( "Adding configured feature stores." );
-            for ( String id : ids ) {
-                ResourceState<FeatureStore> state = mgr.getState( id );
+            for ( FeatureStoreId id : ids ) {
+                ResourceState<FeatureStore> state = mgr.getState( id.getValue() );
                 if ( state == null ) {
-                    String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
+                    String msg = "Cannot add feature store '" + id.getValue()
+                                 + "': no such feature store has been configured.";
                     throw new ResourceInitException( msg );
                 }
                 if ( state.getResource() == null ) {
-                    String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
+                    String msg = "Cannot add feature store '" + id.getValue()
+                                 + "': no such feature store has been configured.";
                     throw new ResourceInitException( msg );
                 }
                 addStore( state.getResource() );

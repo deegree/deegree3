@@ -18,7 +18,15 @@
             </sequence>
           </complexType>
         </element>
-        <element name="FeatureStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element name="FeatureStoreId" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="customReferenceResolver" type="string" use="optional" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
         <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
         <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
@@ -72,7 +80,7 @@
       <complexContent>
         <extension base="wfs:AbstractFormatType">
           <sequence>
-            <element name="GenerateBoundedByForFeatures" type="boolean" minOccurs="0" default="false" />            
+            <element name="GenerateBoundedByForFeatures" type="boolean" minOccurs="0" default="false" />
             <element name="GetFeatureResponse" minOccurs="0">
               <complexType>
                 <sequence>
