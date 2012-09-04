@@ -46,6 +46,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
@@ -56,6 +57,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.transaction.ReleaseAction.ALL;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
@@ -236,8 +238,7 @@ class TransactionHandler {
 
             // if a lockId has been specified and releaseAction="ALL", release lock
             ReleaseAction releaseAction = request.getReleaseAction();
-            if ( lock != null
-                 && ( releaseAction == null || releaseAction == ReleaseAction.ALL || lock.getNumLocked() == 0 ) ) {
+            if ( lock != null && ( releaseAction == null || releaseAction == ALL || lock.getNumLocked() == 0 ) ) {
                 lock.release();
             } else {
                 // TODO renew expiry timeout according to WFS spec
@@ -262,8 +263,8 @@ class TransactionHandler {
                 sendResponse100( request, response, true );
                 return;
             }
-            throw new OWSException( "Error occured during transaction: " + e.getMessage(),
-                                    OWSException.MISSING_PARAMETER_VALUE, e.getName() );
+            throw new OWSException( "Error occured during transaction: " + e.getMessage(), MISSING_PARAMETER_VALUE,
+                                    e.getName() );
         } catch ( InvalidParameterValueException e ) {
             // needed for CITE compliance (wfs:wfs-1.1.0-LockFeature-tc2.1)
             LOG.debug( "Error occured during transaction, performing rollback." );
@@ -279,8 +280,8 @@ class TransactionHandler {
                 sendResponse100( request, response, true );
                 return;
             }
-            throw new OWSException( "Error occured during transaction: " + e.getMessage(),
-                                    OWSException.INVALID_PARAMETER_VALUE, e.getName() );
+            throw new OWSException( "Error occured during transaction: " + e.getMessage(), INVALID_PARAMETER_VALUE,
+                                    e.getName() );
         } catch ( OWSException e ) {
             LOG.debug( "Error occured during transaction, performing rollback." );
             for ( FeatureStoreTransaction ta : acquiredTransactions.values() ) {
@@ -372,7 +373,7 @@ class TransactionHandler {
             } catch ( UnknownCRSException e ) {
                 String msg = "Cannot perform insert. Specified srsName '" + insert.getSrsName()
                              + "' is not supported by this WFS.";
-                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "srsName" );
+                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "srsName" );
             }
         }
 
@@ -402,7 +403,7 @@ class TransactionHandler {
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
             String msg = "Cannot perform insert operation: " + e.getMessage();
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
         }
     }
 
@@ -496,8 +497,8 @@ class TransactionHandler {
                             throws OWSException {
         LOG.debug( "doNative: " + nativeOp );
         if ( nativeOp.isSafeToIgnore() == false ) {
-            throw new OWSException( "Native operations are not supported by this WFS.",
-                                    OWSException.INVALID_PARAMETER_VALUE, "Native" );
+            throw new OWSException( "Native operations are not supported by this WFS.", INVALID_PARAMETER_VALUE,
+                                    "Native" );
         }
 
         XMLStreamReader xmlStream = nativeOp.getVendorSpecificData();
@@ -505,7 +506,7 @@ class TransactionHandler {
             skipElement( xmlStream );
         } catch ( XMLStreamException e ) {
             String msg = "Error in native operation: " + e.getMessage();
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
         }
     }
 
