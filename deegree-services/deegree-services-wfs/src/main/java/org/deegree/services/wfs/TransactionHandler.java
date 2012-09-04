@@ -369,7 +369,10 @@ class TransactionHandler {
         // TODO streaming
         FeatureStoreTransaction ta = null;
         try {
-            FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), inputFormat, defaultCRS );
+            XMLStreamReader xmlStream = insert.getFeatures();
+            System.out.println ("Before: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ));
+            FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
+            System.out.println ("After: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ));
             FeatureStore fs = service.getStores()[0];
             ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
@@ -387,7 +390,6 @@ class TransactionHandler {
             } else {
                 insertedFidswithoutHandle.addAll( newFids );
             }
-            nextElement( insert.getFeatures() );
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
             String msg = "Cannot perform insert operation: " + e.getMessage();
@@ -437,8 +439,6 @@ class TransactionHandler {
         // resolve local xlink references
         gmlStream.getIdContext().resolveLocalRefs();
 
-        // skip to next START_ELEMENT / END_ELEMENT
-        xmlStream.nextTag();
         return fc;
     }
 
