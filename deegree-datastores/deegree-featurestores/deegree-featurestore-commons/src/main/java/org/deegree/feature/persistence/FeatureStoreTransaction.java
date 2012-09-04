@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,7 +33,6 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.feature.persistence;
 
 import java.util.List;
@@ -105,16 +104,16 @@ public interface FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException;
 
-//    /**
-//     * Inserts the given {@link Feature} into the {@link FeatureStore}.
-//     * 
-//     * @param f
-//     * @param mode
-//     * @return
-//     * @throws FeatureStoreException
-//     */
-//    public S performInsert( Feature f, IDGenMode mode )
-//                            throws FeatureStoreException;
+    // /**
+    // * Inserts the given {@link Feature} into the {@link FeatureStore}.
+    // *
+    // * @param f
+    // * @param mode
+    // * @return
+    // * @throws FeatureStoreException
+    // */
+    // public S performInsert( Feature f, IDGenMode mode )
+    // throws FeatureStoreException;
 
     /**
      * Performs an update operation against the {@link FeatureStore}.
@@ -132,6 +131,22 @@ public interface FeatureStoreTransaction {
      *             if the update fails
      */
     public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
+                            throws FeatureStoreException;
+
+    /**
+     * Performs a replace operation against the {@link FeatureStore}.
+     * 
+     * @param replacement
+     *            replacement feature, must not be <code>null</code>
+     * @param filter
+     *            selects the feature instance to be replaced, must not be <code>null</code>
+     * @param lock
+     *            optional lock object, may be <code>null</code>
+     * @return identifier of the replaced feature, can be <code>null</code> (filter didn't match)
+     * @throws FeatureStoreException
+     *             if the replace fails
+     */
+    public String performReplace( Feature replacement, Filter filter, Lock lock )
                             throws FeatureStoreException;
 
     /**

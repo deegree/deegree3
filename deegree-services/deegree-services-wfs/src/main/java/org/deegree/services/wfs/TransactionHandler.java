@@ -38,10 +38,10 @@ package org.deegree.services.wfs;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
@@ -54,6 +54,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -150,9 +151,11 @@ class TransactionHandler {
     // keys: handle of the insert operation, value: list of newly introduced feature ids
     private final Map<String, List<String>> insertHandleToFids = new LinkedHashMap<String, List<String>>();
 
-    private final List<String> insertedFidswithoutHandle = new LinkedList<String>();
+    private final List<String> insertedFidsWithoutHandle = new LinkedList<String>();
 
-    private int inserted, deleted, updated;
+    private int inserted, deleted, replaced, updated;
+
+    private final IDGenMode idGenMode;
 
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
@@ -164,11 +167,14 @@ class TransactionHandler {
      *            WFS instance used to lookup the feature types
      * @param request
      *            request to be handled
+     * @param idGenMode
      */
-    TransactionHandler( WebFeatureService master, WFSFeatureStoreManager service, Transaction request ) {
+    TransactionHandler( WebFeatureService master, WFSFeatureStoreManager service, Transaction request,
+                        IDGenMode idGenMode ) {
         this.master = master;
         this.service = service;
         this.request = request;
+        this.idGenMode = idGenMode;
     }
 
     /**
@@ -299,8 +305,12 @@ class TransactionHandler {
 
         if ( VERSION_100.equals( request.getVersion() ) ) {
             sendResponse100( request, response, false );
+        } else if ( VERSION_110.equals( request.getVersion() ) ) {
+            sendResponse110( request, response );
+        } else if ( VERSION_200.equals( request.getVersion() ) ) {
+            sendResponse200( request, response );
         } else {
-            sendResponse110and200( request, response );
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -370,14 +380,18 @@ class TransactionHandler {
         FeatureStoreTransaction ta = null;
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
-            System.out.println ("Before: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ));
+            System.out.println( "Before: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ) );
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
-            System.out.println ("After: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ));
+            System.out.println( "After: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ) );
             FeatureStore fs = service.getStores()[0];
             ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
             if ( mode == null ) {
-                mode = IDGenMode.GENERATE_NEW;
+                if ( VERSION_110.equals( request.getVersion() ) ) {
+                    mode = GENERATE_NEW;
+                } else {
+                    mode = idGenMode;
+                }
             }
             List<String> newFids = ta.performInsert( fc, mode );
             inserted += newFids.size();
@@ -388,7 +402,7 @@ class TransactionHandler {
                     insertHandleToFids.put( insert.getHandle(), newFids );
                 }
             } else {
-                insertedFidswithoutHandle.addAll( newFids );
+                insertedFidsWithoutHandle.addAll( newFids );
             }
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
@@ -635,9 +649,9 @@ class TransactionHandler {
                 }
                 xmlWriter.writeEndElement();
             }
-            if ( insertedFidswithoutHandle.size() > 0 ) {
+            if ( insertedFidsWithoutHandle.size() > 0 ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
-                for ( String fid : insertedFidswithoutHandle ) {
+                for ( String fid : insertedFidsWithoutHandle ) {
                     LOG.debug( "Inserted fid: " + fid );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
                     xmlWriter.writeAttribute( "fid", fid );
@@ -670,65 +684,101 @@ class TransactionHandler {
         }
     }
 
-    private void sendResponse110and200( Transaction request, HttpResponseBuffer response )
+    private void sendResponse110( Transaction request, HttpResponseBuffer response )
                             throws XMLStreamException, IOException {
 
-        String schemaLocation = null;
-        String ns = null;
-        if ( VERSION_110.equals( request.getVersion() ) ) {
-            ns = WFS_NS;
-            schemaLocation = ns + " " + WFS_110_SCHEMA_URL;
-        } else if ( VERSION_200.equals( request.getVersion() ) ) {
-            ns = WFS_200_NS;
-            schemaLocation = ns + " " + WFS_200_SCHEMA_URL;
-        } else {
-            throw new RuntimeException();
-        }
+        String ns = WFS_NS;
+        String schemaLocation = ns + " " + WFS_110_SCHEMA_URL;
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
-        if ( VERSION_110.equals( request.getVersion() ) ) {
-            xmlWriter.setPrefix( "wfs", WFS_NS );
-            xmlWriter.writeStartElement( WFS_NS, "TransactionResponse" );
-            xmlWriter.writeNamespace( "wfs", WFS_NS );
-            xmlWriter.writeNamespace( "ogc", OGCNS );
-        }
 
-        if ( VERSION_110.equals( request.getVersion() ) ) {
-            xmlWriter.writeAttribute( "version", VERSION_110.toString() );
-        }
+        xmlWriter.setPrefix( "wfs", WFS_NS );
+        xmlWriter.writeStartElement( WFS_NS, "TransactionResponse" );
+        xmlWriter.writeNamespace( "wfs", WFS_NS );
+        xmlWriter.writeNamespace( "ogc", OGCNS );
 
-        if ( VERSION_110.equals( request.getVersion() ) ) {
+        xmlWriter.writeAttribute( "version", VERSION_110.toString() );
 
-            xmlWriter.writeStartElement( WFS_NS, "TransactionSummary" );
-            writeElement( xmlWriter, WFS_NS, "totalInserted", "" + inserted );
-            writeElement( xmlWriter, WFS_NS, "totalUpdated", "" + updated );
-            writeElement( xmlWriter, WFS_NS, "totalDeleted", "" + deleted );
-            xmlWriter.writeEndElement();
-            if ( inserted > 0 ) {
-                xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
-                for ( String handle : insertHandleToFids.keySet() ) {
-                    Collection<String> fids = insertHandleToFids.get( handle );
-                    for ( String fid : fids ) {
-                        LOG.debug( "Inserted fid: " + fid );
-                        xmlWriter.writeStartElement( WFS_NS, "Feature" );
-                        xmlWriter.writeAttribute( "handle", handle );
-                        xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                        xmlWriter.writeAttribute( "fid", fid );
-                        xmlWriter.writeEndElement();
-                        xmlWriter.writeEndElement();
-                    }
-                }
-                for ( String fid : insertedFidswithoutHandle ) {
+        xmlWriter.writeStartElement( WFS_NS, "TransactionSummary" );
+        writeElement( xmlWriter, WFS_NS, "totalInserted", "" + inserted );
+        writeElement( xmlWriter, WFS_NS, "totalUpdated", "" + updated );
+        writeElement( xmlWriter, WFS_NS, "totalDeleted", "" + deleted );
+        xmlWriter.writeEndElement();
+        if ( inserted > 0 ) {
+            xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
+            for ( String handle : insertHandleToFids.keySet() ) {
+                Collection<String> fids = insertHandleToFids.get( handle );
+                for ( String fid : fids ) {
                     LOG.debug( "Inserted fid: " + fid );
                     xmlWriter.writeStartElement( WFS_NS, "Feature" );
+                    xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( OGCNS, "FeatureId" );
                     xmlWriter.writeAttribute( "fid", fid );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
+            }
+            for ( String fid : insertedFidsWithoutHandle ) {
+                LOG.debug( "Inserted fid: " + fid );
+                xmlWriter.writeStartElement( WFS_NS, "Feature" );
+                xmlWriter.writeStartElement( OGCNS, "FeatureId" );
+                xmlWriter.writeAttribute( "fid", fid );
+                xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
+            xmlWriter.writeEndElement();
         }
+
+        xmlWriter.writeEndElement();
+        xmlWriter.writeEndDocument();
+        xmlWriter.flush();
+    }
+
+    private void sendResponse200( Transaction request, HttpResponseBuffer response )
+                            throws XMLStreamException, IOException {
+
+        String ns = WFS_200_NS;
+        String schemaLocation = ns + " " + WFS_200_SCHEMA_URL;
+        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
+
+        xmlWriter.setPrefix( "wfs", WFS_200_NS );
+        xmlWriter.writeStartElement( WFS_200_NS, "TransactionResponse" );
+        xmlWriter.writeAttribute( "version", VERSION_200.toString() );
+        xmlWriter.writeNamespace( "wfs", WFS_200_NS );
+        xmlWriter.writeNamespace( "fes", FES_20_NS );
+
+        xmlWriter.writeStartElement( WFS_200_NS, "TransactionSummary" );
+        writeElement( xmlWriter, WFS_200_NS, "totalInserted", "" + inserted );
+        writeElement( xmlWriter, WFS_200_NS, "totalUpdated", "" + updated );
+        writeElement( xmlWriter, WFS_200_NS, "totalReplaced", "" + replaced );
+        writeElement( xmlWriter, WFS_200_NS, "totalDeleted", "" + deleted );
+        xmlWriter.writeEndElement();
+
+        if ( inserted > 0 ) {
+            xmlWriter.writeStartElement( WFS_200_NS, "InsertResults" );
+            for ( String handle : insertHandleToFids.keySet() ) {
+                Collection<String> fids = insertHandleToFids.get( handle );
+                for ( String fid : fids ) {
+                    LOG.debug( "Inserted fid: " + fid );
+                    xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
+                    xmlWriter.writeAttribute( "handle", handle );
+                    xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
+                    xmlWriter.writeAttribute( "rid", fid );
+                    xmlWriter.writeEndElement();
+                    xmlWriter.writeEndElement();
+                }
+            }
+            for ( String fid : insertedFidsWithoutHandle ) {
+                LOG.debug( "Inserted fid: " + fid );
+                xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
+                xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
+                xmlWriter.writeAttribute( "rid", fid );
+                xmlWriter.writeEndElement();
+                xmlWriter.writeEndElement();
+            }
+            xmlWriter.writeEndElement();
+        }
+
         xmlWriter.writeEndElement();
         xmlWriter.writeEndDocument();
         xmlWriter.flush();

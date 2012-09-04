@@ -4,8 +4,8 @@
 
   <!-- SupportedVersions [0...1]: Activated OGC protocol versions, default: activate all implemented versions -->
   <SupportedVersions>
-    <Version>1.0.0</Version>
     <Version>1.1.0</Version>
+    <Version>2.0.0</Version>    
   </SupportedVersions>
 
   <!-- EnableTransactions [0...1]: Enable transactions (WFS-T operations), default: disabled -->

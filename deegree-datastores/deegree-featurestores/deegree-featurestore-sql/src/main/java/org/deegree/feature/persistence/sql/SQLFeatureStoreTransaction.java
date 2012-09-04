@@ -923,4 +923,10 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         return new IdFilter( ids );
     }
+
+    @Override
+    public String performReplace( Feature replacement, Filter filter, Lock lock )
+                            throws FeatureStoreException {
+        throw new FeatureStoreException( "Replace is not supported yet." );
+    }
 }

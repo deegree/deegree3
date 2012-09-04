@@ -107,4 +107,9 @@ public class GeoCouchFeatureStoreTransaction implements FeatureStoreTransaction 
         throw new FeatureStoreException( "Delete is not supported yet." );
     }
 
+    @Override
+    public String performReplace( Feature replacement, Filter filter, Lock lock )
+                            throws FeatureStoreException {
+        throw new FeatureStoreException( "Replace is not supported yet." );
+    }
 }

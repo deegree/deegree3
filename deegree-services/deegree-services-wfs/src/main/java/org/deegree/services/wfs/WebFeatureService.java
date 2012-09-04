@@ -137,6 +137,7 @@ import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
 import org.deegree.protocol.wfs.storedquery.ListStoredQueriesKVPAdapter;
 import org.deegree.protocol.wfs.storedquery.ListStoredQueriesXMLAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.kvp.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReaderFactory;
@@ -153,10 +154,12 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.EnableTransactions;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
 import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
@@ -207,6 +210,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean enableTransactions;
 
+    private IDGenMode idGenMode;
+
     private boolean disableBuffering;
 
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
@@ -238,7 +243,11 @@ public class WebFeatureService extends AbstractOWS {
         DeegreeWFS jaxbConfig = (DeegreeWFS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
-        enableTransactions = jaxbConfig.isEnableTransactions() == null ? false : jaxbConfig.isEnableTransactions();
+        EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
+        if ( enableTransactions != null ) {
+            this.enableTransactions = enableTransactions.isValue();
+            this.idGenMode = parseIdGenMode( enableTransactions.getIdGen() );
+        }
         disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
                                                                               : true;
         maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
@@ -267,6 +276,24 @@ public class WebFeatureService extends AbstractOWS {
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
         mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
+    }
+
+    private IDGenMode parseIdGenMode( IdentifierGenerationOptionType idGen ) {
+        if ( idGen == null ) {
+            return IDGenMode.GENERATE_NEW;
+        }
+        switch ( idGen ) {
+        case GENERATE_NEW: {
+            return IDGenMode.GENERATE_NEW;
+        }
+        case USE_EXISTING: {
+            return IDGenMode.USE_EXISTING;
+        }
+        case REPLACE_DUPLICATE: {
+            return IDGenMode.REPLACE_DUPLICATE;
+        }
+        }
+        return null;
     }
 
     private String getMetadataURL( String metadataUrlTemplate, FeatureTypeMetadata ftMd ) {
@@ -596,7 +623,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -737,7 +764,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );

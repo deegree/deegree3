@@ -27,7 +27,15 @@
             </simpleContent>
           </complexType>
         </element>
-        <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
+        <element name="EnableTransactions" minOccurs="0" default="false">
+          <complexType>
+            <simpleContent>
+              <extension base="boolean">
+                <attribute name="idGen" type="wfs:IdentifierGenerationOptionType" use="optional" default="GenerateNew" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
         <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
@@ -100,7 +108,7 @@
                 </sequence>
               </complexType>
             </element>
-            <element ref="wfs:AbstractCoordinateFormatter" minOccurs="0" />          
+            <element ref="wfs:AbstractCoordinateFormatter" minOccurs="0" />
           </sequence>
           <attribute name="gmlVersion" type="wfs:GMLVersionType" use="required" />
         </extension>
@@ -170,6 +178,36 @@
       <enumeration value="GML_30" />
       <enumeration value="GML_31" />
       <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="IdentifierGenerationOptionType">
+    <restriction base="string">
+      <enumeration value="UseExisting">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            raise an exception.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="ReplaceDuplicate">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            replace the existing feature instance with the one encoded in the Insert action.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="GenerateNew">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will generate new and unique feature identifiers for inserted features.
+          </documentation>
+        </annotation>
+      </enumeration>
     </restriction>
   </simpleType>
 </schema>
