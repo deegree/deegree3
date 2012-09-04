@@ -60,6 +60,7 @@ import org.deegree.protocol.wfs.transaction.action.Native;
 import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 import org.deegree.protocol.wfs.transaction.action.Replace;
 import org.deegree.protocol.wfs.transaction.action.Update;
+import org.deegree.protocol.wfs.transaction.action.UpdateAction;
 import org.junit.Test;
 
 /**
@@ -88,11 +89,7 @@ public class TransactionXmlReader200Test extends TestCase {
 
     private final String UPDATE_ACTION2_200 = "v200/update2.xml";
 
-    // private final String UPDATE_ACTION3_200 = "v200/update3.xml";
-    //
-    // private final String UPDATE_ACTION4_200 = "v200/update4.xml";
-    //
-    // private final String UPDATE_ACTION5_200 = "v200/update5.xml";
+    private final String UPDATE_ACTION3_200 = "v200/update3.xml";
 
     private final TransactionXmlReader200 reader = new TransactionXmlReader200();
 
@@ -185,7 +182,7 @@ public class TransactionXmlReader200Test extends TestCase {
         Iterator<PropertyReplacement> replacementProps = action.getReplacementProps();
 
         PropertyReplacement replacement = replacementProps.next();
-        assertNull( replacement.getUpdateAction() );        
+        assertNull( replacement.getUpdateAction() );
         XMLStreamReader valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
         assertEquals( new QName( "populationType" ), replacement.getPropertyName() );
@@ -224,6 +221,67 @@ public class TransactionXmlReader200Test extends TestCase {
         assertFalse( replacementProps.hasNext() );
 
         nextElement( xmlStream );
+        Filter filter = action.getFilter();
+        assertNotNull( filter );
+
+        xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Update" );
+    }
+
+    @Test
+    public void testReadUpdateWfs200AllOptionalAttributes()
+                            throws Exception {
+        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION3_200 );
+        Update action = reader.readUpdate( xmlStream );
+        assertEquals( "BLA", action.getHandle() );
+        assertEquals( "application/gml+xml; version=3.2", action.getInputFormat() );
+        assertEquals( "EPSG:4326", action.getSRSName() );
+        Iterator<PropertyReplacement> replacementProps = action.getReplacementProps();
+
+        PropertyReplacement replacement = replacementProps.next();
+        assertEquals( UpdateAction.REPLACE, replacement.getUpdateAction() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType" ), replacement.getPropertyName() );
+        XMLStreamReader valueStream = replacement.getReplacementValue();
+        valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
+        assertEquals( "CONIFEROUS", valueStream.getElementText() );
+        nextElement( valueStream );
+        valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
+        nextElement( valueStream );
+
+        assertTrue( replacementProps.hasNext() );
+        replacement = replacementProps.next();
+        assertEquals( UpdateAction.INSERT_AFTER, replacement.getUpdateAction() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType2" ), replacement.getPropertyName() );
+        valueStream = replacement.getReplacementValue();
+        valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
+        assertEquals( "CONIFEROUS", valueStream.getElementText() );
+        nextElement( valueStream );
+        valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
+        nextElement( valueStream );
+
+        assertTrue( replacementProps.hasNext() );
+        replacement = replacementProps.next();
+        assertEquals( UpdateAction.INSERT_BEFORE, replacement.getUpdateAction() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType3" ), replacement.getPropertyName() );
+        valueStream = replacement.getReplacementValue();
+        valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
+        assertEquals( "CONIFEROUS", valueStream.getElementText() );
+        nextElement( valueStream );
+        valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
+        nextElement( valueStream );
+
+        assertTrue( replacementProps.hasNext() );
+        replacement = replacementProps.next();
+        assertEquals( UpdateAction.REMOVE, replacement.getUpdateAction() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType3" ), replacement.getPropertyName() );
+        valueStream = replacement.getReplacementValue();
+        valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
+        assertEquals( "CONIFEROUS", valueStream.getElementText() );
+        nextElement( valueStream );
+        valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
+        nextElement( valueStream );
+
+        assertFalse( replacementProps.hasNext() );
+
         Filter filter = action.getFilter();
         assertNotNull( filter );
 
