@@ -377,11 +377,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
-            if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
+//            if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
                 String col = converter.getSelectSnippet( tableAlias );
                 int colIndex = colToRsIdx.get( col );
                 particle = converter.toParticle( rs, colIndex );
-            }
+//            }
         } else if ( mapping instanceof ConstantMapping<?> ) {
             particle = ( (ConstantMapping<?>) mapping ).getValue();
         } else if ( mapping instanceof CompoundMapping ) {

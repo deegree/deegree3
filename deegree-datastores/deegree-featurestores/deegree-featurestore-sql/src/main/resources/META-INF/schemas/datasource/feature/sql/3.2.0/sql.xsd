@@ -42,6 +42,7 @@
           </simpleType>
         </element>
         <element name="VoidEscalationPolicy" minOccurs="0" type="sqlfs:VoidEscalationPolicyType" default="NONE" />
+        <element name="CustomReferenceResolver" minOccurs="0" maxOccurs="unbounded" type="string" />
         <element ref="sqlfs:StorageCRS" minOccurs="0" />
         <element name="GMLSchema" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
