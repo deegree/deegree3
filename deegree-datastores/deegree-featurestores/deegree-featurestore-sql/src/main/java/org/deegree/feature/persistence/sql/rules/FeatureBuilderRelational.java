@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
-import static java.util.Collections.EMPTY_LIST;
 import static org.deegree.commons.utils.JDBCUtils.close;
 
 import java.sql.Connection;
@@ -74,6 +73,7 @@ import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.jaxb.VoidEscalationPolicyType;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
@@ -84,7 +84,6 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.gml.GMLVersion;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.jaxen.expr.Expr;
@@ -122,9 +121,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final NamespaceBindings nsBindings;
 
-    private final GMLVersion gmlVersion;
+    // private final GMLVersion gmlVersion;
 
     private final LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
+
+    private VoidEscalationPolicyType escalationPolicy;
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
@@ -137,24 +138,27 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      *            feature type mapping, must not be <code>null</code>
      * @param conn
      *            JDBC connection (used for performing subsequent SELECTs), must not be <code>null</code>
+     * @param escalationPolicy
+     *            the void escalation policy, must not be <code>null</code>
      */
     public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
-                                     String ftTableAlias ) {
+                                     String ftTableAlias, VoidEscalationPolicyType escalationPolicy ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
         this.conn = conn;
         this.tableAlias = ftTableAlias;
+        this.escalationPolicy = escalationPolicy;
         this.nsBindings = new NamespaceBindings();
         for ( String prefix : fs.getNamespaceContext().keySet() ) {
             String ns = fs.getNamespaceContext().get( prefix );
             nsBindings.addNamespace( prefix, ns );
         }
-        if ( ft.getSchema().getGMLSchema() != null ) {
-            this.gmlVersion = ft.getSchema().getGMLSchema().getVersion();
-        } else {
-            this.gmlVersion = GMLVersion.GML_32;
-        }
+        // if ( ft.getSchema().getGMLSchema() != null ) {
+        // this.gmlVersion = ft.getSchema().getGMLSchema().getVersion();
+        // } else {
+        // this.gmlVersion = GMLVersion.GML_32;
+        // }
     }
 
     @Override
@@ -292,7 +296,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             if ( pt.isNillable() ) {
                 Map<QName, PrimitiveValue> attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
                                                                              new PrimitiveValue( Boolean.TRUE ) );
-                props.add( new GenericProperty( pt, propMapping.getPath().getAsQName(), null, attrs, EMPTY_LIST ) );
+                props.add( new GenericProperty( pt, propMapping.getPath().getAsQName(), null, attrs,
+                                                Collections.<TypedObjectNode> emptyList() ) );
             } else {
                 LOG.warn( "Unable to map NULL value for mapping '" + propMapping.getPath().getAsText()
                           + "' to output. This will result in schema violations." );
@@ -399,7 +404,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             found = true;
                         }
                     }
-                    if ( !found ) {
+                    if ( !found && escalationPolicy.equals( VoidEscalationPolicyType.ALWAYS ) ) {
                         escalateVoid = true;
                     }
                 }

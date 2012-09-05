@@ -100,6 +100,7 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.CustomInspector;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VoidEscalationPolicyType;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -189,6 +190,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final List<FeatureInspector> inspectors = new ArrayList<FeatureInspector>();
 
+    private VoidEscalationPolicyType escalationPolicy;
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
      * 
@@ -267,6 +270,12 @@ public class SQLFeatureStore implements FeatureStore {
                     throw new ResourceInitException( msg );
                 }
             }
+        }
+
+        escalationPolicy = config.getVoidEscalationPolicy();
+        if ( escalationPolicy == null ) {
+            // defaults don't work in jaxb for element values
+            escalationPolicy = VoidEscalationPolicyType.NONE;
         }
     }
 
@@ -1072,7 +1081,8 @@ public class SQLFeatureStore implements FeatureStore {
             conn = getConnection();
 
             String tableAlias = "X1";
-            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias );
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
+                                                                   escalationPolicy );
             List<String> columns = builder.getInitialSelectColumns();
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( columns.get( 0 ) );
@@ -1312,7 +1322,8 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
-            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias );
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias,
+                                                                   escalationPolicy );
             List<String> columns = builder.getInitialSelectColumns();
 
             BlobMapping blobMapping = getSchema().getBlobMapping();

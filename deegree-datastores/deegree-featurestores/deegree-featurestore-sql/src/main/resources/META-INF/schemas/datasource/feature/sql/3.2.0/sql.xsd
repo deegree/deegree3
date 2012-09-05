@@ -41,6 +41,7 @@
             </restriction>
           </simpleType>
         </element>
+        <element name="VoidEscalationPolicy" minOccurs="0" type="sqlfs:VoidEscalationPolicyType" default="NONE" />
         <element ref="sqlfs:StorageCRS" minOccurs="0" />
         <element name="GMLSchema" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
@@ -84,6 +85,12 @@
       </attribute>
     </complexType>
   </element>
+  <simpleType name="VoidEscalationPolicyType">
+  	<restriction base="string">
+      <enumeration value="NONE" />
+      <enumeration value="ALWAYS" />
+	</restriction>
+  </simpleType>
   <!-- === Feature id mapping and id generators === -->
   <element name="FIDMapping">
     <annotation>
