@@ -18,15 +18,7 @@
             </sequence>
           </complexType>
         </element>
-        <element name="FeatureStoreId" minOccurs="0" maxOccurs="unbounded">
-          <complexType>
-            <simpleContent>
-              <extension base="string">
-                <attribute name="customReferenceResolver" type="string" use="optional" />
-              </extension>
-            </simpleContent>
-          </complexType>
-        </element>
+        <element name="FeatureStoreId" minOccurs="0" maxOccurs="unbounded" type="string" />
         <element name="EnableTransactions" minOccurs="0" default="false">
           <complexType>
             <simpleContent>
