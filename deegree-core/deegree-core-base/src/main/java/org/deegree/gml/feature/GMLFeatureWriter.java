@@ -44,8 +44,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_2;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,6 +53,7 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
@@ -76,6 +75,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -84,6 +84,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.filter.ProjectionClause;
@@ -91,6 +92,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +132,10 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     private final boolean exportBoundedBy;
 
     private final PropertyType boundedByPt;
+
+    private AppSchema schema;
+
+    private GMLSchemaInfoSet schemaInfoset;
 
     private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
@@ -270,6 +276,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     private void export( Feature feature, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
+        setSchema( feature );
+
         if ( feature.getId() != null ) {
             exportedIds.add( feature.getId() );
         }
@@ -332,6 +340,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 }
             }
             writer.writeEndElement();
+        }
+    }
+
+    private void setSchema( Feature feature ) {
+        if ( schema == null ) {
+            schema = feature.getType().getSchema();
+            if ( schema != null ) {
+                schemaInfoset = schema.getGMLSchema();
+            }
         }
     }
 
@@ -575,8 +592,67 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         if ( subFeature == null ) {
             writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             endEmptyElement();
-        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
-            // normal feature or local feature reference
+        } else if ( subFeature instanceof FeatureReference ) {
+            FeatureReference ref = (FeatureReference) subFeature;
+            String uri = ref.getURI();
+            if ( uri.startsWith( "http://vancouver1.demo.galdosinc.com" ) ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeAttributeWithNS( XLNNS, "href", uri );
+                endEmptyElement();
+            } else if ( maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) ) {
+                // force export (maximum number of inline levels not reached)
+                if ( pt.getAllowedRepresentation() == REMOTE ) {
+                    // only export by reference possible
+                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    if ( additionalObjectHandler != null ) {
+                        String idUri = additionalObjectHandler.requireObject( (GMLReference<?>) subFeature );
+                        if ( uri.startsWith( "urn:uuid:" ) ) {
+                            writeAttributeWithNS( XLNNS, "href", uri );
+                        } else {
+                            writeAttributeWithNS( XLNNS, "href", idUri );
+                        }
+                    } else {
+                        if ( ref.isLocal() ) {
+                            String idUri = remoteXlinkTemplate.replace( "{}", subFeature.getId() );
+                            writeAttributeWithNS( XLNNS, "href", idUri );
+                        } else {
+                            writeAttributeWithNS( XLNNS, "href", uri );
+                        }
+                    }
+                    endEmptyElement();
+                } else {
+                    // export inline
+                    exportedIds.add( subFeature.getId() );
+                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writer.writeComment( "Inlined feature '" + subFeature.getId() + "'" );
+                    export( subFeature, currentLevel + 1, maxInlineLevels );
+                    writer.writeEndElement();
+                }
+            } else {
+                // don't force export (maximum number of inline levels reached)
+                if ( !( subFeature instanceof GMLReference<?> ) ) {
+                    LOG.warn( "References not expected at this point. Needs investigation." );
+                }
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                if ( additionalObjectHandler != null && subFeature instanceof GMLReference<?> ) {
+                    String idUri = additionalObjectHandler.requireObject( (GMLReference<?>) subFeature );
+                    if ( uri.startsWith( "urn:uuid:" ) ) {
+                        writeAttributeWithNS( XLNNS, "href", uri );
+                    } else {
+                        writeAttributeWithNS( XLNNS, "href", idUri );
+                    }
+                } else {
+                    if ( ref.isLocal() ) {
+                        String idUri = remoteXlinkTemplate.replace( "{}", subFeature.getId() );
+                        writeAttributeWithNS( XLNNS, "href", idUri );
+                    } else {
+                        writeAttributeWithNS( XLNNS, "href", uri );
+                    }
+                }
+                endEmptyElement();
+            }
+        } else {
+            // normal feature
             String subFid = subFeature.getId();
             if ( subFid == null ) {
                 // no feature id -> no other chance, but inlining it
@@ -592,68 +668,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     writeAttributeWithNS( XLNNS, "href", "#" + subFid );
                     endEmptyElement();
                 } else {
-                    // not exported yet
-                    if ( maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) ) {
-                        // force export (maximum number of inline levels not reached)
-                        if ( pt.getAllowedRepresentation() == REMOTE ) {
-                            // only export by reference possible
-                            writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                            if ( additionalObjectHandler != null ) {
-                                String uri = additionalObjectHandler.requireObject( (GMLReference<?>) subFeature );
-                                writeAttributeWithNS( XLNNS, "href", uri );
-                            } else {
-                                LOG.debug( "No additionalObjectHandler registered. Exporting xlink-only feature property inline." );
-                                String uri = remoteXlinkTemplate.replace( "{}", subFid );
-                                writeAttributeWithNS( XLNNS, "href", uri );
-                            }
-                            endEmptyElement();
-                        } else {
-                            // export inline
-                            exportedIds.add( subFeature.getId() );
-                            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                            writer.writeComment( "Inlined feature '" + subFid + "'" );
-                            export( subFeature, currentLevel + 1, maxInlineLevels );
-                            writer.writeEndElement();
-                        }
-                    } else {
-                        // don't force export (maximum number of inline levels reached)
-                        if ( !( subFeature instanceof GMLReference<?> ) ) {
-                            LOG.warn( "References not expected at this point. Needs investigation." );
-                        }
-                        writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                        if ( additionalObjectHandler != null && subFeature instanceof GMLReference<?> ) {
-                            String uri = additionalObjectHandler.handleReference( (GMLReference<?>) subFeature );
-                            writeAttributeWithNS( XLNNS, "href", uri );
-                        } else {
-                            LOG.warn( "No additionalObjectHandler registered. Exporting xlink-only feature inline." );
-                            String uri = remoteXlinkTemplate.replace( "{}", subFid );
-                            writeAttributeWithNS( XLNNS, "href", uri );
-                        }
-                        endEmptyElement();
-                    }
+                    // not exported yet, export inline
+                    exportedIds.add( subFeature.getId() );
+                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writer.writeComment( "Inlined feature '" + subFeature.getId() + "'" );
+                    export( subFeature, currentLevel + 1, maxInlineLevels );
+                    writer.writeEndElement();
                 }
-            }
-        } else {
-            // remote feature reference
-            FeatureReference ref = (FeatureReference) subFeature;
-            if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || remoteXlinkTemplate == null
-                 || maxInlineLevels == -1 ) {
-                String uri = ref.getURI();
-                try {
-                    new URL( uri );
-                    throw new UnsupportedOperationException(
-                                                             "Inlining of remote feature references is not implemented yet." );
-                } catch ( MalformedURLException e ) {
-                    LOG.warn( "Not inlining remote feature reference -- not a valid URI." );
-                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    writeAttributeWithNS( XLNNS, "href", ref.getURI() );
-                    endEmptyElement();
-                }
-            } else {
-                // must be exported by reference
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XLNNS, "href", ref.getURI() );
-                endEmptyElement();
             }
         }
     }
@@ -676,8 +697,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else if ( node instanceof ElementNode ) {
             ElementNode xmlContent = (ElementNode) node;
             exportGenericXmlElement( xmlContent, currentLevel, maxInlineLevels );
-        } else if ( node instanceof PrimitiveValue ) {
-            writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
         } else if ( node instanceof TypedObjectNodeArray<?> ) {
             for ( TypedObjectNode elem : ( (TypedObjectNodeArray<?>) node ).getElements() ) {
                 export( elem, currentLevel, maxInlineLevels );
@@ -693,6 +712,21 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName elName = xmlContent.getName();
+        LOG.debug( "Exporting " + elName );
+        XSElementDeclaration elDecl = xmlContent.getXSType();
+        if ( elDecl != null && schemaInfoset != null ) {
+            ObjectPropertyType gmlPropertyDecl = schemaInfoset.getGMLPropertyDecl( elDecl, elName, 0, 1, null );
+            if ( gmlPropertyDecl instanceof FeaturePropertyType ) {
+                List<TypedObjectNode> children = xmlContent.getChildren();
+                if ( children.size() == 1 && children.get( 0 ) instanceof Feature ) {
+                    LOG.debug( "Exporting as nested feature property." );
+                    exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ),
+                                           currentLevel, maxInlineLevels );
+                    return;
+                }
+            }
+        }
+
         writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
 
         if ( xmlContent.getAttributes() != null ) {

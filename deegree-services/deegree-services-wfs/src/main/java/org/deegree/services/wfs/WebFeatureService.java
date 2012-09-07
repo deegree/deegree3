@@ -198,7 +198,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/3.1.0/wfs_configuration.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/3.2.0/wfs_configuration.xsd";
 
     private static final int DEFAULT_MAX_FEATURES = 15000;
 

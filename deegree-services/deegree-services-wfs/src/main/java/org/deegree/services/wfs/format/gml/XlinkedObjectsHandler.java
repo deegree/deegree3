@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of {@link GMLObject} references that have to be included in a {@link GetFeature} response.
+ * Keeps track of referenced {@link GMLObject}s that have to be included in a {@link GetFeature} response.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
