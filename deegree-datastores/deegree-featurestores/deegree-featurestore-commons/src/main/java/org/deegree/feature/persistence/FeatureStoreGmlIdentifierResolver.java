@@ -87,7 +87,6 @@ public class FeatureStoreGmlIdentifierResolver implements GMLReferenceResolver {
 
     @Override
     public GMLObject getObject( String uri, String baseURL ) {
-        System.out.println( "resolving!" + uri );
         Matcher m = pattern.matcher( uri );
         if ( m.find() ) {
             List<FeatureType> fts = fs.getSchema().getFeatureTypes( null, false, false );
@@ -104,30 +103,23 @@ public class FeatureStoreGmlIdentifierResolver implements GMLReferenceResolver {
             for ( TypeName tn : typeNames ) {
                 queries.add( new Query( new TypeName[] { tn }, f, null, null, null ) );
             }
-            System.out.println("queries: " + queries.size());
             for ( Query q : queries ) {
-                System.out.println( "querying..." );
                 FeatureInputStream rs = null;
                 try {
                     rs = fs.query( q );
                     Feature obj = rs.iterator().next();
                     if ( obj != null ) {
-                        System.out.println("have object!");
                         return obj;
                     }
                 } catch ( Throwable e ) {
-                    e.printStackTrace();
                     // then it's not resolvable (?)
                 } finally {
-                    System.out.println("closongh");
-                    try{
-                    rs.close();
-                    }catch(Throwable e){
+                    try {
+                        rs.close();
+                    } catch ( Throwable e ) {
                         // not closable
                     }
-                    System.out.println("closed");
                 }
-                System.out.println("contn");
             }
         }// else?
         return null;
