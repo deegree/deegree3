@@ -155,7 +155,7 @@ public class PostGISGeometryConverter implements GeometryParticleConverter {
                     GeometryTransformer transformer = new GeometryTransformer( crs );
                     transformedLiteral = transformer.transform( literal );
                 } catch ( Exception e ) {
-                    throw new SQLException( e.getMessage() );
+                    throw new SQLException( e.getMessage(), e );
                 }
             }
         }

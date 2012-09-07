@@ -57,6 +57,7 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
@@ -212,6 +213,9 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
                 return ( (LineStringSegment) segment ).getControlPoints();
             }
+            if ( segment.getSegmentType() == CurveSegmentType.GEODESIC_STRING ) {
+                return ( (GeodesicString) segment ).getControlPoints();
+            }
             throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_NON_LINEAR_SEGMENT" ) );
         }
 
@@ -219,6 +223,8 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
         for ( CurveSegment segment : segments ) {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
                 pointsList.add( ( (LineStringSegment) segment ).getControlPoints() );
+            } else if ( segment.getSegmentType() == CurveSegmentType.GEODESIC_STRING ) {
+                pointsList.add( ( (GeodesicString) segment ).getControlPoints() );
             } else {
                 throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_NON_LINEAR_SEGMENTS" ) );
             }

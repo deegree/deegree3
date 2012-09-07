@@ -63,7 +63,9 @@ import org.deegree.geometry.primitive.segments.ArcString;
 import org.deegree.geometry.primitive.segments.Circle;
 import org.deegree.geometry.primitive.segments.CubicSpline;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -79,6 +81,7 @@ import org.slf4j.LoggerFactory;
  * <li>{@link ArcString}</li>
  * <li>{@link Circle}</li>
  * <li>{@link CubicSpline}</li>
+ * <li>{@link GeodesicString}</li>
  * <li>{@link LineStringSegment}</li>
  * </ul>
  * 
@@ -181,6 +184,10 @@ public class CurveLinearizer {
             lineSegment = linearizeArcString( (ArcString) segment, crit );
             break;
         }
+        case GEODESIC_STRING: {
+            lineSegment = linearizeGeodesicString( (GeodesicString) segment, crit );
+            break;
+        }
         case ARC_BY_BULGE:
         case ARC_BY_CENTER_POINT:
         case ARC_STRING_BY_BULGE:
@@ -189,7 +196,6 @@ public class CurveLinearizer {
         case CIRCLE_BY_CENTER_POINT:
         case CLOTHOID:
         case GEODESIC:
-        case GEODESIC_STRING:
         case OFFSET_CURVE: {
             String msg = "Linearization of curve segment type '" + segment.getSegmentType().name()
                          + "' is not implemented yet.";
@@ -197,6 +203,10 @@ public class CurveLinearizer {
         }
         }
         return lineSegment;
+    }
+
+    private LineStringSegment linearizeGeodesicString( GeodesicString segment, LinearizationCriterion crit ) {
+        return new DefaultLineStringSegment( segment.getControlPoints() );
     }
 
     /**
@@ -855,8 +865,9 @@ public class CurveLinearizer {
         Point p2Shifted = new DefaultPoint( null, p2.getCoordinateSystem(), p2.getPrecision(),
                                             new double[] { p2.get0() - minOrd0, p2.get1() - minOrd1 } );
 
-        double res = ( p2Shifted.get0() - p0Shifted.get0() ) * ( ( p2Shifted.get1() + p0Shifted.get1() ) / 2 ) + ( p1Shifted.get0() - p2Shifted.get0() )
-                     * ( ( p1Shifted.get1() + p2Shifted.get1() ) / 2 ) + ( p0Shifted.get0() - p1Shifted.get0() ) * ( ( p0Shifted.get1() + p1Shifted.get1() ) / 2 );
+        double res = ( p2Shifted.get0() - p0Shifted.get0() ) * ( ( p2Shifted.get1() + p0Shifted.get1() ) / 2 )
+                     + ( p1Shifted.get0() - p2Shifted.get0() ) * ( ( p1Shifted.get1() + p2Shifted.get1() ) / 2 )
+                     + ( p0Shifted.get0() - p1Shifted.get0() ) * ( ( p0Shifted.get1() + p1Shifted.get1() ) / 2 );
         return Math.abs( res ) < EPSILON;
     }
 }

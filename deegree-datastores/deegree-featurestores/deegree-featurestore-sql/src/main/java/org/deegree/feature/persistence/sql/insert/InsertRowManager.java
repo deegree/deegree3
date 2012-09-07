@@ -272,8 +272,10 @@ public class InsertRowManager {
                     @SuppressWarnings("unchecked")
                     ParticleConverter<PrimitiveValue> converter = (ParticleConverter<PrimitiveValue>) fs.getConverter( mapping );
                     PrimitiveValue primitiveValue = getPrimitiveValue( value );
-                    String column = ( (DBField) me ).getColumn();
-                    currentRow.addPreparedArgument( column, primitiveValue, converter );
+                    if ( primitiveValue != null ) {
+                        String column = ( (DBField) me ).getColumn();
+                        currentRow.addPreparedArgument( column, primitiveValue, converter );
+                    }
                 }
             } else if ( mapping instanceof GeometryMapping ) {
                 MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
