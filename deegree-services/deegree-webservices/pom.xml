@@ -188,13 +188,6 @@
       <artifactId>deegree-jsf-console</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>de.mclick</groupId>
-      <artifactId>aixm-processes</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
