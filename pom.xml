@@ -87,7 +87,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.11</version>
+          <version>1.15</version>
         </plugin>
       </plugins>
     </pluginManagement>
