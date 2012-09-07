@@ -32,6 +32,17 @@
     </repository>
   </repositories>
 
+  <distributionManagement>
+    <repository>
+      <id>deegree-releases</id>
+      <url>http://repo.deegree.org/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>deegree-snapshots</id>
+      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <build>
     <plugins>
      <plugin>
