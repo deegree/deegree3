@@ -222,7 +222,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private final Map<GMLVersion, Format> gmlVersionToFormat = new HashMap<GMLVersion, Format>();
 
-    private int maxFeatures;
+    private int queryMaxFeatures;
 
     private boolean checkAreaOfUse;
 
@@ -250,7 +250,7 @@ public class WebFeatureService extends AbstractOWS {
         }
         disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
                                                                               : true;
-        maxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
+        queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                               : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
 
@@ -1031,9 +1031,9 @@ public class WebFeatureService extends AbstractOWS {
         return mimeTypeToFormat.keySet();
     }
 
-    public int getMaxFeatures() {
+    public int getQueryMaxFeatures() {
         // TODO Auto-generated method stub
-        return maxFeatures;
+        return queryMaxFeatures;
     }
 
     public boolean getCheckAreaOfUse() {

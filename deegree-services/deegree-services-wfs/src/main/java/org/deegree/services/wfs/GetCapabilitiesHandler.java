@@ -857,8 +857,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "ManageStoredQueries", "FALSE" ) );
 
             // capacity constraints
-            if ( master.getMaxFeatures() != -1 ) {
-                constraints.add( new Domain( "CountDefault", "" + master.getMaxFeatures() ) );
+            if ( master.getQueryMaxFeatures() != -1 ) {
+                constraints.add( new Domain( "CountDefault", "" + master.getQueryMaxFeatures() ) );
             }
 
             constraints.add( new Domain( "ResolveLocalScope", "*" ) );
