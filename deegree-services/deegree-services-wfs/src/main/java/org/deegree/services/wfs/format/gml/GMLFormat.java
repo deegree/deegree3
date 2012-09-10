@@ -417,33 +417,43 @@ public class GMLFormat implements Format {
         gmlStream.setAdditionalObjectHandler( additionalObjects );
 
         // retrieve and write result features
-        int numberReturned = 0;
+        int startIndex = 0;
         int maxResults = -1;
+        // TODO evaluate if maxResults should have a default / configurable value
         if ( request.getPresentationParams().getCount() != null ) {
             maxResults = request.getPresentationParams().getCount().intValue();
+        }
+        if ( request.getPresentationParams().getStartIndex() != null ) {
+            startIndex = request.getPresentationParams().getStartIndex().intValue();
         }
 
         GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
         GMLFeatureWriter featureWriter = gmlStream.getFeatureWriter();
 
+        int numberReturned = 0;
+        int valuesSkipped = 0;
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature member : rs ) {
-                    TypedObjectNode[] values = evaluator.eval( member, request.getValueReference() );
-                    for ( TypedObjectNode value : values ) {
-                        xmlStream.writeStartElement( WFS_200_NS, "member" );
-                        featureWriter.export( value, 0, traverseXLinkDepth );
-                        xmlStream.writeEndElement();
-                        numberReturned++;
-                        if ( numberReturned == maxResults ) {
-                            break;
-                        }
-                    }
                     if ( numberReturned == maxResults ) {
                         break;
+                    }
+                    TypedObjectNode[] values = evaluator.eval( member, request.getValueReference() );
+                    for ( TypedObjectNode value : values ) {
+                        if ( valuesSkipped < startIndex ) {
+                            valuesSkipped++;
+                        } else {
+                            xmlStream.writeStartElement( WFS_200_NS, "member" );
+                            featureWriter.export( value, 0, traverseXLinkDepth );
+                            xmlStream.writeEndElement();
+                            numberReturned++;
+                            if ( numberReturned == maxResults ) {
+                                break;
+                            }
+                        }
                     }
                 }
             } finally {
