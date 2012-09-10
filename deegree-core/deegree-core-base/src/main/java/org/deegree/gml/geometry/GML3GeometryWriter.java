@@ -1530,21 +1530,18 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
         GMLObjectType gmlType = geometry.getType();
         if ( gmlType == null ) {
-            writer.writeStartElement( "gml", localName, gmlNs );
+            writeStartElementWithNS( gmlNs, localName );
         } else {
             QName elName = gmlType.getName();
-            // if ( elName.getPrefix() != null ) {
-            // writer.setPrefix( elName.getPrefix(), elName.getNamespaceURI() );
-            // }
             writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
         }
 
         if ( !exportSf && geometry.getId() != null ) {
             exportedIds.add( geometry.getId() );
-            writer.writeAttribute( "gml", gmlNs, "id", geometry.getId() );
+            writeAttributeWithNS( gmlNs, "id", geometry.getId() );
         } else if ( version == GML_32 && geometry.getId() == null ) {
             // in GML 3.2, a gml:id is required for every geometry
-            writer.writeAttribute( "gml", gmlNs, "id", "GEOMETRY_" + generateNewId() );
+            writeAttributeWithNS( gmlNs, "id", "GEOMETRY_" + generateNewId() );
         }
 
         if ( outputCRS != null ) {

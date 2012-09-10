@@ -93,7 +93,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     private static final String GML21NS = "http://www.opengis.net/gml";
 
     private final ICRS outputCRS;
-    
+
     private CoordinateFormatter formatter;
 
     private CoordinateTransformer transformer;
@@ -623,7 +623,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     private void startGeometry( String localName, Geometry geometry )
                             throws XMLStreamException {
 
-        writer.writeStartElement( "gml", localName, GML21NS );
+        writeStartElementWithNS( GML21NS, localName );
 
         if ( geometry.getId() != null ) {
             exportedIds.add( geometry.getId() );
