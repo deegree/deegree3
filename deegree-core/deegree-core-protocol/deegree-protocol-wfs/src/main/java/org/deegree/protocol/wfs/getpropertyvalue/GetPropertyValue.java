@@ -78,9 +78,9 @@ public class GetPropertyValue extends AbstractWFSRequest {
      * @param handle
      *            client-generated identifier, may be <code>null</code>
      * @param presentationParams
-     *            parameters for controlling the presentation of the result set, may be <code>null</code>
+     *            parameters for controlling the presentation of the result set, must not be <code>null</code>
      * @param resolveParams
-     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
+     *            parameters for controlling the resolution of references of the result set, must not be <code>null</code>
      * @param valueReference
      *            selects the nodes or child nodes of queried features to be returned, must not be <code>null</code>
      * @param resolvePath

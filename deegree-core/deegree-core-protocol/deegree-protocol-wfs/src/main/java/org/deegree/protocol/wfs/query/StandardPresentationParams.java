@@ -80,7 +80,7 @@ public class StandardPresentationParams {
     }
 
     /**
-     * Returns the index within the result set from which the server shall begin returning results (conting starts at
+     * Returns the index within the result set from which the server shall begin returning results (counting starts at
      * 0).
      * 
      * @return index within the result set from which the server shall begin returning results (non-negative integer,
