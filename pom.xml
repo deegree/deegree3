@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
@@ -47,173 +48,191 @@
         <updatePolicy>never</updatePolicy>
       </releases>
       <snapshots>
-          <enabled>true</enabled>
-        </snapshots>
-      </pluginRepository>
-    </pluginRepositories>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
-    <build>
-      <resources>
-        <resource>
-          <directory>src/main/resources</directory>
-          <filtering>false</filtering>
-        </resource>
-        <resource>
-          <directory>src/main/filtered</directory>
-          <filtering>true</filtering>
-        </resource>
-      </resources>
-      <pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.jvnet.jaxb2.maven2</groupId>
-            <artifactId>maven-jaxb2-plugin</artifactId>
-            <version>0.8.0</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>generate</goal>
-                </goals>
-                <configuration>
-                  <schemaIncludes>
-                    <include>**/*xsd</include>
-                  </schemaIncludes>
-                  <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
-                  <episode>true</episode>
-                  <catalog>target/deegree.xmlcatalog</catalog>
-                  <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-maven-plugin</artifactId>
-            <version>1.15</version>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>1.7</version>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.2</version>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.3</version>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>appassembler-maven-plugin</artifactId>
-            <version>1.1</version>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>tomcat-maven-plugin</artifactId>
-            <version>1.1</version>
-          </plugin>
-          <plugin>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr3-maven-plugin</artifactId>
-            <version>3.2</version>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.12</version>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.12</version>
-          </plugin>
-        </plugins>
-      </pluginManagement>
-
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.1</version>
-          <configuration>
-            <preparationGoals>clean install</preparationGoals>
-            <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-            <arguments>-e</arguments>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
-          <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
-            <encoding>UTF-8</encoding>
-            <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>2.4.3</version>
-          <configuration>
-            <encoding>UTF-8</encoding>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>1.0</version>
+          <groupId>org.jvnet.jaxb2.maven2</groupId>
+          <artifactId>maven-jaxb2-plugin</artifactId>
+          <version>0.8.0</version>
           <executions>
             <execution>
-              <phase>validate</phase>
               <goals>
-                <goal>create</goal>
+                <goal>generate</goal>
               </goals>
+              <configuration>
+                <schemaIncludes>
+                  <include>**/*xsd</include>
+                </schemaIncludes>
+                <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+                <episode>true</episode>
+                <catalog>target/deegree.xmlcatalog</catalog>
+                <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+              </configuration>
             </execution>
           </executions>
-          <configuration>
-            <revisionOnScmFailure>${buildTimestamp}</revisionOnScmFailure>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>buildinfo</id>
-              <goals>
-                <goal>generate-buildinfo</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>jaxbcatalog</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>generate-jaxb-catalog</goal>
-              </goals>
-            </execution>
-          </executions>
+          <version>1.15</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.7</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-scm-plugin</artifactId>
-          <version>1.5</version>
-          <configuration>
-            <goals>install</goals>
-          </configuration>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>appassembler-maven-plugin</artifactId>
+          <version>1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>tomcat-maven-plugin</artifactId>
+          <version>1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr3-maven-plugin</artifactId>
+          <version>3.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.12</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.12</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>2.5.2</version>
         </plugin>
       </plugins>
-    </build>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <preparationGoals>clean install</preparationGoals>
+          <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <arguments>-e</arguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+          <encoding>UTF-8</encoding>
+          <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <revisionOnScmFailure>${buildTimestamp}</revisionOnScmFailure>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>buildinfo</id>
+            <goals>
+              <goal>generate-buildinfo</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jaxbcatalog</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-jaxb-catalog</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <goals>install</goals>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
 
 
   <dependencyManagement>
