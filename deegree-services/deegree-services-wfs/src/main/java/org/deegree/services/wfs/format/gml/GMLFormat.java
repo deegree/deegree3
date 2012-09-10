@@ -186,8 +186,6 @@ public class GMLFormat implements Format {
 
     private final DescribeFeatureTypeHandler dftHandler;
 
-    private boolean exportOriginalSchema;
-
     private String appSchemaBaseURL;
 
     private String mimeType;
@@ -195,7 +193,7 @@ public class GMLFormat implements Format {
     public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.service = master.getStoreManager();
-        this.dftHandler = new DescribeFeatureTypeHandler( service, exportOriginalSchema, null );
+        this.dftHandler = new DescribeFeatureTypeHandler( service, false, null );
         this.featureLimit = master.getMaxFeatures();
         this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.gmlVersion = gmlVersion;
@@ -212,6 +210,7 @@ public class GMLFormat implements Format {
         }
 
         GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
+        boolean exportOriginalSchema = false;
         if ( responseConfig != null ) {
             if ( responseConfig.isDisableStreaming() != null ) {
                 disableStreaming = responseConfig.isDisableStreaming();
@@ -989,7 +988,7 @@ public class GMLFormat implements Format {
         if ( responseContainerEl == null ) {
             // use "wfs:FeatureCollection" then
             QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
-            if ( responseContainerEl == null || wfsFeatureCollection.equals( responseContainerEl ) ) {
+            if ( wfsFeatureCollection.equals( responseContainerEl ) ) {
                 if ( VERSION_100.equals( requestVersion ) ) {
                     if ( GML_2 == gmlVersion ) {
                         schemaLocation = WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;

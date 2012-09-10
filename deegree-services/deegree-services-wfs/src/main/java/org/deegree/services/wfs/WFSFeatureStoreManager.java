@@ -265,16 +265,4 @@ public class WFSFeatureStoreManager {
             }
         }
     }
-
-    /**
-     * Deregisters the specified {@link FeatureStore} from the WFS.
-     * 
-     * @param fs
-     *            store to be registered
-     */
-    public void removeStore( FeatureStore fs ) {
-        synchronized ( this ) {
-
-        }
-    }
 }

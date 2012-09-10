@@ -488,12 +488,11 @@ public class WebFeatureService extends AbstractOWS {
                     }
                     OMElement omEl = new XMLAdapter( xmlStream ).getRootElement();
                     for ( String wfsVersion : extendedCapConfig.getWfsVersions() ) {
-                        Version version = Version.parseVersion( wfsVersion );
-                        if ( wfsVersionToExtendedCaps.containsKey( version ) ) {
-                            String msg = "Multiple ExtendedCapabilities sections for WFS version: " + version + ".";
+                        if ( wfsVersionToExtendedCaps.containsKey( wfsVersion ) ) {
+                            String msg = "Multiple ExtendedCapabilities sections for WFS version: " + wfsVersion + ".";
                             throw new ResourceInitException( msg );
                         }
-                        wfsVersionToExtendedCaps.put( version.toString(), Collections.singletonList( omEl ) );
+                        wfsVersionToExtendedCaps.put( wfsVersion, Collections.singletonList( omEl ) );
                     }
                 }
             }
@@ -801,43 +800,50 @@ public class WebFeatureService extends AbstractOWS {
      */
     public static String getSchemaLocation( Version version, GMLVersion gmlVersion, QName... fts ) {
 
-        String baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version
-                         + "&REQUEST=DescribeFeatureType&OUTPUTFORMAT=";
+        StringBuilder baseUrl = new StringBuilder();
+
+        baseUrl.append( OGCFrontController.getHttpGetURL() );
+        baseUrl.append( "SERVICE=WFS&VERSION=" );
+        baseUrl.append( version );
+        baseUrl.append( "&REQUEST=DescribeFeatureType&OUTPUTFORMAT=" );
 
         try {
             if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
-                baseUrl += "XMLSCHEMA";
+                baseUrl.append( "XMLSCHEMA" );
             } else if ( VERSION_200.equals( version ) && gmlVersion == GMLVersion.GML_32 ) {
-                baseUrl += URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" );
+                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
             } else {
-                baseUrl += URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" );
+                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );
             }
 
             if ( fts.length > 0 ) {
-                baseUrl += "&TYPENAME=";
+
+                baseUrl.append( "&TYPENAME=" );
 
                 Map<String, String> bindings = new HashMap<String, String>();
                 for ( int i = 0; i < fts.length; i++ ) {
                     QName ftName = fts[i];
                     bindings.put( ftName.getPrefix(), ftName.getNamespaceURI() );
-                    baseUrl += URLEncoder.encode( ftName.getPrefix(), "UTF-8" ) + ":"
-                               + URLEncoder.encode( ftName.getLocalPart(), "UTF-8" );
+                    baseUrl.append( URLEncoder.encode( ftName.getPrefix(), "UTF-8" ) );
+                    baseUrl.append( ':' );
+                    baseUrl.append( URLEncoder.encode( ftName.getLocalPart(), "UTF-8" ) );
                     if ( i != fts.length - 1 ) {
-                        baseUrl += ",";
+                        baseUrl.append( ',' );
                     }
                 }
 
                 if ( !VERSION_100.equals( version ) ) {
-                    baseUrl += "&NAMESPACE=xmlns(";
+                    baseUrl.append( "&NAMESPACE=xmlns(" );
                     int i = 0;
                     for ( Entry<String, String> entry : bindings.entrySet() ) {
-                        baseUrl += URLEncoder.encode( entry.getKey(), "UTF-8" ) + "="
-                                   + URLEncoder.encode( entry.getValue(), "UTF-8" );
+                        baseUrl.append( URLEncoder.encode( entry.getKey(), "UTF-8" ) );
+                        baseUrl.append( '=' );
+                        baseUrl.append( URLEncoder.encode( entry.getValue(), "UTF-8" ) );
                         if ( i != bindings.size() - 1 ) {
-                            baseUrl += ",";
+                            baseUrl.append( ',' );
                         }
                     }
-                    baseUrl += ")";
+                    baseUrl.append( ')' );
                 }
             }
         } catch ( UnsupportedEncodingException e ) {
@@ -847,7 +853,7 @@ public class WebFeatureService extends AbstractOWS {
         if ( fts.length > 0 ) {
             return fts[0].getNamespaceURI() + " " + baseUrl;
         }
-        return baseUrl;
+        return baseUrl.toString();
     }
 
     private Version getVersion( String versionString )

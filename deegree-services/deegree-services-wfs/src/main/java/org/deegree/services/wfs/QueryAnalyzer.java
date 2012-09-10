@@ -634,7 +634,7 @@ public class QueryAnalyzer {
 
     private Envelope transform( Envelope bbox, ICRS targetCrs )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
-        if ( bbox.getEnvelope().equals( targetCrs ) ) {
+        if ( targetCrs.equals( bbox.getEnvelope().getCoordinateSystem() ) ) {
             return bbox;
         }
         GeometryTransformer transformer = new GeometryTransformer( targetCrs );

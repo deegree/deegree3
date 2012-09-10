@@ -36,6 +36,7 @@
 package org.deegree.services.wfs;
 
 import static java.util.Collections.singletonList;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.FES_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -107,7 +108,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles a single {@link GetCapabilities} requests for the {@link WebFeatureService}.
+ * Handles a single {@link GetCapabilities} request for the {@link WebFeatureService}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -595,7 +596,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
                     prefix = "app";
                 }
-                if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                if ( !NULL_NS_URI.equals( ftName.getNamespaceURI() ) ) {
                     // TODO what about the namespace prefix?
                     writer.writeNamespace( prefix, ftName.getNamespaceURI() );
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
@@ -894,7 +895,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
                     prefix = "app";
                 }
-                if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                if ( !NULL_NS_URI.equals( ftName.getNamespaceURI() ) ) {
                     // TODO what about the namespace prefix?
                     writer.writeNamespace( prefix, ftName.getNamespaceURI() );
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );

@@ -109,6 +109,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
         XMLStreamReader inStream = getBufferedXML();
         int eventType = 0;
         while ( ( eventType = inStream.getEventType() ) != END_DOCUMENT ) {
+            String localName = inStream.getLocalName();
             switch ( eventType ) {
             case CDATA: {
                 sink.writeCData( inStream.getText() );
@@ -123,24 +124,24 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                 break;
             }
             case END_ELEMENT: {
-                if ( !inStream.getLocalName().equals( "WrapperElement" ) ) {
+                if ( !localName.equals( "WrapperElement" ) ) {
                     sink.writeEndElement();
                 }
                 break;
             }
             case START_ELEMENT: {
-                if ( !inStream.getLocalName().equals( "DummyElement" )
-                     && !inStream.getLocalName().equals( "WrapperElement" ) ) {
-                    if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX
-                         || inStream.getPrefix() == null ) {
-                        sink.writeStartElement( inStream.getLocalName() );
+                if ( !localName.equals( "DummyElement" ) && !localName.equals( "WrapperElement" ) ) {
+                    String nsUri = inStream.getNamespaceURI();
+                    String prefix = inStream.getPrefix();
+                    if ( nsUri == null || prefix == null ) {
+                        sink.writeStartElement( localName );
                     } else {
-                        if ( sink.getPrefix( inStream.getNamespaceURI() ) == null ) {
-                            sink.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
-                            sink.writeStartElement( inStream.getNamespaceURI(), inStream.getLocalName() );
-                            sink.writeNamespace( inStream.getPrefix(), inStream.getNamespaceURI() );
+                        if ( sink.getPrefix( nsUri ) == null ) {
+                            sink.setPrefix( prefix, nsUri );
+                            sink.writeStartElement( nsUri, localName );
+                            sink.writeNamespace( prefix, nsUri );
                         } else {
-                            sink.writeStartElement( inStream.getNamespaceURI(), inStream.getLocalName() );
+                            sink.writeStartElement( nsUri, localName );
                         }
                     }
                 }
@@ -154,14 +155,14 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
                 // copy all attributes
                 for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
-                    String localName = inStream.getAttributeLocalName( i );
+                    String attrLocalName = inStream.getAttributeLocalName( i );
                     String nsPrefix = inStream.getAttributePrefix( i );
                     String value = inStream.getAttributeValue( i );
                     String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null || nsURI.equals( NULL_NS_URI )) {
-                        sink.writeAttribute( localName, value );
+                    if ( nsURI == null || nsURI.equals( NULL_NS_URI ) ) {
+                        sink.writeAttribute( attrLocalName, value );
                     } else {
-                        if ( localName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
+                        if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
                             if ( value.startsWith( "{" ) || value.endsWith( "}" ) ) {
                                 String objectId = value.substring( 1, value.length() - 1 );
                                 if ( gmlWriter.isObjectExported( objectId ) ) {
@@ -176,7 +177,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                             sink.writeNamespace( nsPrefix, nsURI );
                         }
 
-                        sink.writeAttribute( nsURI, localName, value );
+                        sink.writeAttribute( nsURI, attrLocalName, value );
                     }
                 }
                 break;
