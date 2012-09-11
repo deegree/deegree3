@@ -258,7 +258,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     alias = aliasesList.get( i );
                 }
                 String typeNameStr = params.get( i );
-                String[] tokens = StringUtils.split( typeNameStr, " " );
+                String[] tokens = StringUtils.split( typeNameStr, "," );
                 if ( alias != null && alias.length != tokens.length ) {
                     String msg = "Number of entries in 'ALIASES' and 'TYPENAMES' parameters does not match.";
                     throw new OWSException( msg, INVALID_PARAMETER_VALUE, "aliases" );
