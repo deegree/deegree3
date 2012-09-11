@@ -625,7 +625,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         boolean includeNextLevelInOutput = includeNextLevelInOutput( maxInlineLevels, currentLevel );
         if ( includeNextLevelInOutput ) {
             if ( pt.getAllowedRepresentation() == REMOTE ) {
-                exportFeaturePropertyByReference( propName, ref );
+                exportFeaturePropertyByReference( propName, ref, true );
             } else {
                 if ( exportedIds.contains( ref.getId() ) ) {
                     exportAlreadyExportedFeaturePropertyByReference( ref, propName );
@@ -634,7 +634,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 }
             }
         } else {
-            exportFeaturePropertyByReference( propName, ref );
+            exportFeaturePropertyByReference( propName, ref, false );
         }
     }
 
@@ -649,11 +649,35 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels );
     }
 
-    private void exportFeaturePropertyByReference( QName propName, FeatureReference ref )
+    private void exportFeaturePropertyByReference( QName propName, FeatureReference ref,
+                                                   boolean forceInclusionInDocument )
+                            throws XMLStreamException {
+
+        writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        if ( additionalObjectHandler != null ) {
+            String uri = null;
+            if ( forceInclusionInDocument ) {
+                uri = additionalObjectHandler.requireObject( ref );
+            } else {
+                uri = additionalObjectHandler.handleReference( ref );
+            }
+            writeAttributeWithNS( XLNNS, "href", uri );
+        } else {
+            if ( ref.isLocal() ) {
+                String uri = remoteXlinkTemplate.replace( "{}", ref.getId() );
+                writeAttributeWithNS( XLNNS, "href", uri );
+            } else {
+                writeAttributeWithNS( XLNNS, "href", ref.getURI() );
+            }
+        }
+        endEmptyElement();
+    }
+
+    private void exportFeaturePropertyByReferenceAndForceInclusion( QName propName, FeatureReference ref )
                             throws XMLStreamException {
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
         if ( additionalObjectHandler != null ) {
-            String uri = additionalObjectHandler.handleReference( ref );
+            String uri = additionalObjectHandler.requireObject( ref );
             writeAttributeWithNS( XLNNS, "href", uri );
         } else {
             if ( ref.isLocal() ) {
