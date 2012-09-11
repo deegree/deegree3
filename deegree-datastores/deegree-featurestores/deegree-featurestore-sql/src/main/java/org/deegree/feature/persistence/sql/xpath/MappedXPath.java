@@ -281,7 +281,7 @@ public class MappedXPath {
 
         String fromTable = currentTable;
         String fromTableAlias = currentTableAlias;
-        // TODO
+        // TODO what do do with Href mappings here? Needs proper reference resolving code for mapping here...
         String fromColumn = mapping.getJoinedTable().get( 0 ).getFromColumns().get( 0 ).toString();
         String toTable = ftMapping.getFtTable().toString();
         String toTableAlias = aliasManager.generateNew();
