@@ -59,7 +59,7 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
 
-    private LinkedHashMap<String, GMLReference<?>> objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
+    private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 
     private final BufferableXMLStreamWriter xmlStream;
 
@@ -75,13 +75,22 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     @Override
     public String requireObject( GMLReference<?> ref ) {
-        LOG.debug( "Exporting forward reference to object {} which must be included in the output.", ref.getId() );
-        objectIdToRef.put( ref.getId(), ref );
-        return "#" + ref.getId();
+        String uri = ref.getURI();
+        LOG.debug( "Exporting forward reference to object {} which must be included in the output.", uri );
+        uriToRef.put( ref.getURI(), ref );
+        return ref.getURI();
     }
 
     @Override
     public String handleReference( GMLReference<?> ref ) {
+
+        String uri = ref.getURI();
+        LOG.debug( "Encountered reference to object {}.", uri );
+        if ( isNonIdBasedUri( uri ) ) {
+            LOG.debug( "Reference to object {} considered non-rewritable.", uri );
+            return uri;
+        }
+
         if ( localReferencesPossible ) {
             LOG.debug( "Exporting potential forward reference to object {} which may or may not be exported later.",
                        ref.getId() );
@@ -96,11 +105,25 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
         return remoteXlinkTemplate.replace( "{}", ref.getId() );
     }
 
+    private boolean isNonIdBasedUri( String uri ) {
+        if ( uri.startsWith( "urn" ) ) {
+            return true;
+        }
+        // hacks for CITE WFS 1.1.0
+        if ( uri.startsWith( "http://vancouver1.demo.galdosinc.com" ) ) {
+            return true;
+        }
+        if ( uri.startsWith( "ftp://vancouver1.demo.galdosinc.com" ) ) {
+            return true;
+        }
+        return false;
+    }
+
     Collection<GMLReference<?>> getAdditionalRefs() {
-        return objectIdToRef.values();
+        return uriToRef.values();
     }
 
     void clear() {
-        objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
+        uriToRef = new LinkedHashMap<String, GMLReference<?>>();
     }
 }

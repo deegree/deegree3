@@ -176,7 +176,8 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
                 gmlReader.close();
                 LOG.debug( "Read GML object: id='" + object.getId() + "'" );
             } catch ( Throwable e ) {
-                throw new ReferenceResolvingException( "Unable to resolve external object reference: " + e.getMessage() );
+                String msg = "Unable to resolve external object reference to '" + uri + "': " + e.getMessage();
+                throw new ReferenceResolvingException( msg );
             }
         }
         return object;

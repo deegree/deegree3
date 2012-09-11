@@ -109,7 +109,6 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
         XMLStreamReader inStream = getBufferedXML();
         int eventType = 0;
         while ( ( eventType = inStream.getEventType() ) != END_DOCUMENT ) {
-            String localName = inStream.getLocalName();
             switch ( eventType ) {
             case CDATA: {
                 sink.writeCData( inStream.getText() );
@@ -124,12 +123,14 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                 break;
             }
             case END_ELEMENT: {
+                String localName = inStream.getLocalName();                
                 if ( !localName.equals( "WrapperElement" ) ) {
                     sink.writeEndElement();
                 }
                 break;
             }
             case START_ELEMENT: {
+                String localName = inStream.getLocalName();                
                 if ( !localName.equals( "DummyElement" ) && !localName.equals( "WrapperElement" ) ) {
                     String nsUri = inStream.getNamespaceURI();
                     String prefix = inStream.getPrefix();
