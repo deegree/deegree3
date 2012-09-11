@@ -153,11 +153,11 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new ResolveParams( null, traverseXlinkDepth, resolveTimeout );
     }
 
-    public ResolveParams parseStandardResolveParameters200( OMElement requestEl ) {
+    public ResolveParams parseStandardResolveParameters200( OMElement element ) {
 
         // <xsd:attribute name="resolve" type="wfs:ResolveValueType" default="none"/>
         ResolveMode resolve = null;
-        String resolveString = getNodeAsString( rootElement, new XPath( "@resolve", nsContext ), null );
+        String resolveString = getNodeAsString( element, new XPath( "@resolve", nsContext ), null );
         if ( resolveString != null ) {
             if ( resolveString.equalsIgnoreCase( "local" ) ) {
                 resolve = ResolveMode.LOCAL;
@@ -173,10 +173,10 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         }
 
         // <xsd:attribute name="resolveDepth" type="wfs:positiveIntegerWithStar" default="*"/>
-        String resolveDepth = getNodeAsString( rootElement, new XPath( "@resolveDepth", nsContext ), null );
+        String resolveDepth = getNodeAsString( element, new XPath( "@resolveDepth", nsContext ), null );
 
         // <xsd:attribute name="resolveTimeout" type="xsd:positiveInteger" default="300"/>
-        BigInteger resolveTimeout = getNodeAsBigInt( rootElement, new XPath( "@resolveTimeout", nsContext ), null );
+        BigInteger resolveTimeout = getNodeAsBigInt( element, new XPath( "@resolveTimeout", nsContext ), null );
 
         return new ResolveParams( resolve, resolveDepth, resolveTimeout );
     }
