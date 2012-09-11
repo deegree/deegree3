@@ -80,8 +80,7 @@ public class ResourcesServlet extends HttpServlet {
      * @return the HTTP URL (for GET requests)
      */
     public static String getHttpGetURL( String resourcePath ) {
-        String url = OGCFrontController.getHttpGetURL();
-        url = url.substring( 0, url.lastIndexOf( '/' ) );
+        String url = OGCFrontController.getWebappBaseURL();
         // TODO retrieve from config (web.xml)
         return url + "/resources/" + resourcePath;
     }

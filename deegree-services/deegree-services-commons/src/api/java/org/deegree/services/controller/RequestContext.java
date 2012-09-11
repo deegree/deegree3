@@ -50,9 +50,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RequestContext {
 
-    private String requestedBaseURL;
+    private final String requestedEndpointUrl;
 
-    private Credentials credentials;
+    private final Credentials credentials;
+
+    private final String webappBaseUrl;
 
     /**
      * @param request
@@ -61,17 +63,37 @@ public class RequestContext {
      *            credentials associated with the request
      */
     RequestContext( HttpServletRequest request, Credentials credentials ) {
-        this.requestedBaseURL = request.getRequestURL().toString();
+        requestedEndpointUrl = request.getRequestURL().toString();
         this.credentials = credentials;
+        webappBaseUrl = deriveWebappBaseUrl( requestedEndpointUrl, request );
+    }
+
+    private String deriveWebappBaseUrl( String requestedEndpointUrl, HttpServletRequest request ) {
+        String servletPath = request.getServletPath();
+        String pathInfo = request.getPathInfo();
+        int webappBaseUrlLength = requestedEndpointUrl.length() - servletPath.length();
+        if ( pathInfo != null ) {
+            webappBaseUrlLength -= pathInfo.length();
+        }
+        return requestedEndpointUrl.substring( 0, webappBaseUrlLength );
     }
 
     /**
-     * Returns the base URL that was used to contact the {@link OGCFrontController} and initiated the request.
+     * Returns the endpoint URL that was used to contact the {@link OGCFrontController} and initiated the request.
      * 
-     * @return the base URL, never <code>null</code>
+     * @return the endpoint URL, never <code>null</code>
      */
-    public String getRequestedBaseURL() {
-        return requestedBaseURL;
+    public String getRequestedEndpointUrl() {
+        return requestedEndpointUrl;
+    }
+
+    /**
+     * Returns the base webapp URL that was used to contact the {@link OGCFrontController} and initiated the request.
+     * 
+     * @return the base webapp URL (without trailing slash or questionmark), never <code>null</code>
+     */
+    public String getRequestedWebappBaseUrl() {
+        return webappBaseUrl;
     }
 
     /**
@@ -83,6 +105,6 @@ public class RequestContext {
 
     @Override
     public String toString() {
-        return "{credentials=" + credentials + ",requestURL=" + requestedBaseURL + "}";
+        return "{credentials=" + credentials + ",requestURL=" + requestedEndpointUrl + "}";
     }
 }
