@@ -673,23 +673,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private void exportFeaturePropertyByReferenceAndForceInclusion( QName propName, FeatureReference ref )
-                            throws XMLStreamException {
-        writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-        if ( additionalObjectHandler != null ) {
-            String uri = additionalObjectHandler.requireObject( ref );
-            writeAttributeWithNS( XLNNS, "href", uri );
-        } else {
-            if ( ref.isLocal() ) {
-                String uri = remoteXlinkTemplate.replace( "{}", ref.getId() );
-                writeAttributeWithNS( XLNNS, "href", uri );
-            } else {
-                writeAttributeWithNS( XLNNS, "href", ref.getURI() );
-            }
-        }
-        endEmptyElement();
-    }
-
     private void exportFeaturePropertyByValue( QName propName, Feature subFeature, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         exportedIds.add( subFeature.getId() );
