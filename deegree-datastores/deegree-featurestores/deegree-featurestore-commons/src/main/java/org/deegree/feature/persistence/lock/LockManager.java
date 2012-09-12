@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.lock;
 
+import java.util.List;
+
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.protocol.wfs.lockfeature.LockOperation;
+import org.deegree.feature.persistence.query.Query;
 
 /**
  * Keeps track of the lock state of the features stored in a {@link FeatureStore}.
@@ -68,8 +70,8 @@ public interface LockManager {
      * the WFS spec.).
      * </p>
      * 
-     * @param lockRequests
-     *            lock requests to be executed, must not be <code>null</code>
+     * @param queries
+     *            queries that specify the features to be locked, must not be <code>null</code>
      * @param mustLockAll
      *            if true, a {@link FeatureStoreException} is thrown if any of the requested feature instances could not
      *            be locked
@@ -80,7 +82,7 @@ public interface LockManager {
      *             if an internal error occurs or if <code>mustLockAll</code> is <code>true</code> and at least one
      *             feature could not be locked
      */
-    public Lock acquireLock( LockOperation[] lockRequests, boolean mustLockAll, long expireTimeout )
+    public Lock acquireLock( List<Query> queries, boolean mustLockAll, long expireTimeout )
                             throws FeatureStoreException;
 
     /**

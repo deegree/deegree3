@@ -123,13 +123,6 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
-import org.deegree.protocol.wfs.lockfeature.BBoxLock;
-import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
-import org.deegree.protocol.wfs.lockfeature.FilterLock;
-import org.deegree.protocol.wfs.lockfeature.LockOperation;
-import org.deegree.protocol.wfs.query.BBoxQuery;
-import org.deegree.protocol.wfs.query.FeatureIdQuery;
-import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -366,7 +359,7 @@ public class GMLFormat implements Format {
         LOG.debug( "doGetPropertyValue: " + request );
 
         QueryAnalyzer analyzer = new QueryAnalyzer( Collections.singletonList( request.getQuery() ), master, service,
-                                                    gmlVersion, checkAreaOfUse );
+                                                    checkAreaOfUse );
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
         int traverseXLinkDepth = 0;
@@ -486,7 +479,7 @@ public class GMLFormat implements Format {
 
         LOG.debug( "Performing GetFeature (results) request." );
 
-        QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, gmlVersion, checkAreaOfUse );
+        QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
 
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
@@ -899,7 +892,7 @@ public class GMLFormat implements Format {
 
         LOG.debug( "Performing GetFeature (hits) request." );
 
-        QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, gmlVersion, checkAreaOfUse );
+        QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = null;
         if ( VERSION_100.equals( request.getVersion() ) ) {
@@ -1081,38 +1074,14 @@ public class GMLFormat implements Format {
             try {
                 // TODO strategy for multiple LockManagers / feature stores
                 manager = service.getStores()[0].getLockManager();
-
-                LockOperation[] lockOperations = new LockOperation[request.getQueries().size()];
-                int i = 0;
-                for ( org.deegree.protocol.wfs.query.Query wfsQuery : request.getQueries() ) {
-                    lockOperations[i++] = buildLockOperation( wfsQuery );
-                }
-                Lock lock = manager.acquireLock( lockOperations, mustLockAll, expiry );
+                List<Query> queries = analyzer.getQueries().get( service.getStores()[0] );
+                Lock lock = manager.acquireLock( queries, mustLockAll, expiry );
                 lockId = lock.getId();
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( "Cannot acquire lock: " + e.getMessage(), NO_APPLICABLE_CODE );
             }
         }
         return lockId;
-    }
-
-    private LockOperation buildLockOperation( org.deegree.protocol.wfs.query.Query wfsQuery ) {
-        LockOperation lockOperation = null;
-        if ( wfsQuery instanceof BBoxQuery ) {
-            BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;
-            lockOperation = new BBoxLock( bboxQuery.getBBox(), bboxQuery.getTypeNames() );
-        } else if ( wfsQuery instanceof FeatureIdQuery ) {
-            FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            String[] fids = fidQuery.getFeatureIds();
-            lockOperation = new FeatureIdLock( fids, fidQuery.getTypeNames() );
-        } else if ( wfsQuery instanceof FilterQuery ) {
-            FilterQuery filterQuery = (FilterQuery) wfsQuery;
-            // TODO multiple type names
-            lockOperation = new FilterLock( null, filterQuery.getTypeNames()[0], filterQuery.getFilter() );
-        } else {
-            throw new RuntimeException();
-        }
-        return lockOperation;
     }
 
     private GMLObject retrieveObject( String id )

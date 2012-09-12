@@ -63,6 +63,7 @@ import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 
@@ -131,15 +132,14 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Boolean lockAll = parseLockAction( lockActionStr );
 
         List<OMElement> lockElements = getRequiredElements( rootElement, new XPath( "wfs:Lock", nsContext ) );
-        LockOperation[] locks = new LockOperation[lockElements.size()];
-        int i = 0;
+        List<Query> queries = new ArrayList<Query>( lockElements.size() );
         for ( OMElement lockElement : lockElements ) {
-            locks[i++] = parseLock100( lockElement );
+            queries.add( parseLock100( lockElement ) );
         }
-        return new LockFeature( VERSION_100, handle, locks, expiry, lockAll, null );
+        return new LockFeature( VERSION_100, handle, queries, expiry, lockAll, null );
     }
 
-    private LockOperation parseLock100( OMElement lockElement ) {
+    private Query parseLock100( OMElement lockElement ) {
 
         String handle = getNodeAsString( lockElement, new XPath( "@handle", nsContext ), null );
         // TODO can there be an alias for the typeName ??
@@ -163,7 +163,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 throw new XMLParsingException( this, filterEl, e.getMessage() );
             }
         }
-        return new FilterLock( handle, typeName, filter );
+        return new FilterQuery( handle, new TypeName[] { typeName }, null, null, null, null, filter );
     }
 
     /**
@@ -180,15 +180,14 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Boolean lockAll = parseLockAction( lockActionStr );
 
         List<OMElement> lockElements = getRequiredElements( rootElement, new XPath( "wfs:Lock", nsContext ) );
-        LockOperation[] locks = new LockOperation[lockElements.size()];
-        int i = 0;
+        List<Query> queries = new ArrayList<Query>( lockElements.size() );
         for ( OMElement lockElement : lockElements ) {
-            locks[i++] = parseLock110( lockElement );
+            queries.add( parseLock110( lockElement ) );
         }
-        return new LockFeature( VERSION_110, handle, locks, expiry, lockAll, null );
+        return new LockFeature( VERSION_110, handle, queries, expiry, lockAll, null );
     }
 
-    private LockOperation parseLock110( OMElement lockElement ) {
+    private Query parseLock110( OMElement lockElement ) {
 
         String handle = getNodeAsString( lockElement, new XPath( "@handle", nsContext ), null );
         // TODO can there be an alias for the typeName ??
@@ -211,17 +210,18 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 throw new XMLParsingException( this, filterEl, e.getMessage() );
             }
         }
-        return new FilterLock( handle, typeName, filter );
+        return new FilterQuery( handle, new TypeName[] { typeName }, null, null, null, null, filter );
     }
 
     /**
      * Parses a WFS 2.0.0 <code>LockFeature</code> document into a {@link LockFeature} object.
      * 
      * @return corresponding {@link LockFeature} instance
-     * @throws OWSException 
+     * @throws OWSException
      */
     @SuppressWarnings("boxing")
-    public LockFeature parse200() throws OWSException {
+    public LockFeature parse200()
+                            throws OWSException {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );

@@ -43,6 +43,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -52,6 +53,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -137,7 +139,10 @@ class LockFeatureHandler {
                                         + " is not implemented yet.", OPERATION_NOT_SUPPORTED );
             }
 
-            lock = manager.acquireLock( request.getLocks(), lockAll, expiry );
+            QueryAnalyzer queryAnalyzer = new QueryAnalyzer( request.getQueries(), master, master.getStoreManager(),
+                                                             master.getCheckAreaOfUse() );
+            List<Query> fsQueries = queryAnalyzer.getQueries().get( master.getStoreManager().getStores()[0] );
+            lock = manager.acquireLock( fsQueries, lockAll, expiry );
 
             XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, "text/xml", schemaLocation );
             if ( request.getVersion() == WFSConstants.VERSION_100 ) {

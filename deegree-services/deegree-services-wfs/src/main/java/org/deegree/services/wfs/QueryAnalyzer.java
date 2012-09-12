@@ -84,7 +84,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -102,8 +101,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Responsible for validating the queries contained in {@link GetFeature} requests and generating a corresponding
- * sequence of feature store queries.
+ * Responsible for validating a sequence of queries (e.g from {@link GetFeature} requests) and generating a
+ * corresponding sequence of feature store queries.
  * <p>
  * Also performs some normalizing on the values of {@link ValueReference}s. TODO describe strategy
  * </p>
@@ -122,8 +121,6 @@ public class QueryAnalyzer {
     private final WebFeatureService controller;
 
     private final WFSFeatureStoreManager service;
-
-    private final GMLVersion outputFormat;
 
     private final Set<FeatureType> requestedFts = new HashSet<FeatureType>();
 
@@ -146,8 +143,6 @@ public class QueryAnalyzer {
      *            queries be performed, must not be <code>null</code>
      * @param service
      *            {@link WFSFeatureStoreManager} to be used, must not be <code>null</code>
-     * @param outputFormat
-     *            output format, must not be <code>null</code>
      * @param checkInputDomain
      *            true, if geometries in query constraints should be checked against validity domain of the SRS (needed
      *            for CITE 1.1.0 compliance)
@@ -155,12 +150,10 @@ public class QueryAnalyzer {
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
     public QueryAnalyzer( List<org.deegree.protocol.wfs.query.Query> wfsQueries, WebFeatureService controller,
-                          WFSFeatureStoreManager service, GMLVersion outputFormat, boolean checkInputDomain )
-                            throws OWSException {
+                          WFSFeatureStoreManager service, boolean checkInputDomain ) throws OWSException {
 
         this.controller = controller;
         this.service = service;
-        this.outputFormat = outputFormat;
         this.checkAreaOfUse = checkInputDomain;
 
         // generate validated feature store queries

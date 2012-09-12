@@ -35,8 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.lockfeature;
 
+import java.util.List;
+
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * Represents a <code>LockFeature</code> request to a WFS.
@@ -56,7 +59,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class LockFeature extends AbstractWFSRequest {
 
-    private final LockOperation[] locks;
+    private final List<Query> queries;
 
     private final Integer expiry;
 
@@ -71,8 +74,8 @@ public class LockFeature extends AbstractWFSRequest {
      *            protocol version, may not be null
      * @param handle
      *            client-generated identifier, may be null
-     * @param locks
-     *            locks to be acquired, must not be null and contain at least one entry
+     * @param queries
+     *            queries that select the features to be locked, must not be null and contain at least one entry
      * @param expiry
      *            expiry time (in minutes) before the features are unlocked automatically, may be null (unspecified)
      * @param lockAll
@@ -81,22 +84,22 @@ public class LockFeature extends AbstractWFSRequest {
      * @param existingLockId
      *            identifier of an existing lock for the purpose of resetting the lock expiry, can be <code>null</code>
      */
-    public LockFeature( Version version, String handle, LockOperation[] locks, Integer expiry, Boolean lockAll,
+    public LockFeature( Version version, String handle, List<Query> queries, Integer expiry, Boolean lockAll,
                         String existingLockId ) {
         super( version, handle );
-        this.locks = locks;
+        this.queries = queries;
         this.expiry = expiry;
         this.lockAll = lockAll;
         this.existingLockId = existingLockId;
     }
 
     /**
-     * Returns the locks to be acquired.
+     * Returns the queries that select the features to be locked.
      * 
-     * @return the locks to be acquired, never null and always contains at least one entry
+     * @return the queries that select the features to be locked, never null and always contains at least one entry
      */
-    public LockOperation[] getLocks() {
-        return locks;
+    public List<Query> getQueries() {
+        return queries;
     }
 
     /**
@@ -129,18 +132,6 @@ public class LockFeature extends AbstractWFSRequest {
     @Override
     public String toString() {
         String s = "{version=" + getVersion() + ",handle=" + getHandle();
-        // if (typeNames != null ) {
-        // s += "{";
-        // for ( int i = 0; i < typeNames.length; i++ ) {
-        // s += typeNames [i];
-        // if (i != typeNames.length -1) {
-        // s += ",";
-        // }
-        // }
-        // s += "}";
-        // } else {
-        // s += "null";
-        // }
         s += "}";
         return s;
     }

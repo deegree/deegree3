@@ -36,6 +36,7 @@
 
 package org.deegree.protocol.wfs.lockfeature;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 
 import java.io.StringReader;
@@ -62,6 +63,10 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.query.BBoxQuery;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 
 /**
  * Adapter between KVP <code>LockFeature</code> requests and {@link LockFeature} objects.
@@ -158,11 +163,8 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         if ( featureIdStr != null ) {
-
-            FeatureIdLock[] featureIdLocks = new FeatureIdLock[1];
-            featureIdLocks[0] = new FeatureIdLock( featureIds, typeNames );
-
-            return new LockFeature( VERSION_110, null, featureIdLocks, expiry, lockAll, null );
+            Query query = new FeatureIdQuery( null, typeNames, null, null, null, null, featureIds );
+            return new LockFeature( VERSION_110, null, singletonList( query ), expiry, lockAll, null );
         }
 
         if ( bboxStr != null ) {
@@ -178,10 +180,8 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             Envelope bbox = createEnvelope( bboxStr, srs );
-
-            BBoxLock[] bboxLocks = new BBoxLock[1];
-            bboxLocks[0] = new BBoxLock( bbox, typeNames );
-            return new LockFeature( VERSION_110, null, bboxLocks, expiry, lockAll, null );
+            Query bboxQuery = new BBoxQuery( null, typeNames, null, srs, null, null, bbox );
+            return new LockFeature( VERSION_110, null, singletonList( bboxQuery ), expiry, lockAll, null );
         }
 
         if ( filterStr != null || typeNames != null ) {
@@ -191,15 +191,12 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
 
             int length = typeNames.length;
-
             String[] filters = getFilters( filterStr );
-
-            FilterLock[] filterLocks = new FilterLock[length];
+            List<Query> queries = new ArrayList<Query>( length );
 
             for ( int i = 0; i < length; i++ ) {
                 Filter filter = null;
                 if ( filters != null ) {
-
                     StringReader sr = new StringReader( filters[i] );
                     XMLAdapter adapter = new XMLAdapter( sr );
                     XMLStreamReaderWrapper streamWrapper = new XMLStreamReaderWrapper(
@@ -216,9 +213,9 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                         // TODO raise exception
                     }
                 }
-                filterLocks[i] = new FilterLock( null, typeNames[i], filter );
+                queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, null, null, null, null, filter ) );
             }
-            return new LockFeature( VERSION_110, null, filterLocks, expiry, lockAll, null );
+            return new LockFeature( VERSION_110, null, queries, expiry, lockAll, null );
 
         }
         return null;

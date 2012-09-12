@@ -35,6 +35,7 @@
 package org.deegree.protocol.wfs.lockfeature;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -46,6 +47,9 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.protocol.wfs.query.FeatureIdQuery;
+import org.deegree.protocol.wfs.query.FilterQuery;
+import org.deegree.protocol.wfs.query.Query;
 import org.junit.Test;
 
 /**
@@ -78,8 +82,8 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
 
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
-        FilterLock filterLock = (FilterLock) lockFeature.getLocks()[0];
-        assertEquals( new QName( "InWaterA_1M" ), filterLock.getTypeName().getFeatureTypeName() );
+        FilterQuery filterLock = (FilterQuery) lockFeature.getQueries().get( 0 );
+        assertEquals( new QName( "InWaterA_1M" ), filterLock.getTypeNames()[0].getFeatureTypeName() );
     }
 
     /**
@@ -92,7 +96,7 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
 
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
-        FeatureIdLock featureLock = (FeatureIdLock) lockFeature.getLocks()[0];
+        FeatureIdQuery featureLock = (FeatureIdQuery) lockFeature.getQueries().get( 0 );
         assertEquals( "RoadL_1M.1013", featureLock.getFeatureIds()[0] );
     }
 
@@ -106,11 +110,10 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
 
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
-        FilterLock featureLock0 = (FilterLock) lockFeature.getLocks()[0];
-        assertEquals( new QName( "InWaterA_1M" ), featureLock0.getTypeName().getFeatureTypeName() );
-
-        FilterLock featureLock1 = (FilterLock) lockFeature.getLocks()[1];
-        assertEquals( new QName( "BuiltUpA_1M" ), featureLock1.getTypeName().getFeatureTypeName() );
+        FilterQuery featureLock0 = (FilterQuery) lockFeature.getQueries().get( 0 );
+        assertEquals( new QName( "InWaterA_1M" ), featureLock0.getTypeNames()[0].getFeatureTypeName() );
+        FilterQuery featureLock1 = (FilterQuery) lockFeature.getQueries().get( 1 );
+        assertEquals( new QName( "BuiltUpA_1M" ), featureLock1.getTypeNames()[0].getFeatureTypeName() );
     }
 
     /**
@@ -127,12 +130,12 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         assertTrue( lockFeature.getLockAll() );
         assertEquals( new Integer( 5 ), lockFeature.getExpiry() );
 
-        LockOperation[] locks = lockFeature.getLocks();
-        assertEquals( 2, locks.length );
+        List<Query> queries = lockFeature.getQueries();
+        assertEquals( 2, queries.size() );
 
-        FilterLock filterLock1 = (FilterLock) locks[0];
+        FilterQuery filterQuery1 = (FilterQuery) queries.get( 0 );
 
-        OperatorFilter filter1 = (OperatorFilter) filterLock1.getFilter();
+        OperatorFilter filter1 = (OperatorFilter) filterQuery1.getFilter();
         assertTrue( filter1.getOperator() instanceof Within );
 
         Within within = (Within) filter1.getOperator();
