@@ -98,7 +98,7 @@ public class WorkspaceBean implements Serializable {
     private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
 
     // only used when no build (Maven) module version information is available
-    private static final String DEFAULT_VERSION = "3.1";
+    private static final String DEFAULT_VERSION = "3.2-pre11-SNAPSHOT";
 
     private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
@@ -250,6 +250,7 @@ public class WorkspaceBean implements Serializable {
         String location = workspaceLocations.get( wsName );
         InputStream in = null;
         try {
+            setWorkspaceImportName( wsName );
             importWorkspace( location );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to download workspace: " + t.getMessage(), null );
@@ -283,6 +284,7 @@ public class WorkspaceBean implements Serializable {
                 lastMessage = "Workspace has been imported.";
             }
         } catch ( Exception e ) {
+            e.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to import workspace: " + e.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         } finally {
