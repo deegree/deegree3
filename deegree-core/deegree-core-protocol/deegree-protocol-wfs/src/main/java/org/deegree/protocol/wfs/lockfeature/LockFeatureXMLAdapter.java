@@ -39,7 +39,10 @@ package org.deegree.protocol.wfs.lockfeature;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -57,8 +60,11 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
+import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 
 /**
  * Adapter between XML <code>LockFeature</code> requests and {@link LockFeature} objects.
@@ -77,7 +83,9 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * <p>
      * Supported versions:
      * <ul>
+     * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * 
      * @return parsed {@link LockFeature} request
@@ -99,9 +107,12 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             result = parse100();
         else if ( VERSION_110.equals( version ) )
             result = parse110();
+        else if ( VERSION_200.equals( version ) )
+            result = parse200();
         else {
-            throw new Exception( "Version " + version
-                                 + " is not supported for parsing (for now). Only 1.1.0 is supported." );
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
+                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
+            throw new InvalidParameterValueException( msg );
         }
         return result;
     }
@@ -117,17 +128,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
-        Boolean lockAll = null;
-        if ( lockActionStr != null ) {
-            if ( "ALL".equals( lockActionStr ) ) {
-                lockAll = true;
-            } else if ( "SOME".equals( lockActionStr ) ) {
-                lockAll = false;
-            } else {
-                String msg = Messages.get( "WFS_UNKNOWN_LOCK_ACTION", lockActionStr, VERSION_100, "ALL or SOME" );
-                throw new XMLParsingException( this, rootElement, msg );
-            }
-        }
+        Boolean lockAll = parseLockAction( lockActionStr );
 
         List<OMElement> lockElements = getRequiredElements( rootElement, new XPath( "wfs:Lock", nsContext ) );
         LockOperation[] locks = new LockOperation[lockElements.size()];
@@ -135,7 +136,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         for ( OMElement lockElement : lockElements ) {
             locks[i++] = parseLock100( lockElement );
         }
-        return new LockFeature( VERSION_100, handle, locks, expiry, lockAll );
+        return new LockFeature( VERSION_100, handle, locks, expiry, lockAll, null );
     }
 
     private LockOperation parseLock100( OMElement lockElement ) {
@@ -176,17 +177,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
-        Boolean lockAll = null;
-        if ( lockActionStr != null ) {
-            if ( "ALL".equals( lockActionStr ) ) {
-                lockAll = true;
-            } else if ( "SOME".equals( lockActionStr ) ) {
-                lockAll = false;
-            } else {
-                String msg = Messages.get( "WFS_UNKNOWN_LOCK_ACTION", lockActionStr, VERSION_110, "ALL or SOME" );
-                throw new XMLParsingException( this, rootElement, msg );
-            }
-        }
+        Boolean lockAll = parseLockAction( lockActionStr );
 
         List<OMElement> lockElements = getRequiredElements( rootElement, new XPath( "wfs:Lock", nsContext ) );
         LockOperation[] locks = new LockOperation[lockElements.size()];
@@ -194,7 +185,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         for ( OMElement lockElement : lockElements ) {
             locks[i++] = parseLock110( lockElement );
         }
-        return new LockFeature( VERSION_110, handle, locks, expiry, lockAll );
+        return new LockFeature( VERSION_110, handle, locks, expiry, lockAll, null );
     }
 
     private LockOperation parseLock110( OMElement lockElement ) {
@@ -221,5 +212,49 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             }
         }
         return new FilterLock( handle, typeName, filter );
+    }
+
+    /**
+     * Parses a WFS 2.0.0 <code>LockFeature</code> document into a {@link LockFeature} object.
+     * 
+     * @return corresponding {@link LockFeature} instance
+     * @throws OWSException 
+     */
+    @SuppressWarnings("boxing")
+    public LockFeature parse200() throws OWSException {
+
+        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+        int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
+        String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
+        Boolean lockAll = parseLockAction( lockActionStr );
+        String lockId = rootElement.getAttributeValue( new QName( "lockId" ) );
+
+        List<Query> queries = new ArrayList<Query>();
+        @SuppressWarnings("unchecked")
+        Iterator<OMElement> childElIter = rootElement.getChildElements();
+        QueryXMLAdapter queryXMLAdapter = new QueryXMLAdapter();
+        queryXMLAdapter.setRootElement( rootElement );
+        while ( childElIter.hasNext() ) {
+            OMElement childEl = childElIter.next();
+            Query query = queryXMLAdapter.parseAbstractQuery200( childEl );
+            queries.add( query );
+        }
+
+        return new LockFeature( VERSION_200, handle, null, expiry, lockAll, lockId );
+    }
+
+    private Boolean parseLockAction( String lockActionStr ) {
+        Boolean lockAll = null;
+        if ( lockActionStr != null ) {
+            if ( "ALL".equals( lockActionStr ) ) {
+                lockAll = true;
+            } else if ( "SOME".equals( lockActionStr ) ) {
+                lockAll = false;
+            } else {
+                String msg = Messages.get( "WFS_UNKNOWN_LOCK_ACTION", lockActionStr );
+                throw new XMLParsingException( this, rootElement, msg );
+            }
+        }
+        return lockAll;
     }
 }

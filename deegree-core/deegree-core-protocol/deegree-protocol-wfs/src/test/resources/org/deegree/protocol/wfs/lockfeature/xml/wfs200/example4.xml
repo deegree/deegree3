@@ -1,0 +1,31 @@
+<LockFeature version="2.0.0" service="WFS" expiry="4" lockAction="SOME" xmlns="http://www.opengis.net/wfs/2.0"
+  xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:myns="http://www.someserver.com/myns"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+http://schemas.opengis.net/wfs/2.0/wfs.xsd
+http://www.opengis.net/gml/3.2
+http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+  <Query handle="LOCK1" typeNames="myns:BuiltUpA_1M">
+    <fes:Filter>
+      <fes:Within>
+        <fes:ValueReference>BuiltUpA_1M/wkbGeom</fes:ValueReference>
+        <gml:Polygon gml:id="GID_71" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-72.4343981 18.4774721 -72.4344232 18.4775742 -72.4343699 18.477586 -72.4343448 18.4774839
+                -72.4343981 18.4774721
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </fes:Within>
+    </fes:Filter>
+  </Query>
+  <Query handle="LOCK2" typeNames="myns:InWaterA_1M">
+    <fes:Filter>
+      <fes:ResourceId rid="InWaterA_1M.1212" />
+      <fes:ResourceId rid="InWaterA_1M.1213" />
+      <fes:ResourceId rid="InWaterA_1M.10" />
+    </fes:Filter>
+  </Query>
+</LockFeature>

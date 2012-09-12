@@ -162,7 +162,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             FeatureIdLock[] featureIdLocks = new FeatureIdLock[1];
             featureIdLocks[0] = new FeatureIdLock( featureIds, typeNames );
 
-            return new LockFeature( VERSION_110, null, featureIdLocks, expiry, lockAll );
+            return new LockFeature( VERSION_110, null, featureIdLocks, expiry, lockAll, null );
         }
 
         if ( bboxStr != null ) {
@@ -181,7 +181,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             BBoxLock[] bboxLocks = new BBoxLock[1];
             bboxLocks[0] = new BBoxLock( bbox, typeNames );
-            return new LockFeature( VERSION_110, null, bboxLocks, expiry, lockAll );
+            return new LockFeature( VERSION_110, null, bboxLocks, expiry, lockAll, null );
         }
 
         if ( filterStr != null || typeNames != null ) {
@@ -218,7 +218,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 }
                 filterLocks[i] = new FilterLock( null, typeNames[i], filter );
             }
-            return new LockFeature( VERSION_110, null, filterLocks, expiry, lockAll );
+            return new LockFeature( VERSION_110, null, filterLocks, expiry, lockAll, null );
 
         }
         return null;

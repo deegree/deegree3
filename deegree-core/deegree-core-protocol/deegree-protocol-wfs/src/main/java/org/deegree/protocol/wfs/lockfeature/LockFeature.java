@@ -45,6 +45,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <ul>
  * <li>WFS 1.0.0</li>
  * <li>WFS 1.1.0</li>
+ * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
  * 
@@ -55,11 +56,13 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class LockFeature extends AbstractWFSRequest {
 
-    private LockOperation[] locks;
+    private final LockOperation[] locks;
 
-    private Integer expiry;
+    private final Integer expiry;
 
-    private Boolean lockAll;
+    private final Boolean lockAll;
+
+    private final String existingLockId;
 
     /**
      * Creates a new {@link LockFeature} request.
@@ -75,12 +78,16 @@ public class LockFeature extends AbstractWFSRequest {
      * @param lockAll
      *            true means that the request should fail if not all requested locks can be acquired, may be null
      *            (unspecified)
+     * @param existingLockId
+     *            identifier of an existing lock for the purpose of resetting the lock expiry, can be <code>null</code>
      */
-    public LockFeature( Version version, String handle, LockOperation[] locks, Integer expiry, Boolean lockAll ) {
+    public LockFeature( Version version, String handle, LockOperation[] locks, Integer expiry, Boolean lockAll,
+                        String existingLockId ) {
         super( version, handle );
         this.locks = locks;
         this.expiry = expiry;
         this.lockAll = lockAll;
+        this.existingLockId = existingLockId;
     }
 
     /**
@@ -108,6 +115,15 @@ public class LockFeature extends AbstractWFSRequest {
      */
     public Boolean getLockAll() {
         return lockAll;
+    }
+
+    /**
+     * Returns the identifier of an existing lock that this request refers to.
+     * 
+     * @return identifier of an existing lock, can be <code>null</code> (not referring to an existing lock)
+     */
+    public String getExistingLockId() {
+        return existingLockId;
     }
 
     @Override

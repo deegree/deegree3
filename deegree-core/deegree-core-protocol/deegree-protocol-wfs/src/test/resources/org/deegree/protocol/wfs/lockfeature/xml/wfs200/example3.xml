@@ -1,0 +1,21 @@
+<LockFeature version="2.0.0" service="WFS" xmlns="http://www.opengis.net/wfs/2.0" xmlns:fes="http://www.opengis.net/fes/2.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:myns="http://www.someserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+http://schemas.opengis.net/wfs/2.0/wfs.xsd
+http://www.opengis.net/gml/3.2
+http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+  <Query handle="Lock1" typeNames="myns:InWaterA_1M">
+    <fes:Filter>
+      <fes:Within>
+        <fes:ValueReference>myns:wkbGeom</fes:ValueReference>
+        <gml:Polygon gml:id="GID_45" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>-95.7 38.1 -97.8 38.2 -98.9 38.2 -95.7 38.1</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </fes:Within>
+    </fes:Filter>
+  </Query>
+</LockFeature>
