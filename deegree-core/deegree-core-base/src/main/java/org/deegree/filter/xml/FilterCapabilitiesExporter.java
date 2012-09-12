@@ -163,8 +163,8 @@ public class FilterCapabilitiesExporter {
         exportConstraint200( writer, "ImplementsStandardFilter", true );
         exportConstraint200( writer, "ImplementsMinSpatialFilter", true );
         exportConstraint200( writer, "ImplementsSpatialFilter", true );
-        exportConstraint200( writer, "ImplementsMinTemporalFilter", true );
-        exportConstraint200( writer, "ImplementsTemporalFilter", true );
+        exportConstraint200( writer, "ImplementsMinTemporalFilter", false );
+        exportConstraint200( writer, "ImplementsTemporalFilter", false );
         exportConstraint200( writer, "ImplementsVersionNav", false );
         exportConstraint200( writer, "ImplementsSorting", true );
         exportConstraint200( writer, "ImplementsExtendedOperators", false );
