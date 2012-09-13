@@ -1065,9 +1065,9 @@ public class GMLFormat implements Format {
             boolean mustLockAll = true;
 
             // default: 5 minutes
-            int expiry = 5 * 60 * 1000;
-            if ( gfLock.getExpiry() != null ) {
-                expiry = gfLock.getExpiry() * 60 * 1000;
+            long expiryInMilliseconds = 5 * 60 * 1000;
+            if ( gfLock.getExpiryInSeconds() != null ) {
+                expiryInMilliseconds = gfLock.getExpiryInSeconds().longValue() * 1000;
             }
 
             LockManager manager = null;
@@ -1075,7 +1075,7 @@ public class GMLFormat implements Format {
                 // TODO strategy for multiple LockManagers / feature stores
                 manager = service.getStores()[0].getLockManager();
                 List<Query> queries = analyzer.getQueries().get( service.getStores()[0] );
-                Lock lock = manager.acquireLock( queries, mustLockAll, expiry );
+                Lock lock = manager.acquireLock( queries, mustLockAll, expiryInMilliseconds );
                 lockId = lock.getId();
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( "Cannot acquire lock: " + e.getMessage(), NO_APPLICABLE_CODE );

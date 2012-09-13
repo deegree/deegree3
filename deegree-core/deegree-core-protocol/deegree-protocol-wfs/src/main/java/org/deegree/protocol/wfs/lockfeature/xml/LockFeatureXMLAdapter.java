@@ -127,8 +127,8 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
     public LockFeature parse100() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-        BigInteger expiry = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
-        expiry = convertToSeconds( expiry );
+        BigInteger expiryInMinutes = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
+        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
 
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
         Boolean lockAll = parseLockAction( lockActionStr );
@@ -138,7 +138,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         for ( OMElement lockElement : lockElements ) {
             queries.add( parseLock100( lockElement ) );
         }
-        return new LockFeature( VERSION_100, handle, queries, expiry, lockAll, null );
+        return new LockFeature( VERSION_100, handle, queries, expiryInSeconds, lockAll, null );
     }
 
     private Query parseLock100( OMElement lockElement ) {
@@ -177,8 +177,8 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
     public LockFeature parse110() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-        BigInteger expiry = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
-        expiry = convertToSeconds( expiry );
+        BigInteger expiryInMinutes = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
+        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
         Boolean lockAll = parseLockAction( lockActionStr );
 
@@ -187,7 +187,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         for ( OMElement lockElement : lockElements ) {
             queries.add( parseLock110( lockElement ) );
         }
-        return new LockFeature( VERSION_110, handle, queries, expiry, lockAll, null );
+        return new LockFeature( VERSION_110, handle, queries, expiryInSeconds, lockAll, null );
     }
 
     private Query parseLock110( OMElement lockElement ) {

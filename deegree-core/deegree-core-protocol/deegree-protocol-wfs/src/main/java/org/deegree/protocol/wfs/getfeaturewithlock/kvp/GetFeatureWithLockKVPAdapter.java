@@ -36,8 +36,11 @@
 
 package org.deegree.protocol.wfs.getfeaturewithlock.kvp;
 
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -85,18 +88,21 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
         Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
 
         GetFeatureWithLock result = null;
-        // if ( VERSION_100.equals( version ) ) {
-        // result = parse100( kvpParams );
-        // } else
-        if ( VERSION_110.equals( version ) ) {
+        if ( VERSION_100.equals( version ) ) {
+            result = parse100( kvpParams );
+        } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
-            // } else if ( VERSION_200.equals( version ) ) {
-            // result = parse200( kvpParams );
+        } else if ( VERSION_200.equals( version ) ) {
+            result = parse200( kvpParams );
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
+    }
+
+    private static GetFeatureWithLock parse100( Map<String, String> kvpParams ) {
+        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("boxing")
@@ -105,16 +111,64 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         GetFeature gf = GetFeatureKVPAdapter.parse( kvpParams, null );
 
-        // optional: EXPIRY -- specific for GetFeatureWithLock
-        Integer expiry = null;
+        // optional: EXPIRY
         String expiryStr = kvpParams.get( "EXPIRY" );
+        BigInteger expiryInMinutes = null;
         if ( expiryStr != null ) {
-            expiry = Integer.parseInt( expiryStr );
+            expiryInMinutes = new BigInteger( expiryStr );
+        }
+        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
+
+        StandardPresentationParams presentationParams = gf.getPresentationParams();
+        ResolveParams resolveParams = gf.getResolveParams();
+        List<Query> queries = gf.getQueries();
+        return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiryInSeconds,
+                                       null );
+    }
+
+    @SuppressWarnings("boxing")
+    private static GetFeatureWithLock parse200( Map<String, String> kvpParams )
+                            throws Exception {
+
+        GetFeature gf = GetFeatureKVPAdapter.parse( kvpParams, null );
+
+        // optional LOCKACTION
+        Boolean lockAll = parseLockAction( kvpParams.get( "LOCKACTION" ) );
+
+        // optional: EXPIRY
+        String expiryStr = kvpParams.get( "EXPIRY" );
+        BigInteger expiryInSeconds = null;
+        if ( expiryStr != null ) {
+            expiryInSeconds = new BigInteger( expiryStr );
         }
 
         StandardPresentationParams presentationParams = gf.getPresentationParams();
         ResolveParams resolveParams = gf.getResolveParams();
         List<Query> queries = gf.getQueries();
-        return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiry );
+        return new GetFeatureWithLock( VERSION_200, null, presentationParams, resolveParams, queries, expiryInSeconds,
+                                       lockAll );
+    }
+
+    private static BigInteger convertToSeconds( BigInteger expiryInMinutes ) {
+        if ( expiryInMinutes == null ) {
+            return null;
+        }
+        return expiryInMinutes.multiply( BigInteger.valueOf( 60 ) );
+    }
+
+    private static Boolean parseLockAction( String lockActionString ) {
+        Boolean lockAll = null;
+        if ( lockActionString != null ) {
+            if ( "SOME".equals( lockActionString ) ) {
+                lockAll = false;
+            } else if ( "ALL".equals( lockActionString ) ) {
+                lockAll = true;
+            } else {
+                String msg = "Invalid value (=" + lockActionString
+                             + ") for lock action parameter. Valid values are 'ALL' or 'SOME'.";
+                throw new InvalidParameterValueException( msg, "lockAction" );
+            }
+        }
+        return lockAll;
     }
 }

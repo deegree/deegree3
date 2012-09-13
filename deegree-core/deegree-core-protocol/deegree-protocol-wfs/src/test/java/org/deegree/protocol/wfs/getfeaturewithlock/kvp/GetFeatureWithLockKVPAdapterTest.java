@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeaturewithlock.kvp;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Map;
 
@@ -53,18 +54,42 @@ import org.junit.Test;
  */
 public class GetFeatureWithLockKVPAdapterTest extends TestCase {
 
-    private final String EXAMPLE1 = "wfs110/example1.kvp";
+    private final String EXAMPLE1WFS110 = "wfs110/example1.kvp";
 
-    /**
-     * @throws Exception
-     */
+    private final String EXAMPLE1WFS200 = "wfs200/example1.kvp";
+
+    private final String EXAMPLE2WFS200 = "wfs200/example2.kvp";
+
     @Test
-    public void testEXAMPLE1()
+    public void testExample1Wfs110()
                             throws Exception {
-        URL example1 = this.getClass().getResource( EXAMPLE1 );
+        URL example1 = this.getClass().getResource( EXAMPLE1WFS110 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example1 );
 
         GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse( kvpMap );
-        assertEquals( new Integer( 1 ), getFeatureWL.getExpiry() );
+        assertEquals( new BigInteger( "60" ), getFeatureWL.getExpiryInSeconds() );
     }
+
+    @Test
+    public void testExample1Wfs200()
+                            throws Exception {
+        URL example1 = this.getClass().getResource( EXAMPLE1WFS200 );
+        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example1 );
+
+        GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse( kvpMap );
+        assertNull( getFeatureWL.getExpiryInSeconds() );
+        assertNull( getFeatureWL.getLockAll() );
+    }
+
+    @Test
+    public void testExample2Wfs200()
+                            throws Exception {
+        URL example2 = this.getClass().getResource( EXAMPLE2WFS200 );
+        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example2 );
+
+        GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse( kvpMap );
+        assertEquals( new BigInteger( "300" ), getFeatureWL.getExpiryInSeconds() );
+        assertFalse( getFeatureWL.getLockAll() );
+    }
+
 }
