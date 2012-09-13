@@ -47,6 +47,7 @@ import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
  * </ul>
  * </p>
  * 
+ * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
@@ -102,7 +103,7 @@ public class ServiceProvider {
         return providerSite;
     }
 
-    public void setProviderSite( String string ) {
+    public void setProviderSite( String providerSite ) {
         this.providerSite = providerSite;
     }
 
