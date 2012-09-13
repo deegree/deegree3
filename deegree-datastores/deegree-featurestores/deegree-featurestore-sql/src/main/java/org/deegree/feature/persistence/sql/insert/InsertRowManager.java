@@ -289,15 +289,15 @@ public class InsertRowManager {
                 if ( feature instanceof FeatureReference ) {
                     if ( ( (FeatureReference) feature ).isLocal() || ( (FeatureReference) feature ).isResolved() ) {
                         subFeatureRow = lookupFeatureRow( feature.getId() );
+                    }
+                    // always use the uri if href is mapped explicitly
+                    href = ( (FeatureReference) feature ).getURI();
+                    MappingExpression me = ( (FeatureMapping) mapping ).getHrefMapping();
+                    if ( !( me instanceof DBField ) ) {
+                        LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );
                     } else {
-                        href = ( (FeatureReference) feature ).getURI();
-                        MappingExpression me = ( (FeatureMapping) mapping ).getHrefMapping();
-                        if ( !( me instanceof DBField ) ) {
-                            LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );
-                        } else {
-                            String column = ( (DBField) me ).getColumn();
-                            row.addPreparedArgument( column, href );
-                        }
+                        String column = ( (DBField) me ).getColumn();
+                        row.addPreparedArgument( column, href );
                     }
                 } else if ( feature != null ) {
                     subFeatureRow = lookupFeatureRow( feature );
@@ -322,11 +322,12 @@ public class InsertRowManager {
                         }
                         children.add( currentRow );
 
-                        SQLIdentifier hrefCol = null;
-                        if ( ( (FeatureMapping) mapping ).getHrefMapping() != null ) {
-                            hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
-                        }
-                        ref.addHrefingRow( currentRow, hrefCol );
+                        // href handling is done above
+                        // SQLIdentifier hrefCol = null;
+                        // if ( ( (FeatureMapping) mapping ).getHrefMapping() != null ) {
+                        // hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
+                        // }
+                        // ref.addHrefingRow( currentRow, hrefCol );
 
                         if ( !delayedRows.contains( subFeatureRow ) ) {
                             // sub feature already inserted, propagate key values right away
