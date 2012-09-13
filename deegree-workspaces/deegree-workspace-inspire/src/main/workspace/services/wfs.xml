@@ -14,9 +14,7 @@
   <GMLFormat gmlVersion="GML_32">
     <MimeType>application/gml+xml; version=3.2</MimeType>
     <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
-    <GetFeatureResponse xmlns:gml="http://www.opengis.net/gml/3.2">
-      <ContainerElement>gml:FeatureCollection</ContainerElement>
-      <FeatureMemberElement>gml:featureMember</FeatureMemberElement>
+    <GetFeatureResponse>
       <AdditionalSchemaLocation>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</AdditionalSchemaLocation>
       <DisableDynamicSchema>true</DisableDynamicSchema>
     </GetFeatureResponse>

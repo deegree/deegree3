@@ -93,6 +93,7 @@ public class WFSFeatureStoreManager {
      * @param baseURL
      * @throws FeatureStoreException
      */
+    @SuppressWarnings("unchecked")
     public void init( DeegreeWFS sc, String baseURL, DeegreeWorkspace workspace )
                             throws ResourceInitException {
 

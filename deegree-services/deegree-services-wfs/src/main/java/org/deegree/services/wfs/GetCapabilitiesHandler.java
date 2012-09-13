@@ -59,8 +59,10 @@ import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
 import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.controller.OGCFrontController.getHttpPostURL;
@@ -801,12 +803,18 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // GetPropertyValue
             operations.add( new Operation( GetPropertyValue.name(), getAndPost, null, null, null ) );
 
-            // Transaction
             if ( enableTransactions ) {
+                // Transaction
                 List<Domain> constraints = new ArrayList<Domain>();
                 constraints.add( new Domain( "AutomaticDataLocking", "TRUE" ) );
                 constraints.add( new Domain( "PreservesSiblingOrder", "TRUE" ) );
                 operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
+                
+                // GetFeatureWithLock
+                operations.add( new Operation( GetFeatureWithLock.name(), getAndPost, null, null, null ) );
+                
+                // LockFeature
+                operations.add( new Operation( LockFeature.name(), getAndPost, null, null, null ) );
             }
 
             // global parameter domains
@@ -840,10 +848,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "ImplementsBasicWFS", "TRUE" ) );
             if ( enableTransactions ) {
                 constraints.add( new Domain( "ImplementsTransactionalWFS", "TRUE" ) );
+                constraints.add( new Domain( "ImplementsLockingWFS", "TRUE" ) );
             } else {
                 constraints.add( new Domain( "ImplementsTransactionalWFS", "FALSE" ) );
-            }
-            constraints.add( new Domain( "ImplementsLockingWFS", "FALSE" ) );
+                constraints.add( new Domain( "ImplementsLockingWFS", "FALSE" ) );
+            }            
             constraints.add( new Domain( "KVPEncoding", "TRUE" ) );
             constraints.add( new Domain( "XMLEncoding", "TRUE" ) );
             constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );

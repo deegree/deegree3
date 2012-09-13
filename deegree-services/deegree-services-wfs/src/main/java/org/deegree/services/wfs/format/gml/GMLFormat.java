@@ -36,6 +36,7 @@
 package org.deegree.services.wfs.format.gml;
 
 import static java.math.BigInteger.ZERO;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -64,7 +65,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -184,6 +184,8 @@ public class GMLFormat implements Format {
 
     private String mimeType;
 
+    private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
+    
     public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.service = master.getStoreManager();
@@ -398,7 +400,7 @@ public class GMLFormat implements Format {
         xmlStream.setPrefix( "wfs", WFS_200_NS );
         xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
         xmlStream.writeNamespace( "wfs", WFS_200_NS );
-        xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+        xmlStream.writeAttribute( "timeStamp", getTimestamp() );
         xmlStream.writeAttribute( "numberMatched", Integer.toString( numFeatures ) );
         xmlStream.writeAttribute( "numberReturned", "0" );
         xmlStream.writeEndElement();
@@ -442,7 +444,7 @@ public class GMLFormat implements Format {
         xmlStream.setPrefix( "wfs", WFS_200_NS );
         xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
         xmlStream.writeNamespace( "wfs", WFS_200_NS );
-        xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+        xmlStream.writeAttribute( "timeStamp", getTimestamp() );
         xmlStream.writeAttribute( "numberMatched", "UNKNOWN" );
         xmlStream.writeAttribute( "numberReturned", "UNKNOWN" );
 
@@ -599,13 +601,16 @@ public class GMLFormat implements Format {
                 if ( lockId != null ) {
                     xmlStream.writeAttribute( "lockId", lockId );
                 }
-                xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+                xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             }
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.setPrefix( "wfs", WFS_200_NS );
             xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_200_NS );
-            xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
+            if ( lockId != null ) {
+                xmlStream.writeAttribute( "lockId", lockId );
+            }
         }
 
         // ensure that namespace for feature member elements is bound
@@ -966,7 +971,7 @@ public class GMLFormat implements Format {
 
         int hitsTotal = 0;
         int[] queryHits = new int[wfsQueryToIndex.size()];
-        Date[] queryTimeStamps = new Date[queryHits.length];
+        DateTime[] queryTimeStamps = new DateTime[queryHits.length];
 
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
@@ -981,7 +986,7 @@ public class GMLFormat implements Format {
                 int index = wfsQueryToIndex.get( wfsQuery );
                 hitsTotal += singleHits;
                 queryHits[index] = queryHits[index] + singleHits;
-                queryTimeStamps[index] = new Date();
+                queryTimeStamps[index] = getCurrentDateTimeWithoutMilliseconds();
             }
         }
 
@@ -1001,20 +1006,20 @@ public class GMLFormat implements Format {
             if ( lockId != null ) {
                 xmlStream.writeAttribute( "lockId", lockId );
             }
-            xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
             xmlStream.setPrefix( "wfs", WFS_200_NS );
             xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_200_NS );
-            xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             xmlStream.writeAttribute( "numberMatched", "" + hitsTotal );
             xmlStream.writeAttribute( "numberReturned", "0" );
             if ( queryHits.length > 1 ) {
                 for ( int j = 0; j < queryHits.length; j++ ) {
                     xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
                     xmlStream.writeEmptyElement( "wfs", "FeatureCollection", WFS_200_NS );
-                    xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( queryTimeStamps[j] ) );
+                    xmlStream.writeAttribute( "timeStamp", formatDateTime( queryTimeStamps[j] ) );
                     xmlStream.writeAttribute( "numberMatched", "" + queryHits[j] );
                     xmlStream.writeAttribute( "numberReturned", "0" );
                     xmlStream.writeEndElement();
@@ -1216,5 +1221,16 @@ public class GMLFormat implements Format {
      */
     public String getMimeType() {
         return mimeType;
+    }
+
+    private String getTimestamp() {
+        DateTime dateTime = getCurrentDateTimeWithoutMilliseconds();
+        return ISO8601Converter.formatDateTime( dateTime );
+    }
+
+    private DateTime getCurrentDateTimeWithoutMilliseconds() {
+        long msSince1970 = new Date().getTime();
+        msSince1970 = msSince1970 / 1000 * 1000;
+        return new DateTime( new Date( msSince1970 ), GMT );
     }
 }
