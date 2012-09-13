@@ -82,7 +82,7 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
-import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapter;
+import org.deegree.protocol.wfs.describefeaturetype.kvp.DescribeFeatureTypeKVPAdapter;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;

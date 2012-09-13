@@ -76,7 +76,7 @@ import org.deegree.protocol.wfs.capabilities.WFS110CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFS200CapabilitiesAdapter;
 import org.deegree.protocol.wfs.capabilities.WFSCapabilitiesAdapter;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
-import org.deegree.protocol.wfs.getfeature.GetFeature110XMLEncoder;
+import org.deegree.protocol.wfs.getfeature.xml.GetFeature110XMLEncoder;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 import org.slf4j.Logger;

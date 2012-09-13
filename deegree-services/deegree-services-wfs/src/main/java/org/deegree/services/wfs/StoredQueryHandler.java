@@ -65,7 +65,7 @@ import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
 import org.deegree.protocol.wfs.storedquery.Parameter;
 import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
-import org.deegree.protocol.wfs.storedquery.StoredQueryDefinitionXMLAdapter;
+import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

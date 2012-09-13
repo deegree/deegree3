@@ -62,7 +62,7 @@ public class Parameter {
 
     private final List<OMElement> metadata;
 
-    Parameter( String name, QName type, List<LanguageString> titles, List<LanguageString> abstracts,
+    public Parameter( String name, QName type, List<LanguageString> titles, List<LanguageString> abstracts,
                List<OMElement> metadata ) {
         this.name = name;
         this.type = type;

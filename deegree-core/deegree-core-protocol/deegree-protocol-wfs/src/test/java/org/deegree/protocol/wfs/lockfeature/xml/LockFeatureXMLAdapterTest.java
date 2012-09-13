@@ -70,6 +70,4 @@ public class LockFeatureXMLAdapterTest {
         assertNull( request.getExpiryInSeconds() );
         assertNull( request.getHandle() );
     }
-    
-    
 }

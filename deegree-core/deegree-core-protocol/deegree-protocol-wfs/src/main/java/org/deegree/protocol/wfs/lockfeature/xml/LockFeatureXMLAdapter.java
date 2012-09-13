@@ -67,7 +67,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
-import org.deegree.protocol.wfs.query.QueryXMLAdapter;
+import org.deegree.protocol.wfs.query.xml.QueryXMLAdapter;
 
 /**
  * Adapter between XML <code>LockFeature</code> requests and {@link LockFeature} objects.
