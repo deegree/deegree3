@@ -66,6 +66,7 @@ import org.slf4j.Logger;
 
 /**
  * 
+ * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
  * 
@@ -164,28 +165,28 @@ public abstract class RequestBase {
             ListIterator<LayerRef> it = pair.first.listIterator();
             ListIterator<StyleRef> st = pair.second.listIterator();
             while ( it.hasNext() ) {
-                LayerRef l = it.next();
-                StyleRef s = st.next();
-                String name = l.getName();
-                if ( !layers.contains( name ) ) {
+                LayerRef lRef = it.next();
+                StyleRef sRef = st.next();
+                if ( !layers.contains( lRef ) ) {
                     it.remove();
                     st.remove();
                 } else {
+                    String name = lRef.getName();
                     LinkedList<Pair<LayerRef, StyleRef>> list = lays.get( name );
                     if ( list == null ) {
                         list = new LinkedList<Pair<LayerRef, StyleRef>>();
                         lays.put( name, list );
                     }
 
-                    list.add( new Pair<LayerRef, StyleRef>( l, s ) );
+                    list.add( new Pair<LayerRef, StyleRef>( lRef, sRef ) );
                 }
             }
 
             // to get the order right, in case it's different from the SLD order
-            for ( LayerRef name : layers ) {
-                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( name );
+            for ( LayerRef lRef : layers ) {
+                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( lRef.getName() );
                 if ( l == null ) {
-                    throw new OWSException( "The SLD NamedLayer " + name + " is invalid.", "InvalidParameterValue",
+                    throw new OWSException( "The SLD NamedLayer " + lRef + " is invalid.", "InvalidParameterValue",
                                             "layers" );
                 }
                 Pair<ArrayList<LayerRef>, ArrayList<StyleRef>> p = unzipPair( l );
