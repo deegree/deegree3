@@ -146,6 +146,7 @@ import org.slf4j.LoggerFactory;
  * container for WFS 2.0.
  * </p>
  * 
+ * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -274,9 +275,9 @@ public class GMLFormat implements Format {
                             throws Exception {
         ResultType type = request.getPresentationParams().getResultType();
         if ( type == RESULTS || type == null ) {
-            doResults( request, response );
+            doGetFeatureResults( request, response );
         } else {
-            doHits( request, response );
+            doGetFeatureHits( request, response );
         }
     }
 
@@ -355,6 +356,57 @@ public class GMLFormat implements Format {
     @Override
     public void doGetPropertyValue( GetPropertyValue request, HttpResponseBuffer response )
                             throws Exception {
+        ResultType type = request.getPresentationParams().getResultType();
+        if ( type == RESULTS || type == null ) {
+            doGetPropertyValueResult( request, response );
+        } else {
+            doGetPropertyValueHits( request, response );
+        }
+    }
+
+    private void doGetPropertyValueHits( GetPropertyValue request, HttpResponseBuffer response )
+                            throws FeatureStoreException, FilterEvaluationException, IOException, OWSException,
+                            XMLStreamException {
+
+        LOG.debug( "Performing doGetPropertyValue (HITS) request: " + request );
+
+        QueryAnalyzer analyzer = new QueryAnalyzer( Collections.singletonList( request.getQuery() ), master, service,
+                                                    checkAreaOfUse );
+        String contentType = mimeType;
+        String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+        XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
+
+        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+
+        int numFeatures = 0;
+
+        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
+            FeatureStore fs = fsToQueries.getKey();
+            Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
+            FeatureInputStream rs = fs.query( queries );
+            try {
+                for ( Feature member : rs ) {
+                    TypedObjectNode[] values = evaluator.eval( member, request.getValueReference() );
+                    numFeatures += values.length;
+                }
+            } finally {
+                LOG.debug( "Closing FeatureResultSet (stream)" );
+                rs.close();
+            }
+        }
+
+        xmlStream.setPrefix( "wfs", WFS_200_NS );
+        xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
+        xmlStream.writeNamespace( "wfs", WFS_200_NS );
+        xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
+        xmlStream.writeAttribute( "numberMatched", Integer.toString( numFeatures ) );
+        xmlStream.writeAttribute( "numberReturned", "0" );
+        xmlStream.writeEndElement();
+        xmlStream.flush();
+    }
+
+    private void doGetPropertyValueResult( GetPropertyValue request, HttpResponseBuffer response )
+                            throws Exception {
 
         LOG.debug( "doGetPropertyValue: " + request );
 
@@ -390,7 +442,7 @@ public class GMLFormat implements Format {
         xmlStream.setPrefix( "wfs", WFS_200_NS );
         xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
         xmlStream.writeNamespace( "wfs", WFS_200_NS );
-        xmlStream.writeAttribute( "timeStamp", "" + new DateTime( Calendar.getInstance( TimeZone.getDefault() ), false ) );
+        xmlStream.writeAttribute( "timeStamp", ISO8601Converter.formatDateTime( new Date() ) );
         xmlStream.writeAttribute( "numberMatched", "UNKNOWN" );
         xmlStream.writeAttribute( "numberReturned", "UNKNOWN" );
 
@@ -474,7 +526,7 @@ public class GMLFormat implements Format {
         }
     }
 
-    private void doResults( GetFeature request, HttpResponseBuffer response )
+    private void doGetFeatureResults( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
 
         LOG.debug( "Performing GetFeature (results) request." );
@@ -886,7 +938,7 @@ public class GMLFormat implements Format {
         return prefixToNs;
     }
 
-    private void doHits( GetFeature request, HttpResponseBuffer response )
+    private void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException, FeatureStoreException,
                             FilterEvaluationException {
 
