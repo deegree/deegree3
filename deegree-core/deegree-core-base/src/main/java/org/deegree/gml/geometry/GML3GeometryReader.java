@@ -153,6 +153,7 @@ import org.slf4j.LoggerFactory;
  * <code>Grid</code> and <code>RectifiedGrid</code>).
  * </p>
  * 
+ * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
@@ -300,7 +301,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @return true, if the element is a GML 3.1.1 geometry or a GML 3.1.1 envelope element, false otherwise
      */
     public boolean isGeometryOrEnvelopeElement( QName elName ) {
-        if ( elName.getLocalPart().equals( "Envelope" ) && gmlNs.equals( elName ) ) {
+        if ( elName.getLocalPart().equals( "Envelope" ) && gmlNs.equals( elName.getNamespaceURI() ) ) {
             return true;
         }
         return isGeometryElement( elName );
