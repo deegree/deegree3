@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
-import static org.deegree.gml.GMLVersion.GML_32;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -74,7 +72,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.sqldialect.SQLDialect;
@@ -109,8 +106,6 @@ public class InsertRowManager {
 
     private final Connection conn;
 
-    private final GMLVersion gmlVersion;
-
     private final IDGenMode idGenMode;
 
     private final TableDependencies tableDeps;
@@ -141,7 +136,6 @@ public class InsertRowManager {
         this.fs = fs;
         this.dialect = fs.getDialect();
         this.conn = conn;
-        this.gmlVersion = fs.getSchema().getGMLSchema() == null ? GML_32 : fs.getSchema().getGMLSchema().getVersion();
         this.idGenMode = idGenMode;
         this.tableDeps = fs.getSchema().getKeyDependencies();
     }
@@ -293,7 +287,7 @@ public class InsertRowManager {
                 String href = null;
                 Feature feature = (Feature) getPropValue( value );
                 if ( feature instanceof FeatureReference ) {
-                    if ( ( (FeatureReference) feature ).isLocal() ) {
+                    if ( ( (FeatureReference) feature ).isLocal() || ( (FeatureReference) feature ).isResolved() ) {
                         subFeatureRow = lookupFeatureRow( feature.getId() );
                     } else {
                         href = ( (FeatureReference) feature ).getURI();
@@ -372,6 +366,7 @@ public class InsertRowManager {
         SQLIdentifier fromColumn = join.getFromColumns().get( 0 );
         SQLIdentifier toColumn = join.getToColumns().get( 0 );
 
+        TableName ftTable = null;
         // a bit dirty: if no feature type is specified, use any
         QName ftName = getSchema().getFtMappings().keySet().iterator().next();
         if ( mapping.getValueFtName() != null ) {
@@ -388,9 +383,13 @@ public class InsertRowManager {
                 }
                 ftName = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ) )[0].getName();
             }
+            FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
+            ftTable = ftMapping.getFtTable();
+        } else if ( !join.getToTable().getName().equals( "?" ) ) {
+            // I hope this does not break anything. Use the table configured in the Join mapping if the schema did not
+            // reveal the value feature type
+            ftTable = join.getToTable();
         }
-        FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
-        TableName ftTable = ftMapping.getFtTable();
         Set<SQLIdentifier> ftTableGenColumns = tableDeps.getGenColumns( ftTable );
         if ( ftTableGenColumns != null && ftTableGenColumns.contains( toColumn ) ) {
             return new KeyPropagation( ftTable, toColumn, join.getFromTable(), fromColumn );
