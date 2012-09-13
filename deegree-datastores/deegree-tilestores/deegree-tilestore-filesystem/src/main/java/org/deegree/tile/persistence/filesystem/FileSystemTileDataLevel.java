@@ -43,7 +43,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
-import org.deegree.tile.Tiles;
 
 /**
  * {@link TileDataLevel} implementation for the {@link FileSystemTileStore}.

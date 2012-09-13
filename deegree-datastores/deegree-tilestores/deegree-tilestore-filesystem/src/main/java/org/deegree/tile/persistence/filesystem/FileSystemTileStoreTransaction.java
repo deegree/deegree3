@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,6 +48,7 @@ import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 import org.deegree.tile.persistence.AbstractTileStoreTransaction;
 import org.deegree.tile.persistence.TileStoreTransaction;
+import org.slf4j.Logger;
 
 /**
  * {@link TileStoreTransaction} for the {@link FileSystemTileStore}.
@@ -58,6 +61,8 @@ import org.deegree.tile.persistence.TileStoreTransaction;
  */
 class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
+    private static final Logger LOG = getLogger( FileSystemTileStoreTransaction.class );
+    
     /**
      * Creates a new {@link FileSystemTileStoreTransaction}.
      * 
@@ -88,11 +93,13 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
     }
 
     @Override
-    public void delete( String matrixId, long x, long y ) {
+    public void delete( String matrixId, long x, long y ) throws TileIOException {
         DiskLayout layout = ( (FileSystemTileDataLevel) this.store.getTileDataSet( this.tileMatrixSet ).getTileDataLevel( matrixId ) ).getLayout();
         File file = layout.resolve( matrixId, x, y );
         if ( file.exists() ) {
-            file.delete();
+            if ( !file.delete() ) {
+                throw new TileIOException( "Unable to delete tile file " + file );
+            }
         }
     }
 }

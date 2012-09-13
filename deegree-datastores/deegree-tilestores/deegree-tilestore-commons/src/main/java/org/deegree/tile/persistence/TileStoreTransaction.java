@@ -75,8 +75,10 @@ public interface TileStoreTransaction {
      *            column index
      * @param y
      *            row index
+     * @throws TileIOException
      */
-    void delete( String tileDataLevel, long x, long y );
+    void delete( String tileDataLevel, long x, long y )
+                            throws TileIOException;
 
     /**
      * Deletes all tiles intersecting with the given envelope. If tileDataLevel is null, tiles will be deleted from all
@@ -86,6 +88,8 @@ public interface TileStoreTransaction {
      *            the tile data level id
      * @param envelope
      *            the envelope
+     * @throws TileIOException
      */
-    void delete( String tileDataLevel, Envelope envelope );
+    void delete( String tileDataLevel, Envelope envelope )
+                            throws TileIOException;
 }
