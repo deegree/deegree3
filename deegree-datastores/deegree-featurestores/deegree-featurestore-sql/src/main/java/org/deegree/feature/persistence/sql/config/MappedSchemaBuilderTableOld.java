@@ -220,7 +220,7 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
         }
 
         for ( ColumnMetadataOld md : getColumns( table ).values() ) {
-            if ( fidColumnNames.contains( md.column.toLowerCase() ) ) {
+            if ( fidColumnNames.contains( new SQLIdentifier( md.column.toLowerCase() ) ) ) {
                 LOG.debug( "Omitting column '" + md.column + "' from properties. Used in FIDMapping." );
                 continue;
             }

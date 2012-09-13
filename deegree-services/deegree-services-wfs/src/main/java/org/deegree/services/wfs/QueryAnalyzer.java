@@ -160,7 +160,7 @@ public class QueryAnalyzer {
         if ( wfsQueries.isEmpty() ) {
             // TODO perform the check here?
             String msg = "Either the typeName parameter must be present or the query must provide feature ids.";
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "typeName" );
         }
 
         List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> adHocQueries = convertStoredQueries( wfsQueries );
@@ -240,7 +240,7 @@ public class QueryAnalyzer {
         } catch ( IOException e ) {
             String msg = "An error occurred when trying to convert stored query with id '" + query.getId() + "': '"
                          + e.getLocalizedMessage() + "'.";
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
         }
     }
 
@@ -283,7 +283,7 @@ public class QueryAnalyzer {
                     adHocQueries.addAll( qs );
                 } else {
                     String msg = "Stored query with id '" + storedQuery.getId() + "' is not known.";
-                    throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "storedQueryId" );
+                    throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
                 }
             }
         }
@@ -374,7 +374,7 @@ public class QueryAnalyzer {
             if ( commonFs != null ) {
                 if ( fs != commonFs ) {
                     String msg = "Requested join of feature types from different feature stores. This is not supported.";
-                    throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
+                    throw new OWSException( msg, INVALID_PARAMETER_VALUE, "typeName" );
                 }
             } else {
                 commonFs = fs;
@@ -435,7 +435,7 @@ public class QueryAnalyzer {
 
         if ( wfsTypeNames.length == 0 && ( filter == null || !( filter instanceof IdFilter ) ) ) {
             String msg = "Either the typeName parameter must be present or the query must provide feature ids.";
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "typeName" );
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "typeName" );
         }
 
         SortProperty[] sortProps = ( (AdHocQuery) wfsQuery ).getSortBy();
@@ -474,7 +474,7 @@ public class QueryAnalyzer {
                             if ( !name.getLocalPart().equals( "boundedBy" ) ) {
                                 String msg = "Specified PropertyName '" + propName.getAsText() + "' (='" + name
                                              + "') does not exist for feature type '" + ft.getName() + "'.";
-                                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+                                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "PropertyName" );
                             }
                         }
                     }
@@ -527,7 +527,7 @@ public class QueryAnalyzer {
         if ( match == null ) {
             String msg = "Specified PropertyName '" + propName.getAsText() + "' does not exist for feature type '"
                          + ft.getName() + "'.";
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "PropertyName" );
         }
         if ( !match.equals( propName.getAsQName() ) ) {
             LOG.debug( "Repairing unqualified PropertyName: " + QNameUtils.toString( propName.getAsQName() ) + " -> "
@@ -592,7 +592,7 @@ public class QueryAnalyzer {
                                  + "') of its CRS ('"
                                  + bbox.getCoordinateSystem().getAlias()
                                  + "').";
-                    throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "filter" );
+                    throw new OWSException( msg, INVALID_PARAMETER_VALUE, "filter" );
                 }
             } catch ( UnknownCRSException e ) {
                 // could not validate constraint, but let's assume it's met
@@ -613,7 +613,7 @@ public class QueryAnalyzer {
                 if ( !bboxTransformed.isWithin( domainOfValidity ) ) {
                     String msg = "Invalid geometry constraint in filter. The envelope of the geometry is not within the domain of validity ('"
                                  + domainOfValidity + "') of the queried CRS ('" + queriedCrs.getAlias() + "').";
-                    throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "filter" );
+                    throw new OWSException( msg, INVALID_PARAMETER_VALUE, "filter" );
                 }
             } catch ( UnknownCRSException e ) {
                 // could not validate constraint, but let's assume it's met
