@@ -58,29 +58,28 @@ import org.junit.Test;
  * The <code>LockFeatureKVPAdapterTest</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class LockFeatureKVPAdapterTest extends TestCase {
 
-    private final String EXAMPLE1 = "wfs110/example1.kvp";
+    private final static String EXAMPLE1_WFS110 = "wfs110/example1.kvp";
 
-    private final String EXAMPLE2 = "wfs110/example2.kvp";
+    private final static String EXAMPLE2_WFS110 = "wfs110/example2.kvp";
 
-    private final String EXAMPLE3 = "wfs110/example3.kvp";
+    private final static String EXAMPLE3_WFS110 = "wfs110/example3.kvp";
 
-    private final String EXAMPLE4 = "wfs110/example4.kvp";
+    private final static String EXAMPLE4_WFS110 = "wfs110/example4.kvp";
 
-    /**
-     * @throws Exception
-     */
+    private final static String EXAMPLE1_WFS200 = "wfs200/example1.kvp";
+
+    private final static String EXAMPLE2_WFS200 = "wfs200/example2.kvp";
+
     @Test
-    public void testEXAMPLE1()
+    public void testExample1Wfs110()
                             throws Exception {
-        URL example = this.getClass().getResource( EXAMPLE1 );
+        URL example = this.getClass().getResource( EXAMPLE1_WFS110 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
 
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
@@ -92,9 +91,9 @@ public class LockFeatureKVPAdapterTest extends TestCase {
      * @throws Exception
      */
     @Test
-    public void testEXAMPLE2()
+    public void testExample2Wfs110()
                             throws Exception {
-        URL example = this.getClass().getResource( EXAMPLE2 );
+        URL example = this.getClass().getResource( EXAMPLE2_WFS110 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
 
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
@@ -106,9 +105,9 @@ public class LockFeatureKVPAdapterTest extends TestCase {
      * @throws Exception
      */
     @Test
-    public void testEXAMPLE3()
+    public void testExample3Wfs110()
                             throws Exception {
-        URL example = this.getClass().getResource( EXAMPLE3 );
+        URL example = this.getClass().getResource( EXAMPLE3_WFS110 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
 
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
@@ -123,9 +122,9 @@ public class LockFeatureKVPAdapterTest extends TestCase {
      */
     @SuppressWarnings("boxing")
     @Test
-    public void testEXAMPLE4()
+    public void testExample4Wfs110()
                             throws Exception {
-        URL example = this.getClass().getResource( EXAMPLE4 );
+        URL example = this.getClass().getResource( EXAMPLE4_WFS110 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
         assertTrue( lockFeature.getLockAll() );
@@ -143,7 +142,33 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         assertEquals( "wkbGeom", within.getPropName().getAsText() );
         Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10, 10, 20, 20 );
+    }
 
+    @Test
+    public void testExample1Wfs200()
+                            throws Exception {
+        URL example = this.getClass().getResource( EXAMPLE1_WFS200 );
+        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
+        LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
+        assertNull( lockFeature.getHandle() );
+        assertNull( lockFeature.getExistingLockId() );
+        assertNull( lockFeature.getExpiryInSeconds() );
+        assertNull( lockFeature.getLockAll() );
+        assertEquals( 1, lockFeature.getQueries().size() );
+    }
+
+    @Test
+    public void testExample2Wfs200()
+                            throws Exception {
+        URL example = this.getClass().getResource( EXAMPLE2_WFS200 );
+        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
+        LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
+        assertNull( lockFeature.getHandle() );
+        assertEquals( "LOCK_1", lockFeature.getExistingLockId() );
+        assertEquals( new BigInteger( "38348348884895485485485623783487548745587548754" ),
+                      lockFeature.getExpiryInSeconds() );
+        assertFalse( lockFeature.getLockAll() );
+        assertEquals( 1, lockFeature.getQueries().size() );
     }
 
     @SuppressWarnings("boxing")

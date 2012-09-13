@@ -37,8 +37,10 @@
 package org.deegree.protocol.wfs.lockfeature.kvp;
 
 import static java.util.Collections.singletonList;
+import static org.deegree.commons.tom.ows.Version.getVersionsString;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import java.io.StringReader;
 import java.math.BigInteger;
@@ -46,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.ows.Version;
@@ -61,15 +62,14 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
+import org.deegree.protocol.wfs.query.kvp.QueryKVPAdapter;
 
 /**
  * Adapter between KVP <code>LockFeature</code> requests and {@link LockFeature} objects.
@@ -80,7 +80,7 @@ import org.deegree.protocol.wfs.query.Query;
  * 
  * @version $Revision$, $Date$
  */
-public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
+public class LockFeatureKVPAdapter extends QueryKVPAdapter {
 
     /**
      * Parses a normalized KVP-map as a WFS {@link LockFeature} request.
@@ -89,6 +89,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
      * <ul>
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
+     * <li>WFS 2.0.0</li>
      * </ul>
      * 
      * @param kvpParams
@@ -106,10 +107,11 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             result = parse100( kvpParams );
         } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
-            // } else if ( VERSION_200.equals( version ) ) {
-            // result = parse200( kvpParams );
+        } else if ( VERSION_200.equals( version ) ) {
+            result = parse200( kvpParams );
         } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
+                                       getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
@@ -142,11 +144,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
 
         // optional: LOCKACTION
-        Boolean lockAll = true;
-        String lockStr = kvpParams.get( "LOCKACTION" );
-        if ( lockStr != null ) {
-            lockAll = !lockStr.equals( "SOME" );
-        }
+        Boolean lockAll = parseLockAction( kvpParams.get( "LOCKACTION" ) );
 
         // mandatory: TYPENAME, but optional if FEATUREID is specified
         String typeStrList = kvpParams.get( "TYPENAME" );
@@ -229,69 +227,27 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return null;
     }
 
-    private static String[] getFilters( String filterStr ) {
-        String[] filters = null;
-        if ( filterStr != null ) {
-            filters = filterStr.split( "[)][(]" );
-            if ( filters[0].startsWith( "(" ) ) {
-                filters[0] = filters[0].substring( 1 );
-            }
+    private static LockFeature parse200( Map<String, String> kvpParams )
+                            throws Exception {
 
-            String last = filters[filters.length - 1];
-            if ( last.endsWith( ")" ) ) {
-                filters[filters.length - 1] = last.substring( 0, last.length() - 1 );
-            }
-        }
-        return filters;
-    }
+        String handle = null;
 
-    @SuppressWarnings("boxing")
-    private static Envelope createEnvelope( String bboxStr, ICRS srs ) {
-        String[] coordList = bboxStr.split( "," );
+        List<Query> queries = parseQueries200( kvpParams );
 
-        int n = coordList.length / 2;
-        List<Double> lowerCorner = new ArrayList<Double>();
-        for ( int i = 0; i < n; i++ ) {
-            lowerCorner.add( Double.parseDouble( coordList[i] ) );
-        }
-        List<Double> upperCorner = new ArrayList<Double>();
-        for ( int i = n; i < 2 * n; i++ ) {
-            upperCorner.add( Double.parseDouble( coordList[i] ) );
+        // optional: EXPIRY
+        String expiryStr = kvpParams.get( "EXPIRY" );
+        BigInteger expiryInSeconds = null;
+        if ( expiryStr != null ) {
+            expiryInSeconds = new BigInteger( expiryStr );
         }
 
-        GeometryFactory gf = new GeometryFactory();
+        // optional: LOCKACTION
+        Boolean lockAll = parseLockAction( kvpParams.get( "LOCKACTION" ) );
 
-        return gf.createEnvelope( lowerCorner, upperCorner, srs );
-    }
+        // optional: LOCKID
+        String existingLockId = kvpParams.get( "LOCKID" );
 
-    private static TypeName[] getTypeNames( String typeStrList, Map<String, String> nsBindings ) {
-        TypeName[] result = null;
-        if ( typeStrList != null ) {
-
-            String[] typeList = typeStrList.split( "," );
-            result = new TypeName[typeList.length];
-
-            for ( int i = 0; i < typeList.length; i++ ) {
-                String[] typeParts = typeList[i].split( ":" );
-                if ( typeParts.length == 2 ) {
-
-                    // check if it has an alias
-                    int equalSign;
-                    if ( ( equalSign = typeParts[1].indexOf( "=" ) ) != -1 ) {
-                        result[i] = new TypeName(
-                                                  new QName( nsBindings.get( typeParts[0] ), typeParts[1], typeParts[0] ),
-                                                  typeParts[1].substring( equalSign + 1 ) );
-                    } else {
-                        result[i] = new TypeName(
-                                                  new QName( nsBindings.get( typeParts[0] ), typeParts[1], typeParts[0] ),
-                                                  null );
-                    }
-                } else {
-                    result[i] = new TypeName( new QName( typeParts[0] ), null );
-                }
-            }
-        }
-        return result;
+        return new LockFeature( VERSION_200, handle, queries, expiryInSeconds, lockAll, existingLockId );
     }
 
     private static BigInteger convertToSeconds( BigInteger expiryInMinutes ) {
@@ -299,5 +255,21 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             return null;
         }
         return expiryInMinutes.multiply( BigInteger.valueOf( 60 ) );
+    }
+
+    private static Boolean parseLockAction( String lockActionString ) {
+        Boolean lockAll = null;
+        if ( lockActionString != null ) {
+            if ( "SOME".equals( lockActionString ) ) {
+                lockAll = false;
+            } else if ( "ALL".equals( lockActionString ) ) {
+                lockAll = true;
+            } else {
+                String msg = "Invalid value (=" + lockActionString
+                             + ") for lock action parameter. Valid values are 'ALL' or 'SOME'.";
+                throw new InvalidParameterValueException( msg, "lockAction" );
+            }
+        }
+        return lockAll;
     }
 }
