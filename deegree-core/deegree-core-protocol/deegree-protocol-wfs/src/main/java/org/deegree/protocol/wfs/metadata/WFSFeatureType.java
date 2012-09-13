@@ -75,7 +75,7 @@ public class WFSFeatureType {
 
     private final List<Object> mdReferences;
 
-    private final Object extendedDescription;
+//    private final Object extendedDescription;
 
     public WFSFeatureType( QName name, List<LanguageString> titles, List<LanguageString> abstracts,
                            List<String> outputFormats, List<Object> keywords, CRSRef defaultCrs, List<CRSRef> otherCrs,
@@ -93,7 +93,7 @@ public class WFSFeatureType {
             wgs84BBox = wgs84BBox.merge( wgs84BBoxes.get( i ) );
         }
         this.mdReferences = Collections.emptyList();
-        this.extendedDescription = extendedDescription;
+//        this.extendedDescription = extendedDescription;
     }
 
     public QName getName() {

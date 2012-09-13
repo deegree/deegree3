@@ -116,13 +116,6 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             resultType = HITS;
         }
 
-        // optional: SRSNAME
-        String srsName = kvpUC.get( "SRSNAME" );
-        ICRS srs = null;
-        if ( srsName != null ) {
-            srs = CRSManager.getCRSRef( srsName );
-        }
-
         // optional: MAXFEATURES
         BigInteger maxFeatures = KVPUtils.getBigInt( kvpUC, "MAXFEATURES", null );
 

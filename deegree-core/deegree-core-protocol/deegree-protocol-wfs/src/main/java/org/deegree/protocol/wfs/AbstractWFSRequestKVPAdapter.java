@@ -46,8 +46,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.protocol.i18n.Messages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides utility methods for parsing common constructs found in KVP-encoded WFS requests.
@@ -58,8 +56,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestKVPAdapter {
-
-    private static Logger LOG = LoggerFactory.getLogger( AbstractWFSRequestKVPAdapter.class );
 
     /**
      * Extracts the qualified type names from the <code>TYPENAME</code> parameter.
