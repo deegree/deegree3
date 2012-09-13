@@ -66,13 +66,13 @@ import org.junit.Test;
  */
 public class LockFeatureKVPAdapterTest extends TestCase {
 
-    private final String EXAMPLE1 = "v110/example1.kvp";
+    private final String EXAMPLE1 = "wfs110/example1.kvp";
 
-    private final String EXAMPLE2 = "v110/example2.kvp";
+    private final String EXAMPLE2 = "wfs110/example2.kvp";
 
-    private final String EXAMPLE3 = "v110/example3.kvp";
+    private final String EXAMPLE3 = "wfs110/example3.kvp";
 
-    private final String EXAMPLE4 = "v110/example4.kvp";
+    private final String EXAMPLE4 = "wfs110/example4.kvp";
 
     /**
      * @throws Exception

@@ -75,32 +75,32 @@ import org.junit.Test;
  */
 public class TransactionXmlReader200Test extends TestCase {
 
-    private final String DELETE_ACTION1_200 = "v200/delete1.xml";
+    private final String DELETE_ACTION1 = "wfs200/delete1.xml";
 
-    private final String DELETE_ACTION2_200 = "v200/delete2.xml";
+    private final String DELETE_ACTION2 = "wfs200/delete2.xml";
 
-    private final String DELETE_ACTION3_200 = "v200/delete3.xml";
+    private final String DELETE_ACTION3 = "wfs200/delete3.xml";
 
-    private final String INSERT_ACTION1_200 = "v200/insert1.dontvalidate";
+    private final String INSERT_ACTION1 = "wfs200/insert1.dontvalidate";
 
-    private final String NATIVE_ACTION1_200 = "v200/native1.xml";
+    private final String NATIVE_ACTION1 = "wfs200/native1.xml";
 
-    private final String REPLACE_ACTION_200 = "v200/replace1.dontvalidate";
+    private final String REPLACE_ACTION = "wfs200/replace1.dontvalidate";
 
-    private final String UPDATE_ACTION1_200 = "v200/update1.xml";
+    private final String UPDATE_ACTION1 = "wfs200/update1.xml";
 
-    private final String UPDATE_ACTION2_200 = "v200/update2.xml";
+    private final String UPDATE_ACTION2 = "wfs200/update2.xml";
 
-    private final String UPDATE_ACTION3_200 = "v200/update3.xml";
+    private final String UPDATE_ACTION3 = "wfs200/update3.xml";
 
-    private final String MIXED_200 = "v200/transaction1.dontvalidate";
+    private final String MIXED_200 = "wfs200/transaction1.dontvalidate";
 
     private final TransactionXmlReader200 reader = new TransactionXmlReader200();
 
     @Test
     public void testReadDeleteWfs200SpecExample1()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION1_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION1 );
         Delete delete = reader.readDelete( xmlStream );
         xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Delete" );
         assertNull( delete.getHandle() );
@@ -111,7 +111,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadDeleteWfs200SpecExample2()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION2_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION2 );
         Delete delete = reader.readDelete( xmlStream );
         xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Delete" );
         assertNull( delete.getHandle() );
@@ -123,7 +123,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadDeleteWfs200SpecExample3()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION3_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( DELETE_ACTION3 );
         Delete delete = reader.readDelete( xmlStream );
         xmlStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Delete" );
         assertNull( delete.getHandle() );
@@ -135,7 +135,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadInsertWfs200SpecExample1()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( INSERT_ACTION1_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( INSERT_ACTION1 );
         Insert insert = reader.readInsert( xmlStream );
         assertNull( insert.getHandle() );
         assertNull( insert.getInputFormat() );
@@ -153,7 +153,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadNativeWfs200SpecExample1()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( NATIVE_ACTION1_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( NATIVE_ACTION1 );
         Native action = reader.readNative( xmlStream );
         xmlStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Native" );
         assertNull( action.getHandle() );
@@ -164,7 +164,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadReplaceWfs200SpecExample1()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( REPLACE_ACTION_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( REPLACE_ACTION );
         Replace action = reader.readReplace( xmlStream );
         xmlStream.require( XMLStreamReader.START_ELEMENT, null, "BuiltUpA_1M" );
         assertNull( action.getHandle() );
@@ -178,7 +178,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadUpdateWfs200SpecExample1()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION1_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION1 );
         Update action = reader.readUpdate( xmlStream );
         assertNull( action.getHandle() );
         assertNull( action.getInputFormat() );
@@ -206,7 +206,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadUpdateWfs200SpecExample2()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION2_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION2 );
         Update action = reader.readUpdate( xmlStream );
         assertNull( action.getHandle() );
         assertNull( action.getInputFormat() );
@@ -234,7 +234,7 @@ public class TransactionXmlReader200Test extends TestCase {
     @Test
     public void testReadUpdateWfs200AllOptionalAttributes()
                             throws Exception {
-        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION3_200 );
+        XMLStreamReader xmlStream = getXMLStreamReader( UPDATE_ACTION3 );
         Update action = reader.readUpdate( xmlStream );
         assertEquals( "BLA", action.getHandle() );
         assertEquals( "application/gml+xml; version=3.2", action.getInputFormat() );

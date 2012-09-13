@@ -75,13 +75,13 @@ import org.junit.Test;
  */
 public class TransactionXmlReader110Test extends TestCase {
 
-    private final String DELETE_110 = "v110/delete.xml";
+    private final String DELETE_110 = "wfs110/delete.xml";
 
-    private final String INSERT_110 = "v110/insert.invalidxml";
+    private final String INSERT_110 = "wfs110/insert.invalidxml";
 
-    private final String UPDATE_110 = "v110/update.xml";
+    private final String UPDATE_110 = "wfs110/update.xml";
 
-    private final String COMPLEX_110 = "v110/complex.invalidxml";
+    private final String COMPLEX_110 = "wfs110/complex.invalidxml";
 
     @Test
     public void testDelete110()
