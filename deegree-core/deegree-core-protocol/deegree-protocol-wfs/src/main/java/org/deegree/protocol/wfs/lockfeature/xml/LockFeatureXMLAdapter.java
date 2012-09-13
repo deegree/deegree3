@@ -34,13 +34,14 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.lockfeature;
+package org.deegree.protocol.wfs.lockfeature.xml;
 
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -63,14 +64,13 @@ import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.QueryXMLAdapter;
 
 /**
  * Adapter between XML <code>LockFeature</code> requests and {@link LockFeature} objects.
- * <p>
- * TODO code for exporting to XML
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -104,13 +104,13 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Version version = determineVersion110Safe();
 
         LockFeature result = null;
-        if ( VERSION_100.equals( version ) )
+        if ( VERSION_100.equals( version ) ) {
             result = parse100();
-        else if ( VERSION_110.equals( version ) )
+        } else if ( VERSION_110.equals( version ) ) {
             result = parse110();
-        else if ( VERSION_200.equals( version ) )
+        } else if ( VERSION_200.equals( version ) ) {
             result = parse200();
-        else {
+        } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version,
                                        Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
             throw new InvalidParameterValueException( msg );
@@ -127,7 +127,9 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
     public LockFeature parse100() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-        int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
+        BigInteger expiry = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
+        expiry = convertToSeconds( expiry );
+
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
         Boolean lockAll = parseLockAction( lockActionStr );
 
@@ -175,7 +177,8 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
     public LockFeature parse110() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-        int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
+        BigInteger expiry = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
+        expiry = convertToSeconds( expiry );
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
         Boolean lockAll = parseLockAction( lockActionStr );
 
@@ -224,7 +227,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                             throws OWSException {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-        int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
+        BigInteger expiry = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
         String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
         Boolean lockAll = parseLockAction( lockActionStr );
         String lockId = rootElement.getAttributeValue( new QName( "lockId" ) );
@@ -240,7 +243,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             queries.add( query );
         }
 
-        return new LockFeature( VERSION_200, handle, null, expiry, lockAll, lockId );
+        return new LockFeature( VERSION_200, handle, queries, expiry, lockAll, lockId );
     }
 
     private Boolean parseLockAction( String lockActionStr ) {
@@ -256,5 +259,12 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             }
         }
         return lockAll;
+    }
+
+    private BigInteger convertToSeconds( BigInteger expiryInMinutes ) {
+        if ( expiryInMinutes == null ) {
+            return null;
+        }
+        return expiryInMinutes.multiply( BigInteger.valueOf( 60 ) );
     }
 }

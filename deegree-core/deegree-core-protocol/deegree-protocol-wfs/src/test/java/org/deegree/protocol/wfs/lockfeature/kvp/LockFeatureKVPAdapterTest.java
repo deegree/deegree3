@@ -32,8 +32,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wfs.lockfeature;
+package org.deegree.protocol.wfs.lockfeature.kvp;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
@@ -64,13 +66,13 @@ import org.junit.Test;
  */
 public class LockFeatureKVPAdapterTest extends TestCase {
 
-    private final String EXAMPLE1 = "example_kvp/v110/example1.kvp";
+    private final String EXAMPLE1 = "v110/example1.kvp";
 
-    private final String EXAMPLE2 = "example_kvp/v110/example2.kvp";
+    private final String EXAMPLE2 = "v110/example2.kvp";
 
-    private final String EXAMPLE3 = "example_kvp/v110/example3.kvp";
+    private final String EXAMPLE3 = "v110/example3.kvp";
 
-    private final String EXAMPLE4 = "example_kvp/v110/example4.kvp";
+    private final String EXAMPLE4 = "v110/example4.kvp";
 
     /**
      * @throws Exception
@@ -125,10 +127,9 @@ public class LockFeatureKVPAdapterTest extends TestCase {
                             throws Exception {
         URL example = this.getClass().getResource( EXAMPLE4 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example );
-
         LockFeature lockFeature = LockFeatureKVPAdapter.parse( kvpMap );
         assertTrue( lockFeature.getLockAll() );
-        assertEquals( new Integer( 5 ), lockFeature.getExpiry() );
+        assertEquals( new BigInteger( "300" ), lockFeature.getExpiryInSeconds() );
 
         List<Query> queries = lockFeature.getQueries();
         assertEquals( 2, queries.size() );

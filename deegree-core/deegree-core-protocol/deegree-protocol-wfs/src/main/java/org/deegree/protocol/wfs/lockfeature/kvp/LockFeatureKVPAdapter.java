@@ -34,12 +34,14 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.lockfeature;
+package org.deegree.protocol.wfs.lockfeature.kvp;
 
 import static java.util.Collections.singletonList;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.protocol.wfs.query.BBoxQuery;
 import org.deegree.protocol.wfs.query.FeatureIdQuery;
 import org.deegree.protocol.wfs.query.FilterQuery;
@@ -99,10 +102,9 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
 
         LockFeature result = null;
-        // if ( VERSION_100.equals( version ) ) {
-        // result = parse100( kvpParams );
-        // } else
-        if ( VERSION_110.equals( version ) ) {
+        if ( VERSION_100.equals( version ) ) {
+            result = parse100( kvpParams );
+        } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
             // } else if ( VERSION_200.equals( version ) ) {
             // result = parse200( kvpParams );
@@ -111,6 +113,11 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             throw new InvalidParameterValueException( msg );
         }
         return result;
+    }
+
+    private static LockFeature parse100( Map<String, String> kvpParams )
+                            throws Exception {
+        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("boxing")
@@ -128,10 +135,11 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: EXPIRY
         String expiryStr = kvpParams.get( "EXPIRY" );
-        Integer expiry = null;
+        BigInteger expiryInMinutes = null;
         if ( expiryStr != null ) {
-            expiry = Integer.parseInt( expiryStr );
+            expiryInMinutes = new BigInteger( expiryStr );
         }
+        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
 
         // optional: LOCKACTION
         Boolean lockAll = true;
@@ -164,7 +172,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         if ( featureIdStr != null ) {
             Query query = new FeatureIdQuery( null, typeNames, null, null, null, null, featureIds );
-            return new LockFeature( VERSION_110, null, singletonList( query ), expiry, lockAll, null );
+            return new LockFeature( VERSION_110, null, singletonList( query ), expiryInSeconds, lockAll, null );
         }
 
         if ( bboxStr != null ) {
@@ -181,7 +189,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             Envelope bbox = createEnvelope( bboxStr, srs );
             Query bboxQuery = new BBoxQuery( null, typeNames, null, srs, null, null, bbox );
-            return new LockFeature( VERSION_110, null, singletonList( bboxQuery ), expiry, lockAll, null );
+            return new LockFeature( VERSION_110, null, singletonList( bboxQuery ), expiryInSeconds, lockAll, null );
         }
 
         if ( filterStr != null || typeNames != null ) {
@@ -215,7 +223,7 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 }
                 queries.add( new FilterQuery( null, new TypeName[] { typeNames[i] }, null, null, null, null, filter ) );
             }
-            return new LockFeature( VERSION_110, null, queries, expiry, lockAll, null );
+            return new LockFeature( VERSION_110, null, queries, expiryInSeconds, lockAll, null );
 
         }
         return null;
@@ -284,5 +292,12 @@ public class LockFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
         }
         return result;
+    }
+
+    private static BigInteger convertToSeconds( BigInteger expiryInMinutes ) {
+        if ( expiryInMinutes == null ) {
+            return null;
+        }
+        return expiryInMinutes.multiply( BigInteger.valueOf( 60 ) );
     }
 }

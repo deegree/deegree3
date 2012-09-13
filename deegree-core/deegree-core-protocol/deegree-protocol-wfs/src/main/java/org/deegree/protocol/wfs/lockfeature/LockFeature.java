@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.lockfeature;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.deegree.commons.tom.ows.Version;
@@ -61,7 +62,7 @@ public class LockFeature extends AbstractWFSRequest {
 
     private final List<Query> queries;
 
-    private final Integer expiry;
+    private final BigInteger expiry;
 
     private final Boolean lockAll;
 
@@ -84,7 +85,7 @@ public class LockFeature extends AbstractWFSRequest {
      * @param existingLockId
      *            identifier of an existing lock for the purpose of resetting the lock expiry, can be <code>null</code>
      */
-    public LockFeature( Version version, String handle, List<Query> queries, Integer expiry, Boolean lockAll,
+    public LockFeature( Version version, String handle, List<Query> queries, BigInteger expiry, Boolean lockAll,
                         String existingLockId ) {
         super( version, handle );
         this.queries = queries;
@@ -107,12 +108,15 @@ public class LockFeature extends AbstractWFSRequest {
      * 
      * @return the expiry time for the acquired locks, can be null (unspecified)
      */
-    public Integer getExpiry() {
+    public BigInteger getExpiryInSeconds() {
         return expiry;
     }
 
     /**
      * Returns whether the request should fail if not all specified features can be locked.
+     * <p>
+     * This corresponds to the lockAction parameter (lockAction = SOME/ALL).
+     * </p>
      * 
      * @return true, if the request should fail, can be null (unspecified)
      */

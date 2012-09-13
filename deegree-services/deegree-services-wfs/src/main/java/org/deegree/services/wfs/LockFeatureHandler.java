@@ -121,9 +121,9 @@ class LockFeatureHandler {
         }
 
         // default: 5 minutes
-        int expiry = 5 * 60 * 1000;
-        if ( request.getExpiry() != null ) {
-            expiry = request.getExpiry() * 60 * 1000;
+        long expiryInMilliseconds = 5 * 60 * 1000;
+        if ( request.getExpiryInSeconds() != null ) {
+            expiryInMilliseconds = request.getExpiryInSeconds().longValue() * 1000;
         }
 
         Lock lock = null;
@@ -142,7 +142,7 @@ class LockFeatureHandler {
             QueryAnalyzer queryAnalyzer = new QueryAnalyzer( request.getQueries(), master, master.getStoreManager(),
                                                              master.getCheckAreaOfUse() );
             List<Query> fsQueries = queryAnalyzer.getQueries().get( master.getStoreManager().getStores()[0] );
-            lock = manager.acquireLock( fsQueries, lockAll, expiry );
+            lock = manager.acquireLock( fsQueries, lockAll, expiryInMilliseconds );
 
             XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, "text/xml", schemaLocation );
             if ( request.getVersion() == WFSConstants.VERSION_100 ) {
