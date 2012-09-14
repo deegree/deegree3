@@ -95,7 +95,7 @@ public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
      * @return corresponding GetPropertyValue instance, never <code>null</code>
      * @throws OWSException
      */
-    public GetPropertyValue parse200()
+    private GetPropertyValue parse200()
                             throws OWSException {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
