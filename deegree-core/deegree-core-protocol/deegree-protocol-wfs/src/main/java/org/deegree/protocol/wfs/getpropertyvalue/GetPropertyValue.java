@@ -123,8 +123,8 @@ public class GetPropertyValue extends AbstractWFSRequest {
      * 
      * @return expression for selecting the returned nodes or child nodes, never <code>null</code>
      */
-    public ValueReference getResolvePath() {
-        return resolvePath;
+    public ValueReference getValueReference() {
+        return valueReference;
     }
 
     /**
@@ -133,8 +133,8 @@ public class GetPropertyValue extends AbstractWFSRequest {
      * @return path along which resource resolution shall be performed, or <code>null</code> (global resource resolution
      *         mode)
      */
-    public ValueReference getValueReference() {
-        return valueReference;
+    public ValueReference getResolvePath() {
+        return resolvePath;
     }
 
     /**
