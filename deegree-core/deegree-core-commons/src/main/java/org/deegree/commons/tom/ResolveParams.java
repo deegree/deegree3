@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -38,7 +38,7 @@ package org.deegree.commons.tom;
 import java.math.BigInteger;
 
 /**
- * Comon set of parameters for controlling the resolving of resource {@link Reference}s.
+ * Common set of parameters for controlling the resolving of resource {@link Reference}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
