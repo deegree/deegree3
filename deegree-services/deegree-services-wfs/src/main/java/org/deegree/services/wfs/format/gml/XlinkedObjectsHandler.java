@@ -77,8 +77,8 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
     public String requireObject( GMLReference<?> ref ) {
         String uri = ref.getURI();
         LOG.debug( "Exporting forward reference to object {} which must be included in the output.", uri );
-        uriToRef.put( ref.getURI(), ref );
-        return ref.getURI();
+        uriToRef.put( uri, ref );
+        return uri;
     }
 
     @Override
