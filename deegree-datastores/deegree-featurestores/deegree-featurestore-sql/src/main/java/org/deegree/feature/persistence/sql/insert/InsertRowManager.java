@@ -307,7 +307,7 @@ public class InsertRowManager {
 
                     // TODO: pure href propagation (no fk)
 
-                    if ( jc.isEmpty() ) {
+                    if ( jc == null || jc.isEmpty() ) {
                         LOG.debug( "Skipping feature mapping (fk). Not mapped to database column." );
                     } else {
                         TableJoin join = jc.get( 0 );
