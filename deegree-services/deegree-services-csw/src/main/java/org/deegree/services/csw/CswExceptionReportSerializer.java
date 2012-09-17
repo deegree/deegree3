@@ -57,9 +57,9 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  */
 public class CswExceptionReportSerializer extends XMLExceptionSerializer {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
+    private static final String OWS_NS = "http://www.opengis.net/ows";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
+    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
 
     private final Version version;
 

@@ -632,12 +632,7 @@ public class CSWController extends AbstractOWS {
     private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
                                     OWSException e, ServletRequest request, SOAPVersion version )
                             throws OMException, ServletException {
-        XMLExceptionSerializer serializer;
-        if ( version instanceof SOAP11Version ) {
-            serializer = new CswExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
-        } else {
-            serializer = new CswExceptionReportSerializer( Version.parseVersion( "1.2.0" ) );
-        }
+        XMLExceptionSerializer serializer = getExceptionSerializer( parseVersion( "1.2.0" ) );
         sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
                            request.getCharacterEncoding() );
     }
