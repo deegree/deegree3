@@ -124,6 +124,7 @@ public class FunctionManager extends AbstractBasicResourceManager {
         functionLoader = ServiceLoader.load( FunctionProvider.class, ws.getModuleClassLoader() );
         for ( FunctionProvider fp : functionLoader ) {
             try {
+                LOG.debug( "Loading function {}", fp.getName() );
                 fp.init( ws );
             } catch ( Throwable t ) {
                 LOG.error( "Initialization of FunctionProvider " + fp.getName() + " failed: " + t.getMessage() );

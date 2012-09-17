@@ -112,6 +112,7 @@ import org.deegree.layer.LayerRef;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.protocol.wms.ops.RequestBase;
@@ -833,6 +834,8 @@ public class MapService {
 
         double scale = gm.getScale();
 
+        ScaleFunction.getCurrentScaleValue().set( scale );
+
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), styles,
                                            extractFilters( gm ), gm.getParameterMap(), gm.getDimensions(),
                                            gm.getPixelSize(), options, gm.getQueryBox() );
@@ -850,6 +853,8 @@ public class MapService {
             ctx.applyOptions( optIter.next() );
             d.render( ctx );
         }
+
+        ScaleFunction.getCurrentScaleValue().remove();
     }
 
     private static void insertMissingOptions( String layer, MapOptionsMaps options, MapOptions layerDefaults,
@@ -949,6 +954,7 @@ public class MapService {
     public Pair<BufferedImage, LinkedList<String>> getMapImage( GetMap gm )
                             throws MissingDimensionValue, InvalidDimensionValue {
         LinkedList<String> warnings = new LinkedList<String>();
+        ScaleFunction.getCurrentScaleValue().set( gm.getScale() );
 
         BufferedImage img = prepareImage( gm );
         Graphics2D g = img.createGraphics();
@@ -960,6 +966,7 @@ public class MapService {
              || gm.getFormat().equals( "image/gif" ) ) {
             img = postprocessPng8bit( img );
         }
+        ScaleFunction.getCurrentScaleValue().remove();
         return new Pair<BufferedImage, LinkedList<String>>( img, warnings );
     }
 
