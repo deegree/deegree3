@@ -102,38 +102,24 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-class DescribeFeatureTypeHandler {
+class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeFeatureTypeHandler.class );
 
     private static final String APPSCHEMAS = "appschemas";
 
-    private WFSFeatureStoreManager service;
-
     // URL of workspace appschema directory
     private String wsAppSchemaBaseURL;
 
-    // external URL for accessing appschema directory
-    private String appSchemaBaseURL;
-
     private String ogcSchemaJarBaseURL;
 
-    private final boolean exportOriginalSchema;
-
     /**
-     * Creates a new {@link DescribeFeatureTypeHandler} instance that uses the given service to lookup requested
-     * {@link FeatureType}s.
+     * Creates a new {@link DescribeFeatureTypeHandler} instance.
      * 
-     * @param service
-     *            WFS instance used to lookup the feature types, must not be <code>null</code>
-     * @param exportOriginalSchema
-     *            true, if the original GML application schema files shall be used, false otherwise
-     * @param appSchemaBaseURL
-     *            base URL to use for referring to static appschema fragments, can be <code>null</code> (use resources
-     *            servlet)
+     * @param gmlFormat
      */
-    DescribeFeatureTypeHandler( WFSFeatureStoreManager service, boolean exportOriginalSchema, String appSchemaBaseURL ) {
-        this.service = service;
+    DescribeFeatureTypeHandler( GMLFormat gmlFormat ) {
+        super( gmlFormat );
         try {
             File wsBaseDir = OGCFrontController.getServiceWorkspace().getLocation();
             File appSchemaBaseDir = new File( wsBaseDir, APPSCHEMAS );
@@ -145,8 +131,6 @@ class DescribeFeatureTypeHandler {
         if ( baseUrl != null ) {
             this.ogcSchemaJarBaseURL = baseUrl.toString();
         }
-        this.exportOriginalSchema = exportOriginalSchema;
-        this.appSchemaBaseURL = appSchemaBaseURL;
     }
 
     /**
@@ -175,8 +159,8 @@ class DescribeFeatureTypeHandler {
 
         LOG.debug( "doDescribeFeatureType: " + request );
 
-        String mimeType = format.getMimeType();
-        GMLVersion version = format.gmlVersion;
+        String mimeType = options.getMimeType();
+        GMLVersion version = options.getGmlVersion();
 
         LOG.debug( "contentType:" + response.getContentType() );
         LOG.debug( "characterEncoding:" + response.getCharacterEncoding() );
@@ -192,10 +176,11 @@ class DescribeFeatureTypeHandler {
         } else {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
-            if ( exportOriginalSchema && service.getStores().length == 1
-                 && service.getStores()[0].getSchema().getGMLSchema() != null
-                 && service.getStores()[0].getSchema().getGMLSchema().getVersion() == version ) {
-                exportOriginalInfoSet( writer, service.getStores()[0].getSchema().getGMLSchema(), targetNs );
+            WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+            if ( options.isExportOriginalSchema() && storeManager.getStores().length == 1
+                 && storeManager.getStores()[0].getSchema().getGMLSchema() != null
+                 && storeManager.getStores()[0].getSchema().getGMLSchema().getVersion() == version ) {
+                exportOriginalInfoSet( writer, storeManager.getStores()[0].getSchema().getGMLSchema(), targetNs );
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
             }
@@ -208,11 +193,12 @@ class DescribeFeatureTypeHandler {
                             throws XMLStreamException {
 
         Map<String, String> importMap = buildImportMap( request, importNs );
-        Map<String, String> prefixToNs = service.getPrefixToNs();
+        WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+        Map<String, String> prefixToNs = storeManager.getPrefixToNs();
         GMLAppSchemaWriter exporter = new GMLAppSchemaWriter( version, targetNs, importMap, prefixToNs );
 
         List<FeatureType> fts = new ArrayList<FeatureType>();
-        for ( FeatureStore fs : service.getStores() ) {
+        for ( FeatureStore fs : storeManager.getStores() ) {
             for ( FeatureType ft : fs.getSchema().getFeatureTypes( targetNs, true, true ) ) {
                 fts.add( ft );
             }
@@ -238,10 +224,10 @@ class DescribeFeatureTypeHandler {
             public String translate( String uri ) {
                 if ( uri.startsWith( wsAppSchemaBaseURL ) ) {
                     String relativePath = uri.substring( wsAppSchemaBaseURL.length() );
-                    if ( appSchemaBaseURL == null ) {
+                    if ( options.getAppSchemaBaseURL() == null ) {
                         return ResourcesServlet.getHttpGetURL( APPSCHEMAS + "/" + relativePath );
                     }
-                    return appSchemaBaseURL + "/" + relativePath;
+                    return options.getAppSchemaBaseURL() + "/" + relativePath;
                 }
                 if ( uri.startsWith( ogcSchemaJarBaseURL ) ) {
                     return "http://schemas.opengis.net" + uri.substring( ogcSchemaJarBaseURL.length() );
@@ -405,16 +391,17 @@ class DescribeFeatureTypeHandler {
                             throws OWSException {
 
         Set<String> set = new LinkedHashSet<String>();
+        WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         if ( request.getTypeNames() == null || request.getTypeNames().length == 0 ) {
             if ( request.getNsBindings() == null ) {
                 LOG.debug( "Adding all namespaces." );
-                for ( FeatureStore fs : service.getStores() ) {
+                for ( FeatureStore fs : storeManager.getStores() ) {
                     set.addAll( fs.getSchema().getAppNamespaces() );
                 }
             } else {
                 LOG.debug( "Adding requested namespaces." );
                 for ( String ns : request.getNsBindings().values() ) {
-                    for ( FeatureStore fs : service.getStores() ) {
+                    for ( FeatureStore fs : storeManager.getStores() ) {
                         AppSchema schema = fs.getSchema();
                         if ( schema.getNamespaceBindings().values().contains( ns ) ) {
                             set.add( ns );
@@ -426,7 +413,7 @@ class DescribeFeatureTypeHandler {
         } else {
             LOG.debug( "Adding namespaces of requested feature types." );
             for ( QName ftName : request.getTypeNames() ) {
-                FeatureType ft = service.lookupFeatureType( ftName );
+                FeatureType ft = storeManager.lookupFeatureType( ftName );
                 if ( ft == null ) {
                     throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
                                             OWSException.INVALID_PARAMETER_VALUE, "typenames" );
@@ -450,8 +437,9 @@ class DescribeFeatureTypeHandler {
 
     private Set<String> findUnhandledNs( Set<String> set ) {
         Set<String> dependentNamespaces = new HashSet<String>();
+        WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         for ( String ns : set ) {
-            for ( FeatureStore fs : service.getStores() ) {
+            for ( FeatureStore fs : storeManager.getStores() ) {
                 AppSchema schema = fs.getSchema();
                 List<String> depNs = schema.getNamespacesDependencies( ns );
                 for ( String n : depNs ) {

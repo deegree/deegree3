@@ -251,7 +251,7 @@ public class WebFeatureService extends AbstractOWS {
         disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
                                                                               : true;
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
-                                                              : jaxbConfig.getQueryMaxFeatures().intValue();
+                                                                   : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
 
         service = new WFSFeatureStoreManager();
@@ -320,8 +320,7 @@ public class WebFeatureService extends AbstractOWS {
         validateAndSetOfferedVersions( versions );
     }
 
-    private void initQueryCRS( List<String> queryCRSLists )
-                            throws ResourceInitException {
+    private void initQueryCRS( List<String> queryCRSLists ) {
         // try {
         for ( String queryCRS : queryCRSLists ) {
             String[] querySrs = StringUtils.split( queryCRS, " ", REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
@@ -402,7 +401,8 @@ public class WebFeatureService extends AbstractOWS {
 
         for ( Format f : mimeTypeToFormat.values() ) {
             if ( f instanceof org.deegree.services.wfs.format.gml.GMLFormat ) {
-                gmlVersionToFormat.put( ( (org.deegree.services.wfs.format.gml.GMLFormat) f ).getGmlVersion(), f );
+                gmlVersionToFormat.put( ( (org.deegree.services.wfs.format.gml.GMLFormat) f ).getGmlFormatOptions().getGmlVersion(),
+                                        f );
             }
         }
     }
@@ -1061,6 +1061,7 @@ public class WebFeatureService extends AbstractOWS {
      * @throws OWSException
      *             if the requested version is not available
      */
+    @Override
     protected Version checkVersion( Version requestedVersion )
                             throws OWSException {
 
