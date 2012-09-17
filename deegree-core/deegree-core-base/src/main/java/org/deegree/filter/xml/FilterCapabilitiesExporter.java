@@ -145,7 +145,7 @@ public class FilterCapabilitiesExporter {
         exportIdCapabilities200( writer );
         exportScalarCapabilities200( writer );
         exportSpatialCapabilities200( writer );
-//        exportTemporalCapabilities200( writer );
+        // exportTemporalCapabilities200( writer );
         exportFunctions200( writer );
         exportExtendedCapabilities200( writer );
 
@@ -281,34 +281,34 @@ public class FilterCapabilitiesExporter {
         writer.writeAttribute( "name", name );
     }
 
-//    private static void exportTemporalCapabilities200( XMLStreamWriter writer )
-//                            throws XMLStreamException {
-//        writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
-//        writer.writeStartElement( FES_20_NS, "TemporalOperands" );
-//        writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-//        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
-//        exportTemporalOperand( writer, "gml:TimeInstant" );
-//        exportTemporalOperand( writer, "gml:TimePeriod" );
-//        exportTemporalOperand( writer, "gml32:TimeInstant" );
-//        exportTemporalOperand( writer, "gml32:TimePeriod" );
-//        writer.writeEndElement();
-//        writer.writeStartElement( FES_20_NS, "TemporalOperators" );
-//        exportTemporalOperator( writer, "After" );
-//        exportTemporalOperator( writer, "Before" );
-//        exportTemporalOperator( writer, "Begins" );
-//        exportTemporalOperator( writer, "BegunBy" );
-//        exportTemporalOperator( writer, "TContains" );
-//        exportTemporalOperator( writer, "During" );
-//        exportTemporalOperator( writer, "TEquals" );
-//        exportTemporalOperator( writer, "TOverlaps" );
-//        exportTemporalOperator( writer, "Meets" );
-//        exportTemporalOperator( writer, "OverlappedBy" );
-//        exportTemporalOperator( writer, "MetBy" );
-//        exportTemporalOperator( writer, "Ends" );
-//        exportTemporalOperator( writer, "EndedBy" );
-//        writer.writeEndElement();
-//        writer.writeEndElement();
-//    }
+    // private static void exportTemporalCapabilities200( XMLStreamWriter writer )
+    // throws XMLStreamException {
+    // writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
+    // writer.writeStartElement( FES_20_NS, "TemporalOperands" );
+    // writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
+    // writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+    // exportTemporalOperand( writer, "gml:TimeInstant" );
+    // exportTemporalOperand( writer, "gml:TimePeriod" );
+    // exportTemporalOperand( writer, "gml32:TimeInstant" );
+    // exportTemporalOperand( writer, "gml32:TimePeriod" );
+    // writer.writeEndElement();
+    // writer.writeStartElement( FES_20_NS, "TemporalOperators" );
+    // exportTemporalOperator( writer, "After" );
+    // exportTemporalOperator( writer, "Before" );
+    // exportTemporalOperator( writer, "Begins" );
+    // exportTemporalOperator( writer, "BegunBy" );
+    // exportTemporalOperator( writer, "TContains" );
+    // exportTemporalOperator( writer, "During" );
+    // exportTemporalOperator( writer, "TEquals" );
+    // exportTemporalOperator( writer, "TOverlaps" );
+    // exportTemporalOperator( writer, "Meets" );
+    // exportTemporalOperator( writer, "OverlappedBy" );
+    // exportTemporalOperator( writer, "MetBy" );
+    // exportTemporalOperator( writer, "Ends" );
+    // exportTemporalOperator( writer, "EndedBy" );
+    // writer.writeEndElement();
+    // writer.writeEndElement();
+    // }
 
     private static void exportTemporalOperand( XMLStreamWriter writer, String name )
                             throws XMLStreamException {
@@ -342,10 +342,10 @@ public class FilterCapabilitiesExporter {
                         }
                     }
                 }
-                if (containsGMLTypes) {
-                    exportFunction200( writer, provider, GML_31 );                    
+                if ( containsGMLTypes ) {
+                    exportFunction200( writer, provider, GML_31 );
                 }
-                exportFunction200( writer, provider, GML_32);
+                exportFunction200( writer, provider, GML_32 );
             }
             writer.writeEndElement();
         }
@@ -361,19 +361,21 @@ public class FilterCapabilitiesExporter {
         writer.writeNamespace( typeName.getPrefix(), typeName.getNamespaceURI() );
         writer.writeCharacters( typeName.getPrefix() + ":" + typeName.getLocalPart() );
         writer.writeEndElement();
-        writer.writeStartElement( FES_20_NS, "Arguments" );
-        int i = 1;
-        for ( ParameterType inputType : function.getArgs() ) {
-            writer.writeStartElement( FES_20_NS, "Argument" );
-            writer.writeAttribute( "name", "arg" + ( i++ ) );
-            writer.writeStartElement( FES_20_NS, "Type" );
-            typeName = inputType.getType( version );
-            writer.writeNamespace( typeName.getPrefix(), typeName.getNamespaceURI() );
-            writer.writeCharacters( typeName.getPrefix() + ":" + typeName.getLocalPart() );
-            writer.writeEndElement();
+        if ( !function.getArgs().isEmpty() ) {
+            writer.writeStartElement( FES_20_NS, "Arguments" );
+            int i = 1;
+            for ( ParameterType inputType : function.getArgs() ) {
+                writer.writeStartElement( FES_20_NS, "Argument" );
+                writer.writeAttribute( "name", "arg" + ( i++ ) );
+                writer.writeStartElement( FES_20_NS, "Type" );
+                typeName = inputType.getType( version );
+                writer.writeNamespace( typeName.getPrefix(), typeName.getNamespaceURI() );
+                writer.writeCharacters( typeName.getPrefix() + ":" + typeName.getLocalPart() );
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
             writer.writeEndElement();
         }
-        writer.writeEndElement();
         writer.writeEndElement();
     }
 
