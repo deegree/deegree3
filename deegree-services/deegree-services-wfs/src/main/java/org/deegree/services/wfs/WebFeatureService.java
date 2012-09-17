@@ -168,6 +168,7 @@ import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -202,7 +203,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private static final int DEFAULT_MAX_FEATURES = 15000;
 
-    private WFSFeatureStoreManager service;
+    private WfsFeatureStoreManager service;
 
     private LockFeatureHandler lockFeatureHandler;
 
@@ -254,7 +255,7 @@ public class WebFeatureService extends AbstractOWS {
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
 
-        service = new WFSFeatureStoreManager();
+        service = new WfsFeatureStoreManager();
         try {
             service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
         } catch ( Exception e ) {
@@ -346,16 +347,16 @@ public class WebFeatureService extends AbstractOWS {
 
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
-            org.deegree.services.wfs.format.gml.GMLFormat gml21 = new org.deegree.services.wfs.format.gml.GMLFormat(
+            org.deegree.services.wfs.format.gml.GmlFormat gml21 = new org.deegree.services.wfs.format.gml.GmlFormat(
                                                                                                                      this,
                                                                                                                      GML_2 );
-            org.deegree.services.wfs.format.gml.GMLFormat gml30 = new org.deegree.services.wfs.format.gml.GMLFormat(
+            org.deegree.services.wfs.format.gml.GmlFormat gml30 = new org.deegree.services.wfs.format.gml.GmlFormat(
                                                                                                                      this,
                                                                                                                      GML_30 );
-            org.deegree.services.wfs.format.gml.GMLFormat gml31 = new org.deegree.services.wfs.format.gml.GMLFormat(
+            org.deegree.services.wfs.format.gml.GmlFormat gml31 = new org.deegree.services.wfs.format.gml.GmlFormat(
                                                                                                                      this,
                                                                                                                      GML_31 );
-            org.deegree.services.wfs.format.gml.GMLFormat gml32 = new org.deegree.services.wfs.format.gml.GMLFormat(
+            org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat(
                                                                                                                      this,
 
                                                                                                                      GML_32 );
@@ -378,7 +379,7 @@ public class WebFeatureService extends AbstractOWS {
                 List<String> mimeTypes = formatDef.getMimeType();
                 Format format = null;
                 if ( formatDef instanceof GMLFormat ) {
-                    format = new org.deegree.services.wfs.format.gml.GMLFormat( this, (GMLFormat) formatDef );
+                    format = new org.deegree.services.wfs.format.gml.GmlFormat( this, (GMLFormat) formatDef );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();
@@ -400,8 +401,8 @@ public class WebFeatureService extends AbstractOWS {
         }
 
         for ( Format f : mimeTypeToFormat.values() ) {
-            if ( f instanceof org.deegree.services.wfs.format.gml.GMLFormat ) {
-                gmlVersionToFormat.put( ( (org.deegree.services.wfs.format.gml.GMLFormat) f ).getGmlFormatOptions().getGmlVersion(),
+            if ( f instanceof org.deegree.services.wfs.format.gml.GmlFormat ) {
+                gmlVersionToFormat.put( ( (org.deegree.services.wfs.format.gml.GmlFormat) f ).getGmlFormatOptions().getGmlVersion(),
                                         f );
             }
         }
@@ -507,11 +508,11 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     /**
-     * Returns the underlying {@link WFSFeatureStoreManager} instance.
+     * Returns the underlying {@link WfsFeatureStoreManager} instance.
      * 
-     * @return the underlying {@link WFSFeatureStoreManager}
+     * @return the underlying {@link WfsFeatureStoreManager}
      */
-    public WFSFeatureStoreManager getStoreManager() {
+    public WfsFeatureStoreManager getStoreManager() {
         return service;
     }
 

@@ -145,7 +145,7 @@ class TransactionHandler {
 
     private final WebFeatureService master;
 
-    private final WFSFeatureStoreManager service;
+    private final WfsFeatureStoreManager service;
 
     private final Transaction request;
 
@@ -173,7 +173,7 @@ class TransactionHandler {
      *            request to be handled
      * @param idGenMode
      */
-    TransactionHandler( WebFeatureService master, WFSFeatureStoreManager service, Transaction request,
+    TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
                         IDGenMode idGenMode ) {
         this.master = master;
         this.service = service;

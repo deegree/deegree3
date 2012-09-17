@@ -151,13 +151,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final List<ICRS> querySRS;
 
-    private final WFSFeatureStoreManager service;
+    private final WfsFeatureStoreManager service;
 
     private final WebFeatureService master;
 
     private final OWSMetadataProvider mdProvider;
 
-    GetCapabilitiesHandler( WebFeatureService master, WFSFeatureStoreManager service, Version version,
+    GetCapabilitiesHandler( WebFeatureService master, WfsFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
                             boolean enableTransactions, List<ICRS> querySRS, OWSMetadataProvider mdProvider ) {
         this.master = master;

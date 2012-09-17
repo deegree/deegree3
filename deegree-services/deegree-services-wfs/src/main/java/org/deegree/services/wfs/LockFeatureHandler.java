@@ -67,6 +67,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
