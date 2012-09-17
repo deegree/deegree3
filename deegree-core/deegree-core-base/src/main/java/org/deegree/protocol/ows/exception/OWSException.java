@@ -127,7 +127,7 @@ public class OWSException extends Exception {
      * exception code for all not known exceptions
      */
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
-
+        
     private final String exceptionCode;
 
     private final String locator;

@@ -47,6 +47,7 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.protocol.ows.exception.OWSException.OPTION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_NS;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
@@ -185,7 +186,7 @@ public class GMLFormat implements Format {
     private String mimeType;
 
     private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
-    
+
     public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.service = master.getStoreManager();
@@ -534,7 +535,7 @@ public class GMLFormat implements Format {
         LOG.debug( "Performing GetFeature (results) request." );
 
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, checkAreaOfUse );
-        String lockId = acquireLock( request, analyzer );
+        Lock lock = acquireLock( request, analyzer );
 
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
 
@@ -585,8 +586,8 @@ public class GMLFormat implements Format {
                 xmlStream.setPrefix( "wfs", WFS_NS );
                 xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
                 xmlStream.writeNamespace( "wfs", WFS_NS );
-                if ( lockId != null ) {
-                    xmlStream.writeAttribute( "lockId", lockId );
+                if ( lock != null ) {
+                    xmlStream.writeAttribute( "lockId", lock.getId() );
                 }
             }
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
@@ -598,8 +599,8 @@ public class GMLFormat implements Format {
                 xmlStream.setPrefix( "wfs", WFS_NS );
                 xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
                 xmlStream.writeNamespace( "wfs", WFS_NS );
-                if ( lockId != null ) {
-                    xmlStream.writeAttribute( "lockId", lockId );
+                if ( lock != null ) {
+                    xmlStream.writeAttribute( "lockId", lock.getId() );
                 }
                 xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             }
@@ -608,8 +609,8 @@ public class GMLFormat implements Format {
             xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_200_NS );
             xmlStream.writeAttribute( "timeStamp", getTimestamp() );
-            if ( lockId != null ) {
-                xmlStream.writeAttribute( "lockId", lockId );
+            if ( lock != null ) {
+                xmlStream.writeAttribute( "lockId", lock.getId() );
             }
         }
 
@@ -651,10 +652,10 @@ public class GMLFormat implements Format {
 
         if ( disableStreaming ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
-                                       traverseXLinkDepth, returnMaxFeatures, startIndex, memberElementName );
+                                       traverseXLinkDepth, returnMaxFeatures, startIndex, memberElementName, lock );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, xLinkTemplate,
-                                       traverseXLinkDepth, returnMaxFeatures, startIndex, memberElementName );
+                                       traverseXLinkDepth, returnMaxFeatures, startIndex, memberElementName, lock );
         }
 
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
@@ -729,7 +730,7 @@ public class GMLFormat implements Format {
 
     private void writeFeatureMembersStream( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, String xLinkTemplate, int traverseXLinkDepth,
-                                            int maxFeatures, int startIndex, QName featureMemberEl )
+                                            int maxFeatures, int startIndex, QName featureMemberEl, Lock lock )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
@@ -759,6 +760,9 @@ public class GMLFormat implements Format {
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature member : rs ) {
+                    if ( lock != null && !lock.isLocked( member.getId() ) ) {
+                        continue;
+                    }
                     if ( featuresAdded == maxFeatures ) {
                         // limit the number of features written to maxfeatures
                         break;
@@ -779,7 +783,7 @@ public class GMLFormat implements Format {
 
     private void writeFeatureMembersCached( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, String xLinkTemplate, int traverseXLinkDepth,
-                                            int maxFeatures, int startIndex, QName featureMemberEl )
+                                            int maxFeatures, int startIndex, QName featureMemberEl, Lock lock )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, IOException {
 
@@ -795,6 +799,9 @@ public class GMLFormat implements Format {
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature feature : rs ) {
+                    if ( lock != null && !lock.isLocked( feature.getId() ) ) {
+                        continue;
+                    }
                     if ( featuresAdded == maxFeatures ) {
                         break;
                     }
@@ -950,7 +957,7 @@ public class GMLFormat implements Format {
         LOG.debug( "Performing GetFeature (hits) request." );
 
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), master, service, checkAreaOfUse );
-        String lockId = acquireLock( request, analyzer );
+        Lock lock = acquireLock( request, analyzer );
         String schemaLocation = null;
         if ( VERSION_100.equals( request.getVersion() ) ) {
             schemaLocation = WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
@@ -995,16 +1002,16 @@ public class GMLFormat implements Format {
             xmlStream.setPrefix( "wfs", WFS_NS );
             xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_NS );
-            if ( lockId != null ) {
-                xmlStream.writeAttribute( "lockId", lockId );
+            if ( lock != null ) {
+                xmlStream.writeAttribute( "lockId", lock.getId() );
             }
             xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
             xmlStream.setPrefix( "wfs", WFS_NS );
             xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_NS );
-            if ( lockId != null ) {
-                xmlStream.writeAttribute( "lockId", lockId );
+            if ( lock != null ) {
+                xmlStream.writeAttribute( "lockId", lock.getId() );
             }
             xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
@@ -1099,10 +1106,10 @@ public class GMLFormat implements Format {
         return schemaLocation;
     }
 
-    private String acquireLock( GetFeature request, QueryAnalyzer analyzer )
+    private Lock acquireLock( GetFeature request, QueryAnalyzer analyzer )
                             throws OWSException {
 
-        String lockId = null;
+        Lock lock = null;
 
         if ( request instanceof GetFeatureWithLock ) {
             GetFeatureWithLock gfLock = (GetFeatureWithLock) request;
@@ -1114,12 +1121,16 @@ public class GMLFormat implements Format {
                     if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
                          || resolveParams.getTimeout() != null ) {
                         throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
-                                                OWSException.OPTION_NOT_SUPPORTED );
+                                                OPTION_NOT_SUPPORTED );
                     }
                 }
             }
 
-            boolean mustLockAll = true;
+            // default: lock all
+            boolean lockAll = true;
+            if ( gfLock.getLockAll() != null ) {
+                lockAll = gfLock.getLockAll();
+            }
 
             // default: 5 minutes
             long expiryInMilliseconds = 5 * 60 * 1000;
@@ -1132,13 +1143,14 @@ public class GMLFormat implements Format {
                 // TODO strategy for multiple LockManagers / feature stores
                 manager = service.getStores()[0].getLockManager();
                 List<Query> queries = analyzer.getQueries().get( service.getStores()[0] );
-                Lock lock = manager.acquireLock( queries, mustLockAll, expiryInMilliseconds );
-                lockId = lock.getId();
+                lock = manager.acquireLock( queries, lockAll, expiryInMilliseconds );
+            } catch ( OWSException e ) {
+                throw new OWSException( e.getMessage(), "CannotLockAllFeatures" );
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( "Cannot acquire lock: " + e.getMessage(), NO_APPLICABLE_CODE );
             }
         }
-        return lockId;
+        return lock;
     }
 
     private GMLObject retrieveObject( String id )

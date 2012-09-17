@@ -60,6 +60,21 @@ public interface Lock {
     public String getId();
 
     /**
+     * Returns the date (milliseconds since 1970-01-01 00:00 UTC) when the lock has been acquired.
+     * 
+     * @return milliseconds (since 1970-01-01 00:00 UTC)
+     */
+    public long getAcquistionDate();
+
+    /**
+     * Sets the date (milliseconds since 1970-01-01 00:00 UTC) when the lock expires.
+     * 
+     * @param expiryDate
+     *            milliseconds since 1970-01-01 00:00 UTC when the lock expires
+     */
+    public void setExpiryDate( long expiryDate ) throws FeatureStoreException;
+
+    /**
      * Returns the number of locked features.
      * 
      * @return the number of locked features

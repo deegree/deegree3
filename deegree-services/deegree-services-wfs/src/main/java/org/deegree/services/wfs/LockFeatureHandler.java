@@ -84,6 +84,8 @@ class LockFeatureHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( LockFeatureHandler.class );
 
+    private static final long DEFAULT_EXPIRY_IN_MILLISECONDS = 5 * 60 * 1000;
+
     private final WebFeatureService master;
 
     /**
@@ -115,8 +117,8 @@ class LockFeatureHandler {
         LOG.debug( "doLockFeature: " + request );
 
         LockManager manager = getLockManager();
+        Lock lock = acquireOrRenewLock( request, manager );
         try {
-            Lock lock = acquireLock( request, manager );
             writeLockFeatureResponse( request, response, lock );
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Cannot acquire lock: " + e.getMessage(), NO_APPLICABLE_CODE );
@@ -279,7 +281,7 @@ class LockFeatureHandler {
     private void writeFeaturesNotLocked200( Lock lock, XMLStreamWriter writer )
                             throws XMLStreamException, FeatureStoreException {
         writer.writeStartElement( WFS_200_NS, "FeaturesNotLocked" );
-        CloseableIterator<String> fidIter = lock.getLockedFeatures();
+        CloseableIterator<String> fidIter = lock.getFailedToLockFeatures();
         try {
             while ( fidIter.hasNext() ) {
                 String fid = fidIter.next();
@@ -292,8 +294,38 @@ class LockFeatureHandler {
         writer.writeEndElement();
     }
 
-    private Lock acquireLock( LockFeature request, LockManager manager )
-                            throws OWSException, FeatureStoreException {
+    private Lock acquireOrRenewLock( LockFeature request, LockManager manager )
+                            throws OWSException {
+        long expiryInMilliseconds = DEFAULT_EXPIRY_IN_MILLISECONDS;
+        if ( request.getExpiryInSeconds() != null ) {
+            expiryInMilliseconds = request.getExpiryInSeconds().longValue() * 1000;
+        }
+
+        String existingLockId = request.getExistingLockId();
+        if ( existingLockId != null ) {
+            return renewLock( request, manager, expiryInMilliseconds, existingLockId );
+        }
+        return acquireLock( request, manager, expiryInMilliseconds );
+
+    }
+
+    private Lock renewLock( LockFeature request, LockManager manager, long expiryInMilliseconds, String existingLockId )
+                            throws OWSException {
+        Lock lock = null;
+        try {
+            lock = manager.getLock( existingLockId );
+            long acquistionDate = lock.getAcquistionDate();
+            long expiryDate = acquistionDate + expiryInMilliseconds;
+            lock.setExpiryDate( expiryDate );
+        } catch ( FeatureStoreException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new OWSException( "Cannot renew lock: " + e.getMessage(), NO_APPLICABLE_CODE );
+        }
+        return lock;
+    }
+
+    private Lock acquireLock( LockFeature request, LockManager manager, long expiryInMilliseconds )
+                            throws OWSException {
 
         // default: lock all
         boolean lockAll = true;
@@ -301,16 +333,28 @@ class LockFeatureHandler {
             lockAll = request.getLockAll();
         }
 
-        // default: 5 minutes
-        long expiryInMilliseconds = 5 * 60 * 1000;
-        if ( request.getExpiryInSeconds() != null ) {
-            expiryInMilliseconds = request.getExpiryInSeconds().longValue() * 1000;
+        List<Query> fsQueries = null;
+        try {
+            QueryAnalyzer queryAnalyzer = new QueryAnalyzer( request.getQueries(), master, master.getStoreManager(),
+                                                             master.getCheckAreaOfUse() );
+            fsQueries = queryAnalyzer.getQueries().get( master.getStoreManager().getStores()[0] );
+        } catch ( Exception e ) {
+            throw new OWSException( "Cannot determine feature store queries for locking: " + e.getMessage(),
+                                    NO_APPLICABLE_CODE );
         }
 
-        QueryAnalyzer queryAnalyzer = new QueryAnalyzer( request.getQueries(), master, master.getStoreManager(),
-                                                         master.getCheckAreaOfUse() );
-        List<Query> fsQueries = queryAnalyzer.getQueries().get( master.getStoreManager().getStores()[0] );
-        return manager.acquireLock( fsQueries, lockAll, expiryInMilliseconds );
+        Lock lock = null;
+        try {
+            lock = manager.acquireLock( fsQueries, lockAll, expiryInMilliseconds );
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new OWSException( e.getMessage(), "CannotLockAllFeatures" );
+        } catch ( Exception e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new OWSException( "Cannot acquire lock: " + e.getMessage(), NO_APPLICABLE_CODE );
+        }
+
+        return lock;
     }
 
     private LockManager getLockManager()
@@ -320,6 +364,7 @@ class LockFeatureHandler {
             // TODO strategy for multiple LockManagers / feature stores
             manager = master.getStoreManager().getStores()[0].getLockManager();
         } catch ( FeatureStoreException e ) {
+            LOG.debug( e.getMessage(), e );
             throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(), NO_APPLICABLE_CODE );
         }
         return manager;
