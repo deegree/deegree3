@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format.gml;
+package org.deegree.services.wfs.format.gml.request;
 
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
@@ -66,17 +66,21 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.wfs.QueryAnalyzer;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
+import org.deegree.services.wfs.format.gml.GmlFormat;
+import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Handles {@link GetPropertyValue} requests for the {@link GmlFormat}.
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
@@ -85,11 +89,11 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
     /**
      * @param storeManager
      */
-    GmlGetPropertyValueHandler( GMLFormat format ) {
+    public GmlGetPropertyValueHandler( GmlFormat format ) {
         super( format );
     }
 
-    void doGetPropertyValueResult( GetPropertyValue request, HttpResponseBuffer response )
+    public void doGetPropertyValueResult( GetPropertyValue request, HttpResponseBuffer response )
                             throws Exception {
 
         LOG.debug( "doGetPropertyValue: " + request );
@@ -213,7 +217,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    void doGetPropertyValueHits( GetPropertyValue request, HttpResponseBuffer response )
+    public void doGetPropertyValueHits( GetPropertyValue request, HttpResponseBuffer response )
                             throws FeatureStoreException, FilterEvaluationException, IOException, OWSException,
                             XMLStreamException {
 
@@ -254,5 +258,4 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         xmlStream.writeEndElement();
         xmlStream.flush();
     }
-
 }

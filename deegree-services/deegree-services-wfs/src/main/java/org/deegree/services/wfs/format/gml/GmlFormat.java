@@ -57,6 +57,10 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.format.gml.request.GmlDescribeFeatureTypeHandler;
+import org.deegree.services.wfs.format.gml.request.GmlGetFeatureHandler;
+import org.deegree.services.wfs.format.gml.request.GmlGetGmlObjectHandler;
+import org.deegree.services.wfs.format.gml.request.GmlGetPropertyValueHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,34 +77,39 @@ import org.slf4j.LoggerFactory;
  * </p>
  * 
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLFormat implements Format {
+public class GmlFormat implements Format {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFormat.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GmlFormat.class );
 
-    private GmlFormatOptions options;
+    private final GmlFormatOptions options;
 
-    private DescribeFeatureTypeHandler dftHandler;
+    private final GmlDescribeFeatureTypeHandler dftHandler;
 
-    private GmlGetFeatureHandler gfHandler;
+    private final GmlGetFeatureHandler gfHandler;
 
-    private GmlGetPropertyValueHandler gpvHandler;
+    private final GmlGetPropertyValueHandler gpvHandler;
 
-    private GmlGetGmlObjectHandler ggoHandler;
+    private final GmlGetGmlObjectHandler ggoHandler;
 
-    private WebFeatureService master;
+    private final WebFeatureService master;
 
-    public GMLFormat( WebFeatureService master, GMLVersion gmlVersion ) {
+    public GmlFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
                                              master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false );
+        this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
+        this.gfHandler = new GmlGetFeatureHandler( this );
+        this.gpvHandler = new GmlGetPropertyValueHandler( this );
+        this.ggoHandler = new GmlGetGmlObjectHandler( this );
     }
 
-    public GMLFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
+    public GmlFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
                             throws ResourceInitException {
         this.master = master;
 
@@ -171,7 +180,7 @@ public class GMLFormat implements Format {
                                              exportOriginalSchema );
 
         // initialize handlers
-        this.dftHandler = new DescribeFeatureTypeHandler( this );
+        this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
         this.ggoHandler = new GmlGetGmlObjectHandler( this );
@@ -185,7 +194,7 @@ public class GMLFormat implements Format {
     @Override
     public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
-        dftHandler.doDescribeFeatureType( request, response, this );
+        dftHandler.doDescribeFeatureType( request, response );
     }
 
     @Override
@@ -202,8 +211,6 @@ public class GMLFormat implements Format {
     @Override
     public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
                             throws Exception {
-
-        LOG.debug( "doGetGmlObject: " + request );
         ggoHandler.doSingleObjectResponse( request.getVersion(), request.getTraverseXlinkDepth(),
                                            request.getRequestedId(), response );
     }
@@ -222,7 +229,7 @@ public class GMLFormat implements Format {
     /**
      * @return the master
      */
-    WebFeatureService getMaster() {
+    public WebFeatureService getMaster() {
         return master;
     }
 
@@ -232,5 +239,4 @@ public class GMLFormat implements Format {
     public GmlFormatOptions getGmlFormatOptions() {
         return options;
     }
-
 }

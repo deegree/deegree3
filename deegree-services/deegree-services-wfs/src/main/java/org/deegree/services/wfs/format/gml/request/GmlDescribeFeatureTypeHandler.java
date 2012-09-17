@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.wfs.format.gml;
+package org.deegree.services.wfs.format.gml.request;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -87,24 +87,25 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.resources.ResourcesServlet;
-import org.deegree.services.wfs.WFSFeatureStoreManager;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.WfsFeatureStoreManager;
+import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles {@link DescribeFeatureType} requests for the {@link GMLFormat}.
+ * Handles {@link DescribeFeatureType} requests for the {@link GmlFormat}.
  * 
- * @see GMLFormat
+ * @see GmlFormat
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
+public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DescribeFeatureTypeHandler.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GmlDescribeFeatureTypeHandler.class );
 
     private static final String APPSCHEMAS = "appschemas";
 
@@ -114,11 +115,12 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
     private String ogcSchemaJarBaseURL;
 
     /**
-     * Creates a new {@link DescribeFeatureTypeHandler} instance.
+     * Creates a new {@link GmlDescribeFeatureTypeHandler} instance.
      * 
      * @param gmlFormat
+     *            never <code>null</code>
      */
-    DescribeFeatureTypeHandler( GMLFormat gmlFormat ) {
+    public GmlDescribeFeatureTypeHandler( GmlFormat gmlFormat ) {
         super( gmlFormat );
         try {
             File wsBaseDir = OGCFrontController.getServiceWorkspace().getLocation();
@@ -143,10 +145,9 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
      * </p>
      * 
      * @param request
-     *            request to be handled
+     *            request to be handled, never <code>null</code>
      * @param response
-     *            response that is used to write the result
-     * @param format
+     *            response that is used to write the result, never <code>null</code>
      * @throws OWSException
      *             if a WFS specific exception occurs, e.g. a requested feature type is not served
      * @throws XMLStreamException
@@ -154,7 +155,7 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
      * @throws IOException
      *             if an IO-error occurs
      */
-    void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, GMLFormat format )
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
 
         LOG.debug( "doDescribeFeatureType: " + request );
@@ -176,7 +177,7 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         } else {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
-            WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+            WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
             if ( options.isExportOriginalSchema() && storeManager.getStores().length == 1
                  && storeManager.getStores()[0].getSchema().getGMLSchema() != null
                  && storeManager.getStores()[0].getSchema().getGMLSchema().getVersion() == version ) {
@@ -193,7 +194,7 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                             throws XMLStreamException {
 
         Map<String, String> importMap = buildImportMap( request, importNs );
-        WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+        WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         Map<String, String> prefixToNs = storeManager.getPrefixToNs();
         GMLAppSchemaWriter exporter = new GMLAppSchemaWriter( version, targetNs, importMap, prefixToNs );
 
@@ -391,7 +392,7 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                             throws OWSException {
 
         Set<String> set = new LinkedHashSet<String>();
-        WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+        WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         if ( request.getTypeNames() == null || request.getTypeNames().length == 0 ) {
             if ( request.getNsBindings() == null ) {
                 LOG.debug( "Adding all namespaces." );
@@ -437,7 +438,7 @@ class DescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
     private Set<String> findUnhandledNs( Set<String> set ) {
         Set<String> dependentNamespaces = new HashSet<String>();
-        WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+        WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         for ( String ns : set ) {
             for ( FeatureStore fs : storeManager.getStores() ) {
                 AppSchema schema = fs.getSchema();

@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format.gml;
+package org.deegree.services.wfs.format.gml.request;
 
 import static java.math.BigInteger.ZERO;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
@@ -92,31 +92,35 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.wfs.QueryAnalyzer;
-import org.deegree.services.wfs.WFSFeatureStoreManager;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.WfsFeatureStoreManager;
+import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
+import org.deegree.services.wfs.format.gml.GmlFormat;
+import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Handles {@link GetFeature} and {@link GetFeatureWithLock} requests for the {@link GmlFormat}.
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
+public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GmlGetFeatureHandler.class );
 
     /**
      * @param options
      */
-    public GmlGetFeatureHandler( GMLFormat format ) {
+    public GmlGetFeatureHandler( GmlFormat format ) {
         super( format );
     }
 
-    void doGetFeatureResults( GetFeature request, HttpResponseBuffer response )
+    public void doGetFeatureResults( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
 
         LOG.debug( "Performing GetFeature (results) request." );
@@ -275,7 +279,7 @@ class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
+    public void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException, FeatureStoreException,
                             FilterEvaluationException {
 
@@ -575,7 +579,7 @@ class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             LockManager manager = null;
             try {
                 // TODO strategy for multiple LockManagers / feature stores
-                WFSFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+                WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
                 manager = storeManager.getStores()[0].getLockManager();
                 List<Query> queries = analyzer.getQueries().get( storeManager.getStores()[0] );
                 lock = manager.acquireLock( queries, lockAll, expiryInMilliseconds );

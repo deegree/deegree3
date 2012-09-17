@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format.gml;
+package org.deegree.services.wfs.format.gml.request;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -44,6 +44,7 @@ import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +52,9 @@ import org.slf4j.LoggerFactory;
  * Keeps track of referenced {@link GMLObject}s that have to be included in a {@link GetFeature} response.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 

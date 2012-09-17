@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format.gml;
+package org.deegree.services.wfs.format.gml.request;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -86,17 +86,19 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.wfs.QueryAnalyzer;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.format.gml.GmlFormat;
+import org.deegree.services.wfs.format.gml.GmlFormatOptions;
+import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 abstract class AbstractGmlRequestHandler {
 
@@ -106,9 +108,9 @@ abstract class AbstractGmlRequestHandler {
 
     protected final GmlFormatOptions options;
 
-    protected final GMLFormat format;
+    protected final GmlFormat format;
 
-    AbstractGmlRequestHandler( GMLFormat format ) {
+    AbstractGmlRequestHandler( GmlFormat format ) {
         this.options = format.getGmlFormatOptions();
         this.format = format;
     }

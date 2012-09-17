@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.format.gml;
+package org.deegree.services.wfs.format.gml.request;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -57,24 +57,29 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.format.gml.GmlFormat;
 
 /**
+ * Handles {@link GetGmlObject} requests for the {@link GmlFormat}.
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
+public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
 
-    GmlGetGmlObjectHandler( GMLFormat format ) {
+    public GmlGetGmlObjectHandler( GmlFormat format ) {
         super( format );
     }
 
-    void doSingleObjectResponse( Version version, String traverseXLinkDepthStr, String id, HttpResponseBuffer response )
+    public void doSingleObjectResponse( Version version, String traverseXLinkDepthStr, String id,
+                                        HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
 
         int resolveDepth = 0;

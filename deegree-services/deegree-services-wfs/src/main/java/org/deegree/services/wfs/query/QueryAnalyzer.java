@@ -33,13 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs;
+package org.deegree.services.wfs.query;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_ID;
-import static org.deegree.services.wfs.StoredQueryHandler.GET_FEATURE_BY_TYPE;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -96,6 +96,8 @@ import org.deegree.protocol.wfs.query.xml.QueryXMLAdapter;
 import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
+import org.deegree.services.wfs.WfsFeatureStoreManager;
+import org.deegree.services.wfs.WebFeatureService;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +122,7 @@ public class QueryAnalyzer {
 
     private final WebFeatureService controller;
 
-    private final WFSFeatureStoreManager service;
+    private final WfsFeatureStoreManager service;
 
     private final Set<FeatureType> requestedFts = new HashSet<FeatureType>();
 
@@ -142,7 +144,7 @@ public class QueryAnalyzer {
      * @param wfsQueries
      *            queries be performed, must not be <code>null</code>
      * @param service
-     *            {@link WFSFeatureStoreManager} to be used, must not be <code>null</code>
+     *            {@link WfsFeatureStoreManager} to be used, must not be <code>null</code>
      * @param checkInputDomain
      *            true, if geometries in query constraints should be checked against validity domain of the SRS (needed
      *            for CITE 1.1.0 compliance)
@@ -150,7 +152,7 @@ public class QueryAnalyzer {
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
     public QueryAnalyzer( List<org.deegree.protocol.wfs.query.Query> wfsQueries, WebFeatureService controller,
-                          WFSFeatureStoreManager service, boolean checkInputDomain ) throws OWSException {
+                          WfsFeatureStoreManager service, boolean checkInputDomain ) throws OWSException {
 
         this.controller = controller;
         this.service = service;

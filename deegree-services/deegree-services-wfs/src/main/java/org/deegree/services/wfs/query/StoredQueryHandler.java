@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs;
+package org.deegree.services.wfs.query;
 
 import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
@@ -67,6 +67,7 @@ import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.wfs.WebFeatureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +80,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class StoredQueryHandler {
+public class StoredQueryHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredQueryHandler.class );
 
@@ -93,7 +94,7 @@ class StoredQueryHandler {
 
     private WebFeatureService wfs;
 
-    StoredQueryHandler( WebFeatureService wfs, List<URL> storedQueryTemplates ) {
+    public StoredQueryHandler( WebFeatureService wfs, List<URL> storedQueryTemplates ) {
         this.wfs = wfs;
         URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
         storedQueryTemplates.add( url );
@@ -123,7 +124,7 @@ class StoredQueryHandler {
      * @throws IOException
      * @throws XMLStreamException
      */
-    void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response ) {
+    public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response ) {
         throw new UnsupportedOperationException( "Performing CreateStoredQuery requests is not implemented yet." );
     }
 
@@ -138,7 +139,7 @@ class StoredQueryHandler {
      * @throws XMLStreamException
      * @throws OWSException
      */
-    void doDescribeStoredQueries( DescribeStoredQueries request, HttpResponseBuffer response )
+    public void doDescribeStoredQueries( DescribeStoredQueries request, HttpResponseBuffer response )
                             throws XMLStreamException, IOException, OWSException {
 
         List<StoredQueryDefinition> returnedDescriptions = new ArrayList<StoredQueryDefinition>();
@@ -292,7 +293,7 @@ class StoredQueryHandler {
      * @throws IOException
      * @throws XMLStreamException
      */
-    void doDropStoredQuery( DropStoredQuery dropStoredQuery, HttpResponseBuffer response ) {
+    public void doDropStoredQuery( DropStoredQuery dropStoredQuery, HttpResponseBuffer response ) {
         throw new UnsupportedOperationException( "Performing DropStoredQuery requests is not implemented yet." );
     }
 
@@ -306,7 +307,7 @@ class StoredQueryHandler {
      * @throws IOException
      * @throws XMLStreamException
      */
-    void doListStoredQueries( ListStoredQueries listStoredQueries, HttpResponseBuffer response )
+    public void doListStoredQueries( ListStoredQueries listStoredQueries, HttpResponseBuffer response )
                             throws XMLStreamException, IOException {
         String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
@@ -373,5 +374,4 @@ class StoredQueryHandler {
     public URL getStoredQueryTemplate( String id ) {
         return idToUrl.get( id );
     }
-
 }
