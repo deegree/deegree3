@@ -143,7 +143,7 @@ class LockFeatureHandler {
     }
 
     private void writeLockFeatureResponse100( HttpResponseBuffer response, Lock lock )
-                            throws XMLStreamException, IOException, FeatureStoreException, OWSException {
+                            throws XMLStreamException, IOException, FeatureStoreException {
 
         String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
@@ -167,7 +167,7 @@ class LockFeatureHandler {
     }
 
     private void writeLockFeatureResponse110( HttpResponseBuffer response, Lock lock )
-                            throws XMLStreamException, IOException, FeatureStoreException, OWSException {
+                            throws XMLStreamException, IOException, FeatureStoreException {
 
         String schemaLocation = WFS_NS + " " + WFS_110_SCHEMA_URL;
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
@@ -191,7 +191,7 @@ class LockFeatureHandler {
     }
 
     private void writeLockFeatureResponse200( HttpResponseBuffer response, Lock lock )
-                            throws XMLStreamException, IOException, FeatureStoreException, OWSException {
+                            throws XMLStreamException, IOException, FeatureStoreException {
 
         String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
@@ -304,13 +304,13 @@ class LockFeatureHandler {
 
         String existingLockId = request.getExistingLockId();
         if ( existingLockId != null ) {
-            return renewLock( request, manager, expiryInMilliseconds, existingLockId );
+            return renewLock( manager, expiryInMilliseconds, existingLockId );
         }
         return acquireLock( request, manager, expiryInMilliseconds );
 
     }
 
-    private Lock renewLock( LockFeature request, LockManager manager, long expiryInMilliseconds, String existingLockId )
+    private Lock renewLock( LockManager manager, long expiryInMilliseconds, String existingLockId )
                             throws OWSException {
         Lock lock = null;
         try {
