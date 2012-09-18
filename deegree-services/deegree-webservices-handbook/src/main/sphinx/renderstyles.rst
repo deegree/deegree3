@@ -17,6 +17,20 @@ In deegree terms, each SLD or SE file will create a *style store*. In case of an
 .. tip::
   When defining styles, take note of the log file. Upon startup the log will warn you about potential problems or errors during parsing, and upon rendering warnings will be emitted when rendering is unsuccessful eg. because you had a typo in a geometry property name. When you're seeing an empty map when expecting a fancy one, check the log before reporting a bug. deegree will tolerate a lot of syntactical errors in your style files, but you're more likely to get a good result when your files validate and you have no warnings in the log.
 
+^^^^^^^^^^^^^^^^^^^^^
+SLD/SE clarifications
+^^^^^^^^^^^^^^^^^^^^^
+
+This chapter is meant to clarify deegree's behaviour when using standard SLD/SE constructs.
+
+________________________________________
+Perpendicular offset/polygon orientation
+________________________________________
+
+For polygon rendering, the orientation is always fixed, and will be corrected if a feature store yields inconsistent geometries. The outer ring is always oriented counter clockwise, inner rings are oriented clockwise.
+
+A positive perpendicular offset setting results in an offset movement in the outer direction, a negative setting moves the offset into the interior. For inner rings the effect is flipped (a positive setting moves into the interior of the inner ring, a negative setting moves into the exterior of the inner ring).
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 deegree specific extensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
