@@ -6,9 +6,9 @@ Style configuration
 
 Style resources are used to obtain information on how to render geo objects (mostly features, but also coverages) into maps. The most common use case is to reference them from a layer configuration, in order to describe how the layer is to be rendered. This chapter assumes the reader is familiar with basic SLD/SE terms. The style configurations do not depend on any other resource.
 
-In contrast to other deegree configurations the style configurations do not have a custom format. You can use standard SLD or SE documents (1.0.0 and 1.1.0 are supported), with a couple of deegree specific extensions, which are described below. Please refer to the Wiki_ for examples, and to the SLD_ and SE_ specifications for reference.
+In contrast to other deegree configurations the style configurations do not have a custom format. You can use standard SLD or SE documents (1.0.0 and 1.1.0 are supported), with a couple of deegree specific extensions, which are described below. Please refer to the Wiki1_ for examples, and to the SLD_ and SE_ specifications for reference.
 
-.. _wiki: http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration/StylesConfiguration
+.. _Wiki1: http://wiki.deegree.org/deegreeWiki/deegree3/WorkspaceConfiguration/StylesConfiguration
 .. _SLD: http://www.opengeospatial.org/standards/sld
 .. _SE: http://www.opengeospatial.org/standards/se
 
@@ -35,9 +35,9 @@ __________________________
 
 There are a couple of deegree specific functions which can be expressed as standard OGC function expressions in SLD/SE.
 
-Most of the functions are currently described in the Wiki_, but new ones will be described here (the descriptions from the wiki will be ported soon TODO TODO).
+Most of the functions are currently described in the Wiki2_, but new ones will be described here (the descriptions from the wiki will be ported soon TODO TODO).
 
-.. _wiki: http://wiki.deegree.org/deegreeWiki/deegree3/FilterFunctions
+.. _Wiki2: http://wiki.deegree.org/deegreeWiki/deegree3/FilterFunctions
 
 ---------------
 GetCurrentScale
