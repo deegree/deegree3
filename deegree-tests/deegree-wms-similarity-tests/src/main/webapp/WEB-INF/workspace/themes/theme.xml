@@ -24,6 +24,11 @@
       <Layer>contours</Layer>
     </Theme>
     <Theme>
+      <Identifier>getcurrentscale</Identifier>
+      <d:Title>getcurrentscale</d:Title>
+      <Layer>getcurrentscale</Layer>
+    </Theme>
+    <Theme>
       <Identifier>SGID500_DominantVegetation</Identifier>
       <d:Title>SGID500_DominantVegetation</d:Title>
       <Layer>dominant</Layer>

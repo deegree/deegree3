@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<sld:FeatureTypeStyle version="1.0.0" xmlns:sld="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:app="http://www.deegree.org/app">
+  <sld:Rule>
+    <sld:LineSymbolizer>
+      <sld:Stroke>
+        <sld:SvgParameter name="stroke-width">
+          <ogc:Function name="idiv">
+            <ogc:Literal>500000</ogc:Literal>
+            <ogc:Function name="GetCurrentScale" />
+          </ogc:Function>
+        </sld:SvgParameter>
+      </sld:Stroke>
+    </sld:LineSymbolizer>
+  </sld:Rule>
+</sld:FeatureTypeStyle>

@@ -36,14 +36,11 @@
 package org.deegree.filter.function.other;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.filter.function.ParameterType.ANYTYPE;
 import static org.deegree.filter.function.ParameterType.INTEGER;
-import static org.deegree.filter.function.ParameterType.STRING;
 import static org.deegree.filter.function.other.IMod.checkTwoArguments;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;

@@ -40,7 +40,6 @@ import static org.deegree.filter.function.ParameterType.INTEGER;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;

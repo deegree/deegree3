@@ -40,8 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -74,7 +72,7 @@ public class Symbolizer<T extends Styling<T>> {
 
     // TODO improve the caching, eg. implement a real cache with a limit etc.
     // NOTE: Using a synchronized map here is strictly necessary (race condition), RB / MS
-    private Map<String, T> cache = new ConcurrentHashMap<String, T>();
+    // private Map<String, T> cache = new ConcurrentHashMap<String, T>();
 
     private Continuation<T> next;
 
@@ -229,16 +227,16 @@ public class Symbolizer<T extends Styling<T>> {
             return new Pair<T, LinkedList<Geometry>>( evaluated == null ? base.copy() : evaluated.copy(), geoms );
         }
 
-        String id = f.getId();
-        if ( id != null && cache.containsKey( id ) ) {
-            return new Pair<T, LinkedList<Geometry>>( cache.get( id ), geoms );
-        }
+        // String id = f.getId();
+        // if ( id != null && cache.containsKey( id ) ) {
+        // return new Pair<T, LinkedList<Geometry>>( cache.get( id ), geoms );
+        // }
 
         if ( evaluated != null ) {
             Pair<T, LinkedList<Geometry>> pair = new Pair<T, LinkedList<Geometry>>( evaluated, geoms );
-            if ( id != null ) {
-                cache.put( id, pair.first );
-            }
+            // if ( id != null ) {
+            // cache.put( id, pair.first );
+            // }
             return pair;
         }
 
@@ -250,9 +248,9 @@ public class Symbolizer<T extends Styling<T>> {
         }
 
         next.evaluate( evald, f, evaluator );
-        if ( id != null ) {
-            cache.put( id, pair.first );
-        }
+        // if ( id != null ) {
+        // cache.put( id, pair.first );
+        // }
 
         return pair;
     }
