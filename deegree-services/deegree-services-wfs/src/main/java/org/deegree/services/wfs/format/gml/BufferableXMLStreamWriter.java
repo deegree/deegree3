@@ -44,11 +44,13 @@ import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElement;
 
 import java.io.IOException;
 import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -75,6 +77,14 @@ import org.slf4j.LoggerFactory;
 public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
     private static Logger LOG = LoggerFactory.getLogger( BufferableXMLStreamWriter.class );
+
+    private static final int MEMORY_BUFFER_SIZE_IN_BYTES = 10 * 1024 * 1024;
+
+    private static final String ELEMENT_NAME_DUMMY_LEVEL = "DummyLevel";
+
+    private static final String ELEMENT_NAME_WRAPPER = "WrapperElement";
+
+    private static final String ELEMENT_NAME_CONTENT = "Content";
 
     private final XMLStreamWriter sink;
 
@@ -107,6 +117,9 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
         XMLStreamReader inStream = getBufferedXML();
+        skipToRequiredElement( inStream, new QName( ELEMENT_NAME_CONTENT ) );
+        boolean onContentElement = true;
+
         int eventType = 0;
         while ( ( eventType = inStream.getEventType() ) != END_DOCUMENT ) {
             switch ( eventType ) {
@@ -123,15 +136,15 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                 break;
             }
             case END_ELEMENT: {
-                String localName = inStream.getLocalName();                
-                if ( !localName.equals( "WrapperElement" ) ) {
+                String localName = inStream.getLocalName();
+                if ( !localName.equals( ELEMENT_NAME_WRAPPER ) ) {
                     sink.writeEndElement();
                 }
                 break;
             }
             case START_ELEMENT: {
-                String localName = inStream.getLocalName();                
-                if ( !localName.equals( "DummyElement" ) && !localName.equals( "WrapperElement" ) ) {
+                if ( !onContentElement ) {
+                    String localName = inStream.getLocalName();
                     String nsUri = inStream.getNamespaceURI();
                     String prefix = inStream.getPrefix();
                     if ( nsUri == null || prefix == null ) {
@@ -145,6 +158,8 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                             sink.writeStartElement( nsUri, localName );
                         }
                     }
+                } else {
+                    onContentElement = false;
                 }
 
                 // copy all namespace bindings
@@ -206,23 +221,28 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                             throws XMLStreamException {
         if ( activeWriter == sink ) {
             LOG.debug( "Switching to buffered XMLStreamWriter, openElements: " + openElements );
-            buffer = new StreamBufferStore( 10 * 1024 * 1024 );
+            buffer = new StreamBufferStore( MEMORY_BUFFER_SIZE_IN_BYTES );
             XMLOutputFactory of = XMLOutputFactory.newInstance();
             activeWriter = of.createXMLStreamWriter( buffer, "UTF-8" );
-
-            activeWriter.writeStartElement( "WrapperElement" );
-            Iterator<String> namespaceIter = nsBindings.getNamespaceURIs();
-            while ( namespaceIter.hasNext() ) {
-                String ns = namespaceIter.next();
-                String prefix = nsBindings.getPrefix( ns );
-                activeWriter.writeNamespace( prefix, ns );
-                LOG.debug( prefix + "->" + ns );
-            }
-
-            for ( int i = 0; i < openElements; i++ ) {
-                activeWriter.writeStartElement( "DummyElement" );
-            }
+            writeWrapperElementWithNamespacesAndDummyLevel();
         }
+    }
+
+    private void writeWrapperElementWithNamespacesAndDummyLevel()
+                            throws XMLStreamException {
+        activeWriter.writeStartElement( ELEMENT_NAME_WRAPPER );
+        Iterator<String> namespaceIter = nsBindings.getNamespaceURIs();
+        while ( namespaceIter.hasNext() ) {
+            String ns = namespaceIter.next();
+            String prefix = nsBindings.getPrefix( ns );
+            activeWriter.writeNamespace( prefix, ns );
+            LOG.debug( prefix + "->" + ns );
+        }
+
+        for ( int i = 0; i < openElements - 1; i++ ) {
+            activeWriter.writeStartElement( ELEMENT_NAME_DUMMY_LEVEL );
+        }
+        activeWriter.writeStartElement( ELEMENT_NAME_CONTENT );
     }
 
     @Override

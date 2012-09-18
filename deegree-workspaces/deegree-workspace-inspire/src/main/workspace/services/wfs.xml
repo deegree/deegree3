@@ -17,6 +17,7 @@
     <GetFeatureResponse>
       <AdditionalSchemaLocation>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd</AdditionalSchemaLocation>
       <DisableDynamicSchema>true</DisableDynamicSchema>
+      <DisableStreaming>true</DisableStreaming>
     </GetFeatureResponse>
   </GMLFormat>
 
