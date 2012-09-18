@@ -56,7 +56,6 @@ import java.util.Collection;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -84,11 +83,11 @@ public class WMSSimilarityIntegrationTest {
 
     public WMSSimilarityIntegrationTest( Object wasXml, String request, byte[] response ) {
         // we only use .kvp for WMS
-        this.request = (String) request;
+        this.request = request;
         if ( !this.request.startsWith( "?" ) ) {
             this.request = "?" + this.request;
         }
-        this.response = (byte[]) response;
+        this.response = response;
     }
 
     @Parameters
