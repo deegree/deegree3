@@ -336,7 +336,7 @@ public class GetMap extends RequestBase {
         String psize = map.get( "PIXELSIZE" );
         if ( psize != null ) {
             try {
-                pixelSize = Double.parseDouble( psize );
+                pixelSize = Double.parseDouble( psize ) / 1000;
             } catch ( NumberFormatException e ) {
                 LOG.warn( "The value of PIXELSIZE could not be parsed as a number." );
                 LOG.trace( "Stack trace:", e );
