@@ -37,11 +37,13 @@
 package org.deegree.feature.persistence.lock;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.utils.JDBCUtils.rollbackQuietly;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.xml.namespace.QName;
@@ -135,15 +137,18 @@ class DefaultLock implements Lock {
             ResultSet rs = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
+                conn.setAutoCommit( false );                
                 stmt = conn.prepareStatement( "UPDATE LOCKS SET EXPIRES=? WHERE ID=?" );
-                stmt.setDate( 1, new java.sql.Date( expiryDate ) );
+                stmt.setTimestamp( 1, new Timestamp( expiryDate ) );
                 stmt.setString( 2, id );
                 if ( stmt.executeUpdate() != 1 ) {
                     String msg = "Could not reset expiry date for lock with id " + id;
                     throw new FeatureStoreException( msg );
                 }
                 expires = new Date( expiryDate );
+                conn.commit();
             } catch ( SQLException e ) {
+                rollbackQuietly( conn );
                 String msg = "Could not reset expiry date for lock with id " + id;
                 LOG.debug( msg, e );
                 throw new FeatureStoreException( msg, e );
