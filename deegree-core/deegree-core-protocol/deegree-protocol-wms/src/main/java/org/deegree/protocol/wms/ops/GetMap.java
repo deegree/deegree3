@@ -386,7 +386,6 @@ public class GetMap extends RequestBase {
         if ( q != null ) {
             try {
                 queryBoxSize = Double.parseDouble( q );
-                System.out.println(queryBoxSize);
             } catch ( NumberFormatException e ) {
                 LOG.warn( "The QUERYBOXSIZE parameter could not be parsed." );
             }
