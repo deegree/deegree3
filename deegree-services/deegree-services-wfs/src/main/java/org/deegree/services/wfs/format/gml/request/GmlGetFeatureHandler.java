@@ -40,6 +40,7 @@ import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.writeNamespaceIfNotBound;
+import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -84,7 +85,6 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.ProjectionClause;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
@@ -114,12 +114,23 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
     private static final Logger LOG = LoggerFactory.getLogger( GmlGetFeatureHandler.class );
 
     /**
-     * @param options
+     * Creates a new {@link GmlGetFeatureHandler} instance.
+     * 
+     * @param gmlFormat
+     *            never <code>null</code>
      */
     public GmlGetFeatureHandler( GmlFormat format ) {
         super( format );
     }
 
+    /**
+     * Performs the given {@link GetFeature} request.
+     * 
+     * @param request
+     *            request to be handled, never <code>null</code>
+     * @param response
+     *            response that is used to write the result, never <code>null</code>
+     */
     public void doGetFeatureResults( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
 
@@ -231,7 +242,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             startIndex = request.getPresentationParams().getStartIndex().intValue();
         }
 
-        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
+        GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
         gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
@@ -389,7 +400,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "unknown" );
             xmlStream.writeAttribute( "numberReturned", "0" );
-            xmlStream.writeComment( "NOTE: numberReturned attribute should be 'unknown', but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925." );
+            xmlStream.writeComment( "NOTE: numberReturned attribute should be 'unknown' as well, but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925." );
         }
 
         if ( outputFormat == GML_2 ) {

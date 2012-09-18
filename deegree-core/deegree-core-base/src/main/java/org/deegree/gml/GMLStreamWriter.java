@@ -93,7 +93,7 @@ public class GMLStreamWriter {
 
     private final GMLVersion version;
 
-    private XMLStreamWriter xmlStream;
+    private final XMLStreamWriter xmlStream;
 
     private String remoteXlinkTemplate;
 

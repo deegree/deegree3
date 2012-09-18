@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -87,7 +90,10 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
     private static final Logger LOG = LoggerFactory.getLogger( GmlGetPropertyValueHandler.class );
 
     /**
-     * @param storeManager
+     * Creates a new {@link GmlGetPropertyValueHandler} instance.
+     * 
+     * @param gmlFormat
+     *            never <code>null</code>
      */
     public GmlGetPropertyValueHandler( GmlFormat format ) {
         super( format );
@@ -129,14 +135,6 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
-        // open "wfs:ValueCollection" element
-        xmlStream.setPrefix( "wfs", WFS_200_NS );
-        xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
-        xmlStream.writeNamespace( "wfs", WFS_200_NS );
-        xmlStream.writeAttribute( "timeStamp", getTimestamp() );
-        xmlStream.writeAttribute( "numberMatched", "UNKNOWN" );
-        xmlStream.writeAttribute( "numberReturned", "UNKNOWN" );
-
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
@@ -167,6 +165,48 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
         GMLFeatureWriter featureWriter = gmlStream.getFeatureWriter();
 
+        // open "wfs:ValueCollection" element
+        xmlStream.setPrefix( "wfs", WFS_200_NS );
+        xmlStream.writeStartElement( WFS_200_NS, "ValueCollection" );
+        xmlStream.writeNamespace( "wfs", WFS_200_NS );
+        xmlStream.writeAttribute( "timeStamp", getTimestamp() );
+
+        if ( options.isDisableStreaming() ) {
+            writeValuesCached( request, analyzer, traverseXLinkDepth, xmlStream, startIndex, maxResults, evaluator,
+                               featureWriter );
+        } else {
+            writeValuesStream( request, analyzer, traverseXLinkDepth, xmlStream, startIndex, maxResults, evaluator,
+                               featureWriter );
+        }
+
+        if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
+            xmlStream.writeStartElement( WFS_200_NS, "additionalValues" );
+            xmlStream.writeStartElement( WFS_200_NS, "SimpleFeatureCollection" );
+            writeAdditionalObjects( gmlStream, additionalObjects, traverseXLinkDepth, new QName( WFS_200_NS, "member" ) );
+            xmlStream.writeEndElement();
+            xmlStream.writeEndElement();
+        }
+
+        // close container element
+        xmlStream.writeEndElement();
+        xmlStream.flush();
+
+        // append buffered parts of the stream
+        if ( ( (BufferableXMLStreamWriter) xmlStream ).hasBuffered() ) {
+            ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
+        }
+    }
+
+    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer, int traverseXLinkDepth,
+                                    XMLStreamWriter xmlStream, int startIndex, int maxResults,
+                                    GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
+                            throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
+                            UnknownCRSException, TransformationException {
+
+        xmlStream.writeAttribute( "numberMatched", "0" );
+        xmlStream.writeAttribute( "numberReturned", "0" );
+        xmlStream.writeComment( "NOTE: numberReturned/numberMatched attributes should be 'unknown', but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925." );
+
         int numberReturned = 0;
         int valuesSkipped = 0;
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
@@ -194,26 +234,54 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
                     }
                 }
             } finally {
-                LOG.debug( "Closing FeatureResultSet (stream)" );
+                rs.close();
+            }
+        }
+    }
+
+    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer, int traverseXLinkDepth,
+                                    XMLStreamWriter xmlStream, int startIndex, int maxResults,
+                                    GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
+                            throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
+                            UnknownCRSException, TransformationException {
+
+        List<TypedObjectNode> cachedValues = new LinkedList<TypedObjectNode>();
+        int numberReturned = 0;
+        int valuesSkipped = 0;
+        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
+            FeatureStore fs = fsToQueries.getKey();
+            Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
+            FeatureInputStream rs = fs.query( queries );
+            try {
+                for ( Feature member : rs ) {
+                    if ( numberReturned == maxResults ) {
+                        break;
+                    }
+                    TypedObjectNode[] values = evaluator.eval( member, request.getValueReference() );
+                    for ( TypedObjectNode value : values ) {
+                        if ( valuesSkipped < startIndex ) {
+                            valuesSkipped++;
+                        } else {
+                            cachedValues.add( value );
+                            numberReturned++;
+                            if ( numberReturned == maxResults ) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            } finally {
                 rs.close();
             }
         }
 
-        if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
-            xmlStream.writeStartElement( WFS_200_NS, "additionalValues" );
-            xmlStream.writeStartElement( WFS_200_NS, "SimpleFeatureCollection" );
-            writeAdditionalObjects( gmlStream, additionalObjects, traverseXLinkDepth, new QName( WFS_200_NS, "member" ) );
-            xmlStream.writeEndElement();
-            xmlStream.writeEndElement();
-        }
+        xmlStream.writeAttribute( "numberMatched", "" + numberReturned );
+        xmlStream.writeAttribute( "numberReturned", "" + numberReturned );
 
-        // close container element
-        xmlStream.writeEndElement();
-        xmlStream.flush();
-
-        // append buffered parts of the stream
-        if ( ( (BufferableXMLStreamWriter) xmlStream ).hasBuffered() ) {
-            ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
+        for ( TypedObjectNode value : cachedValues ) {
+            xmlStream.writeStartElement( WFS_200_NS, "member" );
+            featureWriter.export( value, 0, traverseXLinkDepth );
+            xmlStream.writeEndElement();
         }
     }
 

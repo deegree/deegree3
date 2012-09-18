@@ -39,9 +39,12 @@ import javax.xml.namespace.QName;
 
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.services.jaxb.wfs.GMLFormat;
 
 /**
+ * Configuration options for the {@link GMLFormat}.
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
  * 
@@ -74,10 +77,16 @@ public class GmlFormatOptions {
     private final boolean exportOriginalSchema;
 
     /**
+     * Creates a new {@link GmlFormatOptions} instance.
+     * 
      * @param gmlVersion
+     *            GML version, must not be <code>null</code>
      * @param responseContainerEl
+     *            can be <code>null</code> (use default <code>wfs:FeatureCollection</code> element)
      * @param responseFeatureMemberEl
+     *            can be <code>null</code> (use default <code>wfs:featureMember/wfs:member</code> element)
      * @param schemaLocation
+     *            can be <code>null</code> ()
      * @param disableStreaming
      * @param generateBoundedByForFeatures
      * @param queryMaxFeatures
@@ -85,7 +94,7 @@ public class GmlFormatOptions {
      * @param formatter
      * @param appSchemaBaseURL
      * @param mimeType
-     * @param exportOriginalSchema 
+     * @param exportOriginalSchema
      */
     public GmlFormatOptions( GMLVersion gmlVersion, QName responseContainerEl, QName responseFeatureMemberEl,
                              String schemaLocation, boolean disableStreaming, boolean generateBoundedByForFeatures,

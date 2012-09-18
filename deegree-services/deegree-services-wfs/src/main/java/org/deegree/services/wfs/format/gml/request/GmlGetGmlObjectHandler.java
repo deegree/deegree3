@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -57,6 +57,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -74,13 +75,30 @@ import org.deegree.services.wfs.format.gml.GmlFormat;
  */
 public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
 
+    /**
+     * Creates a new {@link GmlGetGmlObjectHandler} instance.
+     * 
+     * @param gmlFormat
+     *            never <code>null</code>
+     */
     public GmlGetGmlObjectHandler( GmlFormat format ) {
         super( format );
     }
 
-    public void doSingleObjectResponse( Version version, String traverseXLinkDepthStr, String id,
-                                        HttpResponseBuffer response )
+    /**
+     * Performs the given {@link GetFeature} request.
+     * 
+     * @param request
+     *            request to be handled, never <code>null</code>
+     * @param response
+     *            response that is used to write the result, never <code>null</code>
+     */
+    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
+
+        Version version = request.getVersion();
+        String traverseXLinkDepthStr = request.getTraverseXlinkDepth();
+        String id = request.getRequestedId();
 
         int resolveDepth = 0;
         if ( traverseXLinkDepthStr != null ) {
@@ -141,5 +159,4 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
             throw new OWSException( msg, NO_APPLICABLE_CODE );
         }
     }
-
 }

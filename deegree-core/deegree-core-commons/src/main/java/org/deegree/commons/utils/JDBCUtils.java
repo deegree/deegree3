@@ -243,4 +243,14 @@ public final class JDBCUtils {
             throw new SQLException( msg, e );
         }
     }
+
+    public static void rollbackQuietly(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch ( SQLException e ) {
+                // nothing to do
+            }
+        }
+    }
 }

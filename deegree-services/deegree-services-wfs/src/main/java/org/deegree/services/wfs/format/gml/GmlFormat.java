@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -87,6 +87,8 @@ public class GmlFormat implements Format {
 
     private static final Logger LOG = LoggerFactory.getLogger( GmlFormat.class );
 
+    private final WebFeatureService master;
+
     private final GmlFormatOptions options;
 
     private final GmlDescribeFeatureTypeHandler dftHandler;
@@ -97,8 +99,14 @@ public class GmlFormat implements Format {
 
     private final GmlGetGmlObjectHandler ggoHandler;
 
-    private final WebFeatureService master;
-
+    /**
+     * Creates a new {@link GmlFormat} instance with default behaviour for the specified GML version.
+     * 
+     * @param master
+     *            service that uses this format, must not be <code>null</code>
+     * @param gmlVersion
+     *            GML version, must not be <code>null</code>
+     */
     public GmlFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
@@ -109,6 +117,15 @@ public class GmlFormat implements Format {
         this.ggoHandler = new GmlGetGmlObjectHandler( this );
     }
 
+    /**
+     * Creates a new {@link GmlFormat} instance with user-defined configuration options.
+     * 
+     * @param master
+     *            service that uses this format, must not be <code>null</code>
+     * @param formatDef
+     *            JAXB configuration options, must not be <code>null</code>
+     * @throws ResourceInitException
+     */
     public GmlFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
                             throws ResourceInitException {
         this.master = master;
@@ -179,7 +196,6 @@ public class GmlFormat implements Format {
                                              checkAreaOfUse, formatter, appSchemaBaseURL, mimeType,
                                              exportOriginalSchema );
 
-        // initialize handlers
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
@@ -211,8 +227,7 @@ public class GmlFormat implements Format {
     @Override
     public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
                             throws Exception {
-        ggoHandler.doSingleObjectResponse( request.getVersion(), request.getTraverseXlinkDepth(),
-                                           request.getRequestedId(), response );
+        ggoHandler.doGetGmlObject( request, response );
     }
 
     @Override
@@ -227,14 +242,18 @@ public class GmlFormat implements Format {
     }
 
     /**
-     * @return the master
+     * Returns the service instance that uses this format.
+     * 
+     * @return service that uses this format, must not be <code>null</code>
      */
     public WebFeatureService getMaster() {
         return master;
     }
 
     /**
-     * @return the options to control GML output
+     * Returns the configured GML output options.
+     * 
+     * @return the configured options to control GML output, never <code>null</code>
      */
     public GmlFormatOptions getGmlFormatOptions() {
         return options;
