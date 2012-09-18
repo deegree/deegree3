@@ -42,6 +42,7 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_NS;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_SCHEMA_URL;
+import static org.deegree.protocol.wfs.WFSConstants.QUERY_ID_GET_FEATURE_BY_ID;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -207,8 +208,8 @@ abstract class AbstractGmlRequestHandler {
                            + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
             } else if ( VERSION_200.equals( version ) ) {
                 template = baseUrl + "REQUEST=GetFeature&OUTPUTFORMAT="
-                           + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&STOREDQUERY_ID=urn:ogc:def:query:OGC-WFS::GetFeatureById&ID={}#{}";
+                           + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) + "&STOREDQUERY_ID="
+                           + QUERY_ID_GET_FEATURE_BY_ID + "&ID={}#{}";
             } else {
                 throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED", version ) );
             }
