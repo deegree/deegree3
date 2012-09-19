@@ -50,10 +50,8 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +61,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -785,76 +782,6 @@ public class WebFeatureService extends AbstractOWS {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
-    }
-
-    /**
-     * Returns the value for the 'xsi:schemaLocation' attribute to be included in a <code>GetGmlObject</code> or
-     * <code>GetFeature</code> response.
-     * 
-     * @param version
-     *            WFS protocol version, must not be <code>null</code>
-     * @param gmlVersion
-     *            requested GML version, must not be <code>null</code>
-     * @param fts
-     *            types of features included in the response, must not be <code>null</code>
-     * @return schemaLocation value
-     */
-    public static String getSchemaLocation( Version version, GMLVersion gmlVersion, QName... fts ) {
-
-        StringBuilder baseUrl = new StringBuilder();
-
-        baseUrl.append( OGCFrontController.getHttpGetURL() );
-        baseUrl.append( "SERVICE=WFS&VERSION=" );
-        baseUrl.append( version );
-        baseUrl.append( "&REQUEST=DescribeFeatureType&OUTPUTFORMAT=" );
-
-        try {
-            if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
-                baseUrl.append( "XMLSCHEMA" );
-            } else if ( VERSION_200.equals( version ) && gmlVersion == GMLVersion.GML_32 ) {
-                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
-            } else {
-                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );
-            }
-
-            if ( fts.length > 0 ) {
-
-                baseUrl.append( "&TYPENAME=" );
-
-                Map<String, String> bindings = new HashMap<String, String>();
-                for ( int i = 0; i < fts.length; i++ ) {
-                    QName ftName = fts[i];
-                    bindings.put( ftName.getPrefix(), ftName.getNamespaceURI() );
-                    baseUrl.append( URLEncoder.encode( ftName.getPrefix(), "UTF-8" ) );
-                    baseUrl.append( ':' );
-                    baseUrl.append( URLEncoder.encode( ftName.getLocalPart(), "UTF-8" ) );
-                    if ( i != fts.length - 1 ) {
-                        baseUrl.append( ',' );
-                    }
-                }
-
-                if ( !VERSION_100.equals( version ) ) {
-                    baseUrl.append( "&NAMESPACE=xmlns(" );
-                    int i = 0;
-                    for ( Entry<String, String> entry : bindings.entrySet() ) {
-                        baseUrl.append( URLEncoder.encode( entry.getKey(), "UTF-8" ) );
-                        baseUrl.append( '=' );
-                        baseUrl.append( URLEncoder.encode( entry.getValue(), "UTF-8" ) );
-                        if ( i != bindings.size() - 1 ) {
-                            baseUrl.append( ',' );
-                        }
-                    }
-                    baseUrl.append( ')' );
-                }
-            }
-        } catch ( UnsupportedEncodingException e ) {
-            // should never happen (UTF-8 *is* known to Java)
-        }
-
-        if ( fts.length > 0 ) {
-            return fts[0].getNamespaceURI() + " " + baseUrl;
-        }
-        return baseUrl.toString();
     }
 
     private Version getVersion( String versionString )

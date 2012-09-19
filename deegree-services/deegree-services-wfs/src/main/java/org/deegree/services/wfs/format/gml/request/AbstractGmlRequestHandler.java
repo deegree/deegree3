@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -58,8 +60,11 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
@@ -87,7 +92,6 @@ import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.deegree.services.wfs.format.gml.GmlFormatOptions;
 import org.deegree.services.wfs.query.QueryAnalyzer;
@@ -104,6 +108,8 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractGmlRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGmlRequestHandler.class );
+    
+    private static final QName WFS_FEATURECOLLECTION_NAME = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
 
     final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
 
@@ -229,54 +235,63 @@ abstract class AbstractGmlRequestHandler {
      * @return value for the <code>xsi:schemaLocation</code> attribute, never <code>null</code>
      */
     protected String getSchemaLocation( Version requestVersion, Collection<FeatureType> requestedFts ) {
-
-        GMLVersion gmlVersion = options.getGmlVersion();
-
-        String schemaLocation = null;
-        if ( !VERSION_200.equals( requestVersion ) ) {
-            schemaLocation = options.getSchemaLocation();
-        } else {
-            schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL + " " + GML32_NS + " " + GML32_SCHEMA_URL;
+        if ( VERSION_200.equals( requestVersion ) ) {
+            return getSchemaLocationForWfs200( requestedFts );
         }
         if ( options.getResponseContainerEl() == null ) {
-            // use "wfs:FeatureCollection" then
-            QName wfsFeatureCollection = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
-            if ( wfsFeatureCollection.equals( options.getResponseContainerEl() ) ) {
-                if ( VERSION_100.equals( requestVersion ) ) {
-                    if ( GML_2 == gmlVersion ) {
-                        schemaLocation = WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
-                    } else {
-                        schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
-                                                                              wfsFeatureCollection );
-                    }
-                } else if ( VERSION_110.equals( requestVersion ) ) {
-                    if ( GML_31 == gmlVersion ) {
-                        schemaLocation = WFS_NS + " " + WFS_110_SCHEMA_URL;
-                    } else {
-                        schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion,
-                                                                              wfsFeatureCollection );
-                    }
-                }
+            if ( VERSION_100.equals( requestVersion ) ) {
+                return getSchemaLocationForWfs100( requestedFts );
+            } else if ( VERSION_110.equals( requestVersion ) ) {
+                return getSchemaLocationForWfs110( requestedFts );
             }
         }
+        return getCustomSchemaLocationForWfs100Or110( requestVersion, requestedFts );
+    }
 
-        if ( requestedFts == null ) {
-            requestedFts = format.getMaster().getStoreManager().getFeatureTypes();
+    private String getSchemaLocationForWfs100( Collection<FeatureType> requestedFts ) {
+        GMLVersion gmlVersion = options.getGmlVersion();
+        if ( GML_2 == gmlVersion ) {
+            return WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
         }
+        String schemaLocation = getSchemaLocation( VERSION_100, gmlVersion, WFS_FEATURECOLLECTION_NAME );
+        return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( VERSION_100, gmlVersion, requestedFts );
+    }
 
-        QName[] requestedFtNames = new QName[requestedFts.size()];
-        int i = 0;
-        for ( FeatureType requestedFt : requestedFts ) {
-            requestedFtNames[i++] = requestedFt.getName();
+    private String getSchemaLocationForWfs110( Collection<FeatureType> requestedFts ) {
+        GMLVersion gmlVersion = options.getGmlVersion();
+        if ( GML_31 == gmlVersion ) {
+            return WFS_NS + " " + WFS_110_SCHEMA_URL;
         }
+        String schemaLocation = getSchemaLocation( VERSION_110, gmlVersion, WFS_FEATURECOLLECTION_NAME );
+        return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( VERSION_110, gmlVersion, requestedFts );
+    }
 
-        if ( schemaLocation == null || schemaLocation.isEmpty() ) {
-            schemaLocation = WebFeatureService.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
-        } else {
-            schemaLocation += " " + WebFeatureService.getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
+    private String getSchemaLocationForWfs200( Collection<FeatureType> requestedFts ) {
+        String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL + " " + GML32_NS + " " + GML32_SCHEMA_URL;
+        GMLVersion gmlVersion = options.getGmlVersion();
+        return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( VERSION_200, gmlVersion, requestedFts );
+    }
+
+    private String getCustomSchemaLocationForWfs100Or110( Version requestVersion, Collection<FeatureType> requestedFts ) {
+        String schemaLocation = "";
+        if ( options.getSchemaLocation() != null ) {
+            schemaLocation = options.getSchemaLocation();
         }
+        GMLVersion gmlVersion = options.getGmlVersion();
+        return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( requestVersion, gmlVersion, requestedFts );
+    }
 
-        return schemaLocation;
+    private String getSchemaLocationPartForFeatureTypes( Version requestVersion, GMLVersion gmlVersion,
+                                                         Collection<FeatureType> requestedFts ) {
+        QName[] requestedFtNames = new QName[0];
+        if ( requestedFts != null ) {
+            requestedFtNames = new QName[requestedFts.size()];
+            int i = 0;
+            for ( FeatureType requestedFt : requestedFts ) {
+                requestedFtNames[i++] = requestedFt.getName();
+            }
+        }
+        return getSchemaLocation( requestVersion, gmlVersion, requestedFtNames );
     }
 
     protected QName determineFeatureMemberElement( Version version ) {
@@ -343,6 +358,16 @@ abstract class AbstractGmlRequestHandler {
         return prefixToNs;
     }
 
+    public Set<String> getAppSchemaNamespaces() {
+        Set<String> set = new LinkedHashSet<String>();
+        for ( FeatureStore fs : format.getMaster().getStoreManager().getStores() ) {
+            set.addAll( fs.getSchema().getAppNamespaces() );
+        }
+        set.remove( GMLNS );
+        set.remove( GML3_2_NS );        
+        return set;
+    }
+
     protected String getTimestamp() {
         DateTime dateTime = getCurrentDateTimeWithoutMilliseconds();
         return ISO8601Converter.formatDateTime( dateTime );
@@ -352,6 +377,80 @@ abstract class AbstractGmlRequestHandler {
         long msSince1970 = new Date().getTime();
         msSince1970 = msSince1970 / 1000 * 1000;
         return new DateTime( new Date( msSince1970 ), GMT );
+    }
+
+    /**
+     * Returns the value for the 'xsi:schemaLocation' attribute to be included in a <code>GetGmlObject</code> or
+     * <code>GetFeature</code> response.
+     * 
+     * @param version
+     *            WFS protocol version, must not be <code>null</code>
+     * @param gmlVersion
+     *            requested GML version, must not be <code>null</code>
+     * @param fts
+     *            types of features included in the response, may be empty, but must not be <code>null</code>
+     * @return schemaLocation value
+     */
+    protected String getSchemaLocation( Version version, GMLVersion gmlVersion, QName... fts ) {
+
+        StringBuilder baseUrl = new StringBuilder();
+
+        baseUrl.append( OGCFrontController.getHttpGetURL() );
+        baseUrl.append( "SERVICE=WFS&VERSION=" );
+        baseUrl.append( version );
+        baseUrl.append( "&REQUEST=DescribeFeatureType&OUTPUTFORMAT=" );
+
+        try {
+            if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
+                baseUrl.append( "XMLSCHEMA" );
+            } else if ( VERSION_200.equals( version ) && gmlVersion == GMLVersion.GML_32 ) {
+                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
+            } else {
+                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );
+            }
+
+            if ( fts.length > 0 ) {
+
+                baseUrl.append( "&TYPENAME=" );
+
+                Map<String, String> bindings = new HashMap<String, String>();
+                for ( int i = 0; i < fts.length; i++ ) {
+                    QName ftName = fts[i];
+                    bindings.put( ftName.getPrefix(), ftName.getNamespaceURI() );
+                    baseUrl.append( URLEncoder.encode( ftName.getPrefix(), "UTF-8" ) );
+                    baseUrl.append( ':' );
+                    baseUrl.append( URLEncoder.encode( ftName.getLocalPart(), "UTF-8" ) );
+                    if ( i != fts.length - 1 ) {
+                        baseUrl.append( ',' );
+                    }
+                }
+
+                if ( !VERSION_100.equals( version ) ) {
+                    baseUrl.append( "&NAMESPACE=xmlns(" );
+                    int i = 0;
+                    for ( Entry<String, String> entry : bindings.entrySet() ) {
+                        baseUrl.append( URLEncoder.encode( entry.getKey(), "UTF-8" ) );
+                        baseUrl.append( '=' );
+                        baseUrl.append( URLEncoder.encode( entry.getValue(), "UTF-8" ) );
+                        if ( i != bindings.size() - 1 ) {
+                            baseUrl.append( ',' );
+                        }
+                    }
+                    baseUrl.append( ')' );
+                }
+            }
+        } catch ( UnsupportedEncodingException e ) {
+            // should never happen (UTF-8 *is* known to Java)
+        }
+
+        String ns = null;
+        if ( fts.length > 0 ) {
+            ns = fts[0].getNamespaceURI();
+        } else {
+            ns = getAppSchemaNamespaces().iterator().next();
+        }
+
+        return ns + " " + baseUrl.toString();
     }
 
 }

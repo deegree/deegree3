@@ -61,7 +61,6 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 
 /**
@@ -119,7 +118,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
 
         String schemaLocation = null;
         if ( o instanceof Feature ) {
-            schemaLocation = WebFeatureService.getSchemaLocation( version, gmlVersion, ( (Feature) o ).getName() );
+            schemaLocation = getSchemaLocation( version, gmlVersion, ( (Feature) o ).getName() );
         } else if ( o instanceof Geometry ) {
             switch ( gmlVersion ) {
             case GML_2:

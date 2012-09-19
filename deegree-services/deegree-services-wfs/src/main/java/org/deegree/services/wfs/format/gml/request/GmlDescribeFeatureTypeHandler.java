@@ -391,36 +391,16 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
     private List<String> determineRequiredNamespaces( DescribeFeatureType request )
                             throws OWSException {
 
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set;
         WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         if ( request.getTypeNames() == null || request.getTypeNames().length == 0 ) {
             if ( request.getNsBindings() == null ) {
-                LOG.debug( "Adding all namespaces." );
-                for ( FeatureStore fs : storeManager.getStores() ) {
-                    set.addAll( fs.getSchema().getAppNamespaces() );
-                }
+                set = getAppSchemaNamespaces();
             } else {
-                LOG.debug( "Adding requested namespaces." );
-                for ( String ns : request.getNsBindings().values() ) {
-                    for ( FeatureStore fs : storeManager.getStores() ) {
-                        AppSchema schema = fs.getSchema();
-                        if ( schema.getNamespaceBindings().values().contains( ns ) ) {
-                            set.add( ns );
-                            break;
-                        }
-                    }
-                }
+                set = getExplicitlyRequestedNamespaces( request, storeManager );
             }
         } else {
-            LOG.debug( "Adding namespaces of requested feature types." );
-            for ( QName ftName : request.getTypeNames() ) {
-                FeatureType ft = storeManager.lookupFeatureType( ftName );
-                if ( ft == null ) {
-                    throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
-                                            OWSException.INVALID_PARAMETER_VALUE, "typenames" );
-                }
-                set.add( ft.getName().getNamespaceURI() );
-            }
+            set = getNamespacesForRequestedFeatureTypes( request, storeManager );
         }
 
         // add dependent namespaces
@@ -434,6 +414,38 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         set.remove( GML3_2_NS );
 
         return new ArrayList<String>( set );
+    }
+
+    private Set<String> getNamespacesForRequestedFeatureTypes( DescribeFeatureType request,
+                                                               WfsFeatureStoreManager storeManager )
+                            throws OWSException {
+        Set<String> set = new LinkedHashSet<String>();
+        LOG.debug( "Adding namespaces of requested feature types." );
+        for ( QName ftName : request.getTypeNames() ) {
+            FeatureType ft = storeManager.lookupFeatureType( ftName );
+            if ( ft == null ) {
+                throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
+                                        OWSException.INVALID_PARAMETER_VALUE, "typenames" );
+            }
+            set.add( ft.getName().getNamespaceURI() );
+        }
+        return set;
+    }
+
+    private Set<String> getExplicitlyRequestedNamespaces( DescribeFeatureType request,
+                                                          WfsFeatureStoreManager storeManager ) {
+
+        Set<String> set = new LinkedHashSet<String>();
+        for ( String ns : request.getNsBindings().values() ) {
+            for ( FeatureStore fs : storeManager.getStores() ) {
+                AppSchema schema = fs.getSchema();
+                if ( schema.getNamespaceBindings().values().contains( ns ) ) {
+                    set.add( ns );
+                    break;
+                }
+            }
+        }
+        return set;
     }
 
     private Set<String> findUnhandledNs( Set<String> set ) {
