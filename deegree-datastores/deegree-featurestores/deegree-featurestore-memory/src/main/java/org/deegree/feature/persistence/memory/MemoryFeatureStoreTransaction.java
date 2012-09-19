@@ -518,11 +518,24 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( Feature replacement, Filter filter, Lock lock )
+    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Replace is not supported yet." );
+        GenericFeatureCollection col = new GenericFeatureCollection();
+        col.add( replacement );
+        if ( filter instanceof IdFilter ) {
+            performDelete( (IdFilter) filter, lock );
+        } else {
+            for ( FeatureType ft : fs.getSchema().getFeatureTypes( null, false, false ) ) {
+                performDelete( ft.getName(), (OperatorFilter) filter, lock );
+            }
+        }
+        List<String> ids = performInsert( col, idGenMode );
+        if ( ids.isEmpty() || ids.size() > 1 ) {
+            throw new FeatureStoreException( "Unable to determine new feature id." );
+        }
+        return ids.get( 0 );
     }
-    
+
     @Override
     public void rollback()
                             throws FeatureStoreException {

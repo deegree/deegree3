@@ -142,11 +142,13 @@ public interface FeatureStoreTransaction {
      *            selects the feature instance to be replaced, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
+     * @param idGenMode
+     *            never <code>null</code>
      * @return identifier of the replaced feature, can be <code>null</code> (filter didn't match)
      * @throws FeatureStoreException
      *             if the replace fails
      */
-    public String performReplace( Feature replacement, Filter filter, Lock lock )
+    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException;
 
     /**
