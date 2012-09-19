@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ResolveState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,8 +163,14 @@ public class AbstractGMLObjectWriter {
         }
     }
 
-    protected void endEmptyElement() throws XMLStreamException {
+    protected void endEmptyElement()
+                            throws XMLStreamException {
         // signal "end" of empty element to get rid of locally bound namespace prefixes
         writer.writeCharacters( "" );
+    }
+
+    protected ResolveState getResolveStateForNextLevel( ResolveState state ) {
+        return new ResolveState( null, state.getDepth(), state.getCurrentLevel() + 1, state.getMode(),
+                                 state.getRemoteTimeoutInMilliseconds() );
     }
 }

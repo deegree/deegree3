@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
+import static org.deegree.commons.tom.ResolveMode.ALL;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
@@ -56,6 +57,7 @@ import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ResolveState;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
@@ -113,6 +115,13 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
             }
         }
 
+        long remoteTimeoutInMilliseconds = 60 * 1000;
+        if ( request.getTraverseXlinkExpiry() != null ) {
+            remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
+        }
+
+        ResolveState resolveState = new ResolveState( null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds );
+
         GMLObject o = retrieveObject( id );
         GMLVersion gmlVersion = options.getGmlVersion();
 
@@ -144,7 +153,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
         gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( version, gmlVersion ) );
-        gmlStream.setXLinkDepth( resolveDepth );
+        gmlStream.setInitialResolveState( resolveState );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setNamespaceBindings( format.getMaster().getStoreManager().getPrefixToNs() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );

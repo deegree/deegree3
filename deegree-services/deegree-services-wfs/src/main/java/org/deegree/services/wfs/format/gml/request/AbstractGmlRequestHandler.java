@@ -88,6 +88,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ResolveState;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
@@ -108,7 +109,7 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractGmlRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGmlRequestHandler.class );
-    
+
     private static final QName WFS_FEATURECOLLECTION_NAME = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
 
     final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
@@ -143,25 +144,29 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeAdditionalObjects( GMLStreamWriter gmlStream, XlinkedObjectsHandler additionalObjects,
-                                           int traverseXLinkDepth, QName featureMemberEl )
+                                           QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        int currentLevel = 1;
+        ResolveState resolveState = gmlStream.getInitialResolveState();
         Collection<GMLReference<?>> includeObjects = additionalObjects.getAdditionalRefs();
+        int traverseXLinkDepth = resolveState.getDepth();
+        int currentLevel = 1;
 
         while ( ( traverseXLinkDepth == -1 || currentLevel <= traverseXLinkDepth ) && !includeObjects.isEmpty() ) {
             additionalObjects.clear();
+            resolveState = new ResolveState( null, resolveState.getDepth(), resolveState.getCurrentLevel() + 1,
+                                             resolveState.getMode(), resolveState.getRemoteTimeoutInMilliseconds() );
             for ( GMLReference<?> gmlReference : includeObjects ) {
                 Feature feature = (Feature) gmlReference;
-                writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), currentLevel, featureMemberEl );
+                writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), resolveState, featureMemberEl );
             }
             includeObjects = additionalObjects.getAdditionalRefs();
             currentLevel++;
         }
     }
 
-    protected void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream, int level,
-                                       QName featureMemberEl )
+    protected void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
+                                       ResolveState resolveState, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( gmlStream.isObjectExported( member.getId() ) ) {
@@ -173,7 +178,7 @@ abstract class AbstractGmlRequestHandler {
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
             xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
-            gmlStream.getFeatureWriter().export( member, level );
+            gmlStream.getFeatureWriter().export( member, resolveState );
             xmlStream.writeEndElement();
         }
     }
@@ -364,7 +369,7 @@ abstract class AbstractGmlRequestHandler {
             set.addAll( fs.getSchema().getAppNamespaces() );
         }
         set.remove( GMLNS );
-        set.remove( GML3_2_NS );        
+        set.remove( GML3_2_NS );
         return set;
     }
 

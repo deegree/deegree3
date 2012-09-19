@@ -37,6 +37,7 @@
 package org.deegree.feature.persistence.sql.blob;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.deegree.commons.tom.ResolveMode.NONE;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -71,6 +72,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ResolveState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +150,7 @@ public class BlobCodec {
         gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCrs( crs );
         gmlWriter.setRemoteXLinkTemplate( "#{}" );
-        gmlWriter.setXLinkDepth( 0 );
+        gmlWriter.setInitialResolveState( new ResolveState( null, 0, 0, NONE, 0 ) );
         gmlWriter.setExportExtraProps( true );
         gmlWriter.write( object );
         gmlWriter.close();
@@ -159,7 +161,7 @@ public class BlobCodec {
             gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
             gmlWriter.setOutputCrs( crs );
             gmlWriter.setRemoteXLinkTemplate( "#{}" );
-            gmlWriter.setXLinkDepth( 0 );
+            gmlWriter.setInitialResolveState( new ResolveState( null, 0, 0, NONE, 0 ) );
             gmlWriter.write( object );
             gmlWriter.close();
             os.close();

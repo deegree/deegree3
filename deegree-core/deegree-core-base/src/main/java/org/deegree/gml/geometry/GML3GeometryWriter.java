@@ -1558,7 +1558,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         if ( geom.getProperties() != null ) {
             for ( Property prop : geom.getProperties() ) {
                 if ( isStandardProperty( prop.getName() ) ) {
-                    gmlStreamWriter.getFeatureWriter().export( prop, 0, 0 );
+                    gmlStreamWriter.getFeatureWriter().export( prop );
                 }
             }
         }
@@ -1579,7 +1579,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         if ( geom.getProperties() != null ) {
             for ( Property prop : geom.getProperties() ) {
                 if ( !isStandardProperty( prop.getName() ) ) {
-                    gmlStreamWriter.getFeatureWriter().export( prop, 0, 0 );
+                    gmlStreamWriter.getFeatureWriter().export( prop );
                 }
             }
         }

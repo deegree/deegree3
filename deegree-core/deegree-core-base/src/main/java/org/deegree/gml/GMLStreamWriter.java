@@ -97,8 +97,6 @@ public class GMLStreamWriter {
 
     private String remoteXlinkTemplate;
 
-    private int inlineXLinklevels;
-
     private ICRS crs;
 
     private CoordinateFormatter formatter;
@@ -111,8 +109,6 @@ public class GMLStreamWriter {
 
     private List<ProjectionClause> projection;
 
-    private int traverseXLinkExpiry;
-
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
     private GMLForwardReferenceHandler additionalObjectHandler;
@@ -124,6 +120,8 @@ public class GMLStreamWriter {
     private boolean exportBoundedByForFeatures;
 
     private final Set<String> exportedIds = new HashSet<String>();
+
+    private ResolveState initialResolveState;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -215,33 +213,12 @@ public class GMLStreamWriter {
         this.prefixToNs.putAll( prefixToNs );
     }
 
-    /**
-     * Returns the number of xlink levels that will be expanded inside property elements.
-     * 
-     * @return the number of xlink levels that will be expanded inside property elements, -1 means to expand all levels
-     */
-    public int getXlinkDepth() {
-        return inlineXLinklevels;
+    public ResolveState getInitialResolveState() {
+        return initialResolveState;
     }
 
-    /**
-     * Controls the number of xlink levels that will be expanded inside property elements.
-     * 
-     * @param inlineXLinklevels
-     *            number of xlink levels to be expanded, -1 expands to any depth
-     */
-    public void setXLinkDepth( int inlineXLinklevels ) {
-        this.inlineXLinklevels = inlineXLinklevels;
-    }
-
-    /**
-     * Controls the number number of seconds to wait when remote xlinks are expanded inside property elements.
-     * 
-     * @param traverseXLinkExpiry
-     *            number of seconds to wait for the resolving of remote xlinks, -1 sets no timeout
-     */
-    public void setXLinkExpiry( int traverseXLinkExpiry ) {
-        this.traverseXLinkExpiry = traverseXLinkExpiry;
+    public void setInitialResolveState( ResolveState resolveState ) {
+        initialResolveState = resolveState;
     }
 
     /**

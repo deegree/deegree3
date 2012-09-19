@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -163,22 +165,28 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
             LOG.warn( "Unable to resolve external object reference: " + uri
                       + ". Resolving of urn references is not implemented yet." );
         } else {
-            try {
-                URL resolvedURL = null;
-                if ( baseURL != null ) {
-                    resolvedURL = new URL( new URL( baseURL ), uri );
-                } else {
-                    resolvedURL = new URL( uri );
-                }
-                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, resolvedURL );
-                gmlReader.setApplicationSchema( schema );
-                object = gmlReader.read();
-                gmlReader.close();
-                LOG.debug( "Read GML object: id='" + object.getId() + "'" );
-            } catch ( Throwable e ) {
-                String msg = "Unable to resolve external object reference to '" + uri + "': " + e.getMessage();
-                throw new ReferenceResolvingException( msg );
+            object = fetchExternalGmlObject( uri, baseURL );
+        }
+        return object;
+    }
+
+    private GMLObject fetchExternalGmlObject( String uri, String baseURL ) {
+        GMLObject object = null;
+        try {
+            URL resolvedURL = null;
+            if ( baseURL != null ) {
+                resolvedURL = new URL( new URL( baseURL ), uri );
+            } else {
+                resolvedURL = new URL( uri );
             }
+            GMLStreamReader gmlReader = createGMLStreamReader( version, resolvedURL );
+            gmlReader.setApplicationSchema( schema );
+            object = gmlReader.read();
+            gmlReader.close();
+            LOG.debug( "Read GML object: id='" + object.getId() + "'" );
+        } catch ( Throwable e ) {
+            String msg = "Unable to resolve external object reference to '" + uri + "': " + e.getMessage();
+            throw new ReferenceResolvingException( msg );
         }
         return object;
     }

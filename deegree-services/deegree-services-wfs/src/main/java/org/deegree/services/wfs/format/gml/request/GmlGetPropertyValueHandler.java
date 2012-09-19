@@ -39,7 +39,6 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -64,6 +63,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ResolveState;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
@@ -126,7 +126,6 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
                 }
             }
         }
-        BigInteger resolveTimeout = request.getResolveParams().getTimeout();
 
         // quick check if local references in the output can be ruled out
         boolean localReferencesPossible = localReferencesPossible( analyzer, traverseXLinkDepth );
@@ -137,8 +136,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
-        gmlStream.setXLinkDepth( traverseXLinkDepth );
-        gmlStream.setXLinkExpiry( resolveTimeout == null ? -1 : resolveTimeout.intValue() );
+        gmlStream.setInitialResolveState( new ResolveState( request.getResolveParams() ) );
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
@@ -172,17 +170,17 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         xmlStream.writeAttribute( "timeStamp", getTimestamp() );
 
         if ( options.isDisableStreaming() ) {
-            writeValuesCached( request, analyzer, traverseXLinkDepth, xmlStream, startIndex, maxResults, evaluator,
-                               featureWriter );
+            writeValuesCached( request, analyzer, gmlStream.getInitialResolveState(), xmlStream, startIndex,
+                               maxResults, evaluator, featureWriter );
         } else {
-            writeValuesStream( request, analyzer, traverseXLinkDepth, xmlStream, startIndex, maxResults, evaluator,
-                               featureWriter );
+            writeValuesStream( request, analyzer, gmlStream.getInitialResolveState(), xmlStream, startIndex,
+                               maxResults, evaluator, featureWriter );
         }
 
         if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
             xmlStream.writeStartElement( WFS_200_NS, "additionalValues" );
             xmlStream.writeStartElement( WFS_200_NS, "SimpleFeatureCollection" );
-            writeAdditionalObjects( gmlStream, additionalObjects, traverseXLinkDepth, new QName( WFS_200_NS, "member" ) );
+            writeAdditionalObjects( gmlStream, additionalObjects, new QName( WFS_200_NS, "member" ) );
             xmlStream.writeEndElement();
             xmlStream.writeEndElement();
         }
@@ -197,7 +195,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer, int traverseXLinkDepth,
+    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer, ResolveState resolveState,
                                     XMLStreamWriter xmlStream, int startIndex, int maxResults,
                                     GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
@@ -224,7 +222,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
                             valuesSkipped++;
                         } else {
                             xmlStream.writeStartElement( WFS_200_NS, "member" );
-                            featureWriter.export( value, 0, traverseXLinkDepth );
+                            featureWriter.export( value, resolveState );
                             xmlStream.writeEndElement();
                             numberReturned++;
                             if ( numberReturned == maxResults ) {
@@ -239,7 +237,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer, int traverseXLinkDepth,
+    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer, ResolveState resolveState,
                                     XMLStreamWriter xmlStream, int startIndex, int maxResults,
                                     GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
@@ -280,7 +278,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
         for ( TypedObjectNode value : cachedValues ) {
             xmlStream.writeStartElement( WFS_200_NS, "member" );
-            featureWriter.export( value, 0, traverseXLinkDepth );
+            featureWriter.export( value, resolveState );
             xmlStream.writeEndElement();
         }
     }
