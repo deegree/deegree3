@@ -35,8 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.action;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * Describes the change of a property as part of an {@link Update} action.
@@ -48,7 +49,7 @@ import javax.xml.stream.XMLStreamReader;
  */
 public class PropertyReplacement {
 
-    private final QName propertyName;
+    private final ValueReference propertyName;
 
     private final XMLStreamReader xmlStream;
 
@@ -59,7 +60,7 @@ public class PropertyReplacement {
      * @param xmlStream
      * @param updateAction
      */
-    public PropertyReplacement( QName propertyName, XMLStreamReader xmlStream, UpdateAction updateAction ) {
+    public PropertyReplacement( ValueReference propertyName, XMLStreamReader xmlStream, UpdateAction updateAction ) {
         this.propertyName = propertyName;
         this.xmlStream = xmlStream;
         this.updateAction = updateAction;
@@ -70,7 +71,7 @@ public class PropertyReplacement {
      * 
      * @return the name of the property to be replaced, never <code>null</code>
      */
-    public QName getPropertyName() {
+    public ValueReference getPropertyName() {
         return propertyName;
     }
 

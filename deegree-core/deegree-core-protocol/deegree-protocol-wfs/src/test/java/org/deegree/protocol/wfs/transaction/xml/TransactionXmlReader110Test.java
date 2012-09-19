@@ -147,13 +147,15 @@ public class TransactionXmlReader110Test extends TestCase {
 
         Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
         PropertyReplacement replacementProp1 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "name" ), replacementProp1.getPropertyName() );
+        assertEquals( new QName( "http://www.deegree.org/app", "name" ),
+                      replacementProp1.getPropertyName().getAsQName() );
         XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
         assertEquals( "Albert Camus", prop1ValueStream.getElementText() );
         prop1ValueStream.nextTag();
         prop1ValueStream.nextTag();
         PropertyReplacement replacementProp2 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "subject" ), replacementProp2.getPropertyName() );
+        assertEquals( new QName( "http://www.deegree.org/app", "subject" ),
+                      replacementProp2.getPropertyName().getAsQName() );
         XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
         assertEquals( "existentialism", prop1ValueStream.getElementText() );
         prop2ValueStream.nextTag();
@@ -207,13 +209,15 @@ public class TransactionXmlReader110Test extends TestCase {
 
         Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
         PropertyReplacement replacementProp1 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "name" ), replacementProp1.getPropertyName() );
+        assertEquals( new QName( "http://www.deegree.org/app", "name" ),
+                      replacementProp1.getPropertyName().getAsQName() );
         XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
         assertEquals( "Albert Camus", prop1ValueStream.getElementText() );
         prop1ValueStream.nextTag();
         prop1ValueStream.nextTag();
         PropertyReplacement replacementProp2 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "subject" ), replacementProp2.getPropertyName() );
+        assertEquals( new QName( "http://www.deegree.org/app", "subject" ),
+                      replacementProp2.getPropertyName().getAsQName() );
         XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
         assertEquals( "existentialism", prop1ValueStream.getElementText() );
         // contract: skip to wfs:Property END_ELEMENT

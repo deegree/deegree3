@@ -60,6 +60,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
@@ -283,12 +284,12 @@ class TransactionXmlReader110 extends AbstractTransactionXmlReader {
 
         PropertyReplacement replacement = null;
         if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
-            replacement = new PropertyReplacement( propName, xmlStream, null );
+            replacement = new PropertyReplacement( new ValueReference( propName ), xmlStream, null );
         } else {
             // if the wfs:Value element is omitted, the property shall be removed (CITE 1.1.0 test,
             // wfs:wfs-1.1.0-Transaction-tc11.1)
             xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
-            replacement = new PropertyReplacement( propName, null, null );
+            replacement = new PropertyReplacement( new ValueReference( propName ), null, null );
             xmlStream.nextTag();
         }
         return replacement;

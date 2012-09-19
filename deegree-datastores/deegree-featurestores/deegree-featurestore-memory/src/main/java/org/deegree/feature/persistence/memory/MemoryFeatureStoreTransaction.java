@@ -40,6 +40,7 @@ import static org.deegree.feature.i18n.Messages.getMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
@@ -60,11 +61,13 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
+import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.linearization.GeometryLinearizer;
@@ -75,6 +78,7 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,17 +182,19 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         String lockId = lock != null ? lock.getId() : null;
 
         // check if all features can be deleted
-        for ( String id : filter.getMatchingIds() ) {
-            if ( !fs.lockManager.isFeatureModifiable( id, lockId ) ) {
+        for ( ResourceId id : filter.getSelectedIds() ) {
+            if ( !fs.lockManager.isFeatureModifiable( id.getRid(), lockId ) ) {
                 if ( lockId == null ) {
-                    throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id ), "lockId" );
+                    throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id.getRid() ),
+                                                         "lockId" );
                 }
-                throw new InvalidParameterValueException( getMessage( "TA_DELETE_LOCKED_WRONG_LOCK_ID", id ), "lockId" );
+                throw new InvalidParameterValueException( getMessage( "TA_DELETE_LOCKED_WRONG_LOCK_ID", id.getRid() ),
+                                                          "lockId" );
             }
         }
 
-        for ( String id : filter.getMatchingIds() ) {
-            GMLObject obj = sf.idToObject.get( id );
+        for ( ResourceId id : filter.getSelectedIds() ) {
+            GMLObject obj = sf.idToObject.get( id.getRid() );
             if ( obj != null ) {
                 if ( obj instanceof Feature ) {
                     Feature f = (Feature) obj;
@@ -197,10 +203,10 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
             if ( lock != null ) {
-                lock.release( id );
+                lock.release( id.getRid() );
             }
         }
-        return filter.getMatchingIds().size();
+        return filter.getSelectedIds().size();
     }
 
     @Override
@@ -427,7 +433,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     private Geometry transformGeometry( Geometry value, GeometryTransformer transformer )
-                            throws IllegalArgumentException, TransformationException, UnknownCRSException {
+                            throws IllegalArgumentException, TransformationException {
 
         Geometry transformed = value;
         if ( transformed.getCoordinateSystem() == null ) {
@@ -446,7 +452,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
+    public int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
@@ -476,35 +482,80 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
                 updated = update.size();
                 for ( Feature feature : update ) {
-                    for ( Property replacement : replacementProps ) {
-                        if ( replacement.getValue() instanceof Geometry ) {
-                            Geometry geom = (Geometry) replacement.getValue();
+                    for ( ParsedPropertyReplacement replacement : replacementProps ) {
+                        Property prop = replacement.getNewValue();
+                        if ( prop.getValue() instanceof Geometry ) {
+                            Geometry geom = (Geometry) prop.getValue();
                             if ( geom != null ) {
-                                Property current = feature.getProperties( replacement.getType().getName() ).get( 0 );
+                                Property current = feature.getProperties( prop.getType().getName() ).get( 0 );
                                 Geometry currentGeom = current != null ? ( (Geometry) current.getValue() ) : null;
                                 // check compatibility (CRS) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc7.2)
-                                if ( currentGeom.getCoordinateDimension() != geom.getCoordinateDimension() ) {
-                                    throw new InvalidParameterValueException(
-                                                                              "Cannot replace given geometry property '"
-                                                                                                      + replacement.getType().getName()
-                                                                                                      + "' with given value (wrong dimension)." );
+                                if ( currentGeom != null
+                                     && currentGeom.getCoordinateDimension() != geom.getCoordinateDimension() ) {
+                                    String msg = "Cannot replace given geometry property '" + prop.getType().getName()
+                                                 + "' with given value (wrong dimension).";
+                                    throw new InvalidParameterValueException( msg );
                                 }
                                 // check compatibility (geometry type) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc10.1)
-                                if ( !( geom instanceof Surface )
-                                     && replacement.getName().equals( new QName(
-                                                                                 "http://cite.opengeospatial.org/gmlsf",
-                                                                                 "surfaceProperty" ) ) ) {
-                                    throw new InvalidParameterValueException(
-                                                                              "Cannot replace given geometry property '"
-                                                                                                      + replacement.getType().getName()
-                                                                                                      + "' with given value (wrong type)." );
+                                QName qname = new QName( "http://cite.opengeospatial.org/gmlsf", "surfaceProperty" );
+                                if ( !( geom instanceof Surface ) && prop.getType().getName().equals( qname ) ) {
+                                    String msg = "Cannot replace given geometry property '" + prop.getType().getName()
+                                                 + "' with given value (wrong type).";
+                                    throw new InvalidParameterValueException( msg );
                                 }
                             }
                         }
-                        // TODO what about multi properties
-                        feature.setPropertyValue( replacement.getType().getName(), 0, replacement.getValue() );
+
+                        int idx = replacement.getIndex();
+
+                        GenericProperty newProp = new GenericProperty( prop.getType(), prop.getValue() );
+                        newProp.setChildren( prop.getChildren() );
+                        switch ( replacement.getUpdateAction() ) {
+                        case INSERT_AFTER:
+                            List<Property> ps = feature.getProperties();
+                            ListIterator<Property> iter = ps.listIterator();
+                            while ( iter.hasNext() ) {
+                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
+                                    --idx;
+                                }
+                                if ( idx < 0 ) {
+                                    iter.add( newProp );
+                                    break;
+                                }
+                            }
+                            break;
+                        case INSERT_BEFORE:
+                            ps = feature.getProperties();
+                            iter = ps.listIterator();
+                            while ( iter.hasNext() ) {
+                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
+                                    --idx;
+                                }
+                                if ( idx == 0 ) {
+                                    iter.add( newProp );
+                                    break;
+                                }
+                            }
+                            break;
+                        case REMOVE:
+                            feature.setPropertyValue( prop.getType().getName(), idx, null );
+                            break;
+                        case REPLACE:
+                            ps = feature.getProperties();
+                            iter = ps.listIterator();
+                            while ( iter.hasNext() ) {
+                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
+                                    --idx;
+                                }
+                                if ( idx < 0 ) {
+                                    iter.set( newProp );
+                                    break;
+                                }
+                            }
+                            break;
+                        }
                     }
                     if ( lock != null ) {
                         lock.release( feature.getId() );

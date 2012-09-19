@@ -189,7 +189,7 @@ public class TransactionXmlReader200Test extends TestCase {
         assertNull( replacement.getUpdateAction() );
         XMLStreamReader valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
-        assertEquals( new QName( "populationType" ), replacement.getPropertyName() );
+        assertEquals( new QName( "populationType" ), replacement.getPropertyName().getAsQName() );
         assertEquals( "CITY", valueStream.getElementText() );
         nextElement( valueStream );
         valueStream.require( XMLStreamReader.END_ELEMENT, WFS_200_NS, "Property" );
@@ -215,7 +215,7 @@ public class TransactionXmlReader200Test extends TestCase {
 
         PropertyReplacement replacement = replacementProps.next();
         assertNull( replacement.getUpdateAction() );
-        assertEquals( new QName( "http://www.someserver.com/myns", "name" ), replacement.getPropertyName() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "name" ), replacement.getPropertyName().getAsQName() );
         XMLStreamReader valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
         assertEquals( "somestring", valueStream.getElementText() );
@@ -243,7 +243,8 @@ public class TransactionXmlReader200Test extends TestCase {
 
         PropertyReplacement replacement = replacementProps.next();
         assertEquals( UpdateAction.REPLACE, replacement.getUpdateAction() );
-        assertEquals( new QName( "http://www.someserver.com/myns", "treeType" ), replacement.getPropertyName() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType" ),
+                      replacement.getPropertyName().getAsQName() );
         XMLStreamReader valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
         assertEquals( "CONIFEROUS", valueStream.getElementText() );
@@ -254,7 +255,8 @@ public class TransactionXmlReader200Test extends TestCase {
         assertTrue( replacementProps.hasNext() );
         replacement = replacementProps.next();
         assertEquals( UpdateAction.INSERT_AFTER, replacement.getUpdateAction() );
-        assertEquals( new QName( "http://www.someserver.com/myns", "treeType2" ), replacement.getPropertyName() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType2" ),
+                      replacement.getPropertyName().getAsQName() );
         valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
         assertEquals( "CONIFEROUS", valueStream.getElementText() );
@@ -265,7 +267,8 @@ public class TransactionXmlReader200Test extends TestCase {
         assertTrue( replacementProps.hasNext() );
         replacement = replacementProps.next();
         assertEquals( UpdateAction.INSERT_BEFORE, replacement.getUpdateAction() );
-        assertEquals( new QName( "http://www.someserver.com/myns", "treeType3" ), replacement.getPropertyName() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType3" ),
+                      replacement.getPropertyName().getAsQName() );
         valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
         assertEquals( "CONIFEROUS", valueStream.getElementText() );
@@ -276,7 +279,8 @@ public class TransactionXmlReader200Test extends TestCase {
         assertTrue( replacementProps.hasNext() );
         replacement = replacementProps.next();
         assertEquals( UpdateAction.REMOVE, replacement.getUpdateAction() );
-        assertEquals( new QName( "http://www.someserver.com/myns", "treeType3" ), replacement.getPropertyName() );
+        assertEquals( new QName( "http://www.someserver.com/myns", "treeType3" ),
+                      replacement.getPropertyName().getAsQName() );
         valueStream = replacement.getReplacementValue();
         valueStream.require( XMLStreamReader.START_ELEMENT, WFS_200_NS, "Value" );
         assertEquals( "CONIFEROUS", valueStream.getElementText() );

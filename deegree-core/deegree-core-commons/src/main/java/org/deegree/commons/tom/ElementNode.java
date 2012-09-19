@@ -88,5 +88,5 @@ public interface ElementNode extends TypedObjectNode {
      * @return XML schema element declaration, can be <code>null</code>
      */
     public XSElementDeclaration getXSType();
-
+    
 }

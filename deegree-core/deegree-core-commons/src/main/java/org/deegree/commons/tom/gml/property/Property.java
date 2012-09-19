@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -49,7 +49,7 @@ import org.deegree.commons.tom.gml.GMLObject;
  * Encapsulates a (qualified) name, type information and a value.
  * </p>
  * 
- * @see Feature
+ * @see GMLObject
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
@@ -115,4 +115,5 @@ public interface Property extends ElementNode {
      */
     @Override
     public String toString();
+
 }

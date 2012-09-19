@@ -160,6 +160,7 @@ public class Update extends AbstractTransactionAction {
                 try {
                     replacement = transactionReader.readProperty( xmlStream );
                 } catch ( XMLStreamException e ) {
+                    e.printStackTrace();
                     throw new XMLParsingException( xmlStream, "Error parsing transaction operation: " + e.getMessage() );
                 }
                 return replacement;

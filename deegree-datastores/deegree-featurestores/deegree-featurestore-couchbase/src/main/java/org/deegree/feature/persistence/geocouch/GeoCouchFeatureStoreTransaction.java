@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -24,6 +23,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
 import org.slf4j.Logger;
 
 import com.couchbase.client.CouchbaseClient;
@@ -90,7 +90,7 @@ public class GeoCouchFeatureStoreTransaction implements FeatureStoreTransaction 
     }
 
     @Override
-    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
+    public int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
         throw new FeatureStoreException( "Update is not supported yet." );
     }

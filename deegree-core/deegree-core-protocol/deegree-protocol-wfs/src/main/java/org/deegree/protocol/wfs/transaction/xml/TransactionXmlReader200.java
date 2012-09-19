@@ -39,7 +39,6 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -50,15 +49,19 @@ import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REMOVE;
 import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REPLACE;
 
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XPathUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
@@ -311,16 +314,21 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         nextElement( xmlStream );
         xmlStream.require( START_ELEMENT, WFS_200_NS, "ValueReference" );
         UpdateAction updateAction = parseUpdateAction( xmlStream.getAttributeValue( null, "action" ) );
-        // TODO XPath allowed here?
-        QName propName = getElementTextAsQName( xmlStream );
+
+        String propName = xmlStream.getElementText();
+        Set<String> prefixes = XPathUtils.extractPrefixes( propName );
+        ValueReference propertyName = new ValueReference( propName,
+                                                          new NamespaceBindings( xmlStream.getNamespaceContext(),
+                                                                                 prefixes ) );
+
         nextElement( xmlStream );
 
         PropertyReplacement replacement = null;
         if ( new QName( WFS_200_NS, "Value" ).equals( xmlStream.getName() ) ) {
-            replacement = new PropertyReplacement( propName, xmlStream, updateAction );
+            replacement = new PropertyReplacement( propertyName, xmlStream, updateAction );
         } else {
             xmlStream.require( END_ELEMENT, WFS_200_NS, "ValueReference" );
-            replacement = new PropertyReplacement( propName, null, updateAction );
+            replacement = new PropertyReplacement( propertyName, null, updateAction );
             nextElement( xmlStream );
         }
         return replacement;
