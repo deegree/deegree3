@@ -53,6 +53,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * <li>Child nodes</li>
  * </p>
  * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -87,4 +88,5 @@ public interface ElementNode extends TypedObjectNode {
      * @return XML schema element declaration, can be <code>null</code>
      */
     public XSElementDeclaration getXSType();
+
 }
