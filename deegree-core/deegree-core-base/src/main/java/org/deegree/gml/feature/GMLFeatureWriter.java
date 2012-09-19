@@ -37,10 +37,8 @@
 package org.deegree.gml.feature;
 
 import static javax.xml.XMLConstants.NULL_NS_URI;
-import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.commons.xml.stax.StAXExportingHelper.writeAttribute;
 import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -97,7 +95,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based GML writer for {@link Feature} and {@link FeatureCollection} instances.
+ * Stream-based GML writer for {@link Feature} (and {@link FeatureCollection}) instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -108,8 +106,6 @@ import org.slf4j.LoggerFactory;
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureWriter.class );
-
-    private static final String WFS_NS = "http://www.opengis.net/wfs";
 
     private final QName fidAttr;
 
@@ -194,204 +190,50 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         export( feature, initialResolveState );
     }
 
+    /**
+     * Exports the given {@link Property}.
+     * 
+     * @param prop
+     *            property to be exported, must not be <code>null</code>
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
     public void export( Property prop )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         export( prop, initialResolveState );
     }
 
-    /**
-     * TODO merge with other schema location possibilities
-     * 
-     * @param fc
-     * @param noNamespaceSchemaLocation
-     *            may be null
-     * @param bindings
-     *            optional additional schema locations
-     * @throws XMLStreamException
-     * @throws TransformationException
-     * @throws UnknownCRSException
-     */
-    public void export( FeatureCollection fc, String noNamespaceSchemaLocation, Map<String, String> bindings )
+    public void export( TypedObjectNode node, ResolveState resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        LOG.debug( "Exporting generic feature collection." );
-        if ( fc.getId() != null ) {
-            exportedIds.add( fc.getId() );
-        }
-
-        writer.setDefaultNamespace( WFS_NS );
-        writer.writeStartElement( WFS_NS, "FeatureCollection" );
-        writer.writeDefaultNamespace( WFS_NS );
-        writer.writeNamespace( XSI_PREFIX, XSINS );
-        writer.writeNamespace( GML_PREFIX, gmlNs );
-
-        if ( fc.getId() != null ) {
-            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
-                writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
+        if ( node instanceof GMLObject ) {
+            if ( node instanceof Feature ) {
+                export( (Feature) node, resolveState );
+            } else if ( node instanceof Geometry ) {
+                gmlStreamWriter.getGeometryWriter().export( (Geometry) node );
             } else {
-                writer.writeAttribute( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
+                throw new UnsupportedOperationException();
             }
-        }
-
-        if ( noNamespaceSchemaLocation != null ) {
-            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
-        }
-        if ( bindings != null && !bindings.isEmpty() ) {
-
-            String locs = null;
-            for ( Entry<String, String> e : bindings.entrySet() ) {
-                if ( locs == null ) {
-                    locs = "";
-                } else {
-                    locs += " ";
-                }
-                locs += e.getKey() + " " + e.getValue();
+        } else if ( node instanceof PrimitiveValue ) {
+            writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
+        } else if ( node instanceof Property ) {
+            export( (Property) node, resolveState );
+        } else if ( node instanceof ElementNode ) {
+            ElementNode xmlContent = (ElementNode) node;
+            exportGenericXmlElement( xmlContent, resolveState );
+        } else if ( node instanceof TypedObjectNodeArray<?> ) {
+            for ( TypedObjectNode elem : ( (TypedObjectNodeArray<?>) node ).getElements() ) {
+                export( elem, resolveState );
             }
-            writer.writeAttribute( XSINS, "schemaLocation", locs );
-        }
-
-        exportBoundedBy( fc.getEnvelope(), true );
-
-        for ( Feature f : fc ) {
-            writer.writeStartElement( gmlNs, "featureMember" );
-            export( f );
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-    }
-
-    private void exportBoundedBy( Envelope env, boolean indicateMissing )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        if ( env != null || indicateMissing ) {
-            writer.writeStartElement( gmlNs, "boundedBy" );
-            if ( env != null ) {
-                gmlStreamWriter.getGeometryWriter().exportEnvelope( env );
-            } else {
-                writer.writeStartElement( gmlNs, gmlNull );
-                writer.writeCharacters( "missing" );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-        }
-    }
-
-    private void export( Feature feature, ResolveState resolveState )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        setSchema( feature );
-
-        if ( feature.getId() != null ) {
-            exportedIds.add( feature.getId() );
-        }
-        if ( feature instanceof GenericFeatureCollection ) {
-            LOG.debug( "Exporting generic feature collection." );
-            writeStartElementWithNS( gmlNs, "FeatureCollection" );
-            if ( feature.getId() != null ) {
-                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
-                    writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
-                } else {
-                    writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
-                }
-            }
-            exportBoundedBy( feature.getEnvelope(), false );
-            for ( Feature member : ( (FeatureCollection) feature ) ) {
-                String memberFid = member.getId();
-                writeStartElementWithNS( gmlNs, "featureMember" );
-                if ( memberFid != null && exportedIds.contains( memberFid ) ) {
-                    writeAttributeWithNS( XLNNS, "href", "#" + memberFid );
-                } else {
-                    export( member, getResolveStateForNextLevel( resolveState ) );
-                }
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
+        } else if ( node == null ) {
+            LOG.warn( "Null node encountered!?" );
         } else {
-            QName featureName = feature.getName();
-            LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
-            String namespaceURI = featureName.getNamespaceURI();
-            String localName = featureName.getLocalPart();
-            writeStartElementWithNS( namespaceURI, localName );
-
-            if ( feature.getId() != null ) {
-                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
-                    writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
-                } else {
-                    writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
-                }
-            }
-
-            List<Property> props = feature.getProperties();
-            if ( exportBoundedBy ) {
-                props = augmentBoundedBy( feature );
-            }
-
-            for ( Property prop : props ) {
-                export( prop, resolveState );
-            }
-
-            if ( exportExtraProps ) {
-                ExtraProps extraProps = feature.getExtraProperties();
-                if ( extraProps != null ) {
-                    ResolveState resolveAll = new ResolveState( null, -1, 0, initialResolveState.getMode(),
-                                                                initialResolveState.getRemoteTimeoutInMilliseconds() );
-                    for ( Property prop : extraProps.getProperties() ) {
-                        export( prop, resolveAll );
-                    }
-                }
-            }
-            writer.writeEndElement();
+            throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
         }
     }
-
-    private void setSchema( Feature feature ) {
-        if ( schema == null ) {
-            schema = feature.getType().getSchema();
-            if ( schema != null ) {
-                schemaInfoset = schema.getGMLSchema();
-            }
-        }
-    }
-
-    private List<Property> augmentBoundedBy( Feature f ) {
-        LinkedList<Property> props = new LinkedList<Property>( f.getProperties() );
-        for ( int i = 0; i < props.size(); i++ ) {
-            QName name = props.get( i ).getName();
-            if ( !gmlNs.equals( name.getNamespaceURI() ) || name.getLocalPart().equals( "location" ) ) {
-                // not a GML property or gml:location -> gml:boundedBy must be included right before it
-                Property boundedBy = getBoundedBy( f );
-                if ( boundedBy != null ) {
-                    props.add( i, boundedBy );
-                }
-                break;
-            } else if ( name.getLocalPart().equals( "boundedBy" ) ) {
-                // already present -> don't include it
-                break;
-            }
-        }
-        return props;
-    }
-
-    private Property getBoundedBy( Feature f ) {
-        Envelope env = f.getEnvelope();
-        if ( env == null ) {
-            env = f.calcEnvelope();
-        }
-        if ( env == null ) {
-            return null;
-        }
-        return new GenericProperty( boundedByPt, env );
-    }
-
-    private ResolveState getResolveParams( Property prop, ResolveState resolveState ) {
-        ProjectionClause projection = requestedPropertyNames.get( prop.getName() );
-        if ( projection != null && projection.getResolveParams() != null ) {
-            return new ResolveState( projection.getResolveParams() );
-        }
-        return resolveState;
-    }
-
-    public void export( Property property, ResolveState resolveState )
+    
+    private void export( Property property, ResolveState resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
@@ -583,6 +425,137 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
+    private void exportBoundedBy( Envelope env, boolean indicateMissing )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        if ( env != null || indicateMissing ) {
+            writer.writeStartElement( gmlNs, "boundedBy" );
+            if ( env != null ) {
+                gmlStreamWriter.getGeometryWriter().exportEnvelope( env );
+            } else {
+                writer.writeStartElement( gmlNs, gmlNull );
+                writer.writeCharacters( "missing" );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    private void export( Feature feature, ResolveState resolveState )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        setSchema( feature );
+
+        if ( feature.getId() != null ) {
+            exportedIds.add( feature.getId() );
+        }
+        if ( feature instanceof GenericFeatureCollection ) {
+            LOG.debug( "Exporting generic feature collection." );
+            writeStartElementWithNS( gmlNs, "FeatureCollection" );
+            if ( feature.getId() != null ) {
+                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                    writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
+                } else {
+                    writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
+                }
+            }
+            exportBoundedBy( feature.getEnvelope(), false );
+            for ( Feature member : ( (FeatureCollection) feature ) ) {
+                String memberFid = member.getId();
+                writeStartElementWithNS( gmlNs, "featureMember" );
+                if ( memberFid != null && exportedIds.contains( memberFid ) ) {
+                    writeAttributeWithNS( XLNNS, "href", "#" + memberFid );
+                } else {
+                    export( member, getResolveStateForNextLevel( resolveState ) );
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        } else {
+            QName featureName = feature.getName();
+            LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
+            String namespaceURI = featureName.getNamespaceURI();
+            String localName = featureName.getLocalPart();
+            writeStartElementWithNS( namespaceURI, localName );
+
+            if ( feature.getId() != null ) {
+                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                    writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
+                } else {
+                    writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
+                }
+            }
+
+            List<Property> props = feature.getProperties();
+            if ( exportBoundedBy ) {
+                props = augmentBoundedBy( feature );
+            }
+
+            for ( Property prop : props ) {
+                export( prop, resolveState );
+            }
+
+            if ( exportExtraProps ) {
+                ExtraProps extraProps = feature.getExtraProperties();
+                if ( extraProps != null ) {
+                    ResolveState resolveAll = new ResolveState( null, -1, 0, initialResolveState.getMode(),
+                                                                initialResolveState.getRemoteTimeoutInMilliseconds() );
+                    for ( Property prop : extraProps.getProperties() ) {
+                        export( prop, resolveAll );
+                    }
+                }
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    private void setSchema( Feature feature ) {
+        if ( schema == null ) {
+            schema = feature.getType().getSchema();
+            if ( schema != null ) {
+                schemaInfoset = schema.getGMLSchema();
+            }
+        }
+    }
+
+    private List<Property> augmentBoundedBy( Feature f ) {
+        LinkedList<Property> props = new LinkedList<Property>( f.getProperties() );
+        for ( int i = 0; i < props.size(); i++ ) {
+            QName name = props.get( i ).getName();
+            if ( !gmlNs.equals( name.getNamespaceURI() ) || name.getLocalPart().equals( "location" ) ) {
+                // not a GML property or gml:location -> gml:boundedBy must be included right before it
+                Property boundedBy = getBoundedBy( f );
+                if ( boundedBy != null ) {
+                    props.add( i, boundedBy );
+                }
+                break;
+            } else if ( name.getLocalPart().equals( "boundedBy" ) ) {
+                // already present -> don't include it
+                break;
+            }
+        }
+        return props;
+    }
+
+    private Property getBoundedBy( Feature f ) {
+        Envelope env = f.getEnvelope();
+        if ( env == null ) {
+            env = f.calcEnvelope();
+        }
+        if ( env == null ) {
+            return null;
+        }
+        return new GenericProperty( boundedByPt, env );
+    }
+
+    private ResolveState getResolveParams( Property prop, ResolveState resolveState ) {
+        ProjectionClause projection = requestedPropertyNames.get( prop.getName() );
+        if ( projection != null && projection.getResolveParams() != null ) {
+            return new ResolveState( projection.getResolveParams() );
+        }
+        return resolveState;
+    }
+
     private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, ResolveState resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -684,35 +657,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         writer.writeEndElement();
     }
 
-    public void export( TypedObjectNode node, ResolveState resolveState )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        if ( node instanceof GMLObject ) {
-            if ( node instanceof Feature ) {
-                export( (Feature) node, resolveState );
-            } else if ( node instanceof Geometry ) {
-                gmlStreamWriter.getGeometryWriter().export( (Geometry) node );
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        } else if ( node instanceof PrimitiveValue ) {
-            writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
-        } else if ( node instanceof Property ) {
-            export( (Property) node, resolveState );
-        } else if ( node instanceof ElementNode ) {
-            ElementNode xmlContent = (ElementNode) node;
-            exportGenericXmlElement( xmlContent, resolveState );
-        } else if ( node instanceof TypedObjectNodeArray<?> ) {
-            for ( TypedObjectNode elem : ( (TypedObjectNodeArray<?>) node ).getElements() ) {
-                export( elem, resolveState );
-            }
-        } else if ( node == null ) {
-            LOG.warn( "Null node encountered!?" );
-        } else {
-            throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
-        }
-    }
-
     private void exportGenericXmlElement( ElementNode xmlContent, ResolveState resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -751,4 +695,5 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     private boolean isPropertyRequested( QName propName ) {
         return requestedPropertyNames.isEmpty() || requestedPropertyNames.containsKey( propName );
     }
+
 }

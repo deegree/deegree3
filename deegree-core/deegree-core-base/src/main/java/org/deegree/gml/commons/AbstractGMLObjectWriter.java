@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class AbstractGMLObjectWriter {
+public abstract class AbstractGMLObjectWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectWriter.class );
 

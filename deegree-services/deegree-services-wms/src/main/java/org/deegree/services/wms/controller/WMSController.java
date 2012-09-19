@@ -717,7 +717,7 @@ public class WMSController extends AbstractOWS {
                 gmlWriter.setOutputCrs( crs );
                 gmlWriter.setNamespaceBindings( nsBindings );
                 gmlWriter.setExportGeometries( geometries );
-                gmlWriter.getFeatureWriter().export( col, ns == null ? loc : null, bindings );
+                new FeatureInfoGmlWriter( gmlVersion ).export( col, gmlWriter, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
