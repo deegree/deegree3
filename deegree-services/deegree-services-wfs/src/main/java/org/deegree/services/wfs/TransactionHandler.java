@@ -544,9 +544,9 @@ class TransactionHandler {
         }
 
         try {
-            int updated = ta.performUpdate( ftName, replacementProps, filter, lock );
-            for ( int i = 0; i < updated; i++ ) {
-                this.updated.add( "DUMMYFID", update.getHandle() );
+            List<String> updatedFids = ta.performUpdate( ftName, replacementProps, filter, lock );
+            for ( String updatedFid : updatedFids ) {
+                this.updated.add( updatedFid, update.getHandle() );
             }
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Error performing update: " + e.getMessage(), e, NO_APPLICABLE_CODE );

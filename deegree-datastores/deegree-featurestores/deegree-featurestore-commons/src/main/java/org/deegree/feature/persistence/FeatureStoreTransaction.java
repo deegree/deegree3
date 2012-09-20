@@ -104,17 +104,6 @@ public interface FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException;
 
-    // /**
-    // * Inserts the given {@link Feature} into the {@link FeatureStore}.
-    // *
-    // * @param f
-    // * @param mode
-    // * @return
-    // * @throws FeatureStoreException
-    // */
-    // public S performInsert( Feature f, IDGenMode mode )
-    // throws FeatureStoreException;
-
     /**
      * Performs an update operation against the {@link FeatureStore}.
      * 
@@ -126,11 +115,12 @@ public interface FeatureStoreTransaction {
      *            selects the feature instances that are to be updated, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
-     * @return number of updated feature instances
+     * @return ids of updated feature instances, never <code>null</code>
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter, Lock lock )
+    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
+                                       Lock lock )
                             throws FeatureStoreException;
 
     /**

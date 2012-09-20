@@ -745,7 +745,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter, Lock lock )
+    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
+                                       Lock lock )
                             throws FeatureStoreException {
         LOG.debug( "Updating feature type '" + ftName + "', filter: " + filter + ", replacement properties: "
                    + replacementProps.size() );
@@ -764,9 +765,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return performUpdate( ftName, replacementProps, idFilter );
     }
 
-    private int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, IdFilter filter )
+    private List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, IdFilter filter )
                             throws FeatureStoreException {
-        int updated = 0;
+        List<String> updated = null;
         if ( blobMapping != null ) {
             throw new FeatureStoreException( "Updates in SQLFeatureStore (BLOB mode) are currently not implemented." );
         } else {
@@ -785,7 +786,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return updated;
     }
 
-    private int performUpdateRelational( QName ftName, List<ParsedPropertyReplacement> replacementProps, IdFilter filter )
+    private List<String> performUpdateRelational( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                  IdFilter filter )
                             throws FeatureStoreException {
 
         FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
@@ -904,7 +906,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             JDBCUtils.close( stmt );
         }
         LOG.debug( "Updated {} features.", updated );
-        return updated;
+        return new ArrayList<String>( filter.getMatchingIds() );
     }
 
     private IdFilter getIdFilter( QName ftName, OperatorFilter filter )

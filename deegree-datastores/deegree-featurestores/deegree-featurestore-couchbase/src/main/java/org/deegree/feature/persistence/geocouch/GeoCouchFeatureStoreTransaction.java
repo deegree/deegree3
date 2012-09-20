@@ -90,26 +90,27 @@ public class GeoCouchFeatureStoreTransaction implements FeatureStoreTransaction 
     }
 
     @Override
-    public int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter, Lock lock )
+    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
+                                       Lock lock )
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Update is not supported yet." );
+        throw new FeatureStoreException( "Update is not supported by GeoCouchFeatureStore." );
     }
 
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Delete is not supported yet." );
+        throw new FeatureStoreException( "Delete is not supported by GeoCouchFeatureStore." );
     }
 
     @Override
     public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Delete is not supported yet." );
+        throw new FeatureStoreException( "Delete is not supported by GeoCouchFeatureStore." );
     }
 
     @Override
     public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Replace is not supported yet." );
+        throw new FeatureStoreException( "Replace is not supported by GeoCouchFeatureStore." );
     }
 }

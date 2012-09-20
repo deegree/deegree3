@@ -40,6 +40,8 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.Geometry;
 
 /**
  * {@link ElementNode} that wraps a {@link GMLObject} and it's parent.
@@ -67,6 +69,9 @@ public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> exten
         }
         if ( object instanceof Feature ) {
             return ( (Feature) object ).getName();
+        } else if ( object instanceof Geometry ) {
+            // TODO should be covered by the type
+            return new QName ("GEOMETRY");
         }
         throw new IllegalArgumentException( "Creating GMLObjectNode from " + object.getClass()
                                             + " needs implementation." );

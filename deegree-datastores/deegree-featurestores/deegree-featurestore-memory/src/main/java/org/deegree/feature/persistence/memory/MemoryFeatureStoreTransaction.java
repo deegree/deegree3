@@ -458,7 +458,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter, Lock lock )
+    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
+                                       Lock lock )
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
@@ -469,7 +470,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         FeatureCollection fc = sf.ftToFeatures.get( ft );
-        int updated = 0;
+        List<String> updatedFids = new ArrayList<String>();
         if ( fc != null ) {
             try {
                 FeatureCollection update = fc.getMembers( filter, sf.evaluator );
@@ -486,8 +487,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                 }
 
-                updated = update.size();
                 for ( Feature feature : update ) {
+                    updatedFids.add( feature.getId() );
                     for ( ParsedPropertyReplacement replacement : replacementProps ) {
                         Property prop = replacement.getNewValue();
                         UpdateAction updateAction = replacement.getUpdateAction();
@@ -566,7 +567,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 throw new FeatureStoreException( e.getMessage(), e );
             }
         }
-        return updated;
+        return updatedFids;
     }
 
     private void validateProperties( Feature feature, List<Property> props ) {
