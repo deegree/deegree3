@@ -36,12 +36,14 @@
 package org.deegree.tools.alkis;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.gml.reference.GmlXlinkOptions;
+import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +68,9 @@ class XlinkedObjectsHandler implements GmlXlinkStrategy {
 
     private final GmlXlinkOptions resolveOptions;
 
-    XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate,
-                           GmlXlinkOptions resolveOptions ) {
+    private final Set<String> exportedIds = new HashSet<String>();
+
+    XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate, GmlXlinkOptions resolveOptions ) {
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
         this.resolveOptions = resolveOptions;
@@ -107,6 +110,16 @@ class XlinkedObjectsHandler implements GmlXlinkStrategy {
     @Override
     public GmlXlinkOptions getResolveOptions() {
         return resolveOptions;
+    }
+
+    @Override
+    public void addExportedId( String gmlId ) {
+        exportedIds.add( gmlId );
+    }
+
+    @Override
+    public boolean isObjectExported( String gmlId ) {
+        return exportedIds.contains( gmlId );
     }
 
 }
