@@ -64,14 +64,14 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.FeatureReference;
+import org.deegree.gml.reference.FeatureReference;
+import org.deegree.gml.reference.GmlDocumentIdContext;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.slf4j.Logger;
 
@@ -130,7 +130,7 @@ public class BackReferenceFixer {
             reader.setApplicationSchema( appSchema );
 
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, xwriter );
-            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( true, null, new GmlReferenceResolveOptions() );
+            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( true, null, new GmlXlinkOptions() );
             writer.setReferenceResolveStrategy( handler );
 
             QName prop = new QName( ns601, "dientZurDarstellungVon" );
@@ -190,7 +190,7 @@ public class BackReferenceFixer {
             xwriter.writeStartElement( "http://www.opengis.net/gml/3.2", "FeatureCollection" );
             xwriter.writeNamespace( "gml", "http://www.opengis.net/gml/3.2" );
 
-            GMLDocumentIdContext ctx = new GMLDocumentIdContext( GMLVersion.GML_32 );
+            GmlDocumentIdContext ctx = new GmlDocumentIdContext( GMLVersion.GML_32 );
 
             for ( Feature f : reader.readFeatureCollectionStream() ) {
                 if ( refs.containsKey( f.getId() ) ) {

@@ -134,9 +134,9 @@ import org.deegree.filter.temporal.TOverlaps;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.geometry.GMLGeometryVersionHelper;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.time.TimeObject;
 import org.deegree.time.gml.GMLTimeReader;
 import org.slf4j.Logger;
@@ -600,7 +600,7 @@ public class Filter200XMLDecoder {
         XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
         Expression param2 = null;
         QName elName = xmlStream.getName();
-        GMLTimeReader timeReader = new GMLTimeReader( new GMLDocumentIdContext( GML_32 ) );
+        GMLTimeReader timeReader = new GMLTimeReader( new GmlDocumentIdContext( GML_32 ) );
         if ( timeReader.isTimeObject( elName ) ) {
             TimeObject to = timeReader.readTimeObject( xmlStream );
             // TODO Always create a Literal?

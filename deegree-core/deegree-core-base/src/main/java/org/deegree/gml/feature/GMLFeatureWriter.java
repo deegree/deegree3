@@ -88,8 +88,9 @@ import org.deegree.filter.ProjectionClause;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
+import org.deegree.gml.reference.FeatureReference;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,7 +194,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         export( prop, referenceExportStrategy.getResolveOptions() );
     }
 
-    public void export( TypedObjectNode node, GmlReferenceResolveOptions resolveState )
+    public void export( TypedObjectNode node, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( node instanceof GMLObject ) {
@@ -222,7 +223,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void export( Property property, GmlReferenceResolveOptions resolveState )
+    private void export( Property property, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
@@ -294,7 +295,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 endEmptyElement();
             } else {
                 Geometry gValue = (Geometry) value;
-                if ( !exportSf && gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
+                if ( !exportSf && gValue.getId() != null && referenceExportStrategy.isObjectExported( gValue.getId() ) ) {
                     writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writeAttributeWithNS( XLNNS, "href", "#" + gValue.getId() );
                     endEmptyElement();
@@ -430,13 +431,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void export( Feature feature, GmlReferenceResolveOptions resolveState )
+    private void export( Feature feature, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         setSchema( feature );
 
         if ( feature.getId() != null ) {
-            exportedIds.add( feature.getId() );
+            referenceExportStrategy.addExportedId( feature.getId() );
         }
         if ( feature instanceof GenericFeatureCollection ) {
             LOG.debug( "Exporting generic feature collection." );
@@ -452,7 +453,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             for ( Feature member : ( (FeatureCollection) feature ) ) {
                 String memberFid = member.getId();
                 writeStartElementWithNS( gmlNs, "featureMember" );
-                if ( memberFid != null && exportedIds.contains( memberFid ) ) {
+                if ( memberFid != null && referenceExportStrategy.isObjectExported( memberFid ) ) {
                     writeAttributeWithNS( XLNNS, "href", "#" + memberFid );
                 } else {
                     export( member, getResolveStateForNextLevel( resolveState ) );
@@ -535,16 +536,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return new GenericProperty( boundedByPt, env );
     }
 
-    private GmlReferenceResolveOptions getResolveParams( Property prop, GmlReferenceResolveOptions resolveState ) {
+    private GmlXlinkOptions getResolveParams( Property prop, GmlXlinkOptions resolveState ) {
         ProjectionClause projection = requestedPropertyNames.get( prop.getName() );
         if ( projection != null && projection.getResolveParams() != null ) {
-            return new GmlReferenceResolveOptions( projection.getResolveParams() );
+            return new GmlXlinkOptions( projection.getResolveParams() );
         }
         return resolveState;
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature,
-                                        GmlReferenceResolveOptions resolveState )
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = pt.getName();
@@ -564,7 +564,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 writer.writeEndElement();
             } else {
                 // has feature id
-                if ( exportedIds.contains( subFid ) ) {
+                if ( referenceExportStrategy.isObjectExported( subFid ) ) {
                     exportAlreadyExportedFeaturePropertyByReference( subFeature, propName );
                 } else {
                     exportFeaturePropertyByValue( propName, subFeature, resolveState );
@@ -579,8 +579,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, FeatureReference ref,
-                                        GmlReferenceResolveOptions resolveState, QName propName )
+    private void exportFeatureProperty( FeaturePropertyType pt, FeatureReference ref, GmlXlinkOptions resolveState,
+                                        QName propName )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         boolean includeNextLevelInOutput = includeNextLevelInOutput( resolveState );
@@ -588,7 +588,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             if ( pt.getAllowedRepresentation() == REMOTE ) {
                 exportFeaturePropertyByReference( propName, ref, true, resolveState );
             } else {
-                if ( exportedIds.contains( ref.getId() ) ) {
+                if ( referenceExportStrategy.isObjectExported( ref.getId() ) ) {
                     exportAlreadyExportedFeaturePropertyByReference( ref, propName );
                 } else {
                     exportFeaturePropertyByValue( propName, ref, resolveState );
@@ -606,15 +606,14 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private boolean includeNextLevelInOutput( GmlReferenceResolveOptions resolveState ) {
+    private boolean includeNextLevelInOutput( GmlXlinkOptions resolveState ) {
         int maxInlineLevels = resolveState.getDepth();
         int currentLevel = resolveState.getCurrentLevel();
         return maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels );
     }
 
     private void exportFeaturePropertyByReference( QName propName, FeatureReference ref,
-                                                   boolean forceInclusionInDocument,
-                                                   GmlReferenceResolveOptions resolveState )
+                                                   boolean forceInclusionInDocument, GmlXlinkOptions resolveState )
                             throws XMLStreamException {
 
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -629,17 +628,16 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private void exportFeaturePropertyByValue( QName propName, Feature subFeature,
-                                               GmlReferenceResolveOptions resolveState )
+    private void exportFeaturePropertyByValue( QName propName, Feature subFeature, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        exportedIds.add( subFeature.getId() );
+        referenceExportStrategy.addExportedId( subFeature.getId() );
         writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
         writer.writeComment( "Inlined feature '" + subFeature.getId() + "'" );
         export( subFeature, getResolveStateForNextLevel( resolveState ) );
         writer.writeEndElement();
     }
 
-    private void exportGenericXmlElement( ElementNode xmlContent, GmlReferenceResolveOptions resolveState )
+    private void exportGenericXmlElement( ElementNode xmlContent, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName elName = xmlContent.getName();

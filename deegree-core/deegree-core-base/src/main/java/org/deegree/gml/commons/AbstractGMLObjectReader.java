@@ -108,11 +108,11 @@ import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.refs.GeometryReference;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.FeatureReference;
 import org.deegree.gml.feature.GMLFeatureReader;
+import org.deegree.gml.reference.FeatureReference;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +140,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     protected final GMLReferenceResolver specialResolver;
 
-    protected final GMLDocumentIdContext idContext;
+    protected final GmlDocumentIdContext idContext;
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 

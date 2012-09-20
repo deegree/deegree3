@@ -57,8 +57,8 @@ import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.GmlReferenceExportStrategy;
+import org.deegree.gml.reference.GmlXlinkStrategy;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
@@ -122,7 +122,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
             remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
         }
 
-        GmlReferenceResolveOptions resolveState = new GmlReferenceResolveOptions( null, resolveDepth, 0, ALL,
+        GmlXlinkOptions resolveState = new GmlXlinkOptions( null, resolveDepth, 0, ALL,
                                                                                   remoteTimeoutInMilliseconds );
 
         GMLObject o = retrieveObject( id );
@@ -155,7 +155,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
-        GmlReferenceExportStrategy strategy = new WfsReferenceExportStrategy( (BufferableXMLStreamWriter) xmlStream, false,
+        GmlXlinkStrategy strategy = new WfsXlinkStrategy( (BufferableXMLStreamWriter) xmlStream, false,
                                                                          getObjectXlinkTemplate( version, gmlVersion ),
                                                                          resolveState );
         gmlStream.setReferenceResolveStrategy( strategy );

@@ -88,7 +88,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.GmlReferenceResolveOptions;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
@@ -143,7 +143,7 @@ abstract class AbstractGmlRequestHandler {
         return o;
     }
 
-    protected void writeAdditionalObjects( GMLStreamWriter gmlStream, WfsReferenceExportStrategy additionalObjects,
+    protected void writeAdditionalObjects( GMLStreamWriter gmlStream, WfsXlinkStrategy additionalObjects,
                                            QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -151,10 +151,10 @@ abstract class AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
 
         while ( !nextLevelObjects.isEmpty() ) {
-            Map<GMLReference<?>, GmlReferenceResolveOptions> refToResolveState = additionalObjects.getResolveStates();
+            Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = additionalObjects.getResolveStates();
             additionalObjects.clear();
             for ( GMLReference<?> ref : nextLevelObjects ) {
-                GmlReferenceResolveOptions resolveState = refToResolveState.get( ref );
+                GmlXlinkOptions resolveState = refToResolveState.get( ref );
                 Feature feature = (Feature) ref;
                 writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
             }
@@ -163,10 +163,10 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                                       GmlReferenceResolveOptions resolveState, QName featureMemberEl )
+                                       GmlXlinkOptions resolveState, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        if ( gmlStream.isObjectExported( member.getId() ) ) {
+        if ( gmlStream.getReferenceResolveStrategy().isObjectExported( member.getId() ) ) {
             xmlStream.writeEmptyElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
             if ( xmlStream.getPrefix( XLNNS ) == null ) {
                 xmlStream.setPrefix( "xlink", XLNNS );

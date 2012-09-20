@@ -82,6 +82,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.commons.AbstractGMLObjectReader;
+import org.deegree.gml.reference.FeatureReference;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;

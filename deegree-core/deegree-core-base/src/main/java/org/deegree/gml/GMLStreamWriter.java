@@ -46,16 +46,13 @@ import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_STRING;
 import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -66,15 +63,16 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
 import org.deegree.gml.dictionary.GMLDictionaryWriter;
-import org.deegree.gml.feature.DefaultGmlReferenceExportStrategy;
 import org.deegree.gml.feature.GMLFeatureWriter;
-import org.deegree.gml.feature.GmlReferenceExportStrategy;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
+import org.deegree.gml.reference.DefaultGmlXlinkStrategy;
+import org.deegree.gml.reference.GmlXlinkOptions;
+import org.deegree.gml.reference.GmlXlinkStrategy;
 
 /**
- * Stream-based writer for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
+ * Stream-based writer for GML instance documents or GML document fragments.
  * <p>
  * Instances of this class are not thread-safe.
  * </p>
@@ -96,6 +94,8 @@ public class GMLStreamWriter {
 
     private final XMLStreamWriter xmlStream;
 
+    private GmlXlinkStrategy referenceExportStrategy;
+
     private ICRS crs;
 
     private CoordinateFormatter formatter;
@@ -110,15 +110,11 @@ public class GMLStreamWriter {
 
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
-    private GmlReferenceExportStrategy referenceExportStrategy;
-
     private boolean exportExtraProps;
 
     private boolean outputGeometries = true;
 
     private boolean exportBoundedByForFeatures;
-
-    private final Set<String> exportedIds = new HashSet<String>();
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -132,7 +128,7 @@ public class GMLStreamWriter {
     GMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
         this.version = version;
         this.xmlStream = xmlStream;
-        referenceExportStrategy = new DefaultGmlReferenceExportStrategy( "#{}", new GmlReferenceResolveOptions() );
+        referenceExportStrategy = new DefaultGmlXlinkStrategy( "#{}", new GmlXlinkOptions() );
         prefixToNs.put( "ogc", OGCNS );
         prefixToNs.put( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
         prefixToNs.put( "xlink", XLNNS );
@@ -230,23 +226,21 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Returns the {@link GmlReferenceExportStrategy} that copes with {@link GMLReference}s that are processed during
-     * export.
+     * Returns the {@link GmlXlinkStrategy} that copes with creating xlinks.
      * 
      * @return strategy, never <code>null</code>
      */
-    public GmlReferenceExportStrategy getReferenceResolveStrategy() {
+    public GmlXlinkStrategy getReferenceResolveStrategy() {
         return referenceExportStrategy;
     }
 
     /**
-     * Sets an {@link GmlReferenceExportStrategy} that copes with {@link GMLReference}s that are processed during
-     * export.
+     * Sets an {@link GmlXlinkStrategy} that copes with creating xlinks.
      * 
      * @param strategy
      *            handler, must not be <code>null</code>
      */
-    public void setReferenceResolveStrategy( GmlReferenceExportStrategy strategy ) {
+    public void setReferenceResolveStrategy( GmlXlinkStrategy strategy ) {
         this.referenceExportStrategy = strategy;
     }
 
@@ -289,21 +283,6 @@ public class GMLStreamWriter {
      */
     public void setGenerateBoundedByForFeatures( boolean exportBoundedBy ) {
         this.exportBoundedByForFeatures = exportBoundedBy;
-    }
-
-    /**
-     * Returns whether the {@link GMLObject} with the specified id has already been exported.
-     * 
-     * @param gmlId
-     *            id of the object, must not be <code>null</code>
-     * @return <code>true</code>, if the object has been exported, <code>false</code> otherwise
-     */
-    public boolean isObjectExported( String gmlId ) {
-        return exportedIds.contains( gmlId );
-    }
-
-    public Set<String> getExportedIds() {
-        return exportedIds;
     }
 
     /**

@@ -181,7 +181,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                         if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
                             if ( value.startsWith( "{" ) || value.endsWith( "}" ) ) {
                                 String objectId = value.substring( 1, value.length() - 1 );
-                                if ( gmlWriter.isObjectExported( objectId ) ) {
+                                if ( gmlWriter.getReferenceResolveStrategy().isObjectExported( objectId ) ) {
                                     value = "#" + objectId;
                                 } else {
                                     value = xLinkTemplate.replace( "{}", objectId );

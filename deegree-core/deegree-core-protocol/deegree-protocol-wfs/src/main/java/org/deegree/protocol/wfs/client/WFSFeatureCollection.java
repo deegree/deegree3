@@ -53,11 +53,11 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StreamFeatureCollection;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * </p>
  * <p>
- * TODO in order to make this usable for <b>really</b> large amounts of complex features, {@link GMLDocumentIdContext}
+ * TODO in order to make this usable for <b>really</b> large amounts of complex features, {@link GmlDocumentIdContext}
  * needs to be rewritten (so it doesn't keep references to all features in memory).
  * </p>
  * 
@@ -271,7 +271,7 @@ public class WFSFeatureCollection<T> {
         return null;
     }
 
-    public GMLDocumentIdContext getIdContext() {
+    public GmlDocumentIdContext getIdContext() {
         return null;
     }
 

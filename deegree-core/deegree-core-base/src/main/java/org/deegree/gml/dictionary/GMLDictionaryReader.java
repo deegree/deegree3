@@ -49,10 +49,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.props.GMLStdPropsReader;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +74,13 @@ public class GMLDictionaryReader {
 
     private final XMLStreamReader xmlStream;
 
-    private final GMLDocumentIdContext idContext;
+    private final GmlDocumentIdContext idContext;
 
     private final GMLStdPropsReader propsReader;
 
     private final String gmlNs;
 
-    public GMLDictionaryReader( GMLVersion version, XMLStreamReader xmlStream, GMLDocumentIdContext idContext ) {
+    public GMLDictionaryReader( GMLVersion version, XMLStreamReader xmlStream, GmlDocumentIdContext idContext ) {
         this.version = version;
         this.xmlStream = xmlStream;
         this.idContext = idContext;

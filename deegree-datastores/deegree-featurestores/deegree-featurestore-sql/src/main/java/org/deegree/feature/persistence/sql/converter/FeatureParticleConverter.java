@@ -46,7 +46,7 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.gml.feature.FeatureReference;
+import org.deegree.gml.reference.FeatureReference;
 
 /**
  * {@link ParticleConverter} for {@link Feature} particles.

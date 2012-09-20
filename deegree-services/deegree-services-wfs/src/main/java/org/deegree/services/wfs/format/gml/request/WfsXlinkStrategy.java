@@ -37,15 +37,17 @@ package org.deegree.services.wfs.format.gml.request;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.GmlReferenceExportStrategy;
+import org.deegree.gml.reference.GmlXlinkOptions;
+import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
@@ -61,13 +63,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class WfsReferenceExportStrategy implements GmlReferenceExportStrategy {
+class WfsXlinkStrategy implements GmlXlinkStrategy {
 
-    private static Logger LOG = LoggerFactory.getLogger( WfsReferenceExportStrategy.class );
+    private static Logger LOG = LoggerFactory.getLogger( WfsXlinkStrategy.class );
 
     private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 
-    private Map<GMLReference<?>, GmlReferenceResolveOptions> refToResolveState = new HashMap<GMLReference<?>, GmlReferenceResolveOptions>();
+    private Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
 
     private final BufferableXMLStreamWriter xmlStream;
 
@@ -75,10 +77,12 @@ class WfsReferenceExportStrategy implements GmlReferenceExportStrategy {
 
     private final String remoteXlinkTemplate;
 
-    private final GmlReferenceResolveOptions resolveOptions;
+    private final GmlXlinkOptions resolveOptions;
 
-    WfsReferenceExportStrategy( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate,
-                           GmlReferenceResolveOptions resolveOptions ) {
+    private final Set<String> exportedIds = new HashSet<String>();
+
+    WfsXlinkStrategy( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate,
+                      GmlXlinkOptions resolveOptions ) {
         this.xmlStream = xmlStream;
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
@@ -86,7 +90,7 @@ class WfsReferenceExportStrategy implements GmlReferenceExportStrategy {
     }
 
     @Override
-    public String requireObject( GMLReference<?> ref, GmlReferenceResolveOptions resolveState ) {
+    public String requireObject( GMLReference<?> ref, GmlXlinkOptions resolveState ) {
         String uri = ref.getURI();
         LOG.debug( "Exporting forward reference to object {} which must be included in the output.", uri );
         uriToRef.put( uri, ref );
@@ -136,18 +140,28 @@ class WfsReferenceExportStrategy implements GmlReferenceExportStrategy {
         return uriToRef.values();
     }
 
-    Map<GMLReference<?>, GmlReferenceResolveOptions> getResolveStates() {
+    Map<GMLReference<?>, GmlXlinkOptions> getResolveStates() {
         return refToResolveState;
     }
 
     void clear() {
         uriToRef = new LinkedHashMap<String, GMLReference<?>>();
-        refToResolveState = new HashMap<GMLReference<?>, GmlReferenceResolveOptions>();
+        refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
     }
 
     @Override
-    public GmlReferenceResolveOptions getResolveOptions() {
+    public GmlXlinkOptions getResolveOptions() {
         return resolveOptions;
+    }
+
+    @Override
+    public void addExportedId( String gmlId ) {
+        exportedIds.add( gmlId );
+    }
+
+    @Override
+    public boolean isObjectExported( String gmlId ) {
+        return exportedIds.contains( gmlId );
     }
 
 }

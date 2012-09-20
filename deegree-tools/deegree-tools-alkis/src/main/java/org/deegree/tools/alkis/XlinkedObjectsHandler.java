@@ -40,8 +40,8 @@ import java.util.LinkedHashMap;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.GmlReferenceExportStrategy;
+import org.deegree.gml.reference.GmlXlinkStrategy;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-class XlinkedObjectsHandler implements GmlReferenceExportStrategy {
+class XlinkedObjectsHandler implements GmlXlinkStrategy {
 
     private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
 
@@ -64,17 +64,17 @@ class XlinkedObjectsHandler implements GmlReferenceExportStrategy {
 
     private final String remoteXlinkTemplate;
 
-    private final GmlReferenceResolveOptions resolveOptions;
+    private final GmlXlinkOptions resolveOptions;
 
     XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate,
-                           GmlReferenceResolveOptions resolveOptions ) {
+                           GmlXlinkOptions resolveOptions ) {
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
         this.resolveOptions = resolveOptions;
     }
 
     @Override
-    public String requireObject( GMLReference<?> ref, GmlReferenceResolveOptions resolveState ) {
+    public String requireObject( GMLReference<?> ref, GmlXlinkOptions resolveState ) {
         LOG.debug( "Exporting forward reference to object {} which must be included in the output.", ref.getId() );
         objectIdToRef.put( ref.getId(), ref );
         return "#" + ref.getId();
@@ -105,7 +105,7 @@ class XlinkedObjectsHandler implements GmlReferenceExportStrategy {
     }
 
     @Override
-    public GmlReferenceResolveOptions getResolveOptions() {
+    public GmlXlinkOptions getResolveOptions() {
         return resolveOptions;
     }
 

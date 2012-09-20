@@ -44,7 +44,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.time.TimeObject;
 import org.deegree.time.complex.TimeComplex;
 import org.deegree.time.complex.TimeTopologyComplex;
@@ -110,9 +110,9 @@ public class GMLTimeReader {
         timeElements.addAll( complexElements );
     }
 
-    private final GMLDocumentIdContext idContext;
+    private final GmlDocumentIdContext idContext;
 
-    public GMLTimeReader( GMLDocumentIdContext idContext ) {
+    public GMLTimeReader( GmlDocumentIdContext idContext ) {
         this.idContext = idContext;
     }
 

@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.gml.feature;
+package org.deegree.gml.reference;
 
 import java.util.List;
 
@@ -53,9 +53,9 @@ import org.deegree.geometry.Envelope;
  * A {@link GMLReference} that targets a {@link Feature}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class FeatureReference extends GMLReference<Feature> implements Feature {
 
@@ -138,4 +138,5 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     public void setExtraProperties( ExtraProps extraProps ) {
         getReferencedObject().setExtraProperties( extraProps );
     }
+
 }

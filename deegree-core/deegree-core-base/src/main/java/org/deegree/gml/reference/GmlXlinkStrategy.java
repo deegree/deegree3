@@ -33,35 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature;
+package org.deegree.gml.reference;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.GmlReferenceResolveOptions;
 
 /**
- * Invoked by the {@link GMLFeatureWriter} when references to {@link GMLObject}s need to be written.
- * <p>
- * This interface allows to customize the strategy for dealing with potential forward-references.
- * </p>
+ * Controls how to export xlinks to {@link GMLObject}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface GmlReferenceExportStrategy {
+public interface GmlXlinkStrategy {
 
     /**
-     * Invoked when the target of the given {@link GMLReference} has to be included in the output.
+     * Returns the options for the resolving of references.
+     * 
+     * @return options for the resolving of references, never <code>null</code>
+     */
+    public GmlXlinkOptions getResolveOptions();
+
+    public void addExportedId( String gmlId );
+    
+    /**
+     * Returns whether a {@link GMLObject} with the specified id has already been exported.
+     * 
+     * @param gmlId
+     *            id of the object, must not be <code>null</code>
+     * @return <code>true</code>, if the object has been exported, <code>false</code> otherwise
+     */
+    public boolean isObjectExported( String gmlId );
+
+    /**
+     * Invoked when the target of the given {@link GMLReference} has to be included in the exported document.
      * 
      * @param ref
      *            reference, never <code>null</code>
-     * @param resolve
-     *            resolve options this reference, never <code>null</code>
+     * @param options
+     *            resolve options for the reference, never <code>null</code>
      * @return URI to write, never <code>null</code>
      */
-    public String requireObject( GMLReference<?> ref, GmlReferenceResolveOptions resolveState );
+    public String requireObject( GMLReference<?> ref, GmlXlinkOptions options );
 
     /**
      * Invoked when the target of the given {@link GMLReference} may be an external reference or a forward reference to
@@ -72,7 +86,5 @@ public interface GmlReferenceExportStrategy {
      * @return URI to write, never <code>null</code>
      */
     public String handleReference( GMLReference<?> ref );
-
-    public GmlReferenceResolveOptions getResolveOptions();
 
 }

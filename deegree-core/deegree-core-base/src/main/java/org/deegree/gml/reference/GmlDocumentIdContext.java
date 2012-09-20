@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml;
+package org.deegree.gml.reference;
 
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 
@@ -48,6 +48,8 @@ import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,13 +65,13 @@ import org.slf4j.LoggerFactory;
  * @see GMLStreamReader
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class GMLDocumentIdContext implements GMLReferenceResolver {
+public class GmlDocumentIdContext implements GMLReferenceResolver {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLDocumentIdContext.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GmlDocumentIdContext.class );
 
     private final GMLVersion version;
 
@@ -82,12 +84,12 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
     private AppSchema schema;
 
     /**
-     * Creates a new {@link GMLDocumentIdContext} instance for a GML document of the given version.
+     * Creates a new {@link GmlDocumentIdContext} instance for a GML document of the given version.
      * 
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLDocumentIdContext( GMLVersion version ) {
+    public GmlDocumentIdContext( GMLVersion version ) {
         this.version = version;
     }
 

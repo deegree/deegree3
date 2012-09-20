@@ -60,6 +60,7 @@ import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -126,7 +127,7 @@ public class GMLStreamReader {
 
     private final GMLVersion version;
 
-    private final GMLDocumentIdContext idContext;
+    private final GmlDocumentIdContext idContext;
 
     private GMLReferenceResolver resolver;
 
@@ -155,7 +156,7 @@ public class GMLStreamReader {
     GMLStreamReader( GMLVersion version, XMLStreamReaderWrapper xmlStream ) {
         this.version = version;
         this.xmlStream = xmlStream;
-        this.idContext = new GMLDocumentIdContext( version );
+        this.idContext = new GmlDocumentIdContext( version );
         this.geomFac = new GeometryFactory();
     }
 
@@ -374,11 +375,11 @@ public class GMLStreamReader {
     }
 
     /**
-     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifiers and references.
+     * Returns the {@link GmlDocumentIdContext} that keeps track of objects, identifiers and references.
      * 
-     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
+     * @return the {@link GmlDocumentIdContext}, never <code>null</code>
      */
-    public GMLDocumentIdContext getIdContext() {
+    public GmlDocumentIdContext getIdContext() {
         return idContext;
     }
 

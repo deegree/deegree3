@@ -33,20 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature;
+package org.deegree.gml.reference;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.GmlReferenceResolveOptions;
 
-public class DefaultGmlReferenceExportStrategy implements GmlReferenceExportStrategy {
+public class DefaultGmlXlinkStrategy implements GmlXlinkStrategy {
 
     private final String remoteXlinkTemplate;
 
-    private final GmlReferenceResolveOptions resolveOptions;
+    private final GmlXlinkOptions resolveOptions;
 
-    public DefaultGmlReferenceExportStrategy() {
+    private final Set<String> exportedIds = new HashSet<String>();
+
+    public DefaultGmlXlinkStrategy() {
         this.remoteXlinkTemplate = "#{}";
-        this.resolveOptions = new GmlReferenceResolveOptions();
+        this.resolveOptions = new GmlXlinkOptions();
     }
 
     /**
@@ -57,13 +61,13 @@ public class DefaultGmlReferenceExportStrategy implements GmlReferenceExportStra
      *            , the substring <code>{}</code> is replaced by the object id, must not be <code>null</code>
      * @param resolveOptions
      */
-    public DefaultGmlReferenceExportStrategy( String remoteXlinkTemplate, GmlReferenceResolveOptions resolveOptions ) {
+    public DefaultGmlXlinkStrategy( String remoteXlinkTemplate, GmlXlinkOptions resolveOptions ) {
         this.remoteXlinkTemplate = remoteXlinkTemplate;
         this.resolveOptions = resolveOptions;
     }
 
     @Override
-    public String requireObject( GMLReference<?> ref, GmlReferenceResolveOptions resolveState ) {
+    public String requireObject( GMLReference<?> ref, GmlXlinkOptions resolveState ) {
         if ( ref.isLocal() ) {
             return remoteXlinkTemplate.replace( "{}", ref.getId() );
         }
@@ -79,8 +83,17 @@ public class DefaultGmlReferenceExportStrategy implements GmlReferenceExportStra
     }
 
     @Override
-    public GmlReferenceResolveOptions getResolveOptions() {
+    public GmlXlinkOptions getResolveOptions() {
         return resolveOptions;
     }
 
+    @Override
+    public void addExportedId( String gmlId ) {
+        exportedIds.add( gmlId );
+    }
+
+    @Override
+    public boolean isObjectExported( String gmlId ) {
+        return exportedIds.contains( gmlId );
+    }
 }

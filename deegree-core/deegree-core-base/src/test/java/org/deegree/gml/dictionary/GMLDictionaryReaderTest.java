@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
@@ -71,7 +71,7 @@ public class GMLDictionaryReaderTest {
         // skip START_DOCUMENT event
         xmlStream.nextTag();
 
-        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GMLDocumentIdContext( GML_30 ) );
+        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GmlDocumentIdContext( GML_30 ) );
 
         Dictionary dict = (Dictionary) dictReader.read();
         assertEquals( "CodeLists", dict.getId() );
@@ -90,7 +90,7 @@ public class GMLDictionaryReaderTest {
         // skip START_DOCUMENT event
         xmlStream.nextTag();
 
-        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GMLDocumentIdContext( GML_30 ) );
+        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GmlDocumentIdContext( GML_30 ) );
 
         Dictionary dict = (Dictionary) dictReader.read();        
 

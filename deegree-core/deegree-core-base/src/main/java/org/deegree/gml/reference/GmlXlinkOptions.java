@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml;
+package org.deegree.gml.reference;
 
 import static java.lang.Integer.parseInt;
 
@@ -44,22 +44,19 @@ import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.jaxen.expr.NameStep;
 
-import com.vividsolutions.jts.io.gml2.GMLWriter;
-
 /**
- * Options for resolving references during export of {@link GMLObject}s.
+ * Options for controlling the generation of xlinks to {@link GMLObject}s.
  * 
- * @see GMLWriter
- * @see GMLObject
+ * @see GmlXlinkStrategy
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GmlReferenceResolveOptions {
+public class GmlXlinkOptions {
 
-    private List<NameStep> remainingResolvePath;
+    private List<NameStep> resolvePath;
 
     private final int resolveDepth;
 
@@ -69,15 +66,15 @@ public class GmlReferenceResolveOptions {
 
     private final long remoteTimeoutInMilliseconds;
 
-    public GmlReferenceResolveOptions() {
-        remainingResolvePath = null;
+    public GmlXlinkOptions() {
+        resolvePath = null;
         resolveDepth = 0;
         currentLevel = 0;
         mode = ResolveMode.NONE;
         remoteTimeoutInMilliseconds = 0;
     }
 
-    public GmlReferenceResolveOptions( ResolveParams params ) {
+    public GmlXlinkOptions( ResolveParams params ) {
         if ( params.getDepth() != null ) {
             if ( "*".equals( params.getDepth() ) ) {
                 resolveDepth = -1;
@@ -103,9 +100,9 @@ public class GmlReferenceResolveOptions {
      * @param mode
      * @param remoteTimeoutInMilliseconds
      */
-    public GmlReferenceResolveOptions( List<NameStep> remainingResolvePath, int depth, int currentLevel,
-                                       ResolveMode mode, long remoteTimeoutInMilliseconds ) {
-        this.remainingResolvePath = remainingResolvePath;
+    public GmlXlinkOptions( List<NameStep> remainingResolvePath, int depth, int currentLevel, ResolveMode mode,
+                            long remoteTimeoutInMilliseconds ) {
+        this.resolvePath = remainingResolvePath;
         this.resolveDepth = depth;
         this.currentLevel = currentLevel;
         this.mode = mode;

@@ -72,7 +72,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.feature.FeatureReference;
+import org.deegree.gml.reference.FeatureReference;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;

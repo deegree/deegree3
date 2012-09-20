@@ -65,10 +65,10 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
@@ -135,7 +135,7 @@ public class MemoryFeatureStore implements FeatureStore {
         gmlReader.setApplicationSchema( schema );
         FeatureCollection fc = gmlReader.readFeatureCollection();
         gmlReader.close();
-        GMLDocumentIdContext idContext = gmlReader.getIdContext();
+        GmlDocumentIdContext idContext = gmlReader.getIdContext();
         idContext.resolveLocalRefs();
 
         FeatureStoreTransaction ta = acquireTransaction();

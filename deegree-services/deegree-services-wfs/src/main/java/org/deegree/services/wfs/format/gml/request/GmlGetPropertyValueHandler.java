@@ -63,8 +63,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.feature.GMLFeatureWriter;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -143,9 +143,9 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
                                                                       format.getMaster().getStoreManager().getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( analyzer.getFeatureTypes() ) );
         gmlStream.setNamespaceBindings( prefixToNs );
-        GmlReferenceResolveOptions resolveOptions = new GmlReferenceResolveOptions( request.getResolveParams() );
+        GmlXlinkOptions resolveOptions = new GmlXlinkOptions( request.getResolveParams() );
         BufferableXMLStreamWriter bufferedStream = (BufferableXMLStreamWriter) xmlStream;
-        WfsReferenceExportStrategy additionalObjects = new WfsReferenceExportStrategy( bufferedStream, localReferencesPossible,
+        WfsXlinkStrategy additionalObjects = new WfsXlinkStrategy( bufferedStream, localReferencesPossible,
                                                                              xLinkTemplate, resolveOptions );
         gmlStream.setReferenceResolveStrategy( additionalObjects );
 
@@ -196,7 +196,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
     }
 
     private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer,
-                                    GmlReferenceResolveOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
+                                    GmlXlinkOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
                                     int maxResults, GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
                             UnknownCRSException, TransformationException {
@@ -238,7 +238,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
     }
 
     private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer,
-                                    GmlReferenceResolveOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
+                                    GmlXlinkOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
                                     int maxResults, GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
                             UnknownCRSException, TransformationException {

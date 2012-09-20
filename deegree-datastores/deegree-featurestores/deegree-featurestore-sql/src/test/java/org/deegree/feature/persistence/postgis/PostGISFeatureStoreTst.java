@@ -96,9 +96,9 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.DefaultGmlReferenceExportStrategy;
 import org.deegree.gml.feature.StreamFeatureCollection;
+import org.deegree.gml.reference.DefaultGmlXlinkStrategy;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.junit.Assert;
@@ -549,8 +549,8 @@ public class PostGISFeatureStoreTst {
                 XMLStreamWriter xmlStream = new IndentingXMLStreamWriter(
                                                                           XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-                GmlReferenceResolveOptions resolveOptions = new GmlReferenceResolveOptions( null, -1, 0, LOCAL, 0 );
-                gmlStream.setReferenceResolveStrategy( new DefaultGmlReferenceExportStrategy( "http://bla?fid={}",
+                GmlXlinkOptions resolveOptions = new GmlXlinkOptions( null, -1, 0, LOCAL, 0 );
+                gmlStream.setReferenceResolveStrategy( new DefaultGmlXlinkStrategy( "http://bla?fid={}",
                                                                                               resolveOptions ) );
                 gmlStream.write( fc );
                 gmlStream.close();
@@ -596,8 +596,8 @@ public class PostGISFeatureStoreTst {
         xmlFac.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
         XMLStreamWriter xmlStream = new IndentingXMLStreamWriter( xmlFac.createXMLStreamWriter( System.out ) );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-        GmlReferenceResolveOptions resolveOptions = new GmlReferenceResolveOptions( null, -1, 0, LOCAL, 0 );
-        gmlStream.setReferenceResolveStrategy( new DefaultGmlReferenceExportStrategy( "http://bla?fid={}",
+        GmlXlinkOptions resolveOptions = new GmlXlinkOptions( null, -1, 0, LOCAL, 0 );
+        gmlStream.setReferenceResolveStrategy( new DefaultGmlXlinkStrategy( "http://bla?fid={}",
                                                                                       resolveOptions ) );
         gmlStream.write( fc );
         gmlStream.close();

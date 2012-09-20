@@ -245,7 +245,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         startGeometry( "Polygon", polygon );
 
         Ring outerRing = polygon.getExteriorRing();
-        if ( outerRing.getId() != null && exportedIds.contains( outerRing.getId() ) ) {
+        if ( outerRing.getId() != null && referenceExportStrategy.isObjectExported( outerRing.getId() ) ) {
             writer.writeEmptyElement( "gml", "outerBoundaryIs", GML21NS );
             writer.writeAttribute( "xlink", XLNNS, "href", "#" + outerRing.getId() );
         } else {
@@ -258,7 +258,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         if ( rings != null ) {
             for ( Ring ring : rings ) {
                 writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
-                if ( exportedIds.contains( ring.getId() ) ) {
+                if ( referenceExportStrategy.isObjectExported( ring.getId() ) ) {
                     writer.writeAttribute( "xlink", XLNNS, "href", "#" + ring.getId() );
                 } else {
                     exportLinearRing( ring ); // in GML 2.1 the interior rings are linear rings
@@ -349,7 +349,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         case MULTI_GEOMETRY: {
             startGeometry( "MultiGeometry", multiGeometry );
             for ( Geometry geom : multiGeometry ) {
-                if ( exportedIds.contains( geom.getId() ) ) {
+                if ( referenceExportStrategy.isObjectExported( geom.getId() ) ) {
                     writer.writeEmptyElement( "gml", "geometryMember", GML21NS );
                     writer.writeAttribute( "xlink", XLNNS, "href", "#" + geom.getId() );
                 } else {
@@ -379,7 +379,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         startGeometry( "MultiPoint", multiPoint );
 
         for ( Point point : multiPoint ) {
-            if ( exportedIds.contains( point.getId() ) ) {
+            if ( referenceExportStrategy.isObjectExported( point.getId() ) ) {
                 writer.writeEmptyElement( "gml", "pointMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + point.getId() );
             } else {
@@ -404,7 +404,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         startGeometry( "MultiLineString", multiLineString );
 
         for ( LineString lineString : multiLineString ) {
-            if ( exportedIds.contains( lineString.getId() ) ) {
+            if ( referenceExportStrategy.isObjectExported( lineString.getId() ) ) {
                 writer.writeEmptyElement( "gml", "lineStringMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + lineString.getId() );
 
@@ -430,7 +430,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         startGeometry( "MultiLineString", multiCurve );
 
         for ( Curve curve : multiCurve ) {
-            if ( exportedIds.contains( curve.getId() ) ) {
+            if ( referenceExportStrategy.isObjectExported( curve.getId() ) ) {
                 writer.writeEmptyElement( "gml", "lineStringMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + curve.getId() );
 
@@ -456,7 +456,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         startGeometry( "MultiPolygon", multiPolygon );
 
         for ( Polygon polygon : multiPolygon ) {
-            if ( polygon.getId() != null && exportedIds.contains( polygon.getId() ) ) {
+            if ( polygon.getId() != null && referenceExportStrategy.isObjectExported( polygon.getId() ) ) {
                 writer.writeEmptyElement( "gml", "polygonMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + polygon.getId() );
 
@@ -482,7 +482,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         startGeometry( "MultiPolygon", multiSurface );
 
         for ( Surface polygon : multiSurface ) {
-            if ( polygon.getId() != null && exportedIds.contains( polygon.getId() ) ) {
+            if ( polygon.getId() != null && referenceExportStrategy.isObjectExported( polygon.getId() ) ) {
                 writer.writeEmptyElement( "gml", "polygonMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + polygon.getId() );
             } else {
@@ -626,7 +626,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         writeStartElementWithNS( GML21NS, localName );
 
         if ( geometry.getId() != null ) {
-            exportedIds.add( geometry.getId() );
+            referenceExportStrategy.addExportedId( geometry.getId() );
             writer.writeAttribute( "gid", geometry.getId() );
         }
 
