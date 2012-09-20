@@ -46,7 +46,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,8 +169,8 @@ public abstract class AbstractGMLObjectWriter {
         writer.writeCharacters( "" );
     }
 
-    protected ResolveState getResolveStateForNextLevel( ResolveState state ) {
-        return new ResolveState( null, state.getDepth(), state.getCurrentLevel() + 1, state.getMode(),
+    protected GmlReferenceResolveOptions getResolveStateForNextLevel( GmlReferenceResolveOptions state ) {
+        return new GmlReferenceResolveOptions( null, state.getDepth(), state.getCurrentLevel() + 1, state.getMode(),
                                  state.getRemoteTimeoutInMilliseconds() );
     }
 }

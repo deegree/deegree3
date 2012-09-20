@@ -88,7 +88,7 @@ import org.deegree.filter.ProjectionClause;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
@@ -113,7 +113,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private final Map<QName, ProjectionClause> requestedPropertyNames = new HashMap<QName, ProjectionClause>();
 
-    private final ResolveState initialResolveState;
+    private final GmlReferenceResolveOptions initialResolveState;
 
     private final boolean exportSf;
 
@@ -142,10 +142,10 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     public GMLFeatureWriter( GMLStreamWriter gmlStreamWriter ) {
         super( gmlStreamWriter );
 
-        if ( gmlStreamWriter.getInitialResolveState() != null ) {
-            initialResolveState = gmlStreamWriter.getInitialResolveState();
+        if ( gmlStreamWriter.getReferenceResolveOptions() != null ) {
+            initialResolveState = gmlStreamWriter.getReferenceResolveOptions();
         } else {
-            initialResolveState = new ResolveState();
+            initialResolveState = new GmlReferenceResolveOptions();
         }
 
         if ( gmlStreamWriter.getProjections() != null ) {
@@ -204,7 +204,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         export( prop, initialResolveState );
     }
 
-    public void export( TypedObjectNode node, ResolveState resolveState )
+    public void export( TypedObjectNode node, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( node instanceof GMLObject ) {
@@ -233,7 +233,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void export( Property property, ResolveState resolveState )
+    private void export( Property property, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
@@ -441,7 +441,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void export( Feature feature, ResolveState resolveState )
+    private void export( Feature feature, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         setSchema( feature );
@@ -498,7 +498,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             if ( exportExtraProps ) {
                 ExtraProps extraProps = feature.getExtraProperties();
                 if ( extraProps != null ) {
-                    ResolveState resolveAll = new ResolveState( null, -1, 0, initialResolveState.getMode(),
+                    GmlReferenceResolveOptions resolveAll = new GmlReferenceResolveOptions( null, -1, 0, initialResolveState.getMode(),
                                                                 initialResolveState.getRemoteTimeoutInMilliseconds() );
                     for ( Property prop : extraProps.getProperties() ) {
                         export( prop, resolveAll );
@@ -548,15 +548,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return new GenericProperty( boundedByPt, env );
     }
 
-    private ResolveState getResolveParams( Property prop, ResolveState resolveState ) {
+    private GmlReferenceResolveOptions getResolveParams( Property prop, GmlReferenceResolveOptions resolveState ) {
         ProjectionClause projection = requestedPropertyNames.get( prop.getName() );
         if ( projection != null && projection.getResolveParams() != null ) {
-            return new ResolveState( projection.getResolveParams() );
+            return new GmlReferenceResolveOptions( projection.getResolveParams() );
         }
         return resolveState;
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, ResolveState resolveState )
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = pt.getName();
@@ -591,7 +591,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, FeatureReference ref, ResolveState resolveState,
+    private void exportFeatureProperty( FeaturePropertyType pt, FeatureReference ref, GmlReferenceResolveOptions resolveState,
                                         QName propName )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -618,14 +618,14 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private boolean includeNextLevelInOutput( ResolveState resolveState ) {
+    private boolean includeNextLevelInOutput( GmlReferenceResolveOptions resolveState ) {
         int maxInlineLevels = resolveState.getDepth();
         int currentLevel = resolveState.getCurrentLevel();
         return maxInlineLevels == -1 || ( maxInlineLevels > 0 && currentLevel < maxInlineLevels );
     }
 
     private void exportFeaturePropertyByReference( QName propName, FeatureReference ref,
-                                                   boolean forceInclusionInDocument, ResolveState resolveState )
+                                                   boolean forceInclusionInDocument, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException {
 
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -649,7 +649,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         endEmptyElement();
     }
 
-    private void exportFeaturePropertyByValue( QName propName, Feature subFeature, ResolveState resolveState )
+    private void exportFeaturePropertyByValue( QName propName, Feature subFeature, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         exportedIds.add( subFeature.getId() );
         writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -658,7 +658,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         writer.writeEndElement();
     }
 
-    private void exportGenericXmlElement( ElementNode xmlContent, ResolveState resolveState )
+    private void exportGenericXmlElement( ElementNode xmlContent, GmlReferenceResolveOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName elName = xmlContent.getName();

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -44,15 +44,17 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of referenced {@link GMLObject}s that have to be included in a {@link GetFeature} response.
+ * Keeps track of additional (referenced) {@link GMLObject}s that have to be included in {@link GetFeature}/
+ * {@link GetPropertyValue} responses.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -65,7 +67,7 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 
-    private Map<GMLReference<?>, ResolveState> refToResolveState = new HashMap<GMLReference<?>, ResolveState>();
+    private Map<GMLReference<?>, GmlReferenceResolveOptions> refToResolveState = new HashMap<GMLReference<?>, GmlReferenceResolveOptions>();
 
     private final BufferableXMLStreamWriter xmlStream;
 
@@ -80,7 +82,7 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
     }
 
     @Override
-    public String requireObject( GMLReference<?> ref, ResolveState resolveState ) {
+    public String requireObject( GMLReference<?> ref, GmlReferenceResolveOptions resolveState ) {
         String uri = ref.getURI();
         LOG.debug( "Exporting forward reference to object {} which must be included in the output.", uri );
         uriToRef.put( uri, ref );
@@ -130,12 +132,12 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
         return uriToRef.values();
     }
 
-    Map<GMLReference<?>, ResolveState> getResolveStates() {
+    Map<GMLReference<?>, GmlReferenceResolveOptions> getResolveStates() {
         return refToResolveState;
     }
 
     void clear() {
         uriToRef = new LinkedHashMap<String, GMLReference<?>>();
-        refToResolveState = new HashMap<GMLReference<?>, ResolveState>();
+        refToResolveState = new HashMap<GMLReference<?>, GmlReferenceResolveOptions>();
     }
 }

@@ -88,7 +88,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
@@ -151,10 +151,10 @@ abstract class AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
 
         while ( !nextLevelObjects.isEmpty() ) {
-            Map<GMLReference<?>, ResolveState> refToResolveState = additionalObjects.getResolveStates();
+            Map<GMLReference<?>, GmlReferenceResolveOptions> refToResolveState = additionalObjects.getResolveStates();
             additionalObjects.clear();
             for ( GMLReference<?> ref : nextLevelObjects ) {
-                ResolveState resolveState = refToResolveState.get( ref );
+                GmlReferenceResolveOptions resolveState = refToResolveState.get( ref );
                 Feature feature = (Feature) ref;
                 writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
             }
@@ -163,7 +163,7 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                                       ResolveState resolveState, QName featureMemberEl )
+                                       GmlReferenceResolveOptions resolveState, QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( gmlStream.isObjectExported( member.getId() ) ) {

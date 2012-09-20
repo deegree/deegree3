@@ -57,7 +57,7 @@ import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
@@ -120,7 +120,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
             remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
         }
 
-        ResolveState resolveState = new ResolveState( null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds );
+        GmlReferenceResolveOptions resolveState = new GmlReferenceResolveOptions( null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds );
 
         GMLObject o = retrieveObject( id );
         GMLVersion gmlVersion = options.getGmlVersion();
@@ -153,7 +153,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
         gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( version, gmlVersion ) );
-        gmlStream.setInitialResolveState( resolveState );
+        gmlStream.setReferenceResolveOptions( resolveState );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setNamespaceBindings( format.getMaster().getStoreManager().getPrefixToNs() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );

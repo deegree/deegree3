@@ -63,7 +63,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
@@ -136,7 +136,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
-        gmlStream.setInitialResolveState( new ResolveState( request.getResolveParams() ) );
+        gmlStream.setReferenceResolveOptions( new GmlReferenceResolveOptions( request.getResolveParams() ) );
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
@@ -170,10 +170,10 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         xmlStream.writeAttribute( "timeStamp", getTimestamp() );
 
         if ( options.isDisableStreaming() ) {
-            writeValuesCached( request, analyzer, gmlStream.getInitialResolveState(), xmlStream, startIndex,
+            writeValuesCached( request, analyzer, gmlStream.getReferenceResolveOptions(), xmlStream, startIndex,
                                maxResults, evaluator, featureWriter );
         } else {
-            writeValuesStream( request, analyzer, gmlStream.getInitialResolveState(), xmlStream, startIndex,
+            writeValuesStream( request, analyzer, gmlStream.getReferenceResolveOptions(), xmlStream, startIndex,
                                maxResults, evaluator, featureWriter );
         }
 
@@ -195,7 +195,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer, ResolveState resolveState,
+    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer, GmlReferenceResolveOptions resolveState,
                                     XMLStreamWriter xmlStream, int startIndex, int maxResults,
                                     GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
@@ -237,7 +237,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer, ResolveState resolveState,
+    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer, GmlReferenceResolveOptions resolveState,
                                     XMLStreamWriter xmlStream, int startIndex, int maxResults,
                                     GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,

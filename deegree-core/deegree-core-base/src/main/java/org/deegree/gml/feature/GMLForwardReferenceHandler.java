@@ -37,7 +37,7 @@ package org.deegree.gml.feature;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 
 /**
  * Handler that is invoked by the {@link GMLFeatureWriter} when a reference to a {@link GMLObject} is written.
@@ -61,7 +61,7 @@ public interface GMLForwardReferenceHandler {
      *            resolve options this reference, never <code>null</code>
      * @return URI to write, never <code>null</code>
      */
-    public String requireObject( GMLReference<?> ref, ResolveState resolveState );
+    public String requireObject( GMLReference<?> ref, GmlReferenceResolveOptions resolveState );
 
     /**
      * Invoked when the target of the given {@link GMLReference} may be an external reference or a forward reference to

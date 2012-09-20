@@ -72,7 +72,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,7 +150,7 @@ public class BlobCodec {
         gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCrs( crs );
         gmlWriter.setRemoteXLinkTemplate( "#{}" );
-        gmlWriter.setInitialResolveState( new ResolveState( null, 0, 0, NONE, 0 ) );
+        gmlWriter.setReferenceResolveOptions( new GmlReferenceResolveOptions( null, 0, 0, NONE, 0 ) );
         gmlWriter.setExportExtraProps( true );
         gmlWriter.write( object );
         gmlWriter.close();
@@ -161,7 +161,7 @@ public class BlobCodec {
             gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
             gmlWriter.setOutputCrs( crs );
             gmlWriter.setRemoteXLinkTemplate( "#{}" );
-            gmlWriter.setInitialResolveState( new ResolveState( null, 0, 0, NONE, 0 ) );
+            gmlWriter.setReferenceResolveOptions( new GmlReferenceResolveOptions( null, 0, 0, NONE, 0 ) );
             gmlWriter.write( object );
             gmlWriter.close();
             os.close();

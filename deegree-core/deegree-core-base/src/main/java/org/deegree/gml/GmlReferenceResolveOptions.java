@@ -41,17 +41,23 @@ import java.util.List;
 
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.jaxen.expr.NameStep;
 
+import com.vividsolutions.jts.io.gml2.GMLWriter;
+
 /**
+ * Options for resolving references during export of {@link GMLObject}s.
  * 
+ * @see GMLWriter
+ * @see GMLObject
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ResolveState {
+public class GmlReferenceResolveOptions {
 
     private List<NameStep> remainingResolvePath;
 
@@ -63,7 +69,7 @@ public class ResolveState {
 
     private final long remoteTimeoutInMilliseconds;
 
-    public ResolveState() {
+    public GmlReferenceResolveOptions() {
         remainingResolvePath = null;
         resolveDepth = 0;
         currentLevel = 0;
@@ -71,7 +77,7 @@ public class ResolveState {
         remoteTimeoutInMilliseconds = 0;
     }
 
-    public ResolveState( ResolveParams params ) {
+    public GmlReferenceResolveOptions( ResolveParams params ) {
         if ( params.getDepth() != null ) {
             if ( "*".equals( params.getDepth() ) ) {
                 resolveDepth = -1;
@@ -97,7 +103,7 @@ public class ResolveState {
      * @param mode
      * @param remoteTimeoutInMilliseconds
      */
-    public ResolveState( List<NameStep> remainingResolvePath, int depth, int currentLevel, ResolveMode mode,
+    public GmlReferenceResolveOptions( List<NameStep> remainingResolvePath, int depth, int currentLevel, ResolveMode mode,
                          long remoteTimeoutInMilliseconds ) {
         this.remainingResolvePath = remainingResolvePath;
         this.resolveDepth = depth;

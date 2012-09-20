@@ -121,7 +121,7 @@ public class GMLStreamWriter {
 
     private final Set<String> exportedIds = new HashSet<String>();
 
-    private ResolveState initialResolveState;
+    private GmlReferenceResolveOptions referenceResolveOptions;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -213,12 +213,12 @@ public class GMLStreamWriter {
         this.prefixToNs.putAll( prefixToNs );
     }
 
-    public ResolveState getInitialResolveState() {
-        return initialResolveState;
+    public GmlReferenceResolveOptions getReferenceResolveOptions() {
+        return referenceResolveOptions;
     }
 
-    public void setInitialResolveState( ResolveState resolveState ) {
-        initialResolveState = resolveState;
+    public void setReferenceResolveOptions( GmlReferenceResolveOptions resolveOptions ) {
+        referenceResolveOptions = resolveOptions;
     }
 
     /**

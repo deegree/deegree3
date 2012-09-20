@@ -96,7 +96,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.ResolveState;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
@@ -549,7 +549,7 @@ public class PostGISFeatureStoreTst {
                                                                           XMLOutputFactory.newInstance().createXMLStreamWriter( System.out ) );
                 GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
                 gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
-                gmlStream.setInitialResolveState( new ResolveState( null, -1, 0, LOCAL, 0 ) );
+                gmlStream.setReferenceResolveOptions( new GmlReferenceResolveOptions( null, -1, 0, LOCAL, 0 ) );
                 gmlStream.write( fc );
                 gmlStream.close();
             } finally {
@@ -595,7 +595,7 @@ public class PostGISFeatureStoreTst {
         XMLStreamWriter xmlStream = new IndentingXMLStreamWriter( xmlFac.createXMLStreamWriter( System.out ) );
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
         gmlStream.setRemoteXLinkTemplate( "http://bla?fid={}" );
-        gmlStream.setInitialResolveState( new ResolveState( null, -1, 0, LOCAL, 0 ) );
+        gmlStream.setReferenceResolveOptions( new GmlReferenceResolveOptions( null, -1, 0, LOCAL, 0 ) );
         gmlStream.write( fc );
         gmlStream.close();
     }
