@@ -59,7 +59,7 @@ public class ParsedPropertyReplacement {
      * @param newProp
      *            never <code>null</code>
      * @param action
-     *            never <code>null</code>
+     *            can be <code>null</code>
      * @param path
      *            never <code>null</code>
      * @param index
@@ -80,7 +80,7 @@ public class ParsedPropertyReplacement {
     }
 
     /**
-     * @return never <code>null</code>
+     * @return can be <code>null</code>
      */
     public UpdateAction getUpdateAction() {
         return action;

@@ -154,8 +154,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 if ( qName != null ) {
                     requestedPropertyNames.put( qName, projection );
                 } else {
-                    throw new UnsupportedOperationException(
-                                                             "Only simple qualified element names are supported for projection." );
+                    LOG.debug( "Only simple qualified element names are supported for projection. Ignoring '"
+                               + projection.getPropertyName() + "'" );
                 }
             }
         }
@@ -232,7 +232,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
         }
     }
-    
+
     private void export( Property property, ResolveState resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 

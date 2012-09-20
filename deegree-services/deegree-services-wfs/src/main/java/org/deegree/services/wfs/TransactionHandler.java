@@ -604,6 +604,7 @@ class TransactionHandler {
             XMLStreamReader xmlStream = replacement.getReplacementValue();
             int index = simpleMultiProp == null ? 0 : simpleMultiProp.second;
             UpdateAction updateAction = replacement.getUpdateAction();
+
             if ( xmlStream != null ) {
                 try {
                     xmlStream.require( START_ELEMENT, null, "Value" );
