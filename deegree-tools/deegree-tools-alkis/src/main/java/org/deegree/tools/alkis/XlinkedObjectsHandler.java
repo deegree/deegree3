@@ -41,7 +41,7 @@ import java.util.LinkedHashMap;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.GMLForwardReferenceHandler;
+import org.deegree.gml.feature.GmlReferenceExportStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
+class XlinkedObjectsHandler implements GmlReferenceExportStrategy {
 
     private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
 
@@ -64,9 +64,13 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private final String remoteXlinkTemplate;
 
-    XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate ) {
+    private final GmlReferenceResolveOptions resolveOptions;
+
+    XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate,
+                           GmlReferenceResolveOptions resolveOptions ) {
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
+        this.resolveOptions = resolveOptions;
     }
 
     @Override
@@ -98,6 +102,11 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     void clear() {
         objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
+    }
+
+    @Override
+    public GmlReferenceResolveOptions getResolveOptions() {
+        return resolveOptions;
     }
 
 }

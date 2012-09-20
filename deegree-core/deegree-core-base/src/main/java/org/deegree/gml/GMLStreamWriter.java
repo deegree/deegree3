@@ -66,8 +66,9 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
 import org.deegree.gml.dictionary.GMLDictionaryWriter;
+import org.deegree.gml.feature.DefaultGmlReferenceExportStrategy;
 import org.deegree.gml.feature.GMLFeatureWriter;
-import org.deegree.gml.feature.GMLForwardReferenceHandler;
+import org.deegree.gml.feature.GmlReferenceExportStrategy;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
@@ -95,8 +96,6 @@ public class GMLStreamWriter {
 
     private final XMLStreamWriter xmlStream;
 
-    private String remoteXlinkTemplate;
-
     private ICRS crs;
 
     private CoordinateFormatter formatter;
@@ -111,7 +110,7 @@ public class GMLStreamWriter {
 
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
-    private GMLForwardReferenceHandler additionalObjectHandler;
+    private GmlReferenceExportStrategy referenceExportStrategy;
 
     private boolean exportExtraProps;
 
@@ -120,8 +119,6 @@ public class GMLStreamWriter {
     private boolean exportBoundedByForFeatures;
 
     private final Set<String> exportedIds = new HashSet<String>();
-
-    private GmlReferenceResolveOptions referenceResolveOptions;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -135,7 +132,7 @@ public class GMLStreamWriter {
     GMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
         this.version = version;
         this.xmlStream = xmlStream;
-        this.remoteXlinkTemplate = "#{}";
+        referenceExportStrategy = new DefaultGmlReferenceExportStrategy( "#{}", new GmlReferenceResolveOptions() );
         prefixToNs.put( "ogc", OGCNS );
         prefixToNs.put( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
         prefixToNs.put( "xlink", XLNNS );
@@ -213,37 +210,6 @@ public class GMLStreamWriter {
         this.prefixToNs.putAll( prefixToNs );
     }
 
-    public GmlReferenceResolveOptions getReferenceResolveOptions() {
-        return referenceResolveOptions;
-    }
-
-    public void setReferenceResolveOptions( GmlReferenceResolveOptions resolveOptions ) {
-        referenceResolveOptions = resolveOptions;
-    }
-
-    /**
-     * Returns the template for representing xlinks that point to objects that are not included in the written GML
-     * document (but are local to the system).
-     * 
-     * @return template for representing xlinks that point to objects that are not included in the written GML, never
-     *         <code>null</code>
-     */
-    public String getRemoteXlinkTemplate() {
-        return remoteXlinkTemplate;
-    }
-
-    /**
-     * Controls the representation of xlinks that point to objects that are not included in the written GML document.
-     * 
-     * @param remoteXlinkTemplate
-     *            template used to create references to document-remote objects, e.g.
-     *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
-     *            , the substring <code>{}</code> is replaced by the object id, must not be <code>null</code>
-     */
-    public void setRemoteXLinkTemplate( String remoteXlinkTemplate ) {
-        this.remoteXlinkTemplate = remoteXlinkTemplate;
-    }
-
     /**
      * Returns the feature properties to be included for exported {@link Feature} instances.
      * 
@@ -264,24 +230,24 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Returns the {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during
+     * Returns the {@link GmlReferenceExportStrategy} that copes with {@link GMLReference}s that are processed during
      * export.
      * 
-     * @return handler, may be <code>null</code>
+     * @return strategy, never <code>null</code>
      */
-    public GMLForwardReferenceHandler getAdditionalObjectHandler() {
-        return additionalObjectHandler;
+    public GmlReferenceExportStrategy getReferenceResolveStrategy() {
+        return referenceExportStrategy;
     }
 
     /**
-     * Sets an {@link GMLForwardReferenceHandler} that copes with {@link GMLReference}s that are processed during
+     * Sets an {@link GmlReferenceExportStrategy} that copes with {@link GMLReference}s that are processed during
      * export.
      * 
-     * @param handler
-     *            handler, may be <code>null</code>
+     * @param strategy
+     *            handler, must not be <code>null</code>
      */
-    public void setAdditionalObjectHandler( GMLForwardReferenceHandler handler ) {
-        this.additionalObjectHandler = handler;
+    public void setReferenceResolveStrategy( GmlReferenceExportStrategy strategy ) {
+        this.referenceExportStrategy = strategy;
     }
 
     public boolean getOutputGeometries() {
@@ -452,4 +418,5 @@ public class GMLStreamWriter {
         }
         return dictionaryWriter;
     }
+
 }

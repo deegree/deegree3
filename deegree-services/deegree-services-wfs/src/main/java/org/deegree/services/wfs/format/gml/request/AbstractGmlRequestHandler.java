@@ -143,7 +143,7 @@ abstract class AbstractGmlRequestHandler {
         return o;
     }
 
-    protected void writeAdditionalObjects( GMLStreamWriter gmlStream, XlinkedObjectsHandler additionalObjects,
+    protected void writeAdditionalObjects( GMLStreamWriter gmlStream, WfsReferenceExportStrategy additionalObjects,
                                            QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 

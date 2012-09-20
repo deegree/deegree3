@@ -45,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.GmlReferenceResolveOptions;
-import org.deegree.gml.feature.GMLForwardReferenceHandler;
+import org.deegree.gml.feature.GmlReferenceExportStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
@@ -61,9 +61,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
+class WfsReferenceExportStrategy implements GmlReferenceExportStrategy {
 
-    private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
+    private static Logger LOG = LoggerFactory.getLogger( WfsReferenceExportStrategy.class );
 
     private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 
@@ -75,10 +75,14 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private final String remoteXlinkTemplate;
 
-    XlinkedObjectsHandler( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate ) {
+    private final GmlReferenceResolveOptions resolveOptions;
+
+    WfsReferenceExportStrategy( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate,
+                           GmlReferenceResolveOptions resolveOptions ) {
         this.xmlStream = xmlStream;
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
+        this.resolveOptions = resolveOptions;
     }
 
     @Override
@@ -140,4 +144,10 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
         uriToRef = new LinkedHashMap<String, GMLReference<?>>();
         refToResolveState = new HashMap<GMLReference<?>, GmlReferenceResolveOptions>();
     }
+
+    @Override
+    public GmlReferenceResolveOptions getResolveOptions() {
+        return resolveOptions;
+    }
+
 }

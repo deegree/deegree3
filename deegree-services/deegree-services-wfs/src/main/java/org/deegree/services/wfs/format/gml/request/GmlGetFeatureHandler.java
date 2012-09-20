@@ -244,8 +244,6 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setRemoteXLinkTemplate( xLinkTemplate );
-        gmlStream.setReferenceResolveOptions( new GmlReferenceResolveOptions( request.getResolveParams() ) );
         gmlStream.setProjection( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
@@ -254,9 +252,11 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                                                       format.getMaster().getStoreManager().getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( analyzer.getFeatureTypes() ) );
         gmlStream.setNamespaceBindings( prefixToNs );
-        XlinkedObjectsHandler additionalObjects = new XlinkedObjectsHandler( (BufferableXMLStreamWriter) xmlStream,
-                                                                             localReferencesPossible, xLinkTemplate );
-        gmlStream.setAdditionalObjectHandler( additionalObjects );
+        GmlReferenceResolveOptions resolveOptions = new GmlReferenceResolveOptions( request.getResolveParams() );
+        WfsReferenceExportStrategy additionalObjects = new WfsReferenceExportStrategy( (BufferableXMLStreamWriter) xmlStream,
+                                                                             localReferencesPossible, xLinkTemplate,
+                                                                             resolveOptions );
+        gmlStream.setReferenceResolveStrategy( additionalObjects );
 
         if ( options.isDisableStreaming() ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
@@ -415,7 +415,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         // retrieve and write result features
         int featuresAdded = 0;
         int featuresSkipped = 0;
-        GmlReferenceResolveOptions resolveState = gmlStream.getReferenceResolveOptions();
+        GmlReferenceResolveOptions resolveState = gmlStream.getReferenceResolveStrategy().getResolveOptions();
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
@@ -494,7 +494,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         // retrieve and write result features
-        GmlReferenceResolveOptions resolveState = gmlStream.getReferenceResolveOptions();
+        GmlReferenceResolveOptions resolveState = gmlStream.getReferenceResolveStrategy().getResolveOptions();
         for ( Feature member : allFeatures ) {
             writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
         }

@@ -70,6 +70,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.GmlReferenceResolveOptions;
 import org.deegree.gml.feature.FeatureReference;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.slf4j.Logger;
@@ -129,8 +130,8 @@ public class BackReferenceFixer {
             reader.setApplicationSchema( appSchema );
 
             GMLStreamWriter writer = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_32, xwriter );
-            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( true, null );
-            writer.setAdditionalObjectHandler( handler );
+            XlinkedObjectsHandler handler = new XlinkedObjectsHandler( true, null, new GmlReferenceResolveOptions() );
+            writer.setReferenceResolveStrategy( handler );
 
             QName prop = new QName( ns601, "dientZurDarstellungVon" );
 

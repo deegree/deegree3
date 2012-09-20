@@ -103,8 +103,8 @@ public class GmlReferenceResolveOptions {
      * @param mode
      * @param remoteTimeoutInMilliseconds
      */
-    public GmlReferenceResolveOptions( List<NameStep> remainingResolvePath, int depth, int currentLevel, ResolveMode mode,
-                         long remoteTimeoutInMilliseconds ) {
+    public GmlReferenceResolveOptions( List<NameStep> remainingResolvePath, int depth, int currentLevel,
+                                       ResolveMode mode, long remoteTimeoutInMilliseconds ) {
         this.remainingResolvePath = remainingResolvePath;
         this.resolveDepth = depth;
         this.currentLevel = currentLevel;

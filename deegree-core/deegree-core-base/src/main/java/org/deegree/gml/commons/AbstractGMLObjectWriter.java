@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.GmlReferenceResolveOptions;
+import org.deegree.gml.feature.GmlReferenceExportStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public abstract class AbstractGMLObjectWriter {
 
     protected final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
-    protected final String remoteXlinkTemplate;
+    protected final GmlReferenceExportStrategy referenceExportStrategy;
 
     protected final Set<String> exportedIds;
 
@@ -91,7 +92,7 @@ public abstract class AbstractGMLObjectWriter {
         this.gmlNs = version.getNamespace();
         this.exportedIds = gmlStreamWriter.getExportedIds();
         this.prefixToNs = gmlStreamWriter.getNamespaceBindings();
-        remoteXlinkTemplate = gmlStreamWriter.getRemoteXlinkTemplate();
+        referenceExportStrategy = gmlStreamWriter.getReferenceResolveStrategy();
 
         if ( prefixToNs != null ) {
             for ( Entry<String, String> prefixAndNs : prefixToNs.entrySet() ) {
@@ -171,6 +172,6 @@ public abstract class AbstractGMLObjectWriter {
 
     protected GmlReferenceResolveOptions getResolveStateForNextLevel( GmlReferenceResolveOptions state ) {
         return new GmlReferenceResolveOptions( null, state.getDepth(), state.getCurrentLevel() + 1, state.getMode(),
-                                 state.getRemoteTimeoutInMilliseconds() );
+                                               state.getRemoteTimeoutInMilliseconds() );
     }
 }

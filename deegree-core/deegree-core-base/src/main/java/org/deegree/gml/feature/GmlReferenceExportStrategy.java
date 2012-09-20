@@ -1,7 +1,7 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -40,17 +40,17 @@ import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.GmlReferenceResolveOptions;
 
 /**
- * Handler that is invoked by the {@link GMLFeatureWriter} when a reference to a {@link GMLObject} is written.
+ * Invoked by the {@link GMLFeatureWriter} when references to {@link GMLObject}s need to be written.
  * <p>
  * This interface allows to customize the strategy for dealing with potential forward-references.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public interface GMLForwardReferenceHandler {
+public interface GmlReferenceExportStrategy {
 
     /**
      * Invoked when the target of the given {@link GMLReference} has to be included in the output.
@@ -72,4 +72,7 @@ public interface GMLForwardReferenceHandler {
      * @return URI to write, never <code>null</code>
      */
     public String handleReference( GMLReference<?> ref );
+
+    public GmlReferenceResolveOptions getResolveOptions();
+
 }

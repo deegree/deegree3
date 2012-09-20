@@ -58,11 +58,13 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.GmlReferenceResolveOptions;
+import org.deegree.gml.feature.GmlReferenceExportStrategy;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
+import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 
 /**
@@ -120,7 +122,8 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
             remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
         }
 
-        GmlReferenceResolveOptions resolveState = new GmlReferenceResolveOptions( null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds );
+        GmlReferenceResolveOptions resolveState = new GmlReferenceResolveOptions( null, resolveDepth, 0, ALL,
+                                                                                  remoteTimeoutInMilliseconds );
 
         GMLObject o = retrieveObject( id );
         GMLVersion gmlVersion = options.getGmlVersion();
@@ -152,8 +155,10 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
-        gmlStream.setRemoteXLinkTemplate( getObjectXlinkTemplate( version, gmlVersion ) );
-        gmlStream.setReferenceResolveOptions( resolveState );
+        GmlReferenceExportStrategy strategy = new WfsReferenceExportStrategy( (BufferableXMLStreamWriter) xmlStream, false,
+                                                                         getObjectXlinkTemplate( version, gmlVersion ),
+                                                                         resolveState );
+        gmlStream.setReferenceResolveStrategy( strategy );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setNamespaceBindings( format.getMaster().getStoreManager().getPrefixToNs() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
