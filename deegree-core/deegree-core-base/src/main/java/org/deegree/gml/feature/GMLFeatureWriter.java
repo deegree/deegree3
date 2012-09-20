@@ -598,7 +598,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         boolean includeNextLevelInOutput = includeNextLevelInOutput( resolveState );
         if ( includeNextLevelInOutput ) {
             if ( pt.getAllowedRepresentation() == REMOTE ) {
-                exportFeaturePropertyByReference( propName, ref, true );
+                exportFeaturePropertyByReference( propName, ref, true, resolveState );
             } else {
                 if ( exportedIds.contains( ref.getId() ) ) {
                     exportAlreadyExportedFeaturePropertyByReference( ref, propName );
@@ -607,7 +607,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 }
             }
         } else {
-            exportFeaturePropertyByReference( propName, ref, false );
+            exportFeaturePropertyByReference( propName, ref, false, resolveState );
         }
     }
 
@@ -625,14 +625,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     }
 
     private void exportFeaturePropertyByReference( QName propName, FeatureReference ref,
-                                                   boolean forceInclusionInDocument )
+                                                   boolean forceInclusionInDocument, ResolveState resolveState )
                             throws XMLStreamException {
 
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
         if ( additionalObjectHandler != null ) {
             String uri = null;
             if ( forceInclusionInDocument ) {
-                uri = additionalObjectHandler.requireObject( ref );
+                resolveState = getResolveStateForNextLevel( resolveState );
+                uri = additionalObjectHandler.requireObject( ref, resolveState );
             } else {
                 uri = additionalObjectHandler.handleReference( ref );
             }

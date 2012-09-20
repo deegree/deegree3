@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.gml.ResolveState;
 import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
     }
 
     @Override
-    public String requireObject( GMLReference<?> ref ) {
+    public String requireObject( GMLReference<?> ref, ResolveState resolveState ) {
         LOG.debug( "Exporting forward reference to object {} which must be included in the output.", ref.getId() );
         objectIdToRef.put( ref.getId(), ref );
         return "#" + ref.getId();
@@ -98,4 +99,5 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
     void clear() {
         objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
     }
+
 }

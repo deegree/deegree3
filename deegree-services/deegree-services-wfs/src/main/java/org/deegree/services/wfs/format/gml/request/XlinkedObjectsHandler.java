@@ -36,12 +36,15 @@
 package org.deegree.services.wfs.format.gml.request;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.gml.ResolveState;
 import org.deegree.gml.feature.GMLForwardReferenceHandler;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
@@ -62,6 +65,8 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
 
     private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 
+    private Map<GMLReference<?>, ResolveState> refToResolveState = new HashMap<GMLReference<?>, ResolveState>();
+
     private final BufferableXMLStreamWriter xmlStream;
 
     private final boolean localReferencesPossible;
@@ -75,10 +80,11 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
     }
 
     @Override
-    public String requireObject( GMLReference<?> ref ) {
+    public String requireObject( GMLReference<?> ref, ResolveState resolveState ) {
         String uri = ref.getURI();
         LOG.debug( "Exporting forward reference to object {} which must be included in the output.", uri );
         uriToRef.put( uri, ref );
+        refToResolveState.put( ref, resolveState );
         return uri;
     }
 
@@ -124,7 +130,12 @@ class XlinkedObjectsHandler implements GMLForwardReferenceHandler {
         return uriToRef.values();
     }
 
+    Map<GMLReference<?>, ResolveState> getResolveStates() {
+        return refToResolveState;
+    }
+
     void clear() {
         uriToRef = new LinkedHashMap<String, GMLReference<?>>();
+        refToResolveState = new HashMap<GMLReference<?>, ResolveState>();
     }
 }

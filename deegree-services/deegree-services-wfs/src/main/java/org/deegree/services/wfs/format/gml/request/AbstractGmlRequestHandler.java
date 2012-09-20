@@ -147,21 +147,18 @@ abstract class AbstractGmlRequestHandler {
                                            QName featureMemberEl )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        ResolveState resolveState = gmlStream.getInitialResolveState();
-        Collection<GMLReference<?>> includeObjects = additionalObjects.getAdditionalRefs();
-        int traverseXLinkDepth = resolveState.getDepth();
-        int currentLevel = 1;
+        Collection<GMLReference<?>> nextLevelObjects = additionalObjects.getAdditionalRefs();
+        XMLStreamWriter xmlStream = gmlStream.getXMLStream();
 
-        while ( ( traverseXLinkDepth == -1 || currentLevel <= traverseXLinkDepth ) && !includeObjects.isEmpty() ) {
+        while ( !nextLevelObjects.isEmpty() ) {
+            Map<GMLReference<?>, ResolveState> refToResolveState = additionalObjects.getResolveStates();
             additionalObjects.clear();
-            resolveState = new ResolveState( null, resolveState.getDepth(), resolveState.getCurrentLevel() + 1,
-                                             resolveState.getMode(), resolveState.getRemoteTimeoutInMilliseconds() );
-            for ( GMLReference<?> gmlReference : includeObjects ) {
-                Feature feature = (Feature) gmlReference;
-                writeMemberFeature( feature, gmlStream, gmlStream.getXMLStream(), resolveState, featureMemberEl );
+            for ( GMLReference<?> ref : nextLevelObjects ) {
+                ResolveState resolveState = refToResolveState.get( ref );
+                Feature feature = (Feature) ref;
+                writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
             }
-            includeObjects = additionalObjects.getAdditionalRefs();
-            currentLevel++;
+            nextLevelObjects = additionalObjects.getAdditionalRefs();
         }
     }
 
