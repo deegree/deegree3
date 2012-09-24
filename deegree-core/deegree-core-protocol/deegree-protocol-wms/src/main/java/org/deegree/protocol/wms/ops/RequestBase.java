@@ -37,7 +37,6 @@ package org.deegree.protocol.wms.ops;
 
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.protocol.wms.ops.SLDParser.parse;
-import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.StringReader;
@@ -48,20 +47,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.filter.Filter;
-import org.deegree.filter.Filters;
-import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.logical.And;
 import org.deegree.layer.LayerRef;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.style.StyleRef;
-import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -75,7 +68,8 @@ public abstract class RequestBase {
 
     private static final Logger LOG = getLogger( RequestBase.class );
 
-    private HashMap<String, OperatorFilter> filters = new HashMap<String, OperatorFilter>();
+    // layer names may occur multiple times
+    private List<Pair<String, OperatorFilter>> sldFilters = new ArrayList<Pair<String, OperatorFilter>>();
 
     protected LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
 
@@ -86,47 +80,18 @@ public abstract class RequestBase {
     public abstract double getScale();
 
     public abstract List<LayerRef> getLayers();
-    
-    public void addFilter( String layer, OperatorFilter filter ) {
-        filters.put( layer, Filters.and( filter, filters.get( layer ) ) );
+
+    public void addSldFilter( String layerName, OperatorFilter filter ) {
+        sldFilters.add( new Pair<String, OperatorFilter>( layerName, filter ) );
     }
 
-    /**
-     * @param name
-     * @param filter
-     * @param style
-     * @return a new filter for the layer, fulfilling the filter parameter as well
-     */
-    public Filter getFilterForLayer( String name, Filter filter, Style style ) {
-        Filter sldFilter = getStyleFilters( style, getScale() );
-
-        Filter extra = filters.get( name );
-        if ( extra == null ) {
-            extra = sldFilter;
-        } else {
-            if ( sldFilter != null ) {
-                Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
-                Operator op2 = ( (OperatorFilter) extra ).getOperator();
-                extra = new OperatorFilter( new And( op1, op2 ) );
-            }
-        }
-        if ( filter != null ) {
-            if ( extra != null ) {
-                Operator op = ( (OperatorFilter) extra ).getOperator();
-                Operator op2 = ( (OperatorFilter) filter ).getOperator();
-                return new OperatorFilter( new And( op, op2 ) );
-            }
-            return filter;
-        }
-        return extra;
-    }
-
-    public Map<String, OperatorFilter> getFilters() {
-        return filters;
+    public List<Pair<String, OperatorFilter>> getSldFilters() {
+        return sldFilters;
     }
 
     protected void handleSLD( String sld, String sldBody, LinkedList<LayerRef> layers )
                             throws OWSException {
+        layers = new LinkedList<LayerRef>( layers );
         XMLInputFactory xmlfac = XMLInputFactory.newInstance();
         Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> pair = null;
         if ( sld != null ) {
@@ -167,7 +132,7 @@ public abstract class RequestBase {
                 LayerRef l = it.next();
                 StyleRef s = st.next();
                 String name = l.getName();
-                if ( !layers.contains( name ) ) {
+                if ( !layers.contains( l ) ) {
                     it.remove();
                     st.remove();
                 } else {
@@ -177,16 +142,22 @@ public abstract class RequestBase {
                         lays.put( name, list );
                     }
 
+                    if ( s.getName().isEmpty() ) {
+                        s = new StyleRef( "default" );
+                    }
+
                     list.add( new Pair<LayerRef, StyleRef>( l, s ) );
                 }
             }
 
+            this.layers.clear();
+            this.styles.clear();
             // to get the order right, in case it's different from the SLD order
-            for ( LayerRef name : layers ) {
-                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( name );
+            for ( LayerRef ref : layers ) {
+                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( ref.getName() );
                 if ( l == null ) {
-                    throw new OWSException( "The SLD NamedLayer " + name + " is invalid.", "InvalidParameterValue",
-                                            "layers" );
+                    throw new OWSException( "The SLD NamedLayer " + ref.getName() + " is invalid.",
+                                            "InvalidParameterValue", "layers" );
                 }
                 Pair<ArrayList<LayerRef>, ArrayList<StyleRef>> p = unzipPair( l );
                 this.layers.addAll( p.first );

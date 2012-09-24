@@ -94,7 +94,7 @@ public class CoverageLayer extends AbstractLayer {
 
             RangeSet filter = getDimensionFilter( query.getDimensions(), headers );
 
-            StyleRef ref = query.getStyle( getMetadata().getName() );
+            StyleRef ref = query.getStyle();
             if ( !ref.isResolved() ) {
                 ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
             }
@@ -142,7 +142,7 @@ public class CoverageLayer extends AbstractLayer {
 
             RangeSet filter = getDimensionFilter( query.getDimensions(), headers );
 
-            StyleRef ref = query.getStyle( getMetadata().getName() );
+            StyleRef ref = query.getStyle();
             if ( !ref.isResolved() ) {
                 ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
             }

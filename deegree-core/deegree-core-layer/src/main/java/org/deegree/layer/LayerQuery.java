@@ -66,9 +66,9 @@ public class LayerQuery {
 
     private int x, y, featureCount;
 
-    private final Map<String, StyleRef> styles;
+    private final StyleRef style;
 
-    private final Map<String, OperatorFilter> filters;
+    private final OperatorFilter filter;
 
     private double scale;
 
@@ -82,7 +82,7 @@ public class LayerQuery {
      * @param envelope
      * @param width
      * @param height
-     * @param styles
+     * @param style
      * @param filters
      * @param parameters
      * @param dimensions
@@ -90,14 +90,14 @@ public class LayerQuery {
      *            must be in meter, not mm
      * @param options
      */
-    public LayerQuery( Envelope envelope, int width, int height, Map<String, StyleRef> styles,
-                       Map<String, OperatorFilter> filters, Map<String, String> parameters,
-                       Map<String, List<?>> dimensions, double pixelSize, MapOptionsMaps options ) {
+    public LayerQuery( Envelope envelope, int width, int height, StyleRef style, OperatorFilter filter,
+                       Map<String, String> parameters, Map<String, List<?>> dimensions, double pixelSize,
+                       MapOptionsMaps options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
-        this.styles = styles;
-        this.filters = filters;
+        this.style = style;
+        this.filter = filter;
         this.parameters = parameters;
         this.dimensions = dimensions;
         this.options = options;
@@ -105,17 +105,17 @@ public class LayerQuery {
         this.resolution = Utils.calcResolution( envelope, width, height );
     }
 
-    public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount,
-                       Map<String, OperatorFilter> filters, Map<String, StyleRef> styles,
-                       Map<String, String> parameters, Map<String, List<?>> dimensions, MapOptionsMaps options ) {
+    public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount, OperatorFilter filter,
+                       StyleRef style, Map<String, String> parameters, Map<String, List<?>> dimensions,
+                       MapOptionsMaps options ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
         this.featureCount = featureCount;
-        this.filters = filters;
-        this.styles = styles;
+        this.filter = filter;
+        this.style = style;
         this.parameters = parameters;
         this.dimensions = dimensions;
         this.options = options;
@@ -148,12 +148,12 @@ public class LayerQuery {
         return y;
     }
 
-    public OperatorFilter getFilter( String name ) {
-        return filters.get( name );
+    public OperatorFilter getFilter() {
+        return filter;
     }
 
-    public StyleRef getStyle( String name ) {
-        return styles.get( name );
+    public StyleRef getStyle() {
+        return style;
     }
 
     public Map<String, List<?>> getDimensions() {
