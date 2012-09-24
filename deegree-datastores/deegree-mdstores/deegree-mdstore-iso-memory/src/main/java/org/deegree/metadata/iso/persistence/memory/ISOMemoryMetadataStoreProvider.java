@@ -100,7 +100,7 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return null;
+        return new Class[]{};
     }
 
     @Override

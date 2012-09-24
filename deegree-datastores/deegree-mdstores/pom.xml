@@ -29,6 +29,7 @@
     <module>deegree-mdstore-commons</module>
     <module>deegree-mdstore-ebrim-eo</module>
     <module>deegree-mdstore-iso</module>
+    <module>deegree-mdstore-iso-memory</module>
   </modules>
 
 </project>
