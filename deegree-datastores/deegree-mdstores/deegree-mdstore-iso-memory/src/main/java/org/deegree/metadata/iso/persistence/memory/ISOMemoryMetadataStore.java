@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.memory;
 
+import java.net.URL;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -57,6 +58,10 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
+
+    public ISOMemoryMetadataStore( List<URL> recordDirectories ) {
+        // TODO Auto-generated method stub
+    }
 
     @Override
     public void destroy() {

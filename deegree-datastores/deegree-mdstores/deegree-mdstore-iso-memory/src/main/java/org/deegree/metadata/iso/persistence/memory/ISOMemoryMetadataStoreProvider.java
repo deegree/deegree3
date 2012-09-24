@@ -40,15 +40,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-
-import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.persistence.memory.jaxb.ISOMemoryMetadataStoreConfig;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.slf4j.Logger;
@@ -76,13 +78,24 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
     @Override
     public MetadataStore<ISORecord> create( URL configURL )
                             throws ResourceInitException {
+        List<URL> recordDirectories = new ArrayList<URL>();
         try {
-            Object unmarshall = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL, deegreeWorkspace );
-        } catch ( JAXBException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ISOMemoryMetadataStoreConfig config = (ISOMemoryMetadataStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                                       CONFIG_SCHEMA,
+                                                                                                       configURL,
+                                                                                                       deegreeWorkspace );
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( configURL.toString() );
+            List<String> isoRecordDirectories = config.getISORecordDirectory();
+            for ( String isoRecordDirectory : isoRecordDirectories ) {
+                recordDirectories.add( resolver.resolve( isoRecordDirectory ) );
+            }
+        } catch ( Exception e ) {
+            String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
+            LOG.error( msg, e );
+            throw new ResourceInitException( msg, e );
         }
-        return new ISOMemoryMetadataStore();
+        return new ISOMemoryMetadataStore( recordDirectories );
     }
 
     @Override
