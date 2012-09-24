@@ -41,10 +41,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
+import javax.xml.bind.JAXBException;
+
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
@@ -64,13 +67,21 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
 
     private DeegreeWorkspace deegreeWorkspace;
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.metadata.iso.persistence.memory.jaxb";
+
     private final static String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/metadata/iso19139/memory";
 
-    private final static String CONFIG_SCHEMA = "/META-INF/schemas/datasource/metadata/iso19139/memory/3.2.0/memory.xsd";
+    private final static URL CONFIG_SCHEMA = ISOMemoryMetadataStore.class.getResource( "/META-INF/schemas/datasource/metadata/iso19139/memory/3.2.0/memory.xsd" );
 
     @Override
-    public MetadataStore<ISORecord> create( URL arg0 )
+    public MetadataStore<ISORecord> create( URL configURL )
                             throws ResourceInitException {
+        try {
+            Object unmarshall = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL, deegreeWorkspace );
+        } catch ( JAXBException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return new ISOMemoryMetadataStore();
     }
 
@@ -92,7 +103,7 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return ISOMemoryMetadataStore.class.getResource( CONFIG_SCHEMA );
+        return CONFIG_SCHEMA;
     }
 
     @Override
