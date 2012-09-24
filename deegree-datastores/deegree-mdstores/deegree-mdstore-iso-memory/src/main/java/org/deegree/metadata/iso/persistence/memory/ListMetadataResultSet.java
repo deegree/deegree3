@@ -35,87 +35,64 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.memory;
 
-import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.iso.ISORecord;
-import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
- * {@link MetadataStore} implementation for accessing ISO 19115 records kept in memory.
+ * Implementation of an {@link MetadataResultSet} encapsulating a list of {@link ISORecord}s.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
-public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
+public class ListMetadataResultSet implements MetadataResultSet<ISORecord> {
 
-    private StoredISORecords storedIsoRecords;
+    private Integer requestedRecords = 0;
 
-    public ISOMemoryMetadataStore( List<URL> recordDirectories ) throws ResourceInitException {
-        storedIsoRecords = new StoredISORecords( recordDirectories );
+    private Iterator<ISORecord> iterator;
+
+    private List<ISORecord> foundRecords;
+
+    ListMetadataResultSet( List<ISORecord> foundRecords ) {
+        this.foundRecords = foundRecords;
+        iterator = foundRecords.iterator();
     }
 
     @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void init( DeegreeWorkspace arg0 )
-                            throws ResourceInitException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
+    public void close()
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
-    public int getRecordCount( MetadataQuery query )
+    public boolean next()
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+        return iterator.hasNext();
     }
 
     @Override
-    public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
+    public void skip( int rows )
                             throws MetadataStoreException {
-        return storedIsoRecords.getRecordById( idList, recordTypeNames );
+        throw new UnsupportedOperationException( "skip is not mplemented yet" );
     }
 
     @Override
-    public MetadataStoreTransaction acquireTransaction()
+    public int getRemaining()
                             throws MetadataStoreException {
-        throw new UnsupportedOperationException(
-                                                 "Transactions are currently not supported for the ISOMemoryMetadataStore" );
-    }
-
-    /**
-     * @returns <code>null</code>, cause no JDBC connection is required
-     */
-    @Override
-    public String getConnId() {
-        return null;
+        return foundRecords.size() - requestedRecords;
     }
 
     @Override
-    public String getType() {
-        return "iso-memory";
+    public ISORecord getRecord()
+                            throws MetadataStoreException {
+        synchronized ( requestedRecords ) {
+            requestedRecords++;
+        }
+        return iterator.next();
     }
 
 }
