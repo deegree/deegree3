@@ -51,9 +51,27 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
  */
 public interface MetadataStoreProvider extends ExtendedResourceProvider<MetadataStore> {
 
+    /**
+     * Requests a list of sql statements to setup the database required for a {@link MetadataStore} implementation.
+     * 
+     * @param dbType
+     *            never <code>null</code>
+     * @return a list of sql statements to setup the database, may be empty but never <code>null</code>
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
     String[] getCreateStatements( Type dbType )
                             throws UnsupportedEncodingException, IOException;
 
+    /**
+     * Requests a list of sql statements to reset the database required for a {@link MetadataStore} implementation.
+     * 
+     * @param dbType
+     *            never <code>null</code>
+     * @return a list of sql statements to reset the database, may be empty but never <code>null</code>
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
     String[] getDropStatements( Type dbType )
                             throws UnsupportedEncodingException, IOException;
 }
