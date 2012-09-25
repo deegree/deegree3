@@ -286,10 +286,8 @@ class DefaultLock implements Lock {
                 stmt = conn.prepareStatement( "DELETE FROM LOCKS WHERE ID=?" );
                 stmt.setString( 1, id );
                 stmt.execute();
-                stmt.close();
 
                 conn.commit();
-                conn.close();
             } catch ( SQLException e ) {
                 throw new FeatureStoreException( e.getMessage(), e );
             } finally {
