@@ -47,6 +47,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.filter.Filter;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
@@ -166,19 +167,31 @@ public class StoredISORecords {
         if ( query == null ) {
             throw new IllegalArgumentException( "MetadataQuery must not be null!" );
         }
-        List<ISORecord> result = new ArrayList<ISORecord>();
-        if ( query.getFilter() == null ) {
-            result.addAll( fileIdentifierToRecord.values() );
-        } else {
-            // TODO
-        }
-        result = limitResultToMaxRecords( result, query.getMaxRecords() );
+        List<ISORecord> result = applyFilter( query.getFilter(), query.getMaxRecords() );
         return new ListMetadataResultSet( result );
     }
 
-    private List<ISORecord> limitResultToMaxRecords( List<ISORecord> result, int maxRecords ) {
+    private List<ISORecord> applyFilter( Filter filter, int maxRecords ) {
+        if ( filter == null ) {
+            return applyNullFilter( maxRecords );
+        }
+        List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
+        for ( ISORecord record : fileIdentifierToRecord.values() ) {
+            if ( result.size() >= maxRecords ) {
+                break;
+            }
+            if ( record.eval( filter ) ) {
+                result.add( record );
+            }
+        }
+        return result;
+    }
+
+    private List<ISORecord> applyNullFilter( int maxRecords ) {
+        List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
+        result.addAll( fileIdentifierToRecord.values() );
         if ( maxRecords < result.size() ) {
-            return result.subList( 0, maxRecords );
+            result = result.subList( 0, maxRecords );
         }
         return result;
     }

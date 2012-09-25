@@ -48,15 +48,21 @@ import java.util.List;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.cs.CRSUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.logical.Or;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -163,18 +169,57 @@ public class StoredISORecordsTest {
         assertEquals( maxRecords, allRecords.getRemaining() );
     }
 
+    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
     @Test
-    public void testGetRecordsAllWithFilter()
+    public void testGetRecordsAllWithFilterForSubject()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        int maxRecords = 2;
-        Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "SPOT 5" );
-        Operator op = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), lit2, true, null );
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "SPOT 2" );
+        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
 
-        Filter filter = new OperatorFilter( op );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, maxRecords );
+        Filter filter = new OperatorFilter( operator );
+        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
         MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        assertEquals( maxRecords, allRecords.getRemaining() );
+        assertEquals( 1, allRecords.getRemaining() );
+    }
+
+    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
+    @Test
+    public void testGetRecordsAllWithFilterForBBox()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        GeometryFactory geomFactory = new GeometryFactory();
+        ValueReference reference = new ValueReference( "apiso:BoundingBox", nsContext );
+        Operator operator = new BBOX( reference, geomFactory.createEnvelope( 7.30, 49.30, 10.70, 51.70,
+                                                                             CRSUtils.EPSG_4326 ) );
+        Filter filter = new OperatorFilter( operator );
+        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
+        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
+        // TODO: How much records are matched?
+        assertEquals( 1, allRecords.getRemaining() );
+    }
+
+    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
+    @Test
+    public void testGetRecordsAllWithComplexFilter()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+
+        Literal<PrimitiveValue> literalSubject = new Literal<PrimitiveValue>( "SPOT 2" );
+        Operator operatorSubject = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literalSubject,
+                                                          true, null );
+
+        Literal<PrimitiveValue> lowerCreation = new Literal<PrimitiveValue>( "2006-06-14" );
+        Literal<PrimitiveValue> upperCreation = new Literal<PrimitiveValue>( "2006-06-16" );
+        Operator operatorCreation = new PropertyIsBetween( new ValueReference( "apiso:CreationDate", nsContext ),
+                                                           lowerCreation, upperCreation, true, null );
+
+        Operator or = new Or( operatorSubject, operatorCreation );
+        Filter filter = new OperatorFilter( or );
+        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
+        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
+        // TODO: How much records are matched?
+        assertEquals( 4, allRecords.getRemaining() );
     }
 
     @Test(expected = IllegalArgumentException.class)
