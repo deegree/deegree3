@@ -112,7 +112,7 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 
     @Override
     public String getType() {
-        return "iso-memory";
+        return "iso";
     }
 
 }
