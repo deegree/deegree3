@@ -53,6 +53,7 @@ import jj2000.j2k.NotImplementedError;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
@@ -137,7 +138,8 @@ public class DCRecord implements MetadataRecord {
     }
 
     @Override
-    public boolean eval( Filter filter ) {
+    public boolean eval( Filter filter )
+                            throws FilterEvaluationException {
         throw new UnsupportedOperationException( "In-memory filter evaluation not implemented yet." );
     }
 

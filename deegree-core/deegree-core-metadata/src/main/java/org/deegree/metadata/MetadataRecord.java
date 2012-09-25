@@ -42,6 +42,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
@@ -110,8 +111,10 @@ public interface MetadataRecord {
      * @param filter
      *            filter to evaluate, must not be <code>null</code>
      * @return true, if the record matches the filter, false otherwise
+     * @throws FilterEvaluationException
      */
-    public boolean eval( Filter filter );
+    public boolean eval( Filter filter )
+                            throws FilterEvaluationException;
 
     /**
      * Writes the XML representation of this record to the given XML stream.

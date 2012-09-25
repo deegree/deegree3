@@ -45,6 +45,21 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import junit.framework.Assert;
+
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.cs.CRSUtils;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
 
 /**
@@ -56,6 +71,8 @@ import org.junit.Test;
  * @version $Revision: $, $Date: $
  */
 public class ISORecordTest {
+
+    private final static NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
     @Test
     public void testInstantiationFromXMLStream()
@@ -74,10 +91,71 @@ public class ISORecordTest {
         ISORecord record = new ISORecord( xmlStream );
         boolean exception = false;
         try {
-            String fileIdentifier = record.getIdentifier();
+            record.getIdentifier();
         } catch ( Exception e ) {
             exception = true;
         }
         assertTrue( exception );
+    }
+
+    @Test
+    public void testEvalFilterSubject()
+                            throws Exception {
+        InputStream is = ISORecordTest.class.getResourceAsStream( "datasetRecord.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        ISORecord record = new ISORecord( xmlStream );
+
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "Hydrography" );
+        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+
+        Filter filter = new OperatorFilter( operator );
+        boolean isMatching = record.eval( filter );
+        assertTrue( isMatching );
+    }
+
+    @Test
+    public void testEvalFilterSubjectUnmatching()
+                            throws Exception {
+        InputStream is = ISORecordTest.class.getResourceAsStream( "datasetRecord.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        ISORecord record = new ISORecord( xmlStream );
+
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "NotAKeywordInRecord" );
+        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+
+        Filter filter = new OperatorFilter( operator );
+        boolean isMatching = record.eval( filter );
+        Assert.assertFalse( isMatching );
+    }
+
+    @Test
+    public void testEvalFilterBbox()
+                            throws Exception {
+        InputStream is = ISORecordTest.class.getResourceAsStream( "datasetRecord.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        ISORecord record = new ISORecord( xmlStream );
+
+        GeometryFactory geomFactory = new GeometryFactory();
+        ValueReference reference = new ValueReference( "apiso:BoundingBox", nsContext );
+        Operator operator = new BBOX( reference, geomFactory.createEnvelope( 7.2, 49.30, 10.70, 53.70,
+                                                                             CRSUtils.EPSG_4326 ) );
+        Filter filter = new OperatorFilter( operator );
+        boolean isMatching = record.eval( filter );
+        assertTrue( isMatching );
+    }
+
+    @Test(expected = FilterEvaluationException.class)
+    public void testEvalFilterUnknownPropertyName()
+                            throws Exception {
+        InputStream is = ISORecordTest.class.getResourceAsStream( "datasetRecord.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        ISORecord record = new ISORecord( xmlStream );
+
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "Hydrography" );
+        Operator operator = new PropertyIsEqualTo( new ValueReference( "Unknown", nsContext ), literal, true, null );
+
+        Filter filter = new OperatorFilter( operator );
+        boolean isMatching = record.eval( filter );
+        assertTrue( isMatching );
     }
 }

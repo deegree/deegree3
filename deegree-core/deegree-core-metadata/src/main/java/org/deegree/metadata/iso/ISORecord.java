@@ -65,6 +65,7 @@ import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -213,8 +214,9 @@ public class ISORecord implements MetadataRecord {
     }
 
     @Override
-    public boolean eval( Filter filter ) {
-        throw new UnsupportedOperationException( "In-memory filter evaluation not implemented yet." );
+    public boolean eval( Filter filter )
+                            throws FilterEvaluationException {
+        return filter.evaluate( this, new ISORecordEvaluator() );
     }
 
     @Override

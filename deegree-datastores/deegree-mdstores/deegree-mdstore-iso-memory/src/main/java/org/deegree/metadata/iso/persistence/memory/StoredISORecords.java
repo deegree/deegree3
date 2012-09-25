@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
@@ -160,8 +161,9 @@ public class StoredISORecords {
      * @param query
      *            never <code>null</code>
      * @return all records matching the query, may be empty but never <code>null</code>
+     * @throws FilterEvaluationException 
      */
-    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query ) {
+    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query ) throws FilterEvaluationException {
         if ( query == null ) {
             throw new IllegalArgumentException( "MetadataQuery must not be null!" );
         }
@@ -169,7 +171,7 @@ public class StoredISORecords {
         return new ListMetadataResultSet( result );
     }
 
-    private List<ISORecord> applyFilter( Filter filter, int startPosition, int maxRecords ) {
+    private List<ISORecord> applyFilter( Filter filter, int startPosition, int maxRecords ) throws FilterEvaluationException {
         if ( filter == null ) {
             return applyNullFilter( startPosition, maxRecords );
         }
@@ -178,8 +180,8 @@ public class StoredISORecords {
         for ( ISORecord record : fileIdentifierToRecord.values() ) {
             if ( index >= startPosition && record.eval( filter ) ) {
                 result.add( record );
-                index++;
             }
+            index++;
             if ( result.size() >= maxRecords ) {
                 break;
             }

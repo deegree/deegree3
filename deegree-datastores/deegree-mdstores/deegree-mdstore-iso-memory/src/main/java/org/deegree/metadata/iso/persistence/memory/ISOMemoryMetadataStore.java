@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
@@ -79,14 +80,22 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
                             throws MetadataStoreException {
-        return storedIsoRecords.getRecords( query );
+        try {
+            return storedIsoRecords.getRecords( query );
+        } catch ( FilterEvaluationException e ) {
+            throw new MetadataStoreException( e );
+        }
     }
 
     @Override
     public int getRecordCount( MetadataQuery query )
                             throws MetadataStoreException {
-        MetadataResultSet<ISORecord> records = storedIsoRecords.getRecords( query );
-        return records.getRemaining();
+        try {
+            MetadataResultSet<ISORecord> records = storedIsoRecords.getRecords( query );
+            return records.getRemaining();
+        } catch ( FilterEvaluationException e ) {
+            throw new MetadataStoreException( e );
+        }
     }
 
     @Override

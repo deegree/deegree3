@@ -55,6 +55,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -215,7 +216,8 @@ public class RegistryObject implements MetadataRecord {
     }
 
     @Override
-    public boolean eval( Filter filter ) {
+    public boolean eval( Filter filter ) 
+                            throws FilterEvaluationException {
         // TODO Auto-generated method stub
         return false;
     }

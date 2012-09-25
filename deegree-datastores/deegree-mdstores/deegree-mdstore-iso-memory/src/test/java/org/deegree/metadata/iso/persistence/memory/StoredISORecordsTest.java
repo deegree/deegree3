@@ -63,7 +63,6 @@ import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -187,7 +186,6 @@ public class StoredISORecordsTest {
         assertEquals( expectedRecord.getIdentifier(), actualRecord.getIdentifier() );
     }
 
-    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
     @Test
     public void testGetRecordsWithStartPositionWithQuery()
                             throws Exception {
@@ -208,7 +206,7 @@ public class StoredISORecordsTest {
         ISORecord actualRecord = records.getRecord();
         assertEquals( expectedRecord.getIdentifier(), actualRecord.getIdentifier() );
     }
-    
+
     @Test
     public void testGetRecordsOrder()
                             throws Exception {
@@ -226,14 +224,13 @@ public class StoredISORecordsTest {
     }
 
     private void assertSameOrderAsInserted( ISORecord record1, ISORecord record2, ISORecord record3,
-                                  MetadataResultSet<ISORecord> records )
+                                            MetadataResultSet<ISORecord> records )
                             throws MetadataStoreException {
         assertEquals( record1.getIdentifier(), records.getRecord().getIdentifier() );
         assertEquals( record2.getIdentifier(), records.getRecord().getIdentifier() );
         assertEquals( record3.getIdentifier(), records.getRecord().getIdentifier() );
     }
 
-    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
     @Test
     public void testGetRecordsAllWithFilterForSubject()
                             throws Exception {
@@ -247,23 +244,19 @@ public class StoredISORecordsTest {
         assertEquals( 1, allRecords.getRemaining() );
     }
 
-    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
     @Test
     public void testGetRecordsAllWithFilterForBBox()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
         GeometryFactory geomFactory = new GeometryFactory();
         ValueReference reference = new ValueReference( "apiso:BoundingBox", nsContext );
-        Operator operator = new BBOX( reference, geomFactory.createEnvelope( 7.30, 49.30, 10.70, 51.70,
-                                                                             CRSUtils.EPSG_4326 ) );
+        Operator operator = new BBOX( reference, geomFactory.createEnvelope( 10, 45.22, 11., 45.5, CRSUtils.EPSG_4326 ) );
         Filter filter = new OperatorFilter( operator );
         MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
         MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        // TODO: How much records are matched?
-        assertEquals( 1, allRecords.getRemaining() );
+        assertEquals( 3, allRecords.getRemaining() );
     }
 
-    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
     @Test
     public void testGetRecordsAllWithComplexFilter()
                             throws Exception {
@@ -282,7 +275,6 @@ public class StoredISORecordsTest {
         Filter filter = new OperatorFilter( or );
         MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
         MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        // TODO: How much records are matched?
         assertEquals( 4, allRecords.getRemaining() );
     }
 
