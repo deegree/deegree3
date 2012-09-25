@@ -35,9 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
@@ -62,6 +66,29 @@ import org.jaxen.expr.VariableReferenceExpr;
  * @version $Revision: $, $Date: $
  */
 public class XPathUtils {
+
+    private static void findQName( List<QName> list, Step step, NamespaceBindings nsContext ) {
+        if ( step instanceof NameStep ) {
+            NameStep ns = (NameStep) step;
+            list.add( new QName( nsContext.getNamespaceURI( ns.getPrefix() ), ns.getLocalName() ) );
+        }
+    }
+
+    public static List<QName> extractQNames( XPath xpath ) {
+        List<QName> list = new ArrayList<QName>();
+        try {
+            Expr expr = new BaseXPath( xpath.getXPath(), null ).getRootExpr();
+            if ( expr instanceof LocationPath ) {
+                LocationPath lp = (LocationPath) expr;
+                for ( Object o : lp.getSteps() ) {
+                    findQName( list, (Step) o, xpath.getNamespaceContext() );
+                }
+            }
+        } catch ( JaxenException e ) {
+            // not a proper xpath
+        }
+        return list;
+    }
 
     /**
      * Returns the namespace prefixes that are used in the given XPath 1.0 expression.
