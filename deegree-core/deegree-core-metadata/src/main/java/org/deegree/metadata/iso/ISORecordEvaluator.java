@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso;
 
+import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.DC_NS;
@@ -47,6 +48,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -160,6 +162,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
 
         QP_BBOX.add( new QName( APISO_NS, "BoundingBox" ) );
         QP_BBOX.add( new QName( APISO_NS, "boundingBox" ) );
+        QP_BBOX.add( new QName( OWS_NS, "BoundingBox" ) );
+        QP_BBOX.add( new QName( OWS_NS, "boundingBox" ) );
         QP_BBOX.add( new QName( DC_NS, "BoundingBox" ) );
         QP_BBOX.add( new QName( "BoundingBox" ) );
         QP_BBOX.add( new QName( CSW_202_NS, "BoundingBox" ) );
