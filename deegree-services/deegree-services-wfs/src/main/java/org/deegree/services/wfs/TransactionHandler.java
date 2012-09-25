@@ -392,9 +392,7 @@ class TransactionHandler {
         FeatureStoreTransaction ta = null;
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
-            System.out.println( "Before: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ) );
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
-            System.out.println( "After: " + XMLStreamUtils.getCurrentEventInfo( xmlStream ) );
             FeatureStore fs = service.getStores()[0];
             ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();

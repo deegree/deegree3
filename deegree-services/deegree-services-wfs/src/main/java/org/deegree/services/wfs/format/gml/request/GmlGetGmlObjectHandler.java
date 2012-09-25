@@ -122,8 +122,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
             remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
         }
 
-        GmlXlinkOptions resolveState = new GmlXlinkOptions( null, resolveDepth, 0, ALL,
-                                                                                  remoteTimeoutInMilliseconds );
+        GmlXlinkOptions resolveState = new GmlXlinkOptions( null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds );
 
         GMLObject o = retrieveObject( id );
         GMLVersion gmlVersion = options.getGmlVersion();
@@ -155,9 +154,11 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
+        if ( !( xmlStream instanceof BufferableXMLStreamWriter ) ) {
+            xmlStream = new BufferableXMLStreamWriter( xmlStream, getObjectXlinkTemplate( version, gmlVersion ) );
+        }
         GmlXlinkStrategy strategy = new WfsXlinkStrategy( (BufferableXMLStreamWriter) xmlStream, false,
-                                                                         getObjectXlinkTemplate( version, gmlVersion ),
-                                                                         resolveState );
+                                                          getObjectXlinkTemplate( version, gmlVersion ), resolveState );
         gmlStream.setReferenceResolveStrategy( strategy );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setNamespaceBindings( format.getMaster().getStoreManager().getPrefixToNs() );
