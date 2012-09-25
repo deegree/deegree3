@@ -73,6 +73,19 @@ public class LayerRef {
     }
 
     @Override
+    public boolean equals( Object other ) {
+        if ( !( other instanceof LayerRef ) ) {
+            return false;
+        }
+        return name.equals( ( (LayerRef) other ).getName() );
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
     public String toString() {
         return name;
     }

@@ -133,7 +133,7 @@ public class FeatureLayer extends AbstractLayer {
     @Override
     public FeatureLayerData mapQuery( final LayerQuery query, List<String> headers )
                             throws OWSException {
-        StyleRef ref = query.getStyle( getMetadata().getName() );
+        StyleRef ref = query.getStyle();
         if ( !ref.isResolved() ) {
             ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
         }
@@ -147,7 +147,7 @@ public class FeatureLayer extends AbstractLayer {
         OperatorFilter filter = this.filter;
         style = style.filter( query.getScale() );
         filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
-        filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
+        filter = Filters.and( filter, query.getFilter() );
         filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
 
         final Envelope bbox = query.getQueryBox();
@@ -209,14 +209,14 @@ public class FeatureLayer extends AbstractLayer {
                             throws OWSException {
         OperatorFilter filter = this.filter;
         filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
-        StyleRef ref = query.getStyle( getMetadata().getName() );
+        StyleRef ref = query.getStyle();
         if ( !ref.isResolved() ) {
             ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
         }
         Style style = ref.getStyle();
         style = style.filter( query.getScale() );
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
-        filter = Filters.and( filter, query.getFilter( getMetadata().getName() ) );
+        filter = Filters.and( filter, query.getFilter() );
 
         final Envelope clickBox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
 

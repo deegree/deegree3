@@ -127,7 +127,7 @@ public class SLDParser {
 
                             if ( in.getLocalName().equals( "Filter" ) ) {
                                 OperatorFilter filter = (OperatorFilter) Filter110XMLDecoder.parse( in );
-                                gm.addFilter( layerName, filter );
+                                gm.addSldFilter( layerName, filter );
                             }
 
                             if ( in.getLocalName().equals( "Extent" ) ) {

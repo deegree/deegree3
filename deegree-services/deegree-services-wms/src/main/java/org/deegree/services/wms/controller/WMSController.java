@@ -623,7 +623,7 @@ public class WMSController extends AbstractOWS {
             queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
 
             RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
-                                                    fi.getEnvelope(), 0.28, null, map );
+                                                    fi.getEnvelope(), 0.28, map );
             format = fi.getInfoFormat();
             info.setFormat( format );
             info.setFeatureCount( fi.getFeatureCount() );
@@ -792,7 +792,7 @@ public class WMSController extends AbstractOWS {
 
             RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
                                                     gm2.getTransparent(), gm2.getBgColor(), gm2.getBoundingBox(),
-                                                    gm2.getPixelSize(), gm2.getFilters(), map );
+                                                    gm2.getPixelSize(), map );
             RenderContext ctx = new DefaultRenderContext( info );
             ctx.setOutput( response.getOutputStream() );
             LinkedList<String> headers = new LinkedList<String>();
