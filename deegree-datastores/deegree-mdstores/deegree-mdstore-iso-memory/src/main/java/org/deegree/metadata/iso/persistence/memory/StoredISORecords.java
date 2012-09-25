@@ -40,9 +40,8 @@ import java.io.FilenameFilter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -69,7 +68,7 @@ public class StoredISORecords {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredISORecords.class );
 
-    private final Map<String, ISORecord> fileIdentifierToRecord = new HashMap<String, ISORecord>();
+    private final LinkedHashMap<String, ISORecord> fileIdentifierToRecord = new LinkedHashMap<String, ISORecord>();
 
     StoredISORecords() {
     }
@@ -146,7 +145,6 @@ public class StoredISORecords {
         if ( idList == null ) {
             throw new IllegalArgumentException( "List with ids must not be null!" );
         }
-        LOG.info( "Parameter recordTypeNames is currently not supported!" );
         List<ISORecord> result = new ArrayList<ISORecord>();
         for ( String id : idList ) {
             if ( fileIdentifierToRecord.containsKey( id ) ) {
@@ -167,31 +165,39 @@ public class StoredISORecords {
         if ( query == null ) {
             throw new IllegalArgumentException( "MetadataQuery must not be null!" );
         }
-        List<ISORecord> result = applyFilter( query.getFilter(), query.getMaxRecords() );
+        List<ISORecord> result = applyFilter( query.getFilter(), query.getStartPosition(), query.getMaxRecords() );
         return new ListMetadataResultSet( result );
     }
 
-    private List<ISORecord> applyFilter( Filter filter, int maxRecords ) {
+    private List<ISORecord> applyFilter( Filter filter, int startPosition, int maxRecords ) {
         if ( filter == null ) {
-            return applyNullFilter( maxRecords );
+            return applyNullFilter( startPosition, maxRecords );
         }
         List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
+        int index = 1;
         for ( ISORecord record : fileIdentifierToRecord.values() ) {
+            if ( index >= startPosition && record.eval( filter ) ) {
+                result.add( record );
+                index++;
+            }
             if ( result.size() >= maxRecords ) {
                 break;
-            }
-            if ( record.eval( filter ) ) {
-                result.add( record );
             }
         }
         return result;
     }
 
-    private List<ISORecord> applyNullFilter( int maxRecords ) {
+    private List<ISORecord> applyNullFilter( int startPosition, int maxRecords ) {
         List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
-        result.addAll( fileIdentifierToRecord.values() );
-        if ( maxRecords < result.size() ) {
-            result = result.subList( 0, maxRecords );
+        int index = 1;
+        for ( String fileIdentifier : fileIdentifierToRecord.keySet() ) {
+            if ( index >= startPosition ) {
+                result.add( fileIdentifierToRecord.get( fileIdentifier ) );
+            }
+            index++;
+            if ( result.size() >= maxRecords ) {
+                break;
+            }
         }
         return result;
     }

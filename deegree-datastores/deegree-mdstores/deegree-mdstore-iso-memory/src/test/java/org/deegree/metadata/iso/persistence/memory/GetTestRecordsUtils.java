@@ -54,7 +54,6 @@ public class GetTestRecordsUtils {
 
     public static List<ISORecord> getAllRecords()
                             throws Exception {
-
         List<ISORecord> records = new ArrayList<ISORecord>();
         records.add( getRecord( "1.xml" ) );
         records.add( getRecord( "2.xml" ) );
@@ -62,7 +61,6 @@ public class GetTestRecordsUtils {
         records.add( getRecord( "4.xml" ) );
         records.add( getRecord( "5.xml" ) );
         return records;
-
     }
 
     public static ISORecord getRecord( String name )

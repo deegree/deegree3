@@ -62,6 +62,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
+import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -160,13 +161,76 @@ public class StoredISORecordsTest {
     }
 
     @Test
-    public void testGetRecordsAllWithLimitedMaxRecord()
+    public void testGetRecordsWithLimitedMaxRecord()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
         int maxRecords = 2;
         MetadataQuery query = new MetadataQuery( null, null, null, null, 1, maxRecords );
         MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
         assertEquals( maxRecords, allRecords.getRemaining() );
+    }
+
+    @Test
+    public void testGetRecordsWithStartPositionWithoutQuery()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        storedRecords.addRecord( getRecord( "1.xml" ) );
+        ISORecord expectedRecord = getRecord( "3.xml" );
+        storedRecords.addRecord( expectedRecord );
+        storedRecords.addRecord( getRecord( "2.xml" ) );
+
+        int maxRecords = 1;
+        MetadataQuery query = new MetadataQuery( null, null, null, null, 2, maxRecords );
+        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
+        assertEquals( maxRecords, records.getRemaining() );
+        ISORecord actualRecord = records.getRecord();
+        assertEquals( expectedRecord.getIdentifier(), actualRecord.getIdentifier() );
+    }
+
+    @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
+    @Test
+    public void testGetRecordsWithStartPositionWithQuery()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        storedRecords.addRecord( getRecord( "1.xml" ) );
+        // not matched by the filter!
+        storedRecords.addRecord( getRecord( "2.xml" ) );
+        ISORecord expectedRecord = getRecord( "3.xml" );
+        storedRecords.addRecord( expectedRecord );
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "IKONOS 2" );
+        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+
+        Filter filter = new OperatorFilter( operator );
+        int maxRecords = 1;
+        MetadataQuery query = new MetadataQuery( null, null, filter, null, 2, maxRecords );
+        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
+        assertEquals( maxRecords, records.getRemaining() );
+        ISORecord actualRecord = records.getRecord();
+        assertEquals( expectedRecord.getIdentifier(), actualRecord.getIdentifier() );
+    }
+    
+    @Test
+    public void testGetRecordsOrder()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        ISORecord record1 = getRecord( "3.xml" );
+        storedRecords.addRecord( record1 );
+        ISORecord record2 = getRecord( "1.xml" );
+        storedRecords.addRecord( record2 );
+        ISORecord record3 = getRecord( "2.xml" );
+        storedRecords.addRecord( record3 );
+
+        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 100 );
+        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
+        assertSameOrderAsInserted( record1, record2, record3, records );
+    }
+
+    private void assertSameOrderAsInserted( ISORecord record1, ISORecord record2, ISORecord record3,
+                                  MetadataResultSet<ISORecord> records )
+                            throws MetadataStoreException {
+        assertEquals( record1.getIdentifier(), records.getRecord().getIdentifier() );
+        assertEquals( record2.getIdentifier(), records.getRecord().getIdentifier() );
+        assertEquals( record3.getIdentifier(), records.getRecord().getIdentifier() );
     }
 
     @Ignore("ISORecord.eval(Filter filter) is not implemented yet!")
