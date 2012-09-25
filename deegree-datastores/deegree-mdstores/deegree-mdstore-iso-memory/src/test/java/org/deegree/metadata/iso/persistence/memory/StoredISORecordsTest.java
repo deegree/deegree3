@@ -36,14 +36,26 @@
 package org.deegree.metadata.iso.persistence.memory;
 
 import static java.util.Collections.singletonList;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.deegree.metadata.iso.persistence.memory.GetTestRecordsUtils.getRecord;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.filter.Filter;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.junit.Test;
 
@@ -54,6 +66,34 @@ import org.junit.Test;
  * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class StoredISORecordsTest {
+
+    private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+
+    /*
+     * AddRecords
+     */
+
+    @Test
+    public void testAddRecordTwice()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
+        storedIsoRecords.addRecord( getRecord( "1.xml" ) );
+        assertEquals( expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords() );
+    }
+
+    @Test
+    public void testAddRecordWithoutFileIdentifier()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
+        storedIsoRecords.addRecord( getRecord( "withoutFileIdentifier.xml" ) );
+        assertEquals( expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords() );
+    }
+
+    /*
+     * GetRecordById
+     */
 
     @Test
     public void testGetRecordById()
@@ -98,6 +138,50 @@ public class StoredISORecordsTest {
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
         storedIsoRecords.getRecordById( null, null );
+    }
+
+    /*
+     * GetRecords
+     */
+
+    @Test
+    public void testGetRecordsAll()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 100 );
+        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
+        assertEquals( storedIsoRecords.getNumberOfStoredRecords(), allRecords.getRemaining() );
+    }
+
+    @Test
+    public void testGetRecordsAllWithLimitedMaxRecord()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        int maxRecords = 2;
+        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, maxRecords );
+        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
+        assertEquals( maxRecords, allRecords.getRemaining() );
+    }
+
+    @Test
+    public void testGetRecordsAllWithFilter()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        int maxRecords = 2;
+        Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "SPOT 5" );
+        Operator op = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), lit2, true, null );
+
+        Filter filter = new OperatorFilter( op );
+        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, maxRecords );
+        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
+        assertEquals( maxRecords, allRecords.getRemaining() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetRecordsWithNullQuery()
+                            throws Exception {
+        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+        storedIsoRecords.getRecords( null );
     }
 
     private StoredISORecords getStoredIsoRecords()

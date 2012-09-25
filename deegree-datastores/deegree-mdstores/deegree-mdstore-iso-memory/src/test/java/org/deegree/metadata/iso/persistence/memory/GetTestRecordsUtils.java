@@ -65,7 +65,7 @@ public class GetTestRecordsUtils {
 
     }
 
-    private static ISORecord getRecord( String name )
+    public static ISORecord getRecord( String name )
                             throws Exception {
         URL url = ListMetadataResultSet.class.getResource( name );
         ISORecord record = (ISORecord) MetadataRecordFactory.create( new File( url.toURI() ) );

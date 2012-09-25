@@ -50,6 +50,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.slf4j.Logger;
@@ -103,23 +104,32 @@ public class StoredISORecords {
     }
 
     private void addRecord( File recordFile ) {
-        try {
-            MetadataRecord record = MetadataRecordFactory.create( recordFile );
-            if ( !( record instanceof ISORecord ) ) {
-                LOG.warn( "Ignore record {}: is not a ISO19139 record.", recordFile.getName() );
-                return;
-            }
-            fileIdentifierToRecord.put( record.getIdentifier(), (ISORecord) record );
-        } catch ( Exception e ) {
-            LOG.warn( "Ignore record {}: could not be parsed: {}.", recordFile.getName(), e.getMessage() );
+        MetadataRecord record = MetadataRecordFactory.create( recordFile );
+        if ( !( record instanceof ISORecord ) ) {
+            LOG.warn( "Ignore record {}: is not a ISO19139 record.", recordFile.getName() );
+            return;
         }
+        addRecord( (ISORecord) record, recordFile.getName() );
     }
 
     public void addRecord( ISORecord record ) {
+        addRecord( record, null );
+    }
+
+    private void addRecord( ISORecord record, String fileName ) {
         try {
-            fileIdentifierToRecord.put( record.getIdentifier(), (ISORecord) record );
+            String identifier = record.getIdentifier();
+            LOG.info( "Add record number {} with fileIdentifier {}", getNumberOfStoredRecords() + 1, identifier );
+            if ( identifier == null ) {
+                LOG.warn( "Ignore record {}, fileIdentifier is null.", fileName );
+                return;
+            }
+            if ( fileIdentifierToRecord.containsValue( identifier ) ) {
+                LOG.warn( "Overwrite record with fileIdentifier {}.", identifier );
+            }
+            fileIdentifierToRecord.put( identifier, (ISORecord) record );
         } catch ( Exception e ) {
-            LOG.warn( "Ignore record, could not be parsed: {}.", e.getMessage() );
+            LOG.warn( "Ignore record {}, could not be parsed: {}.", fileName, e.getMessage() );
         }
     }
 
@@ -128,21 +138,58 @@ public class StoredISORecords {
      * 
      * @param idList
      *            may be empty but never null never <code>null</code>
-     * @param recordTypeNames 
-     * @return the records with the passed ids.
+     * @param recordTypeNames
+     * @return the records with the passed ids,may be empty but never <code>null</code>
      */
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames ) {
         if ( idList == null ) {
             throw new IllegalArgumentException( "List with ids must not be null!" );
         }
         LOG.info( "Parameter recordTypeNames is currently not supported!" );
-        List<ISORecord> foundRecords = new ArrayList<ISORecord>();
+        List<ISORecord> result = new ArrayList<ISORecord>();
         for ( String id : idList ) {
             if ( fileIdentifierToRecord.containsKey( id ) ) {
-                foundRecords.add( fileIdentifierToRecord.get( id ) );
+                result.add( fileIdentifierToRecord.get( id ) );
             }
         }
-        return new ListMetadataResultSet( foundRecords );
+        return new ListMetadataResultSet( result );
+    }
+
+    /**
+     * Requests all records matching the query.
+     * 
+     * @param query
+     *            never <code>null</code>
+     * @return all records matching the query, may be empty but never <code>null</code>
+     */
+    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query ) {
+        if ( query == null ) {
+            throw new IllegalArgumentException( "MetadataQuery must not be null!" );
+        }
+        List<ISORecord> result = new ArrayList<ISORecord>();
+        if ( query.getFilter() == null ) {
+            result.addAll( fileIdentifierToRecord.values() );
+        } else {
+            // TODO
+        }
+        result = limitResultToMaxRecords( result, query.getMaxRecords() );
+        return new ListMetadataResultSet( result );
+    }
+
+    private List<ISORecord> limitResultToMaxRecords( List<ISORecord> result, int maxRecords ) {
+        if ( maxRecords < result.size() ) {
+            return result.subList( 0, maxRecords );
+        }
+        return result;
+    }
+
+    /**
+     * Requests the number of records kept in memory
+     * 
+     * @return the number of records kept in memory
+     */
+    public int getNumberOfStoredRecords() {
+        return fileIdentifierToRecord.size();
     }
 
 }

@@ -67,29 +67,26 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-
+        // nothing to do
     }
 
     @Override
-    public void init( DeegreeWorkspace arg0 )
+    public void init( DeegreeWorkspace deegreeWorkspace )
                             throws ResourceInitException {
-        // TODO Auto-generated method stub
-
+        // nothing to do
     }
 
     @Override
     public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        return storedIsoRecords.getRecords( query );
     }
 
     @Override
     public int getRecordCount( MetadataQuery query )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+        MetadataResultSet<ISORecord> records = storedIsoRecords.getRecords( query );
+        return records.getRemaining();
     }
 
     @Override
