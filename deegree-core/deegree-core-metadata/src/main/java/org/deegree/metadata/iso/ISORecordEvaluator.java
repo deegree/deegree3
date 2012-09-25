@@ -48,7 +48,6 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -57,6 +56,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.iso.parsing.QueryableProperties;
 import org.deegree.metadata.iso.types.BoundingBox;
 import org.deegree.metadata.iso.types.CRS;
+import org.deegree.metadata.iso.types.Constraint;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.iso.types.OperatesOnData;
@@ -141,6 +141,28 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     private static final QName QP_OPERATESONNAME = new QName( APISO_NS, "OperatesOnName" );
 
     private static final QName QP_COUPLINGTYPE = new QName( APISO_NS, "CouplingType" );
+
+    private static final QName QP_DEGREE = new QName( APISO_NS, "Degree" );
+
+    private static final QName QP_ACCESSCONSTRAINTS = new QName( APISO_NS, "AccessConstraints" );
+
+    private static final QName QP_OTHERCONSTRAINTS = new QName( APISO_NS, "OtherConstraints" );
+
+    private static final QName QP_CLASSIFICATION = new QName( APISO_NS, "Classification" );
+
+    private static final QName QP_CONDITIONAPPLYINGTOACCESSANDUSE = new QName( APISO_NS,
+                                                                               "ConditionApplyingToAccessAndUse" );
+
+    private static final QName QP_LINEAGE = new QName( APISO_NS, "Lineage" );
+
+    private static final QName QP_SPECIFICATIONTITLE = new QName( APISO_NS, "SpecificationTitle" );
+
+    private static final QName QP_SPECIFICATIONDATETYPE = new QName( APISO_NS, "SpecificationDateType" );
+
+    private static final QName QP_SPECIFICATIONDATE = new QName( APISO_NS, "SpecificationDate" );
+
+    private static final QName QP_RESPONSIBLEPARTYROLE = new QName( APISO_NS, "ResponsiblePartyRole" );
+
     static {
         QP_SUBJECT.add( new QName( APISO_NS, "Subject" ) );
         QP_SUBJECT.add( new QName( APISO_NS, "subject" ) );
@@ -281,8 +303,68 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
             return getResultOperatesOnName( qp.getOperatesOnData() );
         } else if ( isQueryable( QP_COUPLINGTYPE, valueRef ) ) {
             return getResult( qp.getCouplingType() );
+        } else if ( isQueryable( QP_DEGREE, valueRef ) ) {
+            return getResult( qp.isDegree() );
+        } else if ( isQueryable( QP_ACCESSCONSTRAINTS, valueRef ) ) {
+            return getResultAccessConstraints( qp.getConstraints() );
+        } else if ( isQueryable( QP_OTHERCONSTRAINTS, valueRef ) ) {
+            return getResultOtherConstraints( qp.getConstraints() );
+        } else if ( isQueryable( QP_CLASSIFICATION, valueRef ) ) {
+            return getResultClassification( qp.getConstraints() );
+        } else if ( isQueryable( QP_CONDITIONAPPLYINGTOACCESSANDUSE, valueRef ) ) {
+            return getResultCondition( qp.getConstraints() );
+        } else if ( isQueryable( QP_LINEAGE, valueRef ) ) {
+            return getResult( qp.getLineages() );
+        } else if ( isQueryable( QP_SPECIFICATIONTITLE, valueRef ) ) {
+            return getResult( qp.getSpecificationTitle() );
+        } else if ( isQueryable( QP_SPECIFICATIONDATE, valueRef ) ) {
+            return getResult( qp.getSpecificationDate() );
+        } else if ( isQueryable( QP_SPECIFICATIONDATETYPE, valueRef ) ) {
+            return getResult( qp.getSpecificationDateType() );
+        } else if ( isQueryable( QP_RESPONSIBLEPARTYROLE, valueRef ) ) {
+            return getResult( qp.getRespPartyRole() );
         }
         throw new FilterEvaluationException( "Could not map " + valueRef.toString() );
+    }
+
+    private TypedObjectNode[] getResultCondition( List<Constraint> constraints ) {
+        List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
+        for ( Constraint constraint : constraints ) {
+            for ( String limitation : constraint.getLimitations() ) {
+                result.add( new PrimitiveValue( limitation ) );
+            }
+        }
+        return result.toArray( new TypedObjectNode[result.size()] );
+    }
+
+    private TypedObjectNode[] getResultClassification( List<Constraint> constraints ) {
+        List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
+        for ( Constraint constraint : constraints ) {
+            result.add( new PrimitiveValue( constraint.getClassification() ) );
+        }
+        return result.toArray( new TypedObjectNode[result.size()] );
+    }
+
+    private TypedObjectNode[] getResultOtherConstraints( List<Constraint> constraints ) {
+        List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
+        for ( Constraint constraint : constraints ) {
+            for ( String other : constraint.getOtherConstraints() ) {
+                result.add( new PrimitiveValue( other ) );
+            }
+
+        }
+        return result.toArray( new TypedObjectNode[result.size()] );
+    }
+
+    private TypedObjectNode[] getResultAccessConstraints( List<Constraint> constraints ) {
+        List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
+        for ( Constraint constraint : constraints ) {
+            for ( String access : constraint.getAccessConstraints() ) {
+                result.add( new PrimitiveValue( access ) );
+            }
+
+        }
+        return result.toArray( new TypedObjectNode[result.size()] );
     }
 
     private TypedObjectNode[] getResultKeywordsType( List<Keyword> keywords ) {
