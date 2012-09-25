@@ -91,7 +91,7 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     public int getRecordCount( MetadataQuery query )
                             throws MetadataStoreException {
         try {
-            MetadataResultSet<ISORecord> records = storedIsoRecords.getRecords( query );
+            MetadataResultSet<ISORecord> records = storedIsoRecords.getRecords( query.getFilter() );
             return records.getRemaining();
         } catch ( FilterEvaluationException e ) {
             throw new MetadataStoreException( e );

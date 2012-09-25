@@ -282,7 +282,8 @@ public class StoredISORecordsTest {
     public void testGetRecordsWithNullQuery()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        storedIsoRecords.getRecords( null );
+        MetadataQuery query = null;
+        storedIsoRecords.getRecords( query );
     }
 
     private StoredISORecords getStoredIsoRecords()

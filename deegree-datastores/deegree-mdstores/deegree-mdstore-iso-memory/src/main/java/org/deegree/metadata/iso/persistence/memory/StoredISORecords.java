@@ -161,9 +161,10 @@ public class StoredISORecords {
      * @param query
      *            never <code>null</code>
      * @return all records matching the query, may be empty but never <code>null</code>
-     * @throws FilterEvaluationException 
+     * @throws FilterEvaluationException
      */
-    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query ) throws FilterEvaluationException {
+    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
+                            throws FilterEvaluationException {
         if ( query == null ) {
             throw new IllegalArgumentException( "MetadataQuery must not be null!" );
         }
@@ -171,7 +172,8 @@ public class StoredISORecords {
         return new ListMetadataResultSet( result );
     }
 
-    private List<ISORecord> applyFilter( Filter filter, int startPosition, int maxRecords ) throws FilterEvaluationException {
+    private List<ISORecord> applyFilter( Filter filter, int startPosition, int maxRecords )
+                            throws FilterEvaluationException {
         if ( filter == null ) {
             return applyNullFilter( startPosition, maxRecords );
         }
@@ -213,4 +215,26 @@ public class StoredISORecords {
         return fileIdentifierToRecord.size();
     }
 
+    /**
+     * Requests all records matching the filter
+     * 
+     * @param filter
+     *            if <code>null</code> all records are returned
+     * @return
+     * @throws FilterEvaluationException
+     */
+    public MetadataResultSet<ISORecord> getRecords( Filter filter )
+                            throws FilterEvaluationException {
+        List<ISORecord> result = new ArrayList<ISORecord>();
+        if ( filter == null ) {
+            result.addAll( fileIdentifierToRecord.values() );
+        } else {
+            for ( ISORecord record : fileIdentifierToRecord.values() ) {
+                if ( record.eval( filter ) ) {
+                    result.add( record );
+                }
+            }
+        }
+        return new ListMetadataResultSet( result );
+    }
 }
