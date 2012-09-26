@@ -328,6 +328,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultCondition( List<Constraint> constraints ) {
+        if ( constraints == null )
+            return new TypedObjectNode[0];
         List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
         for ( Constraint constraint : constraints ) {
             for ( String limitation : constraint.getLimitations() ) {
@@ -338,6 +340,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultClassification( List<Constraint> constraints ) {
+        if ( constraints == null )
+            return new TypedObjectNode[0];
         List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
         for ( Constraint constraint : constraints ) {
             result.add( new PrimitiveValue( constraint.getClassification() ) );
@@ -346,6 +350,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultOtherConstraints( List<Constraint> constraints ) {
+        if ( constraints == null )
+            return new TypedObjectNode[0];
         List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
         for ( Constraint constraint : constraints ) {
             for ( String other : constraint.getOtherConstraints() ) {
@@ -357,6 +363,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultAccessConstraints( List<Constraint> constraints ) {
+        if ( constraints == null )
+            return new TypedObjectNode[0];
         List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
         for ( Constraint constraint : constraints ) {
             for ( String access : constraint.getAccessConstraints() ) {
@@ -368,6 +376,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultKeywordsType( List<Keyword> keywords ) {
+        if ( keywords == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[keywords.size()];
         int i = 0;
         for ( Keyword keyword : keywords ) {
@@ -377,6 +387,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultKeywords( List<Keyword> keywords ) {
+        if ( keywords == null )
+            return new TypedObjectNode[0];
         List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
         for ( Keyword keywordList : keywords ) {
             for ( String keyword : keywordList.getKeywords() ) {
@@ -387,6 +399,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultOperatesOnName( List<OperatesOnData> operatesOnDatas ) {
+        if ( operatesOnDatas == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[operatesOnDatas.size()];
         int i = 0;
         for ( OperatesOnData operatesOnData : operatesOnDatas ) {
@@ -396,6 +410,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultOperatesOnIdentifier( List<OperatesOnData> operatesOnDatas ) {
+        if ( operatesOnDatas == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[operatesOnDatas.size()];
         int i = 0;
         for ( OperatesOnData operatesOnData : operatesOnDatas ) {
@@ -405,6 +421,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultOperatesOn( List<OperatesOnData> operatesOnDatas ) {
+        if ( operatesOnDatas == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[operatesOnDatas.size()];
         int i = 0;
         for ( OperatesOnData operatesOnData : operatesOnDatas ) {
@@ -414,6 +432,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultFormat( List<Format> formats ) {
+        if ( formats == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[formats.size()];
         int i = 0;
         for ( Format format : formats ) {
@@ -440,6 +460,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResultCrs( List<CRS> crs ) {
+        if ( crs == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[crs.size()];
         int i = 0;
         for ( CRS c : crs ) {
@@ -449,6 +471,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResult( List<String> values ) {
+        if ( values == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[values.size()];
         int i = 0;
         for ( String value : values ) {
@@ -458,6 +482,8 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
     }
 
     private TypedObjectNode[] getResult( String[] values ) {
+        if ( values == null )
+            return new TypedObjectNode[0];
         TypedObjectNode[] result = new TypedObjectNode[values.length];
         for ( int i = 0; i < values.length; i++ ) {
             result[i] = new PrimitiveValue( values[i] );
