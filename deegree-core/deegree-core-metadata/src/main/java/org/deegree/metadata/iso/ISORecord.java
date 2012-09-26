@@ -70,7 +70,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.filter.XPathElementFilter;
 import org.deegree.metadata.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.iso.parsing.RecordPropertyParser;
 import org.deegree.metadata.iso.types.BoundingBox;
@@ -454,8 +453,10 @@ public class ISORecord implements MetadataRecord {
             xpathEN.add( new XPath( s, CommonNamespaces.getNamespaceContext() ) );
         }
 
-        OMElement elem = new XPathElementFilter( root, xpathEN );
-        elem.serialize( writer );
+        if ( !xpathEN.isEmpty() ) {
+            writer = new FilteringXMLStreamWriter( writer, xpathEN );
+        }
+        root.serialize( writer );
     }
 
     @Override

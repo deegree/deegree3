@@ -63,18 +63,21 @@ import org.apache.axiom.om.OMXMLStreamReaderConfiguration;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.FilteringXMLStreamWriter;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Deprecated, because you can use the {@link FilteringXMLStreamWriter} instead, where you define the positive list of
+ * paths you want in the output.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 30339 $, $Date: 2011-04-04 15:59:06 +0200 (Mo, 04. Apr 2011) $
  */
+@Deprecated
 public class XPathElementFilter implements OMElement {
 
     private static Logger LOG = LoggerFactory.getLogger( XPathElementFilter.class );
@@ -422,9 +425,9 @@ public class XPathElementFilter implements OMElement {
         input.setBuilder( arg0 );
     }
 
-//    public void setFirstChild( OMNode arg0 ) {
-//        input.setFirstChild( arg0 );
-//    }
+    // public void setFirstChild( OMNode arg0 ) {
+    // input.setFirstChild( arg0 );
+    // }
 
     public void setLineNumber( int arg0 ) {
         input.setLineNumber( arg0 );
@@ -498,7 +501,7 @@ public class XPathElementFilter implements OMElement {
 
     @Override
     public void undeclarePrefix( String prefix ) {
-        input.undeclarePrefix( prefix );        
+        input.undeclarePrefix( prefix );
     }
 
     @Override
