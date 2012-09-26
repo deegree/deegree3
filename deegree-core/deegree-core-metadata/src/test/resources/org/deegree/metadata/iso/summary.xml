@@ -1,26 +1,23 @@
-<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns="http://www.isotc211.org/2005/gmd"
-  xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:geobru="http://geobru.irisnet.be" xmlns:geonet="http://www.fao.org/geonetwork"
-  xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd">
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:gml="http://www.opengis.net/gml" xmlns:geobru="http://geobru.irisnet.be" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd">
   <gmd:fileIdentifier>
     <gco:CharacterString>655e5998-a20e-66b5-c888-00005553421_nicht_multilang</gco:CharacterString>
   </gmd:fileIdentifier>
   <gmd:language>
-    <gmd:LanguageCode codeList="#LanguageCode" codeListValue="ger" />
+    <gmd:LanguageCode codeList="#LanguageCode" codeListValue="ger"/>
   </gmd:language>
   <gmd:characterSet>
-    <gmd:MD_CharacterSetCode codeList="MD_CharacterSetCode" codeListValue="utf8" />
+    <gmd:MD_CharacterSetCode codeList="MD_CharacterSetCode" codeListValue="utf8"/>
   </gmd:characterSet>
   <gmd:hierarchyLevel>
-    <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_ScopeCode"
-      codeListValue="application" />
+    <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_ScopeCode" codeListValue="application"/>
   </gmd:hierarchyLevel>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
+      
+      
+      
       <gmd:role>
-        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode"
-          codeListValue="distributor" />
+        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="distributor"/>
       </gmd:role>
     </gmd:CI_ResponsibleParty>
   </gmd:contact>
@@ -57,14 +54,14 @@
           <gmd:title>
             <gco:CharacterString>Hessen Wasser Analyser</gco:CharacterString>
           </gmd:title>
+          
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>
                 <gco:DateTime>2007-12-15T00:00:00.000</gco:DateTime>
               </gmd:date>
               <gmd:dateType>
-                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode"
-                  codeListValue="creation" />
+                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode" codeListValue="creation"/>
               </gmd:dateType>
             </gmd:CI_Date>
           </gmd:date>
@@ -82,11 +79,16 @@
               </gmd:code>
             </gmd:RS_Identifier>
           </gmd:identifier>
+          
+          
         </gmd:CI_Citation>
       </gmd:citation>
       <gmd:abstract>
-        <gco:CharacterString>Analysewerkzeug für Wasserschutz- und Überschwemmungsgebiete in Hessen. Nutzt als Geo- und Fachinformationssystem Rasterdaten der Topographische Karte 1:50000 als Hintergrund.</gco:CharacterString>
+        <gco:CharacterString>Analysewerkzeug für Wasserschutz- und Überschwemmungsgebiete in Hessen. Nutzt als Geo-
+              und Fachinformationssystem Rasterdaten der Topographische Karte 1:50000 als Hintergrund.
+            </gco:CharacterString>
       </gmd:abstract>
+      
       <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty>
           <gmd:individualName>
@@ -131,25 +133,27 @@
                 </gmd:CI_OnlineResource>
               </gmd:onlineResource>
               <gmd:contactInstructions>
-                <gco:CharacterString>Bitte zunächst auf den Internetseiten nach den gewünschten Informationen suchen, danach eMail- und telefonische Kontaktaufnahme</gco:CharacterString>
+                <gco:CharacterString>Bitte zunächst auf den Internetseiten nach den gewünschten Informationen
+                      suchen, danach eMail- und telefonische Kontaktaufnahme</gco:CharacterString>
               </gmd:contactInstructions>
             </gmd:CI_Contact>
           </gmd:contactInfo>
           <gmd:role>
-            <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode"
-              codeListValue="processor" />
+            <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="processor"/>
           </gmd:role>
         </gmd:CI_ResponsibleParty>
       </gmd:pointOfContact>
+      
+      
+      
       <gmd:spatialRepresentationType>
-        <gmd:MD_SpatialRepresentationTypeCode
-          codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid" />
+        <gmd:MD_SpatialRepresentationTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid"/>
       </gmd:spatialRepresentationType>
       <gmd:language>
-        <gmd:LanguageCode codeList="#LanguageCode" codeListValue="ger" />
+        <gmd:LanguageCode codeList="#LanguageCode" codeListValue="ger"/>
       </gmd:language>
       <gmd:characterSet>
-        <gmd:MD_CharacterSetCode codeList="MD_CharacterSetCode" codeListValue="utf8" />
+        <gmd:MD_CharacterSetCode codeList="MD_CharacterSetCode" codeListValue="utf8"/>
       </gmd:characterSet>
       <gmd:topicCategory>
         <gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
@@ -187,6 +191,7 @@
   </gmd:identificationInfo>
   <gmd:distributionInfo>
     <gmd:MD_Distribution>
+      
       <gmd:transferOptions>
         <gmd:MD_DigitalTransferOptions>
           <gmd:onLine>

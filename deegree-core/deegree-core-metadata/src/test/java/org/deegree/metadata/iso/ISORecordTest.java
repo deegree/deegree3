@@ -35,11 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
@@ -50,8 +49,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-
-import junit.framework.Assert;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
@@ -71,6 +68,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -92,8 +90,9 @@ public class ISORecordTest {
                             throws Exception {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
-        byte[] bs = writeOut( filterEl, null );
-        IOUtils.write( bs, new FileOutputStream( "/tmp/full.xml" ) );
+        byte[] actual = writeOut( filterEl, null );
+        byte[] expected = IOUtils.toByteArray( ISORecordTest.class.getResourceAsStream( "full_expected.xml" ) );
+        Assert.assertArrayEquals( expected, actual );
     }
 
     @Test
@@ -101,8 +100,9 @@ public class ISORecordTest {
                             throws Exception {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
-        byte[] bs = writeOut( filterEl, ISORecord.briefFilterElementsXPath );
-        IOUtils.write( bs, new FileOutputStream( "/tmp/brief.xml" ) );
+        byte[] actual = writeOut( filterEl, ISORecord.briefFilterElementsXPath );
+        byte[] expected = IOUtils.toByteArray( ISORecordTest.class.getResourceAsStream( "brief.xml" ) );
+        Assert.assertArrayEquals( expected, actual );
     }
 
     @Test
@@ -110,8 +110,9 @@ public class ISORecordTest {
                             throws Exception {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
-        byte[] bs = writeOut( filterEl, ISORecord.summaryFilterElementsXPath );
-        IOUtils.write( bs, new FileOutputStream( "/tmp/summary.xml" ) );
+        byte[] actual = writeOut( filterEl, ISORecord.summaryFilterElementsXPath );
+        byte[] expected = IOUtils.toByteArray( ISORecordTest.class.getResourceAsStream( "summary.xml" ) );
+        Assert.assertArrayEquals( expected, actual );
     }
 
     private byte[] writeOut( OMElement filterEl, List<XPath> paths )
