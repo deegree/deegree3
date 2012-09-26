@@ -40,6 +40,7 @@
     <module>deegree-workspace-base</module>
     <module>deegree-workspace-compliance-tests</module>    
     <module>deegree-workspace-csw</module>
+    <module>deegree-workspace-csw-memory-tests</module>    
     <module>deegree-workspace-csw-tests</module>    
     <module>deegree-workspace-geosciml</module>
     <module>deegree-workspace-inspire</module>
