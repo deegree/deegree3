@@ -11,6 +11,7 @@
     <jdbc.url>jdbc:postgresql://localhost:5432/deegree3-cite-csw</jdbc.url>
     <jdbc.user>postgres</jdbc.user>
     <jdbc.password>postgres</jdbc.password>
+    <memory>false</memory>
   </properties>
 
   <parent>
@@ -72,94 +73,7 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <id>copy-jdbc1</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>src/main/workspace/jdbc</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>src/main/config</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>conn1.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          
-          <execution>
-            <id>copy-jdbc2</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/workspace/jdbc</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>src/main/config</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>conn1.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-jdbc3</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/deegree-workspace-csw-tests/jdbc</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>src/main/config</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>conn1.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-jdbc4</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>src/main/webapp/WEB-INF/workspace/jdbc</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>src/main/config</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>conn1.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -189,6 +103,130 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>memorystore</id>
+      <activation>
+        <property>
+          <name>memory</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.deegree</groupId>
+          <artifactId>deegree-workspace-csw-memory-tests</artifactId>
+          <version>${project.version}</version>
+          <type>deegree-workspace</type>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>sqlstore</id>
+      <activation>
+        <property>
+          <name>!memory</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.deegree</groupId>
+          <artifactId>deegree-workspace-csw-tests</artifactId>
+          <version>${project.version}</version>
+          <type>deegree-workspace</type>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+              <execution>
+                <id>copy-jdbc1</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>src/main/workspace/jdbc</outputDirectory>
+                  <overwrite>true</overwrite>
+                  <resources>
+                    <resource>
+                      <directory>src/main/config</directory>
+                      <filtering>true</filtering>
+                      <includes>
+                        <include>conn1.xml</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>copy-jdbc2</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/workspace/jdbc</outputDirectory>
+                  <overwrite>true</overwrite>
+                  <resources>
+                    <resource>
+                      <directory>src/main/config</directory>
+                      <filtering>true</filtering>
+                      <includes>
+                        <include>conn1.xml</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-jdbc3</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/deegree-workspace-csw-tests/jdbc</outputDirectory>
+                  <overwrite>true</overwrite>
+                  <resources>
+                    <resource>
+                      <directory>src/main/config</directory>
+                      <filtering>true</filtering>
+                      <includes>
+                        <include>conn1.xml</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-jdbc4</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>src/main/webapp/WEB-INF/workspace/jdbc</outputDirectory>
+                  <overwrite>true</overwrite>
+                  <resources>
+                    <resource>
+                      <directory>src/main/config</directory>
+                      <filtering>true</filtering>
+                      <includes>
+                        <include>conn1.xml</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <activation>
         <property>
@@ -260,18 +298,13 @@
         </dependency>
       </dependencies>
     </profile>
+
   </profiles>
 
   <dependencies>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-csw-tests</artifactId>
-      <version>${project.version}</version>
-      <type>deegree-workspace</type>
     </dependency>
     <dependency>
       <groupId>cite</groupId>
