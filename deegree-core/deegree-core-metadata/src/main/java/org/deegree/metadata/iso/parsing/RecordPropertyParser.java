@@ -46,6 +46,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -113,6 +117,8 @@ public final class RecordPropertyParser extends XMLAdapter {
         // for ( String error : ca.getMv().validate( rootElement ) ) {
         // throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
         // }
+
+        qp.setAnyText( getAnyText() );
 
         String language = getNodeAsString( rootElement,
                                            new XPath(
@@ -213,6 +219,23 @@ public final class RecordPropertyParser extends XMLAdapter {
         parseDataQualityInfo();
 
         return new ParsedProfileElement( qp, rp, getRootElement() );
+    }
+
+    private String getAnyText() {
+        try {
+            StringBuilder sb = new StringBuilder();
+            XMLStreamReader xmlStream = rootElement.getXMLStreamReader();
+            while ( xmlStream.hasNext() ) {
+                xmlStream.next();
+                if ( xmlStream.getEventType() == XMLStreamConstants.CHARACTERS && !xmlStream.isWhiteSpace() ) {
+                    sb.append( xmlStream.getText() ).append( " " );
+                }
+            }
+            return sb.toString();
+        } catch ( XMLStreamException e ) {
+            LOG.warn( "Could not read any text: {}", e.getMessage() );
+        }
+        return null;
     }
 
     /**
