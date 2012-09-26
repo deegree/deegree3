@@ -400,7 +400,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                 // ESRI workaround
                 if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
                      && xmlReader.getLocalName().equals( "FeatureInfoResponse" ) ) {
-                    return readESRICollection( xmlReader );
+                    return readESRICollection( xmlReader, lays );
                 }
                 // myWMS workaround
                 if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
@@ -432,7 +432,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         throw new IllegalArgumentException( "GetMap request for other versions than 1.1.1 are not supported yet." );
     }
 
-    private static FeatureCollection readESRICollection( XMLStreamReader reader )
+    private static FeatureCollection readESRICollection( XMLStreamReader reader, String idPrefix )
                             throws NoSuchElementException, XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
 
@@ -450,7 +450,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                 props.add( tp );
             }
             GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
-            col.add( new GenericFeature( ft, "esri_" + ++count, propValues, null ) );
+            col.add( new GenericFeature( ft, idPrefix + "_esri_" + ++count, propValues, null ) );
             skipElement( reader );
             nextElement( reader );
         }
