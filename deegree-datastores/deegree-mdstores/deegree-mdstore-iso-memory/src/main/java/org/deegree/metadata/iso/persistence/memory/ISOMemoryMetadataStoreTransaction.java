@@ -38,8 +38,8 @@ package org.deegree.metadata.iso.persistence.memory;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -111,13 +111,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
                     break;
                 }
             }
-        } catch ( XMLStreamException e ) {
-            LOG.error( "Commit failed: ", e );
-            throw new MetadataStoreException( e );
-        } catch ( FileNotFoundException e ) {
-            LOG.error( "Commit failed: ", e );
-            throw new MetadataStoreException( e );
-        } catch ( URISyntaxException e ) {
+        } catch ( Exception e ) {
             LOG.error( "Commit failed: ", e );
             throw new MetadataStoreException( e );
         }
@@ -125,8 +119,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
     }
 
     private void commitInsert( TransactionCandidate transactionCandidate )
-                            throws FileNotFoundException, URISyntaxException, XMLStreamException,
-                            FactoryConfigurationError {
+                            throws URISyntaxException, XMLStreamException, FactoryConfigurationError, IOException {
         File recordFile = null;
         if ( transactionalDirectory != null ) {
             recordFile = writeFile( transactionCandidate, null );
@@ -135,8 +128,8 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
     }
 
     private void commitUpdate( TransactionCandidate transactionCandidate )
-                            throws FileNotFoundException, URISyntaxException, XMLStreamException,
-                            FactoryConfigurationError, MetadataStoreException {
+                            throws URISyntaxException, XMLStreamException, FactoryConfigurationError,
+                            MetadataStoreException, IOException {
         File recordFile = null;
         if ( transactionalDirectory != null ) {
             File fileToUpdate = storedRecords.getFile( transactionCandidate.identifier );
@@ -144,6 +137,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
             recordFile = writeFile( transactionCandidate, fileToUpdate );
         }
         storedRecords.deleteRecord( transactionCandidate.identifier );
+        System.out.println( transactionCandidate.record.getParsedElement().getQueryableProperties().getKeywords().get( 0 ).getKeywords().get( 0 ) );
         storedRecords.insertRecord( transactionCandidate.record, recordFile );
     }
 
@@ -155,24 +149,37 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
     }
 
     private File writeFile( TransactionCandidate transactionCandidate, File fileToWrite )
-                            throws FileNotFoundException, URISyntaxException, XMLStreamException,
-                            FactoryConfigurationError {
+                            throws URISyntaxException, XMLStreamException, FactoryConfigurationError, IOException {
         if ( fileToWrite == null ) {
             fileToWrite = new File( new File( transactionalDirectory.toURI() ), transactionCandidate.identifier
                                                                                 + ".xml" );
         }
-        OutputStream stream = new FileOutputStream( fileToWrite );
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        transactionCandidate.record.serialize( writer, ReturnableElement.full );
+        if ( !fileToWrite.exists() ) {
+            boolean created = fileToWrite.createNewFile();
+            LOG.debug( "File {} was " + ( created ? "successful" : "not" ) + " created.", fileToWrite );
+        }
+        OutputStream stream = null;
+        XMLStreamWriter writer = null;
+        try {
+            stream = new FileOutputStream( fileToWrite );
+            writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+            transactionCandidate.record.serialize( writer, ReturnableElement.full );
+        } finally {
+            try {
+                writer.close();
+                stream.close();
+            } catch ( IOException e ) {
+            }
+        }
         return fileToWrite;
     }
 
-    private void deleteFile( TransactionStatus status, File fileToUpdate )
+    private void deleteFile( TransactionStatus status, File file )
                             throws MetadataStoreException {
-        boolean deleted = fileToUpdate.delete();
-        LOG.debug( "File was " + ( deleted ? "successful" : "not" ) + " deleted" );
+        boolean deleted = file.delete();
+        LOG.debug( "File {} was " + ( deleted ? "successful" : "not" ) + " deleted", file );
         if ( !deleted )
-            throw new MetadataStoreException( "Commit failed: could not " + status + " record at " + fileToUpdate );
+            throw new MetadataStoreException( "Commit failed: could not " + status + " record at " + file );
     }
 
     @Override
@@ -221,11 +228,11 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
     public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
         try {
-            if ( update.getRecordProperty() != null || !update.getRecordProperty().isEmpty() ) {
+            if ( update.getRecordProperty() != null && !update.getRecordProperty().isEmpty() ) {
                 throw new MetadataStoreException( "Update failed: update of properties is not implemented yet!" );
             }
             List<ISORecord> records = storedRecords.getRecords( update.getConstraint() );
-            if ( records.size() > 0 ) {
+            if ( records.size() > 1 ) {
                 throw new MetadataStoreException(
                                                   "Update failed: update with a filter matching more than one record is not implemented yet!" );
             }
@@ -234,7 +241,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
             }
             ISORecord record = records.get( 0 );
             transactionCandidates.add( new TransactionCandidate( TransactionStatus.UPDATE, record.getIdentifier(),
-                                                                 record ) );
+                                                                 (ISORecord) update.getRecord() ) );
             return 1;
         } catch ( FilterEvaluationException e ) {
             LOG.error( "Could not evaluate filter!", e );
