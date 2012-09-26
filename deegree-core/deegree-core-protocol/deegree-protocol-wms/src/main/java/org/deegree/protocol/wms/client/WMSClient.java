@@ -451,9 +451,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             }
             GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
             col.add( new GenericFeature( ft, "esri_" + ++count, propValues, null ) );
+            skipElement( reader );
             nextElement( reader );
         }
-
+        LOG.debug( "Found {} features.", col.size() );
         return col;
     }
 
