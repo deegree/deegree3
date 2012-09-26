@@ -19,7 +19,8 @@
     <complexType>
       <sequence>
         <element name="ISORecordDirectory" type="string"  maxOccurs="unbounded"/>
-        </sequence>
+        <element name="InsertDirectory" type="string"  minOccurs="0"/>
+      </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>
           <restriction base="string">

@@ -3,4 +3,6 @@
   configVersion="3.2.0">
   <!-- [1...n] directory to be used -->
   <ISORecordDirectory>..</ISORecordDirectory>
+  <!-- [0...1] directory to be used to insert records -->
+  <InsertDirectory>..</InsertDirectory>
 </ISOMemoryMetadataStore>

@@ -79,6 +79,7 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
     public MetadataStore<ISORecord> create( URL configURL )
                             throws ResourceInitException {
         List<URL> recordDirectories = new ArrayList<URL>();
+        URL insertDirectory = null;
         try {
             ISOMemoryMetadataStoreConfig config = (ISOMemoryMetadataStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                                        CONFIG_SCHEMA,
@@ -90,18 +91,21 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
             for ( String isoRecordDirectory : isoRecordDirectories ) {
                 recordDirectories.add( resolver.resolve( isoRecordDirectory ) );
             }
+            if ( config.getInsertDirectory() != null ) {
+                insertDirectory = resolver.resolve( config.getInsertDirectory() );
+            }
         } catch ( Exception e ) {
             String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
             LOG.error( msg, e );
             throw new ResourceInitException( msg, e );
         }
-        // TODO: transact 
-        return new ISOMemoryMetadataStore( recordDirectories, null );
+        // TODO: transact
+        return new ISOMemoryMetadataStore( recordDirectories, insertDirectory );
     }
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[]{};
+        return new Class[] {};
     }
 
     @Override
