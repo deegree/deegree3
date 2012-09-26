@@ -1,0 +1,134 @@
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2012 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.metadata.iso.persistence.memory;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.URL;
+import java.util.Collections;
+
+import org.apache.commons.io.FileUtils;
+import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
+import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.persistence.transaction.DeleteOperation;
+import org.deegree.metadata.persistence.transaction.InsertOperation;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+/**
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author last edited by: $Author: lyn $
+ * 
+ * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
+ */
+public class ISOMemoryMetadataStoreTransactionTest {
+
+    private File directory;
+
+    @Before
+    public void setupTestDirectory()
+                            throws Exception {
+        try {
+            directory = File.createTempFile( "deegreecswtest", "" );
+            directory.delete();
+            directory.mkdir();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        URL record = ISOMemoryMetadataStore.class.getResource( "1.xml" );
+        File dataDirectory = new File( new File( record.toURI() ).getParent() );
+        File[] listFiles = dataDirectory.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File arg0, String arg1 ) {
+                System.out.println( arg1 );
+                System.out.println( arg0.length() < 6 );
+                return arg1.endsWith( ".xml" ) && arg1.length() < 6;
+            }
+        } );
+        for ( File file : listFiles ) {
+            FileUtils.copyFile( file, new File( directory, file.getName() ) );
+        }
+    }
+
+    @Test
+    public void testInsert()
+                            throws Exception {
+        System.out.println( "Directory is: " + directory );
+        URL dir = directory.toURI().toURL();
+        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( dir ) );
+        ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
+        ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
+                                                                                               storedRecords, dir );
+        int beforeInsert = storedRecords.getNumberOfStoredRecords();
+        ISORecord record = GetTestRecordsUtils.getRecord( "toInsert.xml" );
+        InsertOperation insert = new InsertOperation( Collections.singletonList( record ), null, null );
+        transaction.performInsert( insert );
+        transaction.commit();
+        assertEquals( beforeInsert + 1, storedRecords.getNumberOfStoredRecords() );
+        assertEquals( storedRecords.getNumberOfStoredRecords(), getNumberOfRecordsInStoreDirectory() );
+    }
+
+    @Test
+    public void testDelete()
+                            throws Exception {
+        System.out.println( "Directory is: " + directory );
+        URL dir = directory.toURI().toURL();
+        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( dir ) );
+        ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
+        ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
+                                                                                               storedRecords, dir );
+        int beforeInsert = storedRecords.getNumberOfStoredRecords();
+        ISORecord record = GetTestRecordsUtils.getRecord( "1.xml" );
+        Filter filter = new IdFilter( record.getIdentifier() );
+        DeleteOperation delete = new DeleteOperation( null, null, filter );
+        transaction.performDelete( delete );
+        transaction.commit();
+        assertEquals( beforeInsert - 1, storedRecords.getNumberOfStoredRecords() );
+        assertEquals( storedRecords.getNumberOfStoredRecords(), getNumberOfRecordsInStoreDirectory() );
+    }
+
+    private int getNumberOfRecordsInStoreDirectory() {
+        int numberOfRecords = 0;
+        for ( File f : directory.listFiles() ) {
+            numberOfRecords++;
+        }
+        return numberOfRecords;
+    }
+}

@@ -62,7 +62,21 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 
     private StoredISORecords storedIsoRecords;
 
-    public ISOMemoryMetadataStore( List<URL> recordDirectories ) throws ResourceInitException {
+    private MetadataStoreTransaction activeTransaction = null;
+
+    private URL transactionalDirectory;
+
+    /**
+     * 
+     * @param recordDirectories
+     *            never <code>null</code> but may be empty when no directories exists
+     * @param transactionalDirectory
+     *            directory to store inserted records, can be <code>null</code> if transactions are not allowed
+     * @throws ResourceInitException
+     */
+    public ISOMemoryMetadataStore( List<URL> recordDirectories, URL transactionalDirectory )
+                            throws ResourceInitException {
+        this.transactionalDirectory = transactionalDirectory;
         storedIsoRecords = new StoredISORecords( recordDirectories );
     }
 
@@ -91,8 +105,8 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     public int getRecordCount( MetadataQuery query )
                             throws MetadataStoreException {
         try {
-            MetadataResultSet<ISORecord> records = storedIsoRecords.getRecords( query.getFilter() );
-            return records.getRemaining();
+            List<ISORecord> records = storedIsoRecords.getRecords( query.getFilter() );
+            return records.size();
         } catch ( FilterEvaluationException e ) {
             throw new MetadataStoreException( e );
         }
@@ -107,8 +121,12 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
-        throw new UnsupportedOperationException(
-                                                 "Transactions are currently not supported for the ISOMemoryMetadataStore" );
+        // only one transaction per time is accepted!
+        while ( activeTransaction != null ) {
+            // wait until active transaction is released!
+        }
+        activeTransaction = new ISOMemoryMetadataStoreTransaction( this, storedIsoRecords, transactionalDirectory );
+        return activeTransaction;
     }
 
     /**
@@ -122,6 +140,13 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public String getType() {
         return "iso";
+    }
+
+    /**
+     * Release the active transaction if existing.
+     */
+    public void releaseTransaction() {
+        activeTransaction = null;
     }
 
 }

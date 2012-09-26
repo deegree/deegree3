@@ -69,11 +69,24 @@ public class StoredISORecords {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredISORecords.class );
 
-    private final LinkedHashMap<String, ISORecord> fileIdentifierToRecord = new LinkedHashMap<String, ISORecord>();
+    private final LinkedHashMap<String, File> identifierToFile = new LinkedHashMap<String, File>();
 
+    private final LinkedHashMap<String, ISORecord> identifierToRecord = new LinkedHashMap<String, ISORecord>();
+
+    /**
+     * Creates an empty store.
+     */
     StoredISORecords() {
     }
 
+    /**
+     * Creates a store and reads all records from the passed directories
+     * 
+     * @param recordDirectories
+     *            directories to read records from
+     * @throws ResourceInitException
+     *             if a directory could not be read
+     */
     StoredISORecords( List<URL> recordDirectories ) throws ResourceInitException {
         addRecords( recordDirectories );
     }
@@ -81,11 +94,11 @@ public class StoredISORecords {
     private void addRecords( List<URL> recordDirectories )
                             throws ResourceInitException {
         for ( URL url : recordDirectories ) {
-            addRecords( url );
+            loadRecords( url );
         }
     }
 
-    private void addRecords( URL url )
+    private void loadRecords( URL url )
                             throws ResourceInitException {
         try {
             File recordDirectory = new File( url.toURI() );
@@ -96,7 +109,7 @@ public class StoredISORecords {
                 }
             } );
             for ( File record : records ) {
-                addRecord( record );
+                loadRecord( record );
             }
         } catch ( URISyntaxException e ) {
             throw new ResourceInitException( "Could not read records from " + url + ": " + e.getMessage(), e );
@@ -104,34 +117,60 @@ public class StoredISORecords {
 
     }
 
-    private void addRecord( File recordFile ) {
+    /**
+     * Add a new record to the list of stored records
+     * 
+     * @param record
+     *            record to add, never <code>null</code>
+     * @param recordFile
+     *            file containing the record, can be <code>null</code>
+     */
+    public String insertRecord( ISORecord record, File recordFile ) {
+        return addOrUpdateRecord( record, recordFile );
+    }
+
+    /**
+     * Removes the record with the given identifier from the store
+     * 
+     * @param identifier
+     *            never <code>null</code>
+     */
+    public boolean deleteRecord( String identifier ) {
+        if ( identifierToRecord.containsKey( identifier ) ) {
+            identifierToRecord.remove( identifier );
+            identifierToFile.remove( identifier );
+            return true;
+        }
+        return false;
+    }
+
+    private void loadRecord( File recordFile ) {
         MetadataRecord record = MetadataRecordFactory.create( recordFile );
         if ( !( record instanceof ISORecord ) ) {
             LOG.warn( "Ignore record {}: is not a ISO19139 record.", recordFile.getName() );
             return;
         }
-        addRecord( (ISORecord) record, recordFile.getName() );
+        addOrUpdateRecord( (ISORecord) record, recordFile );
     }
 
-    public void addRecord( ISORecord record ) {
-        addRecord( record, null );
-    }
-
-    private void addRecord( ISORecord record, String fileName ) {
+    private String addOrUpdateRecord( ISORecord record, File file ) {
         try {
             String identifier = record.getIdentifier();
             LOG.info( "Add record number {} with fileIdentifier {}", getNumberOfStoredRecords() + 1, identifier );
             if ( identifier == null ) {
-                LOG.warn( "Ignore record {}, fileIdentifier is null.", fileName );
-                return;
+                LOG.warn( "Ignore record {}, fileIdentifier is null.", file != null ? file.getName() : identifier );
+                return null;
             }
-            if ( fileIdentifierToRecord.containsValue( identifier ) ) {
+            if ( identifierToRecord.containsValue( identifier ) ) {
                 LOG.warn( "Overwrite record with fileIdentifier {}.", identifier );
             }
-            fileIdentifierToRecord.put( identifier, (ISORecord) record );
+            identifierToRecord.put( identifier, (ISORecord) record );
+            identifierToFile.put( identifier, file );
+            return identifier;
         } catch ( Exception e ) {
-            LOG.warn( "Ignore record {}, could not be parsed: {}.", fileName, e.getMessage() );
+            LOG.warn( "Ignore record {}, could not be parsed: {}.", file != null ? file.getName() : "", e.getMessage() );
         }
+        return null;
     }
 
     /**
@@ -148,8 +187,8 @@ public class StoredISORecords {
         }
         List<ISORecord> result = new ArrayList<ISORecord>();
         for ( String id : idList ) {
-            if ( fileIdentifierToRecord.containsKey( id ) ) {
-                result.add( fileIdentifierToRecord.get( id ) );
+            if ( identifierToRecord.containsKey( id ) ) {
+                result.add( identifierToRecord.get( id ) );
             }
         }
         return new ListMetadataResultSet( result );
@@ -179,7 +218,7 @@ public class StoredISORecords {
         }
         List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
         int index = 1;
-        for ( ISORecord record : fileIdentifierToRecord.values() ) {
+        for ( ISORecord record : identifierToRecord.values() ) {
             if ( index >= startPosition && record.eval( filter ) ) {
                 result.add( record );
             }
@@ -194,9 +233,9 @@ public class StoredISORecords {
     private List<ISORecord> applyNullFilter( int startPosition, int maxRecords ) {
         List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
         int index = 1;
-        for ( String fileIdentifier : fileIdentifierToRecord.keySet() ) {
+        for ( String fileIdentifier : identifierToRecord.keySet() ) {
             if ( index >= startPosition ) {
-                result.add( fileIdentifierToRecord.get( fileIdentifier ) );
+                result.add( identifierToRecord.get( fileIdentifier ) );
             }
             index++;
             if ( result.size() >= maxRecords ) {
@@ -212,7 +251,7 @@ public class StoredISORecords {
      * @return the number of records kept in memory
      */
     public int getNumberOfStoredRecords() {
-        return fileIdentifierToRecord.size();
+        return identifierToRecord.size();
     }
 
     /**
@@ -223,18 +262,36 @@ public class StoredISORecords {
      * @return
      * @throws FilterEvaluationException
      */
-    public MetadataResultSet<ISORecord> getRecords( Filter filter )
+    public List<ISORecord> getRecords( Filter filter )
                             throws FilterEvaluationException {
         List<ISORecord> result = new ArrayList<ISORecord>();
         if ( filter == null ) {
-            result.addAll( fileIdentifierToRecord.values() );
+            result.addAll( identifierToRecord.values() );
         } else {
-            for ( ISORecord record : fileIdentifierToRecord.values() ) {
+            for ( ISORecord record : identifierToRecord.values() ) {
                 if ( record.eval( filter ) ) {
                     result.add( record );
                 }
             }
         }
-        return new ListMetadataResultSet( result );
+        return result;
+    }
+
+    /**
+     * @param record
+     *            never <code>null</code>
+     * @return return true if a record with the same identifier is stored, false otherwise
+     */
+    public boolean contains( ISORecord record ) {
+        return identifierToRecord.containsKey( record.getIdentifier() );
+    }
+
+    /**
+     * @param identifier
+     *            never <code>null</code>
+     * @return the file assigned to the identifier, <code>null</code> if no file is assigned
+     */
+    File getFile( String identifier ) {
+        return identifierToFile.get( identifier );
     }
 }

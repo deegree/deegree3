@@ -80,20 +80,20 @@ public class StoredISORecordsTest {
      */
 
     @Test
-    public void testAddRecordTwice()
+    public void testInsertRecordTwice()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
         int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
-        storedIsoRecords.addRecord( getRecord( "1.xml" ) );
+        storedIsoRecords.insertRecord( getRecord( "1.xml" ), null );
         assertEquals( expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords() );
     }
 
     @Test
-    public void testAddRecordWithoutFileIdentifier()
+    public void testInsertRecordWithoutFileIdentifier()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
         int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
-        storedIsoRecords.addRecord( getRecord( "withoutFileIdentifier.xml" ) );
+        storedIsoRecords.insertRecord( getRecord( "withoutFileIdentifier.xml" ), null );
         assertEquals( expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords() );
     }
 
@@ -173,10 +173,10 @@ public class StoredISORecordsTest {
     public void testGetRecordsWithStartPositionWithoutQuery()
                             throws Exception {
         StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.addRecord( getRecord( "1.xml" ) );
+        storedRecords.insertRecord( getRecord( "1.xml" ), null );
         ISORecord expectedRecord = getRecord( "3.xml" );
-        storedRecords.addRecord( expectedRecord );
-        storedRecords.addRecord( getRecord( "2.xml" ) );
+        storedRecords.insertRecord( expectedRecord, null );
+        storedRecords.insertRecord( getRecord( "2.xml" ), null );
 
         int maxRecords = 1;
         MetadataQuery query = new MetadataQuery( null, null, null, null, 2, maxRecords );
@@ -190,11 +190,11 @@ public class StoredISORecordsTest {
     public void testGetRecordsWithStartPositionWithQuery()
                             throws Exception {
         StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.addRecord( getRecord( "1.xml" ) );
+        storedRecords.insertRecord( getRecord( "1.xml" ), null );
         // not matched by the filter!
-        storedRecords.addRecord( getRecord( "2.xml" ) );
+        storedRecords.insertRecord( getRecord( "2.xml" ), null );
         ISORecord expectedRecord = getRecord( "3.xml" );
-        storedRecords.addRecord( expectedRecord );
+        storedRecords.insertRecord( expectedRecord, null );
         Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "IKONOS 2" );
         Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
 
@@ -212,11 +212,11 @@ public class StoredISORecordsTest {
                             throws Exception {
         StoredISORecords storedRecords = new StoredISORecords();
         ISORecord record1 = getRecord( "3.xml" );
-        storedRecords.addRecord( record1 );
+        storedRecords.insertRecord( record1, null );
         ISORecord record2 = getRecord( "1.xml" );
-        storedRecords.addRecord( record2 );
+        storedRecords.insertRecord( record2, null );
         ISORecord record3 = getRecord( "2.xml" );
-        storedRecords.addRecord( record3 );
+        storedRecords.insertRecord( record3, null );
 
         MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 100 );
         MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
@@ -286,13 +286,63 @@ public class StoredISORecordsTest {
         storedIsoRecords.getRecords( query );
     }
 
+    /*
+     * Insert
+     */
+
+    @Test
+    public void testInsert()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        storedRecords.insertRecord( getRecord( "1.xml" ), null );
+        storedRecords.insertRecord( getRecord( "2.xml" ), null );
+        storedRecords.insertRecord( getRecord( "3.xml" ), null );
+
+        assertEquals( 3, storedRecords.getNumberOfStoredRecords() );
+    }
+
+    /*
+     * Delete
+     */
+
+    @Test
+    public void testDelete()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        storedRecords.insertRecord( getRecord( "1.xml" ), null );
+        storedRecords.insertRecord( getRecord( "2.xml" ), null );
+        ISORecord record = getRecord( "3.xml" );
+        storedRecords.insertRecord( record, null );
+
+        int numberOfStoredRecordsBeforeDelete = storedRecords.getNumberOfStoredRecords();
+        storedRecords.deleteRecord( record.getIdentifier() );
+        assertEquals( numberOfStoredRecordsBeforeDelete - 1, storedRecords.getNumberOfStoredRecords() );
+        Filter filter = null;
+        List<ISORecord> records = storedRecords.getRecords( filter );
+        for ( ISORecord storedRecord : records ) {
+            assertFalse( record.getIdentifier().equals( storedRecord.getIdentifier() ) );
+        }
+    }
+
+    @Test
+    public void testDeleteUnkown()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        storedRecords.insertRecord( getRecord( "1.xml" ), null );
+        storedRecords.insertRecord( getRecord( "2.xml" ), null );
+
+        int numberOfStoredRecordsBeforeDelete = storedRecords.getNumberOfStoredRecords();
+        storedRecords.deleteRecord( "Unknown" );
+        assertEquals( numberOfStoredRecordsBeforeDelete, storedRecords.getNumberOfStoredRecords() );
+    }
+
     private StoredISORecords getStoredIsoRecords()
                             throws Exception {
         StoredISORecords storedRecords = new StoredISORecords();
 
         List<ISORecord> allRecords = GetTestRecordsUtils.getAllRecords();
         for ( ISORecord record : allRecords ) {
-            storedRecords.addRecord( record );
+            storedRecords.insertRecord( record, null );
         }
         return storedRecords;
     }

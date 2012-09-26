@@ -95,7 +95,8 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
             LOG.error( msg, e );
             throw new ResourceInitException( msg, e );
         }
-        return new ISOMemoryMetadataStore( recordDirectories );
+        // TODO: transact 
+        return new ISOMemoryMetadataStore( recordDirectories, null );
     }
 
     @Override
