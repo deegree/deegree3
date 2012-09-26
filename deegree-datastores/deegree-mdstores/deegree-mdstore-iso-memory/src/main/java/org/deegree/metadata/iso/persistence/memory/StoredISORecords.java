@@ -217,12 +217,14 @@ public class StoredISORecords {
             return applyNullFilter( startPosition, maxRecords );
         }
         List<ISORecord> result = new ArrayList<ISORecord>( maxRecords );
-        int index = 1;
+        int matched = 1;
         for ( ISORecord record : identifierToRecord.values() ) {
-            if ( index >= startPosition && record.eval( filter ) ) {
-                result.add( record );
+            if ( record.eval( filter ) ) {
+                if ( matched >= startPosition ) {
+                    result.add( record );
+                }
+                matched++;
             }
-            index++;
             if ( result.size() >= maxRecords ) {
                 break;
             }

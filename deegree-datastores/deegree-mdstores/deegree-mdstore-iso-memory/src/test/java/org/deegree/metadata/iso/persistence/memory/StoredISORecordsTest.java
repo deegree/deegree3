@@ -208,6 +208,30 @@ public class StoredISORecordsTest {
     }
 
     @Test
+    public void testGetRecordsWithStartPositionWithMaxRecords()
+                            throws Exception {
+        StoredISORecords storedRecords = new StoredISORecords();
+        // not matched by the filter!
+        storedRecords.insertRecord( getRecord( "2.xml" ), null );
+        storedRecords.insertRecord( getRecord( "1.xml" ), null );
+        storedRecords.insertRecord( getRecord( "3.xml" ), null );
+        storedRecords.insertRecord( getRecord( "4.xml" ), null );
+
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "IKONOS 2" );
+        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+
+        Filter filter = new OperatorFilter( operator );
+        List<ISORecord> allMatchingRecords = storedRecords.getRecords( filter );
+
+        int maxRecords = 3;
+        int startPosition = 2;
+        MetadataQuery query = new MetadataQuery( null, null, filter, null, startPosition, maxRecords );
+        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
+        int expected = allMatchingRecords.size() - startPosition + 1;
+        assertEquals( expected, records.getRemaining() );
+    }
+
+    @Test
     public void testGetRecordsOrder()
                             throws Exception {
         StoredISORecords storedRecords = new StoredISORecords();
