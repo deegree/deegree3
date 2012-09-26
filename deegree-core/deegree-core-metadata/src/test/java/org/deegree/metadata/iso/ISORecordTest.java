@@ -38,18 +38,29 @@ package org.deegree.metadata.iso;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.FilteringXMLStreamWriter;
 import org.deegree.cs.CRSUtils;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -73,6 +84,47 @@ import org.junit.Test;
 public class ISORecordTest {
 
     private final static NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+
+    private static final URL DATASET = ISORecordTest.class.getResource( "full.xml" );
+
+    @Test
+    public void testFull()
+                            throws Exception {
+        XMLAdapter xml = new XMLAdapter( DATASET );
+        OMElement filterEl = xml.getRootElement();
+        byte[] bs = writeOut( filterEl, null );
+        IOUtils.write( bs, new FileOutputStream( "/tmp/full.xml" ) );
+    }
+
+    @Test
+    public void testBrief()
+                            throws Exception {
+        XMLAdapter xml = new XMLAdapter( DATASET );
+        OMElement filterEl = xml.getRootElement();
+        byte[] bs = writeOut( filterEl, ISORecord.briefFilterElementsXPath );
+        IOUtils.write( bs, new FileOutputStream( "/tmp/brief.xml" ) );
+    }
+
+    @Test
+    public void testSummary()
+                            throws Exception {
+        XMLAdapter xml = new XMLAdapter( DATASET );
+        OMElement filterEl = xml.getRootElement();
+        byte[] bs = writeOut( filterEl, ISORecord.summaryFilterElementsXPath );
+        IOUtils.write( bs, new FileOutputStream( "/tmp/summary.xml" ) );
+    }
+
+    private byte[] writeOut( OMElement filterEl, List<XPath> paths )
+                            throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
+        if ( paths != null ) {
+            writer = new FilteringXMLStreamWriter( writer, paths );
+        }
+        filterEl.serialize( writer );
+        writer.close();
+        return bos.toByteArray();
+    }
 
     @Test
     public void testInstantiationFromXMLStream()

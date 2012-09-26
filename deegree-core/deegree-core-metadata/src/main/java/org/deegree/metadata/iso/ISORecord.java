@@ -39,11 +39,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -60,6 +58,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.FilteringXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -117,74 +116,122 @@ public class ISORecord implements MetadataRecord {
 
     private ParsedProfileElement pElem;
 
-    private static String[] summaryLocalParts = new String[14];
-
-    private static String[] briefLocalParts = new String[9];
-
-    private static String[] briefSummaryLocalParts = new String[23];
-
     private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
-    private static XPath[] xpathAll = new XPath[1];
+    static List<XPath> summaryFilterElementsXPath = new ArrayList<XPath>();
+
+    static List<XPath> briefFilterElementsXPath = new ArrayList<XPath>();
 
     static {
 
-        xpathAll[0] = new XPath( "//child::text()", null );
+        NamespaceBindings ns = new NamespaceBindings();
+        ns.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
+        ns.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
 
-        summaryLocalParts[0] = "/gmd:MD_Metadata/gmd:dataSetURI";
-        summaryLocalParts[1] = "/gmd:MD_Metadata/gmd:locale";
-        summaryLocalParts[2] = "/gmd:MD_Metadata/gmd:spatialRepresentationInfo";
-        summaryLocalParts[3] = "/gmd:MD_Metadata/gmd:metadataExtensionInfo";
-        summaryLocalParts[4] = "/gmd:MD_Metadata/gmd:contentInfo";
-        summaryLocalParts[5] = "/gmd:MD_Metadata/gmd:portrayalCatalogueInfo";
-        summaryLocalParts[6] = "/gmd:MD_Metadata/gmd:metadataConstraints";
-        summaryLocalParts[7] = "/gmd:MD_Metadata/gmd:applicationSchemaInfo";
-        summaryLocalParts[8] = "/gmd:MD_Metadata/gmd:metadataMaintenance";
-        summaryLocalParts[9] = "/gmd:MD_Metadata/gmd:series";
-        summaryLocalParts[10] = "/gmd:MD_Metadata/gmd:describes";
-        summaryLocalParts[11] = "/gmd:MD_Metadata/gmd:propertyType";
-        summaryLocalParts[12] = "/gmd:MD_Metadata/gmd:featureType";
-        summaryLocalParts[13] = "/gmd:MD_Metadata/gmd:featureAttribute";
+        briefFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", ns ) );
+        briefFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode", ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:dateStamp/gco:DateTime", ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:DateTime",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language/gmd:LanguageCode",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:extentTypeCode/gco:Boolean",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal",
+                                                 ns ) );
+        briefFilterElementsXPath.add( new XPath(
+                                                 "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal",
+                                                 ns ) );
 
-        briefLocalParts[0] = "/gmd:MD_Metadata/gmd:language";
-        briefLocalParts[1] = "/gmd:MD_Metadata/gmd:characterSet";
-        briefLocalParts[2] = "/gmd:MD_Metadata/gmd:parentIdentifier";
-        briefLocalParts[3] = "/gmd:MD_Metadata/gmd:hierarchieLevelName";
-        briefLocalParts[4] = "/gmd:MD_Metadata/gmd:metadataStandardName";
-        briefLocalParts[5] = "/gmd:MD_Metadata/gmd:metadataStandardVersion";
-        briefLocalParts[6] = "/gmd:MD_Metadata/gmd:referenceSystemInfo";
-        briefLocalParts[7] = "/gmd:MD_Metadata/gmd:distributionInfo";
-        briefLocalParts[8] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
-        // metadatacharacterSet
-
-        briefSummaryLocalParts[0] = "/gmd:MD_Metadata/gmd:dataSetURI";
-        briefSummaryLocalParts[1] = "/gmd:MD_Metadata/gmd:locale";
-        briefSummaryLocalParts[2] = "/gmd:MD_Metadata/gmd:spatialRepresentationInfo";
-        briefSummaryLocalParts[3] = "/gmd:MD_Metadata/gmd:metadataExtensionInfo";
-        briefSummaryLocalParts[4] = "/gmd:MD_Metadata/gmd:contentInfo";
-        briefSummaryLocalParts[5] = "/gmd:MD_Metadata/gmd:portrayalCatalogueInfo";
-        briefSummaryLocalParts[6] = "/gmd:MD_Metadata/gmd:metadataConstraints";
-        briefSummaryLocalParts[7] = "/gmd:MD_Metadata/gmd:applicationSchemaInfo";
-        briefSummaryLocalParts[8] = "/gmd:MD_Metadata/gmd:metadataMaintenance";
-        briefSummaryLocalParts[9] = "/gmd:MD_Metadata/gmd:series";
-        briefSummaryLocalParts[10] = "/gmd:MD_Metadata/gmd:describes";
-        briefSummaryLocalParts[11] = "/gmd:MD_Metadata/gmd:propertyType";
-        briefSummaryLocalParts[12] = "/gmd:MD_Metadata/gmd:featureType";
-        briefSummaryLocalParts[13] = "/gmd:MD_Metadata/gmd:featureAttribute";
-        briefSummaryLocalParts[14] = "/gmd:MD_Metadata/gmd:language";
-        briefSummaryLocalParts[15] = "/gmd:MD_Metadata/gmd:characterSet";
-        briefSummaryLocalParts[16] = "/gmd:MD_Metadata/gmd:parentIdentifier";
-        briefSummaryLocalParts[17] = "/gmd:MD_Metadata/gmd:hierarchieLevelName";
-        briefSummaryLocalParts[18] = "/gmd:MD_Metadata/gmd:metadataStandardName";
-        briefSummaryLocalParts[19] = "/gmd:MD_Metadata/gmd:metadataStandardVersion";
-        briefSummaryLocalParts[20] = "/gmd:MD_Metadata/gmd:referenceSystemInfo";
-        briefSummaryLocalParts[21] = "/gmd:MD_Metadata/gmd:distributionInfo";
-        briefSummaryLocalParts[22] = "/gmd:MD_Metadata/gmd:dataQualityInfo";
+        summaryFilterElementsXPath.addAll( briefFilterElementsXPath );
+        summaryFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", ns ) );
+        summaryFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:characterSet/gmd:MD_CharacterSetCode", ns ) );
+        summaryFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:metadataStandardName/gco:CharacterString", ns ) );
+        summaryFilterElementsXPath.add( new XPath( "/gmd:MD_Metadata/gmd:metadataStandardVersion/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:codeSpace/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:version/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:facsimile/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:contactInstructions/gco:CharacterString",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:characterSet/gmd:MD_CharacterSetCode",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode",
+                                                   ns ) );
+        summaryFilterElementsXPath.add( new XPath(
+                                                   "/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL",
+                                                   ns ) );
     }
-
-    private static List<XPath> summaryFilterElementsXPath = removeElementsXPath( summaryLocalParts );
-
-    private static List<XPath> briefFilterElementsXPath = removeElementsXPath( briefSummaryLocalParts );
 
     /**
      * Creates a new {@link ISORecord} instance from the given XML stream.
@@ -383,27 +430,20 @@ public class ISORecord implements MetadataRecord {
     @Override
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException {
-        XMLStreamReader xmlStream = root.getXMLStreamReader();
-
         switch ( returnType ) {
         case brief:
-            XMLStreamUtils.skipStartDocument( xmlStream );
-            toISOBrief( writer, xmlStream );
+            toISOBrief( writer );
             break;
         case summary:
-            XMLStreamUtils.skipStartDocument( xmlStream );
-            toISOSummary( writer, xmlStream );
+            toISOSummary( writer );
             break;
         case full:
-            XMLStreamUtils.skipStartDocument( xmlStream );
-            XMLAdapter.writeElement( writer, xmlStream );
+            root.serialize( writer );
             break;
         default:
-            XMLStreamUtils.skipStartDocument( xmlStream );
-            toISOSummary( writer, xmlStream );
+            toISOSummary( writer );
             break;
         }
-
     }
 
     @Override
@@ -464,6 +504,7 @@ public class ISORecord implements MetadataRecord {
         return getParsedProfileElement().getReturnableProperties().getCreator();
     }
 
+    @Override
     public String getLanguage() {
         return getParsedProfileElement().getQueryableProperties().getLanguage();
     }
@@ -489,40 +530,17 @@ public class ISORecord implements MetadataRecord {
         return new XMLAdapter().getNodesAsStrings( root, xpath );
     }
 
-    private void toISOSummary( XMLStreamWriter writer, XMLStreamReader xmlStream )
+    private void toISOSummary( XMLStreamWriter writer )
                             throws XMLStreamException {
-
-        // XMLStreamReader filter = new NamedElementFilter( xmlStream, summaryFilterElements );
-        OMElement filter = new XPathElementFilter( root, summaryFilterElementsXPath );
-        filter.detach();
-        generateOutput( writer, filter.getXMLStreamReader() );
+        writer = new FilteringXMLStreamWriter( writer, summaryFilterElementsXPath );
+        generateOutput( writer, root.getXMLStreamReader() );
     }
 
-    private void toISOBrief( XMLStreamWriter writer, XMLStreamReader xmlStream )
+    private void toISOBrief( XMLStreamWriter writer )
                             throws XMLStreamException {
-        // XMLStreamReader filter = new NamedElementFilter( xmlStream, briefSummaryFilterElements );
-        OMElement filter = new XPathElementFilter( root, briefFilterElementsXPath );
-        filter.detach();
-        generateOutput( writer, filter.getXMLStreamReader() );
+        writer = new FilteringXMLStreamWriter( writer, briefFilterElementsXPath );
+        generateOutput( writer, root.getXMLStreamReader() );
 
-    }
-
-    private Set<QName> removeElementsISONamespace( String[] localParts ) {
-        Set<QName> removeElements = new HashSet<QName>();
-        for ( String l : localParts ) {
-            removeElements.add( new QName( "http://www.isotc211.org/2005/gmd", l, "gmd" ) );
-        }
-
-        return removeElements;
-
-    }
-
-    private static List<XPath> removeElementsXPath( String[] xpathExpr ) {
-        List<XPath> removeElements = new ArrayList<XPath>();
-        for ( String l : xpathExpr ) {
-            removeElements.add( new XPath( l, ns ) );
-        }
-        return removeElements;
     }
 
     private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
@@ -539,6 +557,7 @@ public class ISORecord implements MetadataRecord {
 
     }
 
+    @Override
     public void update( ValueReference propName, String s ) {
         AXIOMXPath path;
         Object node;
@@ -563,6 +582,7 @@ public class ISORecord implements MetadataRecord {
         el.setText( s );
     }
 
+    @Override
     public void update( ValueReference propName, OMElement newEl ) {
         AXIOMXPath path;
         Object rootNode;
@@ -599,6 +619,7 @@ public class ISORecord implements MetadataRecord {
         prevSib.insertSiblingAfter( newEl );
     }
 
+    @Override
     public void removeNode( ValueReference propName ) {
         AXIOMXPath path;
         Object rootNode;
