@@ -344,7 +344,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
             return new TypedObjectNode[0];
         List<TypedObjectNode> result = new ArrayList<TypedObjectNode>();
         for ( Constraint constraint : constraints ) {
-            result.add( new PrimitiveValue( constraint.getClassification() ) );
+            if ( constraint.getClassification() != null ) {
+                result.add( new PrimitiveValue( constraint.getClassification() ) );
+            }
         }
         return result.toArray( new TypedObjectNode[result.size()] );
     }
@@ -381,7 +383,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
         TypedObjectNode[] result = new TypedObjectNode[keywords.size()];
         int i = 0;
         for ( Keyword keyword : keywords ) {
-            result[i++] = new PrimitiveValue( keyword.getKeywordType() );
+            if ( keyword.getKeywordType() != null ) {
+                result[i++] = new PrimitiveValue( keyword.getKeywordType() );
+            }
         }
         return result;
     }
@@ -404,7 +408,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
         TypedObjectNode[] result = new TypedObjectNode[operatesOnDatas.size()];
         int i = 0;
         for ( OperatesOnData operatesOnData : operatesOnDatas ) {
-            result[i++] = new PrimitiveValue( operatesOnData.getOperatesOnName() );
+            if ( operatesOnData.getOperatesOnName() != null ) {
+                result[i++] = new PrimitiveValue( operatesOnData.getOperatesOnName() );
+            }
         }
         return result;
     }
@@ -415,7 +421,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
         TypedObjectNode[] result = new TypedObjectNode[operatesOnDatas.size()];
         int i = 0;
         for ( OperatesOnData operatesOnData : operatesOnDatas ) {
-            result[i++] = new PrimitiveValue( operatesOnData.getOperatesOnIdentifier() );
+            if ( operatesOnData.getOperatesOnIdentifier() != null ) {
+                result[i++] = new PrimitiveValue( operatesOnData.getOperatesOnIdentifier() );
+            }
         }
         return result;
     }
@@ -426,7 +434,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
         TypedObjectNode[] result = new TypedObjectNode[operatesOnDatas.size()];
         int i = 0;
         for ( OperatesOnData operatesOnData : operatesOnDatas ) {
-            result[i++] = new PrimitiveValue( operatesOnData.getOperatesOnId() );
+            if ( operatesOnData.getOperatesOnId() != null ) {
+                result[i++] = new PrimitiveValue( operatesOnData.getOperatesOnId() );
+            }
         }
         return result;
     }
@@ -437,7 +447,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
         TypedObjectNode[] result = new TypedObjectNode[formats.size()];
         int i = 0;
         for ( Format format : formats ) {
-            result[i++] = new PrimitiveValue( format.getName() );
+            if ( format.getName() != null ) {
+                result[i++] = new PrimitiveValue( format.getName() );
+            }
         }
         return result;
     }
@@ -465,7 +477,9 @@ public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
         TypedObjectNode[] result = new TypedObjectNode[crs.size()];
         int i = 0;
         for ( CRS c : crs ) {
-            result[i++] = new PrimitiveValue( c.getCrsId() );
+            if ( c.getCrsId() != null ) {
+                result[i++] = new PrimitiveValue( c.getCrsId() );
+            }
         }
         return result;
     }
