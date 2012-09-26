@@ -8,6 +8,7 @@
   <LayerStoreId>optionsmultiple</LayerStoreId>
   <LayerStoreId>timeout</LayerStoreId>
   <LayerStoreId>esri</LayerStoreId>
+  <LayerStoreId>esri2</LayerStoreId>
   <LayerStoreId>mywms</LayerStoreId>
   <LayerStoreId>deegree2</LayerStoreId>
   <LayerStoreId>parameters</LayerStoreId>
@@ -80,6 +81,14 @@
       <Identifier>umn</Identifier>
       <d:Title>umn</d:Title>
       <Layer layerStore='umn'>nsg</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>esri2</Identifier>
+      <d:Title>esri2</d:Title>
+      <Layer layerStore='esri2'>0</Layer>
+      <Layer layerStore='esri2'>1</Layer>
+      <Layer layerStore='esri2'>2</Layer>
+      <Layer layerStore='esri2'>3</Layer>
     </Theme>
   </Theme>
 

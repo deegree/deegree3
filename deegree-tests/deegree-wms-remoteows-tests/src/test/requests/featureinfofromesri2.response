@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:noNamespaceSchemaLocation="http://localhost:8080/deegree-wms-remoteows-tests/services?request=GetFeatureInfoSchema&amp;layers=esri2" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+  <gml:boundedBy>
+    <gml:null>missing</gml:null>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <feature fid="0_esri_1">
+      <AGZ>7102_7104_7106</AGZ>
+      <AGZ_NAME>Grenze des Kreises/Region</AGZ_NAME>
+      <GDB>G</GDB>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75009</OBJART>
+      <OBJART_TXT>AX_Gebietsgrenze</OBJART_TXT>
+      <OBJECTID>1</OBJECTID>
+      <LEN>8505,11129378144</LEN>
+      <_LAYERID_>0</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="0_esri_2">
+      <AGZ>7106</AGZ>
+      <AGZ_NAME>Grenze der Gemeinde</AGZ_NAME>
+      <GDB>G</GDB>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75009</OBJART>
+      <OBJART_TXT>AX_Gebietsgrenze</OBJART_TXT>
+      <OBJECTID>1750</OBJECTID>
+      <LEN>6048,08332258868</LEN>
+      <_LAYERID_>0</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="0_esri_3">
+      <AGZ>7106</AGZ>
+      <AGZ_NAME>Grenze der Gemeinde</AGZ_NAME>
+      <GDB>G</GDB>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75009</OBJART>
+      <OBJART_TXT>AX_Gebietsgrenze</OBJART_TXT>
+      <OBJECTID>1751</OBJECTID>
+      <LEN>10956,4123758356</LEN>
+      <_LAYERID_>0</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="0_esri_4">
+      <AGZ>7106</AGZ>
+      <AGZ_NAME>Grenze der Gemeinde</AGZ_NAME>
+      <GDB>G</GDB>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75009</OBJART>
+      <OBJART_TXT>AX_Gebietsgrenze</OBJART_TXT>
+      <OBJECTID>1749</OBJECTID>
+      <LEN>1968,0012087375</LEN>
+      <_LAYERID_>0</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="1_esri_1">
+      <KREIS>Pinneberg</KREIS>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75003</OBJART>
+      <OBJART_TXT>AX_KommunalesGebiet</OBJART_TXT>
+      <OBJECTID>11</OBJECTID>
+      <SCHLUESSEL>56</SCHLUESSEL>
+      <AREA>659504615,892122</AREA>
+      <LEN>149752,36194602</LEN>
+      <_LAYERID_>1</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="2_esri_1">
+      <AMT>Amt Haseldorf</AMT>
+      <AMTS_SCHL>5628</AMTS_SCHL>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75003</OBJART>
+      <OBJART_TXT>AX_KommunalesGebiet</OBJART_TXT>
+      <OBJECTID>195</OBJECTID>
+      <AREA>60986898,1182449</AREA>
+      <LEN>34482,1234822134</LEN>
+      <V_EINHEIT>amtsangehörige Gemeinde</V_EINHEIT>
+      <V_EINHEIT2></V_EINHEIT2>
+      <_LAYERID_>2</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="3_esri_1">
+      <GEMEINDE>Haseldorf</GEMEINDE>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75003</OBJART>
+      <OBJART_TXT>AX_KommunalesGebiet</OBJART_TXT>
+      <OBJECTID>472</OBJECTID>
+      <SCHLUESSEL>01056020</SCHLUESSEL>
+      <AREA>18051324,9274713</AREA>
+      <LEN>19176,2603683077</LEN>
+      <_LAYERID_>3</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="3_esri_2">
+      <GEMEINDE>Haselau</GEMEINDE>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75003</OBJART>
+      <OBJART_TXT>AX_KommunalesGebiet</OBJART_TXT>
+      <OBJECTID>766</OBJECTID>
+      <SCHLUESSEL>01056019</SCHLUESSEL>
+      <AREA>18863365,9595178</AREA>
+      <LEN>23568,6163601899</LEN>
+      <_LAYERID_>3</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+  <gml:featureMember>
+    <feature fid="3_esri_3">
+      <GEMEINDE>Hetlingen</GEMEINDE>
+      <LAND>SH</LAND>
+      <MODELLART>Basis-DLM</MODELLART>
+      <OBJART>75003</OBJART>
+      <OBJART_TXT>AX_KommunalesGebiet</OBJART_TXT>
+      <OBJECTID>642</OBJECTID>
+      <SCHLUESSEL>01056027</SCHLUESSEL>
+      <AREA>24072207,2312821</AREA>
+      <LEN>29682,2405680393</LEN>
+      <_LAYERID_>3</_LAYERID_>
+    </feature>
+  </gml:featureMember>
+</FeatureCollection>
