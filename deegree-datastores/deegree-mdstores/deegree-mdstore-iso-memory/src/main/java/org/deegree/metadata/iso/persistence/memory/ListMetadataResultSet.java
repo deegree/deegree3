@@ -52,7 +52,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
  */
 public class ListMetadataResultSet implements MetadataResultSet<ISORecord> {
 
-    private Integer requestedRecords = 0;
+    private int requestedRecords = 0;
 
     private Iterator<ISORecord> iterator;
 
@@ -77,21 +77,19 @@ public class ListMetadataResultSet implements MetadataResultSet<ISORecord> {
     @Override
     public void skip( int rows )
                             throws MetadataStoreException {
-        throw new UnsupportedOperationException( "skip is not mplemented yet" );
+        throw new UnsupportedOperationException( "skip is not implemented yet" );
     }
 
     @Override
-    public int getRemaining()
+    public synchronized int getRemaining()
                             throws MetadataStoreException {
         return foundRecords.size() - requestedRecords;
     }
 
     @Override
-    public ISORecord getRecord()
+    public synchronized ISORecord getRecord()
                             throws MetadataStoreException {
-        synchronized ( requestedRecords ) {
-            requestedRecords++;
-        }
+        requestedRecords++;
         return iterator.next();
     }
 

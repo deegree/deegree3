@@ -111,11 +111,12 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
                     break;
                 }
             }
+            metadataStore.releaseTransaction();
         } catch ( Exception e ) {
+            rollback();
             LOG.error( "Commit failed: ", e );
             throw new MetadataStoreException( e );
         }
-        metadataStore.releaseTransaction();
     }
 
     private void commitInsert( TransactionCandidate transactionCandidate )
@@ -166,8 +167,13 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
             transactionCandidate.record.serialize( writer, ReturnableElement.full );
         } finally {
             try {
-                writer.close();
-                stream.close();
+                if ( writer != null )
+                    writer.close();
+            } catch ( XMLStreamException e ) {
+            }
+            try {
+                if ( stream != null )
+                    stream.close();
             } catch ( IOException e ) {
             }
         }
@@ -249,7 +255,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
         }
     }
 
-    class TransactionCandidate {
+    static class TransactionCandidate {
 
         TransactionStatus status;
 
@@ -257,7 +263,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
 
         ISORecord record;
 
-        public TransactionCandidate( TransactionStatus status, String identifier, ISORecord record ) {
+        TransactionCandidate( TransactionStatus status, String identifier, ISORecord record ) {
             this.status = status;
             this.identifier = identifier;
             this.record = record;

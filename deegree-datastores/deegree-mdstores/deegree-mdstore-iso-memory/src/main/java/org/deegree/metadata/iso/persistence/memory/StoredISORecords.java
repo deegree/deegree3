@@ -158,10 +158,10 @@ public class StoredISORecords {
             String identifier = record.getIdentifier();
             LOG.info( "Add record number {} with fileIdentifier {}", getNumberOfStoredRecords() + 1, identifier );
             if ( identifier == null ) {
-                LOG.warn( "Ignore record {}, fileIdentifier is null.", file != null ? file.getName() : identifier );
+                LOG.warn( "Ignore record {}, fileIdentifier is null.", file != null ? file.getName() : "" );
                 return null;
             }
-            if ( identifierToRecord.containsValue( identifier ) ) {
+            if ( identifierToRecord.containsKey( identifier ) ) {
                 LOG.warn( "Overwrite record with fileIdentifier {}.", identifier );
             }
             identifierToRecord.put( identifier, (ISORecord) record );
