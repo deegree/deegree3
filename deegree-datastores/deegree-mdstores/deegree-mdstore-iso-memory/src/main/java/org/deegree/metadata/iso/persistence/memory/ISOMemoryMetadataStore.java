@@ -122,11 +122,15 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
         // only one transaction per time is accepted!
-        while ( activeTransaction != null ) {
+        while ( isTransactionActive() ) {
             // wait until active transaction is released!
         }
         activeTransaction = new ISOMemoryMetadataStoreTransaction( this, storedIsoRecords, transactionalDirectory );
         return activeTransaction;
+    }
+
+    private boolean isTransactionActive() {
+        return activeTransaction != null;
     }
 
     /**
