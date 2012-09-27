@@ -51,14 +51,6 @@ public class GeoReferencedPoint extends AbstractGRPoint {
 
     private double x;
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
     private double y;
 
     public GeoReferencedPoint( double x, double y ) {
