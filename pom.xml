@@ -9,9 +9,9 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre8</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.2-pre8</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre8</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/branches/3.2-pre8</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/3.2-pre8</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/branches/3.2-pre8</url>
   </scm>
 
   <repositories>
