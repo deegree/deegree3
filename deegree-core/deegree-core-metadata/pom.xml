@@ -12,13 +12,13 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.2-pre8</version>
+    <version>3.2-pre8.1</version>
   </parent>
 
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
+      <url>http://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>

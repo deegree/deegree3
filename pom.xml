@@ -3,21 +3,21 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.2-pre8</version>
+  <version>3.2-pre8.1</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre8</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.2-pre8</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre8</url>
+    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre8.1</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags/3.2-pre8.1</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/tags/3.2-pre8.1</url>
   </scm>
 
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
+      <url>http://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -30,18 +30,18 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://artefacts.deegree.org/libs-releases-local</url>
+      <url>http://repo.deegree.org/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
   <pluginRepositories>
     <pluginRepository>
       <id>deegree-plugin-repo</id>
-      <url>http://artefacts.deegree.org/repo</url>
+      <url>http://repo.deegree.org/content/groups/public</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
