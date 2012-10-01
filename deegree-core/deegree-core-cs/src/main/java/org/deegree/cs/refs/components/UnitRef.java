@@ -54,7 +54,7 @@ public class UnitRef extends CRSResourceRef<IUnit> implements Serializable, IUni
     private static final long serialVersionUID = -8013673655718092689L;
 
     /**
-     * Creates a reference to a {@link IUNit}
+     * Creates a reference to a {@link IUnit}
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
