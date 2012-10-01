@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.2-pre8.2-SNAPSHOT</version>
+    <version>3.2-pre8.3-SNAPSHOT</version>
   </parent>
 
   <repositories>
