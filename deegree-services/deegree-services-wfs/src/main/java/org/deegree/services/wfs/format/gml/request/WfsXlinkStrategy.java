@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class WfsXlinkStrategy implements GmlXlinkStrategy {
+public class WfsXlinkStrategy implements GmlXlinkStrategy {
 
     private static Logger LOG = LoggerFactory.getLogger( WfsXlinkStrategy.class );
 
@@ -81,8 +81,8 @@ class WfsXlinkStrategy implements GmlXlinkStrategy {
 
     private final Set<String> exportedIds = new HashSet<String>();
 
-    WfsXlinkStrategy( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate,
-                      GmlXlinkOptions resolveOptions ) {
+    public WfsXlinkStrategy( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible,
+                             String xlinkTemplate, GmlXlinkOptions resolveOptions ) {
         this.xmlStream = xmlStream;
         this.localReferencesPossible = localReferencesPossible;
         this.remoteXlinkTemplate = xlinkTemplate;
@@ -136,15 +136,15 @@ class WfsXlinkStrategy implements GmlXlinkStrategy {
         return false;
     }
 
-    Collection<GMLReference<?>> getAdditionalRefs() {
+    public Collection<GMLReference<?>> getAdditionalRefs() {
         return uriToRef.values();
     }
 
-    Map<GMLReference<?>, GmlXlinkOptions> getResolveStates() {
+    public Map<GMLReference<?>, GmlXlinkOptions> getResolveStates() {
         return refToResolveState;
     }
 
-    void clear() {
+    public void clear() {
         uriToRef = new LinkedHashMap<String, GMLReference<?>>();
         refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
     }
