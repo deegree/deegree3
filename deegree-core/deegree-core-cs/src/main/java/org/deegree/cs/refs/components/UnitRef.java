@@ -67,26 +67,32 @@ public class UnitRef extends CRSResourceRef<IUnit> implements Serializable, IUni
         super( resolver, uri, baseURL );
     }
 
+    @Override
     public boolean canConvert( IUnit other ) {
         return getReferencedObject().canConvert( other );
     }
 
+    @Override
     public double convert( double value, IUnit targetUnit ) {
         return getReferencedObject().convert( value, targetUnit );
     }
 
+    @Override
     public double toBaseUnits( double value ) {
         return getReferencedObject().toBaseUnits( value );
     }
 
+    @Override
     public double getScale() {
         return getReferencedObject().getScale();
     }
 
+    @Override
     public boolean isBaseType() {
         return getReferencedObject().isBaseType();
     }
 
+    @Override
     public IUnit getBaseType() {
         return getReferencedObject().getBaseType();
     }
