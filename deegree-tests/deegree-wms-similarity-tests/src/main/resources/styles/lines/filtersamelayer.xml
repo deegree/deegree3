@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<sld:StyledLayerDescriptor version="1.0.0" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:app="http://www.deegree.org/app">
+
+  <sld:NamedLayer>
+    <sld:Name>SGID500_Contours500Ft</sld:Name>
+    <sld:NamedStyle>
+      <sld:Name>default</sld:Name>
+    </sld:NamedStyle>
+  </sld:NamedLayer>
+
+  <sld:NamedLayer>
+    <sld:Name>SGID500_Contours500Ft</sld:Name>
+
+    <sld:UserStyle>
+      <sld:FeatureTypeStyle>
+        <sld:Rule>
+          <ogc:Filter>
+            <ogc:PropertyIsGreaterThan>
+              <ogc:PropertyName>app:ELEV</ogc:PropertyName>
+              <ogc:Literal>6000</ogc:Literal>
+            </ogc:PropertyIsGreaterThan>
+          </ogc:Filter>
+          <sld:LineSymbolizer>
+            <sld:Stroke>
+              <sld:SvgParameter name="stroke">#00ff00</sld:SvgParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+
+</sld:StyledLayerDescriptor>
