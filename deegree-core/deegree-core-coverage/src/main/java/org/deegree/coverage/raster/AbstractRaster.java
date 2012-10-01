@@ -379,12 +379,6 @@ public abstract class AbstractRaster extends AbstractCoverage {
             } else {
                 LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
             }
-        } catch ( UnknownCRSException e ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
-            } else {
-                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
-            }
         }
         return result;
 
@@ -395,6 +389,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * 
      * @return information about the possible sample resolutions.
      */
+    @Override
     public ResolutionInfo getResolutionInfo() {
         return this.resolutionInfo;
     }
