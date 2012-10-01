@@ -143,7 +143,7 @@ public abstract class RequestBase {
                         lays.put( name, list );
                     }
 
-                    if ( sRef.getName().isEmpty() ) {
+                    if ( sRef.getName() == null || sRef.getName().isEmpty() ) {
                         sRef = new StyleRef( "default" );
                     }
 

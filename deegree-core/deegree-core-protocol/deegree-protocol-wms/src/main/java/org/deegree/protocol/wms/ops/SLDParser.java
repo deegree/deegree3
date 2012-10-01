@@ -111,6 +111,7 @@ public class SLDParser {
                     skipElement( in );
                 }
 
+                boolean foundFilter = false;
                 if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
 
                     while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
@@ -128,6 +129,7 @@ public class SLDParser {
                             if ( in.getLocalName().equals( "Filter" ) ) {
                                 OperatorFilter filter = (OperatorFilter) Filter110XMLDecoder.parse( in );
                                 gm.addSldFilter( layerName, filter );
+                                foundFilter = true;
                             }
 
                             if ( in.getLocalName().equals( "Extent" ) ) {
@@ -155,6 +157,11 @@ public class SLDParser {
                     }
 
                     in.nextTag();
+                }
+
+                if ( !foundFilter ) {
+                    // else having the same layer multiple times with and without filter won't work properly
+                    gm.addSldFilter( layerName, null );
                 }
 
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
