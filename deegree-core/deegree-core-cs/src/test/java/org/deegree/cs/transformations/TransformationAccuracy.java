@@ -17,9 +17,8 @@ import org.slf4j.LoggerFactory;
 
 public abstract class TransformationAccuracy {
 
-
     private static Logger LOG = LoggerFactory.getLogger( TransformationAccuracy.class );
-    
+
     /**
      * Creates a {@link CoordinateTransformer} for the given coordinate system.
      * 
@@ -78,8 +77,7 @@ public abstract class TransformationAccuracy {
      * @throws AssertionError
      *             if one of the axis of the transformed point do not lie within the given epsilon range.
      */
-    private String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons, ICRS sourceCRS,
-                                   ICRS targetCRS )
+    String doAccuracyTest( Point3d sourcePoint, Point3d targetPoint, Point3d epsilons, ICRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
         assertNotNull( sourceCRS );
         assertNotNull( targetCRS );
@@ -159,7 +157,46 @@ public abstract class TransformationAccuracy {
         output.append( targetCRS.getCode().toString() );
         output.append( "'.\n" );
 
+        boolean forwardSuccess = doForwardTransformation( sourceCRS, targetCRS, source, target, forwardEpsilon, output );
+        boolean inverseSuccess = doInverseTransformation( sourceCRS, targetCRS, source, target, inverseEpsilon, output );
+
+        LOG.debug( output.toString() );
+        assertEquals( true, forwardSuccess );
+        assertEquals( true, inverseSuccess );
+
+    }
+
+    /**
+     * Do an forward and inverse accuracy test.
+     * 
+     * @param sourceCRS
+     * @param targetCRS
+     * @param source
+     * @param target
+     * @param forwardEpsilon
+     * @param inverseEpsilon
+     * @throws TransformationException
+     */
+    protected void doForward( ICRS sourceCRS, ICRS targetCRS, Point3d source, Point3d target, Point3d forwardEpsilon )
+                            throws TransformationException {
+        StringBuilder output = new StringBuilder();
+        output.append( "Transforming '" );
+        output.append( sourceCRS.getCode().toString() );
+        output.append( "' to '" );
+        output.append( targetCRS.getCode().toString() );
+        output.append( "'.\n" );
+
         // forward transform.
+        boolean forwardSuccess = doForwardTransformation( sourceCRS, targetCRS, source, target, forwardEpsilon, output );
+
+        LOG.debug( output.toString() );
+        assertEquals( true, forwardSuccess );
+
+    }
+
+    private boolean doForwardTransformation( ICRS sourceCRS, ICRS targetCRS, Point3d source, Point3d target,
+                                             Point3d forwardEpsilon, StringBuilder output )
+                            throws TransformationException {
         boolean forwardSuccess = true;
         try {
             output.append( "Forward transformation: " );
@@ -168,8 +205,12 @@ public abstract class TransformationAccuracy {
             output.append( ae.getLocalizedMessage() );
             forwardSuccess = false;
         }
+        return forwardSuccess;
+    }
 
-        // inverse transform.
+    private boolean doInverseTransformation( ICRS sourceCRS, ICRS targetCRS, Point3d source, Point3d target,
+                                             Point3d inverseEpsilon, StringBuilder output )
+                            throws TransformationException {
         boolean inverseSuccess = true;
         try {
             output.append( "\nInverse transformation: " );
@@ -178,10 +219,7 @@ public abstract class TransformationAccuracy {
             output.append( ae.getLocalizedMessage() );
             inverseSuccess = false;
         }
-        LOG.debug( output.toString() );
-        assertEquals( true, forwardSuccess );
-        assertEquals( true, inverseSuccess );
-
+        return inverseSuccess;
     }
 
 }
