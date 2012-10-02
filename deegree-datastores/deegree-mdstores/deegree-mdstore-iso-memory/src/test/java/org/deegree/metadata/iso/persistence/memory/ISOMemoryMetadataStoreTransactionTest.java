@@ -93,7 +93,6 @@ public class ISOMemoryMetadataStoreTransactionTest {
     @Test
     public void testInsert()
                             throws Exception {
-        System.out.println( "Directory is: " + directory );
         StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
         ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
         ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
@@ -110,7 +109,6 @@ public class ISOMemoryMetadataStoreTransactionTest {
     @Test
     public void testDelete()
                             throws Exception {
-        System.out.println( "Directory is: " + directory );
         StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
         ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
         ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
@@ -128,7 +126,6 @@ public class ISOMemoryMetadataStoreTransactionTest {
     @Test
     public void testUpdate()
                             throws Exception {
-        System.out.println( "Directory is: " + directory );
         StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
         ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
         ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
@@ -180,4 +177,5 @@ public class ISOMemoryMetadataStoreTransactionTest {
     private int getNumberOfRecordsInStoreDirectory() {
         return directory.listFiles().length;
     }
+
 }

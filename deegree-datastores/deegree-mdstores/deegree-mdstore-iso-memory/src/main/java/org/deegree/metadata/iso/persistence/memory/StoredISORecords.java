@@ -132,7 +132,7 @@ public class StoredISORecords {
     private void loadRecord( File recordFile ) {
         MetadataRecord record = MetadataRecordFactory.create( recordFile );
         if ( !( record instanceof ISORecord ) ) {
-            LOG.warn( "Ignore record {}: is not a ISO19139 record.", recordFile.getName() );
+            LOG.debug( "Ignore record {}: is not a ISO19139 record.", recordFile.getName() );
             return;
         }
         addOrUpdateRecord( (ISORecord) record, recordFile );
@@ -141,19 +141,19 @@ public class StoredISORecords {
     private String addOrUpdateRecord( ISORecord record, File file ) {
         try {
             String identifier = record.getIdentifier();
-            LOG.info( "Add record number {} with fileIdentifier {}", getNumberOfStoredRecords() + 1, identifier );
+            LOG.debug( "Add record number {} with fileIdentifier {}", getNumberOfStoredRecords() + 1, identifier );
             if ( identifier == null ) {
-                LOG.warn( "Ignore record {}, fileIdentifier is null.", file != null ? file.getName() : "" );
+                LOG.debug( "Ignore record {}, fileIdentifier is null.", file != null ? file.getName() : "" );
                 return null;
             }
             if ( identifierToRecord.containsKey( identifier ) ) {
-                LOG.warn( "Overwrite record with fileIdentifier {}.", identifier );
+                LOG.debug( "Overwrite record with fileIdentifier {}.", identifier );
             }
             identifierToRecord.put( identifier, record );
             identifierToFile.put( identifier, file );
             return identifier;
         } catch ( Exception e ) {
-            LOG.warn( "Ignore record {}, could not be parsed: {}.", file != null ? file.getName() : "", e.getMessage() );
+            LOG.debug( "Ignore record {}, could not be parsed: {}.", file != null ? file.getName() : "", e.getMessage() );
         }
         return null;
     }
