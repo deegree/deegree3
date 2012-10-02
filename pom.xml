@@ -7,7 +7,7 @@
   <version>3.2-pre11-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
-  <url>http://www.deegree.org/</url>
+<!--  <url>http://www.deegree.org/</url>-->
 
   <scm>
     <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</connection>
@@ -146,6 +146,29 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>2.9.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.1</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-ssh</artifactId>
+              <version>1.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <!-- reporting plugins -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.8.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.4</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1047,13 +1070,13 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-site-plugin</artifactId>
-            <version>3.1</version>
             <configuration>
+              <detectLinks>false</detectLinks>
+              <detectOfflineLinks>false</detectOfflineLinks>
               <reportPlugins>
                 <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
-                  <version>2.8</version>
                   <configuration>
                     <maxmemory>512m</maxmemory>
                   </configuration>
@@ -1061,20 +1084,12 @@
                 <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-project-info-reports-plugin</artifactId>
-                  <version>2.4</version>
                   <configuration>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                   </configuration>
                 </plugin>
               </reportPlugins>
             </configuration>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>1.0</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
@@ -1120,7 +1135,7 @@
     </developer>
     <developer>
       <name>Lyn Goltz</name>
-      <email>buesching@lat-lon.de</email>
+      <email>goltz@lat-lon.de</email>
     </developer>
   </developers>
 
