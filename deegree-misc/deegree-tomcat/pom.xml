@@ -61,7 +61,7 @@
     </plugins>
   </build>
 
-  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
+  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-187) -->
   <profiles>
     <profile>
       <id>activate-dependency-plugin</id>
