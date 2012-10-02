@@ -37,15 +37,10 @@ package org.deegree.metadata.iso.persistence.memory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.metadata.MetadataRecord;
@@ -84,37 +79,27 @@ public class StoredISORecords {
      * 
      * @param recordDirectories
      *            directories to read records from
-     * @throws ResourceInitException
-     *             if a directory could not be read
      */
-    StoredISORecords( List<URL> recordDirectories ) throws ResourceInitException {
+    StoredISORecords( List<File> recordDirectories ) {
         addRecords( recordDirectories );
     }
 
-    private void addRecords( List<URL> recordDirectories )
-                            throws ResourceInitException {
-        for ( URL url : recordDirectories ) {
-            loadRecords( url );
+    private void addRecords( List<File> recordDirectories ) {
+        for ( File dir : recordDirectories ) {
+            loadRecords( dir );
         }
     }
 
-    private void loadRecords( URL url )
-                            throws ResourceInitException {
-        try {
-            File recordDirectory = new File( url.toURI() );
-            File[] records = recordDirectory.listFiles( new FilenameFilter() {
-                @Override
-                public boolean accept( File dir, String name ) {
-                    return name.endsWith( ".xml" );
-                }
-            } );
-            for ( File record : records ) {
-                loadRecord( record );
+    private void loadRecords( File recordDirectory ) {
+        File[] records = recordDirectory.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                return name.endsWith( ".xml" );
             }
-        } catch ( URISyntaxException e ) {
-            throw new ResourceInitException( "Could not read records from " + url + ": " + e.getMessage(), e );
+        } );
+        for ( File record : records ) {
+            loadRecord( record );
         }
-
     }
 
     /**
@@ -164,7 +149,7 @@ public class StoredISORecords {
             if ( identifierToRecord.containsKey( identifier ) ) {
                 LOG.warn( "Overwrite record with fileIdentifier {}.", identifier );
             }
-            identifierToRecord.put( identifier, (ISORecord) record );
+            identifierToRecord.put( identifier, record );
             identifierToFile.put( identifier, file );
             return identifier;
         } catch ( Exception e ) {
@@ -178,10 +163,9 @@ public class StoredISORecords {
      * 
      * @param idList
      *            may be empty but never null never <code>null</code>
-     * @param recordTypeNames
      * @return the records with the passed ids,may be empty but never <code>null</code>
      */
-    public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames ) {
+    public MetadataResultSet<ISORecord> getRecordById( List<String> idList ) {
         if ( idList == null ) {
             throw new IllegalArgumentException( "List with ids must not be null!" );
         }

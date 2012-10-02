@@ -94,11 +94,10 @@ public class ISOMemoryMetadataStoreTransactionTest {
     public void testInsert()
                             throws Exception {
         System.out.println( "Directory is: " + directory );
-        URL dir = directory.toURI().toURL();
-        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( dir ) );
+        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
         ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
         ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
-                                                                                               storedRecords, dir );
+                                                                                               storedRecords, directory );
         int beforeInsert = storedRecords.getNumberOfStoredRecords();
         ISORecord record = GetTestRecordsUtils.getRecord( "toInsert.xml" );
         InsertOperation insert = new InsertOperation( Collections.singletonList( record ), null, null );
@@ -112,11 +111,10 @@ public class ISOMemoryMetadataStoreTransactionTest {
     public void testDelete()
                             throws Exception {
         System.out.println( "Directory is: " + directory );
-        URL dir = directory.toURI().toURL();
-        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( dir ) );
+        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
         ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
         ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
-                                                                                               storedRecords, dir );
+                                                                                               storedRecords, directory );
         int beforeInsert = storedRecords.getNumberOfStoredRecords();
         ISORecord record = GetTestRecordsUtils.getRecord( "1.xml" );
         Filter filter = getIdFilter( record.getIdentifier() );
@@ -131,11 +129,10 @@ public class ISOMemoryMetadataStoreTransactionTest {
     public void testUpdate()
                             throws Exception {
         System.out.println( "Directory is: " + directory );
-        URL dir = directory.toURI().toURL();
-        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( dir ) );
+        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
         ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
         ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
-                                                                                               storedRecords, dir );
+                                                                                               storedRecords, directory );
 
         ISORecord updateRecord = GetTestRecordsUtils.getRecord( "toUpdate.xml" );
         String expectedKeyword = getKeyword( updateRecord );

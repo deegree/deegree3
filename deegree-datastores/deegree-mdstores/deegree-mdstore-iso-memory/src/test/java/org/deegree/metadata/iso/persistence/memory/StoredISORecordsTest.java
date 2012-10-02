@@ -105,8 +105,7 @@ public class StoredISORecordsTest {
     public void testGetRecordById()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( singletonList( "f90258d9a412aa5f3ba679b4997bb176" ),
-                                                                                       null );
+        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( singletonList( "f90258d9a412aa5f3ba679b4997bb176" ) );
 
         assertTrue( recordResultSet.next() );
         assertNotNull( recordResultSet.getRecord() );
@@ -117,8 +116,7 @@ public class StoredISORecordsTest {
     public void testGetRecordByIdWithUnknownId()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( singletonList( "UNKNOWN_ID" ),
-                                                                                       null );
+        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( singletonList( "UNKNOWN_ID" ) );
 
         assertFalse( recordResultSet.next() );
     }
@@ -130,7 +128,7 @@ public class StoredISORecordsTest {
         List<String> ids = new ArrayList<String>();
         ids.add( "f90258d9a412aa5f3ba679b4997bb176" );
         ids.add( "15c1c1bbe5b4409c2fe10639bb54330f" );
-        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( ids, null );
+        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( ids );
 
         assertTrue( recordResultSet.next() );
         assertNotNull( recordResultSet.getRecord() );
@@ -143,7 +141,7 @@ public class StoredISORecordsTest {
     public void testGetRecordByIdNullList()
                             throws Exception {
         StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        storedIsoRecords.getRecordById( null, null );
+        storedIsoRecords.getRecordById( null );
     }
 
     /*

@@ -66,6 +66,7 @@ public class ListMetadataResultSet implements MetadataResultSet<ISORecord> {
     @Override
     public void close()
                             throws MetadataStoreException {
+        // nothing to do
     }
 
     @Override

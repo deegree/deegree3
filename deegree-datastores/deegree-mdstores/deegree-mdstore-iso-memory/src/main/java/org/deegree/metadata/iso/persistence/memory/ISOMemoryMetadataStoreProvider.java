@@ -37,6 +37,7 @@ package org.deegree.metadata.iso.persistence.memory;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -78,8 +79,8 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
     @Override
     public MetadataStore<ISORecord> create( URL configURL )
                             throws ResourceInitException {
-        List<URL> recordDirectories = new ArrayList<URL>();
-        URL insertDirectory = null;
+        List<File> recordDirectories = new ArrayList<File>();
+        File insertDirectory = null;
         try {
             ISOMemoryMetadataStoreConfig config = (ISOMemoryMetadataStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
                                                                                                        CONFIG_SCHEMA,
@@ -89,10 +90,12 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
             resolver.setSystemId( configURL.toString() );
             List<String> isoRecordDirectories = config.getISORecordDirectory();
             for ( String isoRecordDirectory : isoRecordDirectories ) {
-                recordDirectories.add( resolver.resolve( isoRecordDirectory ) );
+                recordDirectories.add( new File( resolver.resolve( isoRecordDirectory ).toURI() ) );
             }
             if ( config.getInsertDirectory() != null ) {
-                insertDirectory = resolver.resolve( config.getInsertDirectory() );
+                insertDirectory = new File( resolver.resolve( config.getInsertDirectory() ).toURI() );
+            } else {
+                insertDirectory = recordDirectories.get( 0 );
             }
         } catch ( Exception e ) {
             String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
@@ -103,6 +106,7 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
         return new ISOMemoryMetadataStore( recordDirectories, insertDirectory );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};

@@ -41,8 +41,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +62,10 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
 /**
- * Implementation of the {@link MetadataStoreTransaction} to handle transactions.
+ * {@link MetadataStoreTransaction} for the {@link ISOMemoryMetadataStore}.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
@@ -79,19 +78,19 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
         UPDATE, DELETE, INSERT
     }
 
-    private ISOMemoryMetadataStore metadataStore;
+    private final ISOMemoryMetadataStore metadataStore;
 
-    private StoredISORecords storedRecords;
+    private final StoredISORecords storedRecords;
 
-    private URL transactionalDirectory;
+    private final File insertDirectory;
 
-    private List<TransactionCandidate> transactionCandidates = new ArrayList<TransactionCandidate>();
+    private final List<TransactionCandidate> transactionCandidates = new ArrayList<TransactionCandidate>();
 
     public ISOMemoryMetadataStoreTransaction( ISOMemoryMetadataStore metadataStore, StoredISORecords storedRecords,
-                                              URL transactionalDirectory ) {
+                                              File transactionalDirectory ) {
         this.metadataStore = metadataStore;
         this.storedRecords = storedRecords;
-        this.transactionalDirectory = transactionalDirectory;
+        this.insertDirectory = transactionalDirectory;
     }
 
     @Override
@@ -120,25 +119,21 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
     }
 
     private void commitInsert( TransactionCandidate transactionCandidate )
-                            throws URISyntaxException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         File recordFile = null;
-        if ( transactionalDirectory != null ) {
+        if ( insertDirectory != null ) {
             recordFile = writeFile( transactionCandidate, null );
         }
         storedRecords.insertRecord( transactionCandidate.record, recordFile );
     }
 
     private void commitUpdate( TransactionCandidate transactionCandidate )
-                            throws URISyntaxException, XMLStreamException, FactoryConfigurationError,
-                            MetadataStoreException, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, MetadataStoreException, IOException {
         File recordFile = null;
-        if ( transactionalDirectory != null ) {
-            File fileToUpdate = storedRecords.getFile( transactionCandidate.identifier );
-            deleteFile( TransactionStatus.UPDATE, fileToUpdate );
-            recordFile = writeFile( transactionCandidate, fileToUpdate );
-        }
+        File fileToUpdate = storedRecords.getFile( transactionCandidate.identifier );
+        deleteFile( TransactionStatus.UPDATE, fileToUpdate );
+        recordFile = writeFile( transactionCandidate, fileToUpdate );
         storedRecords.deleteRecord( transactionCandidate.identifier );
-        System.out.println( transactionCandidate.record.getParsedElement().getQueryableProperties().getKeywords().get( 0 ).getKeywords().get( 0 ) );
         storedRecords.insertRecord( transactionCandidate.record, recordFile );
     }
 
@@ -150,10 +145,9 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
     }
 
     private File writeFile( TransactionCandidate transactionCandidate, File fileToWrite )
-                            throws URISyntaxException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         if ( fileToWrite == null ) {
-            fileToWrite = new File( new File( transactionalDirectory.toURI() ), transactionCandidate.identifier
-                                                                                + ".xml" );
+            fileToWrite = new File( insertDirectory, transactionCandidate.identifier + ".xml" );
         }
         if ( !fileToWrite.exists() ) {
             boolean created = fileToWrite.createNewFile();
@@ -170,11 +164,13 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
                 if ( writer != null )
                     writer.close();
             } catch ( XMLStreamException e ) {
+                // ignore when closing
             }
             try {
                 if ( stream != null )
                     stream.close();
             } catch ( IOException e ) {
+                // ignore when closing
             }
         }
         return fileToWrite;

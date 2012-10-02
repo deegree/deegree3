@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.memory;
 
-import java.net.URL;
+import java.io.File;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -60,11 +60,11 @@ import org.deegree.protocol.csw.MetadataStoreException;
  */
 public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 
-    private StoredISORecords storedIsoRecords;
+    private final StoredISORecords storedIsoRecords;
 
     private MetadataStoreTransaction activeTransaction = null;
 
-    private URL transactionalDirectory;
+    private final File insertDirectory;
 
     /**
      * 
@@ -72,11 +72,9 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
      *            never <code>null</code> but may be empty when no directories exists
      * @param transactionalDirectory
      *            directory to store inserted records, can be <code>null</code> if transactions are not allowed
-     * @throws ResourceInitException
      */
-    public ISOMemoryMetadataStore( List<URL> recordDirectories, URL transactionalDirectory )
-                            throws ResourceInitException {
-        this.transactionalDirectory = transactionalDirectory;
+    public ISOMemoryMetadataStore( List<File> recordDirectories, File transactionalDirectory ) {
+        this.insertDirectory = transactionalDirectory;
         storedIsoRecords = new StoredISORecords( recordDirectories );
     }
 
@@ -115,7 +113,7 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
-        return storedIsoRecords.getRecordById( idList, recordTypeNames );
+        return storedIsoRecords.getRecordById( idList );
     }
 
     @Override
@@ -125,7 +123,7 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
         while ( isTransactionActive() ) {
             // wait until active transaction is released!
         }
-        activeTransaction = new ISOMemoryMetadataStoreTransaction( this, storedIsoRecords, transactionalDirectory );
+        activeTransaction = new ISOMemoryMetadataStoreTransaction( this, storedIsoRecords, insertDirectory );
         return activeTransaction;
     }
 
