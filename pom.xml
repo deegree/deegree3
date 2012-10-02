@@ -218,6 +218,7 @@
         </executions>
         <configuration>
           <revisionOnScmFailure>${buildTimestamp}</revisionOnScmFailure>
+          <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
         </configuration>
       </plugin>
       <plugin>
