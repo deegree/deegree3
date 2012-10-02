@@ -41,7 +41,6 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.Geometry;
 
 /**
  * {@link ElementNode} that wraps a {@link GMLObject} and it's parent.
