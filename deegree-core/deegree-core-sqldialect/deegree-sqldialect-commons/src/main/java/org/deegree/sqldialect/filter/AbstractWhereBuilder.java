@@ -332,7 +332,7 @@ public abstract class AbstractWhereBuilder {
 
         if ( op.getMatchAction() != null && op.getMatchAction() != MatchAction.ANY ) {
             LOG.warn( "Mapping of operators with matchAction=" + op.getMatchAction()
-                      + "to SQL is not implemented (and probably not possible)." );
+                      + " to SQL is not implemented (and probably not possible)." );
         }
 
         switch ( op.getSubType() ) {
