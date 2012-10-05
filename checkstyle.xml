@@ -10,11 +10,11 @@
     <module name='CovariantEquals' />
     <module name='ClassDataAbstractionCoupling' />
     <module name='NPathComplexity' />
-    <module name='NewlineAtEndOfFile' />
     <module name='RedundantImport' />
     <module name='UnusedImports' />
     <module name='RedundantModifier' />
     <module name='RedundantThrows' />
-    <module name='FileLength' />
   </module>
+  <module name='FileLength' />
+  <module name='NewlineAtEndOfFile' />
 </module>
