@@ -11,7 +11,7 @@
   </gml:description>
   <gml:name>CITE/WFS-1.1</gml:name>
   <gml:boundedBy>
-    <gml:Envelope srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
+    <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
       <gml:lowerCorner>34.94 -10.52</gml:lowerCorner>
       <gml:upperCorner>71.96 32.19</gml:upperCorner>
     </gml:Envelope>
@@ -98,7 +98,7 @@
       <gml:description>description-f005</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f005</gml:name>
       <sf:multiPointProperty>
-        <gml:MultiPoint srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
+        <gml:MultiPoint srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:pointMember>
             <gml:Point><gml:pos>70.83 29.86</gml:pos></gml:Point>
           </gml:pointMember>
@@ -132,7 +132,7 @@
             </gml:LineString>
           </gml:curveMember>
           <gml:curveMember>
-            <gml:LineString srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
+            <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
               <gml:posList>53.265 -5.188 54.354 -4.775 52.702 -4.288 53.611 -4.107 55.823 -4.010</gml:posList>
             </gml:LineString>
                   </gml:curveMember>
@@ -259,7 +259,7 @@
       <sf:multiSurfaceProperty>
         <gml:MultiSurface>
           <gml:surfaceMember>
-            <gml:Polygon srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
+            <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
               <gml:description>Donec vulputate leo cursus magna.</gml:description>
               <gml:exterior>
                 <gml:LinearRing>
@@ -582,14 +582,15 @@
     </sf:LinkedFeature>
   </gml:featureMember>
 
-  <!-- OPTIONAL, there is a test expecting an error on not finding the reference -->
-  <!-- gml:featureMember>
+    <!-- Inserting this feature is optional. If the WFS refuses to insert the feature with respect to the invalid xlink,
+         this behaviour will be checked by the scripts if the feature is not contained in the WFS at test time.  -->
+  <gml:featureMember>
     <sf:LinkedFeature gml:id="f209">
       <gml:description>description-f209</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f209</gml:name>
       <sf:reference xlink:type="simple" xlink:href="#_6c566516-a435-11dc-8314-0800200c9a66" />
     </sf:LinkedFeature>
-  </gml:featureMember-->
+  </gml:featureMember>
 
   <gml:featureMember>
     <sf:LinkedFeature gml:id="f210">
@@ -598,6 +599,5 @@
       <sf:reference xlink:type="simple" xlink:href="#f206" />
     </sf:LinkedFeature>
   </gml:featureMember>
-
 
 </gml:FeatureCollection>
