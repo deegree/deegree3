@@ -38,11 +38,11 @@ package org.deegree.protocol.sos.getobservation;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.PropertyFilter;
-import org.deegree.protocol.sos.filter.ResultFilter;
-import org.deegree.protocol.sos.filter.SpatialFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
+import org.deegree.observation.filter.ProcedureFilter;
+import org.deegree.observation.filter.PropertyFilter;
+import org.deegree.observation.filter.ResultFilter;
+import org.deegree.observation.filter.SpatialFilter;
+import org.deegree.observation.filter.TimeFilter;
 
 /**
  * 

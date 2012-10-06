@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
+package org.deegree.observation.filter;
 
 import java.util.LinkedList;
 import java.util.List;

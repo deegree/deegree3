@@ -56,13 +56,13 @@ import org.deegree.filter.comparison.ComparisonOperator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.observation.filter.ProcedureFilter;
+import org.deegree.observation.filter.PropertyFilter;
+import org.deegree.observation.filter.ResultFilter;
+import org.deegree.observation.filter.SpatialBBOXFilter;
+import org.deegree.observation.filter.SpatialFilter;
+import org.deegree.observation.filter.TimeFilter;
 import org.deegree.protocol.sos.SOSRequest100XMLAdapter;
-import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.PropertyFilter;
-import org.deegree.protocol.sos.filter.ResultFilter;
-import org.deegree.protocol.sos.filter.SpatialBBOXFilter;
-import org.deegree.protocol.sos.filter.SpatialFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
 import org.slf4j.Logger;
 
 /**

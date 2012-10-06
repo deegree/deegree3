@@ -33,9 +33,8 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
+package org.deegree.observation.filter;
 
-import org.deegree.geometry.Envelope;
 
 /**
  *
@@ -46,21 +45,6 @@ import org.deegree.geometry.Envelope;
  * @version $Revision$, $Date$
  *
  */
-public class SpatialBBOXFilter implements SpatialFilter {
-
-    private final Envelope bbox;
-
-    /**
-     * @param bbox
-     */
-    public SpatialBBOXFilter( Envelope bbox ) {
-        this.bbox = bbox;
-    }
-
-    /**
-     * @return the bbox
-     */
-    public Envelope getBBOX() {
-        return bbox;
-    }
+public interface TimeFilter extends Filter {
+    // marker interface
 }

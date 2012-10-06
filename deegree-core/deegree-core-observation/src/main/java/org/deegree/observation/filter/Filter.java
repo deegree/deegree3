@@ -33,9 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
-
-import java.util.Date;
+package org.deegree.observation.filter;
 
 /**
  *
@@ -46,38 +44,6 @@ import java.util.Date;
  * @version $Revision$, $Date$
  *
  */
-public class BeginFilter implements TimeFilter {
-    private final Date begin;
-    private final boolean inclusiveBegin;
-
-    /**
-     * @param begin
-     */
-    public BeginFilter( Date begin ) {
-        this.begin = begin;
-        this.inclusiveBegin = false;
-    }
-
-    /**
-     * @param begin
-     * @param inclusiveBegin if the date is included
-     */
-    public BeginFilter( Date begin, boolean inclusiveBegin ) {
-        this.begin = begin;
-        this.inclusiveBegin = inclusiveBegin;
-    }
-
-    /**
-     * @return the begin date
-     */
-    public Date getBegin() {
-        return begin;
-    }
-
-    /**
-     * @return true if the begin date is included
-     */
-    public boolean isInclusiveBegin() {
-        return inclusiveBegin;
-    }
+public interface Filter {
+    // marker interface
 }

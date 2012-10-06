@@ -33,10 +33,15 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.time;
+package org.deegree.observation.time;
+
+import java.util.Date;
 
 /**
+ * This class stores a single time.
  *
+ * <p>
+ * A {@link TimeInstant} object is immutable.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -44,6 +49,20 @@ package org.deegree.protocol.sos.time;
  * @version $Revision$, $Date$
  *
  */
-public interface SamplingTime {
-    // marker interface
+public class TimeInstant implements SamplingTime {
+    private final Date time;
+
+    /**
+     * @param time
+     */
+    public TimeInstant( Date time ) {
+        this.time = time;
+    }
+
+    /**
+     * @return the time
+     */
+    public Date getTime() {
+        return time;
+    }
 }

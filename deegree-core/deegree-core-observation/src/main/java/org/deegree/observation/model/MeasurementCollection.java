@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.protocol.sos.time.TimePeriod;
+import org.deegree.observation.time.TimePeriod;
 
 /**
  * This class is a collection of {@link Measurement}s.

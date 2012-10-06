@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.tom.datetime.ISO8601Converter;
-import org.deegree.protocol.sos.time.TimeInstant;
+import org.deegree.observation.time.TimeInstant;
 
 /**
  * This {@link Measurement} shares the procedure, featureOfInterest and observedProperty with other measurements via a

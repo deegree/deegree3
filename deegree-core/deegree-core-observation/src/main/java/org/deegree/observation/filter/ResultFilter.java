@@ -33,7 +33,9 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
+package org.deegree.observation.filter;
+
+import org.deegree.filter.comparison.ComparisonOperator;
 
 /**
  *
@@ -44,20 +46,22 @@ package org.deegree.protocol.sos.filter;
  * @version $Revision$, $Date$
  *
  */
-public class ProcedureFilter implements Filter {
-    private final String procedure;
+public class ResultFilter implements Filter {
+
+    private final ComparisonOperator filter;
 
     /**
-     * @param procedure
+     * @param op
      */
-    public ProcedureFilter( String procedure ) {
-        this.procedure = procedure;
+    public ResultFilter( ComparisonOperator op ) {
+        this.filter = op;
     }
 
     /**
-     * @return the procedure name
+     * @return the filter
      */
-    public String getProcedureName() {
-        return procedure;
+    public ComparisonOperator getOperator() {
+        return filter;
     }
+
 }

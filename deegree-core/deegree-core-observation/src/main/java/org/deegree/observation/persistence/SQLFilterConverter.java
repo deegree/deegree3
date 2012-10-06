@@ -37,10 +37,10 @@ package org.deegree.observation.persistence;
 
 import java.util.List;
 
+import org.deegree.observation.filter.ProcedureFilter;
+import org.deegree.observation.filter.ResultFilter;
+import org.deegree.observation.filter.TimeFilter;
 import org.deegree.observation.model.Offering;
-import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.ResultFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
 
 /**
  * 

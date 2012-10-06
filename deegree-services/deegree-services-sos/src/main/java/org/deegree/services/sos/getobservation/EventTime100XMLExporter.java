@@ -40,10 +40,10 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.sos.time.IndeterminateTime;
-import org.deegree.protocol.sos.time.SamplingTime;
-import org.deegree.protocol.sos.time.TimeInstant;
-import org.deegree.protocol.sos.time.TimePeriod;
+import org.deegree.observation.time.IndeterminateTime;
+import org.deegree.observation.time.SamplingTime;
+import org.deegree.observation.time.TimeInstant;
+import org.deegree.observation.time.TimePeriod;
 
 /**
  * The <code>EventTime100XMLExporter</code> class TODO

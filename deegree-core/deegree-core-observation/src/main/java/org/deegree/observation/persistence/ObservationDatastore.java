@@ -38,11 +38,11 @@ package org.deegree.observation.persistence;
 import java.util.List;
 
 import org.deegree.commons.config.Resource;
+import org.deegree.observation.filter.FilterCollection;
 import org.deegree.observation.model.Observation;
 import org.deegree.observation.model.Offering;
 import org.deegree.observation.model.Property;
-import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.time.SamplingTime;
+import org.deegree.observation.time.SamplingTime;
 
 /**
  * This is the interface for a storage of observations.

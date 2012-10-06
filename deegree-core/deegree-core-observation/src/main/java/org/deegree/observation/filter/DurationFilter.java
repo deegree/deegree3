@@ -33,15 +33,12 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.time;
+package org.deegree.observation.filter;
 
 import java.util.Date;
 
 /**
- * This class stores a single time.
  *
- * <p>
- * A {@link TimeInstant} object is immutable.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -49,20 +46,61 @@ import java.util.Date;
  * @version $Revision$, $Date$
  *
  */
-public class TimeInstant implements SamplingTime {
-    private final Date time;
+public class DurationFilter implements TimeFilter {
+    private final Date begin;
+    private final boolean inclusiveBegin;
+    private final Date end;
+    private final boolean inclusiveEnd;
 
     /**
-     * @param time
+     * @param begin
+     * @param end
      */
-    public TimeInstant( Date time ) {
-        this.time = time;
+    public DurationFilter( Date begin, Date end ) {
+        this.begin = begin;
+        this.end = end;
+        this.inclusiveBegin = false;
+        this.inclusiveEnd = false;
     }
 
     /**
-     * @return the time
+     * @param begin
+     * @param inclusiveBegin if the date is included
+     * @param end
+     * @param inclusiveEnd if the date is included
      */
-    public Date getTime() {
-        return time;
+    public DurationFilter( Date begin, boolean inclusiveBegin, Date end, boolean inclusiveEnd ) {
+        this.begin = begin;
+        this.inclusiveBegin = inclusiveBegin;
+        this.end = end;
+        this.inclusiveEnd = inclusiveEnd;
+    }
+
+    /**
+     * @return the begin date
+     */
+    public Date getBegin() {
+        return begin;
+    }
+
+    /**
+     * @return true if the begin date in included
+     */
+    public boolean isInclusiveBegin() {
+        return inclusiveBegin;
+    }
+
+    /**
+     * @return the end date
+     */
+    public Date getEnd() {
+        return end;
+    }
+
+    /**
+     * @return true if the end date in included
+     */
+    public boolean isInclusiveEnd() {
+        return inclusiveEnd;
     }
 }

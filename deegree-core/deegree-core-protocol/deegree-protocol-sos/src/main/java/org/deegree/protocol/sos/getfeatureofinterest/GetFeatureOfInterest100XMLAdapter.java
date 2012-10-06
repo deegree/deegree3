@@ -36,9 +36,9 @@ package org.deegree.protocol.sos.getfeatureofinterest;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XPath;
+import org.deegree.observation.filter.SpatialFilter;
+import org.deegree.observation.filter.TimeFilter;
 import org.deegree.protocol.sos.SOSRequest100XMLAdapter;
-import org.deegree.protocol.sos.filter.SpatialFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
 
 /**
  * The <code>GetFeatureOfInterest100XMLAdapter</code> class TODO

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.time;
+package org.deegree.observation.time;
 
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 

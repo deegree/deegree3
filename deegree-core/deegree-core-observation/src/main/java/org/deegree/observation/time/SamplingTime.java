@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.time;
+package org.deegree.observation.time;
 
 /**
- * This class represents an indeterminate time like now or unknown.
+ *
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -44,44 +44,6 @@ package org.deegree.protocol.sos.time;
  * @version $Revision$, $Date$
  *
  */
-public class IndeterminateTime implements SamplingTime {
-    /**
-     * The type of the indeterminate time position.
-     */
-    public enum Type {
-        /**
-         *
-         */
-        NOW,
-        /**
-         *
-         */
-        UNKNOWN
-    }
-    private final Type type;
-
-    private IndeterminateTime( Type type ) {
-        this.type = type;
-    }
-
-    /**
-     * @return the type
-     */
-    public Type getType() {
-        return type;
-    }
-
-    /**
-     * @return a new indeterminate time
-     */
-    public static IndeterminateTime now() {
-        return new IndeterminateTime( Type.NOW );
-    }
-
-    /**
-     * @return a new indeterminate time
-     */
-    public static IndeterminateTime unknown() {
-        return new IndeterminateTime( Type.UNKNOWN );
-    }
+public interface SamplingTime {
+    // marker interface
 }

@@ -33,12 +33,10 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
-
-import java.util.Date;
+package org.deegree.observation.time;
 
 /**
- *
+ * This class represents an indeterminate time like now or unknown.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -46,38 +44,44 @@ import java.util.Date;
  * @version $Revision$, $Date$
  *
  */
-public class EndFilter implements TimeFilter {
-    private final Date end;
-    private final boolean inclusiveEnd;
-
+public class IndeterminateTime implements SamplingTime {
     /**
-     * @param end
+     * The type of the indeterminate time position.
      */
-    public EndFilter( Date end ) {
-        this.end = end;
-        this.inclusiveEnd = false;
+    public enum Type {
+        /**
+         *
+         */
+        NOW,
+        /**
+         *
+         */
+        UNKNOWN
+    }
+    private final Type type;
+
+    private IndeterminateTime( Type type ) {
+        this.type = type;
     }
 
     /**
-     * @param end
-     * @param inclusiveEnd if the date is included
+     * @return the type
      */
-    public EndFilter( Date end, boolean inclusiveEnd ) {
-        this.end = end;
-        this.inclusiveEnd = inclusiveEnd;
+    public Type getType() {
+        return type;
     }
 
     /**
-     * @return the end date
+     * @return a new indeterminate time
      */
-    public Date getEnd() {
-        return end;
+    public static IndeterminateTime now() {
+        return new IndeterminateTime( Type.NOW );
     }
 
     /**
-     * @return if the end date in included
+     * @return a new indeterminate time
      */
-    public boolean isInclusiveEnd() {
-        return inclusiveEnd;
+    public static IndeterminateTime unknown() {
+        return new IndeterminateTime( Type.UNKNOWN );
     }
 }

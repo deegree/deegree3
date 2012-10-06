@@ -45,11 +45,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.protocol.sos.filter.DurationFilter;
-import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.PropertyFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
-import org.deegree.protocol.sos.filter.TimeInstantFilter;
+import org.deegree.observation.filter.DurationFilter;
+import org.deegree.observation.filter.ProcedureFilter;
+import org.deegree.observation.filter.PropertyFilter;
+import org.deegree.observation.filter.TimeFilter;
+import org.deegree.observation.filter.TimeInstantFilter;
 
 /**
  * This is an kvp adapter for SOS 1.0.0 GetObservation requests.

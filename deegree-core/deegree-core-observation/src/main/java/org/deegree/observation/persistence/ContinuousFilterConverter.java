@@ -43,11 +43,11 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.protocol.sos.filter.BeginFilter;
-import org.deegree.protocol.sos.filter.DurationFilter;
-import org.deegree.protocol.sos.filter.EndFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
-import org.deegree.protocol.sos.filter.TimeInstantFilter;
+import org.deegree.observation.filter.BeginFilter;
+import org.deegree.observation.filter.DurationFilter;
+import org.deegree.observation.filter.EndFilter;
+import org.deegree.observation.filter.TimeFilter;
+import org.deegree.observation.filter.TimeInstantFilter;
 
 /**
  * This is a filter converter for datastores that does not store the time of each observation. The observations are

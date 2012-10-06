@@ -34,8 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.getfeatureofinterest;
 
-import org.deegree.protocol.sos.filter.SpatialFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
+import org.deegree.observation.filter.SpatialFilter;
+import org.deegree.observation.filter.TimeFilter;
 
 /**
  * The <code>GetFeatureOfInterest</code>class TODO

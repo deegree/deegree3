@@ -33,7 +33,8 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
+package org.deegree.observation.filter;
+
 
 /**
  *
@@ -44,6 +45,6 @@ package org.deegree.protocol.sos.filter;
  * @version $Revision$, $Date$
  *
  */
-public interface Filter {
+public interface SpatialFilter extends Filter {
     // marker interface
 }

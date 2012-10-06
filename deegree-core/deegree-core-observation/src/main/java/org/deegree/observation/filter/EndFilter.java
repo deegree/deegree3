@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
+package org.deegree.observation.filter;
 
-import org.deegree.filter.comparison.ComparisonOperator;
+import java.util.Date;
 
 /**
  *
@@ -46,22 +46,38 @@ import org.deegree.filter.comparison.ComparisonOperator;
  * @version $Revision$, $Date$
  *
  */
-public class ResultFilter implements Filter {
-
-    private final ComparisonOperator filter;
+public class EndFilter implements TimeFilter {
+    private final Date end;
+    private final boolean inclusiveEnd;
 
     /**
-     * @param op
+     * @param end
      */
-    public ResultFilter( ComparisonOperator op ) {
-        this.filter = op;
+    public EndFilter( Date end ) {
+        this.end = end;
+        this.inclusiveEnd = false;
     }
 
     /**
-     * @return the filter
+     * @param end
+     * @param inclusiveEnd if the date is included
      */
-    public ComparisonOperator getOperator() {
-        return filter;
+    public EndFilter( Date end, boolean inclusiveEnd ) {
+        this.end = end;
+        this.inclusiveEnd = inclusiveEnd;
     }
 
+    /**
+     * @return the end date
+     */
+    public Date getEnd() {
+        return end;
+    }
+
+    /**
+     * @return if the end date in included
+     */
+    public boolean isInclusiveEnd() {
+        return inclusiveEnd;
+    }
 }

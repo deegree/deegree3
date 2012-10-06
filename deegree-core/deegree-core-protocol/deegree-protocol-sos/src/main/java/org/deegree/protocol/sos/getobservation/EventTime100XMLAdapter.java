@@ -49,12 +49,12 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.sos.filter.BeginFilter;
-import org.deegree.protocol.sos.filter.DurationFilter;
-import org.deegree.protocol.sos.filter.EndFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
-import org.deegree.protocol.sos.filter.TimeInstantFilter;
-import org.deegree.protocol.sos.time.TimePeriod;
+import org.deegree.observation.filter.BeginFilter;
+import org.deegree.observation.filter.DurationFilter;
+import org.deegree.observation.filter.EndFilter;
+import org.deegree.observation.filter.TimeFilter;
+import org.deegree.observation.filter.TimeInstantFilter;
+import org.deegree.observation.time.TimePeriod;
 
 /**
  * This is an xml adapter for SOS 1.0.0 EventTimes.

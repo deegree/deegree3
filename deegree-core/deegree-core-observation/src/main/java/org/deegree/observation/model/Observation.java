@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.protocol.sos.time.TimePeriod;
+import org.deegree.observation.time.TimePeriod;
 
 /**
  * This class is a collection of muliple {@link Measurement}s. The Measurements are grouped by its procedures in

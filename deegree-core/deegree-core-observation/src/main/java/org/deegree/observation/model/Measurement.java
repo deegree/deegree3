@@ -37,7 +37,7 @@ package org.deegree.observation.model;
 
 import java.util.List;
 
-import org.deegree.protocol.sos.time.TimeInstant;
+import org.deegree.observation.time.TimeInstant;
 
 /**
  * 

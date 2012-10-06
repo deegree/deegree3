@@ -33,8 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.filter;
-
+package org.deegree.observation.filter;
 
 /**
  *
@@ -45,6 +44,20 @@ package org.deegree.protocol.sos.filter;
  * @version $Revision$, $Date$
  *
  */
-public interface TimeFilter extends Filter {
-    // marker interface
+public class ProcedureFilter implements Filter {
+    private final String procedure;
+
+    /**
+     * @param procedure
+     */
+    public ProcedureFilter( String procedure ) {
+        this.procedure = procedure;
+    }
+
+    /**
+     * @return the procedure name
+     */
+    public String getProcedureName() {
+        return procedure;
+    }
 }

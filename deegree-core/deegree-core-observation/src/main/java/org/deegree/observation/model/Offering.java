@@ -40,10 +40,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.observation.filter.FilterCollection;
 import org.deegree.observation.persistence.ObservationDatastore;
 import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreManager;
-import org.deegree.protocol.sos.filter.FilterCollection;
 
 /**
  * The <code>Offering</code> class encapsulates the information from an offering (as it is present in the sos
