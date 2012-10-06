@@ -49,6 +49,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.domain.AllowedValues;
+import org.deegree.commons.ows.metadata.domain.Domain;
+import org.deegree.commons.ows.metadata.domain.PossibleValues;
+import org.deegree.commons.ows.metadata.domain.Value;
+import org.deegree.commons.ows.metadata.domain.Values;
+import org.deegree.commons.ows.metadata.operation.DCP;
+import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -66,14 +74,6 @@ import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.domain.AllowedValues;
-import org.deegree.protocol.ows.metadata.domain.Domain;
-import org.deegree.protocol.ows.metadata.domain.PossibleValues;
-import org.deegree.protocol.ows.metadata.domain.Value;
-import org.deegree.protocol.ows.metadata.domain.Values;
-import org.deegree.protocol.ows.metadata.operation.DCP;
-import org.deegree.protocol.ows.metadata.operation.Operation;
 
 /**
  * API-level client for accessing servers that implement the <a

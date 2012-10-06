@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -53,10 +53,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.describerecord.DescribeRecord;

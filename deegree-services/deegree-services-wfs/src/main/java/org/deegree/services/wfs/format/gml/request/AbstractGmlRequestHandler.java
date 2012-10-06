@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_NS;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.QUERY_ID_GET_FEATURE_BY_ID;
@@ -71,6 +71,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -89,7 +90,6 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.i18n.Messages;

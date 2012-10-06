@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -61,7 +62,6 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;

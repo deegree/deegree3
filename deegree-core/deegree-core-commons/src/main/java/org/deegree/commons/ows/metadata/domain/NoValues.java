@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,59 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.party;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.deegree.commons.ows.metadata.domain;
 
 /**
- * The <code>Telephone</code> bean encapsulates the corresponding GetCapabilities response metadata element.
+ * {@link PossibleValues} that doesn't allow any value.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * against the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>Specifies that no values are allowed for this parameter or quantity.</cite>
+ * </p>
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Telephone {
-
-    private List<String> voice;
-
-    private List<String> facsimile;
-
-    /**
-     * @param voice
-     *            the voice to set
-     */
-    public void setVoice( List<String> voice ) {
-        this.voice = voice;
-    }
-
-    /**
-     * @param facsimile
-     *            the facsimile to set
-     */
-    public void setFacsimile( List<String> facsimile ) {
-        this.facsimile = facsimile;
-    }
-
-    /**
-     * @return voice, may be empty but never <code>null</code>.
-     */
-    public List<String> getVoice() {
-        if ( voice == null ) {
-            voice = new ArrayList<String>();
-        }
-        return voice;
-    }
-
-    /**
-     * @return facsimile, may be empty but never <code>null</code>.
-     */
-    public List<String> getFacsimile() {
-        if ( facsimile == null ) {
-            facsimile = new ArrayList<String>();
-        }
-        return facsimile;
-    }
-
+public class NoValues implements PossibleValues {
+    // nothing in here
 }

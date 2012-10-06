@@ -39,8 +39,8 @@ import static java.lang.Integer.parseInt;
 
 import java.util.Map;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.layer.LayerRef;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.legends.LegendOptions;
 import org.deegree.style.StyleRef;
 

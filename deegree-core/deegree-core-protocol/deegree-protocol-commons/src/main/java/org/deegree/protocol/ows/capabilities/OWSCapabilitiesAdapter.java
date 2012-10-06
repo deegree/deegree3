@@ -37,11 +37,11 @@ package org.deegree.protocol.ows.capabilities;
 
 import java.util.List;
 
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
 
 /**
  * Base interface for {@link XMLAdapter} implementations that extract metadata from OWS capabilities documents.

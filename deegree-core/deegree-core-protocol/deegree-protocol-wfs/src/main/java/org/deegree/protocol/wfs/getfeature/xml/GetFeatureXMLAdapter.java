@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -66,7 +67,6 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;

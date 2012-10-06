@@ -71,6 +71,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.URITranslator;
 import org.deegree.feature.persistence.FeatureStore;
@@ -79,7 +80,6 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.kvp.DescribeFeatureTypeKVPAdapter;

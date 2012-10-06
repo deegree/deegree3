@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
+import static org.deegree.commons.ows.metadata.domain.RangeClosure.CLOSED;
+import static org.deegree.commons.ows.metadata.domain.RangeClosure.CLOSED_OPEN;
+import static org.deegree.commons.ows.metadata.domain.RangeClosure.OPEN;
+import static org.deegree.commons.ows.metadata.domain.RangeClosure.OPEN_CLOSED;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.protocol.ows.metadata.domain.RangeClosure.CLOSED;
-import static org.deegree.protocol.ows.metadata.domain.RangeClosure.CLOSED_OPEN;
-import static org.deegree.protocol.ows.metadata.domain.RangeClosure.OPEN;
-import static org.deegree.protocol.ows.metadata.domain.RangeClosure.OPEN_CLOSED;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,6 +49,25 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.ows.metadata.domain.AllowedValues;
+import org.deegree.commons.ows.metadata.domain.AnyValue;
+import org.deegree.commons.ows.metadata.domain.Domain;
+import org.deegree.commons.ows.metadata.domain.NoValues;
+import org.deegree.commons.ows.metadata.domain.PossibleValues;
+import org.deegree.commons.ows.metadata.domain.Range;
+import org.deegree.commons.ows.metadata.domain.RangeClosure;
+import org.deegree.commons.ows.metadata.domain.Value;
+import org.deegree.commons.ows.metadata.domain.Values;
+import org.deegree.commons.ows.metadata.domain.ValuesReference;
+import org.deegree.commons.ows.metadata.operation.DCP;
+import org.deegree.commons.ows.metadata.party.Address;
+import org.deegree.commons.ows.metadata.party.ContactInfo;
+import org.deegree.commons.ows.metadata.party.ResponsibleParty;
+import org.deegree.commons.ows.metadata.party.Telephone;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
@@ -57,25 +76,6 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.metadata.Description;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
-import org.deegree.protocol.ows.metadata.domain.AllowedValues;
-import org.deegree.protocol.ows.metadata.domain.AnyValue;
-import org.deegree.protocol.ows.metadata.domain.Domain;
-import org.deegree.protocol.ows.metadata.domain.NoValues;
-import org.deegree.protocol.ows.metadata.domain.PossibleValues;
-import org.deegree.protocol.ows.metadata.domain.Range;
-import org.deegree.protocol.ows.metadata.domain.RangeClosure;
-import org.deegree.protocol.ows.metadata.domain.Value;
-import org.deegree.protocol.ows.metadata.domain.Values;
-import org.deegree.protocol.ows.metadata.domain.ValuesReference;
-import org.deegree.protocol.ows.metadata.operation.DCP;
-import org.deegree.protocol.ows.metadata.party.Address;
-import org.deegree.protocol.ows.metadata.party.ContactInfo;
-import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
-import org.deegree.protocol.ows.metadata.party.Telephone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

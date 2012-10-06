@@ -45,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.http.HttpResponse;
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 

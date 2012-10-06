@@ -38,8 +38,8 @@ package org.deegree.layer;
 
 import java.util.List;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * <code>Layer</code>

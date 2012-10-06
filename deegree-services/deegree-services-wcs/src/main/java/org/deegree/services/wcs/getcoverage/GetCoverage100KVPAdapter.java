@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -66,7 +67,6 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wcs.WCSConstants;
 
 /**

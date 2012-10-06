@@ -44,13 +44,13 @@ import javax.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;

@@ -36,7 +36,7 @@
 
 package org.deegree.services.wps;
 
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wps.WPSConstants.ExecutionState.FAILED;
 
 import java.io.IOException;
@@ -58,13 +58,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LiteralOutputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wps.execute.ExecuteRequest;

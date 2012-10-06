@@ -36,10 +36,10 @@
 
 package org.deegree.feature.persistence.lock;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.feature.i18n.Messages.getMessage;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -53,6 +53,7 @@ import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -63,7 +64,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

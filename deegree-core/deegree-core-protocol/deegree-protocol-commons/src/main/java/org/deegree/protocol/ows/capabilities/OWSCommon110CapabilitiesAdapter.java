@@ -51,6 +51,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.domain.Domain;
+import org.deegree.commons.ows.metadata.domain.PossibleValues;
+import org.deegree.commons.ows.metadata.operation.DCP;
+import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -60,11 +65,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.domain.Domain;
-import org.deegree.protocol.ows.metadata.domain.PossibleValues;
-import org.deegree.protocol.ows.metadata.operation.DCP;
-import org.deegree.protocol.ows.metadata.operation.Operation;
 
 /**
  * {@link OWSCapabilitiesAdapter} for capabilities documents that comply to the <a

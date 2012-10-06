@@ -42,20 +42,20 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.domain.AllowedValues;
+import org.deegree.commons.ows.metadata.domain.Domain;
+import org.deegree.commons.ows.metadata.domain.PossibleValues;
+import org.deegree.commons.ows.metadata.domain.Value;
+import org.deegree.commons.ows.metadata.domain.Values;
+import org.deegree.commons.ows.metadata.operation.DCP;
+import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.domain.AllowedValues;
-import org.deegree.protocol.ows.metadata.domain.Domain;
-import org.deegree.protocol.ows.metadata.domain.PossibleValues;
-import org.deegree.protocol.ows.metadata.domain.Value;
-import org.deegree.protocol.ows.metadata.domain.Values;
-import org.deegree.protocol.ows.metadata.operation.DCP;
-import org.deegree.protocol.ows.metadata.operation.Operation;
 
 /**
  * {@link OWSCapabilitiesAdapter} for capabilities documents that comply to the <a

@@ -37,6 +37,8 @@ package org.deegree.protocol.ows.exception;
 
 import java.util.List;
 
+import org.deegree.commons.ows.exception.OWSException;
+
 /**
  * Encapsulates a number of {@link OWSException}s.
  * 

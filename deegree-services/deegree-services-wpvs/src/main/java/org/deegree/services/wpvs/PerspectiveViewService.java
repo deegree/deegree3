@@ -36,7 +36,7 @@
 
 package org.deegree.services.wpvs;
 
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -50,6 +50,7 @@ import java.util.List;
 import javax.media.opengl.GLPbuffer;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.commons.xml.XMLAdapter;
@@ -59,7 +60,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;

@@ -37,9 +37,9 @@ package org.deegree.protocol.wps.client.input.type;
 
 import java.net.URL;
 
+import org.deegree.commons.ows.metadata.domain.Range;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.protocol.ows.metadata.domain.Range;
 import org.deegree.protocol.wps.client.param.ValueWithRef;
 
 /**

@@ -46,6 +46,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.metadata.DCRecord;
@@ -59,7 +60,6 @@ import org.deegree.metadata.persistence.transaction.TransactionOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.transaction.Transaction;
 import org.slf4j.Logger;

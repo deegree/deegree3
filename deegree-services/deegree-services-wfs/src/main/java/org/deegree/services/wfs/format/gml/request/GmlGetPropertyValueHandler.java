@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.exceptions.TransformationException;
@@ -65,7 +66,6 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.reference.GmlXlinkOptions;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;

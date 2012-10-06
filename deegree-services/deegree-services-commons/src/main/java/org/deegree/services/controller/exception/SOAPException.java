@@ -38,7 +38,7 @@ package org.deegree.services.controller.exception;
 
 import static java.util.Arrays.copyOf;
 
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 
 /**
  * The <code>SoapException</code> class wraps the soap specific fault parameters.

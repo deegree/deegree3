@@ -53,9 +53,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.WPSConstants;

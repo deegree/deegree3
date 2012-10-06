@@ -37,12 +37,12 @@ package org.deegree.feature.persistence.lock;
 
 import java.util.List;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * Keeps track of the lock state of the features stored in a {@link FeatureStore}.

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.commons.ows.metadata;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.protocol.ows.metadata.domain.Domain;
-import org.deegree.protocol.ows.metadata.operation.Operation;
+import org.deegree.commons.ows.metadata.domain.Domain;
+import org.deegree.commons.ows.metadata.operation.Operation;
 
 /**
  * Encapsulates metadata on operations provided by an OGC web service (as reported in the capabilities document).

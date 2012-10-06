@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.domain;
+package org.deegree.commons.ows.metadata.domain;
 
 /**
- * {@link PossibleValues} that allow any value.
+ * Specifies which of the boundary values are included in a {@link Range}.
  * <p>
  * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
  * against the following specifications:
@@ -45,7 +45,8 @@ package org.deegree.protocol.ows.metadata.domain;
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>Specifies that any value is allowed for this parameter.</cite>
+ * From OWS Common 2.0: <cite>Specifies which of the minimum and maximum values are included in the range. Note that
+ * plus and minus infinity are considered closed bounds.</cite>
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -53,6 +54,22 @@ package org.deegree.protocol.ows.metadata.domain;
  * 
  * @version $Revision$, $Date$
  */
-public class AnyValue implements PossibleValues {
-    // nothing in here
+public enum RangeClosure {
+
+    /**
+     * Minimum and maximum values are included.
+     */
+    CLOSED,
+    /**
+     * Minimum and maximum values are NOT included.
+     */
+    OPEN,
+    /**
+     * Minimum value is NOT included in this range, and the specified maximum value IS included.
+     */
+    OPEN_CLOSED,
+    /**
+     * Minimum value IS included in this range, and the specified maximum value is NOT included.
+     */
+    CLOSED_OPEN
 }

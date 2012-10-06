@@ -40,11 +40,11 @@ import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wcs.WCSConstants;
 
 /**

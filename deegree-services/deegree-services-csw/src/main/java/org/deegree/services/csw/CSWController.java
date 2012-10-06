@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -70,6 +70,7 @@ import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -82,7 +83,6 @@ import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;

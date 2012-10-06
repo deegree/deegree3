@@ -50,10 +50,10 @@ import java.util.ListIterator;
 
 import javax.xml.stream.XMLInputFactory;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerRef;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 

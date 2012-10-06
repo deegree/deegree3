@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 
 /**

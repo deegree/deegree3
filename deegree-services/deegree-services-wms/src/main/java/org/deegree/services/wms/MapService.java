@@ -87,6 +87,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.DoublePair;
@@ -110,7 +111,6 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.LayerRef;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.filter.ScaleFunction;

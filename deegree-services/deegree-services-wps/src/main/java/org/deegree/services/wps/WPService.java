@@ -36,8 +36,8 @@
 
 package org.deegree.services.wps;
 
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
@@ -63,6 +63,7 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -70,7 +71,6 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wps.WPSConstants.WPSRequestType;

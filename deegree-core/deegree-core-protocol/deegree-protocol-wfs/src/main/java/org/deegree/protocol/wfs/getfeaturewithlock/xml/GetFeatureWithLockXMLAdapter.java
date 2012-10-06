@@ -45,6 +45,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -52,7 +53,6 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.xml.GetFeatureXMLAdapter;

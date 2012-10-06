@@ -38,9 +38,9 @@ package org.deegree.services.csw.exporthandling;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_AUTO_ARRAY;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,6 +48,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
@@ -56,7 +57,6 @@ import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.csw.profile.ServiceProfile;

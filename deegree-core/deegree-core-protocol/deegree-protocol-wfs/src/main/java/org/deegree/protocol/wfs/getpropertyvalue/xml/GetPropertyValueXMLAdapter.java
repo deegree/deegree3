@@ -36,16 +36,16 @@
 
 package org.deegree.protocol.wfs.getpropertyvalue.xml;
 
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;

@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.commons.ows.metadata;
 
-import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
+import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 
 /**
  * Encapsulates service provider metadata reported by an OGC web service.

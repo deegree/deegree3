@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
@@ -55,9 +55,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
 import org.deegree.protocol.wfs.storedquery.DropStoredQuery;

@@ -36,8 +36,8 @@
 package org.deegree.services.wfs.query;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
 
@@ -61,6 +61,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.QNameUtils;
@@ -84,7 +85,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.query.AdHocQuery;

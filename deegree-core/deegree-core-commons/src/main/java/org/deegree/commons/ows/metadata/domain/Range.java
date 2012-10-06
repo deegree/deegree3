@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.domain;
+package org.deegree.commons.ows.metadata.domain;
 
 /**
  * A range of values of a numeric parameter.

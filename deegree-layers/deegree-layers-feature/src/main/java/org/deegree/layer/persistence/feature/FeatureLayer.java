@@ -61,6 +61,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.TimeInstant;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -90,7 +91,6 @@ import org.deegree.layer.LayerQuery;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;

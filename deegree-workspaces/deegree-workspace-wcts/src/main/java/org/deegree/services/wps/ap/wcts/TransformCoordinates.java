@@ -54,6 +54,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.XMLParsingException;
@@ -65,7 +66,6 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.utils.XMLTransformer;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.ap.wcts.WCTSConstants;
 import org.deegree.services.wps.ExceptionAwareProcesslet;
 import org.deegree.services.wps.ExceptionCustomizer;

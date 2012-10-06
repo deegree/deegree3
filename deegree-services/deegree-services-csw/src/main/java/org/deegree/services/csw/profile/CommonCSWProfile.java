@@ -54,13 +54,13 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.csw.exporthandling.CapabilitiesHandler;

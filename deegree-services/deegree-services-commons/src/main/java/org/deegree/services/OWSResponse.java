@@ -50,9 +50,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.slf4j.Logger;

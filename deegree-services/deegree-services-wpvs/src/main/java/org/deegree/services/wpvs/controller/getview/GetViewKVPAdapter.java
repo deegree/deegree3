@@ -36,12 +36,12 @@
 
 package org.deegree.services.wpvs.controller.getview;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.utils.kvp.KVPUtils.getBoolean;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequiredDouble;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequiredInt;
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 
 import java.awt.Color;
 import java.io.UnsupportedEncodingException;
@@ -54,6 +54,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.SunInfo;
@@ -65,7 +66,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 

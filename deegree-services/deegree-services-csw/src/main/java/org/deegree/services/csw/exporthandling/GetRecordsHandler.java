@@ -38,10 +38,10 @@ package org.deegree.services.csw.exporthandling;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_AUTO_ARRAY;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -62,6 +62,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -81,7 +82,6 @@ import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.getrecords.ConfiguredElementName;

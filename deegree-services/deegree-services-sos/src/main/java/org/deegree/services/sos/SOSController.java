@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.sos;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_DATE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
@@ -42,9 +45,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_DATE;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.ows.exception.OWSException.VERSION_NEGOTIATION_FAILED;
 import static org.deegree.services.sos.SOSProvider.IMPLEMENTATION_METADATA;
 import static org.deegree.services.sos.ServiceConfigurationXMLAdapter.SCHEMA;
 
@@ -73,6 +73,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -92,7 +93,6 @@ import org.deegree.observation.model.Offering;
 import org.deegree.observation.model.Procedure;
 import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreManager;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;

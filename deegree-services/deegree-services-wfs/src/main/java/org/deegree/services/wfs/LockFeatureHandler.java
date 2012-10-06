@@ -36,11 +36,11 @@
 
 package org.deegree.services.wfs;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -57,6 +57,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -64,7 +65,6 @@ import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.query.QueryAnalyzer;

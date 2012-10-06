@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.http;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.ows.exception.OWSExceptionReader.isExceptionReport;
 import static org.deegree.protocol.ows.exception.OWSExceptionReader.parseExceptionReport;
 
@@ -53,7 +53,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.conn.ClientConnectionManager;
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

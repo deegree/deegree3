@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
+import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 import static org.deegree.layer.config.ConfigUtils.parseDimensions;
 import static org.deegree.layer.config.ConfigUtils.parseStyles;
-import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
@@ -55,6 +55,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
@@ -81,7 +82,6 @@ import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers.AutoLayers;
-import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.unevaluated.Style;

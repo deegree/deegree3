@@ -54,9 +54,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;

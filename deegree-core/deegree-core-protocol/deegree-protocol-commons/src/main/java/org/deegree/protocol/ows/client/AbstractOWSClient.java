@@ -45,15 +45,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClient;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

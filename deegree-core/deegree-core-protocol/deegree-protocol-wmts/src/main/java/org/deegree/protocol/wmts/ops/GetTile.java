@@ -41,12 +41,12 @@
 
 package org.deegree.protocol.wmts.ops;
 
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 
 import java.util.Map;
 
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 
 /**
  * A <code>GetTile</code> request to a WMTS.

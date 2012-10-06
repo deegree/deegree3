@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.domain;
+package org.deegree.commons.ows.metadata.domain;
 
 /**
- * A single value.
+ * {@link PossibleValues} that allow any value.
  * <p>
  * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
  * against the following specifications:
@@ -45,8 +45,7 @@ package org.deegree.protocol.ows.metadata.domain;
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>A single value, encoded as a string. This type can be used for one value, for a spacing
- * between allowed values, or for the default value of a parameter.</cite>
+ * From OWS Common 2.0: <cite>Specifies that any value is allowed for this parameter.</cite>
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -54,24 +53,6 @@ package org.deegree.protocol.ows.metadata.domain;
  * 
  * @version $Revision$, $Date$
  */
-public class Value implements Values {
-
-    private String value;
-
-    /**
-     * Creates a new {@link Value} instance.
-     * 
-     * @param value
-     */
-    public Value( String value ) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue( String value ) {
-        this.value = value;
-    }
+public class AnyValue implements PossibleValues {
+    // nothing in here
 }

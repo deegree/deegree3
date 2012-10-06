@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.party;
+package org.deegree.commons.ows.metadata.party;
 
 import org.deegree.commons.tom.ows.CodeType;
 

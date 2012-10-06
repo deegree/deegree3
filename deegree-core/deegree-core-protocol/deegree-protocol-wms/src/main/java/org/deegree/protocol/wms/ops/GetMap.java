@@ -70,6 +70,7 @@ import java.util.Map.Entry;
 
 import java_cup.runtime.Symbol;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
@@ -81,7 +82,6 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.LayerRef;
 import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;

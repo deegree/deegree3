@@ -51,12 +51,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.layer.LayerRef;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;

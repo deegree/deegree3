@@ -37,10 +37,10 @@ package org.deegree.protocol.ows.capabilities;
 
 import java.util.List;
 
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
 
 /**
  * Specification and version agnostic representation of the capabilities reported by an OGC Web Service.

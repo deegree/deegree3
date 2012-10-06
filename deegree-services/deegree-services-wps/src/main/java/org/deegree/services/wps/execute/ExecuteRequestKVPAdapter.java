@@ -49,6 +49,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -68,7 +69,6 @@ import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
 import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 import org.deegree.services.wps.ExceptionCustomizer;

@@ -38,7 +38,7 @@
 
 package org.deegree.services.wps;
 
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 
 /**
  * {@link Processlet} that provides customized exception generation.

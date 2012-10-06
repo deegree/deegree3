@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -59,7 +60,6 @@ import org.deegree.layer.LayerQuery;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;

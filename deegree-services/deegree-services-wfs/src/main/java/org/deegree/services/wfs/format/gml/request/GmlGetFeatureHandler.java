@@ -36,6 +36,8 @@
 package org.deegree.services.wfs.format.gml.request;
 
 import static java.math.BigInteger.ZERO;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPTION_NOT_SUPPORTED;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -43,8 +45,6 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.writeNamespaceIfNotBou
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.ows.exception.OWSException.OPTION_NOT_SUPPORTED;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -67,6 +67,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.ows.Version;
@@ -88,7 +89,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.services.controller.utils.HttpResponseBuffer;

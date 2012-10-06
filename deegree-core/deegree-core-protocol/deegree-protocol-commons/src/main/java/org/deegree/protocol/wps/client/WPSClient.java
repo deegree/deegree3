@@ -45,9 +45,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.ows.capabilities.OWSCapabilities;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;

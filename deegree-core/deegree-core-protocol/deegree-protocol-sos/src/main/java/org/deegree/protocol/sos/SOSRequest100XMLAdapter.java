@@ -36,12 +36,12 @@
 package org.deegree.protocol.sos;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
-import org.deegree.protocol.ows.exception.OWSException;
 
 /**
  * Base class for all SOS 1.0.0 XMLAdapter. Defines the SOS XML namespace.

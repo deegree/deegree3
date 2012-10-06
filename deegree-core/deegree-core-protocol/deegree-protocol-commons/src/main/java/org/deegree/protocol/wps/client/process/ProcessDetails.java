@@ -45,13 +45,13 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.domain.Range;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
-import org.deegree.protocol.ows.metadata.domain.Range;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
 import org.deegree.protocol.wps.client.input.type.InputType;

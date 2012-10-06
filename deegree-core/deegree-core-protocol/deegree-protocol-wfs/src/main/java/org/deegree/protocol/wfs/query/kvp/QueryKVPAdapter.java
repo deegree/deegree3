@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.query.kvp;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.commons.utils.kvp.KVPUtils.getBigInt;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.protocol.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
@@ -61,6 +61,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.utils.StringUtils;
@@ -77,7 +78,6 @@ import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.ows.OWSCommonKVPAdapter;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;

@@ -47,6 +47,10 @@ import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.party.Address;
+import org.deegree.commons.ows.metadata.party.ContactInfo;
+import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -59,10 +63,6 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.party.Address;
-import org.deegree.protocol.ows.metadata.party.ContactInfo;
-import org.deegree.protocol.ows.metadata.party.ResponsibleParty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

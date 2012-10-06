@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrepositoryitem;
 
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**

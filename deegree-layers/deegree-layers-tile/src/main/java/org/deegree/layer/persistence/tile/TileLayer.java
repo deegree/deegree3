@@ -48,13 +48,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataSet;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,26 +33,59 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.domain;
+package org.deegree.commons.ows.metadata.party;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Defines that no values are allowed for this {@link Domain}.
- * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * for the following specifications:
- * <ul>
- * <li>OWS Common 2.0</li>
- * </ul>
- * </p>
- * <p>
- * From OWS Common 2.0: <cite>Specifies that no values are allowed for this parameter or quantity</cite>
- * </p>
+ * The <code>Telephone</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface PossibleValues {
-    // marker interface
+public class Telephone {
+
+    private List<String> voice;
+
+    private List<String> facsimile;
+
+    /**
+     * @param voice
+     *            the voice to set
+     */
+    public void setVoice( List<String> voice ) {
+        this.voice = voice;
+    }
+
+    /**
+     * @param facsimile
+     *            the facsimile to set
+     */
+    public void setFacsimile( List<String> facsimile ) {
+        this.facsimile = facsimile;
+    }
+
+    /**
+     * @return voice, may be empty but never <code>null</code>.
+     */
+    public List<String> getVoice() {
+        if ( voice == null ) {
+            voice = new ArrayList<String>();
+        }
+        return voice;
+    }
+
+    /**
+     * @return facsimile, may be empty but never <code>null</code>.
+     */
+    public List<String> getFacsimile() {
+        if ( facsimile == null ) {
+            facsimile = new ArrayList<String>();
+        }
+        return facsimile;
+    }
+
 }

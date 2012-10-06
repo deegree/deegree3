@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.tom.ResolveMode.ALL;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -48,6 +48,7 @@ import java.io.IOException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -59,7 +60,6 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.gml.reference.GmlXlinkOptions;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.services.controller.utils.HttpResponseBuffer;

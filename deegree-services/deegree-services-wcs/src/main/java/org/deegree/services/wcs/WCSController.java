@@ -37,7 +37,7 @@
 package org.deegree.services.wcs;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.protocol.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
 import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
 import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
@@ -62,6 +62,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -74,7 +75,6 @@ import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;

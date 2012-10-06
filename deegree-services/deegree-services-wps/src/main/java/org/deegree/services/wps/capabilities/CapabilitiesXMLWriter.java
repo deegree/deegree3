@@ -48,13 +48,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.ows.metadata.domain.Domain;
+import org.deegree.commons.ows.metadata.operation.DCP;
+import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
-import org.deegree.protocol.ows.metadata.domain.Domain;
-import org.deegree.protocol.ows.metadata.operation.DCP;
-import org.deegree.protocol.ows.metadata.operation.Operation;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;

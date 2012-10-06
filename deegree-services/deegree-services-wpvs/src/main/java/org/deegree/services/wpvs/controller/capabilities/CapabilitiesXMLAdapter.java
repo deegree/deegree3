@@ -48,9 +48,9 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
-import org.deegree.protocol.ows.metadata.OperationsMetadata;
 import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;

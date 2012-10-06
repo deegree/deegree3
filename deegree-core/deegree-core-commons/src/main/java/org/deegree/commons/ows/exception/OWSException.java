@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.exception;
+package org.deegree.commons.ows.exception;
 
 import java.util.Collections;
 import java.util.List;

@@ -50,9 +50,9 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.protocol.ows.metadata.DatasetMetadata;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.services.metadata.OWSMetadataProvider;
 
 /**

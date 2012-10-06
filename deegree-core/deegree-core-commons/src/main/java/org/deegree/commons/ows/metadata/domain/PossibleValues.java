@@ -33,16 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.domain;
+package org.deegree.commons.ows.metadata.domain;
 
 /**
- * Marker interface for types that are allowed for building an {@link AllowedValues} instance.
+ * Defines that no values are allowed for this {@link Domain}.
+ * <p>
+ * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
+ * for the following specifications:
+ * <ul>
+ * <li>OWS Common 2.0</li>
+ * </ul>
+ * </p>
+ * <p>
+ * From OWS Common 2.0: <cite>Specifies that no values are allowed for this parameter or quantity</cite>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface Values {
+public interface PossibleValues {
     // marker interface
 }

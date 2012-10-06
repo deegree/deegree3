@@ -40,9 +40,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.tile;
 
+import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
-import static org.deegree.protocol.ows.metadata.DescriptionConverter.fromJaxb;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
@@ -56,6 +56,7 @@ import java.util.Set;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
@@ -68,7 +69,6 @@ import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayers;
-import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreManager;

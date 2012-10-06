@@ -52,10 +52,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.model.layers.Layer;

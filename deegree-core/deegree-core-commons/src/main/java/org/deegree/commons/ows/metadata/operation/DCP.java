@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata.operation;
+package org.deegree.commons.ows.metadata.operation;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.utils.Pair;
-import org.deegree.protocol.ows.metadata.domain.Domain;
 
 /**
  * The <code>DCP</code> bean encapsulates the corresponding GetCapabilities response metadata element.

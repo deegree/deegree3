@@ -56,9 +56,9 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
-import org.deegree.protocol.ows.exception.OWSException;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;

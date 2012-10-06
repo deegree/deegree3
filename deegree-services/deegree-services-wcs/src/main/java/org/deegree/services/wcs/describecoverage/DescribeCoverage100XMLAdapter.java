@@ -39,9 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**

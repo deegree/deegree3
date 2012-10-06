@@ -43,11 +43,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.protocol.ows.metadata.Description;
 import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.style.se.unevaluated.Style;
 

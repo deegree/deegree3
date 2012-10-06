@@ -38,7 +38,7 @@ package org.deegree.services.wms.controller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.commons.ows.metadata;
 
 import static java.util.Collections.emptyList;
 

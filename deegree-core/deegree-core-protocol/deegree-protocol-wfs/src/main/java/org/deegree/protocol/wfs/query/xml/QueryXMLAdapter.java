@@ -36,8 +36,8 @@
 package org.deegree.protocol.wfs.query.xml;
 
 import static javax.xml.XMLConstants.NULL_NS_URI;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
-import static org.deegree.protocol.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.math.BigInteger;
@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.utils.StringUtils;
@@ -65,7 +66,6 @@ import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;

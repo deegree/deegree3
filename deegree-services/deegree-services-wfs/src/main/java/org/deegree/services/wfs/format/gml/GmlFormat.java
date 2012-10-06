@@ -44,10 +44,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.ResultType;

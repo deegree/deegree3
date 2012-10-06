@@ -83,6 +83,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
@@ -96,7 +97,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.dims.DimensionLexer;
 import org.deegree.layer.dims.parser;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;

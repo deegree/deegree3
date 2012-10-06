@@ -52,11 +52,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController111;
 import org.deegree.services.wms.controller.WMSController130;

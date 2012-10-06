@@ -40,8 +40,8 @@ package org.deegree.services.wps.ap.wcts;
 
 import java.util.Arrays;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 
 /**

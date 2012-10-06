@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.metadata;
+package org.deegree.commons.ows.metadata;
 
 import static org.deegree.commons.metadata.MetadataJAXBConverter.KW_MAPPER;
 import static org.deegree.commons.metadata.MetadataJAXBConverter.LANG_LANG_MAPPER;

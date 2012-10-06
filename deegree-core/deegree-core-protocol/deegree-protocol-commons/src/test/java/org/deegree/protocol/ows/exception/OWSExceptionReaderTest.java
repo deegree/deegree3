@@ -43,6 +43,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.junit.Assert;
 import org.junit.Test;

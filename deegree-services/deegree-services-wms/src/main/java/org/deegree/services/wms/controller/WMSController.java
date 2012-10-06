@@ -38,13 +38,13 @@ package org.deegree.services.wms.controller;
 
 import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.write;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
-import static org.deegree.protocol.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
@@ -91,6 +91,9 @@ import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.ows.metadata.ServiceIdentification;
+import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.ows.Version;
@@ -121,10 +124,7 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
-import org.deegree.protocol.ows.metadata.ServiceIdentification;
-import org.deegree.protocol.ows.metadata.ServiceProvider;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
@@ -486,7 +486,7 @@ public class WMSController extends AbstractOWS {
 
     private void handleRequest( WMSRequestType req, HttpResponseBuffer response, Map<String, String> map,
                                 Version version )
-                            throws IOException, OWSException, org.deegree.protocol.ows.exception.OWSException {
+                            throws IOException, OWSException, org.deegree.commons.ows.exception.OWSException {
         try {
             switch ( req ) {
             case GetCapabilities:
@@ -604,7 +604,7 @@ public class WMSController extends AbstractOWS {
 
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue,
-                            org.deegree.protocol.ows.exception.OWSException {
+                            org.deegree.commons.ows.exception.OWSException {
 
         Pair<FeatureCollection, LinkedList<String>> pair;
         String format;
@@ -782,7 +782,7 @@ public class WMSController extends AbstractOWS {
 
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue,
-                            org.deegree.protocol.ows.exception.OWSException {
+                            org.deegree.commons.ows.exception.OWSException {
 
         if ( service.isNewStyle() ) {
             org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
