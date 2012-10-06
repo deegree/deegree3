@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-observation</artifactId>
+      <artifactId>deegree-protocol-sos</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

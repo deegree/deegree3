@@ -40,12 +40,12 @@ import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 import static org.deegree.cs.CRSUtils.EPSG_4326;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
 import static org.deegree.protocol.csw.CSWConstants.DC_NS;
-import static org.deegree.protocol.ows.OWSCommonXMLAdapter.OWS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;

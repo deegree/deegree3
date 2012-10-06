@@ -43,7 +43,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-base</artifactId>
+      <artifactId>deegree-protocol-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

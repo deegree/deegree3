@@ -44,7 +44,6 @@ import java.util.Map;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.oldwms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;

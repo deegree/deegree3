@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
+import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -53,7 +54,6 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -85,7 +85,7 @@ public abstract class AbstractISOTest {
     protected Connection conn;
 
     static {
-        nsContext.addNamespace( OWSCommonXMLAdapter.OWS_PREFIX, OWSCommonXMLAdapter.OWS_NS );
+        nsContext.addNamespace( "ows", OWS_NS );
     }
 
     /**

@@ -69,7 +69,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.oldwms.Utils;
+import org.deegree.layer.Utils;
 import org.deegree.remoteows.RemoteOWSStore;
 import org.slf4j.Logger;
 
