@@ -43,7 +43,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
-import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
@@ -113,8 +112,6 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     // contains an equivalent (or best-fit) JTS geometry object
     protected com.vividsolutions.jts.geom.Geometry jtsGeometry;
-
-    private GMLStdProps standardProps;
 
     protected Envelope env;
 

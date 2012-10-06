@@ -38,7 +38,6 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -66,11 +65,9 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
 
     private ICRS crs;
 
-    private Surface baseSurface;
+    private final Surface baseSurface;
 
-    private boolean isReversed;
-
-    private GMLStdProps standardProps;
+    private final boolean isReversed;
 
     /**
      * Creates a new <code>DefaultOrientableSurface</code> instance from the given parameters.
