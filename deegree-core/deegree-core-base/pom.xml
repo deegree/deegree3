@@ -3,7 +3,7 @@
   <artifactId>deegree-core-base</artifactId>
   <name>deegree-core-base</name>
   <packaging>jar</packaging>
-  <description>Data model for feature data, data model and evaluation for filter expressions, GML readers and writers, OGC protocol layer parts, remote OWS, temporal model (needs splitting)</description>
+  <description>Data model for feature data, data model and evaluation for filter expressions, GML readers and writers, OGC protocol layer parts (needs splitting)</description>
 
   <properties>
     <deegree.module.status>rework</deegree.module.status>
