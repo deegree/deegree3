@@ -1032,7 +1032,6 @@
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-themes</module>
-    <module>deegree-time</module>
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
   </modules>
