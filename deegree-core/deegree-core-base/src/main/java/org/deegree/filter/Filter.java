@@ -36,14 +36,13 @@
 
 package org.deegree.filter;
 
-import org.deegree.feature.Feature;
-
 /**
  * A <code>Filter</code> is a boolean expression (often containing spatial predicates) that can be tested against
- * objects, such as {@link Feature}s.
+ * structured objects.
  * <p>
- * deegree's filter subsystem is an implementation of the <a href="http://www.opengeospatial.org/standards/filter">OpenGIS
- * Filter Encoding Implementation Specification 1.0.0/1.1.0/2.0.0 (=ISO 19143)</a>.
+ * deegree's filter subsystem is an implementation of the <a
+ * href="http://www.opengeospatial.org/standards/filter">OpenGIS Filter Encoding Implementation Specification
+ * 1.0.0/1.1.0/2.0.0 (=ISO 19143)</a>.
  * </p>
  * 
  * @see IdFilter

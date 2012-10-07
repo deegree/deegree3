@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -103,9 +102,9 @@ public class Function implements Expression {
      * Evaluates the function for the given arguments (without a context object).
      * <p>
      * The double-dimension of input arguments is due to the fact that input arguments usually stem from
-     * XPath-evaluation performed on a {@link TypedObjectNode} (e.g. a {@link Feature}). Therefore, multiple values per
-     * input may occur. The outer list contains one entry per parameter, the inner array contain the values for each
-     * parameter. Depending on the type of function it may return multiple outputs as well.
+     * XPath-evaluation performed on a {@link TypedObjectNode}. Therefore, multiple values per input may occur. The
+     * outer list contains one entry per parameter, the inner array contain the values for each parameter. Depending on
+     * the type of function it may return multiple outputs as well.
      * </p>
      * 
      * @param args
