@@ -31,6 +31,7 @@
     <module>deegree-core-commons</module>
     <module>deegree-core-coverage</module>
     <module>deegree-core-cs</module>
+    <module>deegree-core-feature</module>
     <module>deegree-core-filter</module>
     <module>deegree-core-filterfunctions</module>
     <module>deegree-core-geometry</module>
