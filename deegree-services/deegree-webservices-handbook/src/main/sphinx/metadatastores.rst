@@ -55,7 +55,14 @@ The optional elements are:
   * All: all values
   * Core: the core queryable properties (default)
   * Custom: a custom set of properties defined as xpath expressions
-* ``QueryableProperties``: Configuration of additional query properties.
+* ``QueryableProperties``: Configuration of additional query properties. Detailed informations can be found in the following example:
+
+     .. literalinclude:: xml/metadatastore_iso_sql_qp.snippet
+        :language: xml
+
+.. hint::
+  If a new queryable property is added or the AnyText value changed the inserted metadata records are not adjusted to this changes! This means for the example above that an existing record with SpatialRepresentationType 'raster' is not found by searching for all records with this type until the record is inserted or updated again!   
+
 
 -----------------------------
 SQL EBRIM/EO Metadata store
