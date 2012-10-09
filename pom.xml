@@ -9,9 +9,9 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/branches/true</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/true</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/branches/true</url>
+    <connection>scm:svn:svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/branches/3.2-pre11</connection>
+    <developerConnection>scm:svn:svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/branches/3.2-pre11</developerConnection>
+    <url>svn+ssh://jwilden@svn.wald.intevation.org/deegree/deegree3/branches/3.2-pre11</url>
   </scm>
 
   <repositories>
