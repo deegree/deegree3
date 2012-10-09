@@ -414,6 +414,41 @@ In deegree terminology, a deegree CSW provides access to metadata records stored
    :target: _images/workspace-csw.png
 
    Workspace components involved in a deegree CSW configuration
+   
+.. tip::
+  In order to fully understand deegree CSW configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-metadatastore` describes the configuration of metadatastores.
+
+The deegree CSW config file format is defined by schema file http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The root element is ``deegreeCSW`` and the config attribute must be ``3.2.0``. There is no mandatory element, therefore a minimal CSW configuration example looks like this:
+
+.. topic:: CSW config example 1: Minimal configuration
+
+   .. literalinclude:: xml/csw_basic.xml
+      :language: xml
+   
+The following table lists all available configuration options. When specifiying them, their order must be respected.
+
+.. table:: Options for ``deegreeCSW``
+
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| Option                   | Cardinality  | Value   | Description                                                                                  |
++==========================+==============+=========+==============================================================================================+
+| SupportedVersions        | 0..1         | String  | Supported CSW Version (Default: 2.0.2)                                                       |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| MaxMatches               | 0..1         | Integer | Not negative number of matches (Default:0)                                                   |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| MetadataStoreId          | 0..1         | String  | Id of the meradatastoreId to use as backenend. By default the only configured store is used. |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| EnableTransactions       | 0..1         | Boolean | Enable transactions (CSW operations) default: disabled. (Default: false)                     |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| EnableInspireExtensions  | 0..1         |         | Enable the INSPIRE extensions, default: disabled                                             |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| ExtendedCapabilities     | 0..1         | anyURI  | Include referenced capabilities section.                                                     |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| ElementNames             | 0..1         |         |  List of configured return profiles. See following xml snippet for detailed informations.    |
++--------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+
+   .. literalinclude:: xml/csw_elementNames.snippet
+      :language: xml
 
 .. _anchor-configuration-wps:
 

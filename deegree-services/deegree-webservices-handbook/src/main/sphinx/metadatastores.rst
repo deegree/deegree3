@@ -1,3 +1,5 @@
+.. _anchor-configuration-metadatastore:
+
 ============================
 Metadata store configuration
 ============================
