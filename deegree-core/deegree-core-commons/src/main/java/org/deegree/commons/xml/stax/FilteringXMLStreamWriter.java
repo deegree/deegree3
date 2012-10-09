@@ -387,8 +387,16 @@ public class FilteringXMLStreamWriter implements XMLStreamWriter {
                     return false;
                 }
             }
-            // paths are identical until now -> good
-            return true;
+            // my path has more steps than the other, all matched until now -> good
+            if ( i1.hasNext() && !i2.hasPrevious() ) {
+                return true;
+            }
+            // paths are identical -> good
+            if ( !i1.hasNext() && !i2.hasPrevious() ) {
+                return true;
+            }
+            // all other cases -> bad
+            return false;
         }
     }
 

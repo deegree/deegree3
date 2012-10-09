@@ -1,10 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <app:a xmlns:app="http://www.deegree.org/app" xmlns:nix="http://www.deegree.org/nix" xmlns:alles="http://www.deegree.org/alles">
-  <app:b>
-    <nix:c>
-      <app:b>
-        <nix:c/>
-      </app:b>
-    </nix:c>
-  </app:b>
+  <app:b/>
 </app:a>

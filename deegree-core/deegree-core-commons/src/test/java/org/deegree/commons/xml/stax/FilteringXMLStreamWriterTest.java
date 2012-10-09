@@ -115,7 +115,7 @@ public class FilteringXMLStreamWriterTest {
     public void testFilteringOneXPath()
                             throws Exception {
         List<String> list = new ArrayList<String>();
-        list.add( "/app:a/app:b/nix:c/app:b" );
+        list.add( "/app:a/app:b" );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         XMLStreamWriter writer = getWriter( list, bos );
         writeDocument( writer );
@@ -138,21 +138,6 @@ public class FilteringXMLStreamWriterTest {
         Assert.assertArrayEquals( expected, actual );
     }
 
-    @Test
-    public void testFilteringMultipleXPathsWithText()
-                            throws Exception {
-        List<String> list = new ArrayList<String>();
-        list.add( "/app:a/app:b/nix:c/alles:e" );
-        list.add( "/app:a/app:b/nix:c/app:b" );
-        list.add( "/app:a/app:b/nix:c/falsch:d" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter writer = getWriter( list, bos );
-        writeDocument( writer );
-        byte[] actual = bos.toByteArray();
-        byte[] expected = IOUtils.toByteArray( FilteringXMLStreamWriterTest.class.getResourceAsStream( "filteringxpathmultiplewithtext.xml" ) );
-        Assert.assertArrayEquals( expected, actual );
-    }
-
     @Test(expected = XMLStreamException.class)
     public void testFilteringOneXPathWithoutMatchingRootElement()
                             throws Exception {
@@ -161,8 +146,6 @@ public class FilteringXMLStreamWriterTest {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         XMLStreamWriter writer = getWriter( list, bos );
         writeDocument( writer );
-        byte[] actual = bos.toByteArray();
-        Assert.assertEquals( 0, actual.length );
     }
 
 }
