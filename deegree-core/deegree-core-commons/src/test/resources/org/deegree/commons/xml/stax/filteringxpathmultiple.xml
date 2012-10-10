@@ -3,7 +3,9 @@
   <app:b>
     <nix:c>
       <app:d/>
-      <app:b/>
+      <app:b>
+        <nix:c/>
+      </app:b>
     </nix:c>
   </app:b>
 </app:a>
