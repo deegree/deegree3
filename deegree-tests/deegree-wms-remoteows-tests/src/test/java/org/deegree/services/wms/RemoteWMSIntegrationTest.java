@@ -50,6 +50,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
@@ -75,9 +76,9 @@ public class RemoteWMSIntegrationTest {
 
     private String request;
 
-    private byte[] response;
+    private List<byte[]> response;
 
-    public RemoteWMSIntegrationTest( Object wasXml, String request, byte[] response ) {
+    public RemoteWMSIntegrationTest( Object wasXml, String request, List<byte[]> response ) {
         // we only use .kvp for WMS
         this.request = request;
         this.response = response;
@@ -95,7 +96,11 @@ public class RemoteWMSIntegrationTest {
         base += "/deegree-wms-remoteows-tests/services" + request;
         LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
-        double sim = determineSimilarity( in, new ByteArrayInputStream( response ) );
+        double sim = 0;
+
+        for ( byte[] response : this.response ) {
+            sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
+        }
         Assert.assertEquals( "Images are not similar enough (" + base + ").", 1.0, sim, 0.01 );
     }
 

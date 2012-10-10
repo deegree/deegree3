@@ -73,8 +73,15 @@ public class IntegrationTestUtils {
                 File respFile = new File( f.getParentFile(), name.substring( 0, name.length() - 4 ) + ".response" );
                 Object[] o;
                 try {
-                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ),
-                                      IOUtils.toByteArray( new FileInputStream( respFile ) ) };
+                    List<byte[]> responses = new ArrayList<byte[]>();
+                    int idx = 1;
+                    while ( respFile.exists() ) {
+                        responses.add( IOUtils.toByteArray( new FileInputStream( respFile ) ) );
+                        respFile = new File( f.getParentFile(), name.substring( 0, name.length() - 4 ) + ".response"
+                                                                + ++idx );
+                    }
+
+                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses };
                     list.add( o );
                 } catch ( FileNotFoundException e ) {
                     // TODO Auto-generated catch block
@@ -91,9 +98,10 @@ public class IntegrationTestUtils {
     }
 
     /**
-     * Scans the System.getProperty("requestdir") directories' contents for .kvp/.xml request files.
+     * Scans the System.getProperty("requestdir") directories' contents for .kvp/.xml request files. Responses end in
+     * .response, alternative responses end in .response2 etc.
      * 
-     * @return the .kvp/.xml and .response contents as triples (boolean wasXml, String and byte[])
+     * @return the .kvp/.xml and .response contents as triples (boolean wasXml, String and List<byte[]>)
      */
     public static Collection<Object[]> getTestRequests() {
         File dir = new File( System.getProperty( "requestdir" ) );
