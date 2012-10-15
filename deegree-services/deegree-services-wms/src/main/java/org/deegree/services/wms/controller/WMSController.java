@@ -154,7 +154,6 @@ import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.FeatureInfoSerializer;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.controller.plugins.XSLTFeatureInfoSerializer;
-import org.deegree.services.wms.controller.security.WMSSecurityManager;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
@@ -192,8 +191,6 @@ public class WMSController extends AbstractOWS {
     public final LinkedHashMap<String, String> supportedFeatureInfoFormats = new LinkedHashMap<String, String>();
 
     protected MapService service;
-
-    private WMSSecurityManager securityManager;
 
     protected ServiceIdentification identification;
 
@@ -413,19 +410,6 @@ public class WMSController extends AbstractOWS {
 
             // after the service knows what layers are available:
             handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
-
-            // if ( sc.getSecurityManager() == null ) {
-            // // then do nothing and step over
-            // } else {
-            // securityManager = sc.getSecurityManager().getDummySecurityManager() != null ? new
-            // DummyWMSSecurityManager()
-            // : null;
-            // }
-
-            String securityLogging = securityManager != null ? "A securityManager is specified: " + securityManager
-                                                            : "There is no securityManager specified. Now, there should be no credentials needed and every operation can be requested anonymous.";
-            LOG.debug( securityLogging );
-
         } catch ( MalformedURLException e ) {
             throw new ResourceInitException( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -556,9 +540,7 @@ public class WMSController extends AbstractOWS {
 
     private void getLegendGraphic( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException {
-        GetLegendGraphic glg = securityManager == null ? new GetLegendGraphic( map )
-                                                      : securityManager.preprocess( new GetLegendGraphic( map ),
-                                                                                    OGCFrontController.getContext().getCredentials() );
+        GetLegendGraphic glg = new GetLegendGraphic( map );
 
         if ( !supportedImageFormats.contains( glg.getFormat() ) ) {
             throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", glg.getFormat() ), OWSException.INVALID_FORMAT );
@@ -627,10 +609,7 @@ public class WMSController extends AbstractOWS {
             info.setY( fi.getY() );
             pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, headers ), headers );
         } else {
-            GetFeatureInfo fi = securityManager == null ? new GetFeatureInfo( map, version, service )
-                                                       : securityManager.preprocess( new GetFeatureInfo( map, version,
-                                                                                                         service ),
-                                                                                     OGCFrontController.getContext().getCredentials() );
+            GetFeatureInfo fi = new GetFeatureInfo( map, version, service );
             crs = fi.getCoordinateSystem();
             geometries = fi.returnGeometries();
             format = fi.getInfoFormat();
@@ -745,9 +724,7 @@ public class WMSController extends AbstractOWS {
 
     private void getFeatureInfoSchema( Map<String, String> map, HttpResponseBuffer response )
                             throws IOException {
-        GetFeatureInfoSchema fis = securityManager == null ? new GetFeatureInfoSchema( map )
-                                                          : securityManager.preprocess( new GetFeatureInfoSchema( map ),
-                                                                                        OGCFrontController.getContext().getCredentials() );
+        GetFeatureInfoSchema fis = new GetFeatureInfoSchema( map );
         List<FeatureType> schema = service.getSchema( fis );
         try {
             response.setContentType( "text/xml" );
@@ -799,9 +776,6 @@ public class WMSController extends AbstractOWS {
             GetMap gm = new GetMap( map, version, service );
             checkGetMap( version, gm );
 
-            if ( securityManager != null ) {
-                gm = securityManager.preprocess( gm, OGCFrontController.getContext().getCredentials() );
-            }
             final Pair<BufferedImage, LinkedList<String>> pair = service.getMapImage( gm );
             addHeaders( response, pair.second );
             sendImage( pair.first, response, gm.getFormat() );
@@ -914,9 +888,7 @@ public class WMSController extends AbstractOWS {
         if ( version == null ) {
             version = map.get( "WMTVER" );
         }
-        GetCapabilities req = securityManager == null ? new GetCapabilities( version )
-                                                     : securityManager.preprocess( new GetCapabilities( version ),
-                                                                                   OGCFrontController.getContext().getCredentials() );
+        GetCapabilities req = new GetCapabilities( version );
 
         Version myVersion = negotiateVersion( req );
 
