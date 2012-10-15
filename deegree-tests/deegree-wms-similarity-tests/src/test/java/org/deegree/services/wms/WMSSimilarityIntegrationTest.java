@@ -130,7 +130,7 @@ public class WMSSimilarityIntegrationTest {
 
         double sim = 0;
         for ( byte[] response : this.response ) {
-            if ( MathUtils.isZero( sim ) ) {
+            if ( MathUtils.isZero( sim ) || Math.abs( 1.0 - sim ) > 0.01 ) {
                 sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
             }
         }
