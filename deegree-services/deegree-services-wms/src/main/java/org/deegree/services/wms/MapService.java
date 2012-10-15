@@ -949,7 +949,9 @@ public class MapService {
         List<Feature> feats = new ArrayList<Feature>( gfi.getFeatureCount() );
         for ( LayerData d : list ) {
             FeatureCollection col = d.info();
-            feats.addAll( col );
+            if ( col != null ) {
+                feats.addAll( col );
+            }
         }
 
         feats = Features.clearDuplicates( feats );
