@@ -62,7 +62,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -134,7 +133,6 @@ import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
-import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
@@ -446,7 +444,7 @@ public class WMSController extends AbstractOWS {
     @Override
     public void doKVP( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
-                            throws ServletException, IOException, SecurityException {
+                            throws ServletException, IOException {
         String v = map.get( "VERSION" );
         if ( v == null ) {
             v = map.get( "WMTVER" );
@@ -486,7 +484,7 @@ public class WMSController extends AbstractOWS {
 
     private void handleRequest( WMSRequestType req, HttpResponseBuffer response, Map<String, String> map,
                                 Version version )
-                            throws IOException, OWSException, org.deegree.commons.ows.exception.OWSException {
+                            throws IOException, OWSException {
         try {
             switch ( req ) {
             case GetCapabilities:
@@ -571,7 +569,7 @@ public class WMSController extends AbstractOWS {
 
     private static void runTemplate( HttpResponseBuffer response, String fiFile, FeatureCollection col,
                                      boolean geometries )
-                            throws UnsupportedEncodingException, IOException {
+                            throws IOException {
         PrintWriter out = new PrintWriter( new OutputStreamWriter( response.getOutputStream(), "UTF-8" ) );
 
         try {
@@ -602,8 +600,7 @@ public class WMSController extends AbstractOWS {
     }
 
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
-                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue,
-                            org.deegree.commons.ows.exception.OWSException {
+                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
 
         Pair<FeatureCollection, LinkedList<String>> pair;
         String format;
@@ -780,8 +777,7 @@ public class WMSController extends AbstractOWS {
     }
 
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
-                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue,
-                            org.deegree.commons.ows.exception.OWSException {
+                            throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
 
         if ( service.isNewStyle() ) {
             org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
