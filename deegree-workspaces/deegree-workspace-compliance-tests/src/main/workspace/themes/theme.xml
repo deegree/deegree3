@@ -19,7 +19,7 @@
 
   <Theme>
     <d:Title>CITE layers</d:Title>
-    <g:CRS>EPSG:4326</g:CRS>
+    <g:CRS>CRS:84 urn:ogc:def:crs:EPSG::4326</g:CRS>
     <Theme>
       <Identifier>cite:Autos</Identifier>
       <d:Title>cite:Autos</d:Title>
