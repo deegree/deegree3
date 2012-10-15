@@ -279,7 +279,7 @@ public class Dimension<T> {
         return o;
     }
 
-    private static final double getAsDouble( final Object o ) {
+    private static double getAsDouble( final Object o ) {
         if ( o instanceof Double ) {
             return (Double) o;
         }
