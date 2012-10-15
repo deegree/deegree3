@@ -599,7 +599,6 @@ public class WMSController extends AbstractOWS {
             out.close();
         }
         response.flushBuffer();
-        return;
     }
 
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
