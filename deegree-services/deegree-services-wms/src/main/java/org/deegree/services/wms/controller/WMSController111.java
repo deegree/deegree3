@@ -38,7 +38,6 @@ package org.deegree.services.wms.controller;
 
 import static org.deegree.commons.ows.exception.OWSException.INVALID_SRS;
 import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 
