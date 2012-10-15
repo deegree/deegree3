@@ -58,6 +58,7 @@ import java.util.ListIterator;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -129,7 +130,9 @@ public class WMSSimilarityIntegrationTest {
 
         double sim = 0;
         for ( byte[] response : this.response ) {
-            sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
+            if ( MathUtils.isZero( sim ) ) {
+                sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
+            }
         }
 
         if ( Math.abs( 1.0 - sim ) > 0.01 ) {
