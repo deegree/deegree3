@@ -84,6 +84,40 @@ public class Themes {
         return list;
     }
 
+    private static Envelope aggregateFromLayer( Layer l, Envelope env, List<ICRS> crs ) {
+        SpatialMetadata smd = l.getMetadata().getSpatialMetadata();
+        if ( smd == null ) {
+            return env;
+        }
+        if ( smd.getEnvelope() != null ) {
+            if ( env == null ) {
+                env = smd.getEnvelope();
+            } else {
+                env = env.merge( smd.getEnvelope() );
+            }
+        }
+        if ( smd.getCoordinateSystems() != null ) {
+            addAllUncontained( crs, smd.getCoordinateSystems() );
+        }
+        return env;
+    }
+
+    private static Envelope aggregateFromTheme( Theme t, Envelope env, List<ICRS> crs ) {
+        aggregateSpatialMetadata( t );
+        SpatialMetadata smd = t.getMetadata().getSpatialMetadata();
+        if ( smd.getEnvelope() != null ) {
+            if ( env == null ) {
+                env = smd.getEnvelope();
+            } else {
+                env = env.merge( smd.getEnvelope() );
+            }
+        }
+        if ( smd.getCoordinateSystems() != null ) {
+            addAllUncontained( crs, smd.getCoordinateSystems() );
+        }
+        return env;
+    }
+
     public static void aggregateSpatialMetadata( Theme theme ) {
         // TODO price question is, bottom up or top down inheritance? Possibly a combined approach is desirable (top
         // down inheritance for configured theme values, bottom up for envelopes from layers or so)
@@ -94,34 +128,10 @@ public class Themes {
             crs.addAll( curSmd.getCoordinateSystems() );
         }
         for ( Theme t : theme.getThemes() ) {
-            aggregateSpatialMetadata( t );
-            SpatialMetadata smd = t.getMetadata().getSpatialMetadata();
-            if ( smd.getEnvelope() != null ) {
-                if ( env == null ) {
-                    env = smd.getEnvelope();
-                } else {
-                    env = env.merge( smd.getEnvelope() );
-                }
-            }
-            if ( smd.getCoordinateSystems() != null ) {
-                addAllUncontained( crs, smd.getCoordinateSystems() );
-            }
+            env = aggregateFromTheme( t, env, crs );
         }
         for ( Layer l : theme.getLayers() ) {
-            SpatialMetadata smd = l.getMetadata().getSpatialMetadata();
-            if ( smd == null ) {
-                continue;
-            }
-            if ( smd.getEnvelope() != null ) {
-                if ( env == null ) {
-                    env = smd.getEnvelope();
-                } else {
-                    env = env.merge( smd.getEnvelope() );
-                }
-            }
-            if ( smd.getCoordinateSystems() != null ) {
-                addAllUncontained( crs, smd.getCoordinateSystems() );
-            }
+            env = aggregateFromLayer( l, env, crs );
         }
         theme.getMetadata().setSpatialMetadata( new SpatialMetadata( env, crs ) );
     }
