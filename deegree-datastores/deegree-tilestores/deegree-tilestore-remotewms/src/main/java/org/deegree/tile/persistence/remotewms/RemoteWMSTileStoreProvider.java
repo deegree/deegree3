@@ -99,6 +99,24 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
         this.workspace = workspace;
     }
 
+    private Map<String, TileDataSet> extractTileDataSets( RemoteWMSTileStoreJAXB config, RemoteWMS wms )
+                            throws ResourceInitException {
+        TileMatrixSetManager tmsMgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
+        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
+        for ( RemoteWMSTileStoreJAXB.TileDataSet cfg : config.getTileDataSet() ) {
+            String id = cfg.getIdentifier();
+            String tmsId = cfg.getTileMatrixSetId();
+            TileMatrixSet tms = tmsMgr.get( tmsId );
+            if ( tms == null ) {
+                throw new ResourceInitException( "The tile matrix set with id " + tmsId + " was not available." );
+            }
+
+            RequestParams params = cfg.getRequestParams();
+            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat() ) );
+        }
+        return map;
+    }
+
     @Override
     public TileStore create( URL configUrl )
                             throws ResourceInitException {
@@ -109,7 +127,6 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
 
             String wmsId = config.getRemoteWMSId();
             RemoteOWSManager wmsMgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-            TileMatrixSetManager tmsMgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
             RemoteOWS wms = wmsMgr.get( wmsId );
             if ( !( wms instanceof RemoteWMS ) ) {
                 if ( wms == null ) {
@@ -120,18 +137,7 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
                                                  + wms.getClass().getSimpleName() + ")" );
             }
 
-            Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-            for ( RemoteWMSTileStoreJAXB.TileDataSet cfg : config.getTileDataSet() ) {
-                String id = cfg.getIdentifier();
-                String tmsId = cfg.getTileMatrixSetId();
-                TileMatrixSet tms = tmsMgr.get( tmsId );
-                if ( tms == null ) {
-                    throw new ResourceInitException( "The tile matrix set with id " + tmsId + " was not available." );
-                }
-
-                RequestParams params = cfg.getRequestParams();
-                map.put( id, buildTileDataSet( params, tms, ( (RemoteWMS) wms ).getClient(), cfg.getOutputFormat() ) );
-            }
+            Map<String, TileDataSet> map = extractTileDataSets( config, (RemoteWMS) wms );
 
             return new GenericTileStore( map );
         } catch ( ResourceInitException e ) {
