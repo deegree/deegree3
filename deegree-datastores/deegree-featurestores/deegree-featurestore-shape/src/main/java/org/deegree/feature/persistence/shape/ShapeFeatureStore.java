@@ -60,6 +60,7 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -300,8 +301,9 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     private void getCRSFromFile( File prj ) {
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader( new FileReader( prj ) );
+            in = new BufferedReader( new FileReader( prj ) );
             String c = in.readLine().trim();
             try {
                 crs = CRSManager.lookup( c );
@@ -321,6 +323,8 @@ public class ShapeFeatureStore implements FeatureStore {
             LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.", shpName );
             LOG.trace( "Stack trace:", e1 );
             available = false;
+        } finally {
+            IOUtils.closeQuietly( in );
         }
     }
 

@@ -36,7 +36,6 @@
 package org.deegree.layer;
 
 import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.layer.Layer;
 
 /**
  * 

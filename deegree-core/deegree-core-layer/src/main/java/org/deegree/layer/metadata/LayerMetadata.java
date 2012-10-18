@@ -174,6 +174,35 @@ public class LayerMetadata {
         this.spatialMetadata = spatialMetadata;
     }
 
+    private void mergeDescription( Description desc ) {
+        if ( desc != null ) {
+            if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
+                description.setTitles( desc.getTitles() );
+            }
+            if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
+                description.setAbstracts( desc.getAbstracts() );
+            }
+            if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
+                description.setKeywords( desc.getKeywords() );
+            }
+        }
+    }
+
+    private void mergeSpatialMetadata( SpatialMetadata smd ) {
+        if ( smd != null ) {
+            if ( spatialMetadata.getCoordinateSystems() == null || spatialMetadata.getCoordinateSystems().isEmpty() ) {
+                spatialMetadata.setCoordinateSystems( smd.getCoordinateSystems() );
+            }
+            if ( spatialMetadata.getEnvelope() == null ) {
+                spatialMetadata.setEnvelope( smd.getEnvelope() );
+            } else {
+                if ( smd.getEnvelope() != null ) {
+                    spatialMetadata.setEnvelope( spatialMetadata.getEnvelope().merge( smd.getEnvelope() ) );
+                }
+            }
+        }
+    }
+
     /**
      * Copies any fields from md which are currently not set (applies to description and spatial metadata only).
      * 
@@ -183,33 +212,12 @@ public class LayerMetadata {
         if ( description == null ) {
             description = md.getDescription();
         } else {
-            if ( md.getDescription() != null ) {
-                if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
-                    description.setTitles( md.getDescription().getTitles() );
-                }
-                if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
-                    description.setAbstracts( md.getDescription().getAbstracts() );
-                }
-                if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
-                    description.setKeywords( md.getDescription().getKeywords() );
-                }
-            }
+            mergeDescription( md.getDescription() );
         }
         if ( spatialMetadata == null ) {
             spatialMetadata = md.getSpatialMetadata();
         } else {
-            if ( md.getSpatialMetadata() != null ) {
-                if ( spatialMetadata.getCoordinateSystems() == null || spatialMetadata.getCoordinateSystems().isEmpty() ) {
-                    spatialMetadata.setCoordinateSystems( md.getSpatialMetadata().getCoordinateSystems() );
-                }
-                if ( spatialMetadata.getEnvelope() == null ) {
-                    spatialMetadata.setEnvelope( md.getSpatialMetadata().getEnvelope() );
-                } else {
-                    if ( md.getSpatialMetadata().getEnvelope() != null ) {
-                        spatialMetadata.setEnvelope( spatialMetadata.getEnvelope().merge( md.getSpatialMetadata().getEnvelope() ) );
-                    }
-                }
-            }
+            mergeSpatialMetadata( md.getSpatialMetadata() );
         }
     }
 
