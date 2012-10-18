@@ -54,7 +54,6 @@ import net.sf.ehcache.CacheManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
