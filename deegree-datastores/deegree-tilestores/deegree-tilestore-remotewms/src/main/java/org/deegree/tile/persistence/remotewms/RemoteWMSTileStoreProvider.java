@@ -40,37 +40,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewms;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.StringUtils;
-import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;
-import org.deegree.tile.DefaultTileDataSet;
-import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.GenericTileStore;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
-import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileDataSet.RequestParams;
 import org.deegree.tile.tilematrixset.TileMatrixSetManager;
 import org.slf4j.Logger;
 
@@ -99,24 +88,6 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
         this.workspace = workspace;
     }
 
-    private Map<String, TileDataSet> extractTileDataSets( RemoteWMSTileStoreJAXB config, RemoteWMS wms )
-                            throws ResourceInitException {
-        TileMatrixSetManager tmsMgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
-        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-        for ( RemoteWMSTileStoreJAXB.TileDataSet cfg : config.getTileDataSet() ) {
-            String id = cfg.getIdentifier();
-            String tmsId = cfg.getTileMatrixSetId();
-            TileMatrixSet tms = tmsMgr.get( tmsId );
-            if ( tms == null ) {
-                throw new ResourceInitException( "The tile matrix set with id " + tmsId + " was not available." );
-            }
-
-            RequestParams params = cfg.getRequestParams();
-            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat() ) );
-        }
-        return map;
-    }
-
     @Override
     public TileStore create( URL configUrl )
                             throws ResourceInitException {
@@ -137,7 +108,10 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
                                                  + wms.getClass().getSimpleName() + ")" );
             }
 
-            Map<String, TileDataSet> map = extractTileDataSets( config, (RemoteWMS) wms );
+            TileMatrixSetManager tmsMgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
+            TileDataSetBuilder builder = new TileDataSetBuilder( config, (RemoteWMS) wms, tmsMgr );
+
+            Map<String, TileDataSet> map = builder.extractTileDataSets();
 
             return new GenericTileStore( map );
         } catch ( ResourceInitException e ) {
@@ -147,25 +121,6 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
             LOG.error( msg, e );
             throw new ResourceInitException( "Unable to create RemoteWMSTileStore: " + e.getMessage(), e );
         }
-    }
-
-    private DefaultTileDataSet buildTileDataSet( RequestParams requestParams, TileMatrixSet tms, WMSClient client,
-                                                 String outputFormat ) {
-        List<String> layers = splitNullSafe( requestParams.getLayers() );
-        List<String> styles = splitNullSafe( requestParams.getStyles() );
-        String format = requestParams.getFormat();
-
-        if ( outputFormat.startsWith( "image/" ) ) {
-            outputFormat = outputFormat.substring( 6 );
-        }
-
-        List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
-        for ( TileMatrix tm : tms.getTileMatrices() ) {
-            TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat );
-            dataLevels.add( 0, m );
-        }
-
-        return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
     }
 
     @SuppressWarnings("unchecked")
@@ -187,14 +142,6 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
     @Override
     public List<File> getTileStoreDependencies( File config ) {
         return Collections.<File> emptyList();
-    }
-
-    private static List<String> splitNullSafe( String csv ) {
-        if ( csv == null ) {
-            return emptyList();
-        }
-        String[] tokens = StringUtils.split( csv, "," );
-        return asList( tokens );
     }
 
 }
