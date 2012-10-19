@@ -45,14 +45,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -61,16 +59,11 @@ import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wmts.RemoteWMTS;
-import org.deegree.tile.DefaultTileDataSet;
-import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.GenericTileStore;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB;
-import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB.TileDataSet.RequestParams;
 import org.deegree.tile.tilematrixset.TileMatrixSetManager;
 import org.slf4j.Logger;
 
@@ -139,12 +132,16 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
     private Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config, RemoteWMTS wmts )
                             throws ResourceInitException {
 
+        TileMatrixSetManager tileMatrixSetManager = workspace.getSubsystemManager( TileMatrixSetManager.class );
+
         Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
         for ( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig : config.getTileDataSet() ) {
             String tileDataSetId = determineLayerId( tileDataSetConfig );
             String outputFormat = determineOutputFormat( tileDataSetConfig );
             WMTSClient client = wmts.getClient();
-            TileDataSet tileDataSet = buildTileDataSet( tileDataSetConfig, client, outputFormat );
+            TileDataSetBuilder builder = new TileDataSetBuilder( tileDataSetConfig, client, outputFormat,
+                                                                 tileMatrixSetManager );
+            TileDataSet tileDataSet = builder.buildTileDataSet();
             map.put( tileDataSetId, tileDataSet );
         }
         return map;
@@ -164,91 +161,6 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
             return requestedOutputFormat;
         }
         return requestFormat;
-    }
-
-    private TileDataSet buildTileDataSet( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig, WMTSClient client,
-                                          String outputFormat )
-                            throws ResourceInitException {
-
-        if ( outputFormat.startsWith( "image/" ) ) {
-            outputFormat = outputFormat.substring( 6 );
-        }
-
-        RequestParams requestParams = tileDataSetConfig.getRequestParams();
-        String requestTileMatrixSetId = requestParams.getTileMatrixSet();
-        String workspaceTileMatrixSetId = tileDataSetConfig.getTileMatrixSetId();
-        if ( workspaceTileMatrixSetId == null ) {
-            workspaceTileMatrixSetId = requestTileMatrixSetId;
-        }
-        TileMatrixSet localTileMatrixSet = getLocalTileMatrixSet( requestTileMatrixSetId, workspaceTileMatrixSetId );
-        TileMatrixSet remoteTileMatrixSet = getRemoteTileMatrixSet( client, requestTileMatrixSetId );
-
-        List<TileDataLevel> dataLevels = buildTileDataLevels( localTileMatrixSet, remoteTileMatrixSet, requestParams,
-                                                              client, outputFormat );
-        return new DefaultTileDataSet( dataLevels, localTileMatrixSet, "image/" + outputFormat );
-    }
-
-    private TileMatrixSet getLocalTileMatrixSet( String requestTileMatrixSetId, String workspaceTileMatrixSetId )
-                            throws ResourceInitException {
-        String tileMatrixSetId = workspaceTileMatrixSetId;
-        if ( tileMatrixSetId == null ) {
-            tileMatrixSetId = requestTileMatrixSetId;
-        }
-
-        TileMatrixSetManager tileMatrixSetManager = workspace.getSubsystemManager( TileMatrixSetManager.class );
-        TileMatrixSet tileMatrixSet = tileMatrixSetManager.get( tileMatrixSetId );
-        if ( tileMatrixSet == null ) {
-            String msg = "No local TileMatrixSet definition with identifier '" + tileMatrixSetId + "' available.";
-            throw new ResourceInitException( msg );
-        }
-        return tileMatrixSet;
-    }
-
-    private TileMatrixSet getRemoteTileMatrixSet( WMTSClient client, String tileMatrixSetId )
-                            throws ResourceInitException {
-        TileMatrixSet tileMatrixSet = null;
-        try {
-            tileMatrixSet = client.getTileMatrixSet( tileMatrixSetId );
-        } catch ( XMLStreamException e ) {
-            if ( tileMatrixSet == null ) {
-                String msg = "No remote TileMatrixSet definition with identifier '" + tileMatrixSetId + "' available.";
-                throw new ResourceInitException( msg );
-            }
-        }
-        return tileMatrixSet;
-    }
-
-    private List<TileDataLevel> buildTileDataLevels( TileMatrixSet localTileMatrixSet,
-                                                     TileMatrixSet remoteTileMatrixSet, RequestParams requestParams,
-                                                     WMTSClient client, String outputFormat ) {
-        String layer = requestParams.getLayer();
-        String style = requestParams.getStyle();
-        String format = requestParams.getFormat();
-        String remoteTileMatrixSetId = remoteTileMatrixSet.getIdentifier();
-
-        List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
-        List<TileMatrix> localTileMatrices = localTileMatrixSet.getTileMatrices();
-        List<TileMatrix> remoteTileMatrices = remoteTileMatrixSet.getTileMatrices();
-        int numMatrices = remoteTileMatrices.size();
-        if ( localTileMatrices.size() < numMatrices ) {
-            numMatrices = localTileMatrices.size();
-        }
-        for ( int i = 0; i < numMatrices; i++ ) {
-            TileMatrix localTileMatrix = localTileMatrices.get( i );
-            TileMatrix remoteTileMatrix = remoteTileMatrices.get( i );
-            String remoteTileMatrixId = remoteTileMatrix.getIdentifier();
-            TileDataLevel level = buildTileDataLevel( localTileMatrix, remoteTileMatrixSetId, remoteTileMatrixId,
-                                                      layer, style, format, client, outputFormat );
-            dataLevels.add( level );
-        }
-        return dataLevels;
-    }
-
-    private TileDataLevel buildTileDataLevel( TileMatrix tileMatrix, String remoteTileMatrixSetId,
-                                              String remoteTileMatrixId, String layer, String style, String format,
-                                              WMTSClient client, String outputFormat ) {
-        return new RemoteWMTSTileDataLevel( tileMatrix, remoteTileMatrixSetId, remoteTileMatrixId, format, layer,
-                                            style, client, outputFormat );
     }
 
     @SuppressWarnings("unchecked")
