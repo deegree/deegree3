@@ -102,36 +102,38 @@ public class ConfigServlet extends HttpServlet {
         }
 
         try {
-            if ( path.toLowerCase().startsWith( "/download" ) ) {
-                download( path.substring( 9 ), resp );
-            }
-
-            if ( path.toLowerCase().startsWith( "/restart" ) ) {
-                restart( path.substring( 8 ), resp );
-            }
-
-            if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {
-                listWorkspaces( resp );
-            } else if ( path.toLowerCase().startsWith( "/list" ) ) {
-                list( path.substring( 5 ), resp );
-            }
-
-            if ( path.toLowerCase().startsWith( "/invalidate/datasources/tile/" ) ) {
-                invalidate( path.substring( 29 ), req.getQueryString(), resp );
-            }
-
-            if ( path.toLowerCase().startsWith( "/delete" ) ) {
-                delete( path.substring( 7 ), resp );
-            }
+            dispatch( path, req, resp );
         } catch ( SecurityException e ) {
             resp.setStatus( 403 );
             IOUtils.write( "There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-        } catch ( IOException e ) {
+        } catch ( Throwable e ) {
             resp.setStatus( 500 );
             IOUtils.write( "Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-        } catch ( ServletException e ) {
-            resp.setStatus( 500 );
-            IOUtils.write( "Error while reloading workspace: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
+        }
+    }
+
+    private void dispatch( String path, HttpServletRequest req, HttpServletResponse resp )
+                            throws IOException, ServletException {
+        if ( path.toLowerCase().startsWith( "/download" ) ) {
+            download( path.substring( 9 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/restart" ) ) {
+            restart( path.substring( 8 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {
+            listWorkspaces( resp );
+        } else if ( path.toLowerCase().startsWith( "/list" ) ) {
+            list( path.substring( 5 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/invalidate/datasources/tile/" ) ) {
+            invalidate( path.substring( 29 ), req.getQueryString(), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/delete" ) ) {
+            delete( path.substring( 7 ), resp );
         }
     }
 
