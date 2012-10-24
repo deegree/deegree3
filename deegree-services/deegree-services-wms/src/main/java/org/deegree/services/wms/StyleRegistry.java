@@ -36,38 +36,26 @@
 package org.deegree.services.wms;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.protocol.wms.ops.SLDParser.getStyles;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TimerTask;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.filter.Filter;
 import org.deegree.services.jaxb.wms.DirectStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType;
-import org.deegree.services.jaxb.wms.SLDStyleType.LegendGraphicFile;
-import org.deegree.style.StyleRef;
-import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
@@ -100,11 +88,12 @@ public class StyleRegistry extends TimerTask {
 
     private StyleStoreManager styleManager;
 
-    private DeegreeWorkspace workspace;
+    private StyleBuilder builder;
 
     public StyleRegistry( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
         this.styleManager = workspace.getSubsystemManager( StyleStoreManager.class );
+        // please take note that the style builder instance modifies field values from this class!
+        builder = new StyleBuilder( styleManager, soleStyleFiles, soleLegendFiles, this, workspace );
     }
 
     /**
@@ -225,7 +214,7 @@ public class StyleRegistry extends TimerTask {
         return styles;
     }
 
-    private Style loadNoImport( String layerName, File file, boolean legend ) {
+    Style loadNoImport( String layerName, File file, boolean legend ) {
         XMLInputFactory fac = XMLInputFactory.newInstance();
         FileInputStream in = null;
         try {
@@ -287,91 +276,7 @@ public class StyleRegistry extends TimerTask {
      * @param adapter
      */
     public void load( String layerName, List<DirectStyleType> styles, XMLAdapter adapter ) {
-        File stylesDir = new File( workspace.getLocation(), "styles" );
-        for ( DirectStyleType sty : styles ) {
-            try {
-                File file = new File( adapter.resolve( sty.getFile() ).toURI() );
-
-                Style style;
-                if ( file.getParentFile().equals( stylesDir ) ) {
-                    // already loaded from style store
-                    String styleId = file.getName().substring( 0, file.getName().length() - 4 );
-                    StyleStore store = styleManager.get( styleId );
-                    if ( store != null ) {
-                        style = store.getStyle( null ).copy();
-                    } else {
-                        LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
-                        style = loadNoImport( layerName, file, false );
-                    }
-                } else {
-                    // outside of workspace - load it manually
-                    style = loadNoImport( layerName, file, false );
-                }
-                if ( style != null ) {
-                    String name = sty.getName();
-                    if ( name != null ) {
-                        style.setName( name );
-                    }
-                    if ( styles.size() == 1 ) {
-                        soleStyleFiles.add( file.getName() );
-                    }
-                    put( layerName, style, false );
-                    if ( sty.getLegendGraphicFile() != null ) {
-                        URL url = adapter.resolve( sty.getLegendGraphicFile().getValue() );
-                        if ( url.toURI().getScheme().equals( "file" ) ) {
-                            File legend = new File( url.toURI() );
-                            style.setLegendFile( legend );
-                        } else {
-                            style.setLegendURL( url );
-                        }
-                        style.setPrefersGetLegendGraphicUrl( sty.getLegendGraphicFile().isOutputGetLegendGraphicUrl() );
-                    }
-                }
-            } catch ( MalformedURLException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            } catch ( URISyntaxException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            }
-            try {
-                if ( sty.getLegendConfigurationFile() != null ) {
-                    File file = new File( adapter.resolve( sty.getLegendConfigurationFile() ).toURI() );
-                    Style style;
-                    if ( file.getParentFile().equals( stylesDir ) ) {
-                        // already loaded from style store
-                        String styleId = file.getName().substring( 0, file.getName().length() - 4 );
-                        StyleStore store = styleManager.get( styleId );
-                        if ( store != null ) {
-                            style = store.getStyle( null ).copy();
-                        } else {
-                            LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
-                            style = loadNoImport( layerName, file, true );
-                        }
-                    } else {
-                        // outside of workspace - load it manually
-                        style = loadNoImport( layerName, file, true );
-                    }
-
-                    String name = sty.getName();
-                    if ( style != null ) {
-                        if ( name != null ) {
-                            style.setName( name );
-                        }
-                        if ( styles.size() == 1 ) {
-                            soleLegendFiles.add( file.getName() );
-                        }
-                        putLegend( layerName, style, false );
-                    }
-                }
-            } catch ( MalformedURLException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            } catch ( URISyntaxException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            }
-        }
+        builder.parse( layerName, styles, adapter );
     }
 
     /**
@@ -380,127 +285,7 @@ public class StyleRegistry extends TimerTask {
      * @param adapter
      */
     public void load( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
-        File stylesDir = new File( workspace.getLocation(), "styles" );
-
-        for ( SLDStyleType sty : styles ) {
-            FileInputStream is = null;
-            try {
-                File file = new File( adapter.resolve( sty.getFile() ).toURI() );
-
-                String namedLayer = sty.getNamedLayer();
-                LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
-                Map<String, String> map = new HashMap<String, String>();
-                Map<String, Pair<File, URL>> legends = new HashMap<String, Pair<File, URL>>();
-                Map<String, Boolean> glgUrls = new HashMap<String, Boolean>();
-                String name = null, lastName = null;
-                for ( JAXBElement<?> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
-                    if ( elem.getName().getLocalPart().equals( "Name" ) ) {
-                        name = elem.getValue().toString();
-                    } else if ( elem.getName().getLocalPart().equals( "LegendConfigurationFile" ) ) {
-                        File legendFile = new File( adapter.resolve( elem.getValue().toString() ).toURI() );
-                        Style style;
-
-                        if ( legendFile.getParentFile().equals( stylesDir ) ) {
-                            // already loaded from style store
-                            String styleId = legendFile.getName().substring( 0, legendFile.getName().length() - 4 );
-                            StyleStore store = styleManager.get( styleId );
-                            if ( store != null ) {
-                                style = store.getStyle( null ).copy();
-                            } else {
-                                LOG.warn( "Style store {} was not available, trying to load directly.", styleId );
-                                style = loadNoImport( layerName, legendFile, true );
-                            }
-                        } else {
-                            style = loadNoImport( layerName, legendFile, true );
-                        }
-
-                        if ( style != null ) {
-                            if ( name != null ) {
-                                style.setName( name );
-                            }
-                            putLegend( layerName, style, false );
-                        }
-                    } else if ( elem.getName().getLocalPart().equals( "LegendGraphicFile" ) ) {
-                        LegendGraphicFile lgf = (LegendGraphicFile) elem.getValue();
-                        URL url = adapter.resolve( lgf.getValue() );
-                        if ( url.toURI().getScheme().equals( "file" ) ) {
-                            File legend = new File( url.toURI() );
-                            legends.put( lastName, new Pair<File, URL>( legend, null ) );
-                        } else {
-                            legends.put( lastName, new Pair<File, URL>( null, url ) );
-                        }
-                        glgUrls.put( lastName, lgf.isOutputGetLegendGraphicUrl() );
-                    } else if ( elem.getName().getLocalPart().equals( "UserStyle" ) ) {
-                        if ( name == null ) {
-                            name = elem.getValue().toString();
-                        }
-                        LOG.debug( "Will load user style with name '{}', it will be known as '{}'.", elem.getValue(),
-                                   name );
-                        map.put( elem.getValue().toString(), name );
-                        lastName = name;
-                        name = null;
-                    }
-                }
-
-                if ( file.getParentFile().equals( stylesDir ) ) {
-                    // already loaded from workspace
-                    String styleId = file.getName().substring( 0, file.getName().length() - 4 );
-                    StyleStore store = styleManager.get( styleId );
-
-                    if ( store != null ) {
-                        LOG.info( "Using SLD file loaded from style store." );
-                        for ( Style s : store.getAll( namedLayer ) ) {
-                            s.setName( map.get( s.getName() ) );
-                            put( layerName, s, false );
-                            Pair<File, URL> p = legends.get( s.getName() );
-                            if ( p != null && p.first != null ) {
-                                s.setLegendFile( p.first );
-                            } else if ( p != null ) {
-                                s.setLegendURL( p.second );
-                            }
-                            s.setPrefersGetLegendGraphicUrl( glgUrls.get( s.getName() ) != null
-                                                             && glgUrls.get( s.getName() ) );
-                        }
-                        return;
-                    }
-                }
-
-                LOG.info( "Parsing SLD style file unavailable from style stores." );
-                XMLInputFactory fac = XMLInputFactory.newInstance();
-                is = new FileInputStream( file );
-                XMLStreamReader in = fac.createXMLStreamReader( file.toURI().toURL().toString(), is );
-                Pair<LinkedList<Filter>, LinkedList<StyleRef>> parsedStyles = getStyles( in, namedLayer, map );
-                for ( StyleRef s : parsedStyles.second ) {
-                    if ( !s.isResolved() ) {
-                        continue;
-                    }
-                    put( layerName, s.getStyle(), false );
-                    Pair<File, URL> p = legends.get( s.getName() );
-                    if ( p != null && p.first != null ) {
-                        s.getStyle().setLegendFile( p.first );
-                    } else if ( p != null ) {
-                        s.getStyle().setLegendURL( p.second );
-                    }
-                    s.getStyle().setPrefersGetLegendGraphicUrl( glgUrls.get( s.getStyle().getName() ) != null
-                                                                                        && glgUrls.get( s.getStyle().getName() ) );
-                }
-            } catch ( MalformedURLException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            } catch ( FileNotFoundException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be found.", sty.getFile(), layerName );
-            } catch ( XMLStreamException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be parsed: '{}'.",
-                          new Object[] { sty.getFile(), layerName, e.getLocalizedMessage() } );
-            } catch ( URISyntaxException e ) {
-                LOG.trace( "Stack trace", e );
-                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
-            } finally {
-                closeQuietly( is );
-            }
-        }
+        builder.parse( layerName, adapter, styles );
     }
 
     /**

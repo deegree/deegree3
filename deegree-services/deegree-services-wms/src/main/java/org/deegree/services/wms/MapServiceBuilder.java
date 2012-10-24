@@ -163,70 +163,7 @@ class MapServiceBuilder {
         Layer res = null;
         if ( layer instanceof AbstractLayerType ) {
             AbstractLayerType aLayer = (AbstractLayerType) layer;
-
-            if ( aLayer.getFeatureStoreId() != null ) {
-                try {
-                    res = new FeatureLayer( service, aLayer, parent, workspace );
-                } catch ( Throwable e ) {
-                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-                                                                                              : aLayer.getName(),
-                              e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace", e );
-                    return null;
-                }
-            } else if ( aLayer.getCoverageStoreId() != null ) {
-                res = new RasterLayer( service, aLayer, parent );
-            } else if ( aLayer.getRemoteWMSStoreId() != null ) {
-                res = new RemoteWMSLayer( service, aLayer, parent );
-            } else {
-                res = new EmptyLayer( service, aLayer, parent );
-            }
-
-            if ( res.getName() != null ) {
-                if ( aLayer.getDirectStyle() != null ) {
-                    service.registry.load( res.getName(), aLayer.getDirectStyle(), adapter );
-                }
-                if ( aLayer.getSLDStyle() != null ) {
-                    service.registry.load( res.getName(), adapter, aLayer.getSLDStyle() );
-                }
-                synchronized ( service.layers ) {
-                    service.layers.put( res.getName(), res );
-                }
-            } else {
-                String name = "NamelessLayer_" + ++stylesCounter;
-                if ( aLayer.getDirectStyle() != null ) {
-                    service.registry.load( name, aLayer.getDirectStyle(), adapter );
-                }
-                if ( aLayer.getSLDStyle() != null ) {
-                    service.registry.load( name, adapter, aLayer.getSLDStyle() );
-                }
-                res.setInternalName( name );
-            }
-
-            // this is necessary as well as the run in addChildren (where the children can contain a mix between
-            // scaledenominators and scaleabove/until)
-            if ( aLayer.getScaleDenominators() != null ) {
-                res.setScaleHint( new DoublePair( aLayer.getScaleDenominators().getMin(),
-                                                  aLayer.getScaleDenominators().getMax() ) );
-            }
-
-            LayerOptionsType sf = aLayer.getLayerOptions();
-            if ( sf != null ) {
-                alias = handleDefaultValue( sf.getAntiAliasing(), Antialias.class, alias );
-                quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
-                interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
-                if ( sf.getMaxFeatures() != null ) {
-                    layerOptions.setMaxFeatures( res.getName(), sf.getMaxFeatures() );
-                }
-                if ( sf.getFeatureInfoRadius() != null ) {
-                    layerOptions.setFeatureInfoRadius( res.getName(), sf.getFeatureInfoRadius() );
-                }
-            }
-            layerOptions.setAntialias( res.getName(), alias );
-            layerOptions.setQuality( res.getName(), quality );
-            layerOptions.setInterpolation( res.getName(), interpol );
-
-            addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
+            res = parseAbstractLayer( aLayer, parent, quality );
         } else if ( layer instanceof StatisticsLayer ) {
             res = new org.deegree.services.wms.model.layers.StatisticsLayer( service, parent );
             synchronized ( service.layers ) {
@@ -252,6 +189,74 @@ class MapServiceBuilder {
         return res;
     }
 
+    private Layer parseAbstractLayer( AbstractLayerType aLayer, Layer parent, Quality quality )
+                            throws MalformedURLException {
+        Layer res = null;
+        if ( aLayer.getFeatureStoreId() != null ) {
+            try {
+                res = new FeatureLayer( service, aLayer, parent, workspace );
+            } catch ( Throwable e ) {
+                LOG.warn( "Layer '{}' could not be loaded: '{}'",
+                          aLayer.getName() == null ? aLayer.getTitle() : aLayer.getName(), e.getLocalizedMessage() );
+                LOG.trace( "Stack trace", e );
+                return null;
+            }
+        } else if ( aLayer.getCoverageStoreId() != null ) {
+            res = new RasterLayer( service, aLayer, parent );
+        } else if ( aLayer.getRemoteWMSStoreId() != null ) {
+            res = new RemoteWMSLayer( service, aLayer, parent );
+        } else {
+            res = new EmptyLayer( service, aLayer, parent );
+        }
+
+        if ( res.getName() != null ) {
+            if ( aLayer.getDirectStyle() != null ) {
+                service.registry.load( res.getName(), aLayer.getDirectStyle(), adapter );
+            }
+            if ( aLayer.getSLDStyle() != null ) {
+                service.registry.load( res.getName(), adapter, aLayer.getSLDStyle() );
+            }
+            synchronized ( service.layers ) {
+                service.layers.put( res.getName(), res );
+            }
+        } else {
+            String name = "NamelessLayer_" + ++stylesCounter;
+            if ( aLayer.getDirectStyle() != null ) {
+                service.registry.load( name, aLayer.getDirectStyle(), adapter );
+            }
+            if ( aLayer.getSLDStyle() != null ) {
+                service.registry.load( name, adapter, aLayer.getSLDStyle() );
+            }
+            res.setInternalName( name );
+        }
+
+        // this is necessary as well as the run in addChildren (where the children can contain a mix between
+        // scaledenominators and scaleabove/until)
+        if ( aLayer.getScaleDenominators() != null ) {
+            res.setScaleHint( new DoublePair( aLayer.getScaleDenominators().getMin(),
+                                              aLayer.getScaleDenominators().getMax() ) );
+        }
+
+        LayerOptionsType sf = aLayer.getLayerOptions();
+        if ( sf != null ) {
+            alias = handleDefaultValue( sf.getAntiAliasing(), Antialias.class, alias );
+            quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
+            interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
+            if ( sf.getMaxFeatures() != null ) {
+                layerOptions.setMaxFeatures( res.getName(), sf.getMaxFeatures() );
+            }
+            if ( sf.getFeatureInfoRadius() != null ) {
+                layerOptions.setFeatureInfoRadius( res.getName(), sf.getFeatureInfoRadius() );
+            }
+        }
+        layerOptions.setAntialias( res.getName(), alias );
+        layerOptions.setQuality( res.getName(), quality );
+        layerOptions.setInterpolation( res.getName(), interpol );
+
+        addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
+        return res;
+    }
+
     private void addChildren( Layer parent, List<JAXBElement<? extends BaseAbstractLayerType>> layers,
                               XMLAdapter adapter, Antialias alias, Interpolation interpol, Quality quality )
                             throws MalformedURLException {
@@ -263,6 +268,10 @@ class MapServiceBuilder {
             }
         }
 
+        updateScaleHints( parent, layers );
+    }
+
+    private void updateScaleHints( Layer parent, List<JAXBElement<? extends BaseAbstractLayerType>> layers ) {
         // second run for scale hints
         double last = NEGATIVE_INFINITY;
         Iterator<Layer> iter = parent.getChildren().iterator();
@@ -283,32 +292,37 @@ class MapServiceBuilder {
             }
 
             AbstractLayerType l = (AbstractLayerType) lay;
-            double min = Double.NaN;
-            double max = Double.NaN;
-            if ( l.getScaleDenominators() != null ) {
-                min = l.getScaleDenominators().getMin();
-                max = l.getScaleDenominators().getMax();
-                last = max;
-            }
-            if ( l.getScaleUntil() != null ) {
-                min = last;
-                max = l.getScaleUntil();
-                last = max;
-            }
-            if ( l.getScaleAbove() != null ) {
-                min = l.getScaleAbove();
-                max = POSITIVE_INFINITY;
-            }
-            if ( !Double.isNaN( min ) && !Double.isNaN( max ) ) {
-                if ( min > max ) {
-                    LOG.warn( "Configured min and max scale conflict (min > max) swapping min and max." );
-                    double d = max;
-                    max = min;
-                    min = d;
-                }
-                mappedChild.setScaleHint( new DoublePair( min, max ) );
-            }
+            last = updateScaleHint( l, mappedChild, last );
         }
+    }
+
+    private double updateScaleHint( AbstractLayerType l, Layer mappedChild, double last ) {
+        double min = Double.NaN;
+        double max = Double.NaN;
+        if ( l.getScaleDenominators() != null ) {
+            min = l.getScaleDenominators().getMin();
+            max = l.getScaleDenominators().getMax();
+            last = max;
+        }
+        if ( l.getScaleUntil() != null ) {
+            min = last;
+            max = l.getScaleUntil();
+            last = max;
+        }
+        if ( l.getScaleAbove() != null ) {
+            min = l.getScaleAbove();
+            max = POSITIVE_INFINITY;
+        }
+        if ( !Double.isNaN( min ) && !Double.isNaN( max ) ) {
+            if ( min > max ) {
+                LOG.warn( "Configured min and max scale conflict (min > max) swapping min and max." );
+                double d = max;
+                max = min;
+                min = d;
+            }
+            mappedChild.setScaleHint( new DoublePair( min, max ) );
+        }
+        return last;
     }
 
     private static <T extends Enum<T>> T handleDefaultValue( String val, Class<T> enumType, T defaultValue ) {
