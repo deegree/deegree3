@@ -59,9 +59,6 @@ import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
-import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -69,9 +66,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -82,7 +77,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Timer;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
@@ -125,22 +119,13 @@ import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.legends.Legends;
-import org.deegree.services.jaxb.wms.AbstractLayerType;
-import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
-import org.deegree.services.jaxb.wms.DynamicLayer;
-import org.deegree.services.jaxb.wms.LayerOptionsType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
-import org.deegree.services.jaxb.wms.StatisticsLayer;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.dynamic.LayerUpdater;
-import org.deegree.services.wms.dynamic.PostGISUpdater;
-import org.deegree.services.wms.dynamic.ShapeUpdater;
 import org.deegree.services.wms.model.layers.EmptyLayer;
 import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
-import org.deegree.services.wms.model.layers.RasterLayer;
-import org.deegree.services.wms.model.layers.RemoteWMSLayer;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.ImageUtils;
@@ -182,8 +167,6 @@ public class MapService {
 
     private MapOptions defaultLayerOptions;
 
-    private static int stylesCounter = 0;
-
     private LinkedList<LayerUpdater> dynamics = new LinkedList<LayerUpdater>();
 
     /**
@@ -192,8 +175,6 @@ public class MapService {
     public int updateSequence = 0; // TODO how to restore this after restart?
 
     private Timer styleUpdateTimer;
-
-    private DeegreeWorkspace workspace;
 
     private List<Theme> themes;
 
@@ -208,39 +189,15 @@ public class MapService {
      */
     public MapService( ServiceConfigurationType conf, XMLAdapter adapter, DeegreeWorkspace workspace )
                             throws MalformedURLException {
-        this.workspace = workspace;
         this.registry = new StyleRegistry( workspace );
         layers = new HashMap<String, Layer>();
 
-        Antialias alias = Antialias.BOTH;
-        Quality quali = Quality.HIGH;
-        Interpolation interpol = Interpolation.NEARESTNEIGHBOUR;
-        int maxFeatures = 10000;
-        int featureInfoRadius = 1;
-        if ( conf != null ) {
-            LayerOptionsType sf = conf.getDefaultLayerOptions();
-            alias = handleDefaultValue( sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH );
-            quali = handleDefaultValue( sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL );
-            interpol = handleDefaultValue( sf == null ? null : sf.getInterpolation(), Interpolation.class,
-                                           NEARESTNEIGHBOR );
-            if ( sf != null && sf.getMaxFeatures() != null ) {
-                maxFeatures = sf.getMaxFeatures();
-                LOG.debug( "Using global max features setting of {}.", maxFeatures );
-            } else {
-                LOG.debug( "Using default global max features setting of {}, set it to -1 if you don't want a limit.",
-                           maxFeatures );
-            }
-            if ( sf != null && sf.getFeatureInfoRadius() != null ) {
-                featureInfoRadius = sf.getFeatureInfoRadius();
-                LOG.debug( "Using global feature info radius setting of {}.", featureInfoRadius );
-            } else {
-                LOG.debug( "Using default feature info radius of {}.", featureInfoRadius );
-            }
-            defaultLayerOptions = new MapOptions( quali, interpol, alias, maxFeatures, featureInfoRadius );
-        }
+        MapServiceBuilder builder = new MapServiceBuilder( conf, adapter, layerOptions, this, workspace, dynamics );
+
+        defaultLayerOptions = builder.buildMapOptions();
 
         if ( conf != null && conf.getAbstractLayer() != null ) {
-            root = parseLayer( conf.getAbstractLayer().getValue(), null, adapter, alias, interpol, quali );
+            root = builder.parseLayers();
             fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
             // update the dynamic layers once on startup to avoid having a disappointingly long initial GetCapabilities
             // request...
@@ -295,19 +252,6 @@ public class MapService {
         return themes != null;
     }
 
-    private static <T extends Enum<T>> T handleDefaultValue( String val, Class<T> enumType, T defaultValue ) {
-        if ( val == null ) {
-            return defaultValue;
-        }
-        try {
-            return Enum.valueOf( enumType, val.toUpperCase() );
-        } catch ( IllegalArgumentException e ) {
-            LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
-                      new Object[] { val, enumType.getSimpleName(), defaultValue } );
-            return defaultValue;
-        }
-    }
-
     /**
      * @param layer
      * @param srs
@@ -350,160 +294,6 @@ public class MapService {
      */
     public ArrayList<LayerUpdater> getDynamics() {
         return new ArrayList<LayerUpdater>( dynamics );
-    }
-
-    private void addChildren( Layer parent, List<JAXBElement<? extends BaseAbstractLayerType>> layers,
-                              XMLAdapter adapter, Antialias alias, Interpolation interpol, Quality quality )
-                            throws MalformedURLException {
-        for ( JAXBElement<? extends BaseAbstractLayerType> el : layers ) {
-            BaseAbstractLayerType l = el.getValue();
-            Layer parsed = parseLayer( l, parent, adapter, alias, interpol, quality );
-            if ( parsed != null ) {
-                parent.getChildren().add( parsed );
-            }
-        }
-
-        // second run for scale hints
-        double last = NEGATIVE_INFINITY;
-        Iterator<Layer> iter = parent.getChildren().iterator();
-        for ( JAXBElement<? extends BaseAbstractLayerType> el : layers ) {
-            BaseAbstractLayerType lay = el.getValue();
-            if ( !( lay instanceof AbstractLayerType ) ) {
-                continue;
-            }
-
-            if ( !iter.hasNext() ) {
-                LOG.warn( "The parsed layer does not have a child, but a layer was configured, bailing out." );
-                break;
-            }
-            Layer mappedChild = iter.next();
-            if ( mappedChild == null ) {
-                LOG.warn( "The parsed layer does not have a child, but a layer was configured, bailing out." );
-                break;
-            }
-
-            AbstractLayerType l = (AbstractLayerType) lay;
-            double min = Double.NaN;
-            double max = Double.NaN;
-            if ( l.getScaleDenominators() != null ) {
-                min = l.getScaleDenominators().getMin();
-                max = l.getScaleDenominators().getMax();
-                last = max;
-            }
-            if ( l.getScaleUntil() != null ) {
-                min = last;
-                max = l.getScaleUntil();
-                last = max;
-            }
-            if ( l.getScaleAbove() != null ) {
-                min = l.getScaleAbove();
-                max = POSITIVE_INFINITY;
-            }
-            if ( !Double.isNaN( min ) && !Double.isNaN( max ) ) {
-                if ( min > max ) {
-                    LOG.warn( "Configured min and max scale conflict (min > max) swapping min and max." );
-                    double d = max;
-                    max = min;
-                    min = d;
-                }
-                mappedChild.setScaleHint( new DoublePair( min, max ) );
-            }
-        }
-    }
-
-    private Layer parseLayer( BaseAbstractLayerType layer, final Layer parent, XMLAdapter adapter, Antialias alias,
-                              Interpolation interpol, Quality quality )
-                            throws MalformedURLException {
-        Layer res = null;
-        if ( layer instanceof AbstractLayerType ) {
-            AbstractLayerType aLayer = (AbstractLayerType) layer;
-
-            if ( aLayer.getFeatureStoreId() != null ) {
-                try {
-                    res = new FeatureLayer( this, aLayer, parent, workspace );
-                } catch ( Throwable e ) {
-                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-                                                                                              : aLayer.getName(),
-                              e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace", e );
-                    return null;
-                }
-            } else if ( aLayer.getCoverageStoreId() != null ) {
-                res = new RasterLayer( this, aLayer, parent );
-            } else if ( aLayer.getRemoteWMSStoreId() != null ) {
-                res = new RemoteWMSLayer( this, aLayer, parent );
-            } else {
-                res = new EmptyLayer( this, aLayer, parent );
-            }
-
-            if ( res.getName() != null ) {
-                if ( aLayer.getDirectStyle() != null ) {
-                    registry.load( res.getName(), aLayer.getDirectStyle(), adapter );
-                }
-                if ( aLayer.getSLDStyle() != null ) {
-                    registry.load( res.getName(), adapter, aLayer.getSLDStyle() );
-                }
-                synchronized ( layers ) {
-                    layers.put( res.getName(), res );
-                }
-            } else {
-                String name = "NamelessLayer_" + ++stylesCounter;
-                if ( aLayer.getDirectStyle() != null ) {
-                    registry.load( name, aLayer.getDirectStyle(), adapter );
-                }
-                if ( aLayer.getSLDStyle() != null ) {
-                    registry.load( name, adapter, aLayer.getSLDStyle() );
-                }
-                res.setInternalName( name );
-            }
-
-            // this is necessary as well as the run in addChildren (where the children can contain a mix between
-            // scaledenominators and scaleabove/until)
-            if ( aLayer.getScaleDenominators() != null ) {
-                res.setScaleHint( new DoublePair( aLayer.getScaleDenominators().getMin(),
-                                                  aLayer.getScaleDenominators().getMax() ) );
-            }
-
-            LayerOptionsType sf = aLayer.getLayerOptions();
-            if ( sf != null ) {
-                alias = handleDefaultValue( sf.getAntiAliasing(), Antialias.class, alias );
-                quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
-                interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
-                if ( sf.getMaxFeatures() != null ) {
-                    layerOptions.setMaxFeatures( res.getName(), sf.getMaxFeatures() );
-                }
-                if ( sf.getFeatureInfoRadius() != null ) {
-                    layerOptions.setFeatureInfoRadius( res.getName(), sf.getFeatureInfoRadius() );
-                }
-            }
-            layerOptions.setAntialias( res.getName(), alias );
-            layerOptions.setQuality( res.getName(), quality );
-            layerOptions.setInterpolation( res.getName(), interpol );
-
-            addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
-        } else if ( layer instanceof StatisticsLayer ) {
-            res = new org.deegree.services.wms.model.layers.StatisticsLayer( this, parent );
-            synchronized ( layers ) {
-                layers.put( res.getName(), res );
-            }
-        } else {
-            DynamicLayer dyn = (DynamicLayer) layer;
-            if ( dyn.getShapefileDirectory() != null ) {
-                try {
-                    File shapeDir = new File( adapter.resolve( dyn.getShapefileDirectory() ).toURI() );
-                    dynamics.add( new ShapeUpdater( shapeDir, parent, this ) );
-                } catch ( URISyntaxException e ) {
-                    LOG.error( "Dynamic shape file directory '{}' could not be resolved.", dyn.getShapefileDirectory() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( dyn.getPostGIS() != null ) {
-                dynamics.add( new PostGISUpdater( dyn.getPostGIS().getValue(), dyn.getPostGIS().getSchema(), parent,
-                                                  this, adapter.getSystemId(), workspace ) );
-            }
-        }
-
-        return res;
     }
 
     /**
