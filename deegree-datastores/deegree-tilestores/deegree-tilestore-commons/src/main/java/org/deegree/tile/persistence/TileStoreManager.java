@@ -103,18 +103,9 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
 
         List<File> result = new ArrayList<File>();
 
-        Map<File, List<File>> deps = new HashMap<File, List<File>>();
-        for ( File f : files ) {
-            try {
-                TileStoreProvider p = (TileStoreProvider) this.getProvider( f.toURI().toURL() );
-                if ( p != null ) {
-                    deps.put( f, p.getTileStoreDependencies( f ) );
-                }
-            } catch ( MalformedURLException e ) {
-                // ignore
-            }
-        }
+        Map<File, List<File>> deps = getDependencies( files );
 
+        // add stores with no dependencies first
         for ( Entry<File, List<File>> e : deps.entrySet() ) {
             if ( e.getValue().isEmpty() ) {
                 result.add( e.getKey() );
@@ -122,6 +113,12 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
             }
         }
 
+        orderDependencies( files, deps, result );
+
+        return result;
+    }
+
+    private void orderDependencies( List<File> files, Map<File, List<File>> deps, List<File> result ) {
         boolean changed = false;
         while ( !files.isEmpty() ) {
             changed = false;
@@ -140,6 +137,21 @@ public class TileStoreManager extends AbstractResourceManager<TileStore> {
                 break;
             }
         }
-        return result;
     }
+
+    private Map<File, List<File>> getDependencies( List<File> files ) {
+        Map<File, List<File>> deps = new HashMap<File, List<File>>();
+        for ( File f : files ) {
+            try {
+                TileStoreProvider p = (TileStoreProvider) this.getProvider( f.toURI().toURL() );
+                if ( p != null ) {
+                    deps.put( f, p.getTileStoreDependencies( f ) );
+                }
+            } catch ( MalformedURLException e ) {
+                // ignore
+            }
+        }
+        return deps;
+    }
+
 }

@@ -4,17 +4,29 @@
 "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
   <module name="TreeWalker">
-    <module name="EmptyStatement" />
+    <module name="EmptyStatement">
+      <property name="severity" value="warning" />
+    </module>
     <module name="CyclomaticComplexity" />
     <module name="ClassFanOutComplexity" />
     <module name='CovariantEquals' />
     <module name='ClassDataAbstractionCoupling' />
     <module name='NPathComplexity' />
-    <module name='RedundantImport' />
-    <module name='UnusedImports' />
-    <module name='RedundantModifier' />
-    <module name='RedundantThrows' />
+    <module name='RedundantImport'>
+      <property name="severity" value="warning" />
+    </module>
+    <module name='UnusedImports'>
+      <property name="severity" value="warning" />
+    </module>
+    <module name='RedundantModifier'>
+      <property name="severity" value="warning" />
+    </module>
+    <module name='RedundantThrows'>
+      <property name="severity" value="warning" />
+    </module>
   </module>
   <module name='FileLength' />
-  <module name='NewlineAtEndOfFile' />
+  <module name='NewlineAtEndOfFile'>
+    <property name="severity" value="warning" />
+  </module>
 </module>
