@@ -26,7 +26,15 @@ import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.slf4j.Logger;
 
-public class RemoteWMSLayer extends AbstractLayer {
+/**
+ * TODO add class documentation here
+ * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+class RemoteWMSLayer extends AbstractLayer {
 
     private static final Logger LOG = getLogger( RemoteWMSLayer.class );
 
@@ -50,7 +58,7 @@ public class RemoteWMSLayer extends AbstractLayer {
 
     private final String originalName;
 
-    protected RemoteWMSLayer( String originalName, LayerMetadata md, WMSClient client, RequestOptionsType opts ) {
+    RemoteWMSLayer( String originalName, LayerMetadata md, WMSClient client, RequestOptionsType opts ) {
         super( md );
         this.originalName = originalName;
         md.setCascaded( md.getCascaded() + 1 );
@@ -65,44 +73,7 @@ public class RemoteWMSLayer extends AbstractLayer {
                 this.format = opts.getImageFormat().getValue();
                 this.transparent = opts.getImageFormat().isTransparent();
             }
-            if ( opts.getParameter() != null && !opts.getParameter().isEmpty() ) {
-                for ( Parameter p : opts.getParameter() ) {
-                    String name = p.getName();
-                    String value = p.getValue();
-                    ParameterUseType use = p.getUse();
-                    ParameterScopeType scope = p.getScope();
-                    switch ( use ) {
-                    case ALLOW_OVERRIDE:
-                        switch ( scope ) {
-                        case GET_MAP:
-                            defaultParametersGetMap.put( name, value );
-                            break;
-                        case GET_FEATURE_INFO:
-                            defaultParametersGetFeatureInfo.put( name, value );
-                            break;
-                        default:
-                            defaultParametersGetMap.put( name, value );
-                            defaultParametersGetFeatureInfo.put( name, value );
-                            break;
-                        }
-                        break;
-                    case FIXED:
-                        switch ( scope ) {
-                        case GET_MAP:
-                            hardParametersGetMap.put( name, value );
-                            break;
-                        case GET_FEATURE_INFO:
-                            hardParametersGetFeatureInfo.put( name, value );
-                            break;
-                        default:
-                            hardParametersGetMap.put( name, value );
-                            hardParametersGetFeatureInfo.put( name, value );
-                            break;
-                        }
-                        break;
-                    }
-                }
-            }
+            extractParameters( opts.getParameter() );
         }
         // set default values if not configured
         if ( this.crs == null ) {
@@ -114,6 +85,47 @@ public class RemoteWMSLayer extends AbstractLayer {
                 format = "image/png";
             } else {
                 format = fs.getFirst();
+            }
+        }
+    }
+
+    private void extractParameters( List<Parameter> params ) {
+        if ( params != null && !params.isEmpty() ) {
+            for ( Parameter p : params ) {
+                String name = p.getName();
+                String value = p.getValue();
+                ParameterUseType use = p.getUse();
+                ParameterScopeType scope = p.getScope();
+                switch ( use ) {
+                case ALLOW_OVERRIDE:
+                    switch ( scope ) {
+                    case GET_MAP:
+                        defaultParametersGetMap.put( name, value );
+                        break;
+                    case GET_FEATURE_INFO:
+                        defaultParametersGetFeatureInfo.put( name, value );
+                        break;
+                    default:
+                        defaultParametersGetMap.put( name, value );
+                        defaultParametersGetFeatureInfo.put( name, value );
+                        break;
+                    }
+                    break;
+                case FIXED:
+                    switch ( scope ) {
+                    case GET_MAP:
+                        hardParametersGetMap.put( name, value );
+                        break;
+                    case GET_FEATURE_INFO:
+                        hardParametersGetFeatureInfo.put( name, value );
+                        break;
+                    default:
+                        hardParametersGetMap.put( name, value );
+                        hardParametersGetFeatureInfo.put( name, value );
+                        break;
+                    }
+                    break;
+                }
             }
         }
     }
