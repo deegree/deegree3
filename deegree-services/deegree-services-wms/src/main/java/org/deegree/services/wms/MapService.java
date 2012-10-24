@@ -456,47 +456,7 @@ public class MapService {
             }
 
             if ( queries.size() == 1 ) {
-                LOG.debug( "Using collected queries for better performance." );
-
-                Java2DRenderer renderer = new Java2DRenderer( g, gm.getWidth(), gm.getHeight(), gm.getBoundingBox(),
-                                                              gm.getPixelSize() );
-                Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-
-                // TODO
-                XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator();
-
-                Collection<LinkedList<Query>> qs = queries.values();
-                FeatureInputStream rs = null;
-                try {
-                    FeatureStore store = queries.keySet().iterator().next();
-                    LinkedList<Query> queriesList = qs.iterator().next();
-                    if ( !queriesList.isEmpty() ) {
-                        rs = store.query( queriesList.toArray( new Query[queriesList.size()] ) );
-                        // TODO Should this always be done on this level? What about min and maxFill values?
-                        rs = new ThreadedFeatureInputStream( rs, 100, 20 );
-                        for ( Feature f : rs ) {
-                            QName name = f.getType().getName();
-                            FeatureLayer l = ftToLayer.get( name );
-
-                            applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
-                            render( f, (XPathEvaluator<Feature>) evaluator, ftToStyle.get( name ), renderer,
-                                    textRenderer, gm.getScale(), gm.getResolution() );
-                        }
-                    } else {
-                        LOG.warn( "No queries were found for the requested layers." );
-                    }
-                } catch ( FilterEvaluationException e ) {
-                    LOG.error( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                } catch ( FeatureStoreException e ) {
-                    LOG.error( "Data could not be fetched from the feature store. The error was '{}'.",
-                               e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                } finally {
-                    if ( rs != null ) {
-                        rs.close();
-                    }
-                }
+                handleCollectedQueries( queries, ftToLayer, ftToStyle, gm, g );
                 return;
             }
 
@@ -513,6 +473,51 @@ public class MapService {
             applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
 
             warnings.addAll( paintLayer( l, s, g, gm ) );
+        }
+    }
+
+    private void handleCollectedQueries( Map<FeatureStore, LinkedList<Query>> queries,
+                                         HashMap<QName, FeatureLayer> ftToLayer, HashMap<QName, Style> ftToStyle,
+                                         GetMap gm, Graphics2D g ) {
+        LOG.debug( "Using collected queries for better performance." );
+
+        Java2DRenderer renderer = new Java2DRenderer( g, gm.getWidth(), gm.getHeight(), gm.getBoundingBox(),
+                                                      gm.getPixelSize() );
+        Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
+
+        // TODO
+        XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator();
+
+        Collection<LinkedList<Query>> qs = queries.values();
+        FeatureInputStream rs = null;
+        try {
+            FeatureStore store = queries.keySet().iterator().next();
+            LinkedList<Query> queriesList = qs.iterator().next();
+            if ( !queriesList.isEmpty() ) {
+                rs = store.query( queriesList.toArray( new Query[queriesList.size()] ) );
+                // TODO Should this always be done on this level? What about min and maxFill values?
+                rs = new ThreadedFeatureInputStream( rs, 100, 20 );
+                for ( Feature f : rs ) {
+                    QName name = f.getType().getName();
+                    FeatureLayer l = ftToLayer.get( name );
+
+                    applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
+                    render( f, (XPathEvaluator<Feature>) evaluator, ftToStyle.get( name ), renderer, textRenderer,
+                            gm.getScale(), gm.getResolution() );
+                }
+            } else {
+                LOG.warn( "No queries were found for the requested layers." );
+            }
+        } catch ( FilterEvaluationException e ) {
+            LOG.error( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } catch ( FeatureStoreException e ) {
+            LOG.error( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } finally {
+            if ( rs != null ) {
+                rs.close();
+            }
         }
     }
 
@@ -620,27 +625,7 @@ public class MapService {
 
     public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> headers )
                             throws OWSException {
-        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
-        Iterator<StyleRef> iter = gfi.getStyles().iterator();
-        List<LayerQuery> queries = new ArrayList<LayerQuery>();
-        ListIterator<Pair<String, OperatorFilter>> filterIter = gfi.getSldFilters().listIterator();
-        Pair<String, OperatorFilter> curFilter = filterIter.hasNext() ? filterIter.next() : null;
-
-        for ( LayerRef lr : gfi.getQueryLayers() ) {
-            StyleRef style = iter.next();
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                styles.put( l.getMetadata().getName(), style );
-            }
-            OperatorFilter f = null;
-            if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
-                f = curFilter.second;
-                curFilter = filterIter.hasNext() ? filterIter.next() : null;
-            }
-            LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
-                                               gfi.getY(), gfi.getFeatureCount(), f, style, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
-            queries.add( query );
-        }
+        List<LayerQuery> queries = prepareGetFeatures( gfi );
         List<LayerData> list = new ArrayList<LayerData>();
 
         double scale = calcScaleWMS130( gfi.getWidth(), gfi.getHeight(), gfi.getEnvelope(), gfi.getCoordinateSystem(),
@@ -674,6 +659,31 @@ public class MapService {
         GenericFeatureCollection col = new GenericFeatureCollection();
         col.addAll( feats );
         return col;
+    }
+
+    private List<LayerQuery> prepareGetFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi ) {
+        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
+        Iterator<StyleRef> iter = gfi.getStyles().iterator();
+        List<LayerQuery> queries = new ArrayList<LayerQuery>();
+        ListIterator<Pair<String, OperatorFilter>> filterIter = gfi.getSldFilters().listIterator();
+        Pair<String, OperatorFilter> curFilter = filterIter.hasNext() ? filterIter.next() : null;
+
+        for ( LayerRef lr : gfi.getQueryLayers() ) {
+            StyleRef style = iter.next();
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                styles.put( l.getMetadata().getName(), style );
+            }
+            OperatorFilter f = null;
+            if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
+                f = curFilter.second;
+                curFilter = filterIter.hasNext() ? filterIter.next() : null;
+            }
+            LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
+                                               gfi.getY(), gfi.getFeatureCount(), f, style, gfi.getParameterMap(),
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
+            queries.add( query );
+        }
+        return queries;
     }
 
     /**
@@ -879,6 +889,11 @@ public class MapService {
             legends.put( style, legendMap );
         }
 
+        return buildLegend( req, renderer, style, originalSize, legendMap );
+    }
+
+    private BufferedImage buildLegend( GetLegendGraphic req, Legends renderer, Style style, boolean originalSize,
+                                       HashMap<String, BufferedImage> legendMap ) {
         BufferedImage img = prepareImage( req );
         Graphics2D g = img.createGraphics();
         g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
@@ -896,7 +911,6 @@ public class MapService {
         if ( originalSize ) {
             legendMap.put( req.getFormat(), img );
         }
-
         return img;
     }
 
