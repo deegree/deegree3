@@ -35,16 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression.custom.se;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
-import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,13 +52,11 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.feature.Feature;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
-import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.styling.RasterStyling;
 import org.deegree.style.utils.RasterDataUtility;
@@ -107,10 +101,10 @@ public class Categorize extends AbstractCustomExpression {
         // just used for SPI
     }
 
-    private Categorize( StringBuffer value, Continuation<StringBuffer> contn, boolean precedingBelongs,
-                        List<StringBuffer> values, Color[] valuesArray, List<StringBuffer> thresholds,
-                        Float[] thresholdsArray, LinkedList<Continuation<StringBuffer>> valueContns,
-                        LinkedList<Continuation<StringBuffer>> thresholdContns ) {
+    Categorize( StringBuffer value, Continuation<StringBuffer> contn, boolean precedingBelongs,
+                List<StringBuffer> values, Color[] valuesArray, List<StringBuffer> thresholds, Float[] thresholdsArray,
+                LinkedList<Continuation<StringBuffer>> valueContns,
+                LinkedList<Continuation<StringBuffer>> thresholdContns ) {
         this.value = value;
         this.contn = contn;
         this.precedingBelongs = precedingBelongs;
@@ -128,8 +122,8 @@ public class Categorize extends AbstractCustomExpression {
     }
 
     @SuppressWarnings("unchecked")
-    private static final <T> String eval( StringBuffer initial, Continuation<StringBuffer> contn, T f,
-                                          XPathEvaluator<T> evaluator ) {
+    private static <T> String eval( StringBuffer initial, Continuation<StringBuffer> contn, T f,
+                                    XPathEvaluator<T> evaluator ) {
         StringBuffer sb = new StringBuffer( initial.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, (Feature) f, (XPathEvaluator<Feature>) evaluator );
@@ -275,52 +269,7 @@ public class Categorize extends AbstractCustomExpression {
     @Override
     public Categorize parse( XMLStreamReader in )
                             throws XMLStreamException {
-
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
-        boolean precedingBelongs = false;
-        List<StringBuffer> values = new ArrayList<StringBuffer>();
-        List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
-        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
-        LinkedList<Continuation<StringBuffer>> thresholdContns = new LinkedList<Continuation<StringBuffer>>();
-
-        in.require( START_ELEMENT, null, "Categorize" );
-
-        String belong = in.getAttributeValue( null, "thresholdsBelongTo" );
-        if ( belong == null ) {
-            belong = in.getAttributeValue( null, "threshholdsBelongTo" );
-        }
-        if ( belong != null ) {
-            precedingBelongs = belong.equals( "preceding" );
-        }
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Categorize" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().equals( "LookupValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
-            }
-
-            if ( in.getLocalName().equals( "Threshold" ) ) {
-                StringBuffer sb = new StringBuffer();
-                thresholdContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Threshold", sb, SBUPDATER, null ).second );
-                thresholds.add( sb );
-            }
-
-            if ( in.getLocalName().equals( "Value" ) ) {
-                StringBuffer sb = new StringBuffer();
-                valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
-                values.add( sb );
-            }
-
-        }
-        in.require( END_ELEMENT, null, "Categorize" );
-        Pair<Color[], Float[]> lookup = buildLookupArrays( values, thresholds );
-        Color[] valuesArray = lookup.first;
-        Float[] thresholdsArray = lookup.second;
-        return new Categorize( value, contn, precedingBelongs, values, valuesArray, thresholds, thresholdsArray,
-                               valueContns, thresholdContns );
+        return CategorizeParser.parse( in );
     }
 
     @Override
@@ -328,31 +277,4 @@ public class Categorize extends AbstractCustomExpression {
         return generateToString( this );
     }
 
-    /** Create the sorted lookup arrays from the StringBuffer lists */
-    private static Pair<Color[], Float[]> buildLookupArrays( List<StringBuffer> values, List<StringBuffer> thresholds ) {
-        LOG.debug( "Building look-up arrays, for binary search... " );
-        Color[] valuesArray = null;
-        Float[] thresholdsArray = null;
-
-        {
-            valuesArray = new Color[values.size()];
-            List<Color> list = new ArrayList<Color>( values.size() );
-            Iterator<StringBuffer> i = values.iterator();
-            while ( i.hasNext() ) {
-                list.add( decodeWithAlpha( i.next().toString() ) );
-            }
-            valuesArray = list.toArray( valuesArray );
-        }
-
-        {
-            thresholdsArray = new Float[thresholds.size()];
-            List<Float> list = new ArrayList<Float>( thresholds.size() );
-            Iterator<StringBuffer> i = thresholds.iterator();
-            while ( i.hasNext() ) {
-                list.add( Float.parseFloat( i.next().toString() ) );
-            }
-            thresholdsArray = list.toArray( thresholdsArray );
-        }
-        return new Pair<Color[], Float[]>( valuesArray, thresholdsArray );
-    }
 }
