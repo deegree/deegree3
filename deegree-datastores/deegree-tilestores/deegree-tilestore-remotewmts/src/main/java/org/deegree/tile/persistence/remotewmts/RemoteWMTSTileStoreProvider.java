@@ -46,7 +46,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +54,6 @@ import javax.xml.bind.JAXBException;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wmts.RemoteWMTS;
@@ -98,7 +96,9 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
         try {
             RemoteWMTSTileStoreJAXB config = unmarshallConfig( configUrl );
             RemoteWMTS wmts = getRemoteWmts( config.getRemoteWMTSId() );
-            Map<String, TileDataSet> map = buildTileDataSetMap( config, wmts );
+            TileMatrixSetManager tileMatrixSetManager = workspace.getSubsystemManager( TileMatrixSetManager.class );
+            TileDataSetBuilder builder = new TileDataSetBuilder( wmts.getClient(), tileMatrixSetManager );
+            Map<String, TileDataSet> map = builder.buildTileDataSetMap( config );
             return new GenericTileStore( map );
         } catch ( ResourceInitException e ) {
             throw e;
@@ -127,40 +127,6 @@ public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
             throw new ResourceInitException( msg );
         }
         return (RemoteWMTS) wmts;
-    }
-
-    private Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config, RemoteWMTS wmts )
-                            throws ResourceInitException {
-
-        TileMatrixSetManager tileMatrixSetManager = workspace.getSubsystemManager( TileMatrixSetManager.class );
-
-        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-        for ( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig : config.getTileDataSet() ) {
-            String tileDataSetId = determineLayerId( tileDataSetConfig );
-            String outputFormat = determineOutputFormat( tileDataSetConfig );
-            WMTSClient client = wmts.getClient();
-            TileDataSetBuilder builder = new TileDataSetBuilder( tileDataSetConfig, client, outputFormat,
-                                                                 tileMatrixSetManager );
-            TileDataSet tileDataSet = builder.buildTileDataSet();
-            map.put( tileDataSetId, tileDataSet );
-        }
-        return map;
-    }
-
-    private String determineLayerId( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig ) {
-        if ( tileDataSetConfig.getIdentifier() != null ) {
-            return tileDataSetConfig.getIdentifier();
-        }
-        return tileDataSetConfig.getRequestParams().getLayer();
-    }
-
-    private String determineOutputFormat( RemoteWMTSTileStoreJAXB.TileDataSet tileDataSetConfig ) {
-        String requestedOutputFormat = tileDataSetConfig.getOutputFormat();
-        String requestFormat = tileDataSetConfig.getRequestParams().getFormat();
-        if ( requestedOutputFormat != null ) {
-            return requestedOutputFormat;
-        }
-        return requestFormat;
     }
 
     @SuppressWarnings("unchecked")
