@@ -62,8 +62,6 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.commons.ows.metadata.party.Address;
-import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
@@ -106,17 +104,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
 
     private final String getUrl;
 
-    private final String postUrl;
-
-    private final ServiceIdentification identification;
-
-    private final ServiceProvider provider;
-
     private MapService service;
 
     private final WMSController controller;
 
     private OWSMetadataProvider metadata;
+
+    private WmsCapabilities130MetadataWriter metadataWriter;
 
     /**
      * @param identification
@@ -129,13 +123,11 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     public Capabilities130XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
                                       OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
                                       WMSController controller ) {
-        this.identification = identification;
-        this.provider = provider;
         this.metadata = metadata;
         this.getUrl = getUrl;
-        this.postUrl = postUrl;
         this.service = service;
         this.controller = controller;
+        metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
     }
 
     /**
@@ -161,7 +153,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                                "http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
                                                        + "http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd" );
 
-        writeService( writer );
+        metadataWriter.writeService( writer );
 
         writeCapability( writer );
 
@@ -189,7 +181,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Capability" );
 
-        writeRequest( writer );
+        metadataWriter.writeRequest( writer );
         writer.writeStartElement( WMSNS, "Exception" );
         writeElement( writer, "Format", "XML" );
         writeElement( writer, "Format", "INIMAGE" );
@@ -619,175 +611,6 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
             writer.writeEndElement();
         }
-        writer.writeEndElement();
-    }
-
-    private void writeDCP( XMLStreamWriter writer, boolean get, boolean post )
-                            throws XMLStreamException {
-        writer.writeStartElement( WMSNS, "DCPType" );
-        writer.writeStartElement( WMSNS, "HTTP" );
-        if ( get ) {
-            writer.writeStartElement( WMSNS, "Get" );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", getUrl + "?" );
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
-        if ( post ) {
-            writer.writeStartElement( WMSNS, "Post" );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", postUrl );
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-        writer.writeEndElement();
-    }
-
-    private void writeRequest( XMLStreamWriter writer )
-                            throws XMLStreamException {
-        writer.writeStartElement( WMSNS, "Request" );
-
-        writer.writeStartElement( WMSNS, "GetCapabilities" );
-        writeElement( writer, WMSNS, "Format", "text/xml" );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
-
-        writer.writeStartElement( WMSNS, "GetMap" );
-        writeImageFormats( writer );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
-
-        writer.writeStartElement( WMSNS, "GetFeatureInfo" );
-        writeInfoFormats( writer );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
-
-        writer.writeStartElement( SLDNS, "GetLegendGraphic" );
-        writeImageFormats( writer );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
-
-        writer.writeEndElement();
-    }
-
-    private void writeImageFormats( XMLStreamWriter writer )
-                            throws XMLStreamException {
-        for ( String f : controller.supportedImageFormats ) {
-            writeElement( writer, "Format", f );
-        }
-    }
-
-    private void writeInfoFormats( XMLStreamWriter writer )
-                            throws XMLStreamException {
-        for ( String f : controller.supportedFeatureInfoFormats.keySet() ) {
-            writeElement( writer, "Format", f );
-        }
-    }
-
-    private void writeService( XMLStreamWriter writer )
-                            throws XMLStreamException {
-        writer.writeStartElement( WMSNS, "Service" );
-
-        writeElement( writer, WMSNS, "Name", "WMS" );
-
-        List<LanguageString> titles = identification == null ? null : identification.getTitles();
-        String title = ( titles != null && !titles.isEmpty() ) ? titles.get( 0 ).getString() : "deegree 3 WMS";
-        writeElement( writer, WMSNS, "Title", title );
-
-        List<LanguageString> abstracts = identification == null ? null : identification.getAbstracts();
-        if ( abstracts != null && !abstracts.isEmpty() ) {
-            writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ).getString() );
-        }
-
-        List<Pair<List<LanguageString>, CodeType>> keywords = identification == null ? null
-                                                                                    : identification.getKeywords();
-        if ( keywords != null && !keywords.isEmpty() ) {
-            writer.writeStartElement( WMSNS, "KeywordList" );
-
-            for ( Pair<List<LanguageString>, CodeType> key : keywords ) {
-                CodeType type = key.second;
-                for ( LanguageString lanString : key.first ) {
-                    writer.writeStartElement( WMSNS, "Keyword" );
-                    if ( type != null ) {
-                        writer.writeAttribute( "vocabulary", type.getCodeSpace() );
-                    }
-                    writer.writeCharacters( lanString.getString() );
-                    writer.writeEndElement();
-                }
-            }
-
-            writer.writeEndElement();
-        }
-
-        String url = getUrl;
-        if ( provider != null && provider.getServiceContact() != null
-             && provider.getServiceContact().getContactInfo() != null
-             && provider.getServiceContact().getContactInfo().getOnlineResource() != null ) {
-            url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
-        }
-        writer.writeStartElement( WMSNS, "OnlineResource" );
-        writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", url );
-        writer.writeEndElement();
-
-        if ( provider != null ) {
-            ResponsibleParty contact = provider.getServiceContact();
-            if ( contact != null ) {
-                writer.writeStartElement( WMSNS, "ContactInformation" );
-
-                if ( contact.getIndividualName() != null ) {
-                    writer.writeStartElement( WMSNS, "ContactPersonPrimary" );
-                    writeElement( writer, WMSNS, "ContactPerson", contact.getIndividualName() );
-                    writeElement( writer, WMSNS, "ContactOrganization", provider.getProviderName() );
-                    writer.writeEndElement();
-                }
-
-                maybeWriteElementNS( writer, WMSNS, "ContactPosition", contact.getPositionName() );
-                Address addr = contact.getContactInfo().getAddress();
-                if ( addr != null ) {
-                    writer.writeStartElement( WMSNS, "ContactAddress" );
-                    writeElement( writer, WMSNS, "AddressType", "postal" );
-                    for ( String s : addr.getDeliveryPoint() ) {
-                        maybeWriteElementNS( writer, WMSNS, "Address", s );
-                    }
-                    writeElement( writer, WMSNS, "City", addr.getCity() );
-                    writeElement( writer, WMSNS, "StateOrProvince", addr.getAdministrativeArea() );
-                    writeElement( writer, WMSNS, "PostCode", addr.getPostalCode() );
-                    writeElement( writer, WMSNS, "Country", addr.getCountry() );
-                    writer.writeEndElement();
-                }
-
-                maybeWriteElementNS( writer, WMSNS, "ContactVoiceTelephone",
-                                     contact.getContactInfo().getPhone().getVoice().get( 0 ) );
-                maybeWriteElementNS( writer, WMSNS, "ContactFacsimileTelephone",
-                                     contact.getContactInfo().getPhone().getFacsimile().get( 0 ) );
-                if ( addr != null ) {
-                    for ( String email : addr.getElectronicMailAddress() ) {
-                        maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress", email );
-                    }
-                }
-
-                writer.writeEndElement();
-            }
-
-            if ( identification != null ) {
-                maybeWriteElementNS( writer, WMSNS, "Fees", identification.getFees() );
-                List<String> constr = identification.getAccessConstraints();
-                if ( constr != null ) {
-                    for ( String cons : constr ) {
-                        maybeWriteElementNS( writer, WMSNS, "AccessConstraints", cons );
-                    }
-                }
-            } else {
-                writeElement( writer, WMSNS, "Fees", "none" );
-                writeElement( writer, WMSNS, "AccessConstraints", "none" );
-            }
-
-        }
-
         writer.writeEndElement();
     }
 
