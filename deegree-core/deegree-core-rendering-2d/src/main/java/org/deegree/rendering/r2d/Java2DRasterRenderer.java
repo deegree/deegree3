@@ -134,7 +134,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
     @Override
     public void render( RasterStyling styling, AbstractRaster raster ) {
         LOG.debug( "Rendering raster with style '{}'.", styling );
-        BufferedImage img = null;
         if ( raster == null ) {
             LOG.warn( "Trying to render null raster." );
             return;
@@ -144,6 +143,12 @@ public class Java2DRasterRenderer implements RasterRenderer {
             render( raster );
             return;
         }
+
+        handleStyling( styling, raster );
+    }
+
+    private void handleStyling( RasterStyling styling, AbstractRaster raster ) {
+        BufferedImage img = null;
 
         if ( styling.channelSelection != null ) {
             // Compute channel selection indexes on current raster
@@ -168,14 +173,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
 
-        if ( styling.categorize != null || styling.interpolate != null ) {
-            LOG.trace( "Creating raster ColorMap..." );
-            if ( styling.categorize != null ) {
-                img = styling.categorize.evaluateRaster( raster, styling );
-            } else if ( styling.interpolate != null ) {
-                img = styling.interpolate.evaluateRaster( raster, styling );
-            }
-        }
+        img = handleFunctions( styling, raster );
 
         LOG.trace( "Rendering raster..." );
         if ( img != null ) {
@@ -185,6 +183,23 @@ public class Java2DRasterRenderer implements RasterRenderer {
         }
         LOG.trace( "Done rendering raster." );
 
+        handleOutline( styling, raster );
+    }
+
+    private BufferedImage handleFunctions( RasterStyling styling, AbstractRaster raster ) {
+        BufferedImage img = null;
+        if ( styling.categorize != null || styling.interpolate != null ) {
+            LOG.trace( "Creating raster ColorMap..." );
+            if ( styling.categorize != null ) {
+                img = styling.categorize.evaluateRaster( raster, styling );
+            } else if ( styling.interpolate != null ) {
+                img = styling.interpolate.evaluateRaster( raster, styling );
+            }
+        }
+        return img;
+    }
+
+    private void handleOutline( RasterStyling styling, AbstractRaster raster ) {
         // TODO cleanup outline stuff
         if ( styling.imageOutline != null ) {
             LOG.trace( "Rendering image outline..." );
@@ -305,7 +320,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         return newData;
     }
 
-    private static final byte int2byte( final int val ) {
+    private static byte int2byte( final int val ) {
         return ( val < 128 ? (byte) val : (byte) ( val + 2 * Byte.MIN_VALUE ) );
     }
 
@@ -399,4 +414,5 @@ public class Java2DRasterRenderer implements RasterRenderer {
             graphics.drawImage( img, worldToScreen, null );
         }
     }
+
 }

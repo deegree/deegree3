@@ -37,14 +37,7 @@
 package org.deegree.rendering.r2d;
 
 import static com.vividsolutions.jts.algorithm.CGAlgorithms.isCCW;
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.CAP_ROUND;
-import static java.awt.BasicStroke.CAP_SQUARE;
-import static java.awt.BasicStroke.JOIN_BEVEL;
-import static java.awt.BasicStroke.JOIN_MITER;
-import static java.awt.BasicStroke.JOIN_ROUND;
 import static java.awt.geom.Path2D.WIND_EVEN_ODD;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.acos;
@@ -64,15 +57,9 @@ import static org.deegree.geometry.primitive.Surface.SurfaceType.Polygon;
 import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
 import static org.deegree.geometry.validation.GeometryFixer.invertOrientation;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
-import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
-import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D.Double;
@@ -131,17 +118,13 @@ import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
 import org.deegree.geometry.standard.multi.DefaultMultiSurface;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.deegree.rendering.r2d.strokes.OffsetStroke;
-import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.Styling;
-import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.PerpendicularOffsetType;
-import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.UomCalculator;
 import org.slf4j.Logger;
 
 import com.sun.media.jai.codec.MemoryCacheSeekableStream;
@@ -177,6 +160,12 @@ public class Java2DRenderer implements Renderer {
 
     private static final GeometryLinearizer linearizer = new GeometryLinearizer();
 
+    private UomCalculator uomCalculator;
+
+    private Java2DStrokeRenderer strokeRenderer;
+
+    private Java2DFillRenderer fillRenderer;
+
     /**
      * @param graphics
      * @param width
@@ -188,6 +177,9 @@ public class Java2DRenderer implements Renderer {
     public Java2DRenderer( Graphics2D graphics, int width, int height, Envelope bbox, double pixelSize ) {
         this( graphics, width, height, bbox );
         this.pixelSize = pixelSize;
+        uomCalculator = new UomCalculator( pixelSize, res );
+        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
+        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
     }
 
     /**
@@ -249,6 +241,9 @@ public class Java2DRenderer implements Renderer {
         } else {
             LOG.warn( "No envelope given, proceeding with a scale of 1." );
         }
+        uomCalculator = new UomCalculator( pixelSize, res );
+        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
+        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
     }
 
     /**
@@ -257,6 +252,9 @@ public class Java2DRenderer implements Renderer {
     public Java2DRenderer( Graphics2D graphics ) {
         this.graphics = graphics;
         res = 1;
+        uomCalculator = new UomCalculator( pixelSize, res );
+        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
+        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
     }
 
     private Polygon calculateClippingArea( Envelope bbox ) {
@@ -268,160 +266,6 @@ public class Java2DRenderer implements Renderer {
         Point max = new DefaultPoint( null, bbox.getCoordinateSystem(), null, maxCords );
         Envelope enlargedBBox = new DefaultEnvelope( min, max );
         return (Polygon) Geometries.getAsGeometry( enlargedBBox );
-    }
-
-    private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
-        double width, height;
-        if ( graphic.image != null ) {
-            double max = Math.max( graphic.image.getWidth(), graphic.image.getHeight() );
-            double fac = graphic.size / max;
-            width = fac * graphic.image.getWidth();
-            height = fac * graphic.image.getHeight();
-        } else {
-            width = graphic.size;
-            height = graphic.size;
-        }
-        width = considerUOM( width, uom );
-        height = considerUOM( height, uom );
-
-        if ( width < 0 ) {
-            if ( graphic.image == null ) {
-                width = 6;
-                height = 6;
-            } else {
-                width = graphic.image.getWidth();
-                height = graphic.image.getHeight();
-            }
-        }
-
-        double x0 = x - width * graphic.anchorPointX + considerUOM( graphic.displacementX, uom );
-        double y0 = y - height * graphic.anchorPointY - considerUOM( graphic.displacementY, uom );
-
-        return new Rectangle2D.Double( x0, y0, width, height );
-    }
-
-    void applyGraphicFill( Graphic graphic, UOM uom ) {
-        BufferedImage img;
-
-        if ( graphic.image == null ) {
-            int size = round( considerUOM( graphic.size, uom ) );
-            img = new BufferedImage( size, size, TYPE_INT_ARGB );
-            Graphics2D g = img.createGraphics();
-            Java2DRenderer renderer = new Java2DRenderer( g );
-            renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer, 0, 0, graphic.rotation );
-            g.dispose();
-        } else {
-            img = graphic.image;
-        }
-
-        graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0, uom ) ) );
-    }
-
-    void applyFill( Fill fill, UOM uom ) {
-        if ( fill == null ) {
-            graphics.setPaint( new Color( 0, 0, 0, 0 ) );
-            return;
-        }
-
-        if ( fill.graphic == null ) {
-            graphics.setPaint( fill.color );
-        } else {
-            applyGraphicFill( fill.graphic, uom );
-        }
-    }
-
-    void applyStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset, PerpendicularOffsetType type ) {
-        if ( stroke == null || isZero( stroke.width ) ) {
-            graphics.setPaint( new Color( 0, 0, 0, 0 ) );
-            return;
-        }
-        if ( stroke.fill == null ) {
-            graphics.setPaint( stroke.color );
-        } else {
-            applyGraphicFill( stroke.fill, uom );
-        }
-        if ( stroke.stroke != null ) {
-            if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
-                Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ),
-                                               stroke.stroke.rotation );
-                graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
-                                                     stroke.positionPercentage, stroke.strokeInitialGap ) );
-            } else if ( stroke.stroke.mark != null ) {
-                double poff = considerUOM( perpendicularOffset, uom );
-                Shape transed = object;
-                if ( !isZero( poff ) ) {
-                    transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
-                }
-                double sz = stroke.stroke.size;
-                Shape shape = getShapeFromMark( stroke.stroke.mark, sz <= 0 ? 6 : considerUOM( sz, uom ),
-                                                stroke.stroke.rotation );
-                if ( sz <= 0 ) {
-                    sz = 6;
-                }
-                ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + sz, uom ),
-                                                 stroke.positionPercentage, stroke.strokeInitialGap );
-                transed = s.createStrokedShape( transed );
-                if ( stroke.stroke.mark.fill != null ) {
-                    applyFill( stroke.stroke.mark.fill, uom );
-                    graphics.fill( transed );
-                }
-                if ( stroke.stroke.mark.stroke != null ) {
-                    applyStroke( stroke.stroke.mark.stroke, uom, transed, 0, null );
-                    graphics.draw( transed );
-                }
-                return;
-            } else {
-                LOG.warn( "Rendering of raster images along lines is not supported yet." );
-            }
-        } else {
-            int linecap = CAP_SQUARE;
-            if ( stroke.linecap != null ) {
-                switch ( stroke.linecap ) {
-                case BUTT:
-                    linecap = CAP_BUTT;
-                    break;
-                case ROUND:
-                    linecap = CAP_ROUND;
-                    break;
-                case SQUARE:
-                    linecap = CAP_SQUARE;
-                    break;
-                }
-            }
-            int linejoin = JOIN_MITER;
-            float miterLimit = 10;
-            if ( stroke.linejoin != null ) {
-                switch ( stroke.linejoin ) {
-                case BEVEL:
-                    linejoin = JOIN_BEVEL;
-                    break;
-                case MITRE:
-                    linejoin = JOIN_MITER;
-                    break;
-                case ROUND:
-                    linejoin = JOIN_ROUND;
-                    break;
-                }
-            }
-            float dashoffset = (float) considerUOM( stroke.dashoffset, uom );
-            float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
-            if ( dasharray != null ) {
-                for ( int i = 0; i < stroke.dasharray.length; ++i ) {
-                    dasharray[i] = (float) considerUOM( stroke.dasharray[i], uom );
-                }
-            }
-
-            BasicStroke bs = new BasicStroke( (float) considerUOM( stroke.width, uom ), linecap, linejoin, miterLimit,
-                                              dasharray, dashoffset );
-            double poff = considerUOM( perpendicularOffset, uom );
-            if ( !isZero( poff ) ) {
-                graphics.setStroke( new OffsetStroke( poff, bs, type ) );
-            } else {
-                graphics.setStroke( bs );
-            }
-        }
-
-        graphics.draw( object );
     }
 
     <T extends Geometry> T transform( T g ) {
@@ -492,7 +336,7 @@ public class Java2DRenderer implements Renderer {
         y = p.y;
 
         Graphic g = styling.graphic;
-        Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
+        Rectangle2D.Double rect = fillRenderer.getGraphicBounds( g, x, y, styling.uom );
 
         if ( g.image == null && g.imageURL == null ) {
             renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this,
@@ -658,8 +502,8 @@ public class Java2DRenderer implements Renderer {
         geom = clipGeometry( geom );
         if ( geom instanceof Curve ) {
             Double line = fromCurve( (Curve) geom, false );
-            applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
-                         styling.perpendicularOffsetType );
+            strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
+                                        styling.perpendicularOffsetType );
         }
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
@@ -701,11 +545,11 @@ public class Java2DRenderer implements Renderer {
                     polygon.append( d, false );
                 }
 
-                applyFill( styling.fill, styling.uom );
+                fillRenderer.applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
                 for ( Double d : lines ) {
-                    applyStroke( styling.stroke, styling.uom, d, styling.perpendicularOffset,
-                                 styling.perpendicularOffsetType );
+                    strokeRenderer.applyStroke( styling.stroke, styling.uom, d, styling.perpendicularOffset,
+                                                styling.perpendicularOffsetType );
                 }
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
@@ -903,6 +747,14 @@ public class Java2DRenderer implements Renderer {
             return in / pixelSize;
         }
         return in;
+    }
+
+    Java2DFillRenderer getFillRenderer() {
+        return fillRenderer;
+    }
+
+    Java2DStrokeRenderer getStrokeRenderer() {
+        return strokeRenderer;
     }
 
 }

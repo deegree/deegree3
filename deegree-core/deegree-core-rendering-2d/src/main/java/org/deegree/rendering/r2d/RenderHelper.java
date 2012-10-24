@@ -96,11 +96,11 @@ public class RenderHelper {
         Shape shape = getShapeFromMark( mark, size - 1, rotation, true, x, y );
 
         if ( mark.fill != null ) {
-            renderer.applyFill( mark.fill, uom );
+            renderer.getFillRenderer().applyFill( mark.fill, uom );
             renderer.graphics.fill( shape );
         }
         if ( mark.stroke != null ) {
-            renderer.applyStroke( mark.stroke, uom, shape, 0, null );
+            renderer.getStrokeRenderer().applyStroke( mark.stroke, uom, shape, 0, null );
         }
     }
 
