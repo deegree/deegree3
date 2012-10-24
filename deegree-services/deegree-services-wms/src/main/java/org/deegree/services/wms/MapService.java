@@ -37,18 +37,8 @@
 package org.deegree.services.wms;
 
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
-import static java.awt.RenderingHints.KEY_INTERPOLATION;
-import static java.awt.RenderingHints.KEY_RENDERING;
 import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
-import static java.awt.RenderingHints.VALUE_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
-import static java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC;
-import static java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-import static java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
-import static java.awt.RenderingHints.VALUE_RENDER_DEFAULT;
-import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
-import static java.awt.RenderingHints.VALUE_RENDER_SPEED;
-import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -59,6 +49,8 @@ import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
+import static org.deegree.rendering.r2d.context.Java2DHelper.applyHints;
+import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
 import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -359,62 +351,6 @@ public class MapService {
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
-    private static void applyHints( final String l, final Graphics2D g, MapOptionsMaps options, MapOptions defaults ) {
-        Quality q = options.getQuality( l );
-        if ( q == null ) {
-            q = defaults.getQuality();
-        }
-        switch ( q ) {
-        case HIGH:
-            g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
-            break;
-        case LOW:
-            g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_SPEED );
-            break;
-        case NORMAL:
-            g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
-            break;
-        }
-        Interpolation i = options.getInterpolation( l );
-        if ( i == null ) {
-            i = defaults.getInterpolation();
-        }
-        switch ( i ) {
-        case BICUBIC:
-            g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
-            break;
-        case BILINEAR:
-            g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
-            break;
-        case NEARESTNEIGHBOR:
-        case NEARESTNEIGHBOUR:
-            g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-            break;
-        }
-        Antialias a = options.getAntialias( l );
-        if ( a == null ) {
-            a = defaults.getAntialias();
-        }
-        switch ( a ) {
-        case IMAGE:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
-            break;
-        case TEXT:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-            break;
-        case BOTH:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-            break;
-        case NONE:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
-            break;
-        }
-    }
-
     private static Mapper<Boolean, Layer> getFeatureLayerCollector( final LinkedList<FeatureLayer> list ) {
         return new Mapper<Boolean, Layer>() {
             @Override
@@ -604,28 +540,29 @@ public class MapService {
         }
 
         for ( LayerRef lr : gm.getLayers() ) {
-            Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
-            StyleRef style = iter.next();
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
-                                      defaultLayerOptions );
-                mapOptions.add( options.get( l.getMetadata().getName() ) );
-                StyleRef ref;
-                if ( style.getStyle() != null ) {
-                    ref = new StyleRef( style.getStyle() );
-                } else {
-                    ref = new StyleRef( style.getName() );
-                }
-                styles.put( l.getMetadata().getName(), ref );
-            }
-            OperatorFilter f = null;
-            if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
-                f = curFilter.second;
-                curFilter = filterIter.hasNext() ? filterIter.next() : null;
-            }
-            LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
-                                               gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
-                                               gm.getQueryBox() );
+            // Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
+            // StyleRef style = iter.next();
+            // for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+            // insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
+            // defaultLayerOptions );
+            // mapOptions.add( options.get( l.getMetadata().getName() ) );
+            // StyleRef ref;
+            // if ( style.getStyle() != null ) {
+            // ref = new StyleRef( style.getStyle() );
+            // } else {
+            // ref = new StyleRef( style.getName() );
+            // }
+            // styles.put( l.getMetadata().getName(), ref );
+            // }
+            // OperatorFilter f = null;
+            // if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
+            // f = curFilter.second;
+            // curFilter = filterIter.hasNext() ? filterIter.next() : null;
+            // }
+            // LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
+            // gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
+            // gm.getQueryBox() );
+            LayerQuery query = buildQuery( iter, lr, options, mapOptions, curFilter, filterIter, gm );
             queries.add( query );
         }
 
@@ -652,48 +589,33 @@ public class MapService {
         ScaleFunction.getCurrentScaleValue().remove();
     }
 
-    private static void insertMissingOptions( String layer, MapOptionsMaps options, MapOptions layerDefaults,
-                                              MapOptions globalDefaults ) {
-        if ( options.getAntialias( layer ) == null ) {
-            if ( layerDefaults != null ) {
-                options.setAntialias( layer, layerDefaults.getAntialias() );
+    private LayerQuery buildQuery( Iterator<StyleRef> iter, LayerRef lr, MapOptionsMaps options,
+                                   List<MapOptions> mapOptions, Pair<String, OperatorFilter> curFilter,
+                                   ListIterator<Pair<String, OperatorFilter>> filterIter,
+                                   org.deegree.protocol.wms.ops.GetMap gm ) {
+        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
+        StyleRef style = iter.next();
+        for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+            insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
+                                  defaultLayerOptions );
+            mapOptions.add( options.get( l.getMetadata().getName() ) );
+            StyleRef ref;
+            if ( style.getStyle() != null ) {
+                ref = new StyleRef( style.getStyle() );
+            } else {
+                ref = new StyleRef( style.getName() );
             }
-            if ( options.getAntialias( layer ) == null ) {
-                options.setAntialias( layer, globalDefaults.getAntialias() );
-            }
+            styles.put( l.getMetadata().getName(), ref );
         }
-        if ( options.getQuality( layer ) == null ) {
-            if ( layerDefaults != null ) {
-                options.setQuality( layer, layerDefaults.getQuality() );
-            }
-            if ( options.getQuality( layer ) == null ) {
-                options.setQuality( layer, globalDefaults.getQuality() );
-            }
+        OperatorFilter f = null;
+        if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
+            f = curFilter.second;
+            curFilter = filterIter.hasNext() ? filterIter.next() : null;
         }
-        if ( options.getInterpolation( layer ) == null ) {
-            if ( layerDefaults != null ) {
-                options.setInterpolation( layer, layerDefaults.getInterpolation() );
-            }
-            if ( options.getInterpolation( layer ) == null ) {
-                options.setInterpolation( layer, globalDefaults.getInterpolation() );
-            }
-        }
-        if ( options.getMaxFeatures( layer ) == -1 ) {
-            if ( layerDefaults != null ) {
-                options.setMaxFeatures( layer, layerDefaults.getMaxFeatures() );
-            }
-            if ( options.getMaxFeatures( layer ) == -1 ) {
-                options.setMaxFeatures( layer, globalDefaults.getMaxFeatures() );
-            }
-        }
-        if ( options.getFeatureInfoRadius( layer ) == -1 ) {
-            if ( layerDefaults != null ) {
-                options.setFeatureInfoRadius( layer, layerDefaults.getFeatureInfoRadius() );
-            }
-            if ( options.getFeatureInfoRadius( layer ) == -1 ) {
-                options.setFeatureInfoRadius( layer, globalDefaults.getFeatureInfoRadius() );
-            }
-        }
+        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
+                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
+                                           gm.getQueryBox() );
+        return query;
     }
 
     public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> headers )
