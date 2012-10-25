@@ -55,19 +55,98 @@ This kinds of application schemas can be served using the SQL feature store or t
 Shape feature store
 -------------------
 
-TBD
+The shape feature store serves a feature type from an ESRI shape file. The configuration format for the deegree shape feature store is defined by schema file http://schemas.deegree.org/datasource/feature/shape/3.1.0/shape.xsd. The only mandatory element is ``File``, therefore, a minimal configuration example looks like this:
+
+.. topic:: Shape Feature Store config (minimal configuration example)
+
+   .. literalinclude:: xml/shapefeaturestore_minimal.xml
+      :language: xml
+
+The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+
+.. table:: Options for ``ShapeFeatureStore`` configuration files
+
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                      | Cardinality | Value   | Description                                                                  |
++=============================+=============+=========+==============================================================================+
+| StorageCRS                  | 0..1        | String  | CRS of stored geometries                                                     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| FeatureTypeName             | 0..n        | String  | Local name of the feature type (defaults to base name of shape file)         |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| FeatureTypeNamespace        | 0..1        | String  | Namespace of the feature type (defaults to "http://www.deegree.org/app")     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| FeatureTypePrefix           | 0..1        | String  | Prefix of the feature type (defaults to "app")                               |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| File                        | 1..1        | String  | Path to the shape file                                                       |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Encoding                    | 0..1        | Integer | Encoding of text fields in the dbf file                                      |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| GenerateAlphanumericIndexes | 0..1        | Boolean | Set to true, if an index for alphanumeric fields should be generated         |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Mapping                     | 0..n        | Complex | Mapping between dbf column names and property names                          |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
 --------------------
 Memory feature store
 --------------------
 
-TBD
+The memory feature store serves feature types that are defined by a GML application schema and are stored in memory. The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd. The only mandatory elemens is ``GMLSchema``, therefore, a minimal configuration example looks like this:
+
+.. topic:: Memory Feature Store config (minimal configuration example)
+
+   .. literalinclude:: xml/memoryfeaturestore_minimal.xml
+      :language: xml
+
+The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+
+.. table:: Options for ``Memory Feature Store`` configuration files
+
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                      | Cardinality | Value   | Description                                                                  |
++=============================+=============+=========+==============================================================================+
+| StorageCRS                  | 0..1        | String  | CRS of stored geometries                                                     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| NamespaceHint               | 0..n        | Complex | Local name of the feature type (defaults to base name of shape file)         |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| GMLSchema                   | 1..n        | String  | Path/URL to GML application schema files/dirs to read feature types from     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| GMLFeatureCollection        | 0..n        | Complex | Path/URL to GML feature collections documents to read features from          |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
 ------------------------
 Simple SQL feature store
 ------------------------
 
-TBD
+The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd. The only three mandatory elements are ``JDBCConnId``, ``SQLStatement`` and ``BBoxStatement``, therefore, a minimal configuration example looks like this:
+
+.. topic:: Simple SQL Feature Store config (minimal configuration example)
+
+   .. literalinclude:: xml/simplesqlfeaturestore_minimal.xml
+      :language: xml
+
+The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+
+.. table:: Options for ``Simple SQL feature`` configuration files
+
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                      | Cardinality | Value   | Description                                                                  |
++=============================+=============+=========+==============================================================================+
+| StorageCRS                  | 0..1        | String  | CRS of stored geometries                                                     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| FeatureTypeName             | 0..n        | String  | Local name of the feature type (defaults to table name)                      |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| FeatureTypeNamespace        | 0..1        | String  | Namespace of the feature type (defaults to "http://www.deegree.org/app")     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| FeatureTypePrefix           | 0..1        | String  | Prefix of the feature type (defaults to "app")                               |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| JDBCConnId                  | 1..1        | String  | Identifier of the database connection                                        |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| SQLStatement                | 1..1        | String  | SELECT statement that defines the feature type                               |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| BBoxStatement               | 1..1        | String  | SELECT statement for the bounding box of the feature type                    |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+| LODStatement                | 0..n        | Complex | Statements for specific WMS scale ranges                                     |
++-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
 -------------------------
 SQL feature store: Basics

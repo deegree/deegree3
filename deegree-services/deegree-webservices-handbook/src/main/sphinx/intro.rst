@@ -10,7 +10,7 @@ deegree webservices are implementations of the geospatial webservice specificati
 * `Catalogue Service for the Web (CSW) <http://www.opengeospatial.org/standards/cat>`_: Performs searches for geospatial datasets and services
 * `Web Processing Service (WPS) <http://www.opengeospatial.org/standards/wps>`_: Executes geospatial processes
 
-With a deegree webservices installation, you can set up one of the above services, all of them or even multiple services of the same type. The remainder of this chapter introduces some notable features of the different service implementations and provides learning trails for learning the configuration of each service.
+With a single deegree webservices installation, you can set up one of the above services, all of them or even multiple services of the same type. The remainder of this chapter introduces some notable features of the different service implementations and provides learning trails for learning the configuration of each service.
 
 ------------------------------
 Characteristics of deegree WFS
@@ -18,9 +18,9 @@ Characteristics of deegree WFS
 
 deegree WFS is an implementation of the `OGC Web Feature Service specification <http://www.opengeospatial.org/standards/wfs>`_. Notable features:
 
-* Implements WFS standard 1.0.0, 1.1.0 and 2.0.0 [#f1]_
-* Fully transactional: Supports WFS-T (WFS 1.0.0 and 1.1.0)
-* KVP, XML and SOAP requests
+* Implements WFS standards 1.0.0, 1.1.0 and 2.0.0 [#f1]_
+* Fully transactional
+* Supports KVP, XML and SOAP requests
 * GML 2/3.0/3.1/3.2 output/input
 * Support for GetGmlObject requests and XLinks
 * High performance and excellent scalability
@@ -29,7 +29,7 @@ deegree WFS is an implementation of the `OGC Web Feature Service specification <
 * Mapping of GML application schemas to relational models
 * ISO 19107-compliant geometry model: Complex geometries (e.g. non-linear curves)
 * Advanced filter expression support based on XPath 1.0
-* Supports many backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
+* Supports numerous backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
 
 .. tip::
   In order to learn about configuring a deegree-based WFS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WFS configurations. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wfs`.
@@ -40,17 +40,17 @@ Characteristics of deegree WMS
 
 deegree WMS is an implementation of the `OGC Web Map Service specification <http://www.opengeospatial.org/standards/wms>`_. Notable features:
 
-* Implements WMS standard 1.1.1 and 1.3.0 [#f2]_
+* Implements WMS standards 1.1.1 and 1.3.0 [#f2]_
 * Extensive support for styling languages SLD/SE versions 1.0.0 and 1.1.0
 * High performance and excellent scalability
 * High quality rendering
 * Scale dependent styling
 * Support for SE removes the need for a lot of proprietary extensions
-* Easy configuration of HTML and other output formats for GetFeatureInfo
-* Uses streaming based data access, minimal memory footprint
+* Easy configuration of HTML and other output formats for GetFeatureInfo responses
+* Uses stream-based data access, minimal memory footprint
 * Nearly complete support for raster symbolizing as defined in SE (with some extensions)
 * Complete support for TIME/ELEVATION and other dimensions for both feature and raster data
-* Supports many backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
+* Supports numerous backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
 
 .. tip::
   In order to learn about configuring a deegree-based WMS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WMS configurations. Final steps are understanding :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wms`.
