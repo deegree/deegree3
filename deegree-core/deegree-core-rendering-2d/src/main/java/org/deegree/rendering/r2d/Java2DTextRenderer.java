@@ -35,24 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.JOIN_ROUND;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 import static java.awt.Font.PLAIN;
-import static java.awt.geom.AffineTransform.getTranslateInstance;
-import static java.lang.Math.toRadians;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D.Double;
-import java.awt.geom.Point2D;
 import java.util.Collection;
 
 import org.deegree.commons.annotations.LoggingNotes;
@@ -67,8 +57,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.deegree.rendering.r2d.strokes.OffsetStroke;
-import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.style.styling.TextStyling;
 import org.deegree.style.styling.components.Font.Style;
 import org.slf4j.Logger;
@@ -88,67 +76,14 @@ public class Java2DTextRenderer implements TextRenderer {
 
     private Java2DRenderer renderer;
 
+    private LabelRenderer labelRenderer;
+
     /**
      * @param renderer
      */
     public Java2DTextRenderer( Java2DRenderer renderer ) {
         this.renderer = renderer;
-    }
-
-    private void render( TextStyling styling, Font font, String text, Point p ) {
-        Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
-                                                                               null );
-        double x = pt.x + renderer.considerUOM( styling.displacementX, styling.uom );
-        double y = pt.y - renderer.considerUOM( styling.displacementY, styling.uom );
-        renderer.graphics.setFont( font );
-        AffineTransform transform = renderer.graphics.getTransform();
-        renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
-        TextLayout layout;
-        synchronized ( FontRenderContext.class ) {
-            // apparently getting the font render context is not threadsafe (despite having different graphics here)
-            // so do this globally synchronized to fix:
-            // http://tracker.deegree.org/deegree-core/ticket/200
-            FontRenderContext frc = renderer.graphics.getFontRenderContext();
-            layout = new TextLayout( text, font, frc );
-        }
-        double width = layout.getBounds().getWidth();
-        double height = layout.getBounds().getHeight();
-        double px = x - styling.anchorPointX * width;
-        double py = y + styling.anchorPointY * height;
-
-        if ( styling.halo != null ) {
-            renderer.getFillRenderer().applyFill( styling.halo.fill, styling.uom );
-
-            BasicStroke stroke = new BasicStroke(
-                                                  round( 2 * renderer.considerUOM( styling.halo.radius, styling.uom ) ),
-                                                  CAP_BUTT, JOIN_ROUND );
-            renderer.graphics.setStroke( stroke );
-            renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
-        }
-
-        renderer.graphics.setStroke( new BasicStroke() );
-
-        renderer.getFillRenderer().applyFill( styling.fill, styling.uom );
-        layout.draw( renderer.graphics, (float) px, (float) py );
-
-        renderer.graphics.setTransform( transform );
-    }
-
-    private void render( TextStyling styling, Font font, String text, Curve c ) {
-        renderer.getFillRenderer().applyFill( styling.fill, styling.uom );
-        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
-        if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
-            return;
-        }
-        if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
-                                       styling.linePlacement.perpendicularOffsetType );
-        }
-
-        renderer.graphics.setStroke( stroke );
-        Double line = renderer.geomHelper.fromCurve( c, false );
-
-        renderer.graphics.draw( line );
+        this.labelRenderer = new LabelRenderer( renderer );
     }
 
     @Override
@@ -169,7 +104,65 @@ public class Java2DTextRenderer implements TextRenderer {
             return;
         }
 
-        geom = renderer.geomHelper.clipGeometry( geom );
+        geom = renderer.clipper.clipGeometry( geom );
+
+        Font font = convertFont( styling );
+
+        handleGeometryTypes( styling, text, font, geom );
+    }
+
+    private void handleGeometryTypes( TextStyling styling, String text, Font font, Geometry geom ) {
+        if ( geom instanceof Point ) {
+            labelRenderer.render( styling, font, text, (Point) geom );
+        } else if ( geom instanceof Surface && styling.linePlacement != null ) {
+            render( styling, font, text, (Surface) geom );
+        } else if ( geom instanceof Curve && styling.linePlacement != null ) {
+            labelRenderer.render( styling, font, text, (Curve) geom );
+        } else if ( geom instanceof GeometricPrimitive ) {
+            labelRenderer.render( styling, font, text, geom.getCentroid() );
+        } else {
+            handleMultiGeometryTypes( styling, text, font, geom );
+        }
+    }
+
+    private void handleMultiGeometryTypes( TextStyling styling, String text, Font font, Geometry geom ) {
+        if ( geom instanceof MultiPoint ) {
+            handleMultiGeometry( styling, text, font, (MultiPoint) geom );
+        } else if ( geom instanceof MultiCurve<?> && styling.linePlacement != null ) {
+            handleMultiGeometry( styling, text, font, (MultiCurve<?>) geom );
+        } else if ( geom instanceof MultiLineString && styling.linePlacement != null ) {
+            handleMultiGeometry( styling, text, font, (MultiLineString) geom );
+        } else if ( geom instanceof MultiGeometry<?> ) {
+            for ( Geometry g : (MultiGeometry<?>) geom ) {
+                render( styling, text, g );
+            }
+        } else {
+            LOG.warn( "Trying to use unsupported geometry type '{}' for text rendering.",
+                      geom.getClass().getSimpleName() );
+        }
+    }
+
+    private <T extends Geometry> void handleMultiGeometry( TextStyling styling, String text, Font font,
+                                                           MultiGeometry<T> geom ) {
+        for ( T g : geom ) {
+            handleGeometryTypes( styling, text, font, g );
+        }
+    }
+
+    private void render( TextStyling styling, Font font, String text, Surface surface ) {
+        for ( SurfacePatch patch : surface.getPatches() ) {
+            if ( patch instanceof PolygonPatch ) {
+                PolygonPatch polygonPatch = (PolygonPatch) patch;
+                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                    labelRenderer.render( styling, font, text, curve );
+                }
+            } else {
+                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
+            }
+        }
+    }
+
+    private Font convertFont( TextStyling styling ) {
         AffineTransform shear = null;
 
         int style = styling.font.bold ? BOLD : PLAIN;
@@ -199,46 +192,7 @@ public class Java2DTextRenderer implements TextRenderer {
 
         if ( styling.font.fontStyle == Style.OBLIQUE && shear != null )
             font = font.deriveFont( shear );
-
-        if ( geom instanceof Point ) {
-            render( styling, font, text, (Point) geom );
-        } else if ( geom instanceof Surface && styling.linePlacement != null ) {
-            Surface surface = (Surface) geom;
-            for ( SurfacePatch patch : surface.getPatches() ) {
-                if ( patch instanceof PolygonPatch ) {
-                    PolygonPatch polygonPatch = (PolygonPatch) patch;
-                    for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                        render( styling, font, text, curve );
-                    }
-                } else {
-                    throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-                }
-            }
-        } else if ( geom instanceof Curve && styling.linePlacement != null ) {
-            render( styling, font, text, (Curve) geom );
-        } else if ( geom instanceof GeometricPrimitive ) {
-            render( styling, font, text, geom.getCentroid() );
-        } else if ( geom instanceof MultiPoint ) {
-            for ( Point p : (MultiPoint) geom ) {
-                render( styling, font, text, p );
-            }
-        } else if ( geom instanceof MultiCurve<?> && styling.linePlacement != null ) {
-            for ( Curve c : (MultiCurve<?>) geom ) {
-                render( styling, font, text, c );
-            }
-        } else if ( geom instanceof MultiLineString && styling.linePlacement != null ) {
-            for ( Curve c : (MultiLineString) geom ) {
-                render( styling, font, text, c );
-            }
-        } else if ( geom instanceof MultiGeometry<?> ) {
-            for ( Geometry g : (MultiGeometry<?>) geom ) {
-                render( styling, text, g );
-            }
-        } else {
-            LOG.warn( "Trying to use unsupported geometry type '{}' for text rendering.",
-                      geom.getClass().getSimpleName() );
-        }
-
+        return font;
     }
 
 }

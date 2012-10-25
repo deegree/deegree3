@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
 import static java.awt.BasicStroke.CAP_BUTT;
@@ -78,16 +78,17 @@ class Java2DStrokeRenderer {
     private static final Logger LOG = getLogger( Java2DStrokeRenderer.class );
 
     private Graphics2D graphics;
+
     private UomCalculator uomCalculator;
 
     private Java2DFillRenderer fillRenderer;
-    
-    Java2DStrokeRenderer(Graphics2D graphics, UomCalculator uomCalculator, Java2DFillRenderer fillRenderer){
+
+    Java2DStrokeRenderer( Graphics2D graphics, UomCalculator uomCalculator, Java2DFillRenderer fillRenderer ) {
         this.graphics = graphics;
         this.uomCalculator = uomCalculator;
         this.fillRenderer = fillRenderer;
     }
-    
+
     void applyStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset, PerpendicularOffsetType type ) {
         if ( stroke == null || isZero( stroke.width ) ) {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
@@ -99,87 +100,111 @@ class Java2DStrokeRenderer {
             fillRenderer.applyGraphicFill( stroke.fill, uom );
         }
         if ( stroke.stroke != null ) {
-            if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
-                Shape shape = getShapeFromSvg( stroke.stroke.imageURL, uomCalculator.considerUOM( stroke.stroke.size, uom ),
-                                               stroke.stroke.rotation );
-                graphics.setStroke( new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
-                                                     stroke.positionPercentage, stroke.strokeInitialGap ) );
-            } else if ( stroke.stroke.mark != null ) {
-                double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
-                Shape transed = object;
-                if ( !isZero( poff ) ) {
-                    transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
-                }
-                double sz = stroke.stroke.size;
-                Shape shape = getShapeFromMark( stroke.stroke.mark, sz <= 0 ? 6 : uomCalculator.considerUOM( sz, uom ),
-                                                stroke.stroke.rotation );
-                if ( sz <= 0 ) {
-                    sz = 6;
-                }
-                ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap + sz, uom ),
-                                                 stroke.positionPercentage, stroke.strokeInitialGap );
-                transed = s.createStrokedShape( transed );
-                if ( stroke.stroke.mark.fill != null ) {
-                    fillRenderer.applyFill( stroke.stroke.mark.fill, uom );
-                    graphics.fill( transed );
-                }
-                if ( stroke.stroke.mark.stroke != null ) {
-                    applyStroke( stroke.stroke.mark.stroke, uom, transed, 0, null );
-                    graphics.draw( transed );
-                }
+            if ( applyGraphicStroke( stroke, uom, object, perpendicularOffset, type ) ) {
                 return;
-            } else {
-                LOG.warn( "Rendering of raster images along lines is not supported yet." );
             }
         } else {
-            int linecap = CAP_SQUARE;
-            if ( stroke.linecap != null ) {
-                switch ( stroke.linecap ) {
-                case BUTT:
-                    linecap = CAP_BUTT;
-                    break;
-                case ROUND:
-                    linecap = CAP_ROUND;
-                    break;
-                case SQUARE:
-                    linecap = CAP_SQUARE;
-                    break;
-                }
-            }
-            int linejoin = JOIN_MITER;
-            float miterLimit = 10;
-            if ( stroke.linejoin != null ) {
-                switch ( stroke.linejoin ) {
-                case BEVEL:
-                    linejoin = JOIN_BEVEL;
-                    break;
-                case MITRE:
-                    linejoin = JOIN_MITER;
-                    break;
-                case ROUND:
-                    linejoin = JOIN_ROUND;
-                    break;
-                }
-            }
-            float dashoffset = (float) uomCalculator.considerUOM( stroke.dashoffset, uom );
-            float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
-            if ( dasharray != null ) {
-                for ( int i = 0; i < stroke.dasharray.length; ++i ) {
-                    dasharray[i] = (float) uomCalculator.considerUOM( stroke.dasharray[i], uom );
-                }
-            }
-
-            BasicStroke bs = new BasicStroke( (float) uomCalculator.considerUOM( stroke.width, uom ), linecap, linejoin, miterLimit,
-                                              dasharray, dashoffset );
-            double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
-            if ( !isZero( poff ) ) {
-                graphics.setStroke( new OffsetStroke( poff, bs, type ) );
-            } else {
-                graphics.setStroke( bs );
-            }
+            applyNormalStroke( stroke, uom, object, perpendicularOffset, type );
         }
 
         graphics.draw( object );
+    }
+
+    private boolean applyGraphicStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset,
+                                        PerpendicularOffsetType type ) {
+        if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
+            Shape shape = getShapeFromSvg( stroke.stroke.imageURL,
+                                           uomCalculator.considerUOM( stroke.stroke.size, uom ), stroke.stroke.rotation );
+            graphics.setStroke( new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap
+                                                                                   + stroke.stroke.size, uom ),
+                                                 stroke.positionPercentage, stroke.strokeInitialGap ) );
+        } else if ( stroke.stroke.mark != null ) {
+            double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
+            Shape transed = object;
+            if ( !isZero( poff ) ) {
+                transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
+            }
+            double sz = stroke.stroke.size;
+            Shape shape = getShapeFromMark( stroke.stroke.mark, sz <= 0 ? 6 : uomCalculator.considerUOM( sz, uom ),
+                                            stroke.stroke.rotation );
+            if ( sz <= 0 ) {
+                sz = 6;
+            }
+            ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap + sz, uom ),
+                                             stroke.positionPercentage, stroke.strokeInitialGap );
+            transed = s.createStrokedShape( transed );
+            if ( stroke.stroke.mark.fill != null ) {
+                fillRenderer.applyFill( stroke.stroke.mark.fill, uom );
+                graphics.fill( transed );
+            }
+            if ( stroke.stroke.mark.stroke != null ) {
+                applyStroke( stroke.stroke.mark.stroke, uom, transed, 0, null );
+                graphics.draw( transed );
+            }
+            return true;
+        } else {
+            LOG.warn( "Rendering of raster images along lines is not supported yet." );
+        }
+        return false;
+    }
+
+    private void applyNormalStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset,
+                                    PerpendicularOffsetType type ) {
+        int linecap = getLinecap( stroke );
+        float miterLimit = 10;
+        int linejoin = getLinejoin( stroke );
+        float dashoffset = (float) uomCalculator.considerUOM( stroke.dashoffset, uom );
+        float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
+        if ( dasharray != null ) {
+            for ( int i = 0; i < stroke.dasharray.length; ++i ) {
+                dasharray[i] = (float) uomCalculator.considerUOM( stroke.dasharray[i], uom );
+            }
+        }
+
+        BasicStroke bs = new BasicStroke( (float) uomCalculator.considerUOM( stroke.width, uom ), linecap, linejoin,
+                                          miterLimit, dasharray, dashoffset );
+        double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
+        if ( !isZero( poff ) ) {
+            graphics.setStroke( new OffsetStroke( poff, bs, type ) );
+        } else {
+            graphics.setStroke( bs );
+        }
+    }
+
+    private int getLinecap( Stroke stroke ) {
+        int linecap = CAP_SQUARE;
+        if ( stroke.linecap != null ) {
+            switch ( stroke.linecap ) {
+            case BUTT:
+                linecap = CAP_BUTT;
+                break;
+            case ROUND:
+                linecap = CAP_ROUND;
+                break;
+            case SQUARE:
+                linecap = CAP_SQUARE;
+                break;
+            }
+        }
+        return linecap;
+    }
+
+    private int getLinejoin( Stroke stroke ) {
+        int linejoin = JOIN_MITER;
+        if ( stroke.linejoin != null ) {
+            switch ( stroke.linejoin ) {
+            case BEVEL:
+                linejoin = JOIN_BEVEL;
+                break;
+            case MITRE:
+                linejoin = JOIN_MITER;
+                break;
+            case ROUND:
+                linejoin = JOIN_ROUND;
+                break;
+            }
+        }
+        return linejoin;
     }
 
 }

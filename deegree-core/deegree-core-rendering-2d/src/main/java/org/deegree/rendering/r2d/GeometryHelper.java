@@ -52,7 +52,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.linearization.GeometryLinearizer;
@@ -60,11 +59,7 @@ import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.DefaultEnvelope;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.slf4j.Logger;
 
 /**
@@ -85,30 +80,16 @@ class GeometryHelper {
 
     private AffineTransform worldToScreen;
 
-    private Polygon clippingArea;
-
     GeometryHelper( Envelope bbox, int width, AffineTransform worldToScreen ) {
         this.worldToScreen = worldToScreen;
         try {
             if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
                 transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
             }
-            this.clippingArea = calculateClippingArea( bbox, width );
         } catch ( Throwable e ) {
             LOG.debug( "Stack trace:", e );
             LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
         }
-    }
-
-    private Polygon calculateClippingArea( Envelope bbox, int width ) {
-        double resolution = bbox.getSpan0() / width;
-        double delta = resolution * 100;
-        double[] minCords = new double[] { bbox.getMin().get0() - delta, bbox.getMin().get1() - delta };
-        double[] maxCords = new double[] { bbox.getMax().get0() + delta, bbox.getMax().get1() + delta };
-        Point min = new DefaultPoint( null, bbox.getCoordinateSystem(), null, minCords );
-        Point max = new DefaultPoint( null, bbox.getCoordinateSystem(), null, maxCords );
-        Envelope enlargedBBox = new DefaultEnvelope( min, max );
-        return (Polygon) Geometries.getAsGeometry( enlargedBBox );
     }
 
     Double fromCurve( Curve curve, boolean close ) {
@@ -201,38 +182,6 @@ class GeometryHelper {
             return g2;
         }
         return null;
-    }
-
-    /**
-     * Clips the passed geometry with the drawing area if the drawing area does not contain the passed geometry
-     * completely.
-     * 
-     * @param geom
-     *            the geometry to clip, must not be <code>null</code>
-     * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
-     */
-    Geometry clipGeometry( Geometry geom ) {
-        geom = transform( geom );
-        if ( clippingArea != null && !clippingArea.contains( geom ) ) {
-            try {
-                Geometry clippedGeometry = clippingArea.getIntersection( geom );
-                if ( clippedGeometry == null ) {
-                    // can happen if the clipping somehow resulted in empty geometry collections (at least that was one
-                    // observed case)
-                    return geom;
-                }
-                com.vividsolutions.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
-                com.vividsolutions.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
-                if ( jtsOrig == jtsClipped ) {
-                    return geom;
-                }
-                geom = OrientationFixer.fixOrientation( clippedGeometry );
-            } catch ( UnsupportedOperationException e ) {
-                // use original geometry if intersection not supported by JTS
-                return geom;
-            }
-        }
-        return geom;
     }
 
 }

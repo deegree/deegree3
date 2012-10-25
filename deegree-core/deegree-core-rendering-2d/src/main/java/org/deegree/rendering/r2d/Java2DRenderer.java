@@ -72,6 +72,7 @@ import java.util.Map;
 
 import javax.media.jai.RenderedOp;
 
+import org.apache.batik.ext.awt.image.codec.MemoryCacheSeekableStream;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -103,8 +104,6 @@ import org.deegree.style.styling.components.UOM;
 import org.deegree.style.utils.UomCalculator;
 import org.slf4j.Logger;
 
-import com.sun.media.jai.codec.MemoryCacheSeekableStream;
-
 /**
  * <code>Java2DRenderer</code>
  * 
@@ -134,7 +133,9 @@ public class Java2DRenderer implements Renderer {
 
     private Java2DFillRenderer fillRenderer;
 
-    GeometryHelper geomHelper;
+     GeometryHelper geomHelper;
+
+     GeometryClipper clipper;
 
     /**
      * @param graphics
@@ -170,6 +171,7 @@ public class Java2DRenderer implements Renderer {
             calculateResolution( bbox );
 
             geomHelper = new GeometryHelper( bbox, width, worldToScreen );
+            clipper = new GeometryClipper(geomHelper, bbox, width);
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
             LOG.trace( "Final transformation was {}", worldToScreen );
@@ -316,7 +318,7 @@ public class Java2DRenderer implements Renderer {
             render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
             return;
         }
-        geom = geomHelper.clipGeometry( geom );
+        geom = clipper.clipGeometry( geom );
         // TODO properly convert'em
         if ( geom instanceof Surface ) {
             render( styling, (Surface) geom );
@@ -371,7 +373,7 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
             return;
         }
-        geom = geomHelper.clipGeometry( geom );
+        geom = clipper.clipGeometry( geom );
         if ( geom instanceof Curve ) {
             Double line = geomHelper.fromCurve( (Curve) geom, false );
             strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
@@ -443,7 +445,7 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
         }
-        geom = geomHelper.clipGeometry( geom );
+        geom = clipper.clipGeometry( geom );
         if ( geom instanceof Envelope ) {
             geom = envelopeToPolygon( (Envelope) geom );
         }
