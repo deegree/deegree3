@@ -142,7 +142,7 @@ public class Interpolate extends AbstractCustomExpression {
     }
 
     /** Linear interpolation between two colors, with fraction f */
-    private static final Color interpolateColorLinear( final Color fst, final Color snd, final double f ) {
+    private static Color interpolateColorLinear( final Color fst, final Color snd, final double f ) {
         final double f1m = 1 - f;
         int red = (int) Math.round( fst.getRed() * f1m + snd.getRed() * f );
         int green = (int) Math.round( fst.getGreen() * f1m + snd.getGreen() * f );
@@ -153,7 +153,7 @@ public class Interpolate extends AbstractCustomExpression {
     }
 
     /* Linear interpolation between two numbers with fraction f */
-    private static final double interpolateLinear( final double fst, final double snd, final double f ) {
+    private static double interpolateLinear( final double fst, final double snd, final double f ) {
         return fst * ( 1 - f ) + snd * f;
     }
 
@@ -161,8 +161,8 @@ public class Interpolate extends AbstractCustomExpression {
      * Cubic interpolation between y1 and y2, with fraction f. y0 and y3 are extra points, such that y0-y1-y2-y3 are
      * ordered.
      */
-    private static final double interpolateCubic( final double y0, final double y1, final double y2, final double y3,
-                                                  final double f ) {
+    private static double interpolateCubic( final double y0, final double y1, final double y2, final double y3,
+                                            final double f ) {
         double a0, a1, a2, a3, f2;
 
         f2 = f * f;
@@ -174,7 +174,7 @@ public class Interpolate extends AbstractCustomExpression {
         return ( a0 * f * f2 + a1 * f2 + a2 * f + a3 );
     }
 
-    private static final Color interpolateColorCosine( final Color fst, final Color snd, final double f ) {
+    private static Color interpolateColorCosine( final Color fst, final Color snd, final double f ) {
         final double mu = ( 1 - Math.cos( f * Math.PI ) ) / 2;
         final double m1m = 1 - mu;
         int red = (int) ( fst.getRed() * m1m + snd.getRed() * mu );
@@ -184,12 +184,12 @@ public class Interpolate extends AbstractCustomExpression {
         return new Color( red, green, blue, alpha );
     }
 
-    private static final double interpolateCosine( final double fst, final double snd, final double f ) {
+    private static double interpolateCosine( final double fst, final double snd, final double f ) {
         final double mu = ( 1 - Math.cos( f * Math.PI ) ) / 2;
         return fst * ( 1 - mu ) + snd * mu;
     }
 
-    private final Color interpolateColor( final int pos1, final int pos2, final double f ) {
+    private Color interpolateColor( final int pos1, final int pos2, final double f ) {
         if ( !color ) {
             return null;
         }
@@ -266,13 +266,13 @@ public class Interpolate extends AbstractCustomExpression {
     }
 
     /* Adapt an input value <i>r</i> to an interval [<i>low</i>,<i>high</i>] */
-    private final double fixRange( double r, final double low, final double high ) {
+    private double fixRange( double r, final double low, final double high ) {
         r = r < low ? low : r;
         r = r > high ? high : r;
         return r;
     }
 
-    private final double interpolate( final int pos1, final int pos2, final double f ) {
+    private double interpolate( final int pos1, final int pos2, final double f ) {
         switch ( mode ) {
         case Linear:
             return interpolateLinear( valuesArray[pos1], valuesArray[pos2], f );
@@ -344,21 +344,7 @@ public class Interpolate extends AbstractCustomExpression {
                 contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
             }
 
-            if ( in.getLocalName().equals( "InterpolationPoint" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "InterpolationPoint" ) ) ) {
-                    in.nextTag();
-
-                    if ( in.getLocalName().equals( "Data" ) ) {
-                        datas.add( Double.valueOf( in.getElementText() ) );
-                    }
-
-                    if ( in.getLocalName().equals( "Value" ) ) {
-                        StringBuffer sb = new StringBuffer();
-                        valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
-                        values.add( sb );
-                    }
-                }
-            }
+            parseInterpolationPoint( in, datas, values, valueContns );
 
         }
 
@@ -368,6 +354,27 @@ public class Interpolate extends AbstractCustomExpression {
                                            valueContns, color, mode, fallbackColor );
         inp.buildLookupArrays();
         return inp;
+    }
+
+    private void parseInterpolationPoint( XMLStreamReader in, LinkedList<Double> datas,
+                                          LinkedList<StringBuffer> values,
+                                          LinkedList<Continuation<StringBuffer>> valueContns )
+                            throws XMLStreamException {
+        if ( in.getLocalName().equals( "InterpolationPoint" ) ) {
+            while ( !( in.isEndElement() && in.getLocalName().equals( "InterpolationPoint" ) ) ) {
+                in.nextTag();
+
+                if ( in.getLocalName().equals( "Data" ) ) {
+                    datas.add( Double.valueOf( in.getElementText() ) );
+                }
+
+                if ( in.getLocalName().equals( "Value" ) ) {
+                    StringBuffer sb = new StringBuffer();
+                    valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
+                    values.add( sb );
+                }
+            }
+        }
     }
 
     /**
@@ -537,8 +544,6 @@ public class Interpolate extends AbstractCustomExpression {
      * @return the corresponding Color
      */
     Color lookup2Color( double value ) {
-        Color color;
-
         int l = dataArray.length - 1;
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
             if ( this.color ) {
@@ -558,6 +563,12 @@ public class Interpolate extends AbstractCustomExpression {
                 }
             }
         }
+
+        return findColor( value );
+    }
+
+    private Color findColor( double value ) {
+        Color color;
 
         int pos = binarySearch( dataArray, value );
         if ( pos < 0 ) {
