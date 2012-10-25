@@ -136,10 +136,7 @@ class TransactionHelper extends SqlHelper {
             ir.performInsert( conn );
 
             QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-            updateCRSTable( false, conn, internalId, qp );
-            updateKeywordTable( false, conn, internalId, qp );
-            updateOperatesOnTable( false, conn, internalId, qp );
-            updateConstraintTable( false, conn, internalId, qp );
+            insertNewValues( conn, internalId, qp );
 
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
@@ -255,10 +252,9 @@ class TransactionHelper extends SqlHelper {
                 ur.performUpdate( conn );
 
                 QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-                updateCRSTable( true, conn, requestedId, qp );
-                updateKeywordTable( true, conn, requestedId, qp );
-                updateOperatesOnTable( true, conn, requestedId, qp );
-                updateConstraintTable( true, conn, requestedId, qp );
+
+                deleteOldValues( conn, requestedId );
+                insertNewValues( conn, requestedId, qp );
             }
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", s.toString(), e.getMessage() );
@@ -271,6 +267,24 @@ class TransactionHelper extends SqlHelper {
             JDBCUtils.close( rs, stmt, null, LOG );
         }
         return requestedId;
+    }
+
+    private void insertNewValues( Connection conn, int requestedId, QueryableProperties qp )
+                            throws MetadataStoreException {
+        LOG.debug( "Insert values in referenced tables for dataset with id {}", requestedId );
+        insertInCRSTable( conn, requestedId, qp );
+        insertInKeywordTable( conn, requestedId, qp );
+        insertInOperatesOnTable( conn, requestedId, qp );
+        insertInConstraintTable( conn, requestedId, qp );
+    }
+
+    private void deleteOldValues( Connection conn, int requestedId )
+                            throws MetadataStoreException {
+        LOG.debug( "Delete existing values in referenced tables for dataset with id {}", requestedId );
+        deleteExistingRows( conn, requestedId, crsTable );
+        deleteExistingRows( conn, requestedId, keywordTable );
+        deleteExistingRows( conn, requestedId, opOnTable );
+        deleteExistingRows( conn, requestedId, constraintTable );
     }
 
     private void appendValues( ISORecord rec, TransactionRow tr )
@@ -398,8 +412,7 @@ class TransactionHelper extends SqlHelper {
         return gf.createEnvelope( west, south, east, north, CRSUtils.EPSG_4326 );
     }
 
-    private void updateConstraintTable( boolean isUpdate, Connection connection, int operatesOnId,
-                                        QueryableProperties qp )
+    private void insertInConstraintTable( Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<Constraint> constraintss = qp.getConstraints();
         if ( constraintss != null && constraintss.size() > 0 ) {
@@ -410,10 +423,10 @@ class TransactionHelper extends SqlHelper {
             PreparedStatement stmt = null;
 
             try {
-                stmt = connection.prepareStatement( sw.toString() );
+                stmt = conn.prepareStatement( sw.toString() );
                 stmt.setInt( 2, operatesOnId );
                 for ( Constraint constraint : constraintss ) {
-                    int localId = updateTable( isUpdate, connection, operatesOnId, constraintTable );
+                    int localId = getNewIdentifier( conn, constraintTable );
                     stmt.setInt( 1, localId );
                     stmt.setString( 3, concatenate( constraint.getLimitations() ) );
                     stmt.setString( 4, concatenate( constraint.getAccessConstraints() ) );
@@ -431,14 +444,14 @@ class TransactionHelper extends SqlHelper {
         }
     }
 
-    private void updateCRSTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
+    private void insertInCRSTable( Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<CRS> crss = qp.getCrs();
         if ( crss != null && crss.size() > 0 ) {
             for ( CRS crs : crss ) {
                 InsertRow ir = new InsertRow( new TableName( crsTable ), null );
                 try {
-                    int localId = updateTable( isUpdate, conn, operatesOnId, crsTable );
+                    int localId = getNewIdentifier( conn, crsTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "authority",
@@ -450,6 +463,7 @@ class TransactionHelper extends SqlHelper {
                     ir.addPreparedArgument( "version",
                                             ( crs.getVersion() != null && crs.getVersion().length() > 0 ) ? crs.getVersion()
                                                                                                          : null );
+                    LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
                     String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
@@ -460,18 +474,19 @@ class TransactionHelper extends SqlHelper {
         }
     }
 
-    private void updateKeywordTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
+    private void insertInKeywordTable( Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<Keyword> keywords = qp.getKeywords();
         if ( keywords != null && keywords.size() > 0 ) {
             for ( Keyword keyword : keywords ) {
                 InsertRow ir = new InsertRow( new TableName( keywordTable ), null );
                 try {
-                    int localId = updateTable( isUpdate, conn, operatesOnId, keywordTable );
+                    int localId = getNewIdentifier( conn, keywordTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "keywordtype", keyword.getKeywordType() );
                     ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords() ) );
+                    LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
                     String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
@@ -482,19 +497,20 @@ class TransactionHelper extends SqlHelper {
         }
     }
 
-    private void updateOperatesOnTable( boolean isUpdate, Connection conn, int operatesOnId, QueryableProperties qp )
+    private void insertInOperatesOnTable( Connection conn, int operatesOnId, QueryableProperties qp )
                             throws MetadataStoreException {
         List<OperatesOnData> opOns = qp.getOperatesOnData();
         if ( opOns != null && opOns.size() > 0 ) {
             for ( OperatesOnData opOn : opOns ) {
                 InsertRow ir = new InsertRow( new TableName( opOnTable ), null );
                 try {
-                    int localId = updateTable( isUpdate, conn, operatesOnId, opOnTable );
+                    int localId = getNewIdentifier( conn, opOnTable );
                     ir.addPreparedArgument( idColumn, localId );
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "operateson", opOn.getOperatesOnId() );
                     ir.addPreparedArgument( "operatesonid", opOn.getOperatesOnIdentifier() );
                     ir.addPreparedArgument( "operatesonname", opOn.getOperatesOnName() );
+                    LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
                     String msg = Messages.getMessage( "ERROR_SQL", ir.getSql(), e.getMessage() );
@@ -505,21 +521,22 @@ class TransactionHelper extends SqlHelper {
         }
     }
 
-    private int updateTable( boolean isUpdate, Connection connection, int operatesOnId, String databaseTable )
+    private int getNewIdentifier( Connection connection, String databaseTable )
                             throws MetadataStoreException {
-        StringWriter sqlStatement = new StringWriter( 500 );
+        int localId = getLastDatasetId( connection, databaseTable );
+        return ++localId;
+    }
+
+    private void deleteExistingRows( Connection connection, int operatesOnId, String databaseTable )
+                            throws MetadataStoreException {
         PreparedStatement stmt = null;
-        int localId = 0;
+        StringWriter sqlStatement = new StringWriter();
         try {
-            localId = getLastDatasetId( connection, databaseTable );
-            localId++;
-            if ( isUpdate == true ) {
-                sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_main + " = ?" );
-                stmt = connection.prepareStatement( sqlStatement.toString() );
-                stmt.setInt( 1, operatesOnId );
-                LOG.debug( stmt.toString() );
-                stmt.executeUpdate();
-            }
+            sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE " + fk_main + " = ?" );
+            stmt = connection.prepareStatement( sqlStatement.toString() );
+            stmt.setInt( 1, operatesOnId );
+            LOG.debug( stmt.toString() );
+            stmt.executeUpdate();
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", sqlStatement.toString(), e.getMessage() );
             LOG.debug( msg );
@@ -527,7 +544,6 @@ class TransactionHelper extends SqlHelper {
         } finally {
             close( null, stmt, null, LOG );
         }
-        return localId;
     }
 
     /**
@@ -538,10 +554,10 @@ class TransactionHelper extends SqlHelper {
      * @param databaseTable
      *            the databaseTable that is requested.
      * @return the last Primary Key ID of the databaseTable.
-     * @throws SQLException
+     * @throws MetadataStoreException
      */
     private int getLastDatasetId( Connection conn, String databaseTable )
-                            throws SQLException {
+                            throws MetadataStoreException {
         int result = 0;
         String selectIDRows = null;
         // TODO: use SQLDialect
@@ -563,6 +579,10 @@ class TransactionHelper extends SqlHelper {
             while ( rsBrief.next() ) {
                 result = rsBrief.getInt( 1 );
             }
+        } catch ( SQLException e ) {
+            String msg = Messages.getMessage( "ERROR_SQL", selectIDRows, e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
         } finally {
             close( rsBrief, stmt, null, LOG );
         }
