@@ -93,8 +93,8 @@ public class OffsetStroke implements Stroke {
         this.type = type;
     }
 
-    private static final double[] calcNormal( final double x1, final double y1, final double x2, final double y2,
-                                              final double[] last ) {
+    private static double[] calcNormal( final double x1, final double y1, final double x2, final double y2,
+                                        final double[] last ) {
         final double nx = x2 - x1;
         final double ny = y2 - y1;
         if ( isZero( nx ) && isZero( ny ) ) {
@@ -110,7 +110,7 @@ public class OffsetStroke implements Stroke {
         return new double[] { -ny / len, nx / len };
     }
 
-    private final double[] calcIntersection( final double px, final double py, final double[] n1, final double[] n2 ) {
+    private double[] calcIntersection( final double px, final double py, final double[] n1, final double[] n2 ) {
         double nx = px + offset * n1[0];
         double ny = py + offset * n1[1];
         if ( n2 == null ) {

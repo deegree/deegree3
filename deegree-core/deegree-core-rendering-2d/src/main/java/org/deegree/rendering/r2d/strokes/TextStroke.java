@@ -77,7 +77,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.utils.Pair;
 import org.deegree.style.styling.components.LinePlacement;
 import org.slf4j.Logger;
 
@@ -124,13 +123,11 @@ public class TextStroke implements Stroke {
     // I had none that was practical.
     // the method returns (true, path) if rendering word wise is possible
     // and (false, null) if not
-    private Pair<Boolean, GeneralPath> tryWordWise( Shape shape ) {
+    private GeneralPath tryWordWise( Shape shape ) {
         // two steps: first a list is prepared that describes what to render where
         // second the list is rendered
 
         // first step: iterates over the segment lengths and the words to render
-        Pair<Boolean, GeneralPath> pair = new Pair<Boolean, GeneralPath>();
-
         LinkedList<String> words = new LinkedList<String>( asList( text.split( "\\s" ) ) );
         ListIterator<String> list = words.listIterator();
         while ( list.hasNext() ) {
@@ -169,8 +166,7 @@ public class TextStroke implements Stroke {
             double segLength = lengths.poll() - font.getSize2D(); // at least it works for line angles < 90°
 
             if ( vecLength > segLength ) {
-                pair.first = false;
-                return pair;
+                return null;
             }
 
             currentGap = 0;
@@ -242,8 +238,7 @@ public class TextStroke implements Stroke {
 
         // prepare for second run - now actually doing something
         // this just iterates over the path and creates the final shape to render.
-        pair.first = true;
-        pair.second = new GeneralPath();
+        GeneralPath result = new GeneralPath();
 
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
         double points[] = new double[6];
@@ -256,7 +251,7 @@ public class TextStroke implements Stroke {
             case SEG_MOVETO:
                 movex = lastx = points[0];
                 movey = lasty = points[1];
-                pair.second.moveTo( movex, movey );
+                result.moveTo( movex, movey );
                 break;
 
             case SEG_CLOSE:
@@ -305,7 +300,7 @@ public class TextStroke implements Stroke {
                     t.rotate( angle );
                     t.translate( gap + length, lineHeight / 4 );
 
-                    pair.second.append( t.createTransformedShape( text ), false );
+                    result.append( t.createTransformedShape( text ), false );
 
                     length += gap + text.getBounds2D().getWidth();
 
@@ -320,7 +315,7 @@ public class TextStroke implements Stroke {
             it.next();
         }
 
-        return pair;
+        return result;
     }
 
     private static final double H_PI = Math.PI / 2;
@@ -428,32 +423,19 @@ public class TextStroke implements Stroke {
             return new GeneralPath();
         }
 
-        if ( linePlacement.preventUpsideDown && isUpsideDown( shape ) ) {
-            final Shape originalShape = shape;
-            shape = (Shape) Proxy.newProxyInstance( getClass().getClassLoader(), new Class[] { Shape.class },
-                                                    new InvocationHandler() {
+        shape = handleUpsideDown( shape );
 
-                                                        @Override
-                                                        public Object invoke( Object proxy, Method method, Object[] args )
-                                                                                throws Throwable {
-                                                            Object retval = method.invoke( originalShape, args );
-
-                                                            if ( method.getName().equals( "getPathIterator" ) ) {
-                                                                return new ReversePathIterator( (PathIterator) retval );
-                                                            }
-
-                                                            return retval;
-                                                        }
-                                                    } );
-        }
-
-        Pair<Boolean, GeneralPath> pair = tryWordWise( shape );
-        if ( pair.first ) {
+        GeneralPath path = tryWordWise( shape );
+        if ( path != null ) {
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Rendered text '" + text + "' word wise." );
             }
-            return pair.second;
+            return path;
         }
+        return renderCharacterWise( shape, glyphVector );
+    }
+
+    private Shape renderCharacterWise( Shape shape, GlyphVector glyphVector ) {
 
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
@@ -532,6 +514,28 @@ public class TextStroke implements Stroke {
         }
 
         return result;
+    }
+
+    private Shape handleUpsideDown( Shape shape ) {
+        if ( linePlacement.preventUpsideDown && isUpsideDown( shape ) ) {
+            final Shape originalShape = shape;
+            shape = (Shape) Proxy.newProxyInstance( getClass().getClassLoader(), new Class[] { Shape.class },
+                                                    new InvocationHandler() {
+
+                                                        @Override
+                                                        public Object invoke( Object proxy, Method method, Object[] args )
+                                                                                throws Throwable {
+                                                            Object retval = method.invoke( originalShape, args );
+
+                                                            if ( method.getName().equals( "getPathIterator" ) ) {
+                                                                return new ReversePathIterator( (PathIterator) retval );
+                                                            }
+
+                                                            return retval;
+                                                        }
+                                                    } );
+        }
+        return shape;
     }
 
     static class StringOrGap {
