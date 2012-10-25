@@ -36,27 +36,16 @@
 
 package org.deegree.services.wms;
 
-import static java.awt.RenderingHints.KEY_ANTIALIASING;
-import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
-import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
-import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
-import static org.deegree.rendering.r2d.context.Java2DHelper.applyHints;
 import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
-import static org.deegree.services.wms.model.layers.Layer.render;
-import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -69,13 +58,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Timer;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -84,16 +69,8 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.XPathEvaluator;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.LayerRef;
@@ -102,21 +79,17 @@ import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
-import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.rendering.r2d.context.RenderContext;
-import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.model.layers.EmptyLayer;
-import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
@@ -151,13 +124,9 @@ public class MapService {
      */
     public StyleRegistry registry;
 
-    private HashMap<Style, Pair<Integer, Integer>> legendSizes = new HashMap<Style, Pair<Integer, Integer>>();
+    MapOptionsMaps layerOptions = new MapOptionsMaps();
 
-    private HashMap<Style, HashMap<String, BufferedImage>> legends = new HashMap<Style, HashMap<String, BufferedImage>>();
-
-    private MapOptionsMaps layerOptions = new MapOptionsMaps();
-
-    private MapOptions defaultLayerOptions;
+    MapOptions defaultLayerOptions;
 
     private LinkedList<LayerUpdater> dynamics = new LinkedList<LayerUpdater>();
 
@@ -172,7 +141,11 @@ public class MapService {
 
     private HashMap<String, org.deegree.layer.Layer> newLayers;
 
-    private HashMap<String, Theme> themeMap;
+    HashMap<String, Theme> themeMap;
+
+    private GetLegendHandler getLegendHandler;
+
+    private OldStyleMapService oldStyleMapService;
 
     /**
      * @param conf
@@ -218,6 +191,8 @@ public class MapService {
                 }
             }
         }
+        getLegendHandler = new GetLegendHandler( this );
+        oldStyleMapService = new OldStyleMapService( this );
     }
 
     /**
@@ -228,6 +203,8 @@ public class MapService {
         this.defaultLayerOptions = new MapOptions( Quality.NORMAL, Interpolation.NEARESTNEIGHBOR, Antialias.BOTH, -1, 3 );
         layers = new HashMap<String, Layer>();
         root = new EmptyLayer( this, null, "Root Layer", null );
+        getLegendHandler = new GetLegendHandler( this );
+        oldStyleMapService = new OldStyleMapService( this );
     }
 
     /**
@@ -303,25 +280,6 @@ public class MapService {
         return layers.get( name );
     }
 
-    protected LinkedList<String> paintLayer( Layer l, Style s, Graphics2D g, GetMap gm )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        LinkedList<String> warnings = new LinkedList<String>();
-        double scale = gm.getScale();
-        DoublePair scales = l.getScaleHint();
-        LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
-        if ( scales.first > scale || scales.second < scale ) {
-            LOG.debug( "Not showing layer '{}' because of its scale constraint.", l.getName() == null ? l.getTitle()
-                                                                                                     : l.getName() );
-            return warnings;
-        }
-        warnings.addAll( l.paintMap( g, gm, s ) );
-
-        for ( Layer child : l.getChildren() ) {
-            warnings.addAll( paintLayer( child, registry.get( child.getInternalName(), null ), g, gm ) );
-        }
-        return warnings;
-    }
-
     /**
      * @param req
      *            should be a GetMap or GetLegendGraphic
@@ -351,176 +309,6 @@ public class MapService {
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
-    private static Mapper<Boolean, Layer> getFeatureLayerCollector( final LinkedList<FeatureLayer> list ) {
-        return new Mapper<Boolean, Layer>() {
-            @Override
-            public Boolean apply( Layer u ) {
-                return collectFeatureLayers( u, list );
-            }
-        };
-    }
-
-    /**
-     * @param l
-     * @param list
-     * @return true, if all sub layers were feature layers and its style had a distinct feature type name
-     */
-    static boolean collectFeatureLayers( Layer l, final LinkedList<FeatureLayer> list ) {
-        if ( l instanceof FeatureLayer ) {
-            list.add( (FeatureLayer) l );
-            return reduce( true, map( l.getChildren(), getFeatureLayerCollector( list ) ), AND );
-        }
-        return false;
-    }
-
-    // must ensure that subtree consists of feature layers only
-    // returns null if not all styles contain distinct feature type names
-    private LinkedList<String> collectFeatureQueries( Map<FeatureStore, LinkedList<Query>> queries, FeatureLayer l,
-                                                      Style style, GetMap gm, HashMap<QName, FeatureLayer> ftToLayer,
-                                                      HashMap<QName, Style> ftToStyle )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        if ( !l.getClass().equals( FeatureLayer.class ) ) {
-            return null;
-        }
-
-        LinkedList<String> warns = new LinkedList<String>();
-
-        LinkedList<Query> list = queries.get( l.getDataStore() );
-        if ( list == null ) {
-            list = new LinkedList<Query>();
-            queries.put( l.getDataStore(), list );
-        }
-        warns.addAll( l.collectQueries( style, gm, list ) );
-
-        QName name = style == null ? null : style.getFeatureType();
-        if ( name == null || ftToLayer.containsKey( name ) ) {
-            return null;
-        }
-        ftToLayer.put( name, l );
-        ftToStyle.put( name, style );
-
-        for ( Layer child : l.getChildren() ) {
-            LinkedList<String> otherWarns = collectFeatureQueries( queries, (FeatureLayer) child,
-                                                                   registry.get( child.getInternalName(), null ), gm,
-                                                                   ftToLayer, ftToStyle );
-            if ( otherWarns == null ) {
-                return null;
-            }
-            warns.addAll( otherWarns );
-        }
-
-        return warns;
-    }
-
-    /**
-     * Paints the map on a graphics object.
-     * 
-     * @param g
-     * @param gm
-     * @param warnings
-     * @throws InvalidDimensionValue
-     * @throws MissingDimensionValue
-     */
-    public void paintMap( Graphics2D g, GetMap gm, LinkedList<String> warnings )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        Iterator<Layer> layers = gm.getLayers().iterator();
-        Iterator<Style> styles = gm.getStyles().iterator();
-
-        if ( reduce( true, map( gm.getLayers(), CollectionUtils.<Layer> getInstanceofMapper( FeatureLayer.class ) ),
-                     AND ) ) {
-            LinkedList<FeatureLayer> fls = new LinkedList<FeatureLayer>();
-            Map<FeatureStore, LinkedList<Query>> queries = new HashMap<FeatureStore, LinkedList<Query>>();
-            HashMap<QName, FeatureLayer> ftToLayer = new HashMap<QName, FeatureLayer>();
-            HashMap<QName, Style> ftToStyle = new HashMap<QName, Style>();
-
-            double scale = gm.getScale();
-            if ( reduce( true, map( gm.getLayers(), getFeatureLayerCollector( fls ) ), AND ) ) {
-                while ( layers.hasNext() ) {
-                    Layer l = layers.next();
-                    Style s = styles.next();
-                    DoublePair scales = l.getScaleHint();
-                    LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
-                    if ( scales.first > scale || scales.second < scale ) {
-                        LOG.debug( "Not showing layer '{}' because of its scale constraint.",
-                                   l.getName() == null ? l.getTitle() : l.getName() );
-                        continue;
-                    }
-                    LinkedList<String> otherWarns = collectFeatureQueries( queries, (FeatureLayer) l, s, gm, ftToLayer,
-                                                                           ftToStyle );
-                    if ( otherWarns == null ) {
-                        queries.clear();
-                        break;
-                    }
-                    warnings.addAll( otherWarns );
-                }
-            }
-
-            if ( queries.size() == 1 ) {
-                handleCollectedQueries( queries, ftToLayer, ftToStyle, gm, g );
-                return;
-            }
-
-            LOG.debug( "Not using collected queries." );
-
-            layers = gm.getLayers().iterator();
-            styles = gm.getStyles().iterator();
-        }
-
-        while ( layers.hasNext() ) {
-            Layer l = layers.next();
-            Style s = styles.next();
-
-            applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
-
-            warnings.addAll( paintLayer( l, s, g, gm ) );
-        }
-    }
-
-    private void handleCollectedQueries( Map<FeatureStore, LinkedList<Query>> queries,
-                                         HashMap<QName, FeatureLayer> ftToLayer, HashMap<QName, Style> ftToStyle,
-                                         GetMap gm, Graphics2D g ) {
-        LOG.debug( "Using collected queries for better performance." );
-
-        Java2DRenderer renderer = new Java2DRenderer( g, gm.getWidth(), gm.getHeight(), gm.getBoundingBox(),
-                                                      gm.getPixelSize() );
-        Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-
-        // TODO
-        XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator();
-
-        Collection<LinkedList<Query>> qs = queries.values();
-        FeatureInputStream rs = null;
-        try {
-            FeatureStore store = queries.keySet().iterator().next();
-            LinkedList<Query> queriesList = qs.iterator().next();
-            if ( !queriesList.isEmpty() ) {
-                rs = store.query( queriesList.toArray( new Query[queriesList.size()] ) );
-                // TODO Should this always be done on this level? What about min and maxFill values?
-                rs = new ThreadedFeatureInputStream( rs, 100, 20 );
-                for ( Feature f : rs ) {
-                    QName name = f.getType().getName();
-                    FeatureLayer l = ftToLayer.get( name );
-
-                    applyHints( l.getName(), g, layerOptions, defaultLayerOptions );
-                    render( f, (XPathEvaluator<Feature>) evaluator, ftToStyle.get( name ), renderer, textRenderer,
-                            gm.getScale(), gm.getResolution() );
-                }
-            } else {
-                LOG.warn( "No queries were found for the requested layers." );
-            }
-        } catch ( FilterEvaluationException e ) {
-            LOG.error( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( FeatureStoreException e ) {
-            LOG.error( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( rs != null ) {
-                rs.close();
-            }
-        }
-    }
-
     public boolean hasTheme( String name ) {
         return themeMap.get( name ) != null;
     }
@@ -545,28 +333,6 @@ public class MapService {
         }
 
         for ( LayerRef lr : gm.getLayers() ) {
-            // Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
-            // StyleRef style = iter.next();
-            // for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-            // insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
-            // defaultLayerOptions );
-            // mapOptions.add( options.get( l.getMetadata().getName() ) );
-            // StyleRef ref;
-            // if ( style.getStyle() != null ) {
-            // ref = new StyleRef( style.getStyle() );
-            // } else {
-            // ref = new StyleRef( style.getName() );
-            // }
-            // styles.put( l.getMetadata().getName(), ref );
-            // }
-            // OperatorFilter f = null;
-            // if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
-            // f = curFilter.second;
-            // curFilter = filterIter.hasNext() ? filterIter.next() : null;
-            // }
-            // LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
-            // gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
-            // gm.getQueryBox() );
             LayerQuery query = buildQuery( iter, lr, options, mapOptions, curFilter, filterIter, gm );
             queries.add( query );
         }
@@ -694,52 +460,7 @@ public class MapService {
      */
     public Pair<BufferedImage, LinkedList<String>> getMapImage( GetMap gm )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        LinkedList<String> warnings = new LinkedList<String>();
-        ScaleFunction.getCurrentScaleValue().set( gm.getScale() );
-
-        BufferedImage img = prepareImage( gm );
-        Graphics2D g = img.createGraphics();
-        paintMap( g, gm, warnings );
-        g.dispose();
-
-        // 8 bit png color map support copied from deegree 2, to be optimized
-        if ( gm.getFormat().equals( "image/png; mode=8bit" ) || gm.getFormat().equals( "image/png; subtype=8bit" )
-             || gm.getFormat().equals( "image/gif" ) ) {
-            img = postprocessPng8bit( img );
-        }
-        ScaleFunction.getCurrentScaleValue().remove();
-        return new Pair<BufferedImage, LinkedList<String>>( img, warnings );
-    }
-
-    private LinkedList<String> getFeatures( Collection<Feature> feats, Layer l, GetFeatureInfo fi, Style s )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        LinkedList<String> warnings = new LinkedList<String>();
-
-        if ( l.isQueryable() ) {
-            Pair<FeatureCollection, LinkedList<String>> pair = l.getFeatures( fi, s );
-            if ( pair != null ) {
-                if ( pair.first != null ) {
-                    addAllUncontained( feats, pair.first );
-                }
-                warnings.addAll( pair.second );
-            }
-        }
-        double scale = calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(), fi.getCoordinateSystem(),
-                                        DEFAULT_PIXEL_SIZE );
-        for ( Layer c : l.getChildren() ) {
-            DoublePair scales = c.getScaleHint();
-            LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
-            if ( scales.first > scale || scales.second < scale ) {
-                LOG.debug( "Not showing layer '{}' because of its scale constraint.",
-                           c.getName() == null ? c.getTitle() : c.getName() );
-                continue;
-            }
-            if ( c.getName() != null ) {
-                s = registry.get( c.getName(), null );
-            }
-            warnings.addAll( getFeatures( feats, c, fi, s ) );
-        }
-        return warnings;
+        return oldStyleMapService.getMapImage( gm );
     }
 
     /**
@@ -750,31 +471,7 @@ public class MapService {
      */
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        List<Feature> list = new LinkedList<Feature>();
-        LinkedList<String> warnings = new LinkedList<String>();
-        Iterator<Style> styles = fi.getStyles().iterator();
-        double scale = calcScaleWMS130( fi.getWidth(), fi.getHeight(), fi.getEnvelope(), fi.getCoordinateSystem(),
-                                        DEFAULT_PIXEL_SIZE );
-        for ( Layer layer : fi.getQueryLayers() ) {
-            DoublePair scales = layer.getScaleHint();
-            LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
-            if ( scales.first > scale || scales.second < scale ) {
-                LOG.debug( "Not showing layer '{}' because of its scale constraint.",
-                           layer.getName() == null ? layer.getTitle() : layer.getName() );
-                continue;
-            }
-            warnings.addAll( getFeatures( list, layer, fi, styles.next() ) );
-        }
-
-        list = Features.clearDuplicates( list );
-
-        if ( list.size() > fi.getFeatureCount() ) {
-            list = list.subList( 0, fi.getFeatureCount() );
-        }
-
-        GenericFeatureCollection col = new GenericFeatureCollection();
-        col.addAll( list );
-        return new Pair<FeatureCollection, LinkedList<String>>( col, warnings );
+        return oldStyleMapService.getFeatures( fi );
     }
 
     private void getFeatureTypes( Collection<FeatureType> types, Layer l ) {
@@ -838,80 +535,11 @@ public class MapService {
      * @return the optimal legend size
      */
     public Pair<Integer, Integer> getLegendSize( Style style ) {
-        Pair<Integer, Integer> res = legendSizes.get( style );
-        if ( res != null ) {
-            return res;
-        }
-
-        legendSizes.put( style, res = new Legends().getLegendSize( style ) );
-        return res;
+        return getLegendHandler.getLegendSize( style );
     }
 
     public BufferedImage getLegend( GetLegendGraphic req ) {
-        Legends renderer = new Legends( req.getLegendOptions() );
-
-        LayerRef layer = req.getLayer();
-        StyleRef styleRef = req.getStyle();
-        Style style;
-
-        if ( isNewStyle() ) {
-            style = themeMap.get( layer.getName() ).getMetadata().getLegendStyles().get( styleRef.getName() );
-            if ( style == null ) {
-                style = themeMap.get( layer.getName() ).getMetadata().getStyles().get( styleRef.getName() );
-            }
-        } else {
-            style = registry.getLegendStyle( layer.getName(), styleRef.getName() );
-        }
-
-        Pair<Integer, Integer> size;
-        if ( renderer.getLegendOptions().isDefault() ) {
-            size = getLegendSize( style );
-        } else {
-            size = renderer.getLegendSize( style );
-        }
-
-        if ( req.getWidth() == -1 ) {
-            req.setWidth( size.first );
-        }
-        if ( req.getHeight() == -1 ) {
-            req.setHeight( size.second );
-        }
-
-        boolean originalSize = req.getWidth() == size.first && req.getHeight() == size.second
-                               && renderer.getLegendOptions().isDefault();
-
-        HashMap<String, BufferedImage> legendMap = legends.get( style );
-        if ( originalSize && legendMap != null && legendMap.get( req.getFormat() ) != null ) {
-            return legendMap.get( req.getFormat() );
-        }
-        if ( legendMap == null ) {
-            legendMap = new HashMap<String, BufferedImage>();
-            legends.put( style, legendMap );
-        }
-
-        return buildLegend( req, renderer, style, originalSize, legendMap );
-    }
-
-    private BufferedImage buildLegend( GetLegendGraphic req, Legends renderer, Style style, boolean originalSize,
-                                       HashMap<String, BufferedImage> legendMap ) {
-        BufferedImage img = prepareImage( req );
-        Graphics2D g = img.createGraphics();
-        g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-        g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-
-        renderer.paintLegend( style, req.getWidth(), req.getHeight(), g );
-
-        g.dispose();
-
-        if ( req.getFormat().equals( "image/png; mode=8bit" ) || req.getFormat().equals( "image/png; subtype=8bit" )
-             || req.getFormat().equals( "image/gif" ) ) {
-            img = postprocessPng8bit( img );
-        }
-
-        if ( originalSize ) {
-            legendMap.put( req.getFormat(), img );
-        }
-        return img;
+        return getLegendHandler.getLegend( req );
     }
 
     /**
