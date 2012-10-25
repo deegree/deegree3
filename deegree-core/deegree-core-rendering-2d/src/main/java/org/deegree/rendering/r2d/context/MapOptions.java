@@ -185,7 +185,7 @@ public class MapOptions {
         NONE
     }
 
-    public static interface MapOptionsSetter<T> {
+    public interface MapOptionsSetter<T> {
         void setOption( String layer, T value );
     }
 
@@ -216,7 +216,7 @@ public class MapOptions {
         };
     }
 
-    public static interface MapOptionsGetter<T> {
+    public interface MapOptionsGetter<T> {
         T getOption( String layer );
     }
 

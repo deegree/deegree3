@@ -153,29 +153,12 @@ public class DefaultRenderContext implements RenderContext {
 
     @Override
     public void applyOptions( MapOptions options ) {
-        switch ( options.getQuality() ) {
-        case HIGH:
-            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
-            break;
-        case LOW:
-            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_SPEED );
-            break;
-        case NORMAL:
-            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
-            break;
-        }
-        switch ( options.getInterpolation() ) {
-        case BICUBIC:
-            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
-            break;
-        case BILINEAR:
-            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
-            break;
-        case NEARESTNEIGHBOR:
-        case NEARESTNEIGHBOUR:
-            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-            break;
-        }
+        applyQuality( options );
+        applyInterpolation( options );
+        applyAntialias( options );
+    }
+
+    private void applyAntialias( MapOptions options ) {
         switch ( options.getAntialias() ) {
         case IMAGE:
             graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
@@ -192,6 +175,35 @@ public class DefaultRenderContext implements RenderContext {
         case NONE:
             graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
             graphics.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
+            break;
+        }
+    }
+
+    private void applyInterpolation( MapOptions options ) {
+        switch ( options.getInterpolation() ) {
+        case BICUBIC:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
+            break;
+        case BILINEAR:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
+            break;
+        case NEARESTNEIGHBOR:
+        case NEARESTNEIGHBOUR:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+            break;
+        }
+    }
+
+    private void applyQuality( MapOptions options ) {
+        switch ( options.getQuality() ) {
+        case HIGH:
+            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
+            break;
+        case LOW:
+            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_SPEED );
+            break;
+        case NORMAL:
+            graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
             break;
         }
     }
