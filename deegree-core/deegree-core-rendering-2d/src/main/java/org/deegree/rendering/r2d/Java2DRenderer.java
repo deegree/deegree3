@@ -197,34 +197,7 @@ public class Java2DRenderer implements Renderer {
             double scalex = p.second.first;
             double scaley = p.second.second;
             bbox = p.first;
-            try {
-                if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
-                     || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
-                    res = bbox.getSpan0() / width; // use x for resolution
-                } else {
-                    // heuristics more or less copied from d2, TODO is use the proper UTM conversion
-                    Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
-                    double minx = box.getMin().get0(), miny = box.getMin().get1();
-                    double maxx = minx + box.getSpan0();
-                    double r = 6378.137;
-                    double rad = PI / 180d;
-                    double cose = sin( rad * minx ) * sin( rad * maxx ) + cos( rad * minx ) * cos( rad * maxx );
-                    double dist = r * acos( cose ) * cos( rad * miny );
-                    res = abs( dist * 1000 / width );
-                }
-            } catch ( ReferenceResolvingException e ) {
-                LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
-                LOG.debug( "Stack trace:", e );
-                res = bbox.getSpan0() / width; // use x for resolution
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
-                LOG.debug( "Stack trace:", e );
-                res = bbox.getSpan0() / width; // use x for resolution
-            } catch ( Throwable e ) {
-                LOG.warn( "Could not transform bbox, assuming it's in meter..." );
-                LOG.debug( "Stack trace:", e );
-                res = bbox.getSpan0() / width; // use x for resolution
-            }
+            calculateResolution( bbox );
 
             try {
                 if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
@@ -244,6 +217,37 @@ public class Java2DRenderer implements Renderer {
         uomCalculator = new UomCalculator( pixelSize, res );
         fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
         strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
+    }
+
+    private void calculateResolution( final Envelope bbox ) {
+        try {
+            if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
+                 || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
+                res = bbox.getSpan0() / width; // use x for resolution
+            } else {
+                // heuristics more or less copied from d2, TODO is use the proper UTM conversion
+                Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
+                double minx = box.getMin().get0(), miny = box.getMin().get1();
+                double maxx = minx + box.getSpan0();
+                double r = 6378.137;
+                double rad = PI / 180d;
+                double cose = sin( rad * minx ) * sin( rad * maxx ) + cos( rad * minx ) * cos( rad * maxx );
+                double dist = r * acos( cose ) * cos( rad * miny );
+                res = abs( dist * 1000 / width );
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+            res = bbox.getSpan0() / width; // use x for resolution
+        } catch ( UnknownCRSException e ) {
+            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+            res = bbox.getSpan0() / width; // use x for resolution
+        } catch ( Throwable e ) {
+            LOG.warn( "Could not transform bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+            res = bbox.getSpan0() / width; // use x for resolution
+        }
     }
 
     /**
@@ -292,18 +296,12 @@ public class Java2DRenderer implements Renderer {
                 }
                 return g2;
             } catch ( IllegalArgumentException e ) {
-                if ( g instanceof Surface ) {
-                    @SuppressWarnings("unchecked")
-                    T g2 = (T) transform( linearizer.linearize( (Surface) g, new NumPointsCriterion( 100 ) ) );
-                    g2.setCoordinateSystem( g.getCoordinateSystem() );
+                T g2 = transformLinearized( g );
+
+                if ( g2 != null ) {
                     return g2;
                 }
-                if ( g instanceof Curve ) {
-                    @SuppressWarnings("unchecked")
-                    T g2 = (T) transform( linearizer.linearize( (Curve) g, new NumPointsCriterion( 100 ) ) );
-                    g2.setCoordinateSystem( g.getCoordinateSystem() );
-                    return g2;
-                }
+
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Could not transform geometry of type '{}' before rendering, "
                           + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
@@ -318,6 +316,22 @@ public class Java2DRenderer implements Renderer {
             }
         }
         return g;
+    }
+
+    private <T extends Geometry> T transformLinearized( T g ) {
+        if ( g instanceof Surface ) {
+            @SuppressWarnings("unchecked")
+            T g2 = (T) transform( linearizer.linearize( (Surface) g, new NumPointsCriterion( 100 ) ) );
+            g2.setCoordinateSystem( g.getCoordinateSystem() );
+            return g2;
+        }
+        if ( g instanceof Curve ) {
+            @SuppressWarnings("unchecked")
+            T g2 = (T) transform( linearizer.linearize( (Curve) g, new NumPointsCriterion( 100 ) ) );
+            g2.setCoordinateSystem( g.getCoordinateSystem() );
+            return g2;
+        }
+        return null;
     }
 
     final LinkedHashMap<ComparablePair<String, Integer>, BufferedImage> svgCache = new LinkedHashMap<ComparablePair<String, Integer>, BufferedImage>(
@@ -348,43 +362,7 @@ public class Java2DRenderer implements Renderer {
 
         // try if it's an svg
         if ( img == null && g.imageURL != null ) {
-            ComparablePair<String, Integer> cp = new ComparablePair<String, Integer>( g.imageURL, round( g.size ) );
-            if ( svgCache.containsKey( cp ) ) {
-                img = svgCache.get( cp );
-            } else {
-                PNGTranscoder t = new PNGTranscoder();
-
-                t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
-                t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
-
-                TranscoderInput input = new TranscoderInput( g.imageURL );
-
-                // TODO improve performance by writing a custom transcoder output directly rendering on an image, or
-                // even on
-                // the target graphics
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                TranscoderOutput output = new TranscoderOutput( out );
-                InputStream in = null;
-
-                // TODO cache images
-                try {
-                    t.transcode( input, output );
-                    out.flush();
-                    in = new ByteArrayInputStream( out.toByteArray() );
-                    MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
-                    RenderedOp rop = create( "stream", mcss );
-                    img = rop.getAsBufferedImage();
-                    svgCache.put( cp, img );
-                } catch ( TranscoderException e ) {
-                    LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-                } catch ( IOException e ) {
-                    LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-                } finally {
-                    closeQuietly( out );
-                    closeQuietly( in );
-                }
-            }
-
+            img = prepareSvg( rect, g );
         }
 
         if ( img != null ) {
@@ -397,6 +375,46 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
+    private BufferedImage prepareSvg( Rectangle2D.Double rect, Graphic g ) {
+        BufferedImage img = null;
+        ComparablePair<String, Integer> cp = new ComparablePair<String, Integer>( g.imageURL, round( g.size ) );
+        if ( svgCache.containsKey( cp ) ) {
+            img = svgCache.get( cp );
+        } else {
+            PNGTranscoder t = new PNGTranscoder();
+
+            t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
+            t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
+
+            TranscoderInput input = new TranscoderInput( g.imageURL );
+
+            // TODO improve performance by writing a custom transcoder output directly rendering on an image, or
+            // even on the target graphics
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            TranscoderOutput output = new TranscoderOutput( out );
+            InputStream in = null;
+
+            // TODO cache images
+            try {
+                t.transcode( input, output );
+                out.flush();
+                in = new ByteArrayInputStream( out.toByteArray() );
+                MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
+                RenderedOp rop = create( "stream", mcss );
+                img = rop.getAsBufferedImage();
+                svgCache.put( cp, img );
+            } catch ( TranscoderException e ) {
+                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
+            } finally {
+                closeQuietly( out );
+                closeQuietly( in );
+            }
+        }
+        return img;
+    }
+
     @Override
     public void render( PointStyling styling, Geometry geom ) {
         if ( geom == null ) {
@@ -404,56 +422,50 @@ public class Java2DRenderer implements Renderer {
             return;
         }
 
-        // if ( LOG.isTraceEnabled() ) {
-        // String s;
-        // try {
-        // s = geom.toString();
-        // } catch ( UnsupportedOperationException e ) {
-        // s = "(WKT representation of " + geom.getClass().getSimpleName() + " is not available)";
-        // }
-        // LOG.trace( "Drawing " + s + " with " + styling );
-        // }
-
         if ( geom instanceof Point ) {
             geom = transform( geom );
             render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
+            return;
         }
         geom = clipGeometry( geom );
         // TODO properly convert'em
         if ( geom instanceof Surface ) {
-            Surface surface = (Surface) geom;
-            for ( SurfacePatch patch : surface.getPatches() ) {
-                if ( patch instanceof PolygonPatch ) {
-                    PolygonPatch polygonPatch = (PolygonPatch) patch;
-                    for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                        curve.setCoordinateSystem( surface.getCoordinateSystem() );
-                        render( styling, curve );
-                    }
-                } else {
-                    throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-                }
-            }
-        }
-        if ( geom instanceof Curve ) {
-            Curve curve = (Curve) geom;
-            if ( curve.getCurveSegments().size() != 1
-                 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
-                // TODO handle non-linear and multiple curve segments
-                throw new IllegalArgumentException();
-            }
-            LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
-            // coordinate representation is still subject to change...
-            for ( Point point : segment.getControlPoints() ) {
-                point.setCoordinateSystem( curve.getCoordinateSystem() );
-                render( styling, point );
-            }
-        }
-        if ( geom instanceof MultiGeometry<?> ) {
+            render( styling, (Surface) geom );
+        } else if ( geom instanceof Curve ) {
+            render( styling, (Curve) geom );
+        } else if ( geom instanceof MultiGeometry<?> ) {
             // LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
                 render( styling, g );
             }
+        }
+    }
+
+    private void render( PointStyling styling, Surface surface ) {
+        for ( SurfacePatch patch : surface.getPatches() ) {
+            if ( patch instanceof PolygonPatch ) {
+                PolygonPatch polygonPatch = (PolygonPatch) patch;
+                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                    curve.setCoordinateSystem( surface.getCoordinateSystem() );
+                    render( styling, curve );
+                }
+            } else {
+                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
+            }
+        }
+    }
+
+    private void render( PointStyling styling, Curve curve ) {
+        if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
+            // TODO handle non-linear and multiple curve segments
+            throw new IllegalArgumentException();
+        }
+        LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
+        // coordinate representation is still subject to change...
+        for ( Point point : segment.getControlPoints() ) {
+            point.setCoordinateSystem( curve.getCoordinateSystem() );
+            render( styling, point );
         }
     }
 
@@ -498,34 +510,36 @@ public class Java2DRenderer implements Renderer {
 
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with line styling." );
+            return;
         }
         geom = clipGeometry( geom );
         if ( geom instanceof Curve ) {
             Double line = fromCurve( (Curve) geom, false );
             strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
                                         styling.perpendicularOffsetType );
-        }
-        if ( geom instanceof Surface ) {
-            Surface surface = (Surface) geom;
-            for ( SurfacePatch patch : surface.getPatches() ) {
-                if ( patch instanceof PolygonPatch ) {
-                    PolygonPatch polygonPatch = (PolygonPatch) patch;
-                    for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                        if ( curve.getCoordinateSystem() == null ) {
-                            curve.setCoordinateSystem( surface.getCoordinateSystem() );
-                        }
-                        render( styling, curve );
-                    }
-                } else {
-                    throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-                }
-            }
-        }
-        if ( geom instanceof MultiGeometry<?> ) {
+        } else if ( geom instanceof Surface ) {
+            render( styling, (Surface) geom );
+        } else if ( geom instanceof MultiGeometry<?> ) {
             // LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
                 render( styling, g );
+            }
+        }
+    }
+
+    private void render( LineStyling styling, Surface surface ) {
+        for ( SurfacePatch patch : surface.getPatches() ) {
+            if ( patch instanceof PolygonPatch ) {
+                PolygonPatch polygonPatch = (PolygonPatch) patch;
+                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                    if ( curve.getCoordinateSystem() == null ) {
+                        curve.setCoordinateSystem( surface.getCoordinateSystem() );
+                    }
+                    render( styling, curve );
+                }
+            } else {
+                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
             }
         }
     }
