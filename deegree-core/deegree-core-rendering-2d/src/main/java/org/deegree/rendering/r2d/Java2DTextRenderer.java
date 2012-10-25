@@ -146,7 +146,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
 
         renderer.graphics.setStroke( stroke );
-        Double line = renderer.fromCurve( c, false );
+        Double line = renderer.geomHelper.fromCurve( c, false );
 
         renderer.graphics.draw( line );
     }
@@ -169,7 +169,7 @@ public class Java2DTextRenderer implements TextRenderer {
             return;
         }
 
-        geom = renderer.clipGeometry( geom );
+        geom = renderer.geomHelper.clipGeometry( geom );
         AffineTransform shear = null;
 
         int style = styling.font.bold ? BOLD : PLAIN;
