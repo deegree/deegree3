@@ -133,9 +133,9 @@ public class Java2DRenderer implements Renderer {
 
     private Java2DFillRenderer fillRenderer;
 
-     GeometryHelper geomHelper;
+    GeometryHelper geomHelper;
 
-     GeometryClipper clipper;
+    GeometryClipper clipper;
 
     /**
      * @param graphics
@@ -171,7 +171,7 @@ public class Java2DRenderer implements Renderer {
             calculateResolution( bbox );
 
             geomHelper = new GeometryHelper( bbox, width, worldToScreen );
-            clipper = new GeometryClipper(geomHelper, bbox, width);
+            clipper = new GeometryClipper( geomHelper, bbox, width );
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
             LOG.trace( "Final transformation was {}", worldToScreen );
