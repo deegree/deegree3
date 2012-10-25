@@ -114,52 +114,40 @@ public class ShapeStroke implements Stroke {
         }
     }
 
+    @Override
     public Shape createStrokedShape( Shape shape ) {
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
 
         // a little sub optimal to actually go through twice
         double totalLength = 0;
-        double lx = 0, ly = 0;
-
         if ( positionPercentage >= 0 ) {
-            while ( !it.isDone() ) {
-                float[] ps = new float[6];
-                int type = it.currentSegment( ps );
-                switch ( type ) {
-                case PathIterator.SEG_MOVETO:
-                    lx = ps[0];
-                    ly = ps[1];
-                    break;
-
-                case PathIterator.SEG_CLOSE:
-                    break;
-
-                case PathIterator.SEG_LINETO:
-                    totalLength += sqrt( ( lx - ps[0] ) * ( lx - ps[0] ) + ( ly - ps[1] ) * ( ly - ps[1] ) );
-                    lx = ps[0];
-                    ly = ps[1];
-                    break;
-                }
-                it.next();
-            }
-
+            totalLength = calculatePathLength( it );
             it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
         }
 
-        float points[] = new float[6];
-        float moveX = 0, moveY = 0;
-        float lastX = 0, lastY = 0;
-        float thisX = 0, thisY = 0;
-        int type = 0;
         float next = 0;
         float minLength = (float) initialGap;
         if ( positionPercentage >= 0 ) {
             minLength = (float) ( totalLength * ( positionPercentage / 100 ) );
             next = minLength;
         }
+
+        float points[] = new float[6];
         int currentShape = 0;
         int length = shapes.length;
+
+        createStrokedShape( result, it, next, minLength, points, currentShape, length );
+
+        return result;
+    }
+
+    private void createStrokedShape( GeneralPath result, PathIterator it, float next, float minLength, float[] points,
+                                     int currentShape, int length ) {
+        int type = 0;
+        float moveX = 0, moveY = 0;
+        float lastX = 0, lastY = 0;
+        float thisX = 0, thisY = 0;
 
         while ( currentShape < length && !it.isDone() ) {
             type = it.currentSegment( points );
@@ -204,8 +192,32 @@ public class ShapeStroke implements Stroke {
             }
             it.next();
         }
+    }
 
-        return result;
+    private double calculatePathLength( PathIterator it ) {
+        double totalLength = 0;
+        double lx = 0, ly = 0;
+        while ( !it.isDone() ) {
+            float[] ps = new float[6];
+            int type = it.currentSegment( ps );
+            switch ( type ) {
+            case PathIterator.SEG_MOVETO:
+                lx = ps[0];
+                ly = ps[1];
+                break;
+
+            case PathIterator.SEG_CLOSE:
+                break;
+
+            case PathIterator.SEG_LINETO:
+                totalLength += sqrt( ( lx - ps[0] ) * ( lx - ps[0] ) + ( ly - ps[1] ) * ( ly - ps[1] ) );
+                lx = ps[0];
+                ly = ps[1];
+                break;
+            }
+            it.next();
+        }
+        return totalLength;
     }
 
 }
