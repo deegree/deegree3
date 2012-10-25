@@ -53,30 +53,27 @@ public class MapOptionsHelper {
 
     public static void insertMissingOptions( String layer, MapOptionsMaps options, MapOptions layerDefaults,
                                              MapOptions globalDefaults ) {
-        if ( options.getAntialias( layer ) == null ) {
+        insertAntialias( layer, options, layerDefaults, globalDefaults );
+        insertQuality( layer, options, layerDefaults, globalDefaults );
+        insertInterpolation( layer, options, layerDefaults, globalDefaults );
+        insertMaxFeatures( layer, options, layerDefaults, globalDefaults );
+        insertRadius( layer, options, layerDefaults, globalDefaults );
+    }
+
+    private static void insertRadius( String layer, MapOptionsMaps options, MapOptions layerDefaults,
+                                      MapOptions globalDefaults ) {
+        if ( options.getFeatureInfoRadius( layer ) == -1 ) {
             if ( layerDefaults != null ) {
-                options.setAntialias( layer, layerDefaults.getAntialias() );
+                options.setFeatureInfoRadius( layer, layerDefaults.getFeatureInfoRadius() );
             }
-            if ( options.getAntialias( layer ) == null ) {
-                options.setAntialias( layer, globalDefaults.getAntialias() );
+            if ( options.getFeatureInfoRadius( layer ) == -1 ) {
+                options.setFeatureInfoRadius( layer, globalDefaults.getFeatureInfoRadius() );
             }
         }
-        if ( options.getQuality( layer ) == null ) {
-            if ( layerDefaults != null ) {
-                options.setQuality( layer, layerDefaults.getQuality() );
-            }
-            if ( options.getQuality( layer ) == null ) {
-                options.setQuality( layer, globalDefaults.getQuality() );
-            }
-        }
-        if ( options.getInterpolation( layer ) == null ) {
-            if ( layerDefaults != null ) {
-                options.setInterpolation( layer, layerDefaults.getInterpolation() );
-            }
-            if ( options.getInterpolation( layer ) == null ) {
-                options.setInterpolation( layer, globalDefaults.getInterpolation() );
-            }
-        }
+    }
+
+    private static void insertMaxFeatures( String layer, MapOptionsMaps options, MapOptions layerDefaults,
+                                           MapOptions globalDefaults ) {
         if ( options.getMaxFeatures( layer ) == -1 ) {
             if ( layerDefaults != null ) {
                 options.setMaxFeatures( layer, layerDefaults.getMaxFeatures() );
@@ -85,12 +82,40 @@ public class MapOptionsHelper {
                 options.setMaxFeatures( layer, globalDefaults.getMaxFeatures() );
             }
         }
-        if ( options.getFeatureInfoRadius( layer ) == -1 ) {
+    }
+
+    private static void insertInterpolation( String layer, MapOptionsMaps options, MapOptions layerDefaults,
+                                             MapOptions globalDefaults ) {
+        if ( options.getInterpolation( layer ) == null ) {
             if ( layerDefaults != null ) {
-                options.setFeatureInfoRadius( layer, layerDefaults.getFeatureInfoRadius() );
+                options.setInterpolation( layer, layerDefaults.getInterpolation() );
             }
-            if ( options.getFeatureInfoRadius( layer ) == -1 ) {
-                options.setFeatureInfoRadius( layer, globalDefaults.getFeatureInfoRadius() );
+            if ( options.getInterpolation( layer ) == null ) {
+                options.setInterpolation( layer, globalDefaults.getInterpolation() );
+            }
+        }
+    }
+
+    private static void insertQuality( String layer, MapOptionsMaps options, MapOptions layerDefaults,
+                                       MapOptions globalDefaults ) {
+        if ( options.getQuality( layer ) == null ) {
+            if ( layerDefaults != null ) {
+                options.setQuality( layer, layerDefaults.getQuality() );
+            }
+            if ( options.getQuality( layer ) == null ) {
+                options.setQuality( layer, globalDefaults.getQuality() );
+            }
+        }
+    }
+
+    private static void insertAntialias( String layer, MapOptionsMaps options, MapOptions layerDefaults,
+                                         MapOptions globalDefaults ) {
+        if ( options.getAntialias( layer ) == null ) {
+            if ( layerDefaults != null ) {
+                options.setAntialias( layer, layerDefaults.getAntialias() );
+            }
+            if ( options.getAntialias( layer ) == null ) {
+                options.setAntialias( layer, globalDefaults.getAntialias() );
             }
         }
     }
