@@ -44,6 +44,8 @@ import java.util.TreeSet;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
@@ -54,7 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides efficient access to dependencies between key columns of tables in a {@link MappedAppSchema}.
+ * Provides access to the {@link KeyPropagation}s defined by a {@link MappedAppSchema}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
@@ -63,9 +65,11 @@ import org.slf4j.LoggerFactory;
  */
 public class TableDependencies {
 
-    private static Logger LOG = LoggerFactory.getLogger( TableDependencies.class );
+    private static final Logger LOG = LoggerFactory.getLogger( TableDependencies.class );
 
     private final Map<TableName, LinkedHashSet<SQLIdentifier>> tableToGenerators = new HashMap<TableName, LinkedHashSet<SQLIdentifier>>();
+
+    private final Map<TableName, LinkedHashSet<SQLIdentifier>> tableToKeyColumns = new HashMap<TableName, LinkedHashSet<SQLIdentifier>>();
 
     private final Map<TableName, LinkedHashSet<KeyPropagation>> tableToParents = new HashMap<TableName, LinkedHashSet<KeyPropagation>>();
 
@@ -73,33 +77,45 @@ public class TableDependencies {
 
     private final boolean deleteCascadingByDB;
 
+    /**
+     * Creates a new {@link TableDependencies} instance.
+     * 
+     * @param ftMappings
+     *            mapped feature types, can be <code>null</code>
+     * @param deleteCascadingByDB
+     *            set to <code>true</code>, if the database cascades deletes, <code>false</code> otherwise (manual
+     *            deletion required)
+     */
     public TableDependencies( FeatureTypeMapping[] ftMappings, boolean deleteCascadingByDB ) {
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
-                buildFIDGenerator( ftMapping );
-                TableName currentTable = ftMapping.getFtTable();
-                for ( Mapping particle : ftMapping.getMappings() ) {
-                    buildDependencies( particle, currentTable );
-                }
+                scanFeatureTypeMapping( ftMapping );
             }
         }
         this.deleteCascadingByDB = deleteCascadingByDB;
     }
 
-    private void buildFIDGenerator( FeatureTypeMapping ftMapping ) {
-        // fid auto column
-        FIDMapping fidMapping = ftMapping.getFidMapping();
-        SQLIdentifier fidColumn = new SQLIdentifier( fidMapping.getColumn() );
-        addAutoColumn( ftMapping.getFtTable(), fidColumn );
+    private void scanFeatureTypeMapping( FeatureTypeMapping ftMapping ) {
+        scanFidGenerator( ftMapping );
+        TableName ftTable = ftMapping.getFtTable();
+        for ( Mapping particle : ftMapping.getMappings() ) {
+            scanParticle( particle, ftTable );
+        }
     }
 
-    private void buildDependencies( Mapping particle, TableName currentTable ) {
+    private void scanFidGenerator( FeatureTypeMapping ftMapping ) {
+        FIDMapping fidMapping = ftMapping.getFidMapping();
+        for ( Pair<SQLIdentifier, BaseType> columnAndType : fidMapping.getColumns() ) {
+            SQLIdentifier fidColumn = columnAndType.first;
+            addAutoColumn( ftMapping.getFtTable(), fidColumn );
+            addKeyColumn( ftMapping.getFtTable(), fidColumn );
+        }
+    }
 
+    private void scanParticle( Mapping particle, TableName currentTable ) {
         List<TableJoin> joins = particle.getJoinedTable();
         if ( joins != null && !joins.isEmpty() ) {
-
             if ( particle instanceof FeatureMapping ) {
-                FeatureMapping f = (FeatureMapping) particle;
                 if ( joins.size() != 1 ) {
                     String msg = "Feature type joins with more than one table are not supported yet.";
                     throw new UnsupportedOperationException( msg );
@@ -108,58 +124,71 @@ public class TableDependencies {
                 // don't treat such a join as a dependency
                 return;
             }
-
             for ( TableJoin join : joins ) {
-                boolean found = false;
-                TableName joinTable = join.getToTable();
-
-                // check for propagations from current table to joined table
-                for ( int i = 0; i < join.getFromColumns().size(); i++ ) {
-                    SQLIdentifier fromColumn = join.getFromColumns().get( i );
-                    SQLIdentifier toColumn = join.getToColumns().get( i );
-                    LinkedHashSet<SQLIdentifier> linkedHashSet = tableToGenerators.get( currentTable );
-                    if ( tableToGenerators.get( currentTable ) != null
-                         && tableToGenerators.get( currentTable ).contains( fromColumn ) ) {
-                        KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumn, joinTable, toColumn );
-                        LOG.debug( "Found key propagation (to join table): " + prop );
-                        addChild( currentTable, prop );
-                        addParent( joinTable, prop );
-                        found = true;
-                    }
-                }
-
-                // add generated columns and check for propagations from joined table to current table
-                Map<SQLIdentifier, IDGenerator> keyColumnToGenerator = join.getKeyColumnToGenerator();
-                for ( SQLIdentifier autoGenColumn : keyColumnToGenerator.keySet() ) {
-                    addAutoColumn( joinTable, autoGenColumn );
-                    for ( int i = 0; i < join.getToColumns().size(); i++ ) {
-                        SQLIdentifier fromColumn = join.getFromColumns().get( i );
-                        SQLIdentifier toColumn = join.getToColumns().get( i );
-                        if ( autoGenColumn.equals( toColumn ) ) {
-                            KeyPropagation prop = new KeyPropagation( joinTable, toColumn, join.getFromTable(),
-                                                                      fromColumn );
-                            LOG.debug( "Found key propagation (from join table): " + prop );
-                            addChild( joinTable, prop );
-                            addParent( currentTable, prop );
-                            found = true;
-                        }
-                    }
-                }
-
-                if ( !found ) {
-                    String msg = "Mapping configuration not transaction capable. Join " + join
-                                 + " does not contain key generator on either side.";
-                    LOG.warn( msg );
-                }
-
+                TableName joinTable = scanJoin( currentTable, join );
                 currentTable = joinTable;
             }
         }
         if ( particle instanceof CompoundMapping ) {
             for ( Mapping child : ( (CompoundMapping) particle ).getParticles() ) {
-                buildDependencies( child, currentTable );
+                scanParticle( child, currentTable );
             }
         }
+    }
+
+    private TableName scanJoin( TableName currentTable, TableJoin join ) {
+
+        boolean found = false;
+        TableName joinTable = join.getToTable();
+
+        // check for propagations from current table to joined table
+        List<SQLIdentifier> fromColumns = join.getFromColumns();
+        List<SQLIdentifier> toColumns = join.getToColumns();
+        Set<SQLIdentifier> generatedColumns = tableToGenerators.get( currentTable );
+        if ( generatedColumns != null && generatedColumns.containsAll( fromColumns ) ) {
+            KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumns, joinTable, toColumns );
+            LOG.debug( "Found key propagation (to join table): " + prop );
+            addChild( currentTable, prop );
+            addParent( joinTable, prop );
+            found = true;
+        }
+
+        // add generated columns and check for propagations from joined table to current table
+        Set<SQLIdentifier> generatedColumnsJoinTable = join.getKeyColumnToGenerator().keySet();
+        if ( generatedColumnsJoinTable != null ) {
+            for ( SQLIdentifier generatedColumnJoinTable : generatedColumnsJoinTable ) {
+                addAutoColumn( joinTable, generatedColumnJoinTable );
+                addKeyColumn( joinTable, generatedColumnJoinTable );
+            }
+            if ( generatedColumnsJoinTable.containsAll( toColumns ) ) {
+                KeyPropagation prop = new KeyPropagation( joinTable, toColumns, join.getFromTable(), fromColumns );
+                LOG.debug( "Found key propagation (from join table): " + prop );
+                addChild( joinTable, prop );
+                addParent( currentTable, prop );
+                found = true;
+            }
+        }
+
+        if ( !found ) {
+            assumeParentToJoinTablePropagation( currentTable, join );
+        }
+        return joinTable;
+    }
+
+    private void assumeParentToJoinTablePropagation( TableName currentTable, TableJoin join ) {
+        List<SQLIdentifier> fromColumns = join.getFromColumns();
+        List<SQLIdentifier> toColumns = join.getToColumns();
+        TableName joinTable = join.getToTable();
+        KeyPropagation prop = new KeyPropagation( join.getFromTable(), fromColumns, joinTable, toColumns );
+        LOG.debug( "Found key propagation (to join table): " + prop );
+        addChild( currentTable, prop );
+        addParent( joinTable, prop );
+        for ( SQLIdentifier fromColumn : fromColumns ) {
+            addKeyColumn( currentTable, fromColumn );
+        }
+        String msg = "Join " + join + " does not contain key generator on either side. "
+                     + "Assuming propagation from parent to joined table: " + prop;
+        LOG.warn( msg );
     }
 
     private void addAutoColumn( TableName table, SQLIdentifier autoColumn ) {
@@ -169,6 +198,15 @@ public class TableDependencies {
             tableToGenerators.put( table, autoColumns );
         }
         autoColumns.add( autoColumn );
+    }
+
+    private void addKeyColumn( TableName table, SQLIdentifier keyColumn ) {
+        LinkedHashSet<SQLIdentifier> keyColumns = tableToKeyColumns.get( table );
+        if ( keyColumns == null ) {
+            keyColumns = new LinkedHashSet<SQLIdentifier>();
+            tableToKeyColumns.put( table, keyColumns );
+        }
+        keyColumns.add( keyColumn );
     }
 
     private void addParent( TableName table, KeyPropagation propagation ) {
@@ -189,16 +227,59 @@ public class TableDependencies {
         children.add( propagation );
     }
 
-    public Set<KeyPropagation> getParents( TableName table ) {
-        return tableToParents.get( table );
-    }
-
-    public Set<KeyPropagation> getChildren( TableName table ) {
-        return tableToChildren.get( table );
-    }
-
-    public Set<SQLIdentifier> getGenColumns( TableName table ) {
+    /**
+     * Returns the columns that are auto-generated on insert for the given table.
+     * 
+     * @param table
+     *            name of the table, must not be <code>null</code>
+     * @return columns that are auto-generated on insert, can be <code>null</code> (no autogenerated columns)
+     */
+    public Set<SQLIdentifier> getGeneratedColumns( TableName table ) {
         return tableToGenerators.get( table );
+    }
+
+    /**
+     * Returns the columns that are used as keys in the given table.
+     * 
+     * @param table
+     *            name of the table, must not be <code>null</code>
+     * @return columns that are used as keys, can be <code>null</code> (no autogenerated columns)
+     */
+    public Set<SQLIdentifier> getKeyColumns( TableName table ) {
+        return tableToKeyColumns.get( table );
+    }
+
+    /**
+     * Performs a lookup for the specified key propagation.
+     * 
+     * @param fromTable
+     *            source table, must not be <code>null</code>
+     * @param fromColumns
+     *            primary key columns (in source table), must not be <code>null</code> and contain at least one entry
+     * @param toTable
+     *            target table, must not be <code>null</code>
+     * @param toColumns
+     *            foreign key columns (in target table), must not be <code>null</code> and contain at least one entry
+     * @return key propagation, can be <code>null</code> (no such propagation defined)
+     */
+    public KeyPropagation findKeyPropagation( TableName fromTable, List<SQLIdentifier> fromColumns, TableName toTable,
+                                              List<SQLIdentifier> toColumns ) {
+        Set<KeyPropagation> candidates = tableToChildren.get( fromTable );
+        KeyPropagation fromToTo = new KeyPropagation( fromTable, fromColumns, toTable, toColumns );
+        KeyPropagation toToFrom = new KeyPropagation( toTable, toColumns, fromTable, fromColumns );
+
+        if ( candidates != null ) {
+            for ( KeyPropagation candidate : candidates ) {
+                if ( candidate.equals( fromToTo ) || candidate.equals( toToFrom ) ) {
+                    return candidate;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean getDeleteCascadingByDB() {
+        return deleteCascadingByDB;
     }
 
     @Override
@@ -230,44 +311,5 @@ public class TableDependencies {
             }
         }
         return sb.toString();
-    }
-
-    public KeyPropagation getKeyPropagation( TableName fromTable, List<SQLIdentifier> fromColumns, TableName toTable,
-                                             List<SQLIdentifier> toColumns ) {
-
-        if ( fromColumns.size() != 1 ) {
-            throw new UnsupportedOperationException( "Multi-column joins are not support for INSERT key propagation." );
-        }
-
-        SQLIdentifier fromColumn = fromColumns.get( 0 );
-        SQLIdentifier toColumn = toColumns.get( 0 );
-
-        Set<KeyPropagation> candidates = tableToChildren.get( fromTable );
-        if ( candidates != null ) {
-            for ( KeyPropagation candidate : candidates ) {
-                if ( candidate.getFKTable().equals( toTable ) ) {
-                    if ( candidate.getPKColumn().equals( fromColumn ) && candidate.getFKColumn().equals( toColumn ) ) {
-                        return candidate;
-                    }
-                }
-            }
-        }
-
-        candidates = tableToParents.get( fromTable );
-        if ( candidates != null ) {
-            for ( KeyPropagation candidate : candidates ) {
-                if ( candidate.getPKTable().equals( toTable ) ) {
-                    if ( candidate.getFKColumn().equals( fromColumn ) && candidate.getPKColumn().equals( toColumn ) ) {
-                        return candidate;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public boolean deleteCascadingByDB() {
-        return deleteCascadingByDB;
     }
 }

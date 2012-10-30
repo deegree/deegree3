@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.id;
 
+import java.util.List;
+
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 
 /**
- * Defines the propagation of a key column in a source table to a foreign key column in a target table.
+ * Defines the propagation of values from key columns in a source table to foreign key columns in a target table.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
@@ -52,9 +54,9 @@ public class KeyPropagation {
 
     private final TableName target;
 
-    private final SQLIdentifier pkColumn;
+    private final List<SQLIdentifier> pkColumns;
 
-    private final SQLIdentifier fkColumn;
+    private final List<SQLIdentifier> fkColumns;
 
     /**
      * Creates a new {@link KeyPropagation} instance.
@@ -62,51 +64,78 @@ public class KeyPropagation {
      * @param source
      *            source table, must not be <code>null</code>
      * @param pkColumn
-     *            primary key column (in source table), must not be <code>null</code>
+     *            primary key columns (in source table), must not be <code>null</code> and contain at least one entry
      * @param target
      *            target table, must not be <code>null</code>
      * @param fkColumn
-     *            foreign key column (in target table), must not be <code>null</code>
+     *            foreign key columns (in target table), must not be <code>null</code> and contain at least one entry
      */
-    public KeyPropagation( TableName source, SQLIdentifier pkColumn, TableName target, SQLIdentifier fkColumn ) {
+    public KeyPropagation( TableName source, List<SQLIdentifier> pkColumns, TableName target,
+                           List<SQLIdentifier> fkColumns ) {
         this.source = source;
-        this.pkColumn = pkColumn;
+        this.pkColumns = pkColumns;
         this.target = target;
-        this.fkColumn = fkColumn;
-    }
-
-    public TableName getPKTable() {
-        return source;
-    }
-
-    public SQLIdentifier getPKColumn() {
-        return pkColumn;
-    }
-
-    public TableName getFKTable() {
-        return target;
-    }
-
-    public SQLIdentifier getFKColumn() {
-        return fkColumn;
+        this.fkColumns = fkColumns;
+        if ( source == null ) {
+            throw new NullPointerException( "Source table must not be null." );
+        }
+        if ( target == null ) {
+            throw new NullPointerException( "Target table must not be null." );
+        }
+        if ( pkColumns == null ) {
+            throw new NullPointerException( "Primary key columns must not be null." );
+        }
+        if ( fkColumns == null ) {
+            throw new NullPointerException( "Foreign key columns must not be null." );
+        }
+        if ( pkColumns.isEmpty() ) {
+            throw new NullPointerException( "At least one primary/foreign key column must be used." );
+        }
+        if ( pkColumns.size() != fkColumns.size() ) {
+            throw new IllegalArgumentException( "Number of primary and foreign key columns must match." );
+        }
     }
 
     /**
-     * Returns whether the foreign relation is constrained by the DB, i.e. if creating a state where the fk column
-     * contains a value without a match in the pk column will fail.
+     * Returns the source table.
      * 
-     * @return <code>true</code>, if the foreign key relation is constrained, otherwise <code>false</code>
+     * @return source table, never <code>null</code>
      */
-    public boolean isFKConstrained() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
+    public TableName getSourceTable() {
+        return source;
+    }
+
+    /**
+     * Returns the primary key columns (in source table).
+     * 
+     * @return primary key columns, never <code>null</code> and contain at least one entry
+     */
+    public List<SQLIdentifier> getPrimaryKeyColumns() {
+        return pkColumns;
+    }
+
+    /**
+     * Returns the target table.
+     * 
+     * @return target table, never <code>null</code>
+     */    
+    public TableName getTargetTable() {
+        return target;
+    }
+
+    /**
+     * Returns the foreign key columns (in target table).
+     * 
+     * @return foreign key columns, never <code>null</code> and contain at least one entry
+     */    
+    public List<SQLIdentifier> getForeignKeyColumns() {
+        return fkColumns;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( fkColumn == null ) ? 0 : fkColumn.hashCode() );
-        result = prime * result + ( ( pkColumn == null ) ? 0 : pkColumn.hashCode() );
         result = prime * result + ( ( source == null ) ? 0 : source.hashCode() );
         result = prime * result + ( ( target == null ) ? 0 : target.hashCode() );
         return result;
@@ -118,12 +147,39 @@ public class KeyPropagation {
             return false;
         }
         KeyPropagation that = (KeyPropagation) obj;
-        return this.source.equals( that.source ) && this.pkColumn.equals( that.pkColumn )
-               && this.target.equals( that.target ) && this.fkColumn.equals( that.fkColumn );
+        if ( !this.source.equals( that.source ) || !this.target.equals( that.target ) ) {
+            return false;
+        }
+        for ( int i = 0; i < pkColumns.size(); i++ ) {
+            if ( !this.pkColumns.get( i ).equals( that.pkColumns.get( i ) ) ) {
+                return false;
+            }
+            if ( !this.fkColumns.get( i ).equals( that.fkColumns.get( i ) ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return source + "." + pkColumn + " -> " + target + "." + fkColumn;
+        StringBuilder sb = new StringBuilder();
+        sb.append( source );
+        sb.append( ".[" );
+        sb.append( pkColumns.get( 0 ) );
+        for ( int i = 1; i < pkColumns.size(); i++ ) {
+            sb.append( "," );
+            sb.append( pkColumns.get( i ) );
+        }
+        sb.append( "] -> " );
+        sb.append( target );
+        sb.append( ".[" );
+        sb.append( fkColumns.get( 0 ) );
+        for ( int i = 1; i < fkColumns.size(); i++ ) {
+            sb.append( "," );
+            sb.append( fkColumns.get( i ) );
+        }
+        sb.append( "]" );
+        return sb.toString();
     }
 }

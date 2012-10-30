@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -316,7 +316,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             try {
                 analysis = schema.analyzeId( id.getRid() );
                 LOG.debug( "Analysis: " + analysis );
-                if ( !schema.getKeyDependencies().deleteCascadingByDB() ) {
+                if ( !schema.getKeyDependencies().getDeleteCascadingByDB() ) {
                     LOG.debug( "Deleting joined rows manually." );
                     deleteJoinedRows( analysis );
                 } else {
@@ -665,7 +665,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         } catch ( Throwable t ) {
-            String msg = "Error inserting feature '" + fid + "':" + t.getMessage();
+            String msg = "Error inserting feature: " + t.getMessage();
             LOG.error( msg );
             LOG.trace( "Stack trace:", t );
             throw new FeatureStoreException( msg, t );
@@ -934,4 +934,5 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
         throw new FeatureStoreException( "Replace is not supported yet." );
     }
+
 }

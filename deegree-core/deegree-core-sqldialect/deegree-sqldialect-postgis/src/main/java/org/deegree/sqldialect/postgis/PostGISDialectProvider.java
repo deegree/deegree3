@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql/src/main/java/org/deegree/sqldialect/postgis/PostGISDialectProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -54,7 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for PostgreSQL / PostGIS databases.
+ * {@link SQLDialectProvider} for PostGIS-enabled PostgreSQL databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -88,4 +88,5 @@ public class PostGISDialectProvider implements SQLDialectProvider {
         }
         return new PostGISDialect( useLegacyPredicates );
     }
+
 }

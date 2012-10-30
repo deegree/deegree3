@@ -66,7 +66,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialect} for PostgreSQL / PostGIS databases.
+ * {@link SQLDialect} for PostGIS-enabled PostgreSQL databases.
+ * <p>
+ * Supported PostgreSQL versions:
+ * <ul>
+ * <li>8.3</li>
+ * <li>8.4</li>
+ * <li>9.0</li>
+ * <li>9.1</li>
+ * <li>9.2</li>
+ * </ul>
+ * Supported PostGIS versions:
+ * <ul>
+ * <li>1.3</li>
+ * <li>1.4</li>
+ * <li>1.5</li>
+ * <li>2.0</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -244,4 +261,5 @@ public class PostGISDialect implements SQLDialect {
     public String getSelectSequenceNextVal( String sequence ) {
         return "SELECT nextval('" + sequence + "')";
     }
+
 }

@@ -219,4 +219,5 @@ public interface SQLDialect {
      * @return SQL <code>SELECT</code> statement, never <code>null</code>
      */
     String getSelectSequenceNextVal( String sequence );
+
 }

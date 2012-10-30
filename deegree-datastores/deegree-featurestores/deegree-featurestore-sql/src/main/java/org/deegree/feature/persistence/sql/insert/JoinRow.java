@@ -37,8 +37,6 @@ package org.deegree.feature.persistence.sql.insert;
 
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An {@link InsertRow} for a row of a joined table.
@@ -49,8 +47,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 class JoinRow extends InsertRow {
-
-    private static Logger LOG = LoggerFactory.getLogger( JoinRow.class );
 
     /**
      * Creates a new {@link JoinRow} instance.
@@ -66,4 +62,5 @@ class JoinRow extends InsertRow {
         this.table = join.getToTable();
         generateImmediateKeys( join.getKeyColumnToGenerator() );
     }
+
 }

@@ -56,7 +56,7 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 /**
  * An {@link InsertRow} for a feature type root table (deals with feature id generation).
  * <p>
- * The final value of the feature id is usually not known during construction of the object (e.g. when
+ * The final value of the feature id is usually not known during construction of the object (i.e. when
  * {@link IDGenMode#GENERATE_NEW} is used). Also, the feature type may not be known (in case an instances gets created,
  * because a reference to a feature occurred, but not the feature itself).
  * </p>
@@ -88,7 +88,7 @@ public class FeatureRow extends InsertRow {
     }
 
     /**
-     * Returns the original id of the {@link Feature}.
+     * Returns the original id value of the {@link Feature}.
      * 
      * @return original id, can be <code>null</code> (feature without id)
      */
@@ -97,9 +97,9 @@ public class FeatureRow extends InsertRow {
     }
 
     /**
-     * Returns the final (insert) id of the {@link Feature}.
+     * Returns the final (insert) id value of the {@link Feature}.
      * 
-     * @return insert id, can be <code>null</code> (not assigned)
+     * @return insert id, can be <code>null</code> (not assigned yet)
      */
     public String getNewId() {
         return newId;
@@ -119,12 +119,13 @@ public class FeatureRow extends InsertRow {
 
         // clear everything, but keep key columns (values may still be needed by referencing rows)
         Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();
-        Set<SQLIdentifier> genColumns = mgr.getGenColumns( table );
+        Set<SQLIdentifier> genColumns = mgr.getKeyColumns( table );
         if ( genColumns != null ) {
             for ( SQLIdentifier genColumn : genColumns ) {
                 keyColumnToValue.put( genColumn, get( genColumn ) );
             }
         }
+
         columnToLiteral.clear();
         columnToObject.clear();
         columnToObject.putAll( keyColumnToValue );
@@ -141,9 +142,11 @@ public class FeatureRow extends InsertRow {
         switch ( mgr.getIdGenMode() ) {
         case GENERATE_NEW: {
             Map<SQLIdentifier, IDGenerator> keyColumnToGenerator = new HashMap<SQLIdentifier, IDGenerator>();
-            SQLIdentifier fidColumn = new SQLIdentifier( ftMapping.getFidMapping().getColumn() );
-            keyColumnToGenerator.put( fidColumn, ftMapping.getFidMapping().getIdGenerator() );
-            generateImmediateKeys( keyColumnToGenerator );
+            for ( Pair<SQLIdentifier, BaseType> columnAndType : ftMapping.getFidMapping().getColumns() ) {
+                SQLIdentifier fidColumn = columnAndType.first;
+                keyColumnToGenerator.put( fidColumn, ftMapping.getFidMapping().getIdGenerator() );
+                generateImmediateKeys( keyColumnToGenerator );
+            }
             break;
         }
         case USE_EXISTING: {
@@ -227,4 +230,5 @@ public class FeatureRow extends InsertRow {
         }
         return value;
     }
+
 }

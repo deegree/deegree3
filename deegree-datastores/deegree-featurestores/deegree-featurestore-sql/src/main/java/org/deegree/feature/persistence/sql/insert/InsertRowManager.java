@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.sql.insert;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -205,7 +206,11 @@ public class InsertRowManager {
     }
 
     Set<SQLIdentifier> getGenColumns( TableName table ) {
-        return tableDeps.getGenColumns( table );
+        return tableDeps.getGeneratedColumns( table );
+    }
+
+    Set<SQLIdentifier> getKeyColumns( TableName table ) {
+        return tableDeps.getKeyColumns( table );
     }
 
     private FeatureRow lookupFeatureRow( String fid )
@@ -374,7 +379,6 @@ public class InsertRowManager {
             ftName = mapping.getValueFtName();
             if ( getSchema().getFeatureType( ftName ).isAbstract() ) {
                 // may be abstract, so take any concrete substitution feature type
-
                 FeatureType[] concreteSubtypes = getSchema().getConcreteSubtypes( getSchema().getFeatureType( ftName ) );
                 if ( concreteSubtypes.length == 0 ) {
                     String msg = "Error in mapping. Feature-particle mapping " + mapping
@@ -391,9 +395,11 @@ public class InsertRowManager {
             // reveal the value feature type
             ftTable = join.getToTable();
         }
-        Set<SQLIdentifier> ftTableGenColumns = tableDeps.getGenColumns( ftTable );
+        Set<SQLIdentifier> ftTableGenColumns = tableDeps.getKeyColumns( ftTable );
         if ( ftTableGenColumns != null && ftTableGenColumns.contains( toColumn ) ) {
-            return new KeyPropagation( ftTable, toColumn, join.getFromTable(), fromColumn );
+            List<SQLIdentifier> toColumns = Collections.singletonList( toColumn );
+            List<SQLIdentifier> fromColumns = Collections.singletonList( fromColumn );
+            return new KeyPropagation( ftTable, toColumns, join.getFromTable(), fromColumns );
         }
 
         // must be the other way round
@@ -407,14 +413,14 @@ public class InsertRowManager {
         JoinRow newRow = new JoinRow( this, join );
         delayedRows.add( newRow );
 
-        KeyPropagation keyPropagation = tableDeps.getKeyPropagation( join.getFromTable(), join.getFromColumns(),
-                                                                     join.getToTable(), join.getToColumns() );
+        KeyPropagation keyPropagation = tableDeps.findKeyPropagation( join.getFromTable(), join.getFromColumns(),
+                                                                      join.getToTable(), join.getToColumns() );
         if ( keyPropagation == null ) {
             String msg = "Internal error: table dependencies don't contain join " + join;
             throw new FeatureStoreException( msg );
         }
 
-        if ( keyPropagation.getPKTable().equals( join.getFromTable() ) ) {
+        if ( keyPropagation.getSourceTable().equals( join.getFromTable() ) ) {
             ParentRowReference ref = new ParentRowReference( row, keyPropagation );
             newRow.addParent( ref );
             List<InsertRow> children = rowToChildRows.get( row );
