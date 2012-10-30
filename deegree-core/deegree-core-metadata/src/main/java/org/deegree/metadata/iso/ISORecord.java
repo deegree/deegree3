@@ -45,7 +45,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -534,28 +533,13 @@ public class ISORecord implements MetadataRecord {
     private void toISOSummary( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer = new FilteringXMLStreamWriter( writer, summaryFilterElementsXPath );
-        generateOutput( writer, root.getXMLStreamReader() );
+        root.serialize( writer );
     }
 
     private void toISOBrief( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer = new FilteringXMLStreamWriter( writer, briefFilterElementsXPath );
-        generateOutput( writer, root.getXMLStreamReader() );
-
-    }
-
-    private void generateOutput( XMLStreamWriter writer, XMLStreamReader filter )
-                            throws XMLStreamException {
-        while ( filter.hasNext() ) {
-
-            if ( filter.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                XMLAdapter.writeElement( writer, filter );
-            } else {
-                filter.next();
-            }
-        }
-        filter.close();
-
+        root.serialize( writer );
     }
 
     @Override
