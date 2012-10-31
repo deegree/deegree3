@@ -40,13 +40,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
-import org.deegree.geometry.multi.MultiLineString;
-import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.multi.MultiPolygon;
-import org.deegree.geometry.multi.MultiSolid;
-import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -57,6 +51,7 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsArray;
+import org.deegree.geometry.standard.points.PointsList;
 
 /**
  * Contains utility methods for common tasks on {@link Geometry} objects.
@@ -71,9 +66,11 @@ public class Geometries {
     private final static GeometryFactory fac = new GeometryFactory();
 
     /**
-     * Homogenizes the given generic {@link MultiGeometry}, i.e. returns a {@link MultiPoint}, {@link MultiCurve},
-     * {@link MultiLineString}, {@link MultiSurface}, {@link MultiPolygon} or {@link MultiSolid} (depending on the
-     * members).
+     * Homogenizes the given generic {@link org.deegree.geometry.multi.MultiGeometry}, i.e. returns a
+     * {@link org.deegree.geometry.multi.MultiPoint}, {@link org.deegree.geometry.multi.MultiCurve},
+     * {@link org.deegree.geometry.multi.MultiLineString}, {@link org.deegree.geometry.multi.MultiSurface},
+     * {@link org.deegree.geometry.multi.MultiPolygon} or {@link org.deegree.geometry.multi.MultiSolid} (depending on
+     * the members).
      * 
      * @param geometry
      *            generic multi geometry to be homogenized, must not be <code>null</code>
@@ -90,6 +87,39 @@ public class Geometries {
         }
 
         // check if all members have the same dimension
+        int dim = getDimension( deepMembers );
+
+        switch ( dim ) {
+        case -1: {
+            homogenized = new GeometryFactory().createMultiPoint( geometry.getId(), geometry.getCoordinateSystem(),
+                                                                  Collections.EMPTY_LIST );
+            break;
+        }
+        case 0: {
+            homogenized = new GeometryFactory().createMultiPoint( geometry.getId(), geometry.getCoordinateSystem(),
+                                                                  (List<Point>) deepMembers );
+            break;
+        }
+        case 1: {
+            homogenized = new GeometryFactory().createMultiLineString( geometry.getId(),
+                                                                       geometry.getCoordinateSystem(),
+                                                                       (List<LineString>) deepMembers );
+            break;
+        }
+        case 2: {
+            homogenized = new GeometryFactory().createMultiPolygon( geometry.getId(), geometry.getCoordinateSystem(),
+                                                                    (List<Polygon>) deepMembers );
+            break;
+        }
+        default: {
+            String msg = "Cannot homogenize MultiGeometry: contains members with dimension " + dim + ".";
+            throw new IllegalArgumentException( msg );
+        }
+        }
+        return homogenized;
+    }
+
+    private static int getDimension( List<?> deepMembers ) {
         int dim = -1;
         for ( Object o : deepMembers ) {
             GeometricPrimitive member = (GeometricPrimitive) o;
@@ -120,35 +150,7 @@ public class Geometries {
                 throw new IllegalArgumentException( msg );
             }
         }
-
-        switch ( dim ) {
-        case -1: {
-            homogenized = new GeometryFactory().createMultiPoint( geometry.getId(), geometry.getCoordinateSystem(),
-                                                                  Collections.EMPTY_LIST );
-            break;
-        }
-        case 0: {
-            homogenized = new GeometryFactory().createMultiPoint( geometry.getId(), geometry.getCoordinateSystem(),
-                                                                  (List<Point>) deepMembers );
-            break;
-        }
-        case 1: {
-            homogenized = new GeometryFactory().createMultiLineString( geometry.getId(),
-                                                                       geometry.getCoordinateSystem(),
-                                                                       (List<LineString>) deepMembers );
-            break;
-        }
-        case 2: {
-            homogenized = new GeometryFactory().createMultiPolygon( geometry.getId(), geometry.getCoordinateSystem(),
-                                                                    (List<Polygon>) deepMembers );
-            break;
-        }
-        default: {
-            String msg = "Cannot homogenize MultiGeometry: contains members with dimension " + dim + ".";
-            throw new IllegalArgumentException( msg );
-        }
-        }
-        return homogenized;
+        return dim;
     }
 
     private static void collectMembersDeep( Geometry geometry, List<GeometricPrimitive> deepMembers ) {
@@ -220,4 +222,50 @@ public class Geometries {
         com.vividsolutions.jts.geom.Geometry jtsGeom = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
         return ( (AbstractDefaultGeometry) geom ).createFromJTS( jtsGeom, geom.getCoordinateSystem() );
     }
+
+    /**
+     * Samples points on a line string using the specified distance.
+     * 
+     * @param linestring
+     * @param distance
+     * @return the sampled points
+     */
+    public static Points sampleLineString( LineString linestring, int distance ) {
+        GeometryFactory fac = new GeometryFactory();
+        ICRS crs = linestring.getCoordinateSystem();
+        List<Point> list = new ArrayList<Point>();
+
+        double lastx = Double.NaN, lasty = Double.NaN;
+        for ( Point p : linestring.getControlPoints() ) {
+            double x = p.get0();
+            double y = p.get1();
+            if ( Double.isNaN( lastx ) ) {
+                lastx = x;
+                lasty = y;
+                list.add( fac.createPoint( null, x, y, crs ) );
+                continue;
+            }
+            double dx = x - lastx;
+            double dy = y - lasty;
+            double len = Math.sqrt( dx * dx + dy * dy );
+            dx /= len;
+            dy /= len;
+            double newx = lastx + dx * distance;
+            double newy = lasty + dy * distance;
+
+            int num = (int) Math.floor( len / distance );
+
+            for ( int i = 0; i < num; ++i ) {
+                list.add( fac.createPoint( null, newx, newy, crs ) );
+                newx += dx * distance;
+                newy += dy * distance;
+            }
+            list.add( fac.createPoint( null, x, y, crs ) );
+            lastx = x;
+            lasty = y;
+        }
+
+        return new PointsList( list );
+    }
+
 }
