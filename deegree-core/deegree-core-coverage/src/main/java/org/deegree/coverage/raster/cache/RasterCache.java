@@ -84,7 +84,7 @@ public class RasterCache {
     /** A key which can be given to the JVM to define the amount of memory used for caching (e.g. 1024m). */
     public static final String DEF_RASTER_CACHE_MEM_SIZE = "deegree.raster.cache.memsize";
 
-    /** A key which can be given to the JVM to define the amount of disk memory used for caching (e.g. 1024m).  */
+    /** A key which can be given to the JVM to define the amount of disk memory used for caching (e.g. 1024m). */
     public static final String DEF_RASTER_CACHE_DISK_SIZE = "deegree.raster.cache.disksize";
 
     private static long maxCacheMem;
@@ -124,8 +124,7 @@ public class RasterCache {
             long mm = StringUtils.parseByteSize( cacheSize );
             if ( mm == 0 ) {
                 if ( StringUtils.isSet( cacheSize ) ) {
-                    LOG.warn(
-                              "Ignoring supplied property: {} because it could not be parsed. Using 0.5 of the total memory for raster caching.",
+                    LOG.warn( "Ignoring supplied property: {} because it could not be parsed. Using 0.5 of the total memory for raster caching.",
                               DEF_RASTER_CACHE_MEM_SIZE );
                 }
                 mm = Runtime.getRuntime().maxMemory();
@@ -143,8 +142,7 @@ public class RasterCache {
             mm = StringUtils.parseByteSize( t );
             if ( mm == 0 ) {
                 if ( StringUtils.isSet( t ) ) {
-                    LOG.warn(
-                              "Ignoring supplied property: {} because it could not be parsed. Using 20G of disk space for raster caching.",
+                    LOG.warn( "Ignoring supplied property: {} because it could not be parsed. Using 20G of disk space for raster caching.",
                               DEF_RASTER_CACHE_MEM_SIZE );
                 }
                 mm = 20 * ( 1024l * 1024 * 1024 );
@@ -192,15 +190,13 @@ public class RasterCache {
                               directory.getAbsolutePath() );
                     boolean creation = directory.mkdir();
                     if ( !creation ) {
-                        LOG.warn(
-                                  "Creation of cache directory: {} was not succesfull using default cache directory instead: {}.",
+                        LOG.warn( "Creation of cache directory: {} was not succesfull using default cache directory instead: {}.",
                                   directory.getAbsolutePath(), DEFAULT_CACHE_DIR.getAbsoluteFile() );
                     } else {
                         cacheDir = directory;
                     }
                 } else {
-                    LOG.warn(
-                              "Given cache directory: {} does not exist and creation was not requested, using default cache dir: {}",
+                    LOG.warn( "Given cache directory: {} does not exist and creation was not requested, using default cache dir: {}",
                               directory.getAbsolutePath(), DEFAULT_CACHE_DIR.getAbsolutePath() );
                 }
             } else {
@@ -591,6 +587,11 @@ public class RasterCache {
      */
     public File getCacheDirectory() {
         return cacheDir;
+    }
+
+    public static void disableAllCaches() {
+        maxCacheMem = 0;
+        maxCacheDisk = 0;
     }
 
 }
