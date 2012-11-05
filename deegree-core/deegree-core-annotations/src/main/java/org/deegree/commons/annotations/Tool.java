@@ -61,6 +61,6 @@ public @interface Tool {
     /**
      * @return the short description of this tool.
      */
-    public String value();
+    String value();
 
 }

@@ -76,7 +76,7 @@ import org.slf4j.Logger;
 @SupportedAnnotationTypes(value = { "org.deegree.commons.annotations.PackageLoggingNotes",
                                    "org.deegree.commons.annotations.LoggingNotes" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedOptions( { "log4j.outputdir" })
+@SupportedOptions({ "log4j.outputdir" })
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
     private static final Logger LOG = getLogger( LoggingAnnotationProcessor.class );
@@ -250,76 +250,10 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         void print( RollbackPrintWriter out, String qname, boolean error, boolean warn, boolean info, boolean debug,
                     boolean trace ) {
             if ( notes != null ) {
-                if ( !notes.error().isEmpty() && error ) {
-                    out.println( format( notes.error() ) );
-                    out.println( "#log4j.logger." + qname + " = ERROR" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !notes.warn().isEmpty() && warn ) {
-                    out.println( format( notes.warn() ) );
-                    out.println( "#log4j.logger." + qname + " = WARN" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !notes.info().isEmpty() && info ) {
-                    out.println( format( notes.info() ) );
-                    out.println( "#log4j.logger." + qname + " = INFO" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !notes.debug().isEmpty() && debug ) {
-                    out.println( format( notes.debug() ) );
-                    out.println( "#log4j.logger." + qname + " = DEBUG" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !notes.trace().isEmpty() && trace ) {
-                    out.println( format( notes.trace() ) );
-                    out.println( "#log4j.logger." + qname + " = TRACE" );
-                    out.println();
-                    out.flush();
-                }
+                handleNotes( out, qname, error, warn, info, debug, trace );
             }
             if ( pnotes != null ) {
-                String title = pnotes.title();
-
-                boolean isSubsystem = qname.replaceAll( "[^\\.]", "" ).length() == 2;
-
-                if ( !title.isEmpty() ) {
-                    block( title, out, isSubsystem );
-                }
-
-                if ( !pnotes.error().isEmpty() && error ) {
-                    out.println( format( pnotes.error() ) );
-                    out.println( "#log4j.logger." + qname + " = ERROR" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !pnotes.warn().isEmpty() && warn ) {
-                    out.println( format( pnotes.warn() ) );
-                    out.println( "#log4j.logger." + qname + " = WARN" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !pnotes.info().isEmpty() && info ) {
-                    out.println( format( pnotes.info() ) );
-                    out.println( "#log4j.logger." + qname + " = INFO" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !pnotes.debug().isEmpty() && debug ) {
-                    out.println( format( pnotes.debug() ) );
-                    out.println( "#log4j.logger." + qname + " = DEBUG" );
-                    out.println();
-                    out.flush();
-                }
-                if ( !pnotes.trace().isEmpty() && trace ) {
-                    out.println( format( pnotes.trace() ) );
-                    out.println( "#log4j.logger." + qname + " = TRACE" );
-                    out.println();
-                    out.flush();
-                }
+                handlePackageNotes( out, qname, error, warn, info, debug, trace );
             }
             for ( Entry<String, Tree> entry : children.entrySet() ) {
                 entry.getValue().print( out, qname + ( qname.isEmpty() ? "" : "." ) + entry.getKey(), error, warn,
@@ -327,6 +261,42 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
             }
             out.rollback();
         }
+
+        private void handleNotes( RollbackPrintWriter out, String qname, boolean error, boolean warn, boolean info,
+                                  boolean debug, boolean trace ) {
+            handleNote( out, error, notes.error(), qname, "ERROR" );
+            handleNote( out, warn, notes.warn(), qname, "WARN" );
+            handleNote( out, info, notes.info(), qname, "INFO" );
+            handleNote( out, debug, notes.debug(), qname, "DEBUG" );
+            handleNote( out, trace, notes.trace(), qname, "TRACE" );
+        }
+
+        private void handlePackageNotes( RollbackPrintWriter out, String qname, boolean error, boolean warn,
+                                         boolean info, boolean debug, boolean trace ) {
+            String title = pnotes.title();
+
+            boolean isSubsystem = qname.replaceAll( "[^\\.]", "" ).length() == 2;
+
+            if ( !title.isEmpty() ) {
+                block( title, out, isSubsystem );
+            }
+
+            handleNote( out, error, pnotes.error(), qname, "ERROR" );
+            handleNote( out, warn, pnotes.warn(), qname, "WARN" );
+            handleNote( out, info, pnotes.info(), qname, "INFO" );
+            handleNote( out, debug, pnotes.debug(), qname, "DEBUG" );
+            handleNote( out, trace, pnotes.trace(), qname, "TRACE" );
+        }
+
+        private void handleNote( RollbackPrintWriter out, boolean level, String note, String qname, String levelName ) {
+            if ( !note.isEmpty() && level ) {
+                out.println( format( note ) );
+                out.println( "#log4j.logger." + qname + " = " + levelName );
+                out.println();
+                out.flush();
+            }
+        }
+
     }
 
 }
