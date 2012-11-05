@@ -53,14 +53,12 @@ import static org.deegree.protocol.wmts.WMTSConstants.WMTS_100_NS;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -69,13 +67,13 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 
 /**
- * {@link OWSCapabilitiesAdapter} for Web Map Tile Service (WMTS) 1.0.0 capabilities documents.
+ * {@link org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter} for Web Map Tile Service (WMTS) 1.0.0
+ * capabilities documents.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
@@ -145,7 +143,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
     }
 
     private List<Layer> parseLayers( XMLStreamReader xmlStream )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
         List<Layer> layers = new ArrayList<Layer>();
         while ( xmlStream.isStartElement() && LAYER.equals( xmlStream.getName() ) ) {
             Layer layer = parseLayer( xmlStream );
@@ -166,12 +164,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:Layer&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/wmts:Layer&gt;) afterwards
      * @return corresponding {@link Layer} representation, never <code>null</code>
-     * @throws XMLParsingException
+     * @throws org.deegree.commons.xml.XMLParsingException
      *             if the element can not be parsed as a "wmts:Layer" element
      * @throws XMLStreamException
      */
     Layer parseLayer( XMLStreamReader xmlStream )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
 
         nextElement( xmlStream );
 
@@ -240,7 +238,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
     }
 
     private String parseTileMatrixSetLink( XMLStreamReader xmlStream )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
         nextElement( xmlStream );
         skipToRequiredElementOnSameLevel( xmlStream, TILE_MATRIX_SET );
         String tileMatrixSet = xmlStream.getElementText().trim();
@@ -272,7 +270,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
     }
 
     private List<TileMatrixSet> parseTileMatrixSets( XMLStreamReader xmlStream )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
         List<TileMatrixSet> tileMatrixSets = new ArrayList<TileMatrixSet>();
         while ( xmlStream.isStartElement() && TILE_MATRIX_SET.equals( xmlStream.getName() ) ) {
             TileMatrixSet tileMatrixSet = parseTileMatrixSet( xmlStream );
@@ -294,7 +292,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wmts:TileMatrixSet&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/wmts:TileMatrixSet&gt;) afterwards
      * @return corresponding {@link TileMatrix} representation, never <code>null</code>
-     * @throws XMLParsingException
+     * @throws org.deegree.commons.xml.XMLParsingException
      *             if the element can not be parsed as a "wmts:TileMatrixSet" element
      * @throws XMLStreamException
      */
@@ -376,7 +374,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
      * @param crs
      *            world coordinate reference system, must not be <code>null</code>
      * @return corresponding {@link TileMatrix} representation, never <code>null</code>
-     * @throws XMLParsingException
+     * @throws org.deegree.commons.xml.XMLParsingException
      *             if the element can not be parsed as a "wmts:TileMatrix" element
      * @throws XMLStreamException
      */
