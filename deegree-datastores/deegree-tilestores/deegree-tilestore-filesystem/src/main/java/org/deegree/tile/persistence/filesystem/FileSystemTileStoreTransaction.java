@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,11 +45,9 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 import org.deegree.tile.persistence.AbstractTileStoreTransaction;
-import org.deegree.tile.persistence.TileStoreTransaction;
-import org.slf4j.Logger;
 
 /**
- * {@link TileStoreTransaction} for the {@link FileSystemTileStore}.
+ * {@link org.deegree.tile.persistence.TileStoreTransaction} for the {@link FileSystemTileStore}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
@@ -61,10 +57,10 @@ import org.slf4j.Logger;
  */
 class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
-    private static final Logger LOG = getLogger( FileSystemTileStoreTransaction.class );
-    
+    // private static final Logger LOG = getLogger( FileSystemTileStoreTransaction.class );
+
     /**
-     * Creates a new {@link FileSystemTileStoreTransaction}.
+     * Creates a new {@link org.deegree.tile.persistence.TileStoreTransaction}.
      * 
      * @param store
      *            tile store, must not be <code>null</code>
@@ -93,7 +89,8 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
     }
 
     @Override
-    public void delete( String matrixId, long x, long y ) throws TileIOException {
+    public void delete( String matrixId, long x, long y )
+                            throws TileIOException {
         DiskLayout layout = ( (FileSystemTileDataLevel) this.store.getTileDataSet( this.tileMatrixSet ).getTileDataLevel( matrixId ) ).getLayout();
         File file = layout.resolve( matrixId, x, y );
         if ( file.exists() ) {
