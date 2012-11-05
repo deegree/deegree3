@@ -42,26 +42,17 @@ package org.deegree.services.wmts.controller.capabilities;
 
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.Description;
-import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.commons.ows.metadata.domain.Domain;
-import org.deegree.commons.ows.metadata.operation.DCP;
-import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.components.Unit;
@@ -94,7 +85,6 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private final XMLStreamWriter writer;
 
-    private final ServiceIdentification identification;
 
     private final ServiceProvider provider;
 
@@ -102,10 +92,11 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private String mdurltemplate;
 
+    private WmtsCapabilitiesMetadataWriter mdwriter;
+
     public WMTSCapabilitiesWriter( XMLStreamWriter writer, ServiceIdentification identification,
                                    ServiceProvider provider, List<Theme> themes, String mdurltemplate ) {
         this.writer = writer;
-        this.identification = identification;
         this.provider = provider;
         this.themes = themes;
         if ( mdurltemplate == null || mdurltemplate.isEmpty() ) {
@@ -116,6 +107,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
             mdurltemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
         }
         this.mdurltemplate = mdurltemplate;
+        this.mdwriter = new WmtsCapabilitiesMetadataWriter(writer, identification);
     }
 
     public void export100()
@@ -132,9 +124,9 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeAttribute( XSINS, "schemaLocation",
                                "http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" );
 
-        exportServiceIdentification();
+        mdwriter.exportServiceIdentification();
         exportServiceProvider110New( writer, provider );
-        exportOperationsMetadata();
+        mdwriter.exportOperationsMetadata();
 
         exportContents( themes );
 
@@ -143,48 +135,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement(); // Capabilities
     }
 
-    private void exportServiceIdentification()
-                            throws XMLStreamException {
-        writer.writeStartElement( OWS110_NS, "ServiceIdentification" );
-        if ( identification == null ) {
-            writeElement( writer, OWS110_NS, "Title", "deegree 3 WMTS" );
-            writeElement( writer, OWS110_NS, "Abstract", "deegree 3 WMTS implementation" );
-        } else {
-            LanguageString title = identification.getTitle( null );
-            writeElement( writer, OWS110_NS, "Title", title == null ? "deegree 3 WMTS" : title.getString() );
-            LanguageString _abstract = identification.getAbstract( null );
-            writeElement( writer, OWS110_NS, "Abstract", _abstract == null ? "deegree 3 WMTS implementation"
-                                                                          : _abstract.getString() );
-        }
-        writeElement( writer, OWS110_NS, "ServiceType", "WMTS" );
-        writeElement( writer, OWS110_NS, "ServiceTypeVersion", "1.0.0" );
-        writer.writeEndElement();
-    }
 
-    private void exportOperationsMetadata()
-                            throws XMLStreamException {
-
-        List<Operation> operations = new LinkedList<Operation>();
-
-        List<DCP> dcps = null;
-        try {
-            DCP dcp = new DCP( new URL( OGCFrontController.getHttpGetURL() ), null );
-            dcps = Collections.singletonList( dcp );
-        } catch ( MalformedURLException e ) {
-            // should never happen
-        }
-
-        List<Domain> params = new ArrayList<Domain>();
-        List<Domain> constraints = new ArrayList<Domain>();
-        List<OMElement> mdEls = new ArrayList<OMElement>();
-
-        operations.add( new Operation( "GetCapabilities", dcps, params, constraints, mdEls ) );
-        operations.add( new Operation( "GetTile", dcps, params, constraints, mdEls ) );
-
-        OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
-
-        exportOperationsMetadata110( writer, operationsMd );
-    }
 
     private void exportThemes( List<Theme> themes )
                             throws XMLStreamException {
