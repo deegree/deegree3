@@ -36,7 +36,11 @@
 
 package org.deegree.services.controller;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
 
 /**
  * Encapsulates security and other information that are associated with the currently processed request.
@@ -49,6 +53,8 @@ import javax.servlet.http.HttpServletRequest;
  * @version $Revision: $, $Date: $
  */
 public class RequestContext {
+
+    private static final Logger LOG = getLogger( RequestContext.class );
 
     private final String requestedEndpointUrl;
 
@@ -66,11 +72,19 @@ public class RequestContext {
         requestedEndpointUrl = request.getRequestURL().toString();
         this.credentials = credentials;
         webappBaseUrl = deriveWebappBaseUrl( requestedEndpointUrl, request );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Request URL: " + requestedEndpointUrl );
+            LOG.debug( "Webapp Base URL: " + webappBaseUrl );
+        }
     }
 
     private String deriveWebappBaseUrl( String requestedEndpointUrl, HttpServletRequest request ) {
         String servletPath = request.getServletPath();
         String pathInfo = request.getPathInfo();
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Servlet path: " + servletPath );
+            LOG.debug( "Path Info: " + pathInfo );
+        }        
         int webappBaseUrlLength = requestedEndpointUrl.length() - servletPath.length();
         if ( pathInfo != null ) {
             webappBaseUrlLength -= pathInfo.length();
