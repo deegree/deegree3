@@ -45,8 +45,7 @@ import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.createImageInputStream;
 import static javax.imageio.ImageIO.getImageReadersBySuffix;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
+import static org.deegree.tile.persistence.geotiff.GeoTiffUtils.getEnvelopeAndCrs;
 import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
@@ -65,10 +64,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
@@ -132,7 +128,7 @@ public class GeoTIFFTileMatrixSetProvider implements TileMatrixSetProvider {
             reader.setInput( iis, false, true );
             int num = reader.getNumImages( true );
             IIOMetadata md = reader.getImageMetadata( 0 );
-            Envelope envelope = getEnvelope( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
+            Envelope envelope = getEnvelopeAndCrs( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
 
             if ( envelope == null ) {
                 throw new ResourceInitException( "No envelope information could be read from GeoTIFF. "
@@ -165,56 +161,6 @@ public class GeoTIFFTileMatrixSetProvider implements TileMatrixSetProvider {
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
         }
-    }
-
-    private static Envelope getEnvelope( IIOMetadata metaData, int width, int height, ICRS crs )
-                            throws ResourceInitException {
-        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
-        try {
-            if ( crs == null ) {
-                int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
-                String epsgCode = null;
-                if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
-                    epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
-                } else if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic ) {
-                    epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey );
-                }
-                if ( epsgCode != null && epsgCode.length() != 0 ) {
-                    try {
-                        crs = CRSManager.lookup( "EPSG:" + epsgCode );
-                    } catch ( UnknownCRSException e ) {
-                        LOG.error( "No coordinate system found for EPSG:" + epsgCode );
-                    }
-                }
-            }
-            if ( crs == null ) {
-                throw new ResourceInitException( "No CRS information could be read from GeoTIFF, "
-                                                 + "and none was configured. Please configure a"
-                                                 + " CRS or add one to the GeoTIFF." );
-            }
-
-            double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
-            double[] scale = geoTIFFMetaData.getModelPixelScales();
-            if ( tiePoints != null && scale != null ) {
-
-                RasterGeoReference rasterReference;
-                if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
-                    // rb: this might not always be right, see examples at
-                    // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
-                    // search for PixelIsArea/PixelIsPoint to determine center/outer
-                    rasterReference = new RasterGeoReference( CENTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
-                                                              crs );
-                } else {
-                    rasterReference = new RasterGeoReference( OUTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
-                                                              crs );
-                }
-                return rasterReference.getEnvelope( OUTER, width, height, crs );
-            }
-
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read crs information in GeoTIFF" );
-        }
-        return null;
     }
 
     @Override
