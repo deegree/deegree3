@@ -76,8 +76,10 @@ class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
         FileOutputStream fos = null;
         try {
             File file = layout.resolve( matrixId, x, y );
-            if ( !file.getParentFile().exists() && !file.getParentFile().mkdirs() ) {
-                throw new TileIOException( "Unable to create parent directories for " + file );
+            synchronized ( store ) {
+                if ( !file.getParentFile().exists() && !file.getParentFile().mkdirs() ) {
+                    throw new TileIOException( "Unable to create parent directories for " + file );
+                }
             }
             fos = new FileOutputStream( file );
             ImageIO.write( tile.getAsImage(), layout.getFileType(), fos );
