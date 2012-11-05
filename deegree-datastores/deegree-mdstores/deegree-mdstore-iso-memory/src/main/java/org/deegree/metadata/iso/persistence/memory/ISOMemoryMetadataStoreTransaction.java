@@ -38,16 +38,8 @@ package org.deegree.metadata.iso.persistence.memory;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.metadata.MetadataRecord;
@@ -57,7 +49,6 @@ import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.slf4j.Logger;
 
@@ -74,7 +65,7 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
 
     private static final Logger LOG = getLogger( ISOMemoryMetadataStoreTransaction.class );
 
-    private enum TransactionStatus {
+    enum TransactionStatus {
         UPDATE, DELETE, INSERT
     }
 
@@ -82,15 +73,15 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
 
     private final StoredISORecords storedRecords;
 
-    private final File insertDirectory;
-
     private final List<TransactionCandidate> transactionCandidates = new ArrayList<TransactionCandidate>();
+
+    private TransactionCommitter committer;
 
     public ISOMemoryMetadataStoreTransaction( ISOMemoryMetadataStore metadataStore, StoredISORecords storedRecords,
                                               File transactionalDirectory ) {
         this.metadataStore = metadataStore;
         this.storedRecords = storedRecords;
-        this.insertDirectory = transactionalDirectory;
+        committer = new TransactionCommitter( storedRecords, transactionalDirectory );
     }
 
     @Override
@@ -100,13 +91,13 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
             for ( TransactionCandidate transactionCandidate : transactionCandidates ) {
                 switch ( transactionCandidate.status ) {
                 case INSERT:
-                    commitInsert( transactionCandidate );
+                    committer.commitInsert( transactionCandidate );
                     break;
                 case UPDATE:
-                    commitUpdate( transactionCandidate );
+                    committer.commitUpdate( transactionCandidate );
                     break;
                 case DELETE:
-                    commitDelete( transactionCandidate );
+                    committer.commitDelete( transactionCandidate );
                     break;
                 }
             }
@@ -116,72 +107,6 @@ public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransacti
             LOG.error( "Commit failed: ", e );
             throw new MetadataStoreException( e );
         }
-    }
-
-    private void commitInsert( TransactionCandidate transactionCandidate )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        File recordFile = null;
-        if ( insertDirectory != null ) {
-            recordFile = writeFile( transactionCandidate, null );
-        }
-        storedRecords.insertRecord( transactionCandidate.record, recordFile );
-    }
-
-    private void commitUpdate( TransactionCandidate transactionCandidate )
-                            throws XMLStreamException, FactoryConfigurationError, MetadataStoreException, IOException {
-        File recordFile = null;
-        File fileToUpdate = storedRecords.getFile( transactionCandidate.identifier );
-        deleteFile( TransactionStatus.UPDATE, fileToUpdate );
-        recordFile = writeFile( transactionCandidate, fileToUpdate );
-        storedRecords.deleteRecord( transactionCandidate.identifier );
-        storedRecords.insertRecord( transactionCandidate.record, recordFile );
-    }
-
-    private void commitDelete( TransactionCandidate transactionCandidate )
-                            throws MetadataStoreException {
-        File fileToDelete = storedRecords.getFile( transactionCandidate.identifier );
-        deleteFile( TransactionStatus.DELETE, fileToDelete );
-        storedRecords.deleteRecord( transactionCandidate.identifier );
-    }
-
-    private File writeFile( TransactionCandidate transactionCandidate, File fileToWrite )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        if ( fileToWrite == null ) {
-            fileToWrite = new File( insertDirectory, transactionCandidate.identifier + ".xml" );
-        }
-        if ( !fileToWrite.exists() ) {
-            boolean created = fileToWrite.createNewFile();
-            LOG.debug( "File {} was " + ( created ? "successful" : "not" ) + " created.", fileToWrite );
-        }
-        OutputStream stream = null;
-        XMLStreamWriter writer = null;
-        try {
-            stream = new FileOutputStream( fileToWrite );
-            writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-            transactionCandidate.record.serialize( writer, ReturnableElement.full );
-        } finally {
-            try {
-                if ( writer != null )
-                    writer.close();
-            } catch ( XMLStreamException e ) {
-                // ignore when closing
-            }
-            try {
-                if ( stream != null )
-                    stream.close();
-            } catch ( IOException e ) {
-                // ignore when closing
-            }
-        }
-        return fileToWrite;
-    }
-
-    private void deleteFile( TransactionStatus status, File file )
-                            throws MetadataStoreException {
-        boolean deleted = file.delete();
-        LOG.debug( "File {} was " + ( deleted ? "successful" : "not" ) + " deleted", file );
-        if ( !deleted )
-            throw new MetadataStoreException( "Commit failed: could not " + status + " record at " + file );
     }
 
     @Override

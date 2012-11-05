@@ -39,7 +39,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,13 +129,13 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
 
     @Override
     public String[] getCreateStatements( Type dbType )
-                            throws UnsupportedEncodingException, IOException {
+                            throws IOException {
         return new String[0];
     }
 
     @Override
     public String[] getDropStatements( Type dbType )
-                            throws UnsupportedEncodingException, IOException {
+                            throws IOException {
         return new String[0];
     }
 
