@@ -107,6 +107,7 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
             }
 
             String identifier = new File( configUrl.getPath() ).getName();
+            identifier = identifier.substring( 0, identifier.length() - 4 ).toLowerCase();
             String wknScaleSet = cfg.getWellKnownScaleSet();
             return new TileMatrixSet( identifier, wknScaleSet, matrices, matrices.get( 0 ).getSpatialMetadata() );
         } catch ( Throwable e ) {

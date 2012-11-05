@@ -4,6 +4,8 @@
 
   <CRS>urn:ogc:def:crs:OGC:1.3:CRS84</CRS>
 
+  <WellKnownScaleSet>urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Scale</WellKnownScaleSet>
+  
   <TileMatrix>
     <Identifier>500000000</Identifier>
     <ScaleDenominator>500000000</ScaleDenominator>

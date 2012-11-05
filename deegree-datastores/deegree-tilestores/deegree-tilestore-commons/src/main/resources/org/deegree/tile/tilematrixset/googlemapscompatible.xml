@@ -4,6 +4,8 @@
 
   <CRS>urn:ogc:def:crs:EPSG::3857</CRS>
 
+  <WellKnownScaleSet>urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible</WellKnownScaleSet>
+  
   <TileMatrix>
     <Identifier>0</Identifier>
     <ScaleDenominator>559082264.0287178</ScaleDenominator>

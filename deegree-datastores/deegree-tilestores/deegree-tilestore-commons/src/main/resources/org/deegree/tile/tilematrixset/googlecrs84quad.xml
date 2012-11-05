@@ -4,6 +4,8 @@
 
   <CRS>urn:ogc:def:crs:OGC:1.3:CRS84</CRS>
 
+  <WellKnownScaleSet>urn:ogc:def:wkss:OGC:1.0:GoogleCRS84Quad</WellKnownScaleSet>
+
   <TileMatrix>
     <Identifier>559082264.0287178</Identifier>
     <ScaleDenominator>559082264.0287178</ScaleDenominator>
