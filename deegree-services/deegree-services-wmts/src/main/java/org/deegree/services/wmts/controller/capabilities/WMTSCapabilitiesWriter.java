@@ -280,7 +280,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         for ( TileMatrix tm : tms.getTileMatrices() ) {
             writer.writeStartElement( WMTSNS, "TileMatrix" );
             double scale;
-            if ( cs.getUnits()[0].equals( Unit.DEGREE ) ) {
+            if ( cs.getUnits()[0].equals( Unit.DEGREE ) && wknScaleSet == null ) {
                 scale = MapUtils.calcScaleFromDegrees( tm.getResolution() );
             } else {
                 scale = tm.getResolution() / DEFAULT_PIXEL_SIZE;
