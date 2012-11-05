@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,10 +80,14 @@ class FileSystemTile implements Tile {
     @Override
     public BufferedImage getAsImage()
                             throws TileIOException {
+        InputStream in = null;
         try {
-            return ImageIO.read( getAsStream() );
+            in = getAsStream();
+            return ImageIO.read( in );
         } catch ( IOException e ) {
             throw new TileIOException( "Error decoding tile from file '" + file + "'" + e.getMessage(), e );
+        } finally {
+            closeQuietly( in );
         }
     }
 
