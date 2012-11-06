@@ -86,6 +86,7 @@ public class Legends {
      */
     public Legends( LegendOptions opts ) {
         this.opts = opts;
+        builder = new LegendBuilder( opts );
     }
 
     public LegendOptions getLegendOptions() {
