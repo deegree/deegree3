@@ -246,37 +246,42 @@ public class Dimension<T> {
             }
         }
         if ( o instanceof DimensionInterval<?, ?, ?> ) {
-            DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-            if ( time ) {
-                Date min = parseDateTime( (String) iv.min ).getDate();
-                Date max;
-                if ( ( (String) iv.max ).equalsIgnoreCase( "current" ) ) {
-                    max = new Date();
-                } else {
-                    max = parseDateTime( (String) iv.max ).getDate();
-                }
-                if ( iv.res instanceof Integer ) {
-                    return new DimensionInterval<Date, Date, Object>( min, max, null );
-                }
-                return new DimensionInterval<Date, Date, Duration>( min, max, parseDuration( (String) iv.res ) );
-            }
-            try {
-                Integer min = Integer.valueOf( (String) iv.min );
-                Integer max = Integer.valueOf( (String) iv.max );
-                Integer res = iv.res instanceof Integer ? (Integer) iv.res : Integer.valueOf( (String) iv.res );
-                return new DimensionInterval<Integer, Integer, Integer>( min, max, res );
-            } catch ( NumberFormatException e ) {
-                try {
-                    Double min = Double.valueOf( (String) iv.min );
-                    Double max = Double.valueOf( (String) iv.max );
-                    Double res = iv.res instanceof Integer ? (Integer) iv.res : Double.valueOf( (String) iv.res );
-                    return new DimensionInterval<Double, Double, Double>( min, max, res );
-                } catch ( NumberFormatException e2 ) {
-                    return iv;
-                }
-            }
+            return parseTypedInterval( o, time );
         }
         return o;
+    }
+
+    private static Object parseTypedInterval( Object o, boolean time )
+                            throws ParseException {
+        DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
+        if ( time ) {
+            Date min = parseDateTime( (String) iv.min ).getDate();
+            Date max;
+            if ( ( (String) iv.max ).equalsIgnoreCase( "current" ) ) {
+                max = new Date();
+            } else {
+                max = parseDateTime( (String) iv.max ).getDate();
+            }
+            if ( iv.res instanceof Integer ) {
+                return new DimensionInterval<Date, Date, Object>( min, max, null );
+            }
+            return new DimensionInterval<Date, Date, Duration>( min, max, parseDuration( (String) iv.res ) );
+        }
+        try {
+            Integer min = Integer.valueOf( (String) iv.min );
+            Integer max = Integer.valueOf( (String) iv.max );
+            Integer res = iv.res instanceof Integer ? (Integer) iv.res : Integer.valueOf( (String) iv.res );
+            return new DimensionInterval<Integer, Integer, Integer>( min, max, res );
+        } catch ( NumberFormatException e ) {
+            try {
+                Double min = Double.valueOf( (String) iv.min );
+                Double max = Double.valueOf( (String) iv.max );
+                Double res = iv.res instanceof Integer ? (Integer) iv.res : Double.valueOf( (String) iv.res );
+                return new DimensionInterval<Double, Double, Double>( min, max, res );
+            } catch ( NumberFormatException e2 ) {
+                return iv;
+            }
+        }
     }
 
     private static double getAsDouble( final Object o ) {
@@ -303,76 +308,83 @@ public class Dimension<T> {
      * @return the closest value
      */
     public Object getNearestValue( Object val ) {
-        double oval = getAsDouble( val );
-
-        double distance = Double.MAX_VALUE;
-        Object cur = val;
+        NearestValueStatus status = new NearestValueStatus( getAsDouble( val ), val );
 
         for ( Object o : extent ) {
             if ( o instanceof DimensionInterval<?, ?, ?> ) {
                 DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-                double min = getAsDouble( iv.min );
-                double max = getAsDouble( iv.max );
-                double res = getAsDouble( iv.res );
-                if ( oval < min ) {
-                    double dist = abs( oval - min );
-                    if ( dist < distance ) {
-                        cur = iv.min;
-                        distance = dist;
-                    }
-                } else if ( oval > max ) {
-                    double dist = abs( max - oval );
-                    if ( dist < distance ) {
-                        cur = iv.max;
-                        distance = dist;
-                    }
-                }
-                if ( res == 0 ) {
-                    if ( min <= oval && oval <= max ) {
-                        return val;
-                    }
-                } else {
-                    if ( min <= oval && oval <= max ) {
-                        // TODO think about a better way
-                        if ( res <= 0 ) {
-                            res = 1;
-                        }
-                        while ( min <= max ) {
-                            double dist = abs( oval - min );
-                            if ( dist < distance ) {
-                                cur = min;
-                                distance = dist;
-                            }
-                            min += res;
-                        }
-                    }
+                if ( !getNearestValueFromInterval( status, iv ) ) {
+                    return val;
                 }
             } else {
                 double next = getAsDouble( o );
-                double dist = abs( next - oval );
-                if ( dist < distance ) {
-                    cur = o;
-                    distance = dist;
+                double dist = abs( next - status.oval );
+                if ( dist < status.distance ) {
+                    status.cur = o;
+                    status.distance = dist;
                 }
             }
         }
 
-        if ( val instanceof Date && !( cur instanceof Date ) ) {
-            return new Date( (long) getAsDouble( cur ) );
+        if ( val instanceof Date && !( status.cur instanceof Date ) ) {
+            return new Date( (long) getAsDouble( status.cur ) );
         }
 
-        return cur;
+        return status.cur;
     }
 
-    private final static boolean hits( final DimensionInterval<?, ?, ?> iv, final Object o ) {
+    private static boolean getNearestValueFromInterval( NearestValueStatus status, DimensionInterval<?, ?, ?> iv ) {
+        double min = getAsDouble( iv.min );
+        double max = getAsDouble( iv.max );
+        double res = getAsDouble( iv.res );
+        if ( status.oval < min ) {
+            double dist = abs( status.oval - min );
+            if ( dist < status.distance ) {
+                status.cur = iv.min;
+                status.distance = dist;
+            }
+        } else if ( status.oval > max ) {
+            double dist = abs( max - status.oval );
+            if ( dist < status.distance ) {
+                status.cur = iv.max;
+                status.distance = dist;
+            }
+        }
+        if ( res == 0 ) {
+            if ( min <= status.oval && status.oval <= max ) {
+                return false;
+            }
+        } else {
+            getNearestValueFromIntervalWithRes( status, min, max, res );
+        }
+        return true;
+    }
+
+    private static void getNearestValueFromIntervalWithRes( NearestValueStatus status, double min, double max,
+                                                            double res ) {
+        if ( min <= status.oval && status.oval <= max ) {
+            // TODO think about a better way
+            if ( res <= 0 ) {
+                res = 1;
+            }
+            while ( min <= max ) {
+                double dist = abs( status.oval - min );
+                if ( dist < status.distance ) {
+                    status.cur = min;
+                    status.distance = dist;
+                }
+                min += res;
+            }
+        }
+    }
+
+    private static boolean hits( final DimensionInterval<?, ?, ?> iv, final Object o ) {
         double min = getAsDouble( iv.min );
         final double max = getAsDouble( iv.max );
         final double val = getAsDouble( o );
 
-        if ( iv.res instanceof Integer && ( (Integer) iv.res ) == 0 ) {
-            if ( min <= val && val <= max ) {
-                return true;
-            }
+        if ( isInIntervalNoResolution( iv, min, max, val ) ) {
+            return true;
         }
 
         final double res = getAsDouble( iv.res );
@@ -391,6 +403,15 @@ public class Dimension<T> {
         return false;
     }
 
+    private static boolean isInIntervalNoResolution( DimensionInterval<?, ?, ?> iv, double min, double max, double val ) {
+        if ( iv.res instanceof Integer && ( (Integer) iv.res ) == 0 ) {
+            if ( min <= val && val <= max ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @param val
      * @return true, if the value hits values defined in the extent
@@ -398,34 +419,7 @@ public class Dimension<T> {
     public boolean isValid( Object val ) {
         if ( val instanceof DimensionInterval<?, ?, ?> ) {
             DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) val;
-            for ( Object o : extent ) {
-                if ( o instanceof DimensionInterval<?, ?, ?> ) {
-                    DimensionInterval<?, ?, ?> newIv = (DimensionInterval<?, ?, ?>) o;
-
-                    double min = getAsDouble( newIv.min );
-                    final double max = getAsDouble( newIv.max );
-                    double res = getAsDouble( newIv.res );
-                    if ( res <= 0 ) {
-                        // TODO think about a better way
-                        res = 1;
-                    }
-
-                    while ( min < max ) {
-                        if ( hits( iv, min ) ) {
-                            return true;
-                        }
-                        min += res;
-                    }
-
-                    if ( hits( iv, newIv.min ) ) {
-                        return true;
-                    }
-                } else {
-                    if ( hits( iv, o ) ) {
-                        return true;
-                    }
-                }
-            }
+            return isValidInInterval( iv );
         } else {
             for ( Object o : extent ) {
                 if ( o.equals( val ) ) {
@@ -440,6 +434,49 @@ public class Dimension<T> {
         }
 
         return false;
+    }
+
+    private boolean isValidInInterval( DimensionInterval<?, ?, ?> iv ) {
+        for ( Object o : extent ) {
+            if ( o instanceof DimensionInterval<?, ?, ?> ) {
+                DimensionInterval<?, ?, ?> newIv = (DimensionInterval<?, ?, ?>) o;
+
+                double min = getAsDouble( newIv.min );
+                final double max = getAsDouble( newIv.max );
+                double res = getAsDouble( newIv.res );
+                if ( res <= 0 ) {
+                    // TODO think about a better way
+                    res = 1;
+                }
+
+                while ( min < max ) {
+                    if ( hits( iv, min ) ) {
+                        return true;
+                    }
+                    min += res;
+                }
+
+                if ( hits( iv, newIv.min ) ) {
+                    return true;
+                }
+            } else {
+                if ( hits( iv, o ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    static class NearestValueStatus {
+        double oval, distance = Double.MAX_VALUE;
+
+        Object cur;
+
+        NearestValueStatus( double oval, Object cur ) {
+            this.oval = oval;
+            this.cur = cur;
+        }
     }
 
 }
