@@ -62,10 +62,10 @@ public class ReversePathIterator implements PathIterator {
     private final int windingRule;
 
     /** The reversed coordinates. */
-    private final double[] coordinates;
+    private double[] coordinates;
 
     /** The reversed segment types. */
-    private final int[] segmentTypes;
+    private int[] segmentTypes;
 
     /** The index into the coordinates during iteration. */
     private int coordIndex = 0;
@@ -219,25 +219,7 @@ public class ReversePathIterator implements PathIterator {
                 }
                 first = false;
             }
-            int copy;
-            switch ( segType ) {
-            case SEG_MOVETO:
-            case SEG_LINETO:
-                copy = 2;
-                break;
-
-            case SEG_QUADTO:
-                copy = 4;
-                break;
-
-            case SEG_CUBICTO:
-                copy = 6;
-                break;
-
-            default:
-                copy = 0;
-                break;
-            }
+            int copy = determineCopyNum( segType );
             if ( copy > 0 ) {
                 if ( coordPos + copy > coords.length ) {
                     // resize
@@ -253,14 +235,42 @@ public class ReversePathIterator implements PathIterator {
         }
 
         // === reverse everything ===
-        // --- reverse coordinates ---
+        reverseCoordinates( coordPos, coords );
+        reverseSegmentTypes( segPos, segPos, segTypes );
+    }
+
+    private int determineCopyNum( int segType ) {
+        int copy;
+        switch ( segType ) {
+        case SEG_MOVETO:
+        case SEG_LINETO:
+            copy = 2;
+            break;
+
+        case SEG_QUADTO:
+            copy = 4;
+            break;
+
+        case SEG_CUBICTO:
+            copy = 6;
+            break;
+
+        default:
+            copy = 0;
+            break;
+        }
+        return copy;
+    }
+
+    private void reverseCoordinates( int coordPos, double[] coords ) {
         coordinates = new double[coordPos];
         for ( int p = coordPos / 2 - 1; p >= 0; --p ) {
             coordinates[2 * p] = coords[coordPos - 2 * p - 2];
             coordinates[2 * p + 1] = coords[coordPos - 2 * p - 1];
         }
+    }
 
-        // --- reverse segment types ---
+    private void reverseSegmentTypes( int segPos, int segPos2, int[] segTypes ) {
         segmentTypes = new int[segPos];
         if ( segPos > 0 ) {
             boolean pendingClose = false;
@@ -310,7 +320,7 @@ public class ReversePathIterator implements PathIterator {
      *            segment type
      * @return coordinates needed
      */
-    private static final int coordinatesForSegmentType( int segtype ) {
+    private static int coordinatesForSegmentType( int segtype ) {
         switch ( segtype ) {
         case SEG_MOVETO:
         case SEG_LINETO:

@@ -143,6 +143,149 @@ public class OffsetStroke implements Stroke {
         double firstx = list.peek().second[0], firsty = list.peek().second[1];
 
         // calc normals
+        double[] last = calculateNormals( normals, firstx, firsty, list );
+
+        // calc new path
+        // ATTENTION: at least for cubic to this does not work! VM crash...
+        double[] firstNormal = normals.peek();
+        if ( last == null ) {
+            last = normals.peekLast();
+        }
+
+        boolean firstMove = true;
+
+        Path2D.Double path = new Path2D.Double();
+        for ( Pair<Integer, double[]> pair : list ) {
+            switch ( pair.first ) {
+            case SEG_CLOSE:
+                handleClose( last, firstNormal, firstx, firsty, path );
+                break;
+            case SEG_CUBICTO:
+                double[] n1 = normals.poll();
+                double[] n2 = normals.poll();
+                double[] n3 = normals.poll();
+                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+                n2 = calcIntersection( pair.second[2], pair.second[3], n2, n3 );
+                n3 = calcIntersection( pair.second[4], pair.second[5], n3, normals.peek() );
+                path.curveTo( n1[0], n1[1], n2[0], n2[1], n3[0], n3[1] );
+                break;
+            case SEG_LINETO:
+                handleLineTo( normals, pair, firstMove, path );
+                continue;
+            case SEG_MOVETO:
+                n1 = normals.peek();
+                firstMove = false;
+                path.moveTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset );
+                break;
+            case SEG_QUADTO:
+                n1 = normals.poll();
+                n2 = normals.poll();
+                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+                n2 = calcIntersection( pair.second[2], pair.second[3], n2, normals.peek() );
+                path.quadTo( n1[0], n1[1], n2[0], n2[1] );
+                break;
+            }
+        }
+
+        Shape res = stroke == null ? path : stroke.createStrokedShape( path );
+
+        res = handleSubstraction( res, p );
+
+        return res;
+    }
+
+    private Shape handleSubstraction( Shape res, Shape p ) {
+        switch ( type.substraction ) {
+        case None:
+            break;
+        case NegativeOffset:
+            Shape substractMe = new OffsetStroke( -offset, null, null ).createStrokedShape( p );
+            substractMe = stroke == null ? substractMe : stroke.createStrokedShape( substractMe );
+            Area a = new Area( res );
+            a.subtract( new Area( substractMe ) );
+            res = a;
+            break;
+        }
+        return res;
+    }
+
+    private void handleLineTo( LinkedList<double[]> normals, Pair<Integer, double[]> pair, boolean firstMove,
+                               java.awt.geom.Path2D.Double path ) {
+        double[] n1 = normals.poll();
+        double[] n2 = normals.peek();
+        if ( n1 == n2 ) {
+            return;
+        }
+        switch ( type.type ) {
+        case Edged:
+            if ( n2 == null ) {
+                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+                maybeLineTo( path, n1[0], n1[1] );
+                return;
+            }
+            double[] n = new double[] { n1[0] + n2[0], n1[1] + n2[1] };
+            double len = sqrt( n[0] * n[0] + n[1] * n[1] );
+            n[0] /= len;
+            n[1] /= len;
+            n1 = calcIntersection( pair.second[0], pair.second[1], n1, n );
+            maybeLineTo( path, n1[0], n1[1] );
+            n1 = calcIntersection( pair.second[0], pair.second[1], n, n2 );
+            maybeLineTo( path, n1[0], n1[1] );
+            return;
+        case Round:
+            double[] p1 = new double[] { pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset };
+            maybeLineTo( path, p1[0], p1[1] );
+            if ( n2 == null ) {
+                return;
+            }
+            double[] p2 = new double[] { pair.second[0] + n2[0] * offset, pair.second[1] + n2[1] * offset };
+            double[] midp = new double[] { p1[0] + n2[0] * offset, p1[1] + n2[1] * offset };
+            path.quadTo( midp[0], midp[1], p2[0], p2[1] );
+            return;
+        case Standard:
+            n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+            if ( firstMove ) {
+                path.moveTo( n1[0], n1[1] );
+                firstMove = false;
+            } else {
+                maybeLineTo( path, n1[0], n1[1] );
+            }
+            return;
+        }
+    }
+
+    private void handleClose( double[] last, double[] firstNormal, double firstx, double firsty,
+                              java.awt.geom.Path2D.Double path ) {
+        switch ( type.type ) {
+        case Edged:
+            double[] n = new double[] { last[0] + firstNormal[0], last[1] + firstNormal[1] };
+            double len = sqrt( n[0] * n[0] + n[1] * n[1] );
+            n[0] /= len;
+            n[1] /= len;
+            double[] n1 = calcIntersection( firstx, firsty, last, n );
+            maybeLineTo( path, n1[0], n1[1] );
+            n1 = calcIntersection( firstx, firsty, n, firstNormal );
+            maybeLineTo( path, n1[0], n1[1] );
+            path.closePath();
+            break;
+        case Round:
+            double[] p1 = new double[] { firstx + last[0] * offset, firsty + last[1] * offset };
+            maybeLineTo( path, p1[0], p1[1] );
+            double[] p2 = new double[] { firstx + firstNormal[0] * offset, firsty + firstNormal[1] * offset };
+            double[] midp = new double[] { p1[0] + firstNormal[0] * offset, p1[1] + firstNormal[1] * offset };
+            path.quadTo( midp[0], midp[1], p2[0], p2[1] );
+            path.closePath();
+            break;
+        case Standard:
+            double[] pt = calcIntersection( firstx, firsty, last, firstNormal );
+            maybeLineTo( path, pt[0], pt[1] );
+            path.closePath();
+            break;
+        }
+    }
+
+    private double[] calculateNormals( LinkedList<double[]> normals, double firstx, double firsty,
+                                       LinkedList<Pair<Integer, double[]>> list ) {
         double lastx = 0, lasty = 0;
 
         double[] last = null;
@@ -178,129 +321,7 @@ public class OffsetStroke implements Stroke {
         }
 
         clearNulls( normals );
-
-        // calc new path
-        // ATTENTION: at least for cubic to this does not work! VM crash...
-        double[] firstNormal = normals.peek();
-        if ( last == null ) {
-            last = normals.peekLast();
-        }
-
-        boolean firstMove = true;
-
-        Path2D.Double path = new Path2D.Double();
-        for ( Pair<Integer, double[]> pair : list ) {
-            switch ( pair.first ) {
-            case SEG_CLOSE:
-                switch ( type.type ) {
-                case Edged:
-                    double[] n = new double[] { last[0] + firstNormal[0], last[1] + firstNormal[1] };
-                    double len = sqrt( n[0] * n[0] + n[1] * n[1] );
-                    n[0] /= len;
-                    n[1] /= len;
-                    double[] n1 = calcIntersection( firstx, firsty, last, n );
-                    maybeLineTo( path, n1[0], n1[1] );
-                    n1 = calcIntersection( firstx, firsty, n, firstNormal );
-                    maybeLineTo( path, n1[0], n1[1] );
-                    path.closePath();
-                    break;
-                case Round:
-                    double[] p1 = new double[] { firstx + last[0] * offset, firsty + last[1] * offset };
-                    maybeLineTo( path, p1[0], p1[1] );
-                    double[] p2 = new double[] { firstx + firstNormal[0] * offset, firsty + firstNormal[1] * offset };
-                    double[] midp = new double[] { p1[0] + firstNormal[0] * offset, p1[1] + firstNormal[1] * offset };
-                    path.quadTo( midp[0], midp[1], p2[0], p2[1] );
-                    path.closePath();
-                    break;
-                case Standard:
-                    double[] pt = calcIntersection( firstx, firsty, last, firstNormal );
-                    maybeLineTo( path, pt[0], pt[1] );
-                    path.closePath();
-                    break;
-                }
-                break;
-            case SEG_CUBICTO:
-                double[] n1 = normals.poll();
-                double[] n2 = normals.poll();
-                double[] n3 = normals.poll();
-                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
-                n2 = calcIntersection( pair.second[2], pair.second[3], n2, n3 );
-                n3 = calcIntersection( pair.second[4], pair.second[5], n3, normals.peek() );
-                path.curveTo( n1[0], n1[1], n2[0], n2[1], n3[0], n3[1] );
-                break;
-            case SEG_LINETO:
-                n1 = normals.poll();
-                n2 = normals.peek();
-                if ( n1 == n2 ) {
-                    continue;
-                }
-                switch ( type.type ) {
-                case Edged:
-                    if ( n2 == null ) {
-                        n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
-                        maybeLineTo( path, n1[0], n1[1] );
-                        continue;
-                    }
-                    double[] n = new double[] { n1[0] + n2[0], n1[1] + n2[1] };
-                    double len = sqrt( n[0] * n[0] + n[1] * n[1] );
-                    n[0] /= len;
-                    n[1] /= len;
-                    n1 = calcIntersection( pair.second[0], pair.second[1], n1, n );
-                    maybeLineTo( path, n1[0], n1[1] );
-                    n1 = calcIntersection( pair.second[0], pair.second[1], n, n2 );
-                    maybeLineTo( path, n1[0], n1[1] );
-                    continue;
-                case Round:
-                    double[] p1 = new double[] { pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset };
-                    maybeLineTo( path, p1[0], p1[1] );
-                    if ( n2 == null ) {
-                        continue;
-                    }
-                    double[] p2 = new double[] { pair.second[0] + n2[0] * offset, pair.second[1] + n2[1] * offset };
-                    double[] midp = new double[] { p1[0] + n2[0] * offset, p1[1] + n2[1] * offset };
-                    path.quadTo( midp[0], midp[1], p2[0], p2[1] );
-                    continue;
-                case Standard:
-                    n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
-                    if ( firstMove ) {
-                        path.moveTo( n1[0], n1[1] );
-                        firstMove = false;
-                    } else {
-                        maybeLineTo( path, n1[0], n1[1] );
-                    }
-                    continue;
-                }
-                continue;
-            case SEG_MOVETO:
-                n1 = normals.peek();
-                firstMove = false;
-                path.moveTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset );
-                break;
-            case SEG_QUADTO:
-                n1 = normals.poll();
-                n2 = normals.poll();
-                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
-                n2 = calcIntersection( pair.second[2], pair.second[3], n2, normals.peek() );
-                path.quadTo( n1[0], n1[1], n2[0], n2[1] );
-                break;
-            }
-        }
-
-        Shape res = stroke == null ? path : stroke.createStrokedShape( path );
-
-        switch ( type.substraction ) {
-        case None:
-            break;
-        case NegativeOffset:
-            Shape substractMe = new OffsetStroke( -offset, null, null ).createStrokedShape( p );
-            substractMe = stroke == null ? substractMe : stroke.createStrokedShape( substractMe );
-            Area a = new Area( res );
-            a.subtract( new Area( substractMe ) );
-            res = a;
-            break;
-        }
-
-        return res;
+        return last;
     }
 
     private static void maybeLineTo( Path2D path, double x, double y ) {
