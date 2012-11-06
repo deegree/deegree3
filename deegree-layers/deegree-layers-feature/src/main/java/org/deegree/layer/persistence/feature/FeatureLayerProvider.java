@@ -40,70 +40,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static java.util.Collections.singleton;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
-import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
-import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
-import static org.deegree.layer.config.ConfigUtils.parseDimensions;
-import static org.deegree.layer.config.ConfigUtils.parseStyles;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.ows.metadata.Description;
-import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.utils.DoublePair;
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XPathUtils;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.xml.Filter110XMLDecoder;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.layer.Layer;
-import org.deegree.layer.config.ConfigUtils;
-import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
-import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
-import org.deegree.layer.persistence.feature.jaxb.FeatureLayerType;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayers;
-import org.deegree.layer.persistence.feature.jaxb.FeatureLayers.AutoLayers;
-import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreManager;
-import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -126,67 +76,6 @@ public class FeatureLayerProvider implements LayerStoreProvider {
         this.workspace = workspace;
     }
 
-    private MultipleLayerStore createInAutoMode( AutoLayers auto )
-                            throws ResourceInitException {
-        LOG.debug( "Creating feature layers for all feature types automatically." );
-
-        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        String id = auto.getFeatureStoreId();
-        FeatureStore store = mgr.get( id );
-        if ( store == null ) {
-            throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
-                                             + " is not available." );
-        }
-        StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
-        id = auto.getStyleStoreId();
-        StyleStore sstore = smgr.get( id );
-        if ( id != null && sstore == null ) {
-            throw new ResourceInitException( "Feature layer config was invalid, style store with id " + id
-                                             + " is not available." );
-        }
-
-        for ( FeatureType ft : store.getSchema().getFeatureTypes() ) {
-            String name = ft.getName().getLocalPart();
-            LOG.debug( "Adding layer {}.", name );
-            List<ICRS> crs = new ArrayList<ICRS>();
-            Envelope envelope = null;
-            try {
-                envelope = store.getEnvelope( ft.getName() );
-            } catch ( Throwable e ) {
-                LOG.debug( "Could not get envelope from feature store: {}", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-            if ( envelope != null ) {
-                crs.add( envelope.getCoordinateSystem() );
-            }
-            SpatialMetadata smd = new SpatialMetadata( envelope, crs );
-            Description desc = new Description( name, Collections.singletonList( new LanguageString( name, null ) ),
-                                                null, null );
-            LayerMetadata md = new LayerMetadata( name, desc, smd );
-            md.getFeatureTypes().add( ft );
-            Map<String, Style> styles = new LinkedHashMap<String, Style>();
-            if ( sstore != null && sstore.getAll( name ) != null ) {
-                for ( Style s : sstore.getAll( name ) ) {
-                    LOG.debug( "Adding style with name {}.", s.getName() );
-                    styles.put( s.getName(), s );
-                    if ( !styles.containsKey( "default" ) ) {
-                        styles.put( "default", s );
-                    }
-                }
-            }
-            if ( !styles.containsKey( "default" ) ) {
-                LOG.debug( "No styles found, using gray default style." );
-                styles.put( "default", new Style() );
-            }
-            md.setStyles( styles );
-            Layer l = new FeatureLayer( md, store, ft.getName(), null, null, null );
-            map.put( name, l );
-        }
-
-        return new MultipleLayerStore( map );
-    }
-
     @Override
     public MultipleLayerStore create( URL configUrl )
                             throws ResourceInitException {
@@ -195,7 +84,8 @@ public class FeatureLayerProvider implements LayerStoreProvider {
             FeatureLayers lays = (FeatureLayers) unmarshall( pkg, SCHEMA_URL, configUrl, workspace );
 
             if ( lays.getAutoLayers() != null ) {
-                return createInAutoMode( lays.getAutoLayers() );
+                AutoFeatureLayerBuilder builder = new AutoFeatureLayerBuilder( workspace );
+                return builder.createInAutoMode( lays.getAutoLayers() );
             }
 
             LOG.debug( "Creating configured feature layers only." );
@@ -208,129 +98,11 @@ public class FeatureLayerProvider implements LayerStoreProvider {
                                                  + " is not available." );
             }
 
-            Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-            for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
-                QName featureType = lay.getFeatureType();
-
-                // these methods do not use the dom elements but reparse the configuration file using StAX due to bugs
-                // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
-                OperatorFilter filter = parseFilter( configUrl );
-                List<SortProperty> sortBy = parseSortBy( configUrl );
-                List<SortProperty> sortByFeatureInfo = sortBy;
-                if ( sortBy != null && lay.getSortBy().isReverseFeatureInfo() ) {
-                    sortByFeatureInfo = new ArrayList<SortProperty>();
-                    for ( SortProperty prop : sortBy ) {
-                        sortByFeatureInfo.add( new SortProperty( prop.getSortProperty(), !prop.getSortOrder() ) );
-                    }
-                }
-
-                SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
-                Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
-                LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
-                md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
-                md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
-                md.setMetadataId( lay.getMetadataSetId() );
-                if ( featureType != null ) {
-                    md.getFeatureTypes().add( store.getSchema().getFeatureType( featureType ) );
-                } else {
-                    md.getFeatureTypes().addAll( Arrays.asList( store.getSchema().getFeatureTypes() ) );
-                }
-
-                if ( smd.getEnvelope() == null ) {
-                    if ( featureType != null ) {
-                        smd.setEnvelope( store.getEnvelope( featureType ) );
-                    } else {
-                        smd.setEnvelope( getCombinedEnvelope( store ) );
-                    }
-                }
-                if ( smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty() ) {
-                    List<ICRS> crs = new ArrayList<ICRS>();
-                    crs.add( smd.getEnvelope().getCoordinateSystem() );
-                    smd.setCoordinateSystems( crs );
-                }
-
-                ScaleDenominatorsType denoms = lay.getScaleDenominators();
-                if ( denoms != null ) {
-                    md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
-                }
-
-                Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(),
-                                                                              lay.getStyleRef() );
-                md.setStyles( p.first );
-                md.setLegendStyles( p.second );
-                Layer l = new FeatureLayer( md, store, featureType, filter, sortBy, sortByFeatureInfo );
-                map.put( lay.getName(), l );
-            }
-            return new MultipleLayerStore( map );
+            ManualFeatureLayerBuilder builder = new ManualFeatureLayerBuilder( lays, configUrl, store, workspace );
+            return builder.buildFeatureLayers();
         } catch ( Throwable e ) {
             throw new ResourceInitException( "Could not parse layer configuration file.", e );
         }
-    }
-
-    private static OperatorFilter parseFilter( URL configUrl )
-                            throws FactoryConfigurationError, XMLStreamException, URISyntaxException {
-
-        File file = new File( configUrl.toURI() );
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
-
-        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "Filter" ) ) ) {
-            return null;
-        }
-
-        OperatorFilter filter = null;
-        filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
-        reader.close();
-        return filter;
-    }
-
-    private static List<SortProperty> parseSortBy( URL configUrl )
-                            throws FactoryConfigurationError, XMLStreamException, URISyntaxException {
-
-        File file = new File( configUrl.toURI() );
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
-
-        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "SortBy" ) ) ) {
-            return null;
-        }
-
-        // ogc:SortBy
-        requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
-
-        nextElement( reader );
-        List<SortProperty> sortCrits = new ArrayList<SortProperty>();
-        while ( reader.isStartElement() ) {
-            SortProperty prop = parseSortProperty( reader );
-            sortCrits.add( prop );
-            nextElement( reader );
-        }
-        reader.close();
-        return sortCrits;
-    }
-
-    private static SortProperty parseSortProperty( XMLStreamReader reader )
-                            throws NoSuchElementException, XMLStreamException {
-
-        requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
-        nextElement( reader );
-
-        requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
-
-        String xpath = reader.getElementText().trim();
-        Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
-        NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
-        ValueReference propName = new ValueReference( xpath, nsContext );
-        nextElement( reader );
-
-        boolean sortAscending = true;
-        if ( reader.isStartElement() ) {
-            requireStartElement( reader, singleton( new QName( OGCNS, "SortOrder" ) ) );
-            String s = reader.getElementText().trim();
-            sortAscending = "ASC".equals( s );
-            nextElement( reader );
-        }
-
-        reader.require( END_ELEMENT, OGCNS, "SortProperty" );
-        return new SortProperty( propName, sortAscending );
     }
 
     @SuppressWarnings("unchecked")

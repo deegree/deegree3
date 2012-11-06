@@ -40,58 +40,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
-import static org.deegree.commons.utils.CollectionUtils.clearNulls;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
+import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
 import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.tom.datetime.TimeInstant;
-import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.AppSchemas;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.Expression;
-import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
-import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.PropertyIsBetween;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.logical.And;
-import org.deegree.filter.logical.Or;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.spatial.BBOX;
-import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerQuery;
-import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
@@ -116,6 +87,8 @@ public class FeatureLayer extends AbstractLayer {
 
     SortProperty[] sortBy, sortByFeatureInfo;
 
+    private DimensionFilterBuilder dimFilterBuilder;
+
     public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
                          List<SortProperty> sortBy, List<SortProperty> sortByFeatureInfo ) {
         super( md );
@@ -128,6 +101,7 @@ public class FeatureLayer extends AbstractLayer {
         if ( sortByFeatureInfo != null ) {
             this.sortByFeatureInfo = sortByFeatureInfo.toArray( new SortProperty[sortByFeatureInfo.size()] );
         }
+        dimFilterBuilder = new DimensionFilterBuilder( md.getDimensions() );
     }
 
     @Override
@@ -144,11 +118,7 @@ public class FeatureLayer extends AbstractLayer {
                                     + getMetadata().getName() + ".", "StyleNotDefined", "styles" );
         }
 
-        OperatorFilter filter = this.filter;
-        style = style.filter( query.getScale() );
-        filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
-        filter = Filters.and( filter, query.getFilter() );
-        filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
+        OperatorFilter filter = buildFilterForMap( this.filter, style, query, dimFilterBuilder, headers );
 
         final Envelope bbox = query.getQueryBox();
 
@@ -170,45 +140,26 @@ public class FeatureLayer extends AbstractLayer {
 
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), ftName ) );
 
-        List<Query> queries = new LinkedList<Query>();
-        Integer maxFeats = query.getRenderingOptions().getMaxFeatures( getMetadata().getName() );
-        final int maxFeatures = maxFeats == null ? -1 : maxFeats;
-        if ( ftName == null && featureStore != null ) {
-            final Filter filter2 = filter;
-            queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
-                                 new Mapper<Query, FeatureType>() {
-                                     @Override
-                                     public Query apply( FeatureType u ) {
-                                         Filter fil = Filters.addBBoxConstraint( bbox, filter2, geomProp );
-                                         return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
-                                                             query.getResolution(), sortBy );
-                                     }
-                                 } ) );
-        } else {
-            Query fquery = createQuery( ftName, Filters.addBBoxConstraint( bbox, filter, geomProp ),
-                                        round( query.getScale() ), maxFeatures, query.getResolution(), sortBy );
-            queries.add( fquery );
-        }
+        QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
+                                                 getMetadata().getName() );
+        List<Query> queries = builder.buildMapQueries();
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );
             return null;
         }
 
-        return new FeatureLayerData( queries, featureStore, maxFeatures, style, ftName );
-    }
+        Integer maxFeats = query.getRenderingOptions().getMaxFeatures( getMetadata().getName() );
+        final int maxFeatures = maxFeats == null ? -1 : maxFeats;
 
-    static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
-                              SortProperty[] sort ) {
-        TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
-        return new Query( typeNames, filter, sort, scale, maxFeatures, resolution );
+        return new FeatureLayerData( queries, featureStore, maxFeatures, style, ftName );
     }
 
     @Override
     public FeatureLayerData infoQuery( final LayerQuery query, List<String> headers )
                             throws OWSException {
         OperatorFilter filter = this.filter;
-        filter = Filters.and( filter, getDimensionFilter( query.getDimensions(), headers ) );
+        filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
         StyleRef ref = query.getStyle();
         if ( !ref.isResolved() ) {
             ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
@@ -228,247 +179,13 @@ public class FeatureLayer extends AbstractLayer {
 
         LOG.debug( "Querying the feature store(s)..." );
 
-        final Filter filter2 = filter;
-        List<Query> queries = new ArrayList<Query>();
-        if ( featureType == null ) {
-            queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
-                                 new Mapper<Query, FeatureType>() {
-                                     @Override
-                                     public Query apply( FeatureType u ) {
-                                         Filter f;
-                                         if ( filter2 == null ) {
-                                             f = buildFilter( null, u, clickBox );
-                                         } else {
-                                             f = buildFilter( ( (OperatorFilter) filter2 ).getOperator(), u, clickBox );
-                                         }
-                                         return createQuery( u.getName(), f, -1, query.getFeatureCount(), -1,
-                                                             sortByFeatureInfo );
-                                     }
-                                 } ) );
-            clearNulls( queries );
-        } else {
-            Filter f;
-            if ( filter2 == null ) {
-                f = buildFilter( null, featureStore.getSchema().getFeatureType( featureType ), clickBox );
-            } else {
-                f = buildFilter( ( (OperatorFilter) filter2 ).getOperator(),
-                                 featureStore.getSchema().getFeatureType( featureType ), clickBox );
-            }
-            queries.add( createQuery( featureType, f, -1, query.getFeatureCount(), -1, sortByFeatureInfo ) );
-        }
+        QueryBuilder builder = new QueryBuilder( featureStore, filter, featureType, clickBox, query, null,
+                                                 sortByFeatureInfo, getMetadata().getName() );
+        List<Query> queries = builder.buildInfoQueries();
 
         LOG.debug( "Finished querying the feature store(s)." );
 
         return new FeatureLayerData( queries, featureStore, query.getFeatureCount(), style, featureType );
     }
 
-    static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {
-        if ( ft == null ) {
-            if ( operator == null ) {
-                return null;
-            }
-            return new OperatorFilter( operator );
-        }
-        LinkedList<Operator> list = new LinkedList<Operator>();
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType
-                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
-                list.add( new Intersects( new ValueReference( pt.getName() ), clickBox ) );
-            }
-        }
-        if ( list.size() > 1 ) {
-            Or or = new Or( list.toArray( new Operator[list.size()] ) );
-            if ( operator == null ) {
-                return new OperatorFilter( or );
-            }
-            return new OperatorFilter( new And( operator, or ) );
-        }
-        if ( list.isEmpty() ) {
-            // obnoxious case where feature has no geometry properties (but features may have extra geometry props)
-            if ( operator == null ) {
-                return new OperatorFilter( new Intersects( null, clickBox ) );
-            }
-            return new OperatorFilter( new And( operator, new Intersects( null, clickBox ) ) );
-        }
-        if ( operator == null ) {
-            return new OperatorFilter( list.get( 0 ) );
-        }
-        return new OperatorFilter( new And( operator, list.get( 0 ) ) );
-    }
-
-    /**
-     * @param dims
-     * @return a filter or null, if no dimensions have been requested
-     * @throws OWSException
-     * @throws MissingDimensionValue
-     * @throws InvalidDimensionValue
-     */
-    private OperatorFilter getDimensionFilter( Map<String, List<?>> dims, List<String> headers )
-                            throws OWSException {
-        LinkedList<Operator> ops = new LinkedList<Operator>();
-
-        Dimension<?> time = getMetadata().getDimensions().get( "time" );
-
-        if ( time != null ) {
-            final ValueReference property = new ValueReference( time.getPropertyName() );
-
-            List<?> vals = dims.get( "time" );
-
-            if ( vals == null ) {
-                vals = time.getDefaultValue();
-                if ( vals == null ) {
-                    throw new OWSException( "The TIME parameter was missing.", "MissingDimensionValue", "time" );
-                }
-                String defVal = formatDimensionValueList( vals, true );
-
-                headers.add( "99 Default value used: time=" + defVal + " ISO8601" );
-            }
-
-            Operator[] os = new Operator[vals.size()];
-            int i = 0;
-            for ( Object o : vals ) {
-                if ( !time.getNearestValue() && !time.isValid( o ) ) {
-                    String msg = "The value " + ( o instanceof Date ? formatDateTime( (Date) o ) : o.toString() )
-                                 + " for dimension TIME was invalid.";
-                    throw new OWSException( msg, "InvalidDimensionValue", "time" );
-                }
-                Date theVal = null;
-                if ( o instanceof DimensionInterval<?, ?, ?> ) {
-                    DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-                    final String min = formatDateTime( (Date) iv.min );
-                    final String max = formatDateTime( (Date) iv.max );
-                    os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
-                                                     new Literal<PrimitiveValue>( max ), true, null );
-                } else if ( o.toString().equalsIgnoreCase( "current" ) ) {
-                    if ( !time.getCurrent() ) {
-                        String msg = "The value 'current' for TIME was invalid.";
-                        throw new OWSException( msg, "InvalidDimensionValue", "time" );
-                    }
-                    theVal = new Date( currentTimeMillis() );
-                } else if ( o instanceof Date ) {
-                    theVal = (Date) o;
-                } else if ( o instanceof TimeInstant ) {
-                    theVal = ( (TimeInstant) o ).getDate();
-                } else {
-                    throw new RuntimeException( "Unexpected dimension value class: " + o.getClass() );
-                }
-                if ( theVal != null ) {
-                    if ( time.getNearestValue() ) {
-                        Object nearest = time.getNearestValue( theVal );
-                        if ( !nearest.equals( theVal ) ) {
-                            theVal = (Date) nearest;
-                            headers.add( "99 Nearest value used: time=" + formatDateTime( theVal ) + " "
-                                         + time.getUnits() );
-                        }
-                    }
-                    Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>( formatDateTime( theVal ) );
-                    os[i++] = new PropertyIsEqualTo( property, lit, true, null );
-                }
-            }
-            if ( os.length > 1 ) {
-                if ( !time.getMultipleValues() ) {
-                    String msg = "Multiple values are not allowed for TIME.";
-                    throw new OWSException( msg, "InvalidDimensionValue", "time" );
-                }
-                try {
-                    ops.add( new Or( os ) );
-                } catch ( Throwable e ) {
-                    // will not happen, look at the if condition
-                }
-            } else {
-                ops.add( os[0] );
-            }
-        }
-
-        for ( String name : getMetadata().getDimensions().keySet() ) {
-            if ( name.equals( "time" ) ) {
-                continue;
-            }
-            Dimension<?> dim = getMetadata().getDimensions().get( name );
-            final ValueReference property = new ValueReference( dim.getPropertyName() );
-
-            List<?> vals = dims.get( name );
-
-            if ( vals == null ) {
-                vals = dim.getDefaultValue();
-                if ( vals == null ) {
-                    throw new OWSException( "The dimension value for " + name + " was missing.",
-                                            "MissingDimensionValue", name );
-                }
-                String units = dim.getUnits();
-                if ( name.equals( "elevation" ) ) {
-                    headers.add( "99 Default value used: elevation=" + formatDimensionValueList( vals, false ) + " "
-                                 + ( units == null ? "m" : units ) );
-                } else if ( name.equals( "time" ) ) {
-                    headers.add( "99 Default value used: time=" + formatDimensionValueList( vals, true ) + " "
-                                 + ( units == null ? "ISO8601" : units ) );
-                } else {
-                    headers.add( "99 Default value used: DIM_" + name + "=" + formatDimensionValueList( vals, false )
-                                 + " " + units );
-                }
-            }
-
-            Operator[] os = new Operator[vals.size()];
-            int i = 0;
-
-            for ( Object o : vals ) {
-
-                if ( !dim.getNearestValue() && !dim.isValid( o ) ) {
-                    throw new OWSException( "The value " + o.toString() + " was not valid for dimension " + name + ".",
-                                            "InvalidDimensionValue", name );
-                }
-
-                if ( o instanceof DimensionInterval<?, ?, ?> ) {
-                    DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-                    final String min;
-                    if ( iv.min instanceof Date ) {
-                        min = formatDateTime( (Date) iv.min );
-                    } else {
-                        min = ( (Number) iv.min ).toString();
-                    }
-                    final String max;
-                    if ( iv.max instanceof Date ) {
-                        max = formatDateTime( (Date) iv.max );
-                    } else if ( iv.max instanceof String ) {
-                        max = formatDateTime( new Date() );
-                    } else {
-                        max = ( (Number) iv.max ).toString();
-                    }
-                    os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
-                                                     new Literal<PrimitiveValue>( max ), true, null );
-                } else {
-                    if ( dim.getNearestValue() ) {
-                        Object nearest = dim.getNearestValue( o );
-                        if ( !nearest.equals( o ) ) {
-                            o = nearest;
-                            if ( "elevation".equals( name ) ) {
-                                headers.add( "99 Nearest value used: elevation=" + o + " " + dim.getUnits() );
-                            } else {
-                                headers.add( "99 Nearest value used: DIM_" + name + "=" + o + " " + dim.getUnits() );
-                            }
-                        }
-                    }
-                    os[i++] = new PropertyIsEqualTo( new ValueReference( dim.getPropertyName() ),
-                                                     new Literal<PrimitiveValue>( o.toString() ), true, null );
-                }
-            }
-            if ( os.length > 1 ) {
-                if ( !dim.getMultipleValues() ) {
-                    throw new OWSException( "Multiple values are not allowed for ELEVATION.", "InvalidDimensionValue",
-                                            "elevation" );
-                }
-                ops.add( new Or( os ) );
-            } else {
-                ops.add( os[0] );
-            }
-        }
-
-        if ( ops.isEmpty() ) {
-            return null;
-        }
-        if ( ops.size() > 1 ) {
-            return new OperatorFilter( new And( ops.toArray( new Operator[ops.size()] ) ) );
-        }
-        return new OperatorFilter( ops.get( 0 ) );
-    }
 }

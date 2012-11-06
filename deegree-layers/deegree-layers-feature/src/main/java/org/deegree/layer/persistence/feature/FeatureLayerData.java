@@ -38,14 +38,12 @@ package org.deegree.layer.persistence.feature;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -57,14 +55,9 @@ import org.deegree.feature.types.AppSchemas;
 import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.geometry.Geometry;
 import org.deegree.layer.LayerData;
-import org.deegree.rendering.r2d.Renderer;
-import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.styling.Styling;
-import org.deegree.style.styling.TextStyling;
 import org.slf4j.Logger;
 
 /**
@@ -108,32 +101,9 @@ public class FeatureLayerData implements LayerData {
             // TODO Should this always be done on this level? What about min and maxFill values?
             features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
             features = new ThreadedFeatureInputStream( features, 100, 20 );
-            int cnt = 0;
 
-            Renderer renderer = context.getVectorRenderer();
-            TextRenderer textRenderer = context.getTextRenderer();
-
-            for ( Feature f : features ) {
-                try {
-                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate( f,
-                                                                                                       (XPathEvaluator<Feature>) evaluator );
-                    for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
-                        if ( evald.first instanceof TextStyling ) {
-                            textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
-                        } else {
-                            renderer.render( evald.first, evald.second );
-                        }
-                    }
-                } catch ( Throwable e ) {
-                    LOG.warn( "Unable to render feature, probably a curve had multiple/non-linear segments." );
-                    LOG.warn( "Error message was: {}", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-                if ( maxFeatures > 0 && ++cnt == maxFeatures ) {
-                    LOG.debug( "Reached max features of {} for layer '{}', stopping.", maxFeatures, this );
-                    break;
-                }
-            }
+            FeatureStreamRenderer renderer = new FeatureStreamRenderer( context, maxFeatures, evaluator );
+            renderer.renderFeatureStream( features, style );
         } catch ( FilterEvaluationException e ) {
             LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
