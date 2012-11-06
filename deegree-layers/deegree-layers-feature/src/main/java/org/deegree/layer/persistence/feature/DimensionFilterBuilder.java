@@ -105,7 +105,7 @@ class DimensionFilterBuilder {
 
             List<?> vals = dims.get( name );
 
-            checkDefaultValue( vals, dim, headers, name );
+            vals = checkDefaultValue( vals, dim, headers, name );
 
             Operator[] os = new Operator[vals.size()];
 
@@ -173,7 +173,7 @@ class DimensionFilterBuilder {
         }
     }
 
-    private void checkDefaultValue( List<?> vals, Dimension<?> dim, List<String> headers, String name )
+    private List<?> checkDefaultValue( List<?> vals, Dimension<?> dim, List<String> headers, String name )
                             throws OWSException {
         if ( vals == null ) {
             vals = dim.getDefaultValue();
@@ -193,6 +193,7 @@ class DimensionFilterBuilder {
                              + units );
             }
         }
+        return vals;
     }
 
     private Object checkNearestValue( Object o, List<String> headers, String name, Dimension<?> dim ) {
@@ -215,7 +216,7 @@ class DimensionFilterBuilder {
                             throws OWSException {
         List<?> vals = dims.get( "time" );
 
-        checkDefaultValueTime( vals, time, headers );
+        vals = checkDefaultValueTime( vals, time, headers );
 
         Operator[] os = new Operator[vals.size()];
         findTimeFilters( time, vals, os, headers );
@@ -278,7 +279,7 @@ class DimensionFilterBuilder {
         }
     }
 
-    private void checkDefaultValueTime( List<?> vals, Dimension<?> time, List<String> headers )
+    private List<?> checkDefaultValueTime( List<?> vals, Dimension<?> time, List<String> headers )
                             throws OWSException {
         if ( vals == null ) {
             vals = time.getDefaultValue();
@@ -289,6 +290,7 @@ class DimensionFilterBuilder {
 
             headers.add( "99 Default value used: time=" + defVal + " ISO8601" );
         }
+        return vals;
     }
 
     private Date checkNearestValueTime( Date theVal, Dimension<?> time, List<String> headers ) {
