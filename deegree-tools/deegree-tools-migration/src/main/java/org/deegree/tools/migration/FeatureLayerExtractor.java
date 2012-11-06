@@ -35,28 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.migration;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.layer.persistence.LayerStoreManager;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.wms.controller.WMSController;
 
@@ -67,29 +58,34 @@ import org.deegree.services.wms.controller.WMSController;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FeatureLayerExtractor {
+class FeatureLayerExtractor {
 
     private DeegreeWorkspace workspace;
 
-    public FeatureLayerExtractor( DeegreeWorkspace workspace ) {
+    private Pattern stylepattern;
+
+    private int logicalLayerCount = 0;
+
+    FeatureLayerExtractor( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
+        stylepattern = Pattern.compile( "\\.\\./styles/([A-Za-z_0-9]+)\\.xml" );
     }
 
-    public void extract()
+    void extract()
                             throws XMLStreamException {
-        Pattern stylepattern = Pattern.compile( "\\.\\./styles/([A-Za-z_0-9]+)\\.xml" );
-        LayerStoreManager lmgr = workspace.getSubsystemManager( LayerStoreManager.class );
+        HashMap<String, List<FeatureLayer>> map = new HashMap<String, List<FeatureLayer>>();
+        String crs = analyseWmsConfigurations( map );
+        new FeatureLayerWriter( workspace ).writeLayerConfigs( map, crs );
+    }
+
+    private String analyseWmsConfigurations( HashMap<String, List<FeatureLayer>> map )
+                            throws XMLStreamException {
+        String crs = null;
+
         WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
         ResourceState<?>[] states = mgr.getStates();
 
         XMLInputFactory infac = XMLInputFactory.newInstance();
-        XMLOutputFactory outfac = XMLOutputFactory.newInstance();
-
-        Map<String, List<FeatureLayer>> map = new HashMap<String, List<FeatureLayer>>();
-
-        int logicalLayerCount = 0;
-
-        String crs = null;
 
         for ( ResourceState<?> s : states ) {
             if ( s.getResource() instanceof WMSController ) {
@@ -103,113 +99,70 @@ public class FeatureLayerExtractor {
 
                     if ( reader.isStartElement()
                          && ( reader.getLocalName().equals( "RequestableLayer" ) || reader.getLocalName().equals( "LogicalLayer" ) ) ) {
-
-                        FeatureLayer l = new FeatureLayer();
-
-                        if ( reader.getLocalName().equals( "RequestableLayer" ) ) {
-                            reader.nextTag();
-                            l.name = reader.getElementText();
-                            reader.nextTag();
-                            l.title = reader.getElementText();
-                        } else {
-                            l.name = "LogicalLayer_" + ++logicalLayerCount;
-                            l.title = l.name;
-                        }
-
-                        reader.nextTag();
-                        if ( reader.getLocalName().equals( "ScaleDenominators" ) ) {
-                            if ( reader.getAttributeValue( null, "min" ) != null ) {
-                                l.minscale = Double.parseDouble( reader.getAttributeValue( null, "min" ) );
-                            }
-                            if ( reader.getAttributeValue( null, "max" ) != null ) {
-                                l.maxscale = Double.parseDouble( reader.getAttributeValue( null, "max" ) );
-                            }
-                            reader.nextTag();
-                            reader.nextTag();
-                        }
-
-                        String ftid = null;
-                        if ( reader.getLocalName().equals( "FeatureStoreId" ) ) {
-                            ftid = reader.getElementText();
-                            reader.nextTag();
-                        }
-
-                        if ( reader.getLocalName().equals( "DirectStyle" ) ) {
-                            reader.nextTag();
-                            String text = reader.getElementText();
-                            Matcher m = stylepattern.matcher( text );
-                            if ( m.find() ) {
-                                l.style = m.group( 1 );
-                            } else {
-                                l.style = text;
-                            }
-                        }
-                        if ( ftid == null ) {
-                            continue;
-                        }
-                        List<FeatureLayer> list = map.get( ftid );
-                        if ( list == null ) {
-                            list = new ArrayList<FeatureLayer>();
-                            map.put( ftid, list );
-                        }
-                        list.add( l );
+                        extractLayer( reader, map );
                     }
                     reader.next();
                 }
             }
         }
+        return crs;
+    }
 
-        for ( Entry<String, List<FeatureLayer>> e : map.entrySet() ) {
-            String id = e.getKey();
-            List<FeatureLayer> list = e.getValue();
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    private void extractLayer( XMLStreamReader reader, HashMap<String, List<FeatureLayer>> map )
+                            throws XMLStreamException {
+        FeatureLayer l = new FeatureLayer();
 
-            String flns = "http://www.deegree.org/layers/feature";
-            String lns = "http://www.deegree.org/layers/base";
-            String dns = "http://www.deegree.org/metadata/description";
-            String gns = "http://www.deegree.org/metadata/spatial";
+        extractMetadata( reader, l );
 
-            XMLStreamWriter writer = new IndentingXMLStreamWriter( outfac.createXMLStreamWriter( bos ) );
-            writer.writeStartDocument();
-            writer.setDefaultNamespace( flns );
-            writer.writeStartElement( flns, "FeatureLayers" );
-            writer.writeDefaultNamespace( flns );
-            writer.writeNamespace( "l", lns );
-            writer.writeNamespace( "d", dns );
-            writer.writeNamespace( "g", gns );
-            writer.writeAttribute( "configVersion", "3.2.0" );
-
-            XMLAdapter.writeElement( writer, flns, "FeatureStoreId", id );
-
-            for ( FeatureLayer l : list ) {
-                writer.writeStartElement( flns, "FeatureLayer" );
-                XMLAdapter.writeElement( writer, lns, "Name", l.name );
-                XMLAdapter.writeElement( writer, dns, "Title", l.title );
-                XMLAdapter.writeElement( writer, gns, "CRS", crs );
-                if ( !( Double.isInfinite( l.minscale ) && Double.isInfinite( l.maxscale ) ) ) {
-                    writer.writeStartElement( lns, "ScaleDenominators" );
-                    if ( !Double.isInfinite( l.minscale ) ) {
-                        writer.writeAttribute( "min", Double.toString( l.minscale ) );
-                    }
-                    if ( !Double.isInfinite( l.maxscale ) ) {
-                        writer.writeAttribute( "max", Double.toString( l.maxscale ) );
-                    }
-                    writer.writeEndElement();
-                }
-                if ( l.style != null ) {
-                    writer.writeStartElement( lns, "StyleRef" );
-                    XMLAdapter.writeElement( writer, lns, "StyleStoreId", l.style );
-                    writer.writeEndElement();
-                }
-
-                writer.writeEndElement();
+        reader.nextTag();
+        if ( reader.getLocalName().equals( "ScaleDenominators" ) ) {
+            if ( reader.getAttributeValue( null, "min" ) != null ) {
+                l.minscale = Double.parseDouble( reader.getAttributeValue( null, "min" ) );
             }
+            if ( reader.getAttributeValue( null, "max" ) != null ) {
+                l.maxscale = Double.parseDouble( reader.getAttributeValue( null, "max" ) );
+            }
+            reader.nextTag();
+            reader.nextTag();
+        }
 
-            writer.writeEndElement();
-            writer.close();
+        String ftid = null;
+        if ( reader.getLocalName().equals( "FeatureStoreId" ) ) {
+            ftid = reader.getElementText();
+            reader.nextTag();
+        }
 
-            lmgr.createResource( id, new ByteArrayInputStream( bos.toByteArray() ) );
-            lmgr.activate( id );
+        if ( reader.getLocalName().equals( "DirectStyle" ) ) {
+            reader.nextTag();
+            String text = reader.getElementText();
+            Matcher m = stylepattern.matcher( text );
+            if ( m.find() ) {
+                l.style = m.group( 1 );
+            } else {
+                l.style = text;
+            }
+        }
+        if ( ftid == null ) {
+            return;
+        }
+        List<FeatureLayer> list = map.get( ftid );
+        if ( list == null ) {
+            list = new ArrayList<FeatureLayer>();
+            map.put( ftid, list );
+        }
+        list.add( l );
+    }
+
+    private void extractMetadata( XMLStreamReader reader, FeatureLayer l )
+                            throws XMLStreamException {
+        if ( reader.getLocalName().equals( "RequestableLayer" ) ) {
+            reader.nextTag();
+            l.name = reader.getElementText();
+            reader.nextTag();
+            l.title = reader.getElementText();
+        } else {
+            l.name = "LogicalLayer_" + ++logicalLayerCount;
+            l.title = l.name;
         }
     }
 
