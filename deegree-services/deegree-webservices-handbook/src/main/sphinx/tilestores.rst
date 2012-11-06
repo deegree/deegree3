@@ -9,17 +9,17 @@ Tile stores are data sources that provide access to pre-rendered map tiles. The 
 * Provide data for layers in the WMTS
 * Provide data for tile layers in the WMS (no on-the-fly reprojection possible on GetMap request)
 
-The remainder of this chapter describes some relevant terms and the tile store configuration files in detail. You can access this configuration level by clicking on the ``tile stores`` link in the administration console. The configuration files have to be created or edited in the ``datasources/tile/`` directory of the deegree workspace.
+The remainder of this chapter describes some relevant terms and the tile store configuration files in detail. You can access this configuration level by clicking on the ``tile stores`` link in the administration console. The configuration files are located in the ``datasources/tile/`` directory of the deegree workspace.
 
 --------------------------
 Tile stores, tile data sets and tile matrix sets
 --------------------------
 
-A tile store is what you configure with one configuration file. It can contain a bunch of tile data sets. Other resources such as the tile layer configuration usually refer to a specific tile data set from a tile store.
+A tile store is what you configure in a single tile store configuration file. It defines one or more (stored) tile data sets. Other resources such as the tile layer configuration usually refer to a specific tile data set from a tile store.
 
-The structure of a tile data set is determined by a reference to a tile matrix set. This distincion allows the user to focus about where the data is coming from, without being confused about the matrix structure.
+The structure of a tile data set is determined by specifying the identifier of a tile matrix set. Most often, one wants to define tile data sets that conform to a pre-defined tile matrix set. In that case, one only has to provide the tile store configuration file.
 
-The term tile matrix set has been coined deliberately to coincide with the same term from the `WMTS specification <http://www.opengeospatial.org/standards/wmts>`. The tile matrix sets (quads) from WMTS 1.0.0 and the INSPIRE ViewService 3.1 specs are already predefined, but custom tile matrix sets may be specified (see below).
+The term tile matrix set has been coined deliberately to coincide with the same term from the `WMTS specification <http://www.opengeospatial.org/standards/wmts>`_ and refers to structure and spatial properties of the tile matrix. The tile matrix sets (or "quads") from WMTS 1.0.0 and INSPIRE ViewService 3.1 specifications are already predefined, but additional tile matrix sets may be defined as well (see below).
 
 Take note that it is not necessary to provide actual tiles for all tiles defined within the tile matrix set, a tile data set may contain a subset. The only requirement is that you need to fulfill the structure requirements (CRS, size of tiles, position of tiles in world coordinates, scale).
 
@@ -27,12 +27,23 @@ Take note that it is not necessary to provide actual tiles for all tiles defined
 Pre-defined tile matrix sets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The predefined tile matrix sets are currently:
+The following table lists the tile matrix sets that are pre-defined in deegree:
 
-* GoogleCRS84Quad (from WMTS 1.0.0)
-* InspireCRS84Quad (from INSPIRE ViewService 3.1)
++-------------------------+-----------------------+-----------------------------------------------+----------------------------------------+
+| Workspace identifier    | Name in specification | URN                                           | Specification document                 |
++=========================+=======================+===============================================+========================================+
+| globalcrs84scale        | GlobalCRS84Scale      | urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Scale     | OGC WMTS 1.0.0                         |
++-------------------------+-----------------------+-----------------------------------------------+----------------------------------------+
+| globalcrs84pixel        | GlobalCRS84Pixel      | urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Pixel     | OGC WMTS 1.0.0                         |
++-------------------------+-----------------------+-----------------------------------------------+----------------------------------------+
+| googlecrs84quad         | GoogleCRS84Quad       | urn:ogc:def:crs:OGC:1.3:CRS84                 | OGC WMTS 1.0.0                         |
++-------------------------+-----------------------+-----------------------------------------------+----------------------------------------+
+| googlemapscompatible    | GoogleMapsCompatible  | urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible | OGC WMTS 1.0.0                         |
++-------------------------+-----------------------+-----------------------------------------------+----------------------------------------+
+| inspirecrs84quad        | InspireCRS84Quad      | n/a                                           | INSPIRE View Service Specification 3.1 | 
++-------------------------+-----------------------+-----------------------------------------------+----------------------------------------+
 
-You can override standard definitions by placing an appropriately named file into the workspaces' datasources/tile/tilematrixset/ directory. It is recommended to always use lower case file names to avoid confusion.
+You can override these standard definitions by placing an appropriately named file into the ``datasources/tile/tilematrixset/`` directory of your workspace. It is recommended to always use lower case file names to avoid confusion.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 User-defined tile matrix sets
@@ -40,7 +51,7 @@ User-defined tile matrix sets
 
 There are currently two ways to configure tile matrix sets. The first way is to state the structure of the matrices explicitly (described here), the second will extract the structure from a tiled GeoTIFF (BIGTIFF) file (possibly with overlays, described in the GeoTIFF section).
 
-Like everything else in the deegree workspace, defining a tile matrix set means placing a configuration file into a standard location, in this case the datasources/tile/tilematrixset directory.
+Like everything else in the deegree workspace, defining a tile matrix set means placing a configuration file into a standard location, in this case the ``datasources/tile/tilematrixset`` directory.
 
 Let's have a look at an example for the explicit configuration:
 
@@ -71,7 +82,7 @@ Let's have a look at an example for the explicit configuration:
 
   </TileMatrixSet>
 
-As you can see, the format is almost identical to the one from the WMTS capabilities documents. The tile matrix set is obviously defined for one coordinate system, and contains many tile matrices. Each tile matrix has its own identifier, a specific scale, an origin (the top left corner in world coordinates), defines a tile width/height in pixels and specifies how many tiles there are in x and y direction.
+As you can see, the format is almost identical to the one from the WMTS capabilities documents. A tile matrix set is always defined for a single coordinate system, and contains one or more tile matrices. Each tile matrix has an identifier, a specific scale, an origin (the top left corner in world coordinates), defines a tile width/height in pixels and specifies how many tiles there are in x and y direction.
 
 You do not need to explicitly specify the envelope, it will be calculated automatically from the values you provide.
 
@@ -81,9 +92,9 @@ GeoTIFF tile store
 
 The GeoTIFF tile store can be used to configure tile data sets based on GeoTIFF/BIGTIFF files. The tile store is currently read-only. The requirements for the GeoTIFFs are:
 
-* it must be created as BIGTIFF (eg. with GDAL using the -co BIGTIFF=YES option)
-* it must be created as a tiled tiff (eg. with GDAL using the -co TILED=YES option)
-* it can contain overviews (it is best to use a recent GDAL version >= 1.8.0, where you can use GDAL_TIFF_OVR_BLOCKSIZE to specify the overview tile size)
+* it must be created as BIGTIFF (eg. with GDAL using the ``-co BIGTIFF=YES`` option)
+* it must be created as a tiled tiff (eg. with GDAL using the ``-co TILED=YES`` option)
+* it can contain overviews (it is best to use a recent GDAL version >= 1.8.0, where you can use ``GDAL_TIFF_OVR_BLOCKSIZE`` to specify the overview tile size)
 * it is recommended that the overviews contain the same tile size as the main level
 * it must contain the envelope as GeoTIFF tags in the tiff (don't use world files)
 * it is recommended that the CRS is contained as GeoTIFF tag (but can be overridden in the tile matrix set config, see below)
@@ -109,7 +120,7 @@ Let's have a look at an example configuration:
 
 * The identifier is optional, and defaults to the base name of the file (in this example test.tif)
 * The tile matrix set id references the tile matrix set
-* obviously you need to point to the file
+* obviously you need to point to the GeoTIFF file
 * The image format specifies the *output* image format, this is relevant if you use the tile store for a WMTS. The default is image/png.
 
 To generate a tile matrix set from the GeoTIFF, put a file into the datasources/tile/tilematrixset/ directory. See how it must look like:
@@ -127,7 +138,7 @@ The storage crs is optional if the file contains an appropriate GeoTIFF tag, but
 File system tile store
 ----------------------
 
-The file system tile store can be used to provide tiles from `tile cache <http://tilecache.org>` like directory hierarchies. This tile store is read-write.
+The file system tile store can be used to provide tiles from `tile cache <http://tilecache.org>`_ like directory hierarchies. This tile store is read-write.
 
 Let's explain the configuration using an example:
 
@@ -137,7 +148,7 @@ Let's explain the configuration using an example:
 
     <TileDataSet>
       <Identifier>layer1</Identifier>
-      <TileMatrixSetId>InspireCrs84Quad</TileMatrixSetId>
+      <TileMatrixSetId>inspirecrs84quad</TileMatrixSetId>
       <TileCacheDiskLayout>
         <LayerDirectory>../../data/tiles/layer1</LayerDirectory>
         <FileType>png</FileType>
@@ -170,7 +181,7 @@ Let's have a look at an example:
 
     <TileDataSet>
       <Identifier>satellite</Identifier>
-      <TileMatrixSetId>InspireCrs84Quad</TileMatrixSetId>
+      <TileMatrixSetId>inspirecrs84quad</TileMatrixSetId>
       <OutputFormat>image/png</OutputFormat>
       <RequestParams>
         <Layers>SatelliteProvo</Layers>
