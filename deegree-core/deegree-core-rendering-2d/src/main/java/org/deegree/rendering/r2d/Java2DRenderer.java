@@ -43,10 +43,6 @@ import static java.lang.Math.acos;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
-import static javax.media.jai.JAI.create;
-import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
-import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.cs.components.Unit.METRE;
@@ -61,25 +57,11 @@ import java.awt.geom.Path2D.Double;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
-import javax.media.jai.RenderedOp;
-
-import org.apache.batik.ext.awt.image.codec.MemoryCacheSeekableStream;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
-import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
@@ -137,6 +119,8 @@ public class Java2DRenderer implements Renderer {
 
     GeometryClipper clipper;
 
+    private SvgRenderer svgRenderer;
+
     /**
      * @param graphics
      * @param width
@@ -181,6 +165,19 @@ public class Java2DRenderer implements Renderer {
         uomCalculator = new UomCalculator( pixelSize, res );
         fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
         strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
+        svgRenderer = new SvgRenderer();
+    }
+
+    /**
+     * @param graphics
+     */
+    public Java2DRenderer( Graphics2D graphics ) {
+        this.graphics = graphics;
+        res = 1;
+        uomCalculator = new UomCalculator( pixelSize, res );
+        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
+        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
+        svgRenderer = new SvgRenderer();
     }
 
     private void calculateResolution( final Envelope bbox ) {
@@ -214,27 +211,6 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    /**
-     * @param graphics
-     */
-    public Java2DRenderer( Graphics2D graphics ) {
-        this.graphics = graphics;
-        res = 1;
-        uomCalculator = new UomCalculator( pixelSize, res );
-        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
-        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
-    }
-
-    final LinkedHashMap<ComparablePair<String, Integer>, BufferedImage> svgCache = new LinkedHashMap<ComparablePair<String, Integer>, BufferedImage>(
-                                                                                                                                                      256 ) {
-        private static final long serialVersionUID = -6847956873232942891L;
-
-        @Override
-        protected boolean removeEldestEntry( Map.Entry<ComparablePair<String, Integer>, BufferedImage> eldest ) {
-            return size() > 256; // yeah, hardcoded max size... TODO
-        }
-    };
-
     private void render( PointStyling styling, double x, double y ) {
         Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( x, y ), null );
         x = p.x;
@@ -253,7 +229,7 @@ public class Java2DRenderer implements Renderer {
 
         // try if it's an svg
         if ( img == null && g.imageURL != null ) {
-            img = prepareSvg( rect, g );
+            img = svgRenderer.prepareSvg( rect, g );
         }
 
         if ( img != null ) {
@@ -264,46 +240,6 @@ public class Java2DRenderer implements Renderer {
             graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
             graphics.setTransform( t );
         }
-    }
-
-    private BufferedImage prepareSvg( Rectangle2D.Double rect, Graphic g ) {
-        BufferedImage img = null;
-        ComparablePair<String, Integer> cp = new ComparablePair<String, Integer>( g.imageURL, round( g.size ) );
-        if ( svgCache.containsKey( cp ) ) {
-            img = svgCache.get( cp );
-        } else {
-            PNGTranscoder t = new PNGTranscoder();
-
-            t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
-            t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
-
-            TranscoderInput input = new TranscoderInput( g.imageURL );
-
-            // TODO improve performance by writing a custom transcoder output directly rendering on an image, or
-            // even on the target graphics
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            TranscoderOutput output = new TranscoderOutput( out );
-            InputStream in = null;
-
-            // TODO cache images
-            try {
-                t.transcode( input, output );
-                out.flush();
-                in = new ByteArrayInputStream( out.toByteArray() );
-                MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
-                RenderedOp rop = create( "stream", mcss );
-                img = rop.getAsBufferedImage();
-                svgCache.put( cp, img );
-            } catch ( TranscoderException e ) {
-                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-            } finally {
-                closeQuietly( out );
-                closeQuietly( in );
-            }
-        }
-        return img;
     }
 
     @Override
