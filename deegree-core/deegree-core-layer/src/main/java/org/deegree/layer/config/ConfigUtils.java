@@ -198,7 +198,7 @@ public class ConfigUtils {
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
-        return parseDimensions( layerName, dimensions );
+        return DimensionConfigBuilder.parseDimensions( layerName, dimensions );
     }
 
 }
