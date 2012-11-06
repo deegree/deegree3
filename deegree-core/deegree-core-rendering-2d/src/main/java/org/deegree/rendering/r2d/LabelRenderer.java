@@ -84,8 +84,8 @@ class LabelRenderer {
     void render( TextStyling styling, Font font, String text, Point p ) {
         Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
                                                                                null );
-        double x = pt.x + renderer.considerUOM( styling.displacementX, styling.uom );
-        double y = pt.y - renderer.considerUOM( styling.displacementY, styling.uom );
+        double x = pt.x + context.uomCalculator.considerUOM( styling.displacementX, styling.uom );
+        double y = pt.y - context.uomCalculator.considerUOM( styling.displacementY, styling.uom );
         renderer.graphics.setFont( font );
         AffineTransform transform = renderer.graphics.getTransform();
         renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
@@ -105,8 +105,8 @@ class LabelRenderer {
         if ( styling.halo != null ) {
             context.fillRenderer.applyFill( styling.halo.fill, styling.uom );
 
-            BasicStroke stroke = new BasicStroke(
-                                                  round( 2 * renderer.considerUOM( styling.halo.radius, styling.uom ) ),
+            BasicStroke stroke = new BasicStroke( round( 2 * context.uomCalculator.considerUOM( styling.halo.radius,
+                                                                                                styling.uom ) ),
                                                   CAP_BUTT, JOIN_ROUND );
             renderer.graphics.setStroke( stroke );
             renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );

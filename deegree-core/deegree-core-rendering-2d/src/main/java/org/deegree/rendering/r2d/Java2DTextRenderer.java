@@ -181,7 +181,7 @@ public class Java2DTextRenderer implements TextRenderer {
         }
 
         // use the first matching name, or Dialog, if none was found
-        int size = round( renderer.considerUOM( styling.font.fontSize, styling.uom ) );
+        int size = round( renderer.rendererContext.uomCalculator.considerUOM( styling.font.fontSize, styling.uom ) );
         Font font = new Font( "", style, size );
         for ( String name : styling.font.fontFamily ) {
             font = new Font( name, style, size );
