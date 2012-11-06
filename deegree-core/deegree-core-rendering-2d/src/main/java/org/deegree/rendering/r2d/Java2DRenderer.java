@@ -36,7 +36,6 @@
 
 package org.deegree.rendering.r2d;
 
-import static java.awt.geom.Path2D.WIND_EVEN_ODD;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.acos;
@@ -52,13 +51,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D.Double;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ReferenceResolvingException;
@@ -73,9 +70,6 @@ import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
@@ -83,7 +77,6 @@ import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.Styling;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.UOM;
-import org.deegree.style.utils.UomCalculator;
 import org.slf4j.Logger;
 
 /**
@@ -109,17 +102,7 @@ public class Java2DRenderer implements Renderer {
 
     private int width;
 
-    private UomCalculator uomCalculator;
-
-    private Java2DStrokeRenderer strokeRenderer;
-
-    private Java2DFillRenderer fillRenderer;
-
-    GeometryHelper geomHelper;
-
-    GeometryClipper clipper;
-
-    private SvgRenderer svgRenderer;
+    RendererContext rendererContext;
 
     /**
      * @param graphics
@@ -132,9 +115,7 @@ public class Java2DRenderer implements Renderer {
     public Java2DRenderer( Graphics2D graphics, int width, int height, Envelope bbox, double pixelSize ) {
         this( graphics, width, height, bbox );
         this.pixelSize = pixelSize;
-        uomCalculator = new UomCalculator( pixelSize, res );
-        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
-        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
+        initRenderers( bbox );
     }
 
     /**
@@ -154,18 +135,12 @@ public class Java2DRenderer implements Renderer {
             bbox = p.first;
             calculateResolution( bbox );
 
-            geomHelper = new GeometryHelper( bbox, width, worldToScreen );
-            clipper = new GeometryClipper( geomHelper, bbox, width );
-
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
             LOG.trace( "Final transformation was {}", worldToScreen );
         } else {
             LOG.warn( "No envelope given, proceeding with a scale of 1." );
         }
-        uomCalculator = new UomCalculator( pixelSize, res );
-        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
-        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
-        svgRenderer = new SvgRenderer();
+        initRenderers( bbox );
     }
 
     /**
@@ -174,10 +149,11 @@ public class Java2DRenderer implements Renderer {
     public Java2DRenderer( Graphics2D graphics ) {
         this.graphics = graphics;
         res = 1;
-        uomCalculator = new UomCalculator( pixelSize, res );
-        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
-        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
-        svgRenderer = new SvgRenderer();
+        initRenderers( null );
+    }
+
+    private void initRenderers( Envelope bbox ) {
+        rendererContext = new RendererContext( pixelSize, res, graphics, this, bbox, width, worldToScreen );
     }
 
     private void calculateResolution( final Envelope bbox ) {
@@ -217,11 +193,11 @@ public class Java2DRenderer implements Renderer {
         y = p.y;
 
         Graphic g = styling.graphic;
-        Rectangle2D.Double rect = fillRenderer.getGraphicBounds( g, x, y, styling.uom );
+        Rectangle2D.Double rect = rendererContext.fillRenderer.getGraphicBounds( g, x, y, styling.uom );
 
         if ( g.image == null && g.imageURL == null ) {
-            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this,
-                        rect.getMinX(), rect.getMinY(), g.rotation );
+            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom,
+                        rendererContext, rect.getMinX(), rect.getMinY(), g.rotation );
             return;
         }
 
@@ -229,7 +205,7 @@ public class Java2DRenderer implements Renderer {
 
         // try if it's an svg
         if ( img == null && g.imageURL != null ) {
-            img = svgRenderer.prepareSvg( rect, g );
+            img = rendererContext.svgRenderer.prepareSvg( rect, g );
         }
 
         if ( img != null ) {
@@ -250,49 +226,22 @@ public class Java2DRenderer implements Renderer {
         }
 
         if ( geom instanceof Point ) {
-            geom = geomHelper.transform( geom );
+            geom = rendererContext.geomHelper.transform( geom );
             render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
             return;
         }
-        geom = clipper.clipGeometry( geom );
+        geom = rendererContext.clipper.clipGeometry( geom );
         // TODO properly convert'em
         if ( geom instanceof Surface ) {
-            render( styling, (Surface) geom );
+            rendererContext.polygonRenderer.render( styling, (Surface) geom );
         } else if ( geom instanceof Curve ) {
-            render( styling, (Curve) geom );
+            rendererContext.curveRenderer.render( styling, (Curve) geom );
         } else if ( geom instanceof MultiGeometry<?> ) {
             // LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
                 render( styling, g );
             }
-        }
-    }
-
-    private void render( PointStyling styling, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    curve.setCoordinateSystem( surface.getCoordinateSystem() );
-                    render( styling, curve );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-            }
-        }
-    }
-
-    private void render( PointStyling styling, Curve curve ) {
-        if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
-            // TODO handle non-linear and multiple curve segments
-            throw new IllegalArgumentException();
-        }
-        LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
-        // coordinate representation is still subject to change...
-        for ( Point point : segment.getControlPoints() ) {
-            point.setCoordinateSystem( curve.getCoordinateSystem() );
-            render( styling, point );
         }
     }
 
@@ -309,61 +258,18 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
             return;
         }
-        geom = clipper.clipGeometry( geom );
+        geom = rendererContext.clipper.clipGeometry( geom );
         if ( geom instanceof Curve ) {
-            Double line = geomHelper.fromCurve( (Curve) geom, false );
-            strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
-                                        styling.perpendicularOffsetType );
+            Double line = rendererContext.geomHelper.fromCurve( (Curve) geom, false );
+            rendererContext.strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
+                                                        styling.perpendicularOffsetType );
         } else if ( geom instanceof Surface ) {
-            render( styling, (Surface) geom );
+            rendererContext.polygonRenderer.render( styling, (Surface) geom );
         } else if ( geom instanceof MultiGeometry<?> ) {
             // LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
                 render( styling, g );
-            }
-        }
-    }
-
-    private void render( LineStyling styling, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    if ( curve.getCoordinateSystem() == null ) {
-                        curve.setCoordinateSystem( surface.getCoordinateSystem() );
-                    }
-                    render( styling, curve );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-            }
-        }
-    }
-
-    private void render( PolygonStyling styling, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                LinkedList<Double> lines = new LinkedList<Double>();
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
-
-                // just appending the holes appears to work, the Java2D rendering mechanism can determine that they lie
-                // inside and thus no substraction etc. is needed. This speeds up things SIGNIFICANTLY
-                GeneralPath polygon = new GeneralPath( WIND_EVEN_ODD );
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    Double d = geomHelper.fromCurve( curve, true );
-                    lines.add( d );
-                    polygon.append( d, false );
-                }
-
-                fillRenderer.applyFill( styling.fill, styling.uom );
-                graphics.fill( polygon );
-                for ( Double d : lines ) {
-                    strokeRenderer.applyStroke( styling.stroke, styling.uom, d, styling.perpendicularOffset,
-                                                styling.perpendicularOffsetType );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
             }
         }
     }
@@ -381,13 +287,13 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
         }
-        geom = clipper.clipGeometry( geom );
+        geom = rendererContext.clipper.clipGeometry( geom );
         if ( geom instanceof Envelope ) {
             geom = envelopeToPolygon( (Envelope) geom );
         }
         if ( geom instanceof Surface ) {
             // LOG.trace( "Drawing {} with {}", geom, styling );
-            render( styling, (Surface) geom );
+            rendererContext.polygonRenderer.render( styling, (Surface) geom );
         }
         if ( geom instanceof MultiGeometry<?> ) {
             // LOG.trace( "Breaking open multi geometry." );
@@ -444,14 +350,6 @@ public class Java2DRenderer implements Renderer {
             return in / pixelSize;
         }
         return in;
-    }
-
-    Java2DFillRenderer getFillRenderer() {
-        return fillRenderer;
-    }
-
-    Java2DStrokeRenderer getStrokeRenderer() {
-        return strokeRenderer;
     }
 
 }

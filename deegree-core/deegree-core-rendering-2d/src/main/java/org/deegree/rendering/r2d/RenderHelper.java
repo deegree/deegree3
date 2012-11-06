@@ -77,12 +77,12 @@ public class RenderHelper {
      * @param mark
      * @param size
      * @param uom
-     * @param renderer
+     * @param context
      * @param x
      * @param y
      * @param rotation
      */
-    public static void renderMark( Mark mark, int size, UOM uom, Java2DRenderer renderer, double x, double y,
+    public static void renderMark( Mark mark, int size, UOM uom, RendererContext context, double x, double y,
                                    double rotation ) {
         if ( size == 0 ) {
             LOG.debug( "Not rendering a symbol because the size is zero." );
@@ -96,11 +96,11 @@ public class RenderHelper {
         Shape shape = getShapeFromMark( mark, size - 1, rotation, true, x, y );
 
         if ( mark.fill != null ) {
-            renderer.getFillRenderer().applyFill( mark.fill, uom );
-            renderer.graphics.fill( shape );
+            context.fillRenderer.applyFill( mark.fill, uom );
+            context.graphics.fill( shape );
         }
         if ( mark.stroke != null ) {
-            renderer.getStrokeRenderer().applyStroke( mark.stroke, uom, shape, 0, null );
+            context.strokeRenderer.applyStroke( mark.stroke, uom, shape, 0, null );
         }
     }
 

@@ -104,7 +104,7 @@ public class Java2DTextRenderer implements TextRenderer {
             return;
         }
 
-        geom = renderer.clipper.clipGeometry( geom );
+        geom = renderer.rendererContext.clipper.clipGeometry( geom );
 
         Font font = convertFont( styling );
 

@@ -74,8 +74,11 @@ class LabelRenderer {
 
     private Java2DRenderer renderer;
 
+    private RendererContext context;
+
     LabelRenderer( Java2DRenderer renderer ) {
         this.renderer = renderer;
+        this.context = renderer.rendererContext;
     }
 
     void render( TextStyling styling, Font font, String text, Point p ) {
@@ -100,7 +103,7 @@ class LabelRenderer {
         double py = y + styling.anchorPointY * height;
 
         if ( styling.halo != null ) {
-            renderer.getFillRenderer().applyFill( styling.halo.fill, styling.uom );
+            context.fillRenderer.applyFill( styling.halo.fill, styling.uom );
 
             BasicStroke stroke = new BasicStroke(
                                                   round( 2 * renderer.considerUOM( styling.halo.radius, styling.uom ) ),
@@ -111,14 +114,14 @@ class LabelRenderer {
 
         renderer.graphics.setStroke( new BasicStroke() );
 
-        renderer.getFillRenderer().applyFill( styling.fill, styling.uom );
+        context.fillRenderer.applyFill( styling.fill, styling.uom );
         layout.draw( renderer.graphics, (float) px, (float) py );
 
         renderer.graphics.setTransform( transform );
     }
 
-     void render( TextStyling styling, Font font, String text, Curve c ) {
-        renderer.getFillRenderer().applyFill( styling.fill, styling.uom );
+    void render( TextStyling styling, Font font, String text, Curve c ) {
+        context.fillRenderer.applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
         if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
             return;
@@ -129,7 +132,7 @@ class LabelRenderer {
         }
 
         renderer.graphics.setStroke( stroke );
-        Double line = renderer.geomHelper.fromCurve( c, false );
+        Double line = context.geomHelper.fromCurve( c, false );
 
         renderer.graphics.draw( line );
     }
