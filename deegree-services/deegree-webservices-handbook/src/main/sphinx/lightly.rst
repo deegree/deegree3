@@ -4,16 +4,9 @@
 Getting started
 ===============
 
-In the previous chapter, you learned how to install and start deegree webservices. In this chapter, we will introduce the deegree service console and learn how to perform basic tasks such as downloading and activating example configurations. The service console provides a way to configure the different aspects of a deegree installation (active web services, data access, layers, etc). In deegree terminology, a complete configuration for a deegree instance is called a "deegree workspace":
+In the previous chapter, you learned how to install and start deegree webservices. In this chapter, we will introduce the deegree service console and learn how to perform basic tasks such as downloading and activating example configurations. The service console provides a way to configure the different aspects of a deegree installation (active web services, data access, layers, etc). In deegree terminology, a complete configuration for a deegree instance is called a "deegree workspace".
 
-.. figure:: images/workspace-overview.png
-   :figwidth: 90%
-   :width: 90%
-   :target: _images/workspace-overview.png
-
-   Configuration aspects of a deegree workspace
-
-The next chapter describes the structure and the aspects of deegree workspaces in more detail, but for the remainder of this chapter, it is sufficient to know that it is a complete configuration of a deegree webservice instance.
+The following chapters describe the structure and the aspects of the deegree workspace in more detail. For the remainder of this chapter, just think of a deegree workspace as a complete configuration of a deegree webservice instance. You may have multiple deegree workspaces on your machine, but only a single workspace can be active.
 
 -----------------------------------
 Accessing deegree's service console
@@ -29,7 +22,7 @@ The service console is a web-based administration interface for configuring your
    deegree webservices administration console
 
 .. tip::
-  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2-pre8. The port number and webapp name depend on your installation/deployment.
+  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2-pre11. The port number and webapp name depend on your installation/deployment.
 
 .. tip::
   You can access the service console from other machines on your network by exchanging *localhost* with the name or IP address of the machine that runs deegree webservices.
@@ -42,12 +35,9 @@ For the remainder of the chapter, only the **general** section is relevant. The 
 * **send requests**: Send raw XML requests
 * **see layers**: Display WMS layers
 
-.. tip::
-  If the machine running deegree webservices uses a proxy to access the internet and you have trouble downloading example configurations, you will probably have to configure the proxy settings. Ask your network administrator for details.
-
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Activating example workspaces
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Downloading and activating example workspaces
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Click on the *workspaces* link:
 
@@ -58,23 +48,26 @@ Click on the *workspaces* link:
 
    Workspace section
 
-The bottom of the workspace view lists the available example workspace. You should see following:
+The bottom of the workspace view lists the example workspaces provided by the deegree project. You should see the following list:
 
-* **deegree utahDemo**
-* **deegree inspireNode**
-* **deegree CSW demo**
-* **deegree WPS demo**
+* **deegree-workspace-utah**
+* **deegree-workspace-inspire**
+* **deegree-workspace-csw**
+* **deegree-workspace-wps**
 
-If you click on **Import**, the corresponding example workspace will be fetched from deegree's official workspace repository and extracted in your deegree configuration folder. Depending on the workspace and your internet connection, this may take a few minutes (the Utah demo workspace is about 70 MB in size).
+.. tip::
+  If the machine running deegree webservices uses a proxy to access the internet and you don't see any available example configurations, you will probably have to configure the proxy settings. Ask your network administrator for details.
 
-After downloading has completed, the workspace will be shown under "Available workspaces":
+If you click on **Import**, the corresponding example workspace will be fetched from the workspace repository of the deegree project and extracted in your deegree workspaces folder. Depending on the workspace and your internet connection, this may take a few minutes (the Utah demo workspace is about 70 MB in size).
+
+After downloading has completed, the new workspace will be listed in section "Available workspaces":
 
 .. figure:: images/console_workspace_imported.jpg
    :figwidth: 60%
    :width: 50%
    :target: _images/console_workspace_imported.jpg
 
-   Added inactive workspace
+   Downloaded, but inactive workspace
 
 You can now activate the downloaded workspace by clicking on "Start". Again, this may take some time, as it may require some initialization (e.g. building of indexes). The workspace will be removed from the list of inactive workspaces, instead, the workspace will be marked as "Active" (at the top of the view). Your deegree instance is now running the service configuration that is contained in the downloaded workspace.
 
@@ -84,9 +77,9 @@ You can now activate the downloaded workspace by clicking on "Start". Again, thi
 Example workspace 1: Webmapping for Utah
 ----------------------------------------
 
-This workspace contains a web mapping setup based on data from Utah. It contains a WMS with some raster and vector layers and some nice render styles. Raster data is read from GeoTIFF files, vector data is backed by shapefiles. Additionally, a WFS is configured that allows to access the raw vector data in GML format.
+The Utah example workspace contains a web mapping setup based on data from Utah. It contains a WMS configuration with some raster and vector layers and some nice render styles. Raster data is read from GeoTIFF files, vector data is backed by shapefiles. Additionally, a WFS is configured that allows to access the raw vector data in GML format.
 
-After downloading and activating the "deegree utahDemo" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
+After downloading and activating the "deegree-workspace-utah" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
 .. figure:: images/console_workspace_utah1.jpg
    :figwidth: 60%
@@ -143,9 +136,9 @@ You may select example requests from the drop-down menu and click on the "Send" 
 Example workspace 2: INSPIRE in action
 --------------------------------------
 
-This workspace is a basic INSPIRE View and Discovery Service setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers. The workspace is configured to store the INSPIRE features in memory, but can easily be changed to use PostGIS or Oracle as storage backend (TBD describe this).
+This workspace is a basic INSPIRE View and Discovery Service setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers. The workspace is pre-configured to store the INSPIRE features in memory, but can be changed to use PostGIS or Oracle as storage backend.
 
-After downloading and activating the "deegree inspireNode" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
+After downloading and activating the "deegree-workspace-inspire" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
 .. figure:: images/browser.png
    :figwidth: 60%
