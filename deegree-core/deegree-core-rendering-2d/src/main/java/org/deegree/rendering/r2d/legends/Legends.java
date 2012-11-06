@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.legends;
 
-import static java.lang.Math.max;
 import static org.deegree.style.styling.components.UOM.Metre;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,27 +44,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.rendering.r2d.Java2DRasterRenderer;
-import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.se.unevaluated.Symbolizer;
-import org.deegree.style.styling.RasterStyling;
-import org.deegree.style.styling.Styling;
 import org.deegree.style.styling.TextStyling;
 import org.slf4j.Logger;
 
@@ -84,11 +71,14 @@ public class Legends {
 
     private LegendOptions opts;
 
+    private LegendBuilder builder;
+
     /**
      * New legend renderer with default legend options
      */
     public Legends() {
         opts = new LegendOptions();
+        builder = new LegendBuilder( opts );
     }
 
     /**
@@ -118,43 +108,8 @@ public class Legends {
         }
     }
 
-    private static List<LegendItem> prepareLegend( Style style, Java2DRenderer renderer,
-                                                   Java2DTextRenderer textRenderer, Java2DRasterRenderer rasterRenderer ) {
-        List<LegendItem> items = new LinkedList<LegendItem>();
-        LinkedList<Class<?>> ruleTypes = style.getRuleTypes();
-        Iterator<Class<?>> types = ruleTypes.iterator();
-        LinkedList<String> ruleTitles = style.getRuleTitles();
-        Iterator<String> titles = ruleTitles.iterator();
-        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules;
-        rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>( style.getRules() );
-        Iterator<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> ruleIterator = rules.iterator();
-        ArrayList<LinkedList<Styling>> bases = style.getBases();
-
-        for ( LinkedList<Styling> styles : bases ) {
-            boolean raster = false;
-            for ( Styling s : styles ) {
-                if ( s instanceof RasterStyling ) {
-                    items.add( new RasterLegendItem( (RasterStyling) s, renderer, rasterRenderer, textRenderer ) );
-                    raster = true;
-                }
-            }
-            if ( !raster ) {
-                LegendItem item = new StandardLegendItem( styles, ruleIterator.next().first, types.next(),
-                                                          titles.next(), renderer, textRenderer );
-                items.add( item );
-            }
-        }
-
-        return items;
-    }
-
     public List<LegendItem> prepareLegend( Style style, Graphics2D g, int width, int height ) {
-        Pair<Integer, Integer> p = getLegendSize( style );
-        Envelope box = geofac.createEnvelope( 0, 0, p.first, p.second, null );
-        Java2DRenderer renderer = new Java2DRenderer( g, width, height, box );
-        Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-        Java2DRasterRenderer rasterRenderer = new Java2DRasterRenderer( g, width, height, box );
-        return prepareLegend( style, renderer, textRenderer, rasterRenderer );
+        return builder.prepareLegend( style, g, width, height );
     }
 
     /**
@@ -197,34 +152,7 @@ public class Legends {
     }
 
     public Pair<Integer, Integer> getLegendSize( Style style ) {
-        URL url = style.getLegendURL();
-        File file = style.getLegendFile();
-        if ( url == null ) {
-            if ( file != null ) {
-                try {
-                    url = file.toURI().toURL();
-                } catch ( MalformedURLException e ) {
-                    // nothing to do
-                }
-            }
-        }
-        if ( url != null ) {
-            try {
-                BufferedImage legend = ImageIO.read( url );
-                return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
-            } catch ( IOException e ) {
-                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", url, e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        Pair<Integer, Integer> res = new Pair<Integer, Integer>( 2 * opts.spacing + opts.baseWidth, 0 );
-
-        for ( LegendItem item : prepareLegend( style, null, null, null ) ) {
-            res.second += item.getHeight() * ( 2 * opts.spacing + opts.baseHeight );
-            res.first = max( res.first, item.getMaxWidth( opts ) );
-        }
-
-        return res;
+        return builder.getLegendSize( style );
     }
 
 }

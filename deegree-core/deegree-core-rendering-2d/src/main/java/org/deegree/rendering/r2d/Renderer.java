@@ -58,30 +58,30 @@ public interface Renderer {
      * @param styling
      * @param geom
      */
-    public void render( PointStyling styling, Geometry geom );
+    void render( PointStyling styling, Geometry geom );
 
     /**
      * @param styling
      * @param geom
      */
-    public void render( LineStyling styling, Geometry geom );
+    void render( LineStyling styling, Geometry geom );
 
     /**
      * @param styling
      * @param geom
      */
-    public void render( PolygonStyling styling, Geometry geom );
+    void render( PolygonStyling styling, Geometry geom );
 
     /**
      * @param styling
      * @param geoms
      */
-    public void render( Styling styling, Collection<Geometry> geoms );
+    void render( Styling styling, Collection<Geometry> geoms );
 
     /**
      * @param styling
      * @param geom
      */
-    public void render( Styling styling, Geometry geom );
+    void render( Styling styling, Geometry geom );
 
 }

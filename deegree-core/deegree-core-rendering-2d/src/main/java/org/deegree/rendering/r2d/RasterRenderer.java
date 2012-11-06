@@ -53,6 +53,6 @@ public interface RasterRenderer {
      * @param styling
      * @param raster
      */
-    public void render( RasterStyling styling, AbstractRaster raster );
+    void render( RasterStyling styling, AbstractRaster raster );
 
 }

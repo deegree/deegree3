@@ -57,13 +57,13 @@ public interface TextRenderer {
      * @param text
      * @param geom
      */
-    public void render( TextStyling styling, String text, Geometry geom );
+    void render( TextStyling styling, String text, Geometry geom );
 
     /**
      * @param styling
      * @param text
      * @param geoms
      */
-    public void render( TextStyling styling, String text, Collection<Geometry> geoms );
+    void render( TextStyling styling, String text, Collection<Geometry> geoms );
 
 }
