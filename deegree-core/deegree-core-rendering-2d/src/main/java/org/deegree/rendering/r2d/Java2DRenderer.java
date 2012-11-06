@@ -36,36 +36,20 @@
 
 package org.deegree.rendering.r2d;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.abs;
-import static java.lang.Math.acos;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.cs.components.Unit.METRE;
 import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
-import static org.deegree.rendering.r2d.RenderHelper.renderMark;
+import static org.deegree.rendering.r2d.RenderHelper.calculateResolution;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D.Double;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRSUtils;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -75,8 +59,6 @@ import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.Styling;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.UOM;
 import org.slf4j.Logger;
 
 /**
@@ -133,7 +115,7 @@ public class Java2DRenderer implements Renderer {
             double scalex = p.second.first;
             double scaley = p.second.second;
             bbox = p.first;
-            calculateResolution( bbox );
+            res = calculateResolution( bbox, width );
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
             LOG.trace( "Final transformation was {}", worldToScreen );
@@ -156,68 +138,6 @@ public class Java2DRenderer implements Renderer {
         rendererContext = new RendererContext( pixelSize, res, graphics, this, bbox, width, worldToScreen );
     }
 
-    private void calculateResolution( final Envelope bbox ) {
-        try {
-            if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
-                 || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
-                res = bbox.getSpan0() / width; // use x for resolution
-            } else {
-                // heuristics more or less copied from d2, TODO is use the proper UTM conversion
-                Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
-                double minx = box.getMin().get0(), miny = box.getMin().get1();
-                double maxx = minx + box.getSpan0();
-                double r = 6378.137;
-                double rad = PI / 180d;
-                double cose = sin( rad * minx ) * sin( rad * maxx ) + cos( rad * minx ) * cos( rad * maxx );
-                double dist = r * acos( cose ) * cos( rad * miny );
-                res = abs( dist * 1000 / width );
-            }
-        } catch ( ReferenceResolvingException e ) {
-            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
-            LOG.debug( "Stack trace:", e );
-            res = bbox.getSpan0() / width; // use x for resolution
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
-            LOG.debug( "Stack trace:", e );
-            res = bbox.getSpan0() / width; // use x for resolution
-        } catch ( Throwable e ) {
-            LOG.warn( "Could not transform bbox, assuming it's in meter..." );
-            LOG.debug( "Stack trace:", e );
-            res = bbox.getSpan0() / width; // use x for resolution
-        }
-    }
-
-    private void render( PointStyling styling, double x, double y ) {
-        Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( x, y ), null );
-        x = p.x;
-        y = p.y;
-
-        Graphic g = styling.graphic;
-        Rectangle2D.Double rect = rendererContext.fillRenderer.getGraphicBounds( g, x, y, styling.uom );
-
-        if ( g.image == null && g.imageURL == null ) {
-            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom,
-                        rendererContext, rect.getMinX(), rect.getMinY(), g.rotation );
-            return;
-        }
-
-        BufferedImage img = g.image;
-
-        // try if it's an svg
-        if ( img == null && g.imageURL != null ) {
-            img = rendererContext.svgRenderer.prepareSvg( rect, g );
-        }
-
-        if ( img != null ) {
-            AffineTransform t = graphics.getTransform();
-            if ( !isZero( g.rotation ) ) {
-                graphics.rotate( toRadians( g.rotation ), x, y );
-            }
-            graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
-            graphics.setTransform( t );
-        }
-    }
-
     @Override
     public void render( PointStyling styling, Geometry geom ) {
         if ( geom == null ) {
@@ -227,7 +147,7 @@ public class Java2DRenderer implements Renderer {
 
         if ( geom instanceof Point ) {
             geom = rendererContext.geomHelper.transform( geom );
-            render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
+            rendererContext.pointRenderer.render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
             return;
         }
         geom = rendererContext.clipper.clipGeometry( geom );
@@ -335,21 +255,6 @@ public class Java2DRenderer implements Renderer {
                 render( (PolygonStyling) styling, geom );
             }
         }
-    }
-
-    final double considerUOM( final double in, final UOM uom ) {
-        switch ( uom ) {
-        case Pixel:
-            return in * 0.28 / pixelSize;
-        case Foot:
-            // TODO properly convert the res to foot
-            return in / res;
-        case Metre:
-            return in / res;
-        case mm:
-            return in / pixelSize;
-        }
-        return in;
     }
 
 }

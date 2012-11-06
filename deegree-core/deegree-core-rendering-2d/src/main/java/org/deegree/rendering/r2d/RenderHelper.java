@@ -36,7 +36,12 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+import static java.lang.Math.acos;
+import static java.lang.Math.cos;
 import static java.lang.Math.max;
+import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static org.deegree.cs.components.Unit.METRE;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
@@ -50,9 +55,11 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.CRSUtils;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
@@ -264,6 +271,39 @@ public class RenderHelper {
             worldToScreen.scale( scalex, -scaley );
         }
         return new Pair<Envelope, DoublePair>( bbox, new DoublePair( scalex, scaley ) );
+    }
+
+    static double calculateResolution( final Envelope bbox, int width ) {
+        double res;
+        try {
+            if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
+                 || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
+                res = bbox.getSpan0() / width; // use x for resolution
+            } else {
+                // heuristics more or less copied from d2, TODO is use the proper UTM conversion
+                Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
+                double minx = box.getMin().get0(), miny = box.getMin().get1();
+                double maxx = minx + box.getSpan0();
+                double r = 6378.137;
+                double rad = PI / 180d;
+                double cose = sin( rad * minx ) * sin( rad * maxx ) + cos( rad * minx ) * cos( rad * maxx );
+                double dist = r * acos( cose ) * cos( rad * miny );
+                res = abs( dist * 1000 / width );
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+            res = bbox.getSpan0() / width; // use x for resolution
+        } catch ( UnknownCRSException e ) {
+            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+            res = bbox.getSpan0() / width; // use x for resolution
+        } catch ( Throwable e ) {
+            LOG.warn( "Could not transform bbox, assuming it's in meter..." );
+            LOG.debug( "Stack trace:", e );
+            res = bbox.getSpan0() / width; // use x for resolution
+        }
+        return res;
     }
 
 }

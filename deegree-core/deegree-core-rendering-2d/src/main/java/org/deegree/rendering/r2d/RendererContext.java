@@ -75,6 +75,8 @@ class RendererContext {
 
     Graphics2D graphics;
 
+    PointRenderer pointRenderer;
+
     RendererContext( double pixelSize, double res, Graphics2D graphics, Java2DRenderer renderer, Envelope bbox,
                      int width, AffineTransform worldToScreen ) {
         this.graphics = graphics;
@@ -88,6 +90,7 @@ class RendererContext {
         svgRenderer = new SvgRenderer();
         polygonRenderer = new PolygonRenderer( geomHelper, fillRenderer, strokeRenderer, graphics, renderer );
         curveRenderer = new CurveRenderer( renderer );
+        pointRenderer = new PointRenderer( renderer.worldToScreen, this );
     }
 
 }
