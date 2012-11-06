@@ -45,6 +45,6 @@ package org.deegree.time.position;
  */
 public interface TemporalPosition extends Comparable<TemporalPosition> {
 
-    public IndeterminateValue getIndeterminateValue();
+    IndeterminateValue getIndeterminateValue();
 
 }

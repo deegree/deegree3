@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import java.util.List;
-
 import org.deegree.commons.config.ExtendedResourceProvider;
 
 /**
@@ -47,4 +45,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * @version $Revision$, $Date$
  */
 public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWS> {
+
+    // specifies type parameter
+
 }

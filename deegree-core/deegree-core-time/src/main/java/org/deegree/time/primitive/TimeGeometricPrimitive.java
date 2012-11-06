@@ -42,5 +42,5 @@ public interface TimeGeometricPrimitive extends TimePrimitive {
      * 
      * @return time frame, can be <code>null</code>
      */
-    public String getFrame();
+    String getFrame();
 }

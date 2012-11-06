@@ -39,11 +39,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.time.TimeObject;
 import org.deegree.time.complex.TimeComplex;
@@ -142,8 +140,8 @@ public class GMLTimeReader {
      * @return corresponding {@link TimeObject} object
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Geometry" element
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
+     * @throws javax.xml.stream.XMLStreamException
+     * @throws org.deegree.cs.exceptions.UnknownCRSException
      */
     public TimeObject readTimeObject( XMLStreamReader xmlStream ) {
         String localName = xmlStream.getLocalName();

@@ -317,9 +317,9 @@ public class CacheRasterReader extends GridFileReader {
         BufferResult res = null;
         if ( rect != null ) {
             // check if the reader has new data
-            if ( !cacheFileUpToDate() ) {
-                clear( true );
-            }
+//            if ( !cacheFileUpToDate() ) {
+//                clear( true );
+//            }
             lastReadAccess = currentTimeMillis();
 
             // now get the data in memory
@@ -538,12 +538,12 @@ public class CacheRasterReader extends GridFileReader {
      * 
      * @return true if the last access time later then the last modification to the backed file.
      */
-    private boolean cacheFileUpToDate() {
-        if ( cachedReader != null && cachedReader.file() != null ) {
-            return lastReadAccess > cachedReader.file().lastModified();
-        }
-        return true;
-    }
+//    private boolean cacheFileUpToDate() {
+//        if ( cachedReader != null && cachedReader.file() != null ) {
+//            return lastReadAccess > cachedReader.file().lastModified();
+//        }
+//        return true;
+//    }
 
     /**
      * Get a tile buffer from the cache, it will be read only.
@@ -634,14 +634,14 @@ public class CacheRasterReader extends GridFileReader {
         long freedUpMemory = 0;
         if ( gridWriter != null ) {
             synchronized ( LOCK ) {
-                if ( !cacheFileUpToDate() ) {
-                    // the original file is newer, don't save anything and remove the memory buffers as well.
-                    freedUpMemory = this.inMemorySize;
-                    clear( true );
-                    if ( this.inMemorySize != 0 ) {
-                        LOG.warn( "After clearing the cache entry some allocated memory remains, this may not be!" );
-                    }
-                } else {
+//                if ( !cacheFileUpToDate() ) {
+//                    // the original file is newer, don't save anything and remove the memory buffers as well.
+//                    freedUpMemory = this.inMemorySize;
+//                    clear( true );
+//                    if ( this.inMemorySize != 0 ) {
+//                        LOG.warn( "After clearing the cache entry some allocated memory remains, this may not be!" );
+//                    }
+//                } else {
                     gridWriter.leaveStreamOpen( true );
                     boolean rewriteInfo = false;
                     for ( int row = 0; row < getTileRows(); ++row ) {
@@ -686,7 +686,7 @@ public class CacheRasterReader extends GridFileReader {
                         }
                         gridWriter.leaveStreamOpen( false );
                     }
-                }
+//                }
             }
         }
         return freedUpMemory;
