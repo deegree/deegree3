@@ -35,30 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
-import static org.deegree.coverage.rangeset.Interval.Closure.open;
-import static org.deegree.coverage.rangeset.ValueType.Void;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.coverage.rangeset.AxisSubset;
-import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
-import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
-import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerQuery;
-import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.dims.DimensionInterval;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.style.StyleRef;
@@ -80,10 +70,13 @@ public class CoverageLayer extends AbstractLayer {
 
     private final MultiResolutionRaster multiraster;
 
+    private CoverageDimensionHandler dimensionHandler;
+
     public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
         super( md );
         this.raster = raster;
         this.multiraster = multiraster;
+        dimensionHandler = new CoverageDimensionHandler( md.getDimensions() );
     }
 
     @Override
@@ -92,7 +85,7 @@ public class CoverageLayer extends AbstractLayer {
         try {
             Envelope bbox = query.getEnvelope();
 
-            RangeSet filter = getDimensionFilter( query.getDimensions(), headers );
+            RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
 
             StyleRef ref = query.getStyle();
             if ( !ref.isResolved() ) {
@@ -102,21 +95,8 @@ public class CoverageLayer extends AbstractLayer {
             // handle SLD/SE scale settings
             style = style == null ? null : style.filter( query.getScale() );
 
-            InterpolationType interpol = NEAREST_NEIGHBOR;
             Interpolation fromRequest = query.getRenderingOptions().getInterpolation( getMetadata().getName() );
-            if ( fromRequest != null ) {
-                switch ( fromRequest ) {
-                case BICUBIC:
-                    LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
-                case BILINEAR:
-                    interpol = BILINEAR;
-                    break;
-                case NEARESTNEIGHBOR:
-                case NEARESTNEIGHBOUR:
-                    interpol = NEAREST_NEIGHBOR;
-                    break;
-                }
-            }
+            InterpolationType interpol = determineInterpolation( fromRequest );
 
             AbstractRaster raster = this.raster;
             if ( raster == null ) {
@@ -134,13 +114,31 @@ public class CoverageLayer extends AbstractLayer {
         return null;
     }
 
+    private InterpolationType determineInterpolation( Interpolation fromRequest ) {
+        InterpolationType interpol = NEAREST_NEIGHBOR;
+        if ( fromRequest != null ) {
+            switch ( fromRequest ) {
+            case BICUBIC:
+                LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
+            case BILINEAR:
+                interpol = BILINEAR;
+                break;
+            case NEARESTNEIGHBOR:
+            case NEARESTNEIGHBOUR:
+                interpol = NEAREST_NEIGHBOR;
+                break;
+            }
+        }
+        return interpol;
+    }
+
     @Override
     public CoverageLayerData infoQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
         try {
             Envelope bbox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
 
-            RangeSet filter = getDimensionFilter( query.getDimensions(), headers );
+            RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
 
             StyleRef ref = query.getStyle();
             if ( !ref.isResolved() ) {
@@ -165,80 +163,6 @@ public class CoverageLayer extends AbstractLayer {
             LOG.trace( "Stack trace:", e );
         }
         return null;
-    }
-
-    private RangeSet getDimensionFilter( Map<String, List<?>> dims, List<String> headers )
-                            throws OWSException {
-
-        LinkedList<AxisSubset> ops = new LinkedList<AxisSubset>();
-
-        // TODO TIME, how to do this with raster API? Needs test data.
-        for ( String name : getMetadata().getDimensions().keySet() ) {
-            List<SingleValue<?>> singleValues = new LinkedList<SingleValue<?>>();
-            List<Interval<?, ?>> intervals = new LinkedList<Interval<?, ?>>();
-
-            Dimension<?> dim = getMetadata().getDimensions().get( name );
-
-            List<?> vals = dims.get( name );
-
-            if ( dims.get( name ) == null ) {
-                vals = dim.getDefaultValue();
-
-                if ( vals == null ) {
-                    throw new OWSException( "The value for the " + name + " dimension is missing.",
-                                            "MissingDimensionValue" );
-                }
-                String units = dim.getUnits();
-                if ( name.equals( "elevation" ) ) {
-                    headers.add( "99 Default value used: elevation=" + vals.get( 0 ) + " "
-                                 + ( units == null ? "m" : units ) );
-                } else {
-                    headers.add( "99 Default value used: DIM_" + name + "=" + vals.get( 0 ) + " " + units );
-                }
-            }
-
-            for ( Object o : vals ) {
-
-                if ( !dim.getNearestValue() && !dim.isValid( o ) ) {
-                    throw new OWSException( "The value for the " + name + " dimension is invalid: " + o.toString(),
-                                            "InvalidDimensionValue" );
-                }
-
-                if ( o instanceof DimensionInterval<?, ?, ?> ) {
-                    DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-                    final String min = iv.min.toString();
-                    final String max = iv.max.toString();
-                    intervals.add( new Interval<String, String>( new SingleValue<String>( Void, min ),
-                                                                 new SingleValue<String>( Void, max ), open, null,
-                                                                 false, null ) );
-                } else {
-                    if ( dim.getNearestValue() ) {
-                        Object nearest = dim.getNearestValue( o );
-                        if ( !nearest.equals( o ) ) {
-                            o = nearest;
-                            if ( "elevation".equals( name ) ) {
-                                headers.add( "99 Nearest value used: elevation=" + o + " " + dim.getUnits() );
-                            } else {
-                                headers.add( "99 Nearest value used: DIM_" + name + "=" + o + " " + dim.getUnits() );
-                            }
-                        }
-                    }
-                    singleValues.add( new SingleValue<String>( Void, o.toString() ) );
-                }
-            }
-
-            if ( singleValues.size() > 1 && ( !dim.getMultipleValues() ) ) {
-                throw new OWSException( "The value for ELEVATION is invalid: " + vals.toString(),
-                                        "InvalidDimensionValue", "elevation" );
-            }
-
-            ops.add( new AxisSubset( BandType.BAND_0.name(), null, intervals, singleValues ) );
-        }
-
-        if ( ops.isEmpty() ) {
-            return null;
-        }
-        return new RangeSet( ops );
     }
 
 }
