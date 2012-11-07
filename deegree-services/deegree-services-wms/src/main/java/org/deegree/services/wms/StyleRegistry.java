@@ -90,10 +90,13 @@ public class StyleRegistry extends TimerTask {
 
     private StyleBuilder builder;
 
+    private SldStyleBuilder sldBuilder;
+
     public StyleRegistry( DeegreeWorkspace workspace ) {
         this.styleManager = workspace.getSubsystemManager( StyleStoreManager.class );
         // please take note that the style builder instance modifies field values from this class!
         builder = new StyleBuilder( styleManager, soleStyleFiles, soleLegendFiles, this, workspace );
+        sldBuilder = new SldStyleBuilder( styleManager, this, workspace );
     }
 
     /**
@@ -285,7 +288,7 @@ public class StyleRegistry extends TimerTask {
      * @param adapter
      */
     public void load( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
-        builder.parse( layerName, adapter, styles );
+        sldBuilder.parse( layerName, adapter, styles );
     }
 
     /**
