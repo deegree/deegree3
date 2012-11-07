@@ -41,6 +41,25 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>de.jflex</groupId>
+        <artifactId>maven-jflex-plugin</artifactId>
+      </plugin>
+  <!--    <plugin>
+        <groupId>edu.tum.es</groupId>
+        <artifactId>cup-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <className>org.deegree.layer.dims.parser</className>
+          <symbolsName>org.deegree.layer.dims.sym</symbolsName>
+        </configuration>
+      </plugin>-->
     </plugins>
   </build>
 
