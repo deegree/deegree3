@@ -38,7 +38,6 @@ package org.deegree.services.wms;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
