@@ -66,6 +66,23 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>de.jflex</groupId>
+          <artifactId>maven-jflex-plugin</artifactId>
+          <version>1.4.3</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>edu.tum.es</groupId>
+          <artifactId>cup-maven-plugin</artifactId>
+          <version>1.0.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
           <version>0.8.0</version>
