@@ -45,6 +45,7 @@ import java.util.Map;
 
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
@@ -85,10 +86,21 @@ public class LayerMetadata {
 
     private List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
 
+    private List<Pair<String, String>> identifiers = new ArrayList<Pair<String, String>>();
+
+    private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
+
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
         this.description = description;
         this.spatialMetadata = spatialMetadata;
+    }
+
+    public LayerMetadata( List<Pair<String, String>> identifier, List<Pair<String, String>> authorities, String name,
+                          Description description, SpatialMetadata spatialMetadata ) {
+        this( name, description, spatialMetadata );
+        this.identifiers = identifier;
+        this.authorities = authorities;
     }
 
     public void setDescription( Description description ) {
@@ -324,6 +336,36 @@ public class LayerMetadata {
      */
     public List<MetadataUrl> getMetadataUrls() {
         return metadataUrls;
+    }
+
+    /**
+     * @return the identifiers, first element of a pair is the identifier, second the authority
+     */
+    public List<Pair<String, String>> getIdentifiers() {
+        return identifiers;
+    }
+
+    /**
+     * @param identifiers
+     *            the identifiers to set, first element of a pair is the identifier, second the authority
+     */
+    public void setIdentifiers( List<Pair<String, String>> identifiers ) {
+        this.identifiers = identifiers;
+    }
+
+    /**
+     * @return the authorities
+     */
+    public List<Pair<String, String>> getAuthorities() {
+        return authorities;
+    }
+
+    /**
+     * @param authorities
+     *            the authorities to set
+     */
+    public void setAuthorities( List<Pair<String, String>> authorities ) {
+        this.authorities = authorities;
     }
 
 }

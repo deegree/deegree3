@@ -269,6 +269,23 @@ public abstract class WMSCapabilitiesAdapterTest {
         assertEquals( "http://www.deegree.org", metadataUrl.getOnlineResource().toExternalForm() );
         assertEquals( "TC211", metadataUrl.getType() );
         assertEquals( "text/html", metadataUrl.getFormat() );
+    }
+
+    @Test
+    public void testWMSCapabilitiesLayerIdentifierAnAuthorities()
+                            throws XMLStreamException {
+        WMSCapabilitiesAdapter capabilities = createCapabilities();
+        LayerMetadata layer = capabilities.getLayer( "cite:BuildingCenters" );
+        
+        List<Pair<String, String>> identifiers = layer.getIdentifiers();
+        assertEquals( 1, identifiers.size() );
+        assertEquals( "II.BuildingCenters", identifiers.get( 0 ).first );
+        assertEquals( "AUTH", identifiers.get( 0 ).second );
+        
+        List<Pair<String, String>> authorities = layer.getAuthorities();
+        assertEquals( 1, authorities.size() );
+        assertEquals( "AUTH", authorities.get( 0 ).first );
+        assertEquals( "http://authority.de", authorities.get( 0 ).second );
 
     }
 

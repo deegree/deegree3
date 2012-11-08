@@ -342,6 +342,8 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
     private LayerMetadata extractMetadata( OMElement lay ) {
         String name = getNodeAsString( lay, new XPath( getPrefix() + "Name", nsContext ), null );
         String title = getNodeAsString( lay, new XPath( getPrefix() + "Title", nsContext ), null );
+        List<Pair<String, String>> ids = parseIdentifiers( lay );
+        List<Pair<String, String>> authorities = parseAuthorities( lay );
         String abstract_ = getNodeAsString( lay, new XPath( getPrefix() + "Abstract", nsContext ), null );
         List<Pair<List<LanguageString>, CodeType>> keywords = null;
         OMElement kwlist = getElement( lay, new XPath( getPrefix() + "KeywordList", nsContext ) );
@@ -380,7 +382,7 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         }
 
         SpatialMetadata smd = new SpatialMetadata( envelope, crsList );
-        LayerMetadata md = new LayerMetadata( name, desc, smd );
+        LayerMetadata md = new LayerMetadata( ids, authorities, name, desc, smd );
 
         String casc = lay.getAttributeValue( new QName( "cascaded" ) );
         if ( casc != null ) {
@@ -406,6 +408,31 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         }
         md.setStyles( styles );
         return md;
+    }
+
+    private List<Pair<String, String>> parseAuthorities( OMElement lay ) {
+        List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
+        List<OMElement> authorityElements = getElements( lay, new XPath( getPrefix() + "AuthorityURL", nsContext ) );
+        for ( OMElement authorityElement : authorityElements ) {
+            String authority = getNodeAsString( authorityElement, new XPath( "@name" ), null );
+            String authorityUrl = getNodeAsString( authorityElement, new XPath( getPrefix()
+                                                                                 + "OnlineResource/@xlink:href", nsContext ), null );
+            authorities.add( new Pair<String, String>( authority, authorityUrl ) );
+        }
+        return authorities;
+    }
+
+    private List<Pair<String, String>> parseIdentifiers( OMElement lay ) {
+        List<Pair<String, String>> identifiers = new ArrayList<Pair<String, String>>();
+        List<OMElement> identiferElements = getElements( lay, new XPath( getPrefix() + "Identifier", nsContext ) );
+        for ( OMElement identifierElement : identiferElements ) {
+            String id = identifierElement.getText();
+            if ( id != null && id.length() > 0 ) {
+                String authority = getNodeAsString( identifierElement, new XPath( "@authority" ), null );
+                identifiers.add( new Pair<String, String>( id, authority ) );
+            }
+        }
+        return identifiers;
     }
 
     private Style parseStyle( String styleName, OMElement styleEl )

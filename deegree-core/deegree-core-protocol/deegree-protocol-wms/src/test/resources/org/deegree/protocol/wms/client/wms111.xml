@@ -262,6 +262,10 @@
           <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
           <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
             resy="-1.0" />
+          <AuthorityURL name="AUTH">
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://authority.de"/>
+          </AuthorityURL>
+          <Identifier authority="AUTH">II.BuildingCenters</Identifier>
           <Style>
             <Name>default</Name>
             <Title>cite:BuildingCenters (default)</Title>

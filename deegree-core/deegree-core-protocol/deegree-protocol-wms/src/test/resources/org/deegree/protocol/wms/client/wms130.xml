@@ -252,6 +252,10 @@
             resy="-1.0" />
           <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
             resy="-1.0" />
+          <wms:AuthorityURL name="AUTH">
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://authority.de"/>
+          </wms:AuthorityURL>
+          <wms:Identifier authority="AUTH">II.BuildingCenters</wms:Identifier>
           <wms:MetadataURL type="ISO19115:2003">
             <wms:Format>text/html</wms:Format>
             <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
