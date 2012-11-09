@@ -41,7 +41,6 @@ import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
 import static org.apache.maven.project.artifact.MavenMetadataSource.createArtifacts;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
@@ -166,13 +165,7 @@ public class ClasspathHelper {
                 }
             } );
 
-        } catch ( MalformedURLException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        } catch ( ArtifactResolutionException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        } catch ( ArtifactNotFoundException e ) {
-            throw new MojoExecutionException( e.getLocalizedMessage(), e );
-        } catch ( InvalidDependencyVersionException e ) {
+        } catch ( Throwable e ) {
             throw new MojoExecutionException( e.getLocalizedMessage(), e );
         }
     }

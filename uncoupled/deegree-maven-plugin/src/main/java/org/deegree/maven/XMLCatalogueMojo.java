@@ -67,104 +67,99 @@ import com.google.common.base.Predicate;
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision: 31419 $, $Date: 2011-08-02 17:42:17 +0200 (Tue, 02 Aug
- *          2011) $
+ * @version $Revision: 31419 $, $Date: 2011-08-02 17:42:17 +0200 (Tue, 02 Aug 2011) $
  */
 public class XMLCatalogueMojo extends AbstractMojo {
 
-	/**
-	 * @parameter default-value="${project}"
-	 * @required
-	 * @readonly
-	 */
-	private MavenProject project;
+    /**
+     * @parameter default-value="${project}"
+     * @required
+     * @readonly
+     */
+    private MavenProject project;
 
-	/**
-	 * @component
-	 */
-	private ArtifactResolver artifactResolver;
+    /**
+     * @component
+     */
+    private ArtifactResolver artifactResolver;
 
-	/**
-	 * 
-	 * @component
-	 */
-	private ArtifactFactory artifactFactory;
+    /**
+     * 
+     * @component
+     */
+    private ArtifactFactory artifactFactory;
 
-	/**
-	 * 
-	 * @component
-	 */
-	private ArtifactMetadataSource metadataSource;
+    /**
+     * 
+     * @component
+     */
+    private ArtifactMetadataSource metadataSource;
 
-	/**
-	 * 
-	 * @parameter expression="${localRepository}"
-	 */
-	private ArtifactRepository localRepository;
+    /**
+     * 
+     * @parameter expression="${localRepository}"
+     */
+    private ArtifactRepository localRepository;
 
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		File target = new File(project.getBasedir(), "target");
-		target.mkdirs();
-		target = new File(target, "deegree.xmlcatalog");
+    @Override
+    public void execute()
+                            throws MojoExecutionException, MojoFailureException {
+        File target = new File( project.getBasedir(), "target" );
+        target.mkdirs();
+        target = new File( target, "deegree.xmlcatalog" );
 
-		PrintStream catalogOut = null;
-		try {
-			catalogOut = new PrintStream(new FileOutputStream(target));
-			final PrintStream catalog = catalogOut;
+        PrintStream catalogOut = null;
+        try {
+            catalogOut = new PrintStream( new FileOutputStream( target ) );
+            final PrintStream catalog = catalogOut;
 
-			addDependenciesToClasspath(project, artifactResolver,
-					artifactFactory, metadataSource, localRepository);
+            addDependenciesToClasspath( project, artifactResolver, artifactFactory, metadataSource, localRepository );
 
-			final XMLInputFactory fac = XMLInputFactory.newInstance();
-			final Reflections r = new Reflections("/META-INF/schemas/");
+            final XMLInputFactory fac = XMLInputFactory.newInstance();
+            final Reflections r = new Reflections( "/META-INF/schemas/" );
 
-			class CurrentState {
-				String location;
-			}
+            class CurrentState {
+                String location;
+            }
 
-			final CurrentState state = new CurrentState();
+            final CurrentState state = new CurrentState();
 
-			r.collect("META-INF/schemas", new Predicate<String>() {
-				@Override
-				public boolean apply(String input) {
-					state.location = input;
-					return input != null && input.endsWith(".xsd");
-				}
-			}, new Serializer() {
-				@Override
-				public Reflections read(InputStream in) {
-					try {
-						XMLStreamReader reader = fac.createXMLStreamReader(in);
-						nextElement(reader);
-						String location = "classpath:META-INF/schemas/"
-								+ state.location;
-						String ns = reader.getAttributeValue(null,
-								"targetNamespace");
-						catalog.println("PUBLIC \"" + ns + "\" \"" + location
-								+ "\"");
-					} catch (Throwable e) {
-						getLog().error(e);
-					}
-					return r;
-				}
+            r.collect( "META-INF/schemas", new Predicate<String>() {
+                @Override
+                public boolean apply( String input ) {
+                    state.location = input;
+                    return input != null && input.endsWith( ".xsd" );
+                }
+            }, new Serializer() {
+                @Override
+                public Reflections read( InputStream in ) {
+                    try {
+                        XMLStreamReader reader = fac.createXMLStreamReader( in );
+                        nextElement( reader );
+                        String location = "classpath:META-INF/schemas/" + state.location;
+                        String ns = reader.getAttributeValue( null, "targetNamespace" );
+                        catalog.println( "PUBLIC \"" + ns + "\" \"" + location + "\"" );
+                    } catch ( Throwable e ) {
+                        getLog().error( e );
+                    }
+                    return r;
+                }
 
-				@Override
-				public File save(Reflections reflections, String filename) {
-					return null;
-				}
+                @Override
+                public File save( Reflections reflections, String filename ) {
+                    return null;
+                }
 
-				@Override
-				public String toString(Reflections reflections) {
-					return null;
-				}
-			});
-		} catch (Throwable t) {
-			throw new MojoFailureException("Creating xml catalog failed: "
-					+ t.getLocalizedMessage());
-		} finally {
-			closeQuietly(catalogOut);
-		}
-	}
+                @Override
+                public String toString( Reflections reflections ) {
+                    return null;
+                }
+            } );
+        } catch ( Throwable t ) {
+            throw new MojoFailureException( "Creating xml catalog failed: " + t.getLocalizedMessage() );
+        } finally {
+            closeQuietly( catalogOut );
+        }
+    }
 
 }
