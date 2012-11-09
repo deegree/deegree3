@@ -36,6 +36,11 @@ Workspaces and global configuration files
 
 Besides the workspace configuration files, deegree webservices support a small number of global configuration files. Subdirectories in the deegree configuration directory are workspace directories:
 
+.. raw:: latex
+
+   \begin{table}
+   \begin{center}
+
 .. table:: Global configuration files and workspace directories
 +------------------------+------------------------------------------+
 | File name              | Function                                 |
@@ -48,6 +53,12 @@ Besides the workspace configuration files, deegree webservices support a small n
 +------------------------+------------------------------------------+
 | webapps.properties     | Selects the active workspace             |
 +------------------------+------------------------------------------+
+
+.. raw:: latex
+
+   \end{center}
+   \caption{Global configuration files and workspace directories}
+   \end{table}
 
 .. tip::
   Usually, you don't need to take care of any files that are located in this directory. In order to adapt deegree webservices to your needs, you will need to create or edit configuration files in the active workspace directory. Therefore, the rest of the documentation will refer to configuration files in the (active) workspace directory.
