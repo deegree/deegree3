@@ -54,9 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
@@ -66,8 +64,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -117,19 +113,7 @@ public class ServiceIntegrationTestHelper {
                 log.error( input );
                 throw new MojoFailureException( "Retrieving capabilities from " + address + " failed." );
             }
-        } catch ( MalformedURLException e ) {
-            log.debug( e );
-            throw new MojoFailureException( "Retrieving capabilities for " + service + " failed: "
-                                            + e.getLocalizedMessage() );
-        } catch ( XMLStreamException e ) {
-            log.debug( e );
-            throw new MojoFailureException( "Retrieving capabilities for " + service + " failed: "
-                                            + e.getLocalizedMessage() );
-        } catch ( FactoryConfigurationError e ) {
-            log.debug( e );
-            throw new MojoFailureException( "Retrieving capabilities for " + service + " failed: "
-                                            + e.getLocalizedMessage() );
-        } catch ( IOException e ) {
+        } catch ( Throwable e ) {
             log.debug( e );
             throw new MojoFailureException( "Retrieving capabilities for " + service + " failed: "
                                             + e.getLocalizedMessage() );
@@ -173,13 +157,7 @@ public class ServiceIntegrationTestHelper {
             log.debug( e );
             throw new MojoFailureException( "Retrieving map for " + currentLayer + " failed: "
                                             + e.getLocalizedMessage() );
-        } catch ( IllegalArgumentException e ) {
-            log.debug( e );
-            throw new MojoFailureException( "Layer " + currentLayer + " had no bounding box." );
-        } catch ( TransformationException e ) {
-            log.debug( e );
-            throw new MojoFailureException( "Layer " + currentLayer + " had no bounding box." );
-        } catch ( UnknownCRSException e ) {
+        } catch ( Throwable e ) {
             log.debug( e );
             throw new MojoFailureException( "Layer " + currentLayer + " had no bounding box." );
         }

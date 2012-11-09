@@ -114,33 +114,13 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
                             throws MojoExecutionException, MojoFailureException {
         Log log = getLog();
 
-        File dir = new File( project.getBasedir(), "src/main/webapp/WEB-INF/workspace" );
-        if ( !dir.isDirectory() ) {
-            dir = new File( project.getBasedir(), "src/main/webapp/WEB-INF/conf" );
-        }
-        if ( !dir.isDirectory() ) {
-            dir = new File( project.getBasedir(), "src/main/workspace" );
-        }
+        File dir = determineWorkspaceDirectory();
 
         try {
             Set<?> workspaces = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
                                                         localRepository, "deegree-workspace", true );
 
-            Set<?> jarDeps = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
-                                                     localRepository, "jar", false );
-
-            File modules = new File( dir, "modules" );
-            if ( !jarDeps.isEmpty() && !modules.isDirectory() && !modules.mkdirs() ) {
-                throw new MojoFailureException( "Could not create modules directory in workspace." );
-            }
-            for ( Object o : jarDeps ) {
-                Artifact a = (Artifact) o;
-                if ( a.getScope() == null || a.getScope().equalsIgnoreCase( "runtime" )
-                     || a.getScope().equalsIgnoreCase( "compile" ) ) {
-                    log.info( "Copying " + a + " to workspace modules directory." );
-                    copyFileToDirectory( a.getFile(), modules );
-                }
-            }
+            copyDependencies( log, dir );
 
             for ( Object o : workspaces ) {
                 Artifact a = (Artifact) o;
@@ -163,6 +143,37 @@ public class WorkspaceInplaceMojo extends AbstractMojo {
                                             + e.getLocalizedMessage(), e );
         }
 
+    }
+
+    private void copyDependencies( Log log, File dir )
+                            throws MojoFailureException, IOException, ArtifactResolutionException,
+                            ArtifactNotFoundException, InvalidDependencyVersionException {
+        Set<?> jarDeps = getDependencyArtifacts( project, artifactResolver, artifactFactory, metadataSource,
+                                                 localRepository, "jar", false );
+
+        File modules = new File( dir, "modules" );
+        if ( !jarDeps.isEmpty() && !modules.isDirectory() && !modules.mkdirs() ) {
+            throw new MojoFailureException( "Could not create modules directory in workspace." );
+        }
+        for ( Object o : jarDeps ) {
+            Artifact a = (Artifact) o;
+            if ( a.getScope() == null || a.getScope().equalsIgnoreCase( "runtime" )
+                 || a.getScope().equalsIgnoreCase( "compile" ) ) {
+                log.info( "Copying " + a + " to workspace modules directory." );
+                copyFileToDirectory( a.getFile(), modules );
+            }
+        }
+    }
+
+    private File determineWorkspaceDirectory() {
+        File dir = new File( project.getBasedir(), "src/main/webapp/WEB-INF/workspace" );
+        if ( !dir.isDirectory() ) {
+            dir = new File( project.getBasedir(), "src/main/webapp/WEB-INF/conf" );
+        }
+        if ( !dir.isDirectory() ) {
+            dir = new File( project.getBasedir(), "src/main/workspace" );
+        }
+        return dir;
     }
 
 }
