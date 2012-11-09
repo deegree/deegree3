@@ -106,6 +106,7 @@ class TileDataSetBuilder {
         List<String> layers = splitNullSafe( requestParams.getLayers() );
         List<String> styles = splitNullSafe( requestParams.getStyles() );
         String format = requestParams.getFormat();
+        String crs = requestParams.getCRS();
 
         if ( outputFormat.startsWith( "image/" ) ) {
             outputFormat = outputFormat.substring( 6 );
@@ -113,7 +114,7 @@ class TileDataSetBuilder {
 
         List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
         for ( TileMatrix tm : tms.getTileMatrices() ) {
-            TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat );
+            TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs );
             dataLevels.add( 0, m );
         }
 

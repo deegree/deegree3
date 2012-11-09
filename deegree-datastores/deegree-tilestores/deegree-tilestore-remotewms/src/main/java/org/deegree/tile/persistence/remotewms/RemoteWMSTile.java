@@ -49,6 +49,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
@@ -90,10 +91,13 @@ class RemoteWMSTile implements Tile {
     @Override
     public BufferedImage getAsImage()
                             throws TileIOException {
+        InputStream in = null;
         try {
-            return ImageIO.read( getAsStream() );
+            return ImageIO.read( in = getAsStream() );
         } catch ( IOException e ) {
             throw new TileIOException( "Error decoding image : " + e.getMessage(), e );
+        } finally {
+            IOUtils.closeQuietly( in );
         }
     }
 

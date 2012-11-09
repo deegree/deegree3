@@ -37,6 +37,8 @@ package org.deegree.tile.persistence.remotewms;
 
 import java.util.List;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient;
@@ -71,6 +73,8 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
 
     private final String recodedOutputFormat;
 
+    private ICRS crs;
+
     /**
      * Creates a new {@link RemoteWMSTileDataLevel} instance.
      * 
@@ -86,9 +90,11 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
      *            the WMS client to use, must not be <code>null</code>
      * @param recodedOutputFormat
      *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
+     * @param crs
+     *            the crs to request maps with, may be null
      */
     RemoteWMSTileDataLevel( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
-                            WMSClient client, String recodedOutputFormat ) {
+                            WMSClient client, String recodedOutputFormat, String crs ) {
         this.metadata = tileMd;
         this.format = format;
         this.layers = layers;
@@ -97,6 +103,9 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
         this.tileSizeX = tileMd.getTilePixelsX();
         this.tileSizeY = tileMd.getTilePixelsY();
         this.client = client;
+        if ( crs != null ) {
+            this.crs = CRSManager.getCRSRef( crs );
+        }
     }
 
     @Override
@@ -115,8 +124,11 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
         Envelope envelope = fac.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
-        GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope,
-                                envelope.getCoordinateSystem(), format, true );
+        ICRS crs = this.crs;
+        if ( crs == null ) {
+            crs = envelope.getCoordinateSystem();
+        }
+        GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope, crs, format, true );
         return new RemoteWMSTile( client, gm, recodedOutputFormat );
     }
 }
