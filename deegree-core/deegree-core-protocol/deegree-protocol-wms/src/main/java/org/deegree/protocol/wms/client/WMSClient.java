@@ -77,7 +77,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
@@ -433,7 +432,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     }
 
     private static FeatureCollection readESRICollection( XMLStreamReader reader, String idPrefix )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
 
         int count = 0;
@@ -459,7 +458,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     }
 
     private static FeatureCollection readMyWMSCollection( XMLStreamReader reader )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
 
         nextElement( reader );
@@ -496,7 +495,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     }
 
     private static FeatureCollection readUMNCollection( XMLStreamReader reader )
-                            throws NoSuchElementException, XMLStreamException {
+                            throws XMLStreamException {
         GenericFeatureCollection col = new GenericFeatureCollection();
         nextElement( reader );
 
@@ -859,8 +858,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         map.put( "service", "WMS" );
         map.put( "layers", join( ",", getMap.getLayers() ) );
         map.put( "styles", "" );
-        if ( getMap.getStyles().size() > 0 ) {
-            map.put( "styles", join( ",", getMap.getStyles() ) );
+        LinkedList<StyleRef> styles = new LinkedList<StyleRef>( getMap.getStyles() );
+        if ( styles.size() > 0 ) {
+            while ( styles.size() < getMap.getLayers().size() ) {
+                styles.add( new StyleRef( "default" ) );
+            }
+            map.put( "styles", join( ",", styles ) );
         }
         map.put( "width", Integer.toString( getMap.getWidth() ) );
         map.put( "height", Integer.toString( getMap.getHeight() ) );
