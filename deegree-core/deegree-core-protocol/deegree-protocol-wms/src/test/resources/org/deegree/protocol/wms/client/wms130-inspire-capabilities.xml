@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities xmlns="http://www.opengis.net/wms" xmlns:sld="http://www.opengis.net/sld"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
+  xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" updateSequence="1.1.0" version="1.3.0"
+  xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
+  <Service>
+    <Name>WMS</Name>
+    <Title>deegree wms</Title>
+    <wms:Abstract xmlns:wms="http://www.opengis.net/wms">wms reference implementation</wms:Abstract>
+    <wms:KeywordList xmlns:wms="http://www.opengis.net/wms">
+      <wms:Keyword>deegree</wms:Keyword>
+      <wms:Keyword>wms</wms:Keyword>
+    </wms:KeywordList>
+    <wms:OnlineResource xmlns:wms="http://www.opengis.net/wms" xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+      xlink:type="simple" />
+    <wms:ContactInformation xmlns:wms="http://www.opengis.net/wms">
+      <wms:ContactPersonPrimary>
+        <wms:ContactPerson>Andreas Poth</wms:ContactPerson>
+        <wms:ContactOrganization>lat/lon</wms:ContactOrganization>
+      </wms:ContactPersonPrimary>
+      <wms:ContactPosition>Technical Director</wms:ContactPosition>
+      <wms:ContactAddress>
+        <wms:AddressType>postal</wms:AddressType>
+        <wms:Address>Aennchenstr. 19</wms:Address>
+        <wms:City>Bonn</wms:City>
+        <wms:StateOrProvince>NRW</wms:StateOrProvince>
+        <wms:PostCode>53177</wms:PostCode>
+        <wms:Country>Germany</wms:Country>
+      </wms:ContactAddress>
+      <wms:ContactVoiceTelephone>0049228184960</wms:ContactVoiceTelephone>
+      <wms:ContactFacsimileTelephone>00492281849629</wms:ContactFacsimileTelephone>
+      <wms:ContactElectronicMailAddress>info@lat-lon.de</wms:ContactElectronicMailAddress>
+    </wms:ContactInformation>
+    <wms:Fees xmlns:wms="http://www.opengis.net/wms">none</wms:Fees>
+    <wms:AccessConstraints xmlns:wms="http://www.opengis.net/wms">none</wms:AccessConstraints>
+    <LayerLimit>25</LayerLimit>
+    <MaxWidth>1024</MaxWidth>
+    <MaxHeight>768</MaxHeight>
+  </Service>
+  <Capability>
+    <Request>
+      <wms:GetCapabilities xmlns:wms="http://www.opengis.net/wms">
+        <wms:Format>text/xml</wms:Format>
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get>
+              <wms:OnlineResource xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+                xlink:type="simple" />
+            </wms:Get>
+          </wms:HTTP>
+        </wms:DCPType>
+      </wms:GetCapabilities>
+      <wms:GetMap xmlns:wms="http://www.opengis.net/wms">
+        <wms:Format>image/png</wms:Format>
+        <wms:Format>image/png; mode=8bit</wms:Format>
+        <wms:Format>image/png; mode=24bit</wms:Format>
+        <wms:Format>image/jpg</wms:Format>
+        <wms:Format>image/jpeg</wms:Format>
+        <wms:Format>image/gif</wms:Format>
+        <wms:Format>image/tif</wms:Format>
+        <wms:Format>image/bmp</wms:Format>
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get>
+              <wms:OnlineResource xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+                xlink:type="simple" />
+            </wms:Get>
+            <wms:Post>
+              <wms:OnlineResource xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+                xlink:type="simple" />
+            </wms:Post>
+          </wms:HTTP>
+        </wms:DCPType>
+      </wms:GetMap>
+      <wms:GetFeatureInfo xmlns:wms="http://www.opengis.net/wms">
+        <wms:Format>application/vnd.ogc.gml</wms:Format>
+        <wms:Format>text/plain</wms:Format>
+        <wms:Format>text/html</wms:Format>
+        <wms:DCPType>
+          <wms:HTTP>
+            <wms:Get>
+              <wms:OnlineResource xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+                xlink:type="simple" />
+            </wms:Get>
+          </wms:HTTP>
+        </wms:DCPType>
+      </wms:GetFeatureInfo>
+      <sld:GetLegendGraphic>
+        <wms:Format xmlns:wms="http://www.opengis.net/wms">image/gif</wms:Format>
+        <wms:Format xmlns:wms="http://www.opengis.net/wms">image/png</wms:Format>
+        <wms:Format xmlns:wms="http://www.opengis.net/wms">image/jpeg</wms:Format>
+        <wms:Format xmlns:wms="http://www.opengis.net/wms">image/jpg</wms:Format>
+        <wms:Format xmlns:wms="http://www.opengis.net/wms">image/tif</wms:Format>
+        <wms:Format xmlns:wms="http://www.opengis.net/wms">image/bmp</wms:Format>
+        <wms:DCPType xmlns:wms="http://www.opengis.net/wms">
+          <wms:HTTP>
+            <wms:Get>
+              <wms:OnlineResource xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+                xlink:type="simple" />
+            </wms:Get>
+          </wms:HTTP>
+        </wms:DCPType>
+      </sld:GetLegendGraphic>
+    </Request>
+    <Exception>
+      <Format>XML</Format>
+      <Format>INIMAGE</Format>
+      <Format>BLANK</Format>
+    </Exception>
+    <inspire_vs:ExtendedCapabilities>
+      <inspire_common:ResourceLocator>
+        <inspire_common:URL>http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?</inspire_common:URL>
+        <inspire_common:MediaType>application/vnd.ogc.wms_xml</inspire_common:MediaType>
+      </inspire_common:ResourceLocator>
+      <inspire_common:ResourceType>service</inspire_common:ResourceType>
+      <inspire_common:TemporalReference>
+        <inspire_common:DateOfCreation>2003-01-01</inspire_common:DateOfCreation>
+        <inspire_common:DateOfPublication>2003-01-01</inspire_common:DateOfPublication>
+        <inspire_common:TemporalExtent>
+          <inspire_common:IndividualDate>2003-01-01T09:30:47Z</inspire_common:IndividualDate>
+        </inspire_common:TemporalExtent>
+      </inspire_common:TemporalReference>
+      <inspire_common:Conformity>
+        <inspire_common:Specification xsi:type="inspire_common:citationInspireNSRegulation_dut">
+          <inspire_common:Title>Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten</inspire_common:Title>
+          <inspire_common:DateOfPublication>2009-10-19</inspire_common:DateOfPublication>
+          <inspire_common:URI>CELEX:32009R0976:NL:NOT</inspire_common:URI>
+          <inspire_common:ResourceLocator>
+            <inspire_common:URL>http://eurlex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32009R0976:NL:NOT</inspire_common:URL>
+            <inspire_common:MediaType>text/html</inspire_common:MediaType>
+          </inspire_common:ResourceLocator>
+        </inspire_common:Specification>
+        <inspire_common:Degree>notEvaluated</inspire_common:Degree>
+      </inspire_common:Conformity>
+      <inspire_common:MetadataPointOfContact>
+        <inspire_common:OrganisationName>MScontact
+        </inspire_common:OrganisationName>
+        <inspire_common:EmailAddress> contactPoint@organisation.country
+        </inspire_common:EmailAddress>
+      </inspire_common:MetadataPointOfContact>
+      <inspire_common:MetadataDate>2010-11-27</inspire_common:MetadataDate>
+      <inspire_common:SpatialDataServiceType>view</inspire_common:SpatialDataServiceType>
+      <inspire_common:MandatoryKeyword xsi:type="inspire_common:classificationOfSpatialDataService">
+        <inspire_common:KeywordValue>infoMapAccessService</inspire_common:KeywordValue>
+      </inspire_common:MandatoryKeyword>
+      <inspire_common:Keyword xsi:type="inspire_common:inspireTheme_dut">
+        <inspire_common:OriginatingControlledVocabulary
+          xsi:type="inspire_common:originatingControlledVocabularyGemetInspireThemes">
+          <inspire_common:Title>GEMET - INSPIRE themes</inspire_common:Title>
+          <inspire_common:DateOfPublication>2008-06- 01</inspire_common:DateOfPublication>
+        </inspire_common:OriginatingControlledVocabulary>
+        <inspire_common:KeywordValue>Administratieve eenheden</inspire_common:KeywordValue>
+      </inspire_common:Keyword>
+      <inspire_common:Keyword>
+        <inspire_common:KeywordValue xsi:type="inspire_common:topicCategory">boundaries</inspire_common:KeywordValue>
+      </inspire_common:Keyword>
+      <inspire_common:SupportedLanguages xsi:type="inspire_common:supportedLanguagesType">
+        <inspire_common:DefaultLanguage>
+          <inspire_common:Language>dut</inspire_common:Language>
+        </inspire_common:DefaultLanguage>
+        <inspire_common:SupportedLanguage>
+          <inspire_common:Language>eng</inspire_common:Language>
+        </inspire_common:SupportedLanguage>
+      </inspire_common:SupportedLanguages>
+      <inspire_common:ResponseLanguage>
+        <inspire_common:Language>dut</inspire_common:Language>
+      </inspire_common:ResponseLanguage>
+    </inspire_vs:ExtendedCapabilities>
+    <wms:Layer xmlns:wms="http://www.opengis.net/wms" cascaded="0" noSubsets="0" opaque="0" queryable="0">
+      <wms:Title>cite:deegree 2 Demo WMS</wms:Title>
+      <wms:Abstract>deegree demo WMS</wms:Abstract>
+      <wms:KeywordList>
+        <wms:Keyword>deegree</wms:Keyword>
+        <wms:Keyword>layer</wms:Keyword>
+      </wms:KeywordList>
+      <wms:CRS>EPSG:4326</wms:CRS>
+      <wms:CRS>CRS:84</wms:CRS>
+      <wms:EX_GeographicBoundingBox>
+        <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+        <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+        <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+        <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+      </wms:EX_GeographicBoundingBox>
+      <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+        resy="-1.0" />
+      <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+        resy="-1.0" />
+      <wms:MetadataURL type="TC211">
+        <wms:Format>text/html</wms:Format>
+        <wms:OnlineResource xlink:href="http://www.deegree.org" xlink:type="simple" />
+      </wms:MetadataURL>
+      <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+      <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+      <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+        <wms:Name>citelayers</wms:Name>
+        <wms:Title>citetitle</wms:Title>
+        <wms:Abstract>deegree demo WMS</wms:Abstract>
+        <wms:KeywordList>
+          <wms:Keyword>deegree</wms:Keyword>
+          <wms:Keyword>layer</wms:Keyword>
+        </wms:KeywordList>
+        <wms:CRS>EPSG:4326</wms:CRS>
+        <wms:CRS>CRS:84</wms:CRS>
+        <wms:EX_GeographicBoundingBox>
+          <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+          <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+          <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+          <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+        </wms:EX_GeographicBoundingBox>
+        <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+          resy="-1.0" />
+        <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+          resy="-1.0" />
+        <wms:MetadataURL type="ISO19115:2003">
+          <wms:Format>text/html</wms:Format>
+          <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+        </wms:MetadataURL>
+        <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+        <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:BasicPolygons</wms:Name>
+          <wms:Title>cite:BasicPolygons</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:BasicPolygons (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:BasicPolygons&amp;style=default:cite:BasicPolygons&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>0.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>1.0E7</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:Bridges</wms:Name>
+          <wms:Title>cite:Bridges</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:Bridges (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:Bridges&amp;style=default:cite:Bridges&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:BuildingCenters</wms:Name>
+          <wms:Title>cite:BuildingCenters</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:AuthorityURL name="AUTH">
+            <wms:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
+              xlink:href="http://authority.de" />
+          </wms:AuthorityURL>
+          <wms:Identifier authority="AUTH">II.BuildingCenters</wms:Identifier>
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:BuildingCenters (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:BuildingCenters&amp;style=default:cite:BuildingCenters&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:Buildings</wms:Name>
+          <wms:Title>cite:Buildings</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:Buildings (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:Buildings&amp;style=default:cite:Buildings&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:DividedRoutes</wms:Name>
+          <wms:Title>cite:DividedRoutes</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:DividedRoutes (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:DividedRoutes&amp;style=default:cite:DividedRoutes&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:Forests</wms:Name>
+          <wms:Title>cite:Forests</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:Forests (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:Forests&amp;style=default:cite:Forests&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:Lakes</wms:Name>
+          <wms:Title>cite:Lakes</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:Lakes (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:Lakes&amp;style=default:cite:Lakes&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:MapNeatline</wms:Name>
+          <wms:Title>cite:MapNeatline</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:MapNeatline (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:MapNeatline&amp;style=default:cite:MapNeatline&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:NamedPlaces</wms:Name>
+          <wms:Title>cite:NamedPlaces</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:NamedPlaces (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:NamedPlaces&amp;style=default:cite:NamedPlaces&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:Ponds</wms:Name>
+          <wms:Title>cite:Ponds</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:Ponds (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:Ponds&amp;style=default:cite:Ponds&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:RoadSegments</wms:Name>
+          <wms:Title>cite:RoadSegments</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:RoadSegments (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:RoadSegments&amp;style=default:cite:RoadSegments&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+        <wms:Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <wms:Name>cite:Streams</wms:Name>
+          <wms:Title>cite:Streams</wms:Title>
+          <wms:Abstract>deegree demo WMS</wms:Abstract>
+          <wms:KeywordList>
+            <wms:Keyword>deegree</wms:Keyword>
+            <wms:Keyword>layer</wms:Keyword>
+          </wms:KeywordList>
+          <wms:CRS>EPSG:4326</wms:CRS>
+          <wms:CRS>CRS:84</wms:CRS>
+          <wms:EX_GeographicBoundingBox>
+            <wms:westBoundLongitude>-180.0</wms:westBoundLongitude>
+            <wms:eastBoundLongitude>180.0</wms:eastBoundLongitude>
+            <wms:southBoundLatitude>-90.0</wms:southBoundLatitude>
+            <wms:northBoundLatitude>90.0</wms:northBoundLatitude>
+          </wms:EX_GeographicBoundingBox>
+          <wms:BoundingBox CRS="CRS:84" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:BoundingBox CRS="EPSG:4326" maxx="90.0" maxy="180.0" minx="-90.0" miny="-180.0" resx="-1.0"
+            resy="-1.0" />
+          <wms:MetadataURL type="ISO19115:2003">
+            <wms:Format>text/html</wms:Format>
+            <wms:OnlineResource xlink:href="http://www.deegree.org?" xlink:type="simple" />
+          </wms:MetadataURL>
+          <wms:Style>
+            <wms:Name>default</wms:Name>
+            <wms:Title>cite:Streams (default)</wms:Title>
+            <wms:LegendURL height="10" width="10">
+              <wms:Format>image/gif</wms:Format>
+              <wms:OnlineResource
+                xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?request=GetLegendGraphic&amp;version=1.3.0&amp;width=10&amp;height=10&amp;format=image/gif&amp;layer=cite:Streams&amp;style=default:cite:Streams&amp;"
+                xlink:type="simple" />
+            </wms:LegendURL>
+          </wms:Style>
+          <wms:MinScaleDenominator>1.0</wms:MinScaleDenominator>
+          <wms:MaxScaleDenominator>100000.0</wms:MaxScaleDenominator>
+        </wms:Layer>
+      </wms:Layer>
+    </wms:Layer>
+  </Capability>
+</WMS_Capabilities>

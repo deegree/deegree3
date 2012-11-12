@@ -416,7 +416,8 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         for ( OMElement authorityElement : authorityElements ) {
             String authority = getNodeAsString( authorityElement, new XPath( "@name" ), null );
             String authorityUrl = getNodeAsString( authorityElement, new XPath( getPrefix()
-                                                                                 + "OnlineResource/@xlink:href", nsContext ), null );
+                                                                                + "OnlineResource/@xlink:href",
+                                                                                nsContext ), null );
             authorities.add( new Pair<String, String>( authority, authorityUrl ) );
         }
         return authorities;
@@ -601,6 +602,26 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         return new DCP( getEndpoints, postEndpoints );
     }
 
+    /**
+     * @param prefix
+     *            of the element containging the extended capabilities, may be <code>null</code>
+     * @param localName
+     *            localName of the element containing the extended capabilities, never <code>null</code>
+     * @param namespaceUri
+     *            of the element containging the extended capabilities, may be <code>null</code>
+     * @return the {@link OMElement} containing the extended capabilities, may be <code>null</code> if no extended
+     *         capabilities exists
+     */
+    public OMElement getExtendedCapabilities( String prefix, String localName, String namespaceUri ) {
+        if ( prefix != null )
+            nsContext.addNamespace( prefix, namespaceUri );
+        prefix = prefix != null ? ( prefix + ":" ) : "";
+        String xpath = getExtendedCapabilitiesRootXPath() + "/" + prefix + localName;
+        return getElement( rootElement, new XPath( xpath, nsContext ) );
+    }
+
+    protected abstract String getExtendedCapabilitiesRootXPath();
+
     protected abstract Version getServiceVersion();
 
     protected abstract String getPrefix();
@@ -613,4 +634,5 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         layerNameToLatLonBoundingBox = parseLatLonBoxes();
         layerTree = parseLayers();
     }
+
 }

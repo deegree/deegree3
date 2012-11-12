@@ -957,4 +957,18 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     public Tree<LayerMetadata> getLayerTree() {
         return capaDoc.getLayerTree();
     }
+
+    /**
+     * @param prefix
+     *            of the element containging the extended capabilities, may be <code>null</code>
+     * @param localName
+     *            localName of the element containing the extended capabilities, never <code>null</code>
+     * @param namespaceUri
+     *            of the element containging the extended capabilities, may be <code>null</code>
+     * @return the {@link OMElement} containing the extended capabilities, may be <code>null</code> if no extended
+     *         capabilities exists
+     */
+    public OMElement getExtendedCapabilities( String prefix, String localName, String namespaceUri ) {
+        return capaDoc.getExtendedCapabilities( prefix, localName, namespaceUri );
+    }
 }

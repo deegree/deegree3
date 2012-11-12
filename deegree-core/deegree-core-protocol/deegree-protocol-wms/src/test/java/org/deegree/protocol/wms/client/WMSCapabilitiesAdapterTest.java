@@ -49,6 +49,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
@@ -276,12 +277,12 @@ public abstract class WMSCapabilitiesAdapterTest {
                             throws XMLStreamException {
         WMSCapabilitiesAdapter capabilities = createCapabilities();
         LayerMetadata layer = capabilities.getLayer( "cite:BuildingCenters" );
-        
+
         List<Pair<String, String>> identifiers = layer.getIdentifiers();
         assertEquals( 1, identifiers.size() );
         assertEquals( "II.BuildingCenters", identifiers.get( 0 ).first );
         assertEquals( "AUTH", identifiers.get( 0 ).second );
-        
+
         List<Pair<String, String>> authorities = layer.getAuthorities();
         assertEquals( 1, authorities.size() );
         assertEquals( "AUTH", authorities.get( 0 ).first );
@@ -299,6 +300,15 @@ public abstract class WMSCapabilitiesAdapterTest {
         assertTrue( styles.containsKey( "default" ) );
     }
 
+    @Test
+    public void testWMSCapabilitiesInspireExtended()
+                            throws XMLStreamException, UnknownCRSException {
+        WMSCapabilitiesAdapter capabilities = createInspireCapabilities();
+        OMElement extendedCapabilities = capabilities.getExtendedCapabilities( "inspire_vs", "ExtendedCapabilities",
+                                                                               "http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" );
+        assertEquals( "ExtendedCapabilities", extendedCapabilities.getLocalName() );
+    }
+
     protected abstract String getGetGetMapUrl();
 
     protected abstract String getPostGetMapUrl();
@@ -311,6 +321,12 @@ public abstract class WMSCapabilitiesAdapterTest {
      * @return the {@link WMSCapabilitiesAdapter} to test
      */
     protected abstract WMSCapabilitiesAdapter createCapabilities()
+                            throws XMLStreamException;
+
+    /**
+     * @return the {@link WMSCapabilitiesAdapter} to test
+     */
+    protected abstract WMSCapabilitiesAdapter createInspireCapabilities()
                             throws XMLStreamException;
 
 }

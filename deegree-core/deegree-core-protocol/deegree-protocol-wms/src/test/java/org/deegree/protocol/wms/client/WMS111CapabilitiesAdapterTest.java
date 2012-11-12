@@ -73,7 +73,18 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
     @Override
     protected WMSCapabilitiesAdapter createCapabilities()
                             throws XMLStreamException {
-        InputStream is = WMS111CapabilitiesAdapterTest.class.getResourceAsStream( "wms111.xml" );
+        return createCapabilities( "wms111.xml" );
+    }
+
+    @Override
+    protected WMSCapabilitiesAdapter createInspireCapabilities()
+                            throws XMLStreamException {
+        return createCapabilities( "wms111-inspire-capabilities.xml" );
+    }
+
+    private WMSCapabilitiesAdapter createCapabilities( String capabilitiesFile )
+                            throws XMLStreamException {
+        InputStream is = WMS111CapabilitiesAdapterTest.class.getResourceAsStream( capabilitiesFile );
         StAXOMBuilder builder = new StAXOMBuilder( is );
         OMElement capabilities = builder.getDocumentElement();
         WMSCapabilitiesAdapter adapter = new WMS111CapabilitiesAdapter( capabilities );

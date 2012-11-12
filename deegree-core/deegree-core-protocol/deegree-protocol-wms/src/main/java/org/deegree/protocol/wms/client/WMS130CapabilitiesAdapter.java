@@ -115,4 +115,9 @@ public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
         return new Version( 1, 3, 0 );
     }
 
+    @Override
+    protected String getExtendedCapabilitiesRootXPath() {
+        return "//wms:WMS_Capabilities/wms:Capability";
+    }
+
 }

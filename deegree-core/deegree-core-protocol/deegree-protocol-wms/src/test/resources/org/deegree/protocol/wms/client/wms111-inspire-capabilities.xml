@@ -1,0 +1,3066 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM 'http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd' 
+[
+<!ELEMENT VendorSpecificCapabilities (inspire_vs:ExtendedCapabilities)>
+<!-- Scenario 1: Mandatory MetadataUrl element pointing to an INSPIRE
+Compliant ISO metadata document plus language parameters -->
+<!-- Scenario 2: Mandatory (where appropriate) metadata elements not mapped
+to standard capabilities, plus mandatory language parameters, plus OPTIONAL
+MetadataUrl pointing to an INSPIRE Compliant ISO metadata document -->
+<!ELEMENT inspire_vs:ExtendedCapabilities ((
+inspire_common:MetadataUrl,
+inspire_common:SupportedLanguages,
+inspire_common:ResponseLanguage
+) | (
+inspire_common:ResourceLocator+,
+inspire_common:ResourceType,
+inspire_common:TemporalReference+,
+inspire_common:Conformity+,
+inspire_common:MetadataPointOfContact+,
+inspire_common:MetadataDate,
+inspire_common:SpatialDataServiceType,
+inspire_common:MandatoryKeyword+,
+inspire_common:Keyword*,
+inspire_common:SupportedLanguages,
+inspire_common:ResponseLanguage,
+inspire_common:MetadataUrl?
+))>
+<!ATTLIST inspire_vs:ExtendedCapabilities
+xmlns:inspire_vs CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/inspire_vs/1.0'>
+<!ELEMENT inspire_common:MetadataUrl (inspire_common:URL,
+inspire_common:MediaType*)>
+<!ATTLIST inspire_common:MetadataUrl
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'
+xmlns:xsi CDATA #FIXED 'http://www.w3.org/2001/XMLSchemainstance'
+xsi:type CDATA #FIXED 'inspire_common:resourceLocatorType'>
+<!ELEMENT inspire_common:URL (#PCDATA)>
+<!ATTLIST inspire_common:URL
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- inspire_common:MediaType content:
+text/plain
+text/html
+text/xml
+application/xml
+application/json
+application/pdf
+application/rdf+xml
+application/json
+application/soap+xml
+application/vnd.eu.europa.ec.inspire.resource+xml
+application/vnd.google-earth.kml+xml
+application/vnd.google-earth.kml
+application/vnd.google-earth.kmx
+application/vnd.msword
+application/vnd.ms-excel
+application/vnd.ms-powerpoint
+application/vnd.oasis.opendocument.text
+application/vnd.oasis.opendocument.spreadsheet
+application/vnd.oasis.opendocument.presentation
+application/vnd.oasis.opendocument.graphics
+application/gml+xml
+application/vnd.ogc.wms_xml
+application/vnd.ogc.csw_xml
+application/vnd.ogc.csw.capabilities.response_xml
+application/vnd.ogc.csw.GetRecordByIdResponse_xml
+application/vnd.ogc.csw.GetRecordsResponse_xml
+application/vnd.ogc.wfs_xml
+application/vnd.ogc.se_xml
+application/vnd.iso.19139+xml
+-->
+<!ELEMENT inspire_common:MediaType (#PCDATA)>
+<!ATTLIST inspire_common:MediaType
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:SupportedLanguages
+(inspire_common:DefaultLanguage, inspire_common:SupportedLanguage*)>
+<!ATTLIST inspire_common:SupportedLanguages
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:DefaultLanguage (inspire_common:Language)>
+<!ATTLIST inspire_common:DefaultLanguage
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:SupportedLanguage (inspire_common:Language)>
+<!ATTLIST inspire_common:SupportedLanguage
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:ResponseLanguage (inspire_common:Language)>
+<!ATTLIST inspire_common:ResponseLanguage
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- inspire_common:Language:
+bul
+cze
+dan
+dut
+eng
+est
+fin
+fre
+ger
+gre
+hun
+gle
+ita
+lav
+lit
+mlt
+pol
+por
+rum
+slo
+slv
+spa
+swe
+-->
+<!ELEMENT inspire_common:Language (#PCDATA)>
+<!ATTLIST inspire_common:Language
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:ResourceLocator (inspire_common:URL,
+inspire_common:MediaType*)>
+<!ATTLIST inspire_common:ResourceLocator
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- inspire_common:ResourceType content:
+service
+-->
+<!ELEMENT inspire_common:ResourceType (#PCDATA)>
+<!ATTLIST inspire_common:ResourceType
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:TemporalReference (inspire_common:DateOfCreation?,
+inspire_common:DateOfLastRevision?, inspire_common:DateOfPublication*,
+inspire_common:TemporalExtent*)>
+<!ATTLIST inspire_common:TemporalReference
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:DateOfCreation (#PCDATA)>
+<!ATTLIST inspire_common:DateOfCreation
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:DateOfLastRevision (#PCDATA)>
+<!ATTLIST inspire_common:DateOfLastRevision
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:DateOfPublication (#PCDATA)>
+<!ATTLIST inspire_common:DateOfPublication
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:TemporalExtent (inspire_common:IndividualDate |
+inspire_common:IntervalOfDates)>
+<!ATTLIST inspire_common:TemporalExtent
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:IndividualDate (#PCDATA)>
+<!ATTLIST inspire_common:IndividualDate
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:IntervalOfDates (inspire_common:StartingDate,
+inspire_common:EndDate)>
+<!ATTLIST inspire_common:IntervalOfDates
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:StartingDate (#PCDATA)>
+<!ATTLIST inspire_common:StartingDate
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:EndDate (#PCDATA)>
+<!ATTLIST inspire_common:EndDate
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:Conformity (inspire_common:Specification,
+inspire_common:Degree)>
+<!ATTLIST inspire_common:Conformity
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:Specification (inspire_common:Title,
+(
+inspire_common:DateOfPublication
+|
+inspire_common:DateOfCreation
+|
+inspire_common:DateOfLastRevision
+),
+inspire_common:URI*,
+inspire_common:ResourceLocator*)>
+<!ATTLIST inspire_common:Specification
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:Title (#PCDATA)>
+<!ATTLIST inspire_common:Title
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:URI (#PCDATA)>
+<!ATTLIST inspire_common:URI
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- inspire_common:Degree content:
+conformant
+notConformant
+notEvaluated
+-->
+<!ELEMENT inspire_common:Degree (#PCDATA)>
+<!ATTLIST inspire_common:Degree
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:MetadataPointOfContact
+(inspire_common:OrganisationName, inspire_common:EmailAddress)>
+<!ATTLIST inspire_common:MetadataPointOfContact
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:OrganisationName (#PCDATA)>
+<!ATTLIST inspire_common:OrganisationName
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:EmailAddress (#PCDATA)>
+<!ATTLIST inspire_common:EmailAddress
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- YEAR MONTH DAY-TIME-FRACTIONAL SECONDS-TIME ZONE -->
+<!ELEMENT inspire_common:MetadataDate (#PCDATA)>
+<!ATTLIST inspire_common:MetadataDate
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- inspire_common:SpatialDataServiceType content:
+discovery
+view
+download
+transformation
+invoke
+other
+-->
+<!ELEMENT inspire_common:SpatialDataServiceType (#PCDATA)>
+<!ATTLIST inspire_common:SpatialDataServiceType
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:MandatoryKeyword (inspire_common:KeywordValue)>
+<!ATTLIST inspire_common:MandatoryKeyword
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!-- inspire_common:KeywordValue content for inspire_common:MandatoryKeywords: 
+chainDefinitionService
+comEncodingService
+comGeographicCompressionService
+comGeographicFormatConversionService
+comMessagingService
+comRemoteFileAndExecutableManagement
+comService
+comTransferService
+humanCatalogueViewer
+humanChainDefinitionEditor
+humanFeatureGeneralizationEditor
+humanGeographicDataStructureViewer
+humanGeographicFeatureEditor
+humanGeographicSpreadsheetViewer
+humanGeographicSymbolEditor
+humanGeographicViewer
+humanInteractionService
+humanServiceEditor
+humanWorkflowEnactmentManager
+infoCatalogueService
+infoCoverageAccessService
+infoFeatureAccessService
+infoFeatureTypeService
+infoGazetteerService
+infoManagementService
+infoMapAccessService
+infoOrderHandlingService
+infoProductAccessService
+infoRegistryService
+infoSensorDescriptionService
+infoStandingOrderService
+metadataGeographicAnnotationService
+metadataProcessingService
+metadataStatisticalCalculationService
+spatialCoordinateConversionService
+spatialCoordinateTransformationService
+spatialCoverageVectorConversionService
+spatialDimensionMeasurementService
+spatialFeatureGeneralizationService
+spatialFeatureManipulationService
+spatialFeatureMatchingService
+spatialImageCoordinateConversionService
+spatialImageGeometryModelConversionService
+spatialOrthorectificationService
+spatialPositioningService
+spatialProcessingService
+spatialProximityAnalysisService
+spatialRectificationService
+spatialRouteDeterminationService
+spatialSamplingService
+spatialSensorGeometryModelAdjustmentService
+spatialSubsettingService
+spatialTilingChangeService
+subscriptionService
+taskManagementService
+temporalProcessingService
+temporalProximityAnalysisService
+temporalReferenceSystemTransformationService
+temporalSamplingService
+temporalSubsettingService
+thematicChangeDetectionService
+thematicClassificationService
+thematicFeatureGeneralizationService
+thematicGeocodingService
+thematicGeographicInformationExtractionService
+thematicGeoparsingService
+thematicGoparameterCalculationService
+thematicImageManipulationService
+thematicImageProcessingService
+thematicImageSynthesisService
+thematicImageUnderstandingService
+thematicMultibandImageManipulationService
+thematicObjectDetectionService
+thematicProcessingService
+thematicReducedResolutionGenerationService
+thematicSpatialCountingService
+thematicSubsettingService
+workflowEnactmentService
+-->
+<!ELEMENT inspire_common:KeywordValue (#PCDATA)>
+<!ATTLIST inspire_common:KeywordValue
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+<!ELEMENT inspire_common:Keyword
+(inspire_common:OriginatingControlledVocabulary?,
+inspire_common:KeywordValue)>
+<!ATTLIST inspire_common:Keyword
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'
+xmlns:xsi CDATA #FIXED 'http://www.w3.org/2001/XMLSchemainstance'
+xsi:type (
+inspire_common:inspireTheme_bul|
+inspire_common:inspireTheme_cze|
+inspire_common:inspireTheme_dan|
+inspire_common:inspireTheme_dut|
+inspire_common:inspireTheme_eng|
+inspire_common:inspireTheme_est|
+inspire_common:inspireTheme_fin|
+inspire_common:inspireTheme_fre|
+inspire_common:inspireTheme_ger|
+inspire_common:inspireTheme_gre|
+inspire_common:inspireTheme_hun|
+inspire_common:inspireTheme_gle|
+inspire_common:inspireTheme_ita|
+inspire_common:inspireTheme_lav|
+inspire_common:inspireTheme_lit|
+inspire_common:inspireTheme_mlt|
+inspire_common:inspireTheme_pol|
+inspire_common:inspireTheme_por|
+inspire_common:inspireTheme_rum|
+inspire_common:inspireTheme_slo|
+inspire_common:inspireTheme_slv|
+inspire_common:inspireTheme_spa|
+inspire_common:inspireTheme_swe
+) #IMPLIED>
+<!--inspire_common:Title content's : GEMET - INSPIRE themes => inspire_common:DateOfPublication content's : 2008-06-01 -->
+<!ELEMENT inspire_common:OriginatingControlledVocabulary
+(inspire_common:Title,
+(
+inspire_common:DateOfPublication
+|
+inspire_common:DateOfCreation
+|
+inspire_common:DateOfLastRevision
+),
+inspire_common:URI*,
+inspire_common:ResourceLocator*)>
+<!ATTLIST inspire_common:OriginatingControlledVocabulary
+xmlns:inspire_common CDATA #FIXED
+'http://inspire.ec.europa.eu/schemas/common/1.0'>
+]>
+
+
+<WMT_MS_Capabilities updateSequence="1.1.0" version="1.1.1">
+  <Service>
+    <Name>WMS</Name>
+    <Title>deegree wms</Title>
+    <Abstract>wms reference implementation</Abstract>
+    <KeywordList>
+      <Keyword>deegree</Keyword>
+      <Keyword>wms</Keyword>
+    </KeywordList>
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+      xlink:type="simple" />
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>Andreas Poth</ContactPerson>
+        <ContactOrganization>lat/lon</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>Technical Director</ContactPosition>
+      <ContactAddress>
+        <AddressType>postal</AddressType>
+        <Address>Aennchenstr. 19</Address>
+        <City>Bonn</City>
+        <StateOrProvince>NRW</StateOrProvince>
+        <PostCode>53177</PostCode>
+        <Country>Germany</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone>0049228184960</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>00492281849629</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>none</Fees>
+    <AccessConstraints>none</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+                xlink:type="simple" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/png; mode=24bit</Format>
+        <Format>image/jpg</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/gif</Format>
+        <Format>image/tif</Format>
+        <Format>image/bmp</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+                xlink:type="simple" />
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+                xlink:type="simple" />
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>text/plain</Format>
+        <Format>text/html</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+                xlink:type="simple" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+      <GetLegendGraphic>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/jpg</Format>
+        <Format>image/gif</Format>
+        <Format>image/tif</Format>
+        <Format>image/bmp</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+                xlink:type="simple" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetLegendGraphic>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/vnd.ogc.se_inimage</Format>
+      <Format>application/vnd.ogc.se_blank</Format>
+    </Exception>
+    <VendorSpecificCapabilities>
+      <inspire_vs:ExtendedCapabilities xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0">
+        <!-- SC1: link INSPIRE metadata for this NS -->
+        <inspire_common:MetadataUrl xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance" xsi:type="inspire_common:resourceLocatorType">
+          <inspire_common:URL xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">discoveryServiceURL?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;id=METADATA_IDENTIFIER&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</inspire_common:URL>
+          <inspire_common:MediaType xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>
+        </inspire_common:MetadataUrl>
+        <inspire_common:SupportedLanguages xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">
+          <inspire_common:DefaultLanguage>
+            <inspire_common:Language xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">fre</inspire_common:Language>
+          </inspire_common:DefaultLanguage>
+          <inspire_common:SupportedLanguage>
+            <inspire_common:Language xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">eng</inspire_common:Language>
+          </inspire_common:SupportedLanguage>
+        </inspire_common:SupportedLanguages>
+        <inspire_common:ResponseLanguage xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">
+          <inspire_common:Language xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">eng</inspire_common:Language>
+        </inspire_common:ResponseLanguage>
+      </inspire_vs:ExtendedCapabilities>
+    </VendorSpecificCapabilities>
+    <UserDefinedSymbolization RemoteWFS="1" SupportSLD="1" UserLayer="1" UserStyle="1" />
+    <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+      <Title>deegree 2.3 Demo WMS</Title>
+      <Abstract>deegree demo WMS</Abstract>
+      <KeywordList>
+        <Keyword>deegree</Keyword>
+        <Keyword>layer</Keyword>
+      </KeywordList>
+      <SRS>EPSG:4326</SRS>
+      <SRS>EPSG:26912</SRS>
+      <SRS>EPSG:25832</SRS>
+      <SRS>EPSG:25833</SRS>
+      <SRS>EPSG:31466</SRS>
+      <SRS>EPSG:31467</SRS>
+      <SRS>EPSG:31468</SRS>
+      <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+      <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+      <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+        resy="-1.0" />
+      <MetadataURL type="TC211">
+        <Format>text/html</Format>
+        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.deegree.org"
+          xlink:type="simple" />
+      </MetadataURL>
+      <ScaleHint max="1.0E7" min="0.0" />
+      <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+        <Name>citelayers</Name>
+        <Title>Cite Layers</Title>
+        <Abstract>deegree demo WMS</Abstract>
+        <KeywordList>
+          <Keyword>deegree</Keyword>
+          <Keyword>layer</Keyword>
+        </KeywordList>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:25832</SRS>
+        <SRS>EPSG:25833</SRS>
+        <SRS>EPSG:31466</SRS>
+        <SRS>EPSG:31467</SRS>
+        <SRS>EPSG:31468</SRS>
+        <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+        <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+        <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+          resy="-1.0" />
+        <ScaleHint max="1.0E7" min="0.0" />
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:BasicPolygons</Name>
+          <Title>cite:BasicPolygons</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:BasicPolygons (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:BasicPolygons&amp;style=default:cite:BasicPolygons"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:Bridges</Name>
+          <Title>cite:Bridges</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:Bridges (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:Bridges&amp;style=default:cite:Bridges"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:Buildings</Name>
+          <Title>cite:Buildings</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:Buildings (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:Buildings&amp;style=default:cite:Buildings"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:BuildingCenters</Name>
+          <Title>cite:BuildingCenters</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <AuthorityURL name="AUTH">
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://authority.de"/>
+          </AuthorityURL>
+          <Identifier authority="AUTH">II.BuildingCenters</Identifier>
+          <Style>
+            <Name>default</Name>
+            <Title>cite:BuildingCenters (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:BuildingCenters&amp;style=default:cite:BuildingCenters"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:DividedRoutes</Name>
+          <Title>cite:DividedRoutes</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:DividedRoutes (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:DividedRoutes&amp;style=default:cite:DividedRoutes"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:Forests</Name>
+          <Title>cite:Forests</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:Forests (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:Forests&amp;style=default:cite:Forests"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:Lakes</Name>
+          <Title>cite:Lakes</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:Lakes (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:Lakes&amp;style=default:cite:Lakes"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:MapNeatline</Name>
+          <Title>cite:MapNeatline</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:MapNeatline (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:MapNeatline&amp;style=default:cite:MapNeatline"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:NamedPlaces</Name>
+          <Title>cite:NamedPlaces</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:NamedPlaces (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:NamedPlaces&amp;style=default:cite:NamedPlaces"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:Ponds</Name>
+          <Title>cite:Ponds</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:Ponds (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:Ponds&amp;style=default:cite:Ponds"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:RoadSegments</Name>
+          <Title>cite:RoadSegments</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:RoadSegments (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:RoadSegments&amp;style=default:cite:RoadSegments"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>cite:Streams</Name>
+          <Title>cite:Streams</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="1.0" maxy="1.0" minx="-1.0" miny="-1.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>cite:Streams (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cite:Streams&amp;style=default:cite:Streams"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+      </Layer>
+      <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+        <Title>Utah Demo Data</Title>
+        <Abstract>deegree demo WMS</Abstract>
+        <KeywordList>
+          <Keyword>deegree</Keyword>
+          <Keyword>layer</Keyword>
+        </KeywordList>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:25832</SRS>
+        <SRS>EPSG:25833</SRS>
+        <SRS>EPSG:31466</SRS>
+        <SRS>EPSG:31467</SRS>
+        <SRS>EPSG:31468</SRS>
+        <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+        <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+        <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+          resy="-1.0" />
+        <ScaleHint max="1.0E7" min="0.0" />
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>dem_saltlake</Name>
+          <Title>90m DEM Salt Lake City NW</Title>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="-111.750633647006" maxy="40.875836280377996" minx="-111.9779040644908"
+            miny="40.69239810940439" />
+          <BoundingBox SRS="EPSG:4326" maxx="-111.750633647006" maxy="40.875836280377996" minx="-111.9779040644908"
+            miny="40.69239810940439" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="436751.978" maxy="4525245.0" minx="417375.0" miny="4505071.0"
+            resx="-1.0" resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>default (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=dem_saltlake&amp;style=default"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="1.0E7" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+          <Name>orthoimage</Name>
+          <Title>Ortho Imagery of Salt Lake City</Title>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+            <Name>orthoimage1</Name>
+            <Title>Ortho Imagery of Salt Lake City no Bbox</Title>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="-111.80644038553243" maxy="40.82820182642026" minx="-111.94721360400128"
+              miny="40.719021928792515" />
+            <BoundingBox SRS="EPSG:4326" maxx="-111.80644038553243" maxy="40.82820182642026" minx="-111.94721360400128"
+              miny="40.719021928792515" resx="-1.0" resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="432001.0" maxy="4519999.0" minx="420000.0" miny="4507998.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>orthoimage1 (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=orthoimage1&amp;style=default:orthoimage1"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1.0E7" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+            <Name>bbox</Name>
+            <Title>BBox of Ortho Imagery of Salt Lake City</Title>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>bbox (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=bbox&amp;style=default:bbox"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1.0E7" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>StateBoundary</Name>
+          <Title>StateBoundary</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="-108.0" maxy="43.0" minx="-115.0" miny="36.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>StateBoundary (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=StateBoundary&amp;style=default:StateBoundary"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Utah_Boundary</Name>
+            <Title>Utah_Boundary</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=StateBoundary&amp;style=Utah_Boundary"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="2800.0" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Name>StateOverview</Name>
+          <Title>StateOverview</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <Style>
+            <Name>default</Name>
+            <Title>StateOverview (default)</Title>
+            <LegendURL height="10" width="10">
+              <Format>image/jpeg</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=StateOverview&amp;style=default:StateOverview"
+                xlink:type="simple" />
+            </LegendURL>
+          </Style>
+          <ScaleHint max="2800.0" min="0.0" />
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>Administration</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <MetadataURL type="TC211">
+            <Format>text/html</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.deegree.org"
+              xlink:type="simple" />
+          </MetadataURL>
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Counties</Name>
+            <Title>County Boundaries</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Counties (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Counties&amp;style=default:Counties"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>GreyCounties</Name>
+              <Title>GreyCounties</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Counties&amp;style=GreyCounties"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>ColourfulCounties</Name>
+              <Title>ColourfulCounties</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Counties&amp;style=ColourfulCounties"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>UtahCounties</Name>
+              <Title>UtahCounties</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Counties&amp;style=UtahCounties"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>ZipCodes</Name>
+            <Title>Zip Codes</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>ZipCodes (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=ZipCodes&amp;style=default:ZipCodes"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>ZipCodesPop</Name>
+              <Title>ZipCodes Population</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=ZipCodes&amp;style=ZipCodesPop"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Municipalities</Name>
+            <Title>Municipalities</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Municipalities (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Municipalities&amp;style=default:Municipalities"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>Municipalities1</Name>
+              <Title>Municipalities1</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Municipalities&amp;style=Municipalities1"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Cities</Name>
+            <Title>Cities</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Cities (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Cities&amp;style=default:Cities"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>Geology</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>EnergyResources</Name>
+            <Title>Energy Resources</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>EnergyResources (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=EnergyResources&amp;style=default:EnergyResources"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>Hydrology</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Springs</Name>
+            <Title>Springs of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Springs (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Springs&amp;style=default"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="560.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Lake</Name>
+            <Title>Lakes of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Lake (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Lake&amp;style=default:Lake"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>Lake1</Name>
+              <Title>Lake1</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Lake&amp;style=Lake1"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2100.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Rivers</Name>
+            <Title>Rivers of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Rivers (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Rivers&amp;style=default:Rivers"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2100.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Groundwater</Name>
+            <Title>Groundwater of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Groundwater (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Groundwater&amp;style=default:Groundwater"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2100.0" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>Land Use</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Vegetation</Name>
+            <Title>Dominant Vegetation</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Vegetation (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Vegetation&amp;style=default:Vegetation"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>Infrastructure</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Airports</Name>
+            <Title>Airports of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Airports (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Airports&amp;style=default:Airports"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Roads</Name>
+            <Title>Roads of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Roads (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Roads&amp;style=default:Roads"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1.0E7" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>Railroads</Name>
+            <Title>Railroads of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>Railroads (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=Railroads&amp;style=default:Railroads"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>Elevation</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>ElevationContours</Name>
+            <Title>Elevation Contours</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>ElevationContours (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=ElevationContours&amp;style=default:ElevationContours"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>ElevationContours1</Name>
+              <Title>ElevationContours1</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=ElevationContours&amp;style=ElevationContours1"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1.0E7" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>DigitizeFeatures</Name>
+            <Title>DigitizeFeatures</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>DigitizeFeatures (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=DigitizeFeatures&amp;style=default:DigitizeFeatures"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1.0E7" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>deegree Charts</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="-109.38905328019734" maxy="41.34085515268782" minx="-114.6241536741618"
+            miny="38.09183267509113" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>weatherstation</Name>
+            <Title>Weather Stations of Utah</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="-109.38905328019734" maxy="41.34085515268782" minx="-114.6241536741618"
+              miny="38.09183267509113" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>weatherstation (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=weatherstation&amp;style=default:weatherstation"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>weatherstationPie</Name>
+            <Title>Weather Stations PieChart</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="-109.38905328019734" maxy="41.34085515268782" minx="-114.6241536741618"
+              miny="38.09183267509113" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>weatherstationPie (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=weatherstationPie&amp;style=default:weatherstationPie"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1694.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>weatherstationBar</Name>
+            <Title>Weather Stations BarChart</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="-109.38905328019734" maxy="41.34085515268782" minx="-114.6241536741618"
+              miny="38.09183267509113" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>weatherstationBar (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=weatherstationBar&amp;style=default:weatherstationBar"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1694.0" min="0.0" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>TimeParameter</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Name>WeatherTime</Name>
+            <Title>WeatherStationsWithTime</Title>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Dimension name="time" unitSymbol="" units="ISO8601" />
+            <Style>
+              <Name>default</Name>
+              <Title>weatherstationTime (default)</Title>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=WeatherTime&amp;style=default:WeatherTime"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="1.0E7" min="0.0010" />
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>OpenStreetMap Layers</Title>
+          <Abstract>Contains the OpenStreetMap Slippy Map Layers and the OpenStreetMap Northrhine-Westphalia WMS Data
+            Layers.
+            Contained layers are not active by default. Please have a look into the wms_configuration.xml</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+            <Keyword>OpenStreetMap</Keyword>
+            <Keyword>Slippy Map</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Title>OpenStreetMap Slippy Map</Title>
+            <Abstract>Contains the OpenStreetMap Slippy Map Layers</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+              <Keyword>OpenStreetMap</Keyword>
+              <Keyword>Slippy Map</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <ScaleHint max="1.0E7" min="0.0" />
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+              <Name>OSMSlippyMapMN</Name>
+              <Title>OSM Slippy Map Mapnik</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>OSMSlippyMapMN (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=OSMSlippyMapMN&amp;style=default:OSMSlippyMapMN"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="1400.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>OSMSlippyMaposma</Name>
+              <Title>OSM Slippy Map Osmarender</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>OSMSlippyMaposma (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=OSMSlippyMaposma&amp;style=default:OSMSlippyMaposma"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="1400.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+              <Name>OSMSlippyMapcycle</Name>
+              <Title>OSM Slippy Map CycleMap</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>OSMSlippyMapcycle (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=OSMSlippyMapcycle&amp;style=default:OSMSlippyMapcycle"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="1400.0" min="0.0" />
+            </Layer>
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Title>OpenStreetMap Bonn Data Layers</Title>
+            <Abstract>Contains the more detailed OpenStreetMap Bonn Data</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+              <Keyword>OpenStreetMap</Keyword>
+              <Keyword>Slippy Map</Keyword>
+            </KeywordList>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+            <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+              resx="-1.0" resy="-1.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <ScaleHint max="1.0E7" min="0.0" />
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>gastrobonn</Name>
+              <Title>GastronomyBonn</Title>
+              <Abstract>Layer which allows custom SQL, especially with the SQL Template</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+              <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                resx="-1.0" resy="-1.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>GastronomyBonn (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=gastrobonn&amp;style=default:gastrobonn"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="120.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>placeofworship</Name>
+              <Title>PlacesOfWorshipBonn</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+              <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                resx="-1.0" resy="-1.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>PlacesOfWorshipBonn (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=placeofworship&amp;style=default:placeofworship"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="120.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>roadbonn</Name>
+              <Title>RoadsBonn</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+              <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                resx="-1.0" resy="-1.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <ScaleHint max="120.0" min="0.0" />
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>roadb</Name>
+                <Title>RoadsBonn</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+                <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                  resx="-1.0" resy="-1.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>Roadb (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=roadb&amp;style=default:roadb"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="120.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>expressway1b</Name>
+                <Title>expressway1b</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+                <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                  resx="-1.0" resy="-1.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>expressway1b (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=expressway1b&amp;style=default:expressway1b"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="120.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>expressway2b</Name>
+                <Title>expressway2b</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+                <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                  resx="-1.0" resy="-1.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>expressway2b (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=expressway2b&amp;style=default:expressway2b"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="120.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>motorway1b</Name>
+                <Title>MotorwaysBonn</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+                <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                  resx="-1.0" resy="-1.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>motorwayb (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=motorway1b&amp;style=default:motorway1b"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="120.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>motorway2b</Name>
+                <Title>MotorwaysBonn</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+                <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                  resx="-1.0" resy="-1.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>motorway2b (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=motorway2b&amp;style=default:motorway2b"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="120.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>roadlabelb</Name>
+                <Title>roadlabelb</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+                <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                  resx="-1.0" resy="-1.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>roadlabelb (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=roadlabelb&amp;style=default:roadlabelb"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="120.0" min="0.0" />
+              </Layer>
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>building</Name>
+              <Title>BuildingsBonn</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+              <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                resx="-1.0" resy="-1.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>Building (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=building&amp;style=default:building"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="120.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>labelbuilding</Name>
+              <Title>LabelBuildingBonn</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="7.2313" maxy="50.795" minx="7.0137" miny="50.6415" />
+              <BoundingBox SRS="EPSG:25832" maxx="375348.89" maxy="5628519.59" minx="359556.29" miny="5611842.18"
+                resx="-1.0" resy="-1.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>LabelBuildingBonn (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=labelbuilding&amp;style=default:labelbuilding"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="120.0" min="0.0" />
+            </Layer>
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+            <Title>OpenStreetMap NRW Data Layers</Title>
+            <Abstract>Contains the OpenStreetMap NRW Data Layers</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+              <Keyword>OpenStreetMap</Keyword>
+              <Keyword>Slippy Map</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <ScaleHint max="1.0E7" min="0.0" />
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>railwaystation</Name>
+              <Title>RailwayStationsNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>RailwayStation (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=railwaystation&amp;style=default"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>peak</Name>
+              <Title>PeaksNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>Peak (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=peak&amp;style=default:peak"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>airport</Name>
+              <Title>AirportsNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>Airport (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=airport&amp;style=default:airport"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>populatedplace</Name>
+              <Title>PopulatedPlacesNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>PopulatedPlace (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=populatedplace&amp;style=default:populatedplace"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>adminboundaries</Name>
+              <Title>AdminBoundariesNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>admin (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=adminboundaries&amp;style=default:adminboundaries"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>motorway</Name>
+              <Title>MotorwaysNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <ScaleHint max="840.0" min="0.0" />
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>motorway1</Name>
+                <Title>MotorwaysNRW</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>motorway (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=motorway1&amp;style=default"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="840.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>motorway2</Name>
+                <Title>MotorwaysNRW</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>motorway (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=motorway2&amp;style=default"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="840.0" min="0.0" />
+              </Layer>
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>railway</Name>
+              <Title>RailwayNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <ScaleHint max="840.0" min="0.0" />
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>railway1</Name>
+                <Title>RailwayNRW</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>default (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=railway1&amp;style=default"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="840.0" min="0.0" />
+              </Layer>
+              <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+                <Name>railway2</Name>
+                <Title>RailwayNRW</Title>
+                <Abstract>deegree demo WMS</Abstract>
+                <KeywordList>
+                  <Keyword>deegree</Keyword>
+                  <Keyword>layer</Keyword>
+                </KeywordList>
+                <SRS>EPSG:4326</SRS>
+                <SRS>EPSG:26912</SRS>
+                <SRS>EPSG:25832</SRS>
+                <SRS>EPSG:25833</SRS>
+                <SRS>EPSG:31466</SRS>
+                <SRS>EPSG:31467</SRS>
+                <SRS>EPSG:31468</SRS>
+                <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+                <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                  resy="-1.0" />
+                <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                  resx="-1.0" resy="-1.0" />
+                <Style>
+                  <Name>default</Name>
+                  <Title>default (default)</Title>
+                  <LegendURL height="10" width="10">
+                    <Format>image/jpeg</Format>
+                    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=railway2&amp;style=default"
+                      xlink:type="simple" />
+                  </LegendURL>
+                </Style>
+                <ScaleHint max="840.0" min="0.0" />
+              </Layer>
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>watercourse</Name>
+              <Title>WaterCoursesNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>watercourse (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=watercourse&amp;style=default:watercourse"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>bodyofwaters</Name>
+              <Title>BodyOfWatersNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>bodyofwaters (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=bodyofwaters&amp;style=default:bodyofwaters"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>hikingway</Name>
+              <Title>HikingWaysNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>hiking (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=hikingway&amp;style=default:hiking"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+            <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+              <Name>cycleway</Name>
+              <Title>CycleWaysNRW</Title>
+              <Abstract>deegree demo WMS</Abstract>
+              <KeywordList>
+                <Keyword>deegree</Keyword>
+                <Keyword>layer</Keyword>
+              </KeywordList>
+              <SRS>EPSG:4326</SRS>
+              <SRS>EPSG:26912</SRS>
+              <SRS>EPSG:25832</SRS>
+              <SRS>EPSG:25833</SRS>
+              <SRS>EPSG:31466</SRS>
+              <SRS>EPSG:31467</SRS>
+              <SRS>EPSG:31468</SRS>
+              <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+              <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+                resy="-1.0" />
+              <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+                resx="-1.0" resy="-1.0" />
+              <Style>
+                <Name>default</Name>
+                <Title>cycle (default)</Title>
+                <LegendURL height="10" width="10">
+                  <Format>image/jpeg</Format>
+                  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=cycleway&amp;style=default:cycle"
+                    xlink:type="simple" />
+                </LegendURL>
+              </Style>
+              <ScaleHint max="840.0" min="0.0" />
+            </Layer>
+          </Layer>
+        </Layer>
+        <Layer cascaded="0" noSubsets="0" opaque="0" queryable="1">
+          <Title>WKT Example Layers</Title>
+          <Abstract>deegree demo WMS</Abstract>
+          <KeywordList>
+            <Keyword>deegree</Keyword>
+            <Keyword>layer</Keyword>
+          </KeywordList>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:25832</SRS>
+          <SRS>EPSG:25833</SRS>
+          <SRS>EPSG:31466</SRS>
+          <SRS>EPSG:31467</SRS>
+          <SRS>EPSG:31468</SRS>
+          <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+          <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0" resy="-1.0" />
+          <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0" resx="-1.0"
+            resy="-1.0" />
+          <ScaleHint max="1.0E7" min="0.0" />
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+            <Name>target</Name>
+            <Title>Target</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>target (default)</Title>
+              <Abstract>Target</Abstract>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=target&amp;style=default:target"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+          <Layer cascaded="0" noSubsets="0" opaque="0" queryable="0">
+            <Name>position</Name>
+            <Title>Position</Title>
+            <Abstract>deegree demo WMS</Abstract>
+            <KeywordList>
+              <Keyword>deegree</Keyword>
+              <Keyword>layer</Keyword>
+            </KeywordList>
+            <SRS>EPSG:4326</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:25832</SRS>
+            <SRS>EPSG:25833</SRS>
+            <SRS>EPSG:31466</SRS>
+            <SRS>EPSG:31467</SRS>
+            <SRS>EPSG:31468</SRS>
+            <LatLonBoundingBox maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" />
+            <BoundingBox SRS="EPSG:4326" maxx="180.0" maxy="90.0" minx="-180.0" miny="-90.0" resx="-1.0"
+              resy="-1.0" />
+            <BoundingBox SRS="EPSG:26912" maxx="1504379.0" maxy="5432672.0" minx="0.0" miny="3581352.0"
+              resx="-1.0" resy="-1.0" />
+            <Style>
+              <Name>default</Name>
+              <Title>position (default)</Title>
+              <Abstract>Position</Abstract>
+              <LegendURL height="10" width="10">
+                <Format>image/jpeg</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xlink:href="http://demo.deegree.org:80/deegree-wms/services?request=GetLegendGraphic&amp;version=1.1.1&amp;width=25&amp;height=25&amp;format=image/jpeg&amp;layer=position&amp;style=default:position"
+                  xlink:type="simple" />
+              </LegendURL>
+            </Style>
+            <ScaleHint max="2800.0" min="0.0" />
+          </Layer>
+        </Layer>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMT_MS_Capabilities>

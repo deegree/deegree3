@@ -114,4 +114,8 @@ public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
         return new Version( 1, 1, 1 );
     }
 
+    @Override
+    protected String getExtendedCapabilitiesRootXPath() {
+        return "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities";
+    }
 }

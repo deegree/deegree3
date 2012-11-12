@@ -103,7 +103,18 @@ public class WMS130CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
     @Override
     protected WMSCapabilitiesAdapter createCapabilities()
                             throws XMLStreamException {
-        InputStream is = WMS130CapabilitiesAdapterTest.class.getResourceAsStream( "wms130.xml" );
+        return createCapabilities( "wms130.xml" );
+    }
+
+    @Override
+    protected WMSCapabilitiesAdapter createInspireCapabilities()
+                            throws XMLStreamException {
+        return createCapabilities( "wms130-inspire-capabilities.xml" );
+    }
+
+    private WMSCapabilitiesAdapter createCapabilities( String capabilitiesFile )
+                            throws XMLStreamException {
+        InputStream is = WMS130CapabilitiesAdapterTest.class.getResourceAsStream( capabilitiesFile );
         StAXOMBuilder builder = new StAXOMBuilder( is );
         OMElement capabilities = builder.getDocumentElement();
         WMSCapabilitiesAdapter adapter = new WMS130CapabilitiesAdapter( capabilities );
