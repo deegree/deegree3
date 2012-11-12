@@ -36,17 +36,12 @@
 
 package org.deegree.layer.dims;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.util.List;
-
 import junit.framework.TestCase;
 
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
  * <code>ParserTest</code>
@@ -57,7 +52,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public class ParserTest extends TestCase {
-    private static final Logger LOG = getLogger( ParserTest.class );
 
     /**
      * @throws Exception
@@ -65,48 +59,57 @@ public class ParserTest extends TestCase {
     @Test
     public void testParser()
                             throws Exception {
-        parser p = new parser( new DimensionLexer( new StringReader( "123.445" ) ) );
-        assertEquals( "123.445", ( (List<?>) p.parse().value ).get( 0 ) );
+        DimensionsParser p = getParser( "123.445" );
+        assertEquals( "123.445", p.values.get( 0 ) );
 
-        p = new parser( new DimensionLexer( new StringReader( "123.445/543/2" ) ) );
-        assertEquals( "123.445/543/2", ( (List<?>) p.parse().value ).get( 0 ).toString() );
+        p = getParser( "123.445/543/2" );
+        assertEquals( "123.445/543/2", p.values.get( 0 ).toString() );
 
-        p = new parser( new DimensionLexer( new StringReader( "123.445/543" ) ) );
-        assertEquals( "123.445/543/0", ( (List<?>) p.parse().value ).get( 0 ).toString() );
+        p = getParser( "123.445/543" );
+        assertEquals( "123.445/543/0", p.values.get( 0 ).toString() );
 
-        p = new parser( new DimensionLexer( new StringReader( "a,b,c" ) ) );
+        p = getParser( "a,b,c" );
         // do the quick'n'dirty list 'equals'
-        assertEquals( "[a, b, c]", p.parse().value.toString() );
+        assertEquals( "[a, b, c]", p.values.toString() );
 
-        p = new parser( new DimensionLexer( new StringReader( "    a , b , c   " ) ) );
-        assertEquals( "[a, b, c]", p.parse().value.toString() );
+        p = getParser( "    a , b , c   " );
+        assertEquals( "[a, b, c]", p.values.toString() );
 
-        p = new parser( new DimensionLexer( new StringReader( "a/b/c,b/c/a,c/b/a" ) ) );
-        assertEquals( "[a/b/c, b/c/a, c/b/a]", p.parse().value.toString() );
+        p = getParser( "a/b/c,b/c/a,c/b/a" );
+        assertEquals( "[a/b/c, b/c/a, c/b/a]", p.values.toString() );
 
-        LOG.warn( "Setting std.err to a bytearray print stream, so parser error messages will not be visible in the tests." );
-        PrintStream err = System.err;
-        PrintStream newOut = new PrintStream( new ByteArrayOutputStream() );
-        System.setErr( newOut );
+        p = getParser( "1,2," );
+        assertEquals( "Expected another value after [1, 2].", p.error );
 
-        p = new parser( new DimensionLexer( new StringReader( "1,2," ) ) );
-        assertEquals( "Expected another value after '2,'.", ( (Exception) p.parse().value ).getMessage() );
+        p = getParser( "1/3,2/54/gf," );
+        assertEquals( "Expected another value after [1/3/0, 2/54/gf].", p.error );
 
-        p = new parser( new DimensionLexer( new StringReader( "1/3,2/54/gf," ) ) );
-        assertEquals( "Expected another interval after '2/54/gf,'.", ( (Exception) p.parse().value ).getMessage() );
+        p = getParser( "1/3, single" );
+        assertEquals( "[1/3/0, single]", p.values.toString() );
 
-        p = new parser( new DimensionLexer( new StringReader( "1/3, single" ) ) );
-        assertEquals( "[1/3/0, single]", p.parse().value.toString() );
+        p = getParser( "1/3, single/" );
+        assertEquals( "Missing max value for interval.", p.error );
 
-        p = new parser( new DimensionLexer( new StringReader( "1/3, single/" ) ) );
-        assertEquals( "Missing max value for interval.", ( (Exception) p.parse().value ).getMessage() );
+        p = getParser( "single, pseudointerval/" );
+        assertEquals( "Missing max value for interval.", p.error );
 
-        p = new parser( new DimensionLexer( new StringReader( "single, pseudointerval/" ) ) );
-        assertEquals( "Missing max value for interval.", ( (Exception) p.parse().value ).getMessage() );
+        p = getParser( "one/two, three/four/, " );
+        assertEquals( "Expected another value after [one/two/0, three/four/0].", p.error );
 
-        p = new parser( new DimensionLexer( new StringReader( "one/two, three/four/, " ) ) );
-        assertEquals( "Expected another interval after 'three/four/0,'.", ( (Exception) p.parse().value ).getMessage() );
-        System.setErr( err );
+        p = getParser( "2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S" );
+        assertEquals( "2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S", p.values.get( 0 ).toString() );
+    }
+
+    private static DimensionsParser getParser( String input )
+                            throws RecognitionException {
+        DimensionsLexer lexer = new DimensionsLexer( new ANTLRStringStream( input ) );
+        DimensionsParser parser = new DimensionsParser( new CommonTokenStream( lexer ) );
+        try {
+            parser.dimensionvalues();
+        } catch ( RecognitionException e ) {
+            // ignore exception, error message in the parser
+        }
+        return parser;
     }
 
 }

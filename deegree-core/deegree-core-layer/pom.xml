@@ -42,24 +42,16 @@
         </dependencies>
       </plugin>
       <plugin>
-        <groupId>de.jflex</groupId>
-        <artifactId>maven-jflex-plugin</artifactId>
-      </plugin>
-  <!--    <plugin>
-        <groupId>edu.tum.es</groupId>
-        <artifactId>cup-maven-plugin</artifactId>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr3-maven-plugin</artifactId>
         <executions>
           <execution>
             <goals>
-              <goal>generate</goal>
+              <goal>antlr</goal>
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <className>org.deegree.layer.dims.parser</className>
-          <symbolsName>org.deegree.layer.dims.sym</symbolsName>
-        </configuration>
-      </plugin>-->
+      </plugin>
     </plugins>
   </build>
 
@@ -70,13 +62,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.squirrel-sql.thirdparty.non-maven</groupId>
-      <artifactId>java-cup</artifactId>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>    
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

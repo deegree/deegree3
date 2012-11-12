@@ -44,23 +44,22 @@ package org.deegree.layer.config;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.StringReader;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import java_cup.runtime.Symbol;
-
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.dims.DimensionLexer;
-import org.deegree.layer.dims.parser;
+import org.deegree.layer.dims.DimensionsLexer;
+import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.layer.persistence.base.jaxb.DimensionType;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Builds dimensions map from jaxb configuration.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -74,39 +73,36 @@ public class DimensionConfigBuilder {
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
         Map<String, Dimension<?>> map = new LinkedHashMap<String, Dimension<?>>();
         for ( DimensionType type : dimensions ) {
-            parser parser = new parser( new DimensionLexer( new StringReader( type.getExtent() ) ) );
-            parser defaultParser = null;
+            DimensionsLexer lexer = new DimensionsLexer( new ANTLRStringStream( type.getExtent() ) );
+            DimensionsParser parser = new DimensionsParser( new CommonTokenStream( lexer ) );
+            DimensionsParser defaultParser = null;
             if ( type.getDefaultValue() != null ) {
-                defaultParser = new parser( new DimensionLexer( new StringReader( type.getDefaultValue() ) ) );
+                lexer = new DimensionsLexer( new ANTLRStringStream( type.getDefaultValue() ) );
+                defaultParser = new DimensionsParser( new CommonTokenStream( lexer ) );
             }
 
-            LinkedList<?> list;
-            LinkedList<?> defaultList;
+            List<?> list;
+            List<?> defaultList;
 
             try {
-                Symbol sym = parser.parse();
-                if ( sym.value instanceof Exception ) {
-                    final String msg = ( (Exception) sym.value ).getMessage();
-                    LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                                                      + " '{}' occurred while parsing the extent/default values.",
-                              new Object[] { type.getName(), layerName, msg } );
-                    continue;
+                try {
+                    parser.dimensionvalues();
+                } catch ( RecognitionException e ) {
+                    throw new Exception( parser.error );
                 }
 
-                list = (LinkedList<?>) sym.value;
+                list = parser.values;
 
                 if ( defaultParser != null ) {
-                    sym = defaultParser.parse();
-                    if ( sym.value instanceof Exception ) {
-                        final String msg = ( (Exception) sym.value ).getMessage();
-                        LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                                                          + " '{}' occurred while parsing the extent/default values.",
-                                  new Object[] { type.getName(), layerName, msg } );
-                        continue;
+                    try {
+                        defaultParser.dimensionvalues();
+                    } catch ( RecognitionException e ) {
+                        throw new Exception( defaultParser.error );
                     }
+                    defaultList = defaultParser.values;
+                } else {
+                    defaultList = parser.values;
                 }
-
-                defaultList = (LinkedList<?>) sym.value;
             } catch ( Exception e ) {
                 LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
                                                   + " '{}' occurred while parsing the extent/default values.",
@@ -125,8 +121,8 @@ public class DimensionConfigBuilder {
         return map;
     }
 
-    private static void handleTime( DimensionType type, Map<String, Dimension<?>> map, LinkedList<?> defaultList,
-                                    LinkedList<?> list, String layerName ) {
+    private static void handleTime( DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
+                                    List<?> list, String layerName ) {
         try {
             boolean current = ( type.isCurrent() != null ) && type.isCurrent();
             boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
@@ -140,8 +136,8 @@ public class DimensionConfigBuilder {
         }
     }
 
-    private static void handleElevation( DimensionType type, Map<String, Dimension<?>> map, LinkedList<?> defaultList,
-                                         LinkedList<?> list, String layerName ) {
+    private static void handleElevation( DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
+                                         List<?> list, String layerName ) {
         try {
             boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
             boolean multiple = ( type.isMultipleValues() != null ) && type.isMultipleValues();
@@ -155,8 +151,8 @@ public class DimensionConfigBuilder {
         }
     }
 
-    private static void handleOther( DimensionType type, Map<String, Dimension<?>> map, LinkedList<?> defaultList,
-                                     LinkedList<?> list, String layerName ) {
+    private static void handleOther( DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
+                                     List<?> list, String layerName ) {
         try {
             boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
             boolean multiple = ( type.isMultipleValues() != null ) && type.isMultipleValues();

@@ -147,7 +147,7 @@ public class SLDParser {
                                 in.nextTag();
                                 in.require( END_ELEMENT, null, "Extent" );
 
-                                LinkedList<?> list = parseDimensionValues( value, name.toLowerCase() );
+                                List<?> list = parseDimensionValues( value, name.toLowerCase() );
                                 if ( name.toUpperCase().equals( "TIME" ) ) {
                                     gm.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
                                 } else {

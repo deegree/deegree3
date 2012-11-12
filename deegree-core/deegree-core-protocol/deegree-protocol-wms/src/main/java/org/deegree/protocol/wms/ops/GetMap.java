@@ -59,7 +59,6 @@ import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,8 +67,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import java_cup.runtime.Symbol;
-
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
@@ -80,8 +80,8 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.LayerRef;
-import org.deegree.layer.dims.DimensionLexer;
-import org.deegree.layer.dims.parser;
+import org.deegree.layer.dims.DimensionsLexer;
+import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
@@ -517,24 +517,21 @@ public class GetMap extends RequestBase {
      * @return the parsed list of strings or intervals
      * @throws OWSException
      */
-    public static LinkedList<?> parseDimensionValues( String value, String name )
+    public static List<?> parseDimensionValues( String value, String name )
                             throws OWSException {
-        parser parser = new parser( new DimensionLexer( new StringReader( value ) ) );
+        DimensionsLexer lexer = new DimensionsLexer( new ANTLRStringStream( value ) );
+        DimensionsParser parser = new DimensionsParser( new CommonTokenStream( lexer ) );
         try {
-            Symbol sym = parser.parse();
-            if ( sym.value instanceof Exception ) {
-                final String msg = "The value for the " + name + " dimension parameter was invalid: "
-                                   + ( (Exception) sym.value ).getMessage();
+            parser.dimensionvalues();
+            if ( parser.error != null ) {
+                final String msg = "The value for the " + name + " dimension parameter was invalid: " + parser.error;
                 throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );
             }
-
-            return (LinkedList<?>) sym.value;
-        } catch ( Throwable e ) {
-            LOG.trace( "Stack trace:", e );
-            throw new OWSException(
-                                    "The value for the " + name + " dimension parameter was invalid: " + e.getMessage(),
-                                    OWSException.INVALID_PARAMETER_VALUE );
+            return parser.values;
+        } catch ( RecognitionException e ) {
+            // ignore exception, error message in the parser
         }
+        return null;
     }
 
     private void parse130( Map<String, String> map, MapOptionsMaps exts )

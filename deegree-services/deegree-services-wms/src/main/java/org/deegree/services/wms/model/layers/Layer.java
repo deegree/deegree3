@@ -43,7 +43,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
@@ -53,8 +52,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import java_cup.runtime.Symbol;
-
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.DoublePair;
@@ -74,8 +74,8 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.dims.DimensionLexer;
-import org.deegree.layer.dims.parser;
+import org.deegree.layer.dims.DimensionsLexer;
+import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.rendering.r2d.Renderer;
@@ -181,39 +181,42 @@ public abstract class Layer {
         }
 
         for ( DimensionType type : layer.getDimension() ) {
-            parser parser = new parser( new DimensionLexer( new StringReader( type.getExtent() ) ) );
-            parser defaultParser = null;
+            DimensionsLexer lexer = new DimensionsLexer( new ANTLRStringStream( type.getExtent() ) );
+            DimensionsParser parser = new DimensionsParser( new CommonTokenStream( lexer ) );
+            try {
+                parser.dimensionvalues();
+            } catch ( RecognitionException e ) {
+                // ignore exception, error message in the parser
+            }
+            DimensionsParser defaultParser = null;
             if ( type.getDefaultValue() != null ) {
-                defaultParser = new parser( new DimensionLexer( new StringReader( type.getDefaultValue() ) ) );
+                lexer = new DimensionsLexer( new ANTLRStringStream( type.getDefaultValue() ) );
+                defaultParser = new DimensionsParser( new CommonTokenStream( lexer ) );
+                try {
+                    defaultParser.dimensionvalues();
+                } catch ( RecognitionException e ) {
+                    // ignore exception, error message in the parser
+                }
             }
 
-            LinkedList<?> list;
-            LinkedList<?> defaultList;
+            List<?> list;
+            List<?> defaultList;
 
             try {
-                Symbol sym = parser.parse();
-                if ( sym.value instanceof Exception ) {
-                    final String msg = ( (Exception) sym.value ).getMessage();
-                    LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                                                      + " '{}' occurred while parsing the extent/default values.",
-                              new Object[] { type.getName(), name, msg } );
-                    continue;
+                if ( parser.error != null ) {
+                    throw new Exception( parser.error );
                 }
 
-                list = (LinkedList<?>) sym.value;
+                list = parser.values;
 
                 if ( defaultParser != null ) {
-                    sym = defaultParser.parse();
-                    if ( sym.value instanceof Exception ) {
-                        final String msg = ( (Exception) sym.value ).getMessage();
-                        LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                                                          + " '{}' occurred while parsing the extent/default values.",
-                                  new Object[] { type.getName(), name, msg } );
-                        continue;
+                    if ( defaultParser.error != null ) {
+                        throw new Exception( defaultParser.error );
                     }
+                    defaultList = defaultParser.values;
+                } else {
+                    defaultList = parser.values;
                 }
-
-                defaultList = (LinkedList<?>) sym.value;
             } catch ( Exception e ) {
                 LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
                                                   + " '{}' occurred while parsing the extent/default values.",
