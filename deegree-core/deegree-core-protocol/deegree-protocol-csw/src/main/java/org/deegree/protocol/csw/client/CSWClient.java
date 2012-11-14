@@ -41,11 +41,14 @@ import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.Transaction;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
@@ -62,7 +65,10 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.client.getrecords.GetRecords;
@@ -207,8 +213,48 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     }
 
-    public void getRecordById() {
-        throw new UnsupportedOperationException( "GetRecordById is not implemented yet!" );
+    public List<MetadataRecord> getRecordById( List<String> fileIdentifiers ) {
+        throw new UnsupportedOperationException( "GetRecordById with multiple fileIdentifiers is not implemented yet!" );
+    }
+
+    public MetadataRecord getIsoRecordById( String fileIdentifier )
+
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getRecordById( fileIdentifier, "http://www.isotc211.org/2005/gmd" );
+    }
+
+    public MetadataRecord getRecordById( String fileIdentifier, String schema )
+
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        URL endPoint = getGetUrl( "GetRecordById" );
+
+        Map<String, String> params = getGetRecordByIdKvpParams( fileIdentifier, schema );
+
+        OwsHttpResponse response = httpClient.doGet( endPoint, params, null );
+
+        XMLStreamReader xmlStream = response.getAsXMLStream();
+        XMLStreamUtils.skipStartDocument( xmlStream );
+        moveToNextStartElement( xmlStream );
+        return MetadataRecordFactory.create( xmlStream );
+    }
+
+    private Map<String, String> getGetRecordByIdKvpParams( String fileIdentifier, String schema ) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put( "REQUEST", "GetRecordById" );
+        params.put( "VERSION", "2.0.2" );
+        params.put( "SERVICE", "CSW" );
+        params.put( "OUTPUTSCHEMA", schema );
+
+        params.put( "ID", fileIdentifier );
+        return params;
+    }
+
+    private void moveToNextStartElement( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        xmlStream.next();
+        while ( !xmlStream.isStartElement() && xmlStream.getEventType() != XMLStreamReader.END_DOCUMENT ) {
+            xmlStream.next();
+        }
     }
 
     public TransactionResponse insert( OMElement record )
