@@ -49,8 +49,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -98,10 +100,11 @@ import org.deegree.services.csw.describerecord.DescribeRecordKVPAdapter;
 import org.deegree.services.csw.describerecord.DescribeRecordXMLAdapter;
 import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.DescribeRecordHandler;
-import org.deegree.services.csw.exporthandling.GetRecordByIdHandler;
 import org.deegree.services.csw.exporthandling.GetRecordsHandler;
 import org.deegree.services.csw.exporthandling.TransactionHandler;
+import org.deegree.services.csw.getrecordbyid.DefaultGetRecordByIdHandler;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
+import org.deegree.services.csw.getrecordbyid.GetRecordByIdHandler;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdKVPAdapter;
 import org.deegree.services.csw.getrecordbyid.GetRecordByIdXMLAdapter;
 import org.deegree.services.csw.getrecords.ConfiguredElementName;
@@ -262,7 +265,15 @@ public class CSWController extends AbstractOWS {
         describeRecordHandler = new DescribeRecordHandler();
         getRecordsHandler = new GetRecordsHandler( maxMatches, SCHEMA_LOCATION, store, elNames );
         transactionHandler = new TransactionHandler();
-        getRecordByIdHandler = new GetRecordByIdHandler();
+        getRecordByIdHandler = getGetRecordByIdHandler();
+    }
+
+    private GetRecordByIdHandler getGetRecordByIdHandler() {
+        ServiceLoader<GetRecordByIdHandler> serviceLoader = ServiceLoader.load( GetRecordByIdHandler.class );
+        Iterator<GetRecordByIdHandler> iterator = serviceLoader.iterator();
+        if ( iterator.hasNext() )
+            return iterator.next();
+        return new DefaultGetRecordByIdHandler();
     }
 
     @Override

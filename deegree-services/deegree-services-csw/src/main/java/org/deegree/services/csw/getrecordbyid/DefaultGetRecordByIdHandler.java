@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.csw.exporthandling;
+package org.deegree.services.csw.getrecordbyid;
 
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_AUTO_ARRAY;
 import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
@@ -58,7 +58,6 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.csw.getrecordbyid.GetRecordById;
 import org.deegree.services.csw.profile.ServiceProfile;
 import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
@@ -74,25 +73,13 @@ import de.odysseus.staxon.json.JsonXMLOutputFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetRecordByIdHandler {
+public class DefaultGetRecordByIdHandler implements GetRecordByIdHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdHandler.class );
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultGetRecordByIdHandler.class );
 
     private ServiceProfile profile;
 
-    /**
-     * Preprocessing for the export of a {@link GetRecordById} request
-     * 
-     * @param getRecBI
-     *            the parsed getRecordById request
-     * @param response
-     *            for the servlet request to the client
-     * @param isSoap
-     * @throws IOException
-     * @throws XMLStreamException
-     * @throws InvalidParameterValueException
-     * @throws OWSException
-     */
+    @Override
     public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, MetadataStore<?> store,
                                  ServiceProfile profile )
                             throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
@@ -173,13 +160,7 @@ public class GetRecordByIdHandler {
         int requestedIds = requestedIdList.size();
         MetadataRecord recordResponse = null;
         try {
-            if ( store != null ) {
-                try {
-                    resultSet = store.getRecordById( requestedIdList, getRecBI.getTypeNames() );
-                } catch ( MetadataStoreException e ) {
-                    throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
-                }
-            }
+            resultSet = getRecordById( getRecBI, store, requestedIdList );
 
             while ( resultSet.next() ) {
                 countIdList++;
@@ -203,6 +184,19 @@ public class GetRecordByIdHandler {
         }
         writer.writeEndDocument();
 
+    }
+
+    protected MetadataResultSet<?> getRecordById( GetRecordById getRecBI, MetadataStore<?> store,
+                                                  List<String> requestedIdList )
+                            throws OWSException {
+        if ( store != null ) {
+            try {
+                return store.getRecordById( requestedIdList, getRecBI.getTypeNames() );
+            } catch ( MetadataStoreException e ) {
+                throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
+            }
+        }
+        return null;
     }
 
     /**
