@@ -84,7 +84,7 @@ Let's have a look at an example for the explicit configuration:
 
 As you can see, the format is almost identical to the one from the WMTS capabilities documents. A tile matrix set is always defined for a single coordinate system, and contains one or more tile matrices. Each tile matrix has an identifier, a specific scale, an origin (the top left corner in world coordinates), defines a tile width/height in pixels and specifies how many tiles there are in x and y direction.
 
-You do not need to explicitly specify the envelope, it will be calculated automatically from the values you provide.
+You do not need to explicitly specify the envelope, it will be calculated automatically from the values you provide. Keep in mind that the conversion between scale and resolution uses the WMTS conversion factor of approx. 111319 in case of degree based coordinate systems (that's important so the envelope is calculated correctly).
 
 ------------------
 GeoTIFF tile store
