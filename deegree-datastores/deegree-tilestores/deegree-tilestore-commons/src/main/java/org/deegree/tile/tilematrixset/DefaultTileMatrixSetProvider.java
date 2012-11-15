@@ -53,6 +53,8 @@ import java.util.List;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.utils.MapUtils;
+import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -94,7 +96,12 @@ public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
             ICRS crs = CRSManager.getCRSRef( cfg.getCRS() );
             List<TileMatrix> matrices = new ArrayList<TileMatrix>();
             for ( TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
-                double res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
+                double res;
+                if ( crs.getUnits()[0].equals( Unit.DEGREE ) ) {
+                    res = MapUtils.calcDegreeResFromScale( tm.getScaleDenominator() );
+                } else {
+                    res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
+                }
                 double minx = tm.getTopLeftCorner().get( 0 );
                 double maxy = tm.getTopLeftCorner().get( 1 );
                 double maxx = tm.getTileWidth().longValue() * tm.getMatrixWidth().longValue() * res + minx;
