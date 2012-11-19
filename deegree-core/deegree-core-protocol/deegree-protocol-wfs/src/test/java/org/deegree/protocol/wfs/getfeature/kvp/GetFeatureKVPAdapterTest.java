@@ -50,7 +50,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
@@ -491,13 +491,13 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery query0 = (FilterQuery) getFeature.getQueries().get( 0 );
-        ProjectionClause[] propNames0 = query0.getProjectionClauses();
+        PropertyName[] propNames0 = query0.getProjectionClauses();
         assertEquals( "InWaterA_1M/wkbGeom", propNames0[0].getPropertyName().getAsText() );
         assertEquals( "InWaterA_1M/tileId", propNames0[1].getPropertyName().getAsText() );
         assertEquals( new QName( "InWaterA_1M" ), query0.getTypeNames()[0].getFeatureTypeName() );
 
         FilterQuery query1 = (FilterQuery) getFeature.getQueries().get( 1 );
-        ProjectionClause[] propNames1 = query1.getProjectionClauses();
+        PropertyName[] propNames1 = query1.getProjectionClauses();
         assertEquals( "BuiltUpA_1M/*", propNames1[0].getPropertyName().getAsText() );
         assertEquals( new QName( "BuiltUpA_1M" ), query1.getTypeNames()[0].getFeatureTypeName() );
     }
@@ -610,7 +610,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filter0 = (FilterQuery) getFeature.getQueries().get( 0 );
-        ProjectionClause[] propNames = filter0.getProjectionClauses();
+        PropertyName[] propNames = filter0.getProjectionClauses();
         assertEquals( "InWaterA_1M/wkbGeom", propNames[0].getPropertyName().getAsText() );
         assertEquals( "InWaterA_1M/tileId", propNames[1].getPropertyName().getAsText() );
         assertEquals( new QName( "InWaterA_1M" ), filter0.getTypeNames()[0].getFeatureTypeName() );
@@ -646,7 +646,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get( 0 );
-        ProjectionClause[] propNames = featureQuery.getProjectionClauses();
+        PropertyName[] propNames = featureQuery.getProjectionClauses();
         assertEquals( "uk:Town/gml:name", propNames[0].getPropertyName().getAsText() );
         assertEquals( "uk:Town/gml:directedNode", propNames[1].getPropertyName().getAsText() );
         String[] featureId = featureQuery.getFeatureIds();
@@ -680,7 +680,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
         GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get( 0 );
-        ProjectionClause[] xlinkProps = featureQuery.getProjectionClauses();
+        PropertyName[] xlinkProps = featureQuery.getProjectionClauses();
         assertEquals( "uk:Town/gml:name", xlinkProps[0].getPropertyName().getAsText() );
         assertEquals( "0", xlinkProps[0].getResolveParams().getDepth() );
         assertEquals( BigInteger.valueOf( 0 ), xlinkProps[0].getResolveParams().getTimeout() );

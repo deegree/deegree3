@@ -58,7 +58,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
@@ -106,7 +106,7 @@ public class GMLStreamWriter {
 
     private GMLDictionaryWriter dictionaryWriter;
 
-    private List<ProjectionClause> projection;
+    private List<PropertyName> projection;
 
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
@@ -211,7 +211,7 @@ public class GMLStreamWriter {
      * 
      * @return feature properties to be included, or <code>null</code> (include all feature props)
      */
-    public List<ProjectionClause> getProjections() {
+    public List<PropertyName> getProjections() {
         return projection;
     }
 
@@ -221,7 +221,7 @@ public class GMLStreamWriter {
      * @param projection
      *            feature properties to be included, or <code>null</code> (include all feature props)
      */
-    public void setProjection( List<ProjectionClause> projection ) {
+    public void setProjection( List<PropertyName> projection ) {
         this.projection = projection;
     }
 

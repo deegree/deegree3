@@ -84,7 +84,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
@@ -112,7 +112,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private final String gmlNull;
 
-    private final Map<QName, ProjectionClause> requestedPropertyNames = new HashMap<QName, ProjectionClause>();
+    private final Map<QName, PropertyName> requestedPropertyNames = new HashMap<QName, PropertyName>();
 
     private final boolean exportSf;
 
@@ -140,7 +140,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         super( gmlStreamWriter );
 
         if ( gmlStreamWriter.getProjections() != null ) {
-            for ( ProjectionClause projection : gmlStreamWriter.getProjections() ) {
+            for ( PropertyName projection : gmlStreamWriter.getProjections() ) {
                 QName qName = projection.getPropertyName().getAsQName();
                 if ( qName != null ) {
                     requestedPropertyNames.put( qName, projection );
@@ -537,7 +537,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     }
 
     private GmlXlinkOptions getResolveParams( Property prop, GmlXlinkOptions resolveState ) {
-        ProjectionClause projection = requestedPropertyNames.get( prop.getName() );
+        PropertyName projection = requestedPropertyNames.get( prop.getName() );
         if ( projection != null && projection.getResolveParams() != null ) {
             return new GmlXlinkOptions( projection.getResolveParams() );
         }

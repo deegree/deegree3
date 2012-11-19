@@ -39,7 +39,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -80,7 +80,7 @@ public class FilterQuery extends AdHocQuery {
      *            filter constraint, may be <code>null</code>
      */
     public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                        ProjectionClause[] projectionClauses, SortProperty[] sortBy, Filter filter ) {
+                        PropertyName[] projectionClauses, SortProperty[] sortBy, Filter filter ) {
         super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( typeNames == null || typeNames.length == 0 ) {
             throw new IllegalArgumentException();

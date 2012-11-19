@@ -71,8 +71,8 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.geometry.Envelope;
@@ -295,7 +295,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         }
 
         // optional: PROPERTYNAME (can be a list of lists)
-        List<ProjectionClause[]> projectionClausesList = new ArrayList<ProjectionClause[]>();
+        List<PropertyName[]> projectionClausesList = new ArrayList<PropertyName[]>();
         if ( kvpUC.get( "PROPERTYNAME" ) != null ) {
             List<String> params = KVPUtils.splitLists( kvpUC.get( "PROPERTYNAME" ) );
             if ( numQueries != -1 && params.size() != numQueries ) {
@@ -306,11 +306,11 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
             for ( String param : params ) {
                 String[] subParams = KVPUtils.splitList( param );
-                ProjectionClause[] projectionClauses = new ProjectionClause[subParams.length];
+                PropertyName[] projectionClauses = new PropertyName[subParams.length];
                 for ( int i = 0; i < subParams.length; i++ ) {
                     String subParam = subParams[i];
                     ValueReference propName = new ValueReference( subParam, nsContext );
-                    projectionClauses[i] = new ProjectionClause( propName, null, null );
+                    projectionClauses[i] = new PropertyName( propName, null, null );
                 }
                 projectionClausesList.add( projectionClauses );
             }
@@ -398,7 +398,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 if ( !srsNames.isEmpty() ) {
                     srsName = srsNames.get( i );
                 }
-                ProjectionClause[] projectionClauses = null;
+                PropertyName[] projectionClauses = null;
                 if ( !projectionClausesList.isEmpty() ) {
                     projectionClauses = projectionClausesList.get( i );
                 }
@@ -419,7 +419,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     if ( !srsNames.isEmpty() ) {
                         srsName = srsNames.get( i );
                     }
-                    ProjectionClause[] projectionClauses = null;
+                    PropertyName[] projectionClauses = null;
                     if ( !projectionClausesList.isEmpty() ) {
                         projectionClauses = projectionClausesList.get( i );
                     }
@@ -443,7 +443,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     if ( !srsNames.isEmpty() ) {
                         srsName = srsNames.get( i );
                     }
-                    ProjectionClause[] projectionClauses = null;
+                    PropertyName[] projectionClauses = null;
                     if ( !projectionClausesList.isEmpty() ) {
                         projectionClauses = projectionClausesList.get( i );
                     }
@@ -542,20 +542,20 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return gf.createEnvelope( lowerCorner, upperCorner, srs );
     }
 
-    protected static ProjectionClause[][] getXLinkPropNames( ProjectionClause[][] propertyNames, String[][] ptxDepthAr,
+    protected static PropertyName[][] getXLinkPropNames( PropertyName[][] propertyNames, String[][] ptxDepthAr,
                                                              Integer[][] ptxExpAr ) {
-        ProjectionClause[][] result = null;
+        PropertyName[][] result = null;
         if ( propertyNames != null ) {
-            result = new ProjectionClause[propertyNames.length][];
+            result = new PropertyName[propertyNames.length][];
             for ( int i = 0; i < propertyNames.length; i++ ) {
-                result[i] = new ProjectionClause[propertyNames[i].length];
+                result[i] = new PropertyName[propertyNames[i].length];
                 for ( int j = 0; j < propertyNames[i].length; j++ ) {
                     if ( ptxDepthAr != null || ptxExpAr != null ) {
                         String resolveDepth = ptxDepthAr[i][j];
                         BigInteger resolveTimeout = ptxExpAr[i][j] == null ? null
                                                                           : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
                         ResolveParams propResolveParams = new ResolveParams( null, resolveDepth, resolveTimeout );
-                        result[i][j] = new ProjectionClause( propertyNames[i][j].getPropertyName(), propResolveParams,
+                        result[i][j] = new PropertyName( propertyNames[i][j].getPropertyName(), propResolveParams,
                                                              null );
                     } else {
                         result[i][j] = propertyNames[i][j];
@@ -649,16 +649,16 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
-    protected static ProjectionClause[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
-        ProjectionClause[][] result = null;
+    protected static PropertyName[][] getPropertyNames( String propertyStr, NamespaceBindings nsContext ) {
+        PropertyName[][] result = null;
         if ( propertyStr != null ) {
             String[][] propComm = parseParamList( propertyStr );
-            result = new ProjectionClause[propComm.length][];
+            result = new PropertyName[propComm.length][];
             for ( int i = 0; i < propComm.length; i++ ) {
-                result[i] = new ProjectionClause[propComm[i].length];
+                result[i] = new PropertyName[propComm[i].length];
 
                 for ( int j = 0; j < propComm[i].length; j++ ) {
-                    result[i][j] = new ProjectionClause( new ValueReference( propComm[i][j], nsContext ), null, null );
+                    result[i][j] = new PropertyName( new ValueReference( propComm[i][j], nsContext ), null, null );
                 }
             }
         }

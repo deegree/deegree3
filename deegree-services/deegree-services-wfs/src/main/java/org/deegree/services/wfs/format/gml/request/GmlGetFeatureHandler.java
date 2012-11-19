@@ -84,7 +84,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
@@ -567,7 +567,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
             if ( analyzer.getProjection() != null ) {
-                for ( ProjectionClause clause : analyzer.getProjection() ) {
+                for ( PropertyName clause : analyzer.getProjection() ) {
                     ResolveParams resolveParams = clause.getResolveParams();
                     if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
                          || resolveParams.getTimeout() != null ) {

@@ -36,7 +36,7 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -74,7 +74,7 @@ public class FeatureIdQuery extends AdHocQuery {
      *            requested feature id, must not be <code>null</code>
      */
     public FeatureIdQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                           ProjectionClause[] projectionClauses, SortProperty[] sortBy, String[] featureIds ) {
+                           PropertyName[] projectionClauses, SortProperty[] sortBy, String[] featureIds ) {
         super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( featureIds == null ) {
             throw new IllegalArgumentException();

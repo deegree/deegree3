@@ -58,8 +58,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -228,9 +228,9 @@ public class GetFeature110XMLEncoder {
         }
 
         /* write child elements */
-        ProjectionClause[] propertyNames = query.getProjectionClauses();
+        PropertyName[] propertyNames = query.getProjectionClauses();
         if ( propertyNames != null ) {
-            for ( ProjectionClause nextProperty : propertyNames ) {
+            for ( PropertyName nextProperty : propertyNames ) {
                 if ( nextProperty != null ) {
                     ResolveParams resolveParams = nextProperty.getResolveParams();
                     if ( resolveParams.getMode() == null && resolveParams.getDepth() == null
@@ -304,7 +304,7 @@ public class GetFeature110XMLEncoder {
 
     /**
      * Writes property-names and declares corresponding namespaces inside a naming xml-element (e.g. <PropertyName>
-     * relating to {@link ValueReference} or <XlinkPropertyName> relating to {@link ProjectionClause})
+     * relating to {@link ValueReference} or <XlinkPropertyName> relating to {@link PropertyName})
      * 
      * @param propertyName
      *            name of the property which encapsulates the characters and namespace-prefix-mappings which are

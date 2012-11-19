@@ -62,8 +62,8 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
@@ -252,7 +252,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
         List<OMElement> propertyNameEls = getElements( queryEl, new XPath( "wfs200:PropertyName", nsContext ) );
-        List<ProjectionClause> projectionClauses = new ArrayList<ProjectionClause>( propertyNameEls.size() );
+        List<PropertyName> projectionClauses = new ArrayList<PropertyName>( propertyNameEls.size() );
         for ( OMElement propertyNameEl : propertyNameEls ) {
             ResolveParams resolveParams = parseStandardResolveParameters200( propertyNameEl );
             ValueReference resolvePath = null;
@@ -262,7 +262,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
             }
             ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );
-            projectionClauses.add( new ProjectionClause( propName, resolveParams, resolvePath ) );
+            projectionClauses.add( new PropertyName( propName, resolveParams, resolvePath ) );
         }
 
         // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
@@ -298,7 +298,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             }
         }
 
-        ProjectionClause[] projection = projectionClauses.toArray( new ProjectionClause[projectionClauses.size()] );
+        PropertyName[] projection = projectionClauses.toArray( new PropertyName[projectionClauses.size()] );
         SortProperty[] sortPropsArray = sortProps.toArray( new SortProperty[sortProps.size()] );
 
         return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );

@@ -77,8 +77,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
@@ -130,7 +130,7 @@ public class QueryAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private List<ProjectionClause> projections = null;
+    private List<PropertyName> projections = null;
 
     private ICRS requestedCrs;
 
@@ -339,7 +339,7 @@ public class QueryAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public List<ProjectionClause> getProjection() {
+    public List<PropertyName> getProjection() {
         return projections;
     }
 
@@ -394,7 +394,7 @@ public class QueryAnalyzer {
         if ( wfsQuery instanceof FilterQuery ) {
             FilterQuery fQuery = ( (FilterQuery) wfsQuery );
             if ( fQuery.getProjectionClauses() != null ) {
-                for ( ProjectionClause projection : fQuery.getProjectionClauses() ) {
+                for ( PropertyName projection : fQuery.getProjectionClauses() ) {
                     validatePropertyName( projection.getPropertyName(), typeNames );
                 }
             }
@@ -411,9 +411,9 @@ public class QueryAnalyzer {
             filter = fQuery.getFilter();
         } else if ( wfsQuery instanceof BBoxQuery ) {
             BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;
-            ProjectionClause[] propNames = bboxQuery.getProjectionClauses();
+            PropertyName[] propNames = bboxQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( ProjectionClause propertyName : propNames ) {
+                for ( PropertyName propertyName : propNames ) {
                     validatePropertyName( propertyName.getPropertyName(), typeNames );
                 }
             }
@@ -426,9 +426,9 @@ public class QueryAnalyzer {
             filter = new OperatorFilter( bboxOperator );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            ProjectionClause[] propNames = fidQuery.getProjectionClauses();
+            PropertyName[] propNames = fidQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( ProjectionClause propertyName : propNames ) {
+                for ( PropertyName propertyName : propNames ) {
                     validatePropertyName( propertyName.getPropertyName(), typeNames );
                 }
             }

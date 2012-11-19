@@ -61,9 +61,9 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -156,13 +156,13 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<ProjectionClause> propNames = new ArrayList<ProjectionClause>();
+            List<PropertyName> propNames = new ArrayList<PropertyName>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "ogc:PropertyName", nsContext ) );
 
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( new ProjectionClause( propertyName, null, null ) );
+                propNames.add( new PropertyName( propertyName, null, null ) );
             }
 
             Filter filter = null;
@@ -192,7 +192,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
             String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
             // convert some lists to arrays to conform the FilterQuery constructor signature
-            ProjectionClause[] propNamesArray = new ProjectionClause[propNames.size()];
+            PropertyName[] propNamesArray = new PropertyName[propNames.size()];
             propNames.toArray( propNamesArray );
 
             // build Query
@@ -228,12 +228,12 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
-            List<ProjectionClause> propNames = new ArrayList<ProjectionClause>();
+            List<PropertyName> propNames = new ArrayList<PropertyName>();
             List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 ValueReference propertyName = new ValueReference( propertyNameEl.getText(),
                                                                   getNamespaceContext( propertyNameEl ) );
-                propNames.add( new ProjectionClause( propertyName, null, null ) );
+                propNames.add( new PropertyName( propertyName, null, null ) );
             }
 
             List<OMElement> xlinkPropertyElements = getElements( queryEl,
@@ -253,7 +253,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
                 } catch ( NumberFormatException e ) {
                     // TODO string provided as time in minutes is not an integer
                 }
-                ProjectionClause xlinkPropName = new ProjectionClause( xlinkProperty,
+                PropertyName xlinkPropName = new PropertyName( xlinkProperty,
                                                                        new ResolveParams( null, xlinkDepth,
                                                                                           resolveTimeout ), null );
                 propNames.add( xlinkPropName );
@@ -322,7 +322,7 @@ public class GetFeatureXMLAdapter extends QueryXMLAdapter {
                 crs = CRSManager.getCRSRef( srsName );
             }
 
-            ProjectionClause[] propNamesArray = new ProjectionClause[propNames.size()];
+            PropertyName[] propNamesArray = new PropertyName[propNames.size()];
             propNames.toArray( propNamesArray );
 
             SortProperty[] sortPropsArray = new SortProperty[sortProps.size()];

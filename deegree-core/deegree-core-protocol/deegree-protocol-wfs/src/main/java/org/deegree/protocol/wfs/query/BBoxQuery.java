@@ -36,7 +36,7 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -76,7 +76,7 @@ public class BBoxQuery extends AdHocQuery {
      *            envelope that constraints the query, must not be <code>null</code>
      */
     public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                      ProjectionClause[] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
+                      PropertyName[] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
         super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
         if ( bbox == null ) {
             throw new IllegalArgumentException();

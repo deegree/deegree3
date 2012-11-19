@@ -59,7 +59,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -138,7 +138,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        PropertyName[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: FEATUREVERSION
         String featureVersion = kvpParams.get( "FEATUREVERSION" );
@@ -184,7 +184,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
                     if ( typeStrList != null ) {
                         typeName = new TypeName[] { typeNames[i] };
                     }
-                    ProjectionClause[] projectionClauses = null;
+                    PropertyName[] projectionClauses = null;
                     if ( propertyNames != null ) {
                         if ( propertyNames.length > 1 ) {
                             projectionClauses = propertyNames[i];
@@ -210,7 +210,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
             for ( int i = 0; i < typeNames.length; i++ ) {
                 TypeName typeName = typeNames[i];
-                ProjectionClause[] projectionClauses = null;
+                PropertyName[] projectionClauses = null;
                 if ( propertyNames != null ) {
                     projectionClauses = propertyNames[i];
                 }
@@ -288,7 +288,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        ProjectionClause[][] propertyNames = getPropertyNames( propertyStr, nsContext );
+        PropertyName[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: SORTBY
         String sortbyStr = kvpParams.get( "SORTBY" );
@@ -346,7 +346,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
                     if ( typeStrList != null ) {
                         typeName = new TypeName[] { typeNames[i] };
                     }
-                    ProjectionClause[] projectionClauses = null;
+                    PropertyName[] projectionClauses = null;
                     if ( propertyNames != null ) {
                         projectionClauses = propertyNames[i];
                     }
@@ -374,7 +374,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
             Envelope bbox = createEnvelope( bboxStr, bboxCrs );
             for ( int i = 0; i < typeNames.length; i++ ) {
                 TypeName typeName = typeNames[i];
-                ProjectionClause[] projectionClauses = null;
+                PropertyName[] projectionClauses = null;
                 if ( propertyNames != null ) {
                     projectionClauses = propertyNames[i];
                 }

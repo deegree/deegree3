@@ -64,7 +64,7 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -283,7 +283,7 @@ public class RemoteWFSFeatureStore implements FeatureStore {
         TypeName[] typeNames = query.getTypeNames();
         String featureVersion = null;
         ICRS srsName = null;
-        ProjectionClause[] projectionClauses = null;
+        PropertyName[] projectionClauses = null;
         SortProperty[] sortBy = query.getSortProperties();
         Filter filter = query.getFilter();
         return new FilterQuery( null, typeNames, featureVersion, srsName, projectionClauses, sortBy, filter );

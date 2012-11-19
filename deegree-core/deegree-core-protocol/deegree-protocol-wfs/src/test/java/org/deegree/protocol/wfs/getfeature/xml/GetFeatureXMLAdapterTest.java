@@ -57,7 +57,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.ProjectionClause;
 import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -67,6 +66,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
@@ -192,7 +192,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         GetFeature getFeature = getFeatureAdapter.parse();
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
-        ProjectionClause[] projections = filterQuery.getProjectionClauses();
+        PropertyName[] projections = filterQuery.getProjectionClauses();
 
         assertEquals( "myns:WKB_GEOM", projections[0].getPropertyName().getAsText() );
         assertEquals( "myns:TILE_ID", projections[1].getPropertyName().getAsText() );
@@ -222,7 +222,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
+        PropertyName[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 3 );
         assertEquals( propNames[0].getPropertyName().getAsText(), "myns:wkbGeom" );
@@ -332,7 +332,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
+        PropertyName[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getPropertyName().getAsText(), "myns:wkbGeom" );
@@ -687,7 +687,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
+        PropertyName[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getPropertyName().getAsText(), "gml:name" );
@@ -719,7 +719,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
+        PropertyName[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getPropertyName().getAsText(), "gml:name" );
@@ -750,7 +750,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
+        PropertyName[] propNames = filterQuery.getProjectionClauses();
         assertEquals( 2, propNames.length );
         assertEquals( "gml:name", propNames[0].getPropertyName().getAsText() );
         assertEquals( "2", propNames[1].getResolveParams().getDepth() );
