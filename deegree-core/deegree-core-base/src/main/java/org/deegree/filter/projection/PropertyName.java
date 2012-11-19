@@ -40,7 +40,7 @@ import org.deegree.commons.tom.ResolveParams;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * A {@link ValueReference} that is requested to be included in a Query response.
+ * {@link ProjectionClause} that is based on {@link ValueReference}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

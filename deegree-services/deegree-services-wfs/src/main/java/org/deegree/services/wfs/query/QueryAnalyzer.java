@@ -78,6 +78,7 @@ import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
@@ -96,8 +97,8 @@ import org.deegree.protocol.wfs.query.xml.QueryXMLAdapter;
 import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
-import org.deegree.services.wfs.WfsFeatureStoreManager;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.WfsFeatureStoreManager;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,7 @@ public class QueryAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private List<PropertyName> projections = null;
+    private List<ProjectionClause> projections = null;
 
     private ICRS requestedCrs;
 
@@ -339,7 +340,7 @@ public class QueryAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public List<PropertyName> getProjection() {
+    public List<ProjectionClause> getProjection() {
         return projections;
     }
 
@@ -394,8 +395,10 @@ public class QueryAnalyzer {
         if ( wfsQuery instanceof FilterQuery ) {
             FilterQuery fQuery = ( (FilterQuery) wfsQuery );
             if ( fQuery.getProjectionClauses() != null ) {
-                for ( PropertyName projection : fQuery.getProjectionClauses() ) {
-                    validatePropertyName( projection.getPropertyName(), typeNames );
+                for ( ProjectionClause projection : fQuery.getProjectionClauses() ) {
+                    if ( projection instanceof PropertyName ) {
+                        validatePropertyName( ( (PropertyName) projection ).getPropertyName(), typeNames );
+                    }
                 }
             }
             if ( fQuery.getFilter() != null ) {
@@ -411,10 +414,12 @@ public class QueryAnalyzer {
             filter = fQuery.getFilter();
         } else if ( wfsQuery instanceof BBoxQuery ) {
             BBoxQuery bboxQuery = (BBoxQuery) wfsQuery;
-            PropertyName[] propNames = bboxQuery.getProjectionClauses();
+            ProjectionClause[] propNames = bboxQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( PropertyName propertyName : propNames ) {
-                    validatePropertyName( propertyName.getPropertyName(), typeNames );
+                for ( ProjectionClause propertyName : propNames ) {
+                    if ( propertyName instanceof PropertyName ) {
+                        validatePropertyName( ( (PropertyName) propertyName ).getPropertyName(), typeNames );
+                    }
                 }
             }
             if ( checkAreaOfUse ) {
@@ -426,10 +431,12 @@ public class QueryAnalyzer {
             filter = new OperatorFilter( bboxOperator );
         } else if ( wfsQuery instanceof FeatureIdQuery ) {
             FeatureIdQuery fidQuery = (FeatureIdQuery) wfsQuery;
-            PropertyName[] propNames = fidQuery.getProjectionClauses();
+            ProjectionClause[] propNames = fidQuery.getProjectionClauses();
             if ( propNames != null ) {
-                for ( PropertyName propertyName : propNames ) {
-                    validatePropertyName( propertyName.getPropertyName(), typeNames );
+                for ( ProjectionClause propertyName : propNames ) {
+                    if ( propertyName instanceof PropertyName ) {
+                        validatePropertyName( ( (PropertyName) propertyName ).getPropertyName(), typeNames );
+                    }
                 }
             }
             filter = new IdFilter( fidQuery.getFeatureIds() );

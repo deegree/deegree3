@@ -66,6 +66,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
@@ -192,11 +193,11 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         GetFeature getFeature = getFeatureAdapter.parse();
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
-        PropertyName[] projections = filterQuery.getProjectionClauses();
+        ProjectionClause[] projections = filterQuery.getProjectionClauses();
 
-        assertEquals( "myns:WKB_GEOM", projections[0].getPropertyName().getAsText() );
-        assertEquals( "myns:TILE_ID", projections[1].getPropertyName().getAsText() );
-        assertEquals( "myns:FAC_ID", projections[2].getPropertyName().getAsText() );
+        assertEquals( "myns:WKB_GEOM", ( (PropertyName) projections[0] ).getPropertyName().getAsText() );
+        assertEquals( "myns:TILE_ID", ( (PropertyName) projections[1] ).getPropertyName().getAsText() );
+        assertEquals( "myns:FAC_ID", ( (PropertyName) projections[2] ).getPropertyName().getAsText() );
 
         IdFilter idFilter = (IdFilter) filterQuery.getFilter();
         Set<String> matchingIds = idFilter.getMatchingIds();
@@ -222,12 +223,12 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        PropertyName[] propNames = filterQuery.getProjectionClauses();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 3 );
-        assertEquals( propNames[0].getPropertyName().getAsText(), "myns:wkbGeom" );
-        assertEquals( propNames[1].getPropertyName().getAsText(), "myns:tileId" );
-        assertEquals( propNames[2].getPropertyName().getAsText(), "myns:facId" );
+        assertEquals( ( (PropertyName) propNames[0] ).getPropertyName().getAsText(), "myns:wkbGeom" );
+        assertEquals( ( (PropertyName) propNames[1] ).getPropertyName().getAsText(), "myns:tileId" );
+        assertEquals( ( (PropertyName) propNames[2] ).getPropertyName().getAsText(), "myns:facId" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -303,8 +304,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:WKB_GEOM", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
-        assertEquals( "myns:TILE_ID", filterQuery.getProjectionClauses()[1].getPropertyName().getAsText() );
+        assertEquals( "myns:WKB_GEOM",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[0] ).getPropertyName().getAsText() );
+        assertEquals( "myns:TILE_ID",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[1] ).getPropertyName().getAsText() );
         IdFilter idFilter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = idFilter.getMatchingIds();
 
@@ -332,11 +335,11 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        PropertyName[] propNames = filterQuery.getProjectionClauses();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
-        assertEquals( propNames[0].getPropertyName().getAsText(), "myns:wkbGeom" );
-        assertEquals( propNames[1].getPropertyName().getAsText(), "myns:tileId" );
+        assertEquals( ( (PropertyName) propNames[0] ).getPropertyName().getAsText(), "myns:wkbGeom" );
+        assertEquals( ( (PropertyName) propNames[1] ).getPropertyName().getAsText(), "myns:tileId" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -410,8 +413,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( new QName( "http://www.someserver.com/myns", "HYDROGRAPHY" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:GEOTEMP", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
-        assertEquals( "myns:DEPTH", filterQuery.getProjectionClauses()[1].getPropertyName().getAsText() );
+        assertEquals( "myns:GEOTEMP",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[0] ).getPropertyName().getAsText() );
+        assertEquals( "myns:DEPTH",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[1] ).getPropertyName().getAsText() );
     }
 
     /**
@@ -432,9 +437,12 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( new QName( "http://www.someserver.com/myns", "ROADS" ),
                       filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:PATH", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
-        assertEquals( "myns:LANES", filterQuery.getProjectionClauses()[1].getPropertyName().getAsText() );
-        assertEquals( "myns:SURFACETYPE", filterQuery.getProjectionClauses()[2].getPropertyName().getAsText() );
+        assertEquals( "myns:PATH",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[0] ).getPropertyName().getAsText() );
+        assertEquals( "myns:LANES",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[1] ).getPropertyName().getAsText() );
+        assertEquals( "myns:SURFACETYPE",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[2] ).getPropertyName().getAsText() );
 
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         Within within = (Within) opFilter.getOperator();
@@ -524,7 +532,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get( 0 );
         assertEquals( new QName( "Person" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
-        assertEquals( "myns:Person/myns:LastName", filterQuery.getProjectionClauses()[0].getPropertyName().getAsText() );
+        assertEquals( "myns:Person/myns:LastName",
+                      ( (PropertyName) filterQuery.getProjectionClauses()[0] ).getPropertyName().getAsText() );
 
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         assertTrue( opFilter.getOperator() instanceof And );
@@ -687,11 +696,11 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        PropertyName[] propNames = filterQuery.getProjectionClauses();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
-        assertEquals( propNames[0].getPropertyName().getAsText(), "gml:name" );
-        assertEquals( propNames[1].getPropertyName().getAsText(), "gml:directedNode" );
+        assertEquals( ( (PropertyName) propNames[0] ).getPropertyName().getAsText(), "gml:name" );
+        assertEquals( ( (PropertyName) propNames[1] ).getPropertyName().getAsText(), "gml:directedNode" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -719,11 +728,11 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        PropertyName[] propNames = filterQuery.getProjectionClauses();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
 
         assertEquals( propNames.length, 2 );
-        assertEquals( propNames[0].getPropertyName().getAsText(), "gml:name" );
-        assertEquals( propNames[1].getPropertyName().getAsText(), "gml:directedNode" );
+        assertEquals( ( (PropertyName) propNames[0] ).getPropertyName().getAsText(), "gml:name" );
+        assertEquals( ( (PropertyName) propNames[1] ).getPropertyName().getAsText(), "gml:directedNode" );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
@@ -750,12 +759,12 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         List<Query> queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries.get( 0 );
 
-        PropertyName[] propNames = filterQuery.getProjectionClauses();
+        ProjectionClause[] propNames = filterQuery.getProjectionClauses();
         assertEquals( 2, propNames.length );
-        assertEquals( "gml:name", propNames[0].getPropertyName().getAsText() );
-        assertEquals( "2", propNames[1].getResolveParams().getDepth() );
-        assertEquals( BigInteger.valueOf( 120 ), propNames[1].getResolveParams().getTimeout() );
-        assertEquals( "gml:directedNode", propNames[1].getPropertyName().getAsText() );
+        assertEquals( "gml:name", ( (PropertyName) propNames[0] ).getPropertyName().getAsText() );
+        assertEquals( "2", ( (PropertyName) propNames[1] ).getResolveParams().getDepth() );
+        assertEquals( BigInteger.valueOf( 120 ), ( (PropertyName) propNames[1] ).getResolveParams().getTimeout() );
+        assertEquals( "gml:directedNode", ( (PropertyName) propNames[1] ).getPropertyName().getAsText() );
 
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();

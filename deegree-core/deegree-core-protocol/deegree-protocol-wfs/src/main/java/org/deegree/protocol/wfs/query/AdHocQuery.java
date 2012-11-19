@@ -36,7 +36,7 @@
 package org.deegree.protocol.wfs.query;
 
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.filter.projection.PropertyName;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -56,7 +56,7 @@ public abstract class AdHocQuery extends Query {
 
     private final ICRS srsName;
 
-    private final PropertyName[] projectionClauses;
+    private final ProjectionClause[] projectionClauses;
 
     private final SortProperty[] sortBy;
 
@@ -77,7 +77,7 @@ public abstract class AdHocQuery extends Query {
      *            properties whose values should be used to order the result set may be <code>null</code>
      */
     public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                       PropertyName[] projectionClauses, SortProperty[] sortBy ) {
+                       ProjectionClause[] projectionClauses, SortProperty[] sortBy ) {
         super( handle );
         if ( typeNames == null ) {
             this.typeNames = new TypeName[0];
@@ -89,7 +89,7 @@ public abstract class AdHocQuery extends Query {
         if ( projectionClauses != null ) {
             this.projectionClauses = projectionClauses;
         } else {
-            this.projectionClauses = new PropertyName[0];
+            this.projectionClauses = new ProjectionClause[0];
         }
         if ( sortBy != null ) {
             this.sortBy = sortBy;
@@ -126,11 +126,11 @@ public abstract class AdHocQuery extends Query {
     }
 
     /**
-     * Returns the properties of the features that should be retrieved.
+     * Returns the projections for the features that should be retrieved.
      * 
-     * @return the properties of the features that should be retrieved, may be empty, but never <code>null</code>
+     * @return the projections for features that should be retrieved, may be empty, but never <code>null</code>
      */
-    public PropertyName[] getProjectionClauses() {
+    public ProjectionClause[] getProjectionClauses() {
         return projectionClauses;
     }
 

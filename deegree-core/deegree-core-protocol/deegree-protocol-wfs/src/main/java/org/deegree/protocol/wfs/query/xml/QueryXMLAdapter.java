@@ -304,6 +304,105 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );
     }
 
+    // <xsd:element name="DynamicFeatureQuery" type="wfs-aixm:DynamicFeatureQueryType" substitutionGroup="fes:AbstractAdhocQueryExpression"/>
+    private Query parseDynamicFeatureQuery200( OMElement queryEl )
+                            throws OWSException {
+
+        // <xsd:attribute name="handle" type="xsd:string"/>
+        String handle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
+
+        // <xsd:attribute name="aliases" type="fes:AliasesType"/>
+        String[] aliases = null;
+        String aliasesStr = getNodeAsString( queryEl, new XPath( "@aliases", nsContext ), null );
+        if ( aliasesStr != null ) {
+            aliases = StringUtils.split( aliasesStr, " " );
+        }
+
+        // <xsd:attribute name="typeNames" type="fes:TypeNamesListType" use="required"/>
+        String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeNames", nsContext ) );
+        String[] tokens = StringUtils.split( typeNameStr, " " );
+        if ( aliases != null && aliases.length != tokens.length ) {
+            String msg = "Number of entries in 'aliases' and 'typeNames' attributes does not match.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "aliases" );
+        }
+        TypeName[] typeNames = new TypeName[tokens.length];
+        for ( int i = 0; i < tokens.length; i++ ) {
+            String alias = aliases != null ? aliases[i] : null;
+            String token = tokens[i];
+            if ( token.startsWith( "schema-element(" ) && token.endsWith( ")" ) ) {
+                String prefixedName = token.substring( 15, token.length() - 1 );
+                QName qName = resolveQName( queryEl, prefixedName );
+                typeNames[i] = new TypeName( qName, alias, true );
+            } else {
+                QName qName = resolveQName( queryEl, token );
+                typeNames[i] = new TypeName( qName, alias, false );
+            }
+        }
+
+        // <xsd:attribute name="srsName" type="xsd:anyURI"/>
+        ICRS crs = null;
+        String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
+        if ( srsName != null ) {
+            crs = CRSManager.getCRSRef( srsName );
+        }
+
+        // <xsd:attribute name="featureVersion" type="xsd:string"/>
+        String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
+
+        // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
+        List<OMElement> propertyNameEls = getElements( queryEl, new XPath( "wfs200:PropertyName", nsContext ) );
+        List<PropertyName> projectionClauses = new ArrayList<PropertyName>( propertyNameEls.size() );
+        for ( OMElement propertyNameEl : propertyNameEls ) {
+            ResolveParams resolveParams = parseStandardResolveParameters200( propertyNameEl );
+            ValueReference resolvePath = null;
+            String resolvePathStr = propertyNameEl.getAttributeValue( new QName( "resolvePath" ) );
+            NamespaceBindings propNameNsContext = getNamespaceContext( propertyNameEl );
+            if ( resolvePathStr != null ) {
+                resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
+            }
+            ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );
+            projectionClauses.add( new PropertyName( propName, resolveParams, resolvePath ) );
+        }
+
+        // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
+        Filter filter = null;
+        OMElement filterEl = queryEl.getFirstChildWithName( new QName( FES_20_NS, "Filter" ) );
+        if ( filterEl != null ) {
+            try {
+                // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
+                // XMLStreamReader)
+                XMLStreamReader xmlStream = new XMLStreamReaderWrapper( filterEl.getXMLStreamReaderWithoutCaching(),
+                                                                        null );
+                // skip START_DOCUMENT
+                xmlStream.nextTag();
+                filter = Filter200XMLDecoder.parse( xmlStream );
+            } catch ( XMLStreamException e ) {
+                e.printStackTrace();
+                throw new XMLParsingException( this, filterEl, e.getMessage() );
+            }
+        }
+
+        // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
+        List<SortProperty> sortProps = new ArrayList<SortProperty>();
+        // <xsd:element name="SortBy" type="fes:SortByType" substitutionGroup="fes:AbstractSortingClause"/>
+        OMElement sortByEl = getElement( queryEl, new XPath( "fes:SortBy", nsContext ) );
+        if ( sortByEl != null ) {
+            List<OMElement> sortPropertyEls = getRequiredElements( sortByEl, new XPath( "fes:SortProperty", nsContext ) );
+            for ( OMElement sortPropertyEl : sortPropertyEls ) {
+                OMElement propNameEl = getRequiredElement( sortPropertyEl, new XPath( "fes:ValueReference", nsContext ) );
+                ValueReference valRef = new ValueReference( propNameEl.getText(), getNamespaceContext( propNameEl ) );
+                String sortOrder = getNodeAsString( sortPropertyEl, new XPath( "fes:SortOrder", nsContext ), "ASC" );
+                SortProperty sortProp = new SortProperty( valRef, sortOrder.equals( "ASC" ) );
+                sortProps.add( sortProp );
+            }
+        }
+
+        PropertyName[] projection = projectionClauses.toArray( new PropertyName[projectionClauses.size()] );
+        SortProperty[] sortPropsArray = sortProps.toArray( new SortProperty[sortProps.size()] );
+
+        return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );
+    }    
+    
     // <xsd:element name="StoredQuery" type="wfs:StoredQueryType" substitutionGroup="fes:AbstractQueryExpression"/>
     private StoredQuery parseStoredQuery200( OMElement queryEl ) {
 

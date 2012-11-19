@@ -84,6 +84,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLStreamWriter;
@@ -254,8 +255,8 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         gmlStream.setNamespaceBindings( prefixToNs );
         GmlXlinkOptions resolveOptions = new GmlXlinkOptions( request.getResolveParams() );
         WfsXlinkStrategy additionalObjects = new WfsXlinkStrategy( (BufferableXMLStreamWriter) xmlStream,
-                                                                             localReferencesPossible, xLinkTemplate,
-                                                                             resolveOptions );
+                                                                   localReferencesPossible, xLinkTemplate,
+                                                                   resolveOptions );
         gmlStream.setReferenceResolveStrategy( additionalObjects );
 
         if ( options.isDisableStreaming() ) {
@@ -567,12 +568,15 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
             if ( analyzer.getProjection() != null ) {
-                for ( PropertyName clause : analyzer.getProjection() ) {
-                    ResolveParams resolveParams = clause.getResolveParams();
-                    if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
-                         || resolveParams.getTimeout() != null ) {
-                        throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
-                                                OPTION_NOT_SUPPORTED );
+                for ( ProjectionClause clause : analyzer.getProjection() ) {
+                    if ( clause instanceof PropertyName ) {
+                        PropertyName propName = (PropertyName) clause;
+                        ResolveParams resolveParams = propName.getResolveParams();
+                        if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
+                             || resolveParams.getTimeout() != null ) {
+                            throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
+                                                    OPTION_NOT_SUPPORTED );
+                        }
                     }
                 }
             }

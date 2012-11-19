@@ -84,6 +84,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -140,13 +141,16 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         super( gmlStreamWriter );
 
         if ( gmlStreamWriter.getProjections() != null ) {
-            for ( PropertyName projection : gmlStreamWriter.getProjections() ) {
-                QName qName = projection.getPropertyName().getAsQName();
-                if ( qName != null ) {
-                    requestedPropertyNames.put( qName, projection );
-                } else {
-                    LOG.debug( "Only simple qualified element names are supported for projection. Ignoring '"
-                               + projection.getPropertyName() + "'" );
+            for ( ProjectionClause projection : gmlStreamWriter.getProjections() ) {
+                if ( projection instanceof PropertyName ) {
+                    PropertyName propName = (PropertyName) projection;
+                    QName qName = propName.getPropertyName().getAsQName();
+                    if ( qName != null ) {
+                        requestedPropertyNames.put( qName, propName );
+                    } else {
+                        LOG.debug( "Only simple qualified element names are allowed for PropertyName projections. Ignoring '"
+                                   + propName.getPropertyName() + "'" );
+                    }
                 }
             }
         }
