@@ -52,8 +52,10 @@ import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -189,13 +191,12 @@ public class InsertRowManager {
         return featureRow;
     }
 
-    public FeatureRow updateFeature( final Feature feature, FeatureTypeMapping ftMapping )
+    public FeatureRow updateFeature( final Feature feature, final FeatureTypeMapping ftMapping, final String[] idParts )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
 
         FeatureRow featureRow = null;
         try {
             featureRow = new FeatureRow( this, feature.getId() ) {
-                // TODO find id, overwrite methods
                 @Override
                 void performInsert( Connection conn, boolean propagateAutoGenColumns )
                                         throws SQLException, FeatureStoreException {
@@ -204,7 +205,15 @@ public class InsertRowManager {
 
                 @Override
                 public Object get( SQLIdentifier id ) {
-                    return feature.getId();
+                    int idx = 0;
+                    for ( Pair<SQLIdentifier, BaseType> p : ftMapping.getFidMapping().getColumns() ) {
+                        if ( p.first.equals( id ) ) {
+                            // TODO need to use something other than string here?
+                            return idParts[idx];
+                        }
+                        ++idx;
+                    }
+                    return null;
                 }
             };
 
