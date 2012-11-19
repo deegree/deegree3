@@ -82,7 +82,7 @@ public class FeatureRow extends InsertRow {
      * @param origFid
      *            original feature id (before id generation), may be <code>null</code> (feature without id)
      */
-    FeatureRow( InsertRowManager mgr, String origFid ) {
+    public FeatureRow( InsertRowManager mgr, String origFid ) {
         super( mgr );
         this.origFid = origFid;
     }

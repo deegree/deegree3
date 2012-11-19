@@ -189,6 +189,52 @@ public class InsertRowManager {
         return featureRow;
     }
 
+    public FeatureRow updateFeature( final Feature feature, FeatureTypeMapping ftMapping )
+                            throws SQLException, FeatureStoreException, FilterEvaluationException {
+
+        FeatureRow featureRow = null;
+        try {
+            featureRow = new FeatureRow( this, feature.getId() ) {
+                // TODO find id, overwrite methods
+                @Override
+                void performInsert( Connection conn, boolean propagateAutoGenColumns )
+                                        throws SQLException, FeatureStoreException {
+                    // don't
+                }
+
+                @Override
+                public Object get( SQLIdentifier id ) {
+                    return feature.getId();
+                }
+            };
+
+            // tracks all rows of this feature instance
+            List<InsertRow> allRows = new ArrayList<InsertRow>();
+            allRows.add( featureRow );
+
+            for ( Mapping particleMapping : ftMapping.getMappings() ) {
+                buildInsertRows( feature, particleMapping, featureRow, allRows );
+            }
+
+            LOG.debug( "Built rows for feature '" + feature.getId() + "': " + allRows.size() );
+
+            for ( InsertRow insertRow : allRows ) {
+                if ( !insertRow.hasParents() ) {
+                    rootRows.add( insertRow );
+                }
+            }
+
+            LOG.debug( "Before heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size() );
+            processHeap();
+            LOG.debug( "After heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size() );
+
+        } catch ( Throwable t ) {
+            LOG.debug( t.getMessage(), t );
+            throw new FeatureStoreException( t.getMessage(), t );
+        }
+        return featureRow;
+    }
+
     SQLDialect getDialect() {
         return dialect;
     }
@@ -242,8 +288,8 @@ public class InsertRowManager {
         return featureRow;
     }
 
-    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRow row,
-                                  List<InsertRow> additionalRows )
+    public void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRow row,
+                                 List<InsertRow> additionalRows )
                             throws FilterEvaluationException, FeatureStoreException {
 
         List<TableJoin> jc = mapping.getJoinedTable();
@@ -457,7 +503,7 @@ public class InsertRowManager {
         return prop;
     }
 
-    private void processHeap()
+    public void processHeap()
                             throws SQLException, FeatureStoreException {
 
         while ( !rootRows.isEmpty() ) {
@@ -495,4 +541,5 @@ public class InsertRowManager {
     public int getDelayedRows() {
         return delayedRows.size();
     }
+
 }

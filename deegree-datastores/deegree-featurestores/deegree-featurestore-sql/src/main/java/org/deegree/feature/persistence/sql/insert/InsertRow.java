@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-abstract class InsertRow extends TransactionRow {
+public abstract class InsertRow extends TransactionRow {
 
     private static Logger LOG = LoggerFactory.getLogger( InsertRow.class );
 
