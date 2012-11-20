@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DynamicFeatureQuery example for retrieving BASELINE time slices Use case: Retrieve the BASELINE of a feature valid at 
+  a point in time Category: AIP publication Example: Retrieve the BASELINE of an airport at an AIRAC effective date. -->
+<wfs:GetFeature xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wfs="http://www.opengis.net/wfs/2.0"
+  xmlns:wfs-te="http://www.opengis.net/wfs-te/1.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:fes-te="http://www.opengis.net/fes-te/1.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:aixm="http://www.aixm.aero/schema/5.1" service="WFS" version="2.0.0">
+  <wfs-te:DynamicFeatureQuery typeNames="aixm:AirportHeliport">
+    <fes-te:TimeSliceProjection>
+      <fes-te:relevantTime>
+        <gml:TimeInstant gml:id="gmlID1">
+          <gml:timePosition>2010-04-08T00:00:00.000Z</gml:timePosition>
+        </gml:TimeInstant>
+      </fes-te:relevantTime>
+      <fes-te:timeSliceFilter>
+        <fes:Filter>
+          <fes:PropertyIsEqualTo>
+            <fes:ValueReference>aixm:interpretation</fes:ValueReference>
+            <fes:Literal>BASELINE</fes:Literal>
+          </fes:PropertyIsEqualTo>
+        </fes:Filter>
+      </fes-te:timeSliceFilter>
+    </fes-te:TimeSliceProjection>
+    <fes:Filter>
+      <fes:PropertyIsEqualTo>
+        <fes:ValueReference>gml:identifier</fes:ValueReference>
+        <fes:Literal>0083defb-b42e-4417-9be2-7aba2db2674d</fes:Literal>
+      </fes:PropertyIsEqualTo>
+    </fes:Filter>
+  </wfs-te:DynamicFeatureQuery>
+</wfs:GetFeature>
