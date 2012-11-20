@@ -245,7 +245,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setProjections( analyzer.getProjection() );
+        gmlStream.setProjections( analyzer.getProjections() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
@@ -567,8 +567,8 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             GetFeatureWithLock gfLock = (GetFeatureWithLock) request;
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
-            if ( analyzer.getProjection() != null ) {
-                for ( ProjectionClause clause : analyzer.getProjection() ) {
+            if ( analyzer.getProjections() != null ) {
+                for ( ProjectionClause clause : analyzer.getProjections() ) {
                     if ( clause instanceof PropertyName ) {
                         PropertyName propName = (PropertyName) clause;
                         ResolveParams resolveParams = propName.getResolveParams();

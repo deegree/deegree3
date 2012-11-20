@@ -53,7 +53,7 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
@@ -104,7 +104,7 @@ public class Features {
     public static FeatureCollection sortFc( final FeatureCollection fc, final SortProperty[] sortCrits ) {
 
         // TODO
-        final GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        final TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {

@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.gml.GMLInputFactory;
@@ -93,22 +93,22 @@ public class AIXMFilterEvaluationTest {
     public void filterByGMLIdentifier()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "aixm_by_gml_identifier.xml" );
-        assertResultSet( fc.getMembers( filter, new GMLObjectXPathEvaluator() ), "ORGCIVIL_AVIATION" );
+        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "ORGCIVIL_AVIATION" );
     }
 
     @Test
     public void filterByAIXMCustomGeometryProperty()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "aixm_custom_geometry_property.xml" );
-        assertResultSet( fc.getMembers( filter, new GMLObjectXPathEvaluator() ), "EADD" );
+        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADD" );
     }
 
     @Test
     public void filterByAIXMCustomGeometryBBOX()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "aixm_custom_geometry_bbox.xml" );
-        FeatureCollection members = fc.getMembers( filter, new GMLObjectXPathEvaluator() );
-        assertResultSet( fc.getMembers( filter, new GMLObjectXPathEvaluator() ), "EADH" );
+        FeatureCollection members = fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() );
+        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADH" );
     }
 
     private void assertResultSet( FeatureCollection fc, String... expectedIds ) {

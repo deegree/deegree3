@@ -73,7 +73,7 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
 import org.deegree.filter.XPathEvaluator;
@@ -332,7 +332,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 
                 // TODO
                 @SuppressWarnings({ "rawtypes", "unchecked" })
-                XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
+                XPathEvaluator<Feature> evaluator = (XPathEvaluator) new TypedObjectNodeXPathEvaluator( );
 
                 sT = currentTimeMillis();
                 int index = 0;

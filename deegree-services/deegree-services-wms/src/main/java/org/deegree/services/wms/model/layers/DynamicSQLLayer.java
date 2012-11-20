@@ -58,7 +58,7 @@ import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Filters;
@@ -166,7 +166,7 @@ public class DynamicSQLLayer extends Layer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new TypedObjectNodeXPathEvaluator( );
 
         LinkedList<Style> defStyles = new LinkedList<Style>();
         for ( Integer code : symbolCodes ) {

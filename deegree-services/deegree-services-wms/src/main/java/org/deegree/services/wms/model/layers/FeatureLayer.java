@@ -82,7 +82,7 @@ import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -302,7 +302,7 @@ public class FeatureLayer extends Layer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator();
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new TypedObjectNodeXPathEvaluator();
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );

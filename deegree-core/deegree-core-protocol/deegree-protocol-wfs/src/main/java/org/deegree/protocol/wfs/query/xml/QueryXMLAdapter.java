@@ -63,7 +63,9 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
+import org.deegree.filter.projection.TimeSliceProjection;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
@@ -200,6 +202,8 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             return parseAdHocQuery200( queryEl );
         } else if ( new QName( WFS_200_NS, "StoredQuery" ).equals( elName ) ) {
             return parseStoredQuery200( queryEl );
+        } else if ( new QName( WFS_TE_10_NS, "DynamicFeatureQuery" ).equals( elName ) ) {
+            return parseDynamicFeatureQueryTe100( queryEl );
         }
         String msg = "Unsupported query expression element '" + elName + "'.";
         throw new XMLParsingException( this, queryEl, msg );
@@ -254,33 +258,15 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         List<OMElement> propertyNameEls = getElements( queryEl, new XPath( "wfs200:PropertyName", nsContext ) );
         List<PropertyName> projectionClauses = new ArrayList<PropertyName>( propertyNameEls.size() );
         for ( OMElement propertyNameEl : propertyNameEls ) {
-            ResolveParams resolveParams = parseStandardResolveParameters200( propertyNameEl );
-            ValueReference resolvePath = null;
-            String resolvePathStr = propertyNameEl.getAttributeValue( new QName( "resolvePath" ) );
-            NamespaceBindings propNameNsContext = getNamespaceContext( propertyNameEl );
-            if ( resolvePathStr != null ) {
-                resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
-            }
-            ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );
-            projectionClauses.add( new PropertyName( propName, resolveParams, resolvePath ) );
+            PropertyName propName = parsePropertyName200( propertyNameEl );
+            projectionClauses.add( propName );
         }
 
         // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
         Filter filter = null;
         OMElement filterEl = queryEl.getFirstChildWithName( new QName( FES_20_NS, "Filter" ) );
         if ( filterEl != null ) {
-            try {
-                // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
-                // XMLStreamReader)
-                XMLStreamReader xmlStream = new XMLStreamReaderWrapper( filterEl.getXMLStreamReaderWithoutCaching(),
-                                                                        null );
-                // skip START_DOCUMENT
-                xmlStream.nextTag();
-                filter = Filter200XMLDecoder.parse( xmlStream );
-            } catch ( XMLStreamException e ) {
-                e.printStackTrace();
-                throw new XMLParsingException( this, filterEl, e.getMessage() );
-            }
+            filter = parseFilter200( filterEl );
         }
 
         // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
@@ -304,8 +290,20 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );
     }
 
-    // <xsd:element name="DynamicFeatureQuery" type="wfs-aixm:DynamicFeatureQueryType" substitutionGroup="fes:AbstractAdhocQueryExpression"/>
-    private Query parseDynamicFeatureQuery200( OMElement queryEl )
+    private PropertyName parsePropertyName200( OMElement propertyNameEl ) {
+        ResolveParams resolveParams = parseStandardResolveParameters200( propertyNameEl );
+        ValueReference resolvePath = null;
+        String resolvePathStr = propertyNameEl.getAttributeValue( new QName( "resolvePath" ) );
+        NamespaceBindings propNameNsContext = getNamespaceContext( propertyNameEl );
+        if ( resolvePathStr != null ) {
+            resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
+        }
+        ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );
+        return new PropertyName( propName, resolveParams, resolvePath );
+    }
+
+    // <element name="DynamicFeatureQuery" type="wfs-te:DynamicFeatureQueryType" substitutionGroup="wfs:Query"/>
+    private Query parseDynamicFeatureQueryTe100( OMElement queryEl )
                             throws OWSException {
 
         // <xsd:attribute name="handle" type="xsd:string"/>
@@ -350,36 +348,24 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
         // <xsd:element ref="fes:AbstractProjectionClause" minOccurs="0" maxOccurs="unbounded"/>
+        List<ProjectionClause> projectionClauses = new ArrayList<ProjectionClause>();
         List<OMElement> propertyNameEls = getElements( queryEl, new XPath( "wfs200:PropertyName", nsContext ) );
-        List<PropertyName> projectionClauses = new ArrayList<PropertyName>( propertyNameEls.size() );
         for ( OMElement propertyNameEl : propertyNameEls ) {
-            ResolveParams resolveParams = parseStandardResolveParameters200( propertyNameEl );
-            ValueReference resolvePath = null;
-            String resolvePathStr = propertyNameEl.getAttributeValue( new QName( "resolvePath" ) );
-            NamespaceBindings propNameNsContext = getNamespaceContext( propertyNameEl );
-            if ( resolvePathStr != null ) {
-                resolvePath = new ValueReference( resolvePathStr, propNameNsContext );
-            }
-            ValueReference propName = new ValueReference( propertyNameEl.getText(), propNameNsContext );
-            projectionClauses.add( new PropertyName( propName, resolveParams, resolvePath ) );
+            PropertyName propName = parsePropertyName200( propertyNameEl );
+            projectionClauses.add( propName );
+        }
+        List<OMElement> timeSliceProjectionEls = getElements( queryEl, new XPath( "fes-te:TimeSliceProjection",
+                                                                                  nsContext ) );
+        for ( OMElement timeSliceProjectionEl : timeSliceProjectionEls ) {
+            TimeSliceProjection timeSliceProjection = parseTimeSliceProjectionTe100( timeSliceProjectionEl );
+            projectionClauses.add( timeSliceProjection );
         }
 
         // <xsd:element ref="fes:AbstractSelectionClause" minOccurs="0"/>
         Filter filter = null;
         OMElement filterEl = queryEl.getFirstChildWithName( new QName( FES_20_NS, "Filter" ) );
         if ( filterEl != null ) {
-            try {
-                // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
-                // XMLStreamReader)
-                XMLStreamReader xmlStream = new XMLStreamReaderWrapper( filterEl.getXMLStreamReaderWithoutCaching(),
-                                                                        null );
-                // skip START_DOCUMENT
-                xmlStream.nextTag();
-                filter = Filter200XMLDecoder.parse( xmlStream );
-            } catch ( XMLStreamException e ) {
-                e.printStackTrace();
-                throw new XMLParsingException( this, filterEl, e.getMessage() );
-            }
+            filter = parseFilter200( filterEl );
         }
 
         // <xsd:element ref="fes:AbstractSortingClause" minOccurs="0"/>
@@ -397,12 +383,48 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
             }
         }
 
-        PropertyName[] projection = projectionClauses.toArray( new PropertyName[projectionClauses.size()] );
+        ProjectionClause[] projections = projectionClauses.toArray( new ProjectionClause[projectionClauses.size()] );
         SortProperty[] sortPropsArray = sortProps.toArray( new SortProperty[sortProps.size()] );
 
-        return new FilterQuery( handle, typeNames, featureVersion, crs, projection, sortPropsArray, filter );
-    }    
-    
+        return new FilterQuery( handle, typeNames, featureVersion, crs, projections, sortPropsArray, filter );
+    }
+
+    private Filter parseFilter200( OMElement filterEl ) {
+        Filter filter = null;
+        try {
+            // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
+            // XMLStreamReader)
+            XMLStreamReader xmlStream = new XMLStreamReaderWrapper( filterEl.getXMLStreamReaderWithoutCaching(), null );
+            // skip START_DOCUMENT
+            xmlStream.nextTag();
+            filter = Filter200XMLDecoder.parse( xmlStream );
+        } catch ( XMLStreamException e ) {
+            e.printStackTrace();
+            throw new XMLParsingException( this, filterEl, e.getMessage() );
+        }
+        return filter;
+    }
+
+    // <element name="TimeSliceProjection" type="fes-te:TimeSliceProjectionType"
+    // substitutionGroup="fes:AbstractProjectionClause"/>
+    private TimeSliceProjection parseTimeSliceProjectionTe100( OMElement timeSliceProjectionEl ) {
+
+        // OMElement relevantTimeEl = getElement( timeSliceProjectionEl, new XPath( "fes-te:relevantTime", nsContext )
+        // );
+
+        Filter filter = null;
+        OMElement timeSliceFilterEl = getElement( timeSliceProjectionEl,
+                                                  new XPath( "fes-te:timeSliceFilter", nsContext ) );
+        if ( timeSliceFilterEl != null ) {
+            OMElement filterEl = timeSliceFilterEl.getFirstChildWithName( new QName( FES_20_NS, "Filter" ) );
+            if ( filterEl != null ) {
+                filter = parseFilter200( filterEl );
+            }
+        }
+
+        return new TimeSliceProjection( filter );
+    }
+
     // <xsd:element name="StoredQuery" type="wfs:StoredQueryType" substitutionGroup="fes:AbstractQueryExpression"/>
     private StoredQuery parseStoredQuery200( OMElement queryEl ) {
 

@@ -86,7 +86,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.projection.ProjectionClause;
@@ -452,7 +452,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
         }
         for ( Filter timeSliceFilter : timeSliceFilters ) {
-            GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+            TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
             try {
                 if ( !timeSliceFilter.evaluate( timeSlice, evaluator ) ) {
                     return true;

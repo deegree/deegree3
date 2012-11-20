@@ -61,7 +61,7 @@ import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.MemoryFeatureInputStream;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;
@@ -89,7 +89,7 @@ class StoredFeatures {
 
     private final ICRS storageCRS;
 
-    final GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+    final TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator( );
 
     final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 

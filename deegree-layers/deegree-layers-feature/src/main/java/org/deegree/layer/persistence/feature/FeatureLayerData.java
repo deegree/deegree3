@@ -52,7 +52,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.feature.types.AppSchemas;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.layer.LayerData;
@@ -91,7 +91,7 @@ public class FeatureLayerData implements LayerData {
         for ( QName name : validNames ) {
             bindings.put( name.getLocalPart(), name );
         }
-        evaluator = new GMLObjectXPathEvaluator( bindings );
+        evaluator = new TypedObjectNodeXPathEvaluator( bindings );
     }
 
     @Override

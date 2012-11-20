@@ -53,7 +53,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -128,7 +128,7 @@ class WFSOrderedDatasource extends OrderedDatasource<WFSDatasource> {
                 Iterator<Feature> iter = wfsFc.getMembers();
                 while ( iter.hasNext() ) {
                     Feature feature = iter.next();
-                    XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator( );
+                    XPathEvaluator<?> evaluator = new TypedObjectNodeXPathEvaluator( );
                     LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate = style.evaluate( feature,
                                                                                                          (XPathEvaluator<Feature>) evaluator );
                     for ( Triple<Styling, LinkedList<Geometry>, String> triple : evaluate ) {

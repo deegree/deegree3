@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.query;
 
+import static java.util.Collections.emptyList;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_RESOLUTION;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -48,8 +50,8 @@ import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
-import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
@@ -95,6 +97,8 @@ public class Query {
 
     private int maxFeatures = -1;
 
+    private final List<ProjectionClause> projections;
+
     /**
      * Creates a new {@link Query} instance.
      * 
@@ -121,6 +125,7 @@ public class Query {
             hints.put( HINT_RESOLUTION, resolution );
         }
         this.sortBy = new SortProperty[0];
+        this.projections = emptyList();
     }
 
     /**
@@ -146,28 +151,7 @@ public class Query {
         } else {
             this.sortBy = new SortProperty[0];
         }
-    }
-
-    /**
-     * Creates a new {@link Query} instance that selects features based on an {@link IdFilter}.
-     * 
-     * @param filter
-     *            filter to be applied, must not be <code>null</code>
-     * @param featureVersion
-     *            specific feature version to be returned, can be <code>null</code>
-     * @param srsName
-     *            SRS for the returned geometries, can be <code>null</code>
-     * @param sortBy
-     *            sort criteria to be applied, can be <code>null</code>
-     */
-    public Query( IdFilter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
-        this.typeNames = new TypeName[0];
-        this.filter = filter;
-        if ( sortBy != null ) {
-            this.sortBy = sortBy;
-        } else {
-            this.sortBy = new SortProperty[0];
-        }
+        this.projections = emptyList();
     }
 
     /**
@@ -203,6 +187,7 @@ public class Query {
         if ( resolution > 0 ) {
             hints.put( HINT_RESOLUTION, resolution );
         }
+        this.projections = emptyList();
     }
 
     public Object getHint( QueryHint code ) {
@@ -275,6 +260,15 @@ public class Query {
      */
     public SortProperty[] getSortProperties() {
         return sortBy;
+    }
+
+    /**
+     * Returns the projections to be applied to returned features.
+     * 
+     * @return projections to be applied to returned features, never <code>null</code> (but can be empty)
+     */
+    public List<ProjectionClause> getProjections() {
+        return projections;
     }
 
     /**

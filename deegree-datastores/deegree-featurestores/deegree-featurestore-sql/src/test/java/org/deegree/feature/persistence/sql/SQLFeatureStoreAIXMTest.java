@@ -74,7 +74,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
@@ -304,7 +304,7 @@ public class SQLFeatureStoreAIXMTest {
 
     private Geometry getGeometry( String xpath, GMLObject object )
                             throws FilterEvaluationException {
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "gml", GML3_2_NS );
         nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
@@ -317,7 +317,7 @@ public class SQLFeatureStoreAIXMTest {
 
     private PrimitiveValue getPrimitive( String xpath, GMLObject object )
                             throws FilterEvaluationException {
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "gml", GML3_2_NS );
         nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );

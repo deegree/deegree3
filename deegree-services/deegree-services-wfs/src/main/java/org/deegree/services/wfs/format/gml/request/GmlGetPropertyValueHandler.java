@@ -59,7 +59,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
@@ -135,7 +135,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         xmlStream = new BufferableXMLStreamWriter( xmlStream, xLinkTemplate );
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setProjections( analyzer.getProjection() );
+        gmlStream.setProjections( analyzer.getProjections() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
@@ -160,7 +160,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
             startIndex = request.getPresentationParams().getStartIndex().intValue();
         }
 
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
         GMLFeatureWriter featureWriter = gmlStream.getFeatureWriter();
 
         // open "wfs:ValueCollection" element
@@ -197,7 +197,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
     private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer,
                                     GmlXlinkOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
-                                    int maxResults, GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
+                                    int maxResults, TypedObjectNodeXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
                             UnknownCRSException, TransformationException {
 
@@ -239,7 +239,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
     private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer,
                                     GmlXlinkOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
-                                    int maxResults, GMLObjectXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
+                                    int maxResults, TypedObjectNodeXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
                             UnknownCRSException, TransformationException {
 
@@ -296,7 +296,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
 
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 
         int numFeatures = 0;
 

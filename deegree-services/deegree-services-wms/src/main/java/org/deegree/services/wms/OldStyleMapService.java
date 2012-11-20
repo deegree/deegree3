@@ -76,7 +76,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
@@ -248,7 +248,7 @@ class OldStyleMapService {
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
         // TODO
-        XPathEvaluator<?> evaluator = new GMLObjectXPathEvaluator();
+        XPathEvaluator<?> evaluator = new TypedObjectNodeXPathEvaluator();
 
         Collection<LinkedList<Query>> qs = queries.values();
         FeatureInputStream rs = null;

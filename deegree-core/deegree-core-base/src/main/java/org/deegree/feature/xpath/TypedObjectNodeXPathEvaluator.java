@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import static java.util.Collections.synchronizedMap;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,22 +58,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link XPathEvaluator} for {@link GMLObject} objects.
+ * {@link XPathEvaluator} implementation for {@link TypedObjectNode} graphs.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLObjectXPathEvaluator implements XPathEvaluator<TypedObjectNode> {
+public class TypedObjectNodeXPathEvaluator implements XPathEvaluator<TypedObjectNode> {
 
-    private static Logger LOG = LoggerFactory.getLogger( GMLObjectXPathEvaluator.class );
-
-    private static Map<GMLObject, Map<ValueReference, TypedObjectNode[]>> EVAL_CACHE = null;
+    private static Logger LOG = LoggerFactory.getLogger( TypedObjectNodeXPathEvaluator.class );
 
     private Map<String, QName> bindings;
 
-    public GMLObjectXPathEvaluator() {
+    public TypedObjectNodeXPathEvaluator() {
         // default constructor
     }
 
@@ -84,15 +79,8 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<TypedObjectNode> 
      * @param bindings
      *            a mapping from local name to qname to use for repairing broken filters, may be null
      */
-    public GMLObjectXPathEvaluator( Map<String, QName> bindings ) {
+    public TypedObjectNodeXPathEvaluator( Map<String, QName> bindings ) {
         this.bindings = bindings;
-    }
-
-    /**
-     * temporary hack to have a hook for enabliing caching (don't call this unless you know what you are doing)
-     */
-    public static void enableCache() {
-        EVAL_CACHE = synchronizedMap( new HashMap<GMLObject, Map<ValueReference, TypedObjectNode[]>>() );
     }
 
     @Override
@@ -130,15 +118,6 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<TypedObjectNode> 
         TypedObjectNode[] resultValues = null;
         try {
             synchronized ( context ) {
-                if ( EVAL_CACHE != null ) {
-                    Map<ValueReference, TypedObjectNode[]> map = EVAL_CACHE.get( context );
-                    if ( map != null ) {
-                        resultValues = map.get( propName );
-                        if ( resultValues != null ) {
-                            return resultValues;
-                        }
-                    }
-                }
                 XPath xpath = new GMLObjectXPath( propName.getAsText(), context );
                 xpath.setNamespaceContext( propName.getNsContext() );
                 List<?> selectedNodes;
@@ -155,14 +134,6 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<TypedObjectNode> 
                                                     + node.getClass().getName() + "' (=" + node
                                                     + ") during XPath-evaluation." );
                     }
-                }
-                if ( EVAL_CACHE != null ) {
-                    Map<ValueReference, TypedObjectNode[]> map = EVAL_CACHE.get( context );
-                    if ( map == null ) {
-                        map = synchronizedMap( new HashMap<ValueReference, TypedObjectNode[]>() );
-                        EVAL_CACHE.put( context, map );
-                    }
-                    map.put( propName, resultValues );
                 }
             }
         } catch ( JaxenException e ) {

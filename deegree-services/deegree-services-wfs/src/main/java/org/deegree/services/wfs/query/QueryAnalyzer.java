@@ -340,7 +340,7 @@ public class QueryAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public List<ProjectionClause> getProjection() {
+    public List<ProjectionClause> getProjections() {
         return projections;
     }
 

@@ -62,11 +62,23 @@ public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
     /** Namespace binding for WFS 2.0.0 constructs */
     protected final static String WFS_200_PREFIX = "wfs200";
 
+    /** Namespace binding for WFS Temporal Extension 1.0.0 constructs */
+    protected static final String WFS_TE_10_NS = "http://www.opengis.net/wfs-te/1.0";
+
+    protected static final String WFS_TE_10_PREFIX = "wfs-te";
+    
+    /** Namespace binding for FES Temporal Extension 1.0.0 constructs */
+    protected static final String FES_TE_10_NS = "http://www.opengis.net/fes-te/1.0";
+    
+    protected static final String FES_TE_10_PREFIX = "fes-te";
+
     static {
         nsContext = new NamespaceBindings( XMLAdapter.nsContext );
         nsContext.addNamespace( WFS_PREFIX, WFSConstants.WFS_NS );
         nsContext.addNamespace( WFS_200_PREFIX, WFSConstants.WFS_200_NS );
         nsContext.addNamespace( FES_PREFIX, FES_20_NS );
+        nsContext.addNamespace( WFS_TE_10_PREFIX, WFS_TE_10_NS );
+        nsContext.addNamespace( FES_TE_10_PREFIX, FES_TE_10_NS );
     }
 
     /**

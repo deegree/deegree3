@@ -73,7 +73,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -156,7 +156,7 @@ public class StatisticsLayer extends FeatureLayer {
         Pair<Filter, LinkedList<String>> filter = getDimensionFilter( fi.getDimensions() );
 
         // TODO
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator( );
 
         GenericFeatureCollection col = new GenericFeatureCollection();
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
@@ -218,7 +218,7 @@ public class StatisticsLayer extends FeatureLayer {
 
         // TODO
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new GMLObjectXPathEvaluator( );
+        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new TypedObjectNodeXPathEvaluator( );
 
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {

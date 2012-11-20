@@ -72,7 +72,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
@@ -1186,7 +1186,7 @@ public class GML3GeometryReaderTest {
 
     private PrimitiveValue getPrimitive( String xpath, GMLObject object )
                             throws FilterEvaluationException {
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "gml", GML3_2_NS );
         nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );

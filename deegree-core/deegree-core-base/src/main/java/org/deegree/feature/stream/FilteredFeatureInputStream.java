@@ -41,7 +41,7 @@ import java.util.NoSuchElementException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 
@@ -87,7 +87,7 @@ public class FilteredFeatureInputStream implements FeatureInputStream {
         return new Iterator<Feature>() {
 
             // TODO
-            GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+            TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 
             Iterator<Feature> iter = rs.iterator();
 

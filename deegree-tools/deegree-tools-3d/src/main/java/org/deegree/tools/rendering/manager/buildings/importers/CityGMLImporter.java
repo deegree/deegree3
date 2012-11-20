@@ -64,7 +64,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
@@ -552,7 +552,7 @@ public class CityGMLImporter implements ModelImporter {
         nsContext.addNamespace( "cgml", NS );
         ValueReference propName = new ValueReference( "cgml:externalReference/cgml:informationSystem/text()", nsContext );
 
-        GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator( );
+        TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator( );
         TypedObjectNode[] tons;
         try {
             tons = evaluator.eval( building, propName );
