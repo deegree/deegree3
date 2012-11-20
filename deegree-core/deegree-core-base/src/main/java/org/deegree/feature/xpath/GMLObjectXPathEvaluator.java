@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
+public class GMLObjectXPathEvaluator implements XPathEvaluator<TypedObjectNode> {
 
     private static Logger LOG = LoggerFactory.getLogger( GMLObjectXPathEvaluator.class );
 
@@ -95,6 +95,7 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
         EVAL_CACHE = synchronizedMap( new HashMap<GMLObject, Map<ValueReference, TypedObjectNode[]>>() );
     }
 
+    @Override
     public TypedObjectNode[] eval( TypedObjectNode particle, ValueReference path )
                             throws FilterEvaluationException {
         if ( particle instanceof GMLObject ) {
@@ -107,7 +108,6 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
                                              + "' is not supported." );
     }
 
-    @Override
     public TypedObjectNode[] eval( GMLObject context, ValueReference propName )
                             throws FilterEvaluationException {
 
@@ -229,7 +229,11 @@ public class GMLObjectXPathEvaluator implements XPathEvaluator<GMLObject> {
     }
 
     @Override
-    public String getId( GMLObject context ) {
-        return context.getId();
+    public String getId( TypedObjectNode context ) {
+        if ( context instanceof GMLObject ) {
+            return ( (GMLObject) context ).getId();
+        }
+        // TODO implement fallback to generic gml:id attribute
+        return null;
     }
 }

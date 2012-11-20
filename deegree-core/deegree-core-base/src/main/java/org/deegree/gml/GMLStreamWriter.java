@@ -106,7 +106,7 @@ public class GMLStreamWriter {
 
     private GMLDictionaryWriter dictionaryWriter;
 
-    private List<ProjectionClause> projection;
+    private List<ProjectionClause> projections;
 
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
@@ -207,22 +207,22 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Returns the projections for the exported {@link Feature} instances.
+     * Returns the projections that are applied to exported {@link Feature} instances.
      * 
      * @return projections, or <code>null</code> (include all feature properties)
      */
     public List<ProjectionClause> getProjections() {
-        return projection;
+        return projections;
     }
 
     /**
-     * Sets the projections for the exported {@link Feature} instances.
+     * Sets the projections to be applied to exported {@link Feature} instances.
      * 
-     * @param projection
+     * @param projections
      *            projections, or <code>null</code> (include all feature properties)
      */
-    public void setProjection( List<ProjectionClause> projection ) {
-        this.projection = projection;
+    public void setProjections( List<ProjectionClause> projections ) {
+        this.projections = projections;
     }
 
     /**

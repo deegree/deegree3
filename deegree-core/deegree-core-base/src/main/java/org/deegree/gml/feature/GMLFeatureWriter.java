@@ -43,6 +43,7 @@ import static org.deegree.commons.xml.stax.StAXExportingHelper.writeAttribute;
 import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +57,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -84,8 +86,12 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
+import org.deegree.feature.xpath.GMLObjectXPathEvaluator;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
+import org.deegree.filter.projection.TimeSliceProjection;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
@@ -114,6 +120,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     private final String gmlNull;
 
     private final Map<QName, PropertyName> requestedPropertyNames = new HashMap<QName, PropertyName>();
+
+    private final List<Filter> timeSliceFilters = new ArrayList<Filter>();
 
     private final boolean exportSf;
 
@@ -151,6 +159,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                         LOG.debug( "Only simple qualified element names are allowed for PropertyName projections. Ignoring '"
                                    + propName.getPropertyName() + "'" );
                     }
+                } else if ( projection instanceof TimeSliceProjection ) {
+                    timeSliceFilters.add( ( (TimeSliceProjection) projection ).getTimeSliceFilter() );
                 }
             }
         }
@@ -392,6 +402,12 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 writer.writeEndElement();
             }
         } else if ( pt instanceof CustomPropertyType ) {
+            if ( !timeSliceFilters.isEmpty() ) {
+                if ( excludeByTimeSliceFilter( property ) ) {
+                    return;
+                }
+            }
+
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( property.getAttributes() != null ) {
                 for ( Entry<QName, PrimitiveValue> attr : property.getAttributes().entrySet() ) {
@@ -417,6 +433,35 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else {
             throw new RuntimeException( "Internal error. Unhandled property type '" + pt.getClass() + "'" );
         }
+    }
+
+    private boolean excludeByTimeSliceFilter( Property property ) {
+        XSElementDeclaration elDecl = property.getXSType();
+        if ( elDecl == null ) {
+            return false;
+        }
+        if ( schemaInfoset.getTimeSlicePropertySemantics( elDecl ) == null ) {
+            return false;
+        }
+        TypedObjectNode timeSlice = property.getValue();
+        // TODO will somebody *please* clean up getChildren() and getValue()!
+        if ( timeSlice instanceof GenericXMLElement ) {
+            GenericXMLElement el = (GenericXMLElement) timeSlice;
+            if ( !el.getChildren().isEmpty() ) {
+                timeSlice = el.getChildren().get( 0 );
+            }
+        }
+        for ( Filter timeSliceFilter : timeSliceFilters ) {
+            GMLObjectXPathEvaluator evaluator = new GMLObjectXPathEvaluator();
+            try {
+                if ( !timeSliceFilter.evaluate( timeSlice, evaluator ) ) {
+                    return true;
+                }
+            } catch ( FilterEvaluationException e ) {
+                LOG.warn( "Unable to evaluate time slice projection filter: " + e.getMessage() );
+            }
+        }
+        return false;
     }
 
     private void exportBoundedBy( Envelope env, boolean indicateMissing )
@@ -679,5 +724,4 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     private boolean isPropertyRequested( QName propName ) {
         return requestedPropertyNames.isEmpty() || requestedPropertyNames.containsKey( propName );
     }
-
 }

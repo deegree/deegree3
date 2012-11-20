@@ -37,7 +37,7 @@ package org.deegree.feature;
 
 import java.util.Collection;
 
-import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -78,6 +78,6 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
      * @throws FilterEvaluationException
      *             if an exception occurs during the evaluation of the <code>Filter</code>
      */
-    public FeatureCollection getMembers( Filter filter, XPathEvaluator<GMLObject> evaluator )
+    public FeatureCollection getMembers( Filter filter, XPathEvaluator<TypedObjectNode> evaluator )
                             throws FilterEvaluationException;
 }

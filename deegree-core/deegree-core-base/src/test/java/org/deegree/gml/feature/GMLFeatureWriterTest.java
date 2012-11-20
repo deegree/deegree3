@@ -37,16 +37,21 @@
 package org.deegree.gml.feature;
 
 import static junit.framework.Assert.assertEquals;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.filter.MatchAction.ALL;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -56,6 +61,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -67,6 +73,13 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.filter.Filter;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.projection.ProjectionClause;
+import org.deegree.filter.projection.TimeSliceProjection;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -75,6 +88,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -305,5 +319,73 @@ public class GMLFeatureWriterTest {
 
         URL schemaUrl = GMLFeatureReaderTest.class.getResource( "../aixm/schema/AIXM_Features.xsd" );
         XMLAssert.assertValidity( memoryWriter.getReader(), schemaUrl.toString() );
+    }
+
+    @Test
+    public void testAIXM51RouteSegmentTimeSliceProjection1()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException,
+                            TransformationException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../aixm/feature/AIXM51_RouteSegment.gml" );
+        GMLStreamReader gmlReader = createGMLStreamReader( GML_32, docURL );
+        Feature f = gmlReader.readFeature();
+
+        NamespaceBindings nsBindings = new NamespaceBindings();
+        nsBindings.addNamespace( "gml", GML3_2_NS );
+        ValueReference validTimeRef = new ValueReference( "gml:validTime/gml:TimePeriod/gml:beginPosition", nsBindings );
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "2010-01-01T00:00:00.000" );
+        PropertyIsEqualTo comp = new PropertyIsEqualTo( validTimeRef, literal, false, ALL );
+        Filter timeSliceFilter = new OperatorFilter( comp );
+
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
+        GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_32, writer );
+        gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
+        List<ProjectionClause> projections = new ArrayList<ProjectionClause>();
+        projections.add( new TimeSliceProjection( timeSliceFilter ) );
+        gmlwriter.setProjections( projections );
+        gmlwriter.write( f );
+        gmlwriter.close();
+
+        URL schemaUrl = GMLFeatureReaderTest.class.getResource( "../aixm/schema/AIXM_Features.xsd" );
+        XMLAssert.assertValidity( memoryWriter.getReader(), schemaUrl.toString() );
+
+        assertFalse( memoryWriter.toString().contains( "rsts206" ) );
+        assertTrue( memoryWriter.toString().contains( "rsts207" ) );
+    }
+    
+    @Test
+    public void testAIXM51RouteSegmentTimeSliceProjection2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            XMLParsingException, UnknownCRSException, ReferenceResolvingException,
+                            TransformationException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../aixm/feature/AIXM51_RouteSegment.gml" );
+        GMLStreamReader gmlReader = createGMLStreamReader( GML_32, docURL );
+        Feature f = gmlReader.readFeature();
+
+        NamespaceBindings nsBindings = new NamespaceBindings();
+        nsBindings.addNamespace( "gml", GML3_2_NS );
+        ValueReference validTimeRef = new ValueReference( "gml:validTime/gml:TimePeriod/gml:beginPosition", nsBindings );
+        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "2009-01-01T00:00:00.000" );
+        PropertyIsEqualTo comp = new PropertyIsEqualTo( validTimeRef, literal, false, ALL );
+        Filter timeSliceFilter = new OperatorFilter( comp );
+
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
+        GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_32, writer );
+        gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
+        List<ProjectionClause> projections = new ArrayList<ProjectionClause>();
+        projections.add( new TimeSliceProjection( timeSliceFilter ) );
+        gmlwriter.setProjections( projections );
+        gmlwriter.write( f );
+        gmlwriter.close();
+
+        URL schemaUrl = GMLFeatureReaderTest.class.getResource( "../aixm/schema/AIXM_Features.xsd" );
+        XMLAssert.assertValidity( memoryWriter.getReader(), schemaUrl.toString() );
+
+        assertTrue( memoryWriter.toString().contains( "rsts206" ) );
+        assertFalse( memoryWriter.toString().contains( "rsts207" ) );
     }
 }

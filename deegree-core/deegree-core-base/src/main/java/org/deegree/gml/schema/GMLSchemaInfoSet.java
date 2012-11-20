@@ -53,6 +53,8 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
+import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 
@@ -150,6 +152,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     private XSElementDeclaration abstractStyleElementDecl;
 
+    private XSElementDeclaration abstractTimeSliceElementDecl;
+
     private XSElementDeclaration abstractCurveSegmentElementDecl;
 
     private XSElementDeclaration abstractSurfacePatchElementDecl;
@@ -163,6 +167,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     private Set<QName> geomElementNames = new HashSet<QName>();
 
     private Set<QName> featureElementNames = new HashSet<QName>();
+
+    private Set<QName> timeSliceElementNames = new HashSet<QName>();
 
     private SortedSet<String> appNamespaces;
 
@@ -227,6 +233,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             abstractTimeObjectElementDecl = getElementDecl( "_TimeObject", GML_PRE_32_NS );
             abstractCoverageElementDecl = getElementDecl( "_Coverage", GML_PRE_32_NS );
             abstractStyleElementDecl = getElementDecl( "_Style", GML_PRE_32_NS );
+            abstractTimeSliceElementDecl = getElementDecl( "_TimeSlice", GML_PRE_32_NS );
             abstractCurveSegmentElementDecl = getElementDecl( "_CurveSegment", GML_PRE_32_NS );
             abstractSurfacePatchElementDecl = getElementDecl( "_SurfacePatch", GML_PRE_32_NS );
             abstractFeatureElementTypeDecl = getTypeDef( "AbstractFeatureType", GML_PRE_32_NS );
@@ -243,6 +250,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             abstractTimeObjectElementDecl = getElementDecl( "AbstractTimeObject", GML_32_NS );
             abstractCoverageElementDecl = getElementDecl( "AbstractCoverage", GML_32_NS );
             abstractStyleElementDecl = getElementDecl( "AbstractStyle", GML_32_NS );
+            abstractTimeSliceElementDecl = getElementDecl( "AbstractTimeSlice", GML_32_NS );
             abstractCurveSegmentElementDecl = getElementDecl( "AbstractCurveSegment", GML_32_NS );
             abstractSurfacePatchElementDecl = getElementDecl( "AbstractSurfacePatch", GML_32_NS );
             abstractFeatureElementTypeDecl = getTypeDef( "AbstractFeatureType", GML_32_NS );
@@ -288,6 +296,13 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         for ( XSElementDeclaration elemDecl : getGeometryElementDeclarations( null, false ) ) {
             QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
             geomElementNames.add( name );
+        }
+
+        if ( abstractTimeSliceElementDecl != null ) {
+            for ( XSElementDeclaration elemDecl : getTimeSliceElementDeclarations( null, false ) ) {
+                QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
+                timeSliceElementNames.add( name );
+            }
         }
     }
 
@@ -423,6 +438,17 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      */
     public XSElementDeclaration getAbstractGeometryElementDeclaration() {
         return abstractGeometryElementDecl;
+    }
+
+    /**
+     * Returns the element declaration of the abstract time slice element, i.e.
+     * <code>{http://www.opengis.net/gml}_TimeSlice</code> (GML 2 to 3.1) or
+     * <code>{http://www.opengis.net/gml/3.2}AbstractTimeSlice</code> (GML 3.2).
+     * 
+     * @return declaration object of the abstract time slice element
+     */
+    public XSElementDeclaration getAbstractTimeSliceElementDeclaration() {
+        return abstractTimeSliceElementDecl;
     }
 
     /**
@@ -566,6 +592,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         return getSubstitutions( abstractStyleElementDecl, namespace, true, onlyConcrete );
     }
 
+    public List<XSElementDeclaration> getTimeSliceElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractTimeSliceElementDecl, namespace, true, onlyConcrete );
+    }
+
     public XSElementDeclaration getGeometryElement( QName elName ) {
         for ( XSElementDeclaration elementDecl : getGeometryElementDeclarations( null, false ) ) {
             if ( elementDecl.getNamespace().equals( elName.getNamespaceURI() )
@@ -601,7 +631,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         if ( pt == null ) {
             if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
                 LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
-                          + elDecl.getName() + "), but handling is not implemented yet." );
+                           + elDecl.getName() + "), but handling is not implemented yet." );
                 // // TODO actually determine allowed value representations
                 // pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
                 // elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
@@ -1022,4 +1052,190 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         LOG.trace( "Mapping '" + gmlGeometryName + "' -> " + result );
         return result;
     }
+
+    public GMLPropertySemantics getTimeSlicePropertySemantics( XSElementDeclaration elDecl ) {
+        GMLPropertySemantics semantics = derivePropertySemantics( elDecl );
+        if ( semantics == null ) {
+            return null;
+        }
+        XSElementDeclaration valueEl = semantics.getValueElDecl();
+        if ( valueEl != null ) {
+            QName valueElName = new QName( valueEl.getNamespace(), valueEl.getName() );
+            if ( timeSliceElementNames.contains( valueElName ) ) {
+                return semantics;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Determines the generic GML property type interpretation for the given {@link XSElementDeclaration}.
+     * 
+     * @param elDecl
+     *            element declaration, must not be <code>null</code>
+     * @return GML property type semantics, or <code>null</code> if the element declaration cannot be interpreted as a
+     *         GML property type
+     */
+    public GMLPropertySemantics derivePropertySemantics( XSElementDeclaration elDecl ) {
+
+        if ( !( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) ) {
+            return null;
+        }
+
+        QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        LOG.trace( "Checking if element declaration '" + ptName + "' defines a complex-valued GML property type." );
+
+        XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
+        boolean allowsXlink = allowsXLink( typeDef );
+
+        XSElementDeclaration valueElementDeclFromAnnotations = determineAnnotationDefinedValueElement( elDecl );
+        XSElementDeclaration valueElementDeclFromModelGroup = determineModelGroupDefinedValueElement( typeDef );
+
+        if ( valueElementDeclFromModelGroup == null && valueElementDeclFromAnnotations != null ) {
+            ValueRepresentation allowedRepresentation = REMOTE;
+            return new GMLPropertySemantics( elDecl, valueElementDeclFromAnnotations, allowedRepresentation );
+        }
+        if ( valueElementDeclFromModelGroup != null && valueElementDeclFromAnnotations == null ) {
+            ValueRepresentation allowedRepresentation = INLINE;
+            if ( allowsXlink ) {
+                allowedRepresentation = BOTH;
+            }
+            return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation );
+        }
+        if ( valueElementDeclFromModelGroup != null && valueElementDeclFromAnnotations != null ) {
+            ValueRepresentation allowedRepresentation = INLINE;
+            if ( allowsXlink ) {
+                allowedRepresentation = BOTH;
+            }
+            return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation );
+        }
+        return null;
+    }
+
+    private XSElementDeclaration determineAnnotationDefinedValueElement( XSElementDeclaration elDecl ) {
+        XMLAdapter annotationXML = null;
+        XSObjectList annotations = elDecl.getAnnotations();
+        QName targetElement = null;
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            annotationXML = new XMLAdapter( new StringReader( s ) );
+            targetElement = determineTargetElementGml32( annotationXML );
+            if ( targetElement == null ) {
+                targetElement = determineTargetElementXGml( annotationXML );
+            }
+            if ( targetElement == null ) {
+                targetElement = determineTargetElementAdv( annotationXML );
+            }
+        }
+        if ( targetElement != null ) {
+            return getElementDecl( targetElement );
+        }
+        return null;
+    }
+
+    private QName determineTargetElementGml32( XMLAdapter annotationXML ) {
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        nsContext.addNamespace( "gml", GML3_2_NS );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath( "xs:appinfo/gml:targetElement/text()", nsContext ),
+                                                         null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a target element annotation (GML 3.2 style)." );
+        }
+        return refElement;
+    }
+
+    private QName determineTargetElementXGml( XMLAdapter annotationXML ) {
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath(
+                                                                    "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
+                                                                    nsContext ), null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a target element annotation (urn:x-gml style)." );
+        }
+        return refElement;
+    }
+
+    private QName determineTargetElementAdv( XMLAdapter annotationXML ) {
+        NamespaceBindings nsContext = new NamespaceBindings();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath( "xs:appinfo/adv:referenziertesElement/text()",
+                                                                    nsContext ), null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a target element annotation (adv style)." );
+        }
+        return refElement;
+    }
+
+    private XSElementDeclaration determineModelGroupDefinedValueElement( XSComplexTypeDefinition typeDef ) {
+        switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+            LOG.trace( "CONTENTTYPE_ELEMENT" );
+            XSParticle particle = typeDef.getParticle();
+            XSTerm term = particle.getTerm();
+            switch ( term.getType() ) {
+            case XSConstants.MODEL_GROUP: {
+                XSModelGroup modelGroup = (XSModelGroup) term;
+                switch ( modelGroup.getCompositor() ) {
+                case XSModelGroup.COMPOSITOR_ALL: {
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_CHOICE:
+                case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                    LOG.trace( "Found sequence / choice." );
+                    XSObjectList sequence = modelGroup.getParticles();
+                    if ( sequence.getLength() != 1 ) {
+                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a property declaration." );
+                        return null;
+                    }
+                    XSParticle particle2 = (XSParticle) sequence.item( 0 );
+                    switch ( particle2.getTerm().getType() ) {
+                    case XSConstants.ELEMENT_DECLARATION: {
+                        return (XSElementDeclaration) particle2.getTerm();
+                    }
+                    case XSConstants.WILDCARD: {
+                        LOG.debug( "Unhandled particle: WILDCARD" );
+                        break;
+                    }
+                    case XSConstants.MODEL_GROUP: {
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
+                        break;
+                    }
+                    }
+                    break;
+                }
+                default: {
+                    assert false;
+                }
+                }
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                LOG.debug( "Unhandled particle: WILDCARD" );
+                break;
+            }
+            case XSConstants.ELEMENT_DECLARATION: {
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                break;
+            }
+            default: {
+                assert false;
+            }
+            }
+            break;
+        }
+        default: {
+            LOG.debug( "Unhandled content type in determineModelGroupDefinedValueElement(...) encountered." );
+        }
+        }
+        return null;
+    }
+
 }

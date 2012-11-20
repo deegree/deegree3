@@ -38,6 +38,7 @@ package org.deegree.gml.schema;
 import static javax.xml.namespace.QName.valueOf;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 
@@ -47,6 +48,7 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.test.TestProperties;
@@ -401,6 +403,44 @@ public class GMLAppSchemaReaderTest {
         assertPropertyType( gt, 10, new QName( aixmNs, "verticalDatum" ), 0, 1 );
         assertPropertyType( gt, 11, new QName( aixmNs, "verticalAccuracy" ), 0, 1 );
         assertPropertyType( gt, 12, new QName( aixmNs, "extension" ), 0, -1 );
+    }
+
+    @Test
+    public void testAIXMTimeSliceDeclarations()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+        GMLSchemaInfoSet gmlSchema = schema.getGMLSchema();
+        List<XSElementDeclaration> timeSliceElementDecls = gmlSchema.getTimeSliceElementDeclarations( null, true );
+        Assert.assertEquals( 126, timeSliceElementDecls.size() );
+    }
+
+    @Test
+    public void testAIXMTimeSlicePropertyDeclarations()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+        GMLSchemaInfoSet gmlSchema = schema.getGMLSchema();
+        String aixmNs = "http://www.aixm.aero/schema/5.1";
+        QName ftName = new QName( aixmNs, "Unit" );
+        FeatureType ft = schema.getFeatureType( ftName );
+        QName propName = new QName( aixmNs, "timeSlice" );
+        PropertyType pt = ft.getPropertyDeclaration( propName );
+        XSElementDeclaration propDecl = pt.getElementDecl();
+        GMLPropertySemantics propertySemantics = gmlSchema.getTimeSlicePropertySemantics( propDecl );
+        assertNotNull( propertySemantics );
+        
+        propName = new QName( GML3_2_NS, "identifier" );
+        pt = ft.getPropertyDeclaration( propName );
+        propDecl = pt.getElementDecl();
+        propertySemantics = gmlSchema.getTimeSlicePropertySemantics( propDecl );
+        assertNull( propertySemantics );
     }
 
     private void assertPropertyType( GMLObjectType geometryDecl, int propDeclIdx, QName propName, int minOccurs,

@@ -245,7 +245,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setProjection( analyzer.getProjection() );
+        gmlStream.setProjections( analyzer.getProjection() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );

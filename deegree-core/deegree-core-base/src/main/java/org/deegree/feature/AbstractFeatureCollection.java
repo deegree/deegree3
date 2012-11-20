@@ -38,7 +38,7 @@ package org.deegree.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.filter.Filter;
@@ -76,7 +76,7 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
     }
 
     @Override
-    public FeatureCollection getMembers( Filter filter, XPathEvaluator<GMLObject> evaluator )
+    public FeatureCollection getMembers( Filter filter, XPathEvaluator<TypedObjectNode> evaluator )
                             throws FilterEvaluationException {
 
         List<Feature> matchingFeatures = new ArrayList<Feature>();
