@@ -70,7 +70,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeature;
 import org.deegree.feature.persistence.BBoxTracker;
 import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStore;
@@ -963,9 +962,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         List<Property> props = Collections.singletonList( replacement.getNewValue() );
         for ( ResourceId id : list ) {
             IdAnalysis analysis = schema.analyzeId( id.getRid() );
-            Feature f = new GenericFeature( schema.getFeatureType( ftMapping.getFeatureType() ),
-                                            id.getRid(), props, null );
-            mgr.updateFeature( f, ftMapping, analysis.getIdKernels() );
+            FeatureType featureType = schema.getFeatureType( ftMapping.getFeatureType() );
+            Feature f = featureType.newFeature( id.getRid(), props, null );
+            mgr.updateFeature( f, ftMapping, analysis.getIdKernels(), mapping, replacement );
         }
     }
 

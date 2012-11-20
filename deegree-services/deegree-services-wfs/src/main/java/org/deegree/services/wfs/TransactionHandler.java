@@ -619,7 +619,8 @@ class TransactionHandler {
                     // TODO make this hack unnecessary
                     TypedObjectNode propValue = prop.getValue();
                     if ( pt instanceof CustomPropertyType && propValue instanceof GenericXMLElement ) {
-                        prop.setValue( ( (GenericXMLElement) propValue ).getValue() );
+                        prop = new GenericProperty( pt, propValue );
+                        prop.setChildren( ( (GenericXMLElement) propValue ).getChildren() );
                     }
 
                     ParsedPropertyReplacement repl = new ParsedPropertyReplacement( prop, updateAction,
@@ -633,7 +634,6 @@ class TransactionHandler {
                     // contract: skip to next ELEMENT_EVENT
                     xmlStream.nextTag();
                 } catch ( Exception e ) {
-                    e.printStackTrace();
                     LOG.debug( e.getMessage(), e );
                     throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
                 }

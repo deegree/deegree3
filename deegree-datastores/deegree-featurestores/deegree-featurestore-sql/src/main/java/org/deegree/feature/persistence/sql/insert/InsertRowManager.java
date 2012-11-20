@@ -77,6 +77,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.reference.FeatureReference;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
+import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -191,7 +192,8 @@ public class InsertRowManager {
         return featureRow;
     }
 
-    public FeatureRow updateFeature( final Feature feature, final FeatureTypeMapping ftMapping, final String[] idParts )
+    public FeatureRow updateFeature( final Feature feature, final FeatureTypeMapping ftMapping, final String[] idParts,
+                                     Mapping mapping, ParsedPropertyReplacement replacement )
                             throws SQLException, FeatureStoreException, FilterEvaluationException {
 
         FeatureRow featureRow = null;
@@ -221,9 +223,7 @@ public class InsertRowManager {
             List<InsertRow> allRows = new ArrayList<InsertRow>();
             allRows.add( featureRow );
 
-            for ( Mapping particleMapping : ftMapping.getMappings() ) {
-                buildInsertRows( feature, particleMapping, featureRow, allRows );
-            }
+            buildInsertRows( feature, mapping, featureRow, allRows );
 
             LOG.debug( "Built rows for feature '" + feature.getId() + "': " + allRows.size() );
 
