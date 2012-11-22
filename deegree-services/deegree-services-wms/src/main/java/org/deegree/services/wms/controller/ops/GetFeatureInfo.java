@@ -197,6 +197,17 @@ public class GetFeatureInfo {
         bbox = WMSController130.getCRSAndEnvelope( c, vals );
         crs = bbox.getCoordinateSystem();
 
+        parseIj( map );
+
+        if ( x >= width || y >= height || x < 0 || y < 0 ) {
+            throw new OWSException( get( "WMS.INVALID_POINT" ), OWSException.INVALID_POINT );
+        }
+
+        calcClickBox( map );
+    }
+
+    private void parseIj( Map<String, String> map )
+                            throws OWSException {
         String xs = map.get( "I" );
         if ( xs == null ) {
             throw new OWSException( get( "WMS.PARAM_MISSING", "I" ), OWSException.MISSING_PARAMETER_VALUE );
@@ -216,12 +227,6 @@ public class GetFeatureInfo {
         } catch ( NumberFormatException e ) {
             throw new OWSException( get( "WMS.NOT_A_NUMBER", "J", ys ), OWSException.INVALID_PARAMETER_VALUE );
         }
-
-        if ( x >= width || y >= height || x < 0 || y < 0 ) {
-            throw new OWSException( get( "WMS.INVALID_POINT" ), OWSException.INVALID_POINT );
-        }
-
-        calcClickBox( map );
     }
 
     private void calcClickBox( int radius ) {
@@ -248,58 +253,9 @@ public class GetFeatureInfo {
     // returns the bbox
     private double[] handleCommon( Map<String, String> map )
                             throws OWSException {
-        String box = map.get( "BBOX" );
-        if ( box == null || box.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), OWSException.MISSING_PARAMETER_VALUE );
-        }
+        double[] vals = parseBoundingBox( map );
 
-        double[] vals = splitAsDoubles( box, "," );
-        if ( vals.length != 4 ) {
-            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), OWSException.INVALID_PARAMETER_VALUE );
-        }
-
-        if ( vals[2] <= vals[0] ) {
-            throw new OWSException( get( "WMS.MAXX_MINX" ), OWSException.INVALID_PARAMETER_VALUE );
-        }
-        if ( vals[3] <= vals[1] ) {
-            throw new OWSException( get( "WMS.MAXY_MINY" ), OWSException.INVALID_PARAMETER_VALUE );
-        }
-
-        String qls = map.get( "QUERY_LAYERS" );
-        if ( qls == null || qls.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "QUERY_LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
-        }
-        String ls = map.get( "LAYERS" );
-        if ( ls == null || ls.trim().isEmpty() ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
-        }
-        String ss = map.get( "STYLES" );
-        if ( ss == null ) {
-            LOG.warn( "Mandatory STYLES parameter is missing for GFI request, silently ignoring the protocol breach." );
-            ss = "";
-        }
-
-        LinkedList<String> layers = new LinkedList<String>( asList( ls.split( "," ) ) );
-        this.layers = GetMap.handleKVPLayers( layers, service );
-        this.styles = GetMap.handleKVPStyles( ss, service, this.layers );
-
-        LinkedList<String> qlayers = new LinkedList<String>( asList( qls.split( "," ) ) );
-        for ( String l : qlayers ) {
-            if ( service.getLayer( l ) == null ) {
-                throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", l ), OWSException.LAYER_NOT_DEFINED );
-            }
-        }
-        ListIterator<Layer> lays = this.layers.listIterator();
-        ListIterator<Style> stys = this.styles.listIterator();
-
-        while ( lays.hasNext() ) {
-            String name = lays.next().getName();
-            stys.next();
-            if ( !qlayers.contains( name ) ) {
-                lays.remove();
-                stys.remove();
-            }
-        }
+        parseLayersAndStyles( map );
 
         String format = map.get( "INFO_FORMAT" );
         if ( format != null ) {
@@ -340,6 +296,66 @@ public class GetFeatureInfo {
 
         returnGeometries = map.get( "GEOMETRIES" ) != null && map.get( "GEOMETRIES" ).equalsIgnoreCase( "true" );
 
+        return vals;
+    }
+
+    private void parseLayersAndStyles( Map<String, String> map )
+                            throws OWSException {
+        String qls = map.get( "QUERY_LAYERS" );
+        if ( qls == null || qls.trim().isEmpty() ) {
+            throw new OWSException( get( "WMS.PARAM_MISSING", "QUERY_LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
+        }
+        String ls = map.get( "LAYERS" );
+        if ( ls == null || ls.trim().isEmpty() ) {
+            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
+        }
+        String ss = map.get( "STYLES" );
+        if ( ss == null ) {
+            LOG.warn( "Mandatory STYLES parameter is missing for GFI request, silently ignoring the protocol breach." );
+            ss = "";
+        }
+
+        LinkedList<String> layers = new LinkedList<String>( asList( ls.split( "," ) ) );
+        this.layers = GetMap.handleKVPLayers( layers, service );
+        this.styles = GetMap.handleKVPStyles( ss, service, this.layers );
+
+        LinkedList<String> qlayers = new LinkedList<String>( asList( qls.split( "," ) ) );
+        for ( String l : qlayers ) {
+            if ( service.getLayer( l ) == null ) {
+                throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", l ), OWSException.LAYER_NOT_DEFINED );
+            }
+        }
+        ListIterator<Layer> lays = this.layers.listIterator();
+        ListIterator<Style> stys = this.styles.listIterator();
+
+        while ( lays.hasNext() ) {
+            String name = lays.next().getName();
+            stys.next();
+            if ( !qlayers.contains( name ) ) {
+                lays.remove();
+                stys.remove();
+            }
+        }
+    }
+
+    private double[] parseBoundingBox( Map<String, String> map )
+                            throws OWSException {
+        String box = map.get( "BBOX" );
+        if ( box == null || box.trim().isEmpty() ) {
+            throw new OWSException( get( "WMS.PARAM_MISSING", "BBOX" ), OWSException.MISSING_PARAMETER_VALUE );
+        }
+
+        double[] vals = splitAsDoubles( box, "," );
+        if ( vals.length != 4 ) {
+            throw new OWSException( get( "WMS.BBOX_WRONG_FORMAT", box ), OWSException.INVALID_PARAMETER_VALUE );
+        }
+
+        if ( vals[2] <= vals[0] ) {
+            throw new OWSException( get( "WMS.MAXX_MINX" ), OWSException.INVALID_PARAMETER_VALUE );
+        }
+        if ( vals[3] <= vals[1] ) {
+            throw new OWSException( get( "WMS.MAXY_MINY" ), OWSException.INVALID_PARAMETER_VALUE );
+        }
         return vals;
     }
 
