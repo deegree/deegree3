@@ -221,7 +221,9 @@ Readers familiar with the WMS protocol might be wondering why layers can not be 
 Configuration overview
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The configuration can be split up in six sections. Readers familiar with other deegree service configurations may recognize some similarities, but we'll describe the options anyway, because there may be subtle differences. A document template looks like this::
+The configuration can be split up in six sections. Readers familiar with other deegree service configurations may recognize some similarities, but we'll describe the options anyway, because there may be subtle differences. A document template looks like this:
+
+.. code-block:: xml
 
   <?xml version='1.0'?>
   <deegreeWMS xmlns='http://www.deegree.org/services/wms'>
@@ -258,6 +260,8 @@ Basic options
 
 Here is a snippet for quick copy & paste::
 
+.. code-block:: xml
+
   <SupportedVersions>
     <SupportedVersion>1.1.1</SupportedVersion>
   </SupportedVersions>
@@ -290,7 +294,9 @@ Have a look at the layer options and their values:
 
 You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme. The themes are configured using the ``ThemeId`` element.
 
-Here is an example snippet of the content section::
+Here is an example snippet of the content section:
+
+.. code-block:: xml
 
   <ServiceConfiguration>
 
@@ -308,7 +314,9 @@ Custom feature info formats
 
 Any mime type can be configured to be available as response format for GetFeatureInfo requests, although the most commonly used is probably ``text/html``. There are two alternative ways of controlling how the output is generated (besides using the default HTML output). One involves a deegree specific templating mechanism, the other involves writing an XSLT script. The deegree specific mechanism has the advantage of being considerably less verbose, making common use cases very easy, while the XSLT approach gives you all the freedom.
 
-This is how the configuration section looks like for configuring a deegree templating based format::
+This is how the configuration section looks like for configuring a deegree templating based format:
+
+.. code-block:: xml
 
   <FeatureInfoFormats>
     <GetFeatureInfoFormat>
@@ -317,7 +325,9 @@ This is how the configuration section looks like for configuring a deegree templ
     </GetFeatureInfoFormat>
   </FeatureInfoFormats>
 
-The configuration for the XSLT approach looks like this::
+The configuration for the XSLT approach looks like this:
+
+.. code-block:: xml
 
   <FeatureInfoFormats>
     <GetFeatureInfoFormat>
@@ -336,7 +346,9 @@ If you want to learn more about the templating format, http://wiki.deegree.org/d
 Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
-Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS' capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration::
+Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS' capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
+
+.. code-block:: xml
 
   <ExtendedCapabilities>
     <MyCustomOutput xmlns="http://www.custom.org/output">
@@ -504,3 +516,42 @@ Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
 Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. It is not defined by the OGC specifications, but by extensions, such as the INSPIRE service specifications. deegree treats this section as a generic XML element and does not validate it. Please have a look at the service specific section for configuring this type of metadata. 
+
+------------------------
+Controller configuration
+------------------------
+
+The controller configuration is used to configure various global aspect common to all services.
+
+Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, if you want the default behaviour, you can even omit the file completely.
+
+An empty example file looks like follows:
+
+.. code-block:: xml
+
+  <?xml version='1.0'?>
+  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.0.0'>
+  </deegreeServiceController>
+
+The following sections describe the available options in detail.
+
+^^^^^^^^^^^^^^^^^^^^^
+Service endpoint URLs
+^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes it is desirable to override the service endpoint URLs, for example when using deegree in a proxy setup. You can override the URLs used for HTTP GET, POST and SOAP separately.
+
+To do that, put a fragment like the following into the ``main.xml``:
+
+.. code-block:: xml
+
+  <DCP>
+    <HTTPGet>http://services.deegree.org</HTTPGet>
+    <HTTPPost>http://services.deegree.org</HTTPPost>
+    <SOAP>http://soap.deegree.org</SOAP>
+  </DCP>
+
+TODO:
+
+describe ConfiguredServices, PreventClassloaderLeaks, RequestLogging, ValidateResponses
+
