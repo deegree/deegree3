@@ -55,14 +55,33 @@ This kinds of application schemas can be served using the SQL feature store or t
 Shape feature store
 -------------------
 
-The shape feature store serves a feature type from an ESRI shape file. The configuration format for the deegree shape feature store is defined by schema file http://schemas.deegree.org/datasource/feature/shape/3.1.0/shape.xsd. The only mandatory element is ``File``, therefore, a minimal configuration example looks like this:
+The shape feature store serves a feature type from an ESRI shape file. The configuration format for the deegree shape feature store is defined by schema file http://schemas.deegree.org/datasource/feature/shape/3.1.0/shape.xsd.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Minimal configuration example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The only mandatory element is ``File``, therefore, a minimal configuration example looks like this:
 
 .. topic:: Shape Feature Store config (minimal configuration example)
 
    .. literalinclude:: xml/shapefeaturestore_minimal.xml
       :language: xml
 
-The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+The configuration above will make the data from file ``/tmp/rivers.shp`` available with the following settings:
+
+* The feature store offers the feature type ``app:rivers`` (``app`` bound to ``http://www.deegree.org/app``)
+* SRS information is taken from file ``/tmp/rivers.prj`` (if it does not exist, ``EPSG:4326`` is assumed)
+* The geometry is added as property ``app:GEOMETRY``
+* All data columns from file ``/tmp/rivers.dbf`` are used as properties in the feature type
+* Encoding of text columns in ``/tmp/rivers.dbf`` is guessed based on actual contents
+* An alphanumeric index is created for the dbf to speed up filtering based on non-geometric constraints
+
+^^^^^^^^^^^^^^^^^^^^^
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+The following table lists all available configuration options. When specifiying them, their order must be respected.
 
 .. table:: Options for ``ShapeFeatureStore`` configuration files
 
@@ -77,25 +96,51 @@ The following table lists all available configuration options (the complex ones 
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | FeatureTypePrefix           | 0..1        | String  | Prefix of the feature type (defaults to "app")                               |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| File                        | 1..1        | String  | Path to the shape file                                                       |
+| File                        | 1..1        | String  | Path to shape file (can be relative)                                         |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| Encoding                    | 0..1        | Integer | Encoding of text fields in the dbf file                                      |
+| Encoding                    | 0..1        | Integer | Encoding of text fields in dbf file                                          |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | GenerateAlphanumericIndexes | 0..1        | Boolean | Set to true, if an index for alphanumeric fields should be generated         |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| Mapping                     | 0..n        | Complex | Mapping between dbf column names and property names                          |
+| Mapping                     | 0..1        | Complex | Customized mapping between dbf column names and property names               |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+More complex configuration example 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A more complex example that uses all available configuration options:
+
+.. topic:: Shape Feature Store config (more complex configuration example)
+
+   .. literalinclude:: xml/shapefeaturestore_complex.xml
+      :language: xml
 
 --------------------
 Memory feature store
 --------------------
 
-The memory feature store serves feature types that are defined by a GML application schema and are stored in memory. The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd. The only mandatory elemens is ``GMLSchema``, therefore, a minimal configuration example looks like this:
+The memory feature store serves feature types that are defined by a GML application schema and are stored in memory. The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Minimal configuration example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The only mandatory element is ``GMLSchema``, therefore, a minimal configuration example looks like this:
 
 .. topic:: Memory Feature Store config (minimal configuration example)
 
    .. literalinclude:: xml/memoryfeaturestore_minimal.xml
       :language: xml
+
+The configuration above will set up a memory feature store with the following settings:
+
+* The GML 3.2 application schema from file ``../../appschemas/inspire/annex1/addresses.xsd`` is used as application schema (e.g. scanned for feature type definitions)
+* No GML datasets are loaded on startup, so the feature store will be empty unless an insertion is performed (e.g. via WFS-T)
+
+^^^^^^^^^^^^^^^^^^^^^
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
 
 The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
@@ -106,27 +151,46 @@ The following table lists all available configuration options (the complex ones 
 +=============================+=============+=========+==============================================================================+
 | StorageCRS                  | 0..1        | String  | CRS of stored geometries                                                     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| NamespaceHint               | 0..n        | Complex | Local name of the feature type (defaults to base name of shape file)         |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | GMLSchema                   | 1..n        | String  | Path/URL to GML application schema files/dirs to read feature types from     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | GMLFeatureCollection        | 0..n        | Complex | Path/URL to GML feature collections documents to read features from          |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+More complex configuration example 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A more complex example that uses all available configuration options:
+
+.. topic:: Memory Feature Store config (more complex configuration example)
+
+   .. literalinclude:: xml/memoryfeaturestore_complex.xml
+      :language: xml
+
 ------------------------
 Simple SQL feature store
 ------------------------
 
-The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd. The only three mandatory elements are ``JDBCConnId``, ``SQLStatement`` and ``BBoxStatement``, therefore, a minimal configuration example looks like this:
+The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. The configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Minimal configuration example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The only three mandatory elements are ``JDBCConnId``, ``SQLStatement`` and ``BBoxStatement``, therefore, a minimal configuration example looks like this:
 
 .. topic:: Simple SQL Feature Store config (minimal configuration example)
 
    .. literalinclude:: xml/simplesqlfeaturestore_minimal.xml
       :language: xml
 
+^^^^^^^^^^^^^^^^^^^^^
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
 The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
-.. table:: Options for ``Simple SQL feature`` configuration files
+.. table:: Options for ``Simple SQL feature store`` configuration files
 
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | Option                      | Cardinality | Value   | Description                                                                  |
@@ -148,23 +212,32 @@ The following table lists all available configuration options (the complex ones 
 | LODStatement                | 0..n        | Complex | Statements for specific WMS scale ranges                                     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+More complex configuration example 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. topic:: Simple SQL Feature Store config (more complex configuration example)
+
+   .. literalinclude:: xml/simplesqlfeaturestore_complex.xml
+      :language: xml
+
 -------------------------
 SQL feature store: Basics
 -------------------------
 
 The SQL feature store implementation currently supports the following backends:
 
-* PostgreSQL (8.3, 8.4, 9.0, 9.1) with PostGIS (1.4, 1.5)
+* PostgreSQL (8.3, 8.4, 9.0, 9.1) with PostGIS (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
 
-The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd. Due to the potential complexity, it is highly recommended to perform editing of SQL feature store configs in a schema-aware XML editor. The basic structure of an SQL feature store config always looks like this:
+The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. Due to the potential complexity, it is highly recommended to perform editing of SQL feature store configs in a schema-aware XML editor. The basic structure of an SQL feature store config always looks like this:
 
 .. topic:: SQL FeatureStore config (skeleton)
 
    .. literalinclude:: xml/sqlfeaturestore_basic.xml
       :language: xml
 
-The root element has to be ``SQLFeatureStore`` and the config attribute must be ``3.1.0``. The only mandatory element is:
+The root element has to be ``SQLFeatureStore`` and the config attribute must be ``3.2.0``. The only mandatory element is:
 
 * ``JDBCConnId``: Id of the JDBC connection to use (see ...)
 
@@ -281,7 +354,7 @@ The ``FeatureTypeMapping`` element has the following attributes:
 Feature id
 """"""""""
 
-Inside each ``FeatureTypeMapping`` element, a ``FIDMapping`` element is required:
+The first child of every ``FeatureTypeMapping`` element must be a ``FIDMapping`` element:
 
 .. topic:: SQL feature store (schema-driven mode): FeatureTypeMapping elements
 
@@ -289,7 +362,7 @@ Inside each ``FeatureTypeMapping`` element, a ``FIDMapping`` element is required
       :language: xml
 
 .. hint::
-   After providing a correct FIDMapping, a feature type is already queryable, e.g. you can perform a ``GetFeature`` requests against a WFS (if you add it to the workspace first). When creating a configuration manually for an existing database, it is a recommended to do this as a first step to see that everything works so far (although no properties will be returned).
+   After providing a correct FIDMapping, a feature type is already queryable, e.g. you can perform a ``GetFeature`` requests against a WFS that uses this feature store. When creating a configuration manually for an existing database, it is a good idea to do this as a first step. This way you test if everything works so far (although no properties will be returned).
 
 """"""""""
 Properties
@@ -303,6 +376,30 @@ In order to add mappings for properties of the feature type, the following mappi
 * ``Complex``: Maps a complex element that is neither a geometry nor a feature. A container for nested mapping elements.
 
 Mapping the actual content of a feature works by associating XML nodes with columns in the database. In the beginning of the feature type mapping, the current node is the root element of the feature ``ad:Address`` and the current table is ``ad_address``.
+
+----------------------------------------
+SQL feature store: Feature id generation
+----------------------------------------
+
+When new features are inserted into a SQL feature store (for example via a WFS transaction), the values of the feature ids (in the gml:id attribute) sometimes have to be re-generated. This depends on the used id generation mode. There are three id generation modes available, which stem from the WFS 1.1.0 specification:
+
+* ``UseExisting``: The feature store will store the original gml:id values that have been provided in the input. This may lead to errors if the provided ids are already in use or if the format of the id does not match the configuration.
+* ``GenerateNew``: The feature store will discard the original gml:id values and use the configured generator to produce new and unique identifiers. References in the input (xlink:href) that point to a feature with an id that is re-generated are fixed.
+* ``ReplaceDuplicate``: TBD. Not implemented yet.
+
+There are several aspects of the id generation that can be configured in the ``FIDMapping`` element. Here's an example snippet:
+
+.. topic:: SQL feature store: FIDMapping (Feature id generation)
+
+   .. literalinclude:: xml/sqlfeaturestore_fidmapping1.xml
+      :language: xml
+
+The above snippet defines the feature id mapping and id generation behaviour for a feature type called ``ad:Address``
+
+* Column ``attr_gml_id`` stores the value of the gml:id (minus the prefix ``AD_ADDRESS_``). If ``attr_gml_id`` contains the value ``42``, the corresponding feature instance will have the value ``AD_ADDRESS_42``.
+* On insert (mode=UseExisting), the provided gml:id values must have the format ``AD_ADDRESS_$``. The prefix ``AD_ADDRESS_`` is removed and the remaining part of the identifier is stored in column ``attr_gml_id``.
+* On insert (mode=GenerateNew), the database sequence ``SEQ_FID`` is queried for new values to be stored in column ``attr_gml_id``.
+
 
 
 ^^^^^^^^^^^^
