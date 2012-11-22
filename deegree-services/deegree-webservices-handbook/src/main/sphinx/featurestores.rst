@@ -227,12 +227,12 @@ SQL feature store: Basics
 
 The SQL feature store implementation currently supports the following backends:
 
-* PostgreSQL (8.3, 8.4, 9.0, 9.1) with PostGIS (1.4, 1.5, 2.0)
+* PostgreSQL (8.3, 8.4, 9.0, 9.1) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
 
 The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. Due to the potential complexity, it is highly recommended to perform editing of SQL feature store configs in a schema-aware XML editor. The basic structure of an SQL feature store config always looks like this:
 
-.. topic:: SQL FeatureStore config (skeleton)
+.. topic:: SQL feature store config (skeleton)
 
    .. literalinclude:: xml/sqlfeaturestore_basic.xml
       :language: xml
@@ -241,7 +241,7 @@ The root element has to be ``SQLFeatureStore`` and the config attribute must be 
 
 * ``JDBCConnId``: Id of the JDBC connection to use (see ...)
 
-This example is valid, but will not do much, as it does not define any feature types. In order to add feature types, you first have to choose between two configuration approaches supported by the SQL feature store implementation. Both approaches map data stored in tables to feature, but they work quite differently. The following table shows a comparison.
+This example is valid, but will not have much of an effect, as it does not define any feature types. In order to add feature types, you first have to choose between two configuration approaches supported by the SQL feature store implementation. Both approaches map data stored in tables to feature, but they work differently. The following table shows a comparison.
 
 .. raw:: latex
 
@@ -267,11 +267,11 @@ This example is valid, but will not do much, as it does not define any feature t
 .. raw:: latex
 
    \end{center}
-   \caption{SQLFeatureStore: Table-driven vs. Schema-driven-mode}
+   \caption{SQLFeatureStore: Table-driven vs. schema-driven-mode}
    \end{table}
 
 .. hint::
-  If you want to map an existing GML application schema (e.g. INSPIRE Addresses, GeoSciML, CityGML, XPlanung, AAA) always use schema-driven mode. Otherwise, try if table-driven meets your mapping requirements. If your table structures turn out to be too complex to be usable with table-driven mode, you will need to create a matching GML application schema manually and use schema-driven mode.
+  If you want to map an existing GML application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML, XPlanung, AAA) always use schema-driven mode. Otherwise, try if table-driven meets your mapping requirements. If your table structures turn out to be too complex to be usable with table-driven mode, you will need to create a matching GML application schema manually and use schema-driven mode.
 
 ------------------------------------
 SQL feature store: Table-driven mode
@@ -291,14 +291,14 @@ The above example assumes that the database contains a table named ``country``, 
 * every primitive column (number, string, date) is used as a primitive property
 * every geometry column is used as a geometry property
 
-One config file may map more than one table. The following example defines two feature types, based on tables ``country`` and ``cities``.
+A single config file may map more than one table. The following example defines two feature types, based on tables ``country`` and ``cities``.
 
-.. topic:: SQL feature store (table-driven mode): Mapping two stables
+.. topic:: SQL feature store (table-driven mode): Mapping two tables
 
    .. literalinclude:: xml/sqlfeaturestore_tabledriven2.xml
       :language: xml
 
-There are several optional attributes and elements that will give you more control over the feature type definition. The ``name`` attribute allows to set the feature type name explicity. In the following example, it will be ``app:Land`` (Land is German for country).
+There are several optional attributes and elements that give you more control over the derived feature type definition. The ``name`` attribute allows to set the feature type name explicity. In the following example, it will be ``app:Land`` (Land is German for country).
 
 .. topic:: SQL feature store (table-driven mode): Customizing the feature type name
 
@@ -307,7 +307,7 @@ There are several optional attributes and elements that will give you more contr
 
 You may use standard XML namespace binding to control the namespace and prefix of the feature type:
 
-.. topic:: SQL FeatureStore (Table-driven mode): Customizing the feature type namespace and prefix
+.. topic:: SQL feature store (table-driven mode): Customizing the feature type namespace and prefix
 
    .. literalinclude:: xml/sqlfeaturestore_tabledriven4.xml
       :language: xml
