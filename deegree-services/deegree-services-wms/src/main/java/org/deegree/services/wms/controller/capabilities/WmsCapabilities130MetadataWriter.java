@@ -170,8 +170,33 @@ class WmsCapabilities130MetadataWriter {
             writeElement( writer, WMSNS, "Abstract", abstracts.get( 0 ).getString() );
         }
 
+        writeKeywords( writer );
+
+        writer.writeStartElement( WMSNS, "OnlineResource" );
+        writer.writeAttribute( XLNNS, "type", "simple" );
+        writer.writeAttribute( XLNNS, "href", getServiceUrl() );
+        writer.writeEndElement();
+
+        writeServiceProvider( writer );
+
+        writer.writeEndElement();
+    }
+
+    private String getServiceUrl() {
+        String url = getUrl;
+        if ( provider != null && provider.getServiceContact() != null
+             && provider.getServiceContact().getContactInfo() != null
+             && provider.getServiceContact().getContactInfo().getOnlineResource() != null ) {
+            url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
+        }
+        return url;
+    }
+
+    private void writeKeywords( XMLStreamWriter writer )
+                            throws XMLStreamException {
         List<Pair<List<LanguageString>, CodeType>> keywords = identification == null ? null
                                                                                     : identification.getKeywords();
+
         if ( keywords != null && !keywords.isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
 
@@ -189,18 +214,10 @@ class WmsCapabilities130MetadataWriter {
 
             writer.writeEndElement();
         }
+    }
 
-        String url = getUrl;
-        if ( provider != null && provider.getServiceContact() != null
-             && provider.getServiceContact().getContactInfo() != null
-             && provider.getServiceContact().getContactInfo().getOnlineResource() != null ) {
-            url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
-        }
-        writer.writeStartElement( WMSNS, "OnlineResource" );
-        writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", url );
-        writer.writeEndElement();
-
+    private void writeServiceProvider( XMLStreamWriter writer )
+                            throws XMLStreamException {
         if ( provider != null ) {
             ResponsibleParty contact = provider.getServiceContact();
             if ( contact != null ) {
@@ -241,22 +258,25 @@ class WmsCapabilities130MetadataWriter {
                 writer.writeEndElement();
             }
 
-            if ( identification != null ) {
-                maybeWriteElementNS( writer, WMSNS, "Fees", identification.getFees() );
-                List<String> constr = identification.getAccessConstraints();
-                if ( constr != null ) {
-                    for ( String cons : constr ) {
-                        maybeWriteElementNS( writer, WMSNS, "AccessConstraints", cons );
-                    }
-                }
-            } else {
-                writeElement( writer, WMSNS, "Fees", "none" );
-                writeElement( writer, WMSNS, "AccessConstraints", "none" );
-            }
+            writeServiceIdentificationParts( writer );
 
         }
+    }
 
-        writer.writeEndElement();
+    private void writeServiceIdentificationParts( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        if ( identification != null ) {
+            maybeWriteElementNS( writer, WMSNS, "Fees", identification.getFees() );
+            List<String> constr = identification.getAccessConstraints();
+            if ( constr != null ) {
+                for ( String cons : constr ) {
+                    maybeWriteElementNS( writer, WMSNS, "AccessConstraints", cons );
+                }
+            }
+        } else {
+            writeElement( writer, WMSNS, "Fees", "none" );
+            writeElement( writer, WMSNS, "AccessConstraints", "none" );
+        }
     }
 
 }

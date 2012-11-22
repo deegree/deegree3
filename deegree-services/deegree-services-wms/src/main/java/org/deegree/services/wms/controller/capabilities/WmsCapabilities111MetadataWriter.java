@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
@@ -68,25 +68,29 @@ import org.deegree.services.wms.controller.WMSController;
  * 
  * @version $Revision: $, $Date: $
  */
- class WmsCapabilities111MetadataWriter {
+class WmsCapabilities111MetadataWriter {
 
-     private ServiceIdentification identification;
+    private ServiceIdentification identification;
+
     private ServiceProvider provider;
+
     private String getUrl;
+
     private String postUrl;
+
     private WMSController controller;
 
-
-    WmsCapabilities111MetadataWriter(ServiceIdentification identification, ServiceProvider provider, String getUrl, String postUrl, WMSController controller){
+    WmsCapabilities111MetadataWriter( ServiceIdentification identification, ServiceProvider provider, String getUrl,
+                                      String postUrl, WMSController controller ) {
         this.identification = identification;
         this.provider = provider;
         this.getUrl = getUrl;
         this.postUrl = postUrl;
         this.controller = controller;
-         
-     }
-     
-     void writeDCP( XMLStreamWriter writer, boolean get, boolean post )
+
+    }
+
+    void writeDCP( XMLStreamWriter writer, boolean get, boolean post )
                             throws XMLStreamException {
         writer.writeStartElement( "DCPType" );
         writer.writeStartElement( "HTTP" );
@@ -112,7 +116,7 @@ import org.deegree.services.wms.controller.WMSController;
         writer.writeEndElement();
     }
 
-     void writeRequest( XMLStreamWriter writer )
+    void writeRequest( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( "Request" );
 
@@ -139,22 +143,21 @@ import org.deegree.services.wms.controller.WMSController;
         writer.writeEndElement();
     }
 
-     void writeImageFormats( XMLStreamWriter writer )
+    void writeImageFormats( XMLStreamWriter writer )
                             throws XMLStreamException {
         for ( String f : controller.supportedImageFormats ) {
             writeElement( writer, "Format", f );
         }
     }
 
-     void writeInfoFormats( XMLStreamWriter writer )
+    void writeInfoFormats( XMLStreamWriter writer )
                             throws XMLStreamException {
         for ( String f : controller.supportedFeatureInfoFormats.keySet() ) {
             writeElement( writer, "Format", f );
         }
     }
 
-
-     void writeService( XMLStreamWriter writer )
+    void writeService( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( "Service" );
 
@@ -169,6 +172,31 @@ import org.deegree.services.wms.controller.WMSController;
             writeElement( writer, "Abstract", abstracts.get( 0 ).getString() );
         }
 
+        writeKeywords( writer );
+
+        writer.writeStartElement( "OnlineResource" );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
+        writer.writeAttribute( XLNNS, "type", "simple" );
+        writer.writeAttribute( XLNNS, "href", getServiceUrl() );
+        writer.writeEndElement();
+
+        writeServiceProvider( writer );
+
+        writer.writeEndElement();
+    }
+
+    private String getServiceUrl() {
+        String url = getUrl;
+        if ( provider != null && provider.getServiceContact() != null
+             && provider.getServiceContact().getContactInfo() != null
+             && provider.getServiceContact().getContactInfo().getOnlineResource() != null ) {
+            url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
+        }
+        return url;
+    }
+
+    private void writeKeywords( XMLStreamWriter writer )
+                            throws XMLStreamException {
         List<Pair<List<LanguageString>, CodeType>> keywords = identification == null ? null
                                                                                     : identification.getKeywords();
         if ( keywords != null && !keywords.isEmpty() ) {
@@ -182,19 +210,10 @@ import org.deegree.services.wms.controller.WMSController;
 
             writer.writeEndElement();
         }
+    }
 
-        String url = getUrl;
-        if ( provider != null && provider.getServiceContact() != null
-             && provider.getServiceContact().getContactInfo() != null
-             && provider.getServiceContact().getContactInfo().getOnlineResource() != null ) {
-            url = provider.getServiceContact().getContactInfo().getOnlineResource().toExternalForm();
-        }
-        writer.writeStartElement( "OnlineResource" );
-        writer.writeNamespace( XLINK_PREFIX, XLNNS );
-        writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", url );
-        writer.writeEndElement();
-
+    private void writeServiceProvider( XMLStreamWriter writer )
+                            throws XMLStreamException {
         if ( provider != null ) {
             ResponsibleParty contact = provider.getServiceContact();
             if ( contact != null ) {
@@ -236,22 +255,25 @@ import org.deegree.services.wms.controller.WMSController;
                 writer.writeEndElement();
             }
 
-            if ( identification != null ) {
-                maybeWriteElement( writer, "Fees", identification.getFees() );
-                List<String> constr = identification.getAccessConstraints();
-                if ( constr != null ) {
-                    for ( String cons : constr ) {
-                        maybeWriteElement( writer, "AccessConstraints", cons );
-                    }
-                }
-            } else {
-                writeElement( writer, "Fees", "none" );
-                writeElement( writer, "AccessConstraints", "none" );
-            }
+            writeServiceIdentificationParts( writer );
 
         }
+    }
 
-        writer.writeEndElement();
+    private void writeServiceIdentificationParts( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        if ( identification != null ) {
+            maybeWriteElement( writer, "Fees", identification.getFees() );
+            List<String> constr = identification.getAccessConstraints();
+            if ( constr != null ) {
+                for ( String cons : constr ) {
+                    maybeWriteElement( writer, "AccessConstraints", cons );
+                }
+            }
+        } else {
+            writeElement( writer, "Fees", "none" );
+            writeElement( writer, "AccessConstraints", "none" );
+        }
     }
 
 }

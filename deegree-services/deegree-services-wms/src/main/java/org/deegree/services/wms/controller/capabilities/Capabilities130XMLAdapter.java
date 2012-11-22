@@ -36,57 +36,34 @@
 
 package org.deegree.services.wms.controller.capabilities;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.cs.persistence.CRSManager.lookup;
+import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.layer.dims.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.rendering.r2d.legends.Legends;
-import org.deegree.services.jaxb.wms.LanguageStringType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
-import org.deegree.services.wms.controller.WMSController130;
-import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
-import org.deegree.theme.Themes;
 import org.slf4j.Logger;
 
 /**
@@ -98,7 +75,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(warn = "logs problems with CRS when outputting 1.3.0 capabilities", trace = "logs stack traces")
-public class Capabilities130XMLAdapter extends XMLAdapter {
+public class Capabilities130XMLAdapter {
 
     private static final Logger LOG = getLogger( Capabilities130XMLAdapter.class );
 
@@ -111,6 +88,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
     private OWSMetadataProvider metadata;
 
     private WmsCapabilities130MetadataWriter metadataWriter;
+
+    private WmsCapabilities130ThemeWriter themeWriter;
 
     /**
      * @param identification
@@ -128,6 +107,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         this.service = service;
         this.controller = controller;
         metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
+        themeWriter = new WmsCapabilities130ThemeWriter( controller, this, getUrl );
     }
 
     /**
@@ -168,7 +148,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 try {
                     XMLStreamReader reader = c.getXMLStreamReader();
                     XMLStreamUtils.skipStartDocument( reader );
-                    XMLAdapter.writeElement( writer, reader );
+                    writeElement( writer, reader );
                 } catch ( Throwable e ) {
                     LOG.warn( "Could not export extended capabilities snippet" );
                     LOG.trace( "Stack trace", e );
@@ -193,133 +173,18 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         if ( service.isNewStyle() ) {
             writeThemes( writer, service.getThemes() );
         } else {
-            writeLayers( writer, service.getRootLayer() );
+            WmsCapabilities130LegacyWriter lw = new WmsCapabilities130LegacyWriter( service, getUrl, metadata,
+                                                                                    controller, this );
+            lw.writeLayers( writer, service.getRootLayer() );
         }
 
-        writer.writeEndElement();
-    }
-
-    private void writeTheme( XMLStreamWriter writer, Theme theme )
-                            throws XMLStreamException {
-        LayerMetadata md = theme.getMetadata();
-        // TODO think about a push approach instead of a pull approach
-        LayerMetadata lmd = null;
-        for ( org.deegree.layer.Layer l : Themes.getAllLayers( theme ) ) {
-            if ( lmd == null ) {
-                lmd = l.getMetadata();
-            } else {
-                lmd.merge( l.getMetadata() );
-            }
-        }
-        md.merge( lmd );
-
-        writer.writeStartElement( WMSNS, "Layer" );
-
-        if ( md.isQueryable() ) {
-            writer.writeAttribute( "queryable", "1" );
-        }
-        if ( md.getCascaded() != 0 ) {
-            writer.writeAttribute( "cascaded", md.getCascaded() + "" );
-        }
-
-        if ( md.getName() != null ) {
-            writeElement( writer, WMSNS, "Name", md.getName() );
-        }
-        writeElement( writer, WMSNS, "Title", md.getDescription().getTitles().get( 0 ).getString() );
-        List<LanguageString> abs = md.getDescription().getAbstracts();
-        if ( lmd != null && ( abs == null || abs.isEmpty() ) ) {
-            abs = lmd.getDescription().getAbstracts();
-        }
-        if ( abs != null && !abs.isEmpty() ) {
-            writeElement( writer, WMSNS, "Abstract", abs.get( 0 ).getString() );
-        }
-        List<Pair<List<LanguageString>, CodeType>> kws = md.getDescription().getKeywords();
-        if ( lmd != null && ( kws == null || kws.isEmpty() || kws.get( 0 ).first.isEmpty() ) ) {
-            kws = lmd.getDescription().getKeywords();
-        }
-        if ( kws != null && !kws.isEmpty() && !kws.get( 0 ).first.isEmpty() ) {
-            writer.writeStartElement( WMSNS, "KeywordList" );
-            for ( LanguageString ls : kws.get( 0 ).first ) {
-                writeElement( writer, WMSNS, "Keyword", ls.getString() );
-            }
-            writer.writeEndElement();
-        }
-
-        SpatialMetadata smd = md.getSpatialMetadata();
-        writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
-        writeDimensions( writer, md.getDimensions() );
-
-        mdlabel: if ( controller.getMetadataURLTemplate() != null ) {
-            String id = null;
-
-            inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
-                if ( l.getMetadata().getMetadataId() != null ) {
-                    id = l.getMetadata().getMetadataId();
-                    break inner;
-                }
-            }
-
-            if ( id == null ) {
-                break mdlabel;
-            }
-            String mdurlTemplate = controller.getMetadataURLTemplate();
-            if ( mdurlTemplate.isEmpty() ) {
-                mdurlTemplate = getUrl;
-                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
-                    mdurlTemplate += "?";
-                }
-                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
-            }
-
-            writer.writeStartElement( WMSNS, "MetadataURL" );
-            writer.writeAttribute( "type", "ISO19115:2003" );
-            writeElement( writer, WMSNS, "Format", "application/xml" );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
-
-        Map<String, Style> legends = md.getLegendStyles();
-        for ( Entry<String, Style> e : md.getStyles().entrySet() ) {
-            if ( e.getKey() == null || e.getKey().isEmpty() ) {
-                continue;
-            }
-            Style ls = e.getValue();
-            if ( legends.get( e.getKey() ) != null ) {
-                ls = legends.get( e.getKey() );
-            }
-            Pair<Integer, Integer> p = new Legends().getLegendSize( ls );
-            writeStyle( writer, e.getKey(), e.getKey(), p, md.getName(), e.getValue() );
-        }
-
-        DoublePair hint = md.getScaleDenominators();
-        // use layers' settings only if not set for theme
-        if ( hint.first.isInfinite() && hint.second.isInfinite() ) {
-            hint = new DoublePair( hint.second, hint.first );
-            for ( org.deegree.layer.Layer l : theme.getLayers() ) {
-                hint.first = Math.min( l.getMetadata().getScaleDenominators().first, hint.first );
-                hint.second = Math.max( l.getMetadata().getScaleDenominators().second, hint.second );
-            }
-        }
-        if ( !hint.first.isInfinite() ) {
-            writeElement( writer, WMSNS, "MinScaleDenominator", hint.first + "" );
-        }
-        if ( !hint.second.isInfinite() ) {
-            writeElement( writer, WMSNS, "MaxScaleDenominator", hint.second + "" );
-        }
-
-        for ( Theme t : theme.getThemes() ) {
-            writeTheme( writer, t );
-        }
         writer.writeEndElement();
     }
 
     private void writeThemes( XMLStreamWriter writer, List<Theme> themes )
                             throws XMLStreamException {
         if ( themes.size() == 1 ) {
-            writeTheme( writer, themes.get( 0 ) );
+            themeWriter.writeTheme( writer, themes.get( 0 ) );
         } else {
             // synthetic root layer needed
             writer.writeStartElement( WMSNS, "Layer" );
@@ -327,115 +192,13 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             writer.writeAttribute( "queryable", "1" );
             writeElement( writer, WMSNS, "Title", "Root" );
             for ( Theme t : themes ) {
-                writeTheme( writer, t );
+                themeWriter.writeTheme( writer, t );
             }
             writer.writeEndElement();
         }
     }
 
-    private static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> crsList, Envelope layerEnv )
-                            throws XMLStreamException {
-        for ( ICRS crs : crsList ) {
-            if ( crs.getAlias().startsWith( "AUTO" ) ) {
-                writeElement( writer, WMSNS, "CRS", crs.getAlias().replace( "AUTO", "AUTO2" ) );
-            } else {
-                writeElement( writer, WMSNS, "CRS", crs.getAlias() );
-            }
-        }
-
-        ICRS latlon;
-        try {
-            latlon = lookup( "CRS:84" );
-            if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
-                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
-                writer.writeStartElement( WMSNS, "EX_GeographicBoundingBox" );
-                Point min = bbox.getMin();
-                Point max = bbox.getMax();
-                if ( min.equals( max ) ) {
-                    // TODO uncomment this once it's implemented
-                    min = new DefaultPoint( min.getId(), min.getCoordinateSystem(), min.getPrecision(),
-                                            new double[] { min.get0() - 0.0001, min.get1() - 0.0001 } );
-                    // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for all
-                    // crs
-                }
-                writeElement( writer, WMSNS, "westBoundLongitude", min.get0() + "" );
-                writeElement( writer, WMSNS, "eastBoundLongitude", max.get0() + "" );
-                writeElement( writer, WMSNS, "southBoundLatitude", min.get1() + "" );
-                writeElement( writer, WMSNS, "northBoundLatitude", max.get1() + "" );
-                writer.writeEndElement();
-
-                for ( ICRS crs : crsList ) {
-                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
-                        continue;
-                    }
-                    // try {
-                    // crs.getWrappedCRS();
-                    // } catch ( UnknownCRSException e ) {
-                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                    // LOG.trace( "Stack trace:", e );
-                    // continue;
-                    // }
-                    Envelope envelope;
-                    ICRS srs = crs;
-                    try {
-                        Envelope src = layerEnv;
-                        GeometryTransformer transformer = new GeometryTransformer( srs );
-                        if ( src.getCoordinateSystem() == null ) {
-                            envelope = transformer.transform( layerEnv, latlon );
-                        } else {
-                            envelope = transformer.transform( layerEnv );
-                        }
-                    } catch ( Throwable e ) {
-                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    }
-
-                    writer.writeStartElement( WMSNS, "BoundingBox" );
-                    writer.writeAttribute( "CRS", crs.getAlias() );
-
-                    min = envelope.getMin();
-                    max = envelope.getMax();
-                    if ( min.equals( max ) ) {
-                        // TODO uncomment this once it's implemented
-                        min = new DefaultPoint( min.getId(), min.getCoordinateSystem(), min.getPrecision(),
-                                                new double[] { min.get0() - 0.0001, min.get1() - 0.0001 } );
-                        // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for
-                        // all
-                        // crs
-                    }
-
-                    // check for srs with northing as first axis
-                    // try {
-                    srs = WMSController130.getCRS( crs.getAlias() );
-                    // } catch ( UnknownCRSException e ) {
-                    // // may fail if CRS is determined eg. from .prj
-                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                    // LOG.trace( "Stack trace:", e );
-                    // }
-                    // switch ( srs.getAxis()[0].getOrientation() ) {
-                    // case Axis.AO_NORTH:
-                    // writer.writeAttribute( "miny", Double.toString( min.get0() ) );
-                    // writer.writeAttribute( "minx", Double.toString( min.get1() ) );
-                    // writer.writeAttribute( "maxy", Double.toString( max.get0() ) );
-                    // writer.writeAttribute( "maxx", Double.toString( max.get1() ) );
-                    // break;
-                    // default:
-                    writer.writeAttribute( "minx", Double.toString( min.get0() ) );
-                    writer.writeAttribute( "miny", Double.toString( min.get1() ) );
-                    writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
-                    writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
-                    // }
-                    writer.writeEndElement();
-                }
-            }
-        } catch ( Throwable e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-    }
-
-    private static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
+    static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
                             throws XMLStreamException {
         for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
             writer.writeStartElement( WMSNS, "Dimension" );
@@ -461,134 +224,8 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         }
     }
 
-    @Deprecated
-    private void writeLayers( XMLStreamWriter writer, Layer layer )
-                            throws XMLStreamException {
-        if ( layer.getTitle() == null || !layer.isAvailable() ) {
-            for ( Layer l : new LinkedList<Layer>( layer.getChildren() ) ) {
-                writeLayers( writer, l );
-            }
-            return;
-        }
-
-        writer.writeStartElement( WMSNS, "Layer" );
-        if ( layer.isQueryable() ) {
-            writer.writeAttribute( "queryable", "1" );
-        }
-
-        maybeWriteElementNS( writer, WMSNS, "Name", layer.getName() );
-        writeElement( writer, WMSNS, "Title", layer.getTitle() );
-        maybeWriteElementNS( writer, WMSNS, "Abstract", layer.getAbstract() );
-
-        if ( !layer.getKeywords().isEmpty() ) {
-            writer.writeStartElement( WMSNS, "KeywordList" );
-            for ( Pair<org.deegree.commons.tom.ows.CodeType, LanguageStringType> p : layer.getKeywords() ) {
-                writer.writeStartElement( WMSNS, "Keyword" );
-                if ( p.first != null ) {
-                    writer.writeAttribute( "vocabulary", p.first.getCodeSpace() );
-                }
-                writer.writeCharacters( p.second.getValue() );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-        }
-
-        writeSrsAndEnvelope( writer, layer.getSrs(), layer.getBbox() );
-
-        writeDimensions( writer, layer.getDimensions() );
-
-        if ( layer.getAuthorityURL() != null ) {
-            writer.writeStartElement( WMSNS, "AuthorityURL" );
-            writer.writeAttribute( "name", "fromISORecord" );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
-            writer.writeAttribute( XLNNS, "href", layer.getAuthorityURL() );
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
-
-        if ( layer.getAuthorityIdentifier() != null ) {
-            writer.writeStartElement( WMSNS, "Identifier" );
-            writer.writeAttribute( "authority", "fromISORecord" );
-            writer.writeCharacters( layer.getAuthorityIdentifier() );
-            writer.writeEndElement();
-        }
-
-        String mdUrl = null;
-        if ( layer.getName() != null && metadata != null ) {
-            DatasetMetadata dsMd = metadata.getDatasetMetadata( new QName( layer.getName() ) );
-            if ( dsMd != null ) {
-                mdUrl = dsMd.getUrl();
-            }
-        }
-
-        mdlabel: if ( mdUrl == null && controller.getMetadataURLTemplate() != null ) {
-            String id = layer.getDataMetadataSetId();
-            if ( id == null ) {
-                break mdlabel;
-            }
-            String mdurlTemplate = controller.getMetadataURLTemplate();
-            if ( mdurlTemplate.isEmpty() ) {
-                mdurlTemplate = getUrl;
-                if ( !( mdurlTemplate.endsWith( "?" ) || mdurlTemplate.endsWith( "&" ) ) ) {
-                    mdurlTemplate += "?";
-                }
-                mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
-            }
-
-            mdUrl = StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id );
-        }
-
-        if ( mdUrl != null ) {
-            writer.writeStartElement( WMSNS, "MetadataURL" );
-            writer.writeAttribute( "type", "ISO19115:2003" );
-            writeElement( writer, WMSNS, "Format", "application/xml" );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", mdUrl );
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
-
-        Style def = service.getStyles().get( layer.getName(), null );
-        if ( def != null ) {
-            if ( def.getName() != null && !def.getName().isEmpty() ) {
-                writeStyle( writer, "default", def.getName(), service.getLegendSize( def ), layer.getName(), def ); // TODO
-                // title/description/whatever
-            } else {
-                writeStyle( writer, "default", "default", service.getLegendSize( def ), layer.getName(), def ); // TODO
-                // title/description/whatever
-            }
-        }
-        HashSet<Style> visited = new HashSet<Style>();
-        for ( Style s : service.getStyles().getAll( layer.getName() ) ) {
-            if ( visited.contains( s ) ) {
-                continue;
-            }
-            visited.add( s );
-            String name = s.getName();
-            if ( name != null && !name.isEmpty() ) {
-                writeStyle( writer, name, name, service.getLegendSize( s ), layer.getName(), s ); // TODO
-                // title/description/whatever
-            }
-        }
-
-        DoublePair hint = layer.getScaleHint();
-        if ( hint.first != NEGATIVE_INFINITY ) {
-            writeElement( writer, WMSNS, "MinScaleDenominator", hint.first + "" );
-        }
-        if ( hint.second != POSITIVE_INFINITY ) {
-            writeElement( writer, WMSNS, "MaxScaleDenominator", hint.second + "" );
-        }
-
-        for ( Layer l : new LinkedList<Layer>( layer.getChildren() ) ) {
-            writeLayers( writer, l );
-        }
-
-        writer.writeEndElement();
-    }
-
-    private void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
-                             String layerName, Style style )
+    void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
+                     String layerName, Style style )
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Style" );
         writeElement( writer, WMSNS, "Name", name );
