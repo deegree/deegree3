@@ -172,7 +172,9 @@ class QueryHelper extends SqlHelper {
                 outerSelect.append( sortCols );
             }
 
-            preparedStatement = conn.prepareStatement( outerSelect.toString() );
+            String sql = outerSelect.toString();
+            LOG.trace( sql );
+            preparedStatement = conn.prepareStatement( sql );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -223,7 +225,11 @@ class QueryHelper extends SqlHelper {
             getDatasetIDs.append( idColumn );
             getDatasetIDs.append( "))" );
             getPSBody( builder, getDatasetIDs );
-            preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
+
+            String sql = getDatasetIDs.toString();
+            LOG.trace( sql );
+
+            preparedStatement = conn.prepareStatement( sql );
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
@@ -262,7 +268,9 @@ class QueryHelper extends SqlHelper {
                 }
             }
 
-            stmt = conn.prepareStatement( select.toString() );
+            String sql = select.toString();
+            LOG.trace( sql );
+            stmt = conn.prepareStatement( sql );
             stmt.setFetchSize( DEFAULT_FETCH_SIZE );
             LOG.debug( "select RecordById statement: " + stmt );
 
