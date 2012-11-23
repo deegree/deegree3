@@ -49,7 +49,7 @@ An application schema defines a hierarchy of (usually complex) feature types for
    :width: 50%
    :target: _images/address_schema.png
 
-This kinds of application schemas can be served using the SQL feature store or the memory feature store.
+These kinds of application schemas can be served using the SQL feature store or the memory feature store.
 
 -------------------
 Shape feature store
@@ -61,14 +61,14 @@ The shape feature store serves a feature type from an ESRI shape file. The confi
 Minimal configuration example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The only mandatory element is ``File``, therefore, a minimal configuration example looks like this:
+The only mandatory element is ``File``. A minimal valid configuration example looks like this:
 
 .. topic:: Shape Feature Store config (minimal configuration example)
 
    .. literalinclude:: xml/shapefeaturestore_minimal.xml
       :language: xml
 
-The configuration above will make the data from file ``/tmp/rivers.shp`` available with the following settings:
+This configuration will set up a feature store based on the shape file ``/tmp/rivers.shp`` with the following settings:
 
 * The feature store offers the feature type ``app:rivers`` (``app`` bound to ``http://www.deegree.org/app``)
 * SRS information is taken from file ``/tmp/rivers.prj`` (if it does not exist, ``EPSG:4326`` is assumed)
@@ -76,6 +76,27 @@ The configuration above will make the data from file ``/tmp/rivers.shp`` availab
 * All data columns from file ``/tmp/rivers.dbf`` are used as properties in the feature type
 * Encoding of text columns in ``/tmp/rivers.dbf`` is guessed based on actual contents
 * An alphanumeric index is created for the dbf to speed up filtering based on non-geometric constraints
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+More complex configuration example 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A more complex example that uses all available configuration options:
+
+.. topic:: Shape Feature Store config (more complex configuration example)
+
+   .. literalinclude:: xml/shapefeaturestore_complex.xml
+      :language: xml
+
+This configuration will set up a feature store based on the shape file ``/tmp/rivers.shp`` with the following settings:
+
+* SRS of stored geometries is ``EPSG:4326`` (no auto-detection)
+* The feature store offers the shape file contents as feature type ``app:River`` (``app`` bound to ``http://www.deegree.org/app``)
+* Encoding of text columns in ``/tmp/rivers.dbf`` is ``ISO-8859-1`` (no auto-detection)
+* No alphanumeric index is created for the dbf (filtering based on non-geometric constraints has to be performed in-memory)
+* The mapping between the shape file columns and the feature type properties is customized.
+* Property ``objectid`` corresponds to column ``OBJECTID`` of the shape file
+* Property ``geometry`` corresponds to the geometry of the shape file
 
 ^^^^^^^^^^^^^^^^^^^^^
 Configuration options
@@ -105,17 +126,6 @@ The following table lists all available configuration options. When specifiying 
 | Mapping                     | 0..1        | Complex | Customized mapping between dbf column names and property names               |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-More complex configuration example 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-A more complex example that uses all available configuration options:
-
-.. topic:: Shape Feature Store config (more complex configuration example)
-
-   .. literalinclude:: xml/shapefeaturestore_complex.xml
-      :language: xml
-
 --------------------
 Memory feature store
 --------------------
@@ -126,17 +136,35 @@ The memory feature store serves feature types that are defined by a GML applicat
 Minimal configuration example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The only mandatory element is ``GMLSchema``, therefore, a minimal configuration example looks like this:
+The only mandatory element is ``GMLSchema``. A minimal valid configuration example looks like this:
 
 .. topic:: Memory Feature Store config (minimal configuration example)
 
    .. literalinclude:: xml/memoryfeaturestore_minimal.xml
       :language: xml
 
-The configuration above will set up a memory feature store with the following settings:
+This configuration will set up a memory feature store with the following settings:
 
-* The GML 3.2 application schema from file ``../../appschemas/inspire/annex1/addresses.xsd`` is used as application schema (e.g. scanned for feature type definitions)
+* The GML 3.2 application schema from file ``../../appschemas/inspire/annex1/addresses.xsd`` is used as application schema (i.e. scanned for feature type definitions)
 * No GML datasets are loaded on startup, so the feature store will be empty unless an insertion is performed (e.g. via WFS-T)
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+More complex configuration example 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A more complex example that uses all available configuration options:
+
+.. topic:: Memory Feature Store config (more complex configuration example)
+
+   .. literalinclude:: xml/memoryfeaturestore_complex.xml
+      :language: xml
+
+This configuration will set up a memory feature store with the following settings:
+
+* Directory ``../../appschemas/inspire/annex1/`` is scanned for ``*.xsd`` files. All found files are loaded as a GML 3.2 application schema (i.e. analyzed for feature type definitions).
+* Dataset file ``../../data/gml/address.gml`` is loaded on startup. This must be a GML 3.2 file that contains a feature collection with features that validates against the application schema.
+* Dataset file ``../../data/gml/parcels.gml`` is loaded on startup. This must be a GML 3.2 file that contains a feature collection with features that validates against the application schema.
+* The geometries of loaded features are converted to ``urn:ogc:def:crs:EPSG::4258``.
 
 ^^^^^^^^^^^^^^^^^^^^^
 Configuration options
@@ -156,17 +184,6 @@ The following table lists all available configuration options (the complex ones 
 | GMLFeatureCollection        | 0..n        | Complex | Path/URL to GML feature collections documents to read features from          |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-More complex configuration example 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-A more complex example that uses all available configuration options:
-
-.. topic:: Memory Feature Store config (more complex configuration example)
-
-   .. literalinclude:: xml/memoryfeaturestore_complex.xml
-      :language: xml
-
 ------------------------
 Simple SQL feature store
 ------------------------
@@ -177,11 +194,20 @@ The simple SQL feature store serves simple feature types that are stored in a sp
 Minimal configuration example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The only three mandatory elements are ``JDBCConnId``, ``SQLStatement`` and ``BBoxStatement``, therefore, a minimal configuration example looks like this:
+There are three mandatory elements: ``JDBCConnId``, ``SQLStatement`` and ``BBoxStatement``. A minimal configuration example looks like this:
 
 .. topic:: Simple SQL Feature Store config (minimal configuration example)
 
    .. literalinclude:: xml/simplesqlfeaturestore_minimal.xml
+      :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+More complex configuration example 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. topic:: Simple SQL Feature Store config (more complex configuration example)
+
+   .. literalinclude:: xml/simplesqlfeaturestore_complex.xml
       :language: xml
 
 ^^^^^^^^^^^^^^^^^^^^^
@@ -211,15 +237,6 @@ The following table lists all available configuration options (the complex ones 
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | LODStatement                | 0..n        | Complex | Statements for specific WMS scale ranges                                     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-More complex configuration example 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. topic:: Simple SQL Feature Store config (more complex configuration example)
-
-   .. literalinclude:: xml/simplesqlfeaturestore_complex.xml
-      :language: xml
 
 -------------------------
 SQL feature store: Basics

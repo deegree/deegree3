@@ -2,9 +2,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
   http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd">
-
-  <!-- Required: GML application schema file / directory to read feature types from -->
-  <GMLSchema version="GML_32">../../appschemas/inspire/annex1/addresses.xsd</GMLSchema>
-
+  <StorageCRS>urn:ogc:def:crs:EPSG::4258</StorageCRS>
+  <GMLSchema version="GML_32">../../appschemas/inspire/annex1/</GMLSchema>
+  <GMLFeatureCollection version="GML_32">../../data/gml/address.gml</GMLFeatureCollection>
+  <GMLFeatureCollection version="GML_32">../../data/gml/parcels.gml</GMLFeatureCollection>
 </MemoryFeatureStore>
-
