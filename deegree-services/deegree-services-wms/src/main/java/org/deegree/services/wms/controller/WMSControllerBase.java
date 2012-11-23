@@ -93,17 +93,29 @@ public abstract class WMSControllerBase implements Controller {
         case capabilities:
         case GetFeatureInfo:
         case GetFeatureInfoSchema:
+        case GetStyles:
+        case PutStyles:
             exceptions = "XML";
             break;
         case map:
         case GetMap:
         case GetLegendGraphic:
-            exceptions = exceptions == null ? EXCEPTION_DEFAULT : exceptions;
+            exceptions = getExceptions( exceptions );
             break;
         case DTD:
             break;
         }
 
+        checkParameters( map, e, response, exceptions, controller );
+    }
+
+    private String getExceptions( String exceptions ) {
+        return exceptions == null ? EXCEPTION_DEFAULT : exceptions;
+    }
+
+    private void checkParameters( Map<String, String> map, OWSException e, HttpResponseBuffer response,
+                                  String exceptions, WMSController controller )
+                            throws ServletException {
         try {
             int width = Integer.parseInt( map.get( "WIDTH" ) );
             int height = Integer.parseInt( map.get( "HEIGHT" ) );
