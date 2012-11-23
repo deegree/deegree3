@@ -8,6 +8,8 @@ Server connections are used to configure parameters necessary to connect other r
 
 There are currently two types of server connections, JDBC connections (to connect to a database) and remote OWS connections (to connect to other OGC webservices).
 
+.. _anchor-configuration-jdbc:
+
 ----------------
 JDBC connections
 ----------------

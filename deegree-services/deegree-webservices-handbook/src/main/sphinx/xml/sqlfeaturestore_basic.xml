@@ -7,4 +7,6 @@
   <!-- Required: Identifier of JDBC connection -->
   <JDBCConnId>postgis</JDBCConnId>
 
+  <!-- Options and mapping configuration -->
+
 </SQLFeatureStore>
