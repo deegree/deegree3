@@ -87,10 +87,7 @@ public class SLDParser {
      */
     public static Pair<LinkedList<Layer>, LinkedList<Style>> parse( XMLStreamReader in, MapService service, GetMap gm )
                             throws XMLStreamException, OWSException, ParseException {
-        while ( !in.isStartElement() || in.getLocalName() == null
-                || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
-            in.nextTag();
-        }
+        skipToLayer( in );
 
         LinkedList<Layer> layers = new LinkedList<Layer>();
         LinkedList<Style> styles = new LinkedList<Style>();
@@ -118,49 +115,7 @@ public class SLDParser {
                 }
 
                 if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
-
-                    while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
-                        in.nextTag();
-
-                        while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeConstraint" ) ) ) {
-                            in.nextTag();
-
-                            // skip feature type name, it is useless in this context (or is it?) TODO
-                            if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
-                                in.getElementText();
-                                in.nextTag();
-                            }
-
-                            if ( in.getLocalName().equals( "Filter" ) ) {
-                                Filter filter = Filter110XMLDecoder.parse( in );
-                                gm.addFilter( layer.getName(), filter );
-                            }
-
-                            if ( in.getLocalName().equals( "Extent" ) ) {
-                                in.nextTag();
-
-                                in.require( START_ELEMENT, null, "Name" );
-                                String name = in.getElementText().toUpperCase();
-                                in.nextTag();
-                                in.require( START_ELEMENT, null, "Value" );
-                                String value = in.getElementText();
-                                in.nextTag();
-                                in.require( END_ELEMENT, null, "Extent" );
-
-                                List<?> list = parseDimensionValues( value, name.toLowerCase() );
-                                if ( name.toUpperCase().equals( "TIME" ) ) {
-                                    gm.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
-                                } else {
-                                    List<?> values = (List<?>) parseTyped( list, false );
-                                    gm.addDimensionValue( name, values );
-                                }
-
-                            }
-                        }
-                        in.nextTag();
-                    }
-
-                    in.nextTag();
+                    parseConstraintsWithDimensions( in, gm, layer );
                 }
 
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
@@ -179,46 +134,7 @@ public class SLDParser {
                 }
 
                 if ( in.getLocalName().equals( "UserStyle" ) ) {
-
-                    while ( !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
-                        in.nextTag();
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Name" ) ) {
-                            in.getElementText();
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Description" ) ) {
-                            skipElement( in );
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Title" ) ) {
-                            in.getElementText();
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Abstract" ) ) {
-                            in.getElementText();
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "IsDefault" ) ) {
-                            in.getElementText();
-                        }
-
-                        if ( in.getLocalName().equals( "FeatureTypeStyle" )
-                             || in.getLocalName().equals( "CoverageStyle" )
-                             || in.getLocalName().equals( "OnlineResource" ) ) {
-                            Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
-                            layers.add( layer );
-                            styles.add( style );
-                        }
-                    }
-
-                    in.nextTag();
-
+                    parseUserStyle( in, layers, styles, layer );
                 }
 
                 in.nextTag();
@@ -226,6 +142,81 @@ public class SLDParser {
         }
 
         return new Pair<LinkedList<Layer>, LinkedList<Style>>( layers, styles );
+    }
+
+    private static void parseConstraintsWithDimensions( XMLStreamReader in, GetMap gm, Layer layer )
+                            throws XMLStreamException, OWSException, ParseException {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
+            in.nextTag();
+
+            while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeConstraint" ) ) ) {
+                in.nextTag();
+
+                // skip feature type name, it is useless in this context (or is it?) TODO
+                if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
+                    in.getElementText();
+                    in.nextTag();
+                }
+
+                if ( in.getLocalName().equals( "Filter" ) ) {
+                    Filter filter = Filter110XMLDecoder.parse( in );
+                    gm.addFilter( layer.getName(), filter );
+                }
+
+                if ( in.getLocalName().equals( "Extent" ) ) {
+                    in.nextTag();
+
+                    in.require( START_ELEMENT, null, "Name" );
+                    String name = in.getElementText().toUpperCase();
+                    in.nextTag();
+                    in.require( START_ELEMENT, null, "Value" );
+                    String value = in.getElementText();
+                    in.nextTag();
+                    in.require( END_ELEMENT, null, "Extent" );
+
+                    List<?> list = parseDimensionValues( value, name.toLowerCase() );
+                    if ( name.toUpperCase().equals( "TIME" ) ) {
+                        gm.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
+                    } else {
+                        List<?> values = (List<?>) parseTyped( list, false );
+                        gm.addDimensionValue( name, values );
+                    }
+
+                }
+            }
+            in.nextTag();
+        }
+
+        in.nextTag();
+    }
+
+    private static void parseUserStyle( XMLStreamReader in, LinkedList<Layer> layers, LinkedList<Style> styles,
+                                        Layer layer )
+                            throws XMLStreamException {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
+            in.nextTag();
+
+            // TODO skipped
+            if ( in.getLocalName().equals( "Name" ) ) {
+                in.getElementText();
+            }
+
+            skipUnusedElements( in );
+
+            parseStyle( in, layers, styles, layer );
+        }
+
+        in.nextTag();
+    }
+
+    private static void parseStyle( XMLStreamReader in, LinkedList<Layer> layers, LinkedList<Style> styles, Layer layer )
+                            throws XMLStreamException {
+        if ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals( "CoverageStyle" )
+             || in.getLocalName().equals( "OnlineResource" ) ) {
+            Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
+            layers.add( layer );
+            styles.add( style );
+        }
     }
 
     /**
@@ -238,10 +229,7 @@ public class SLDParser {
     public static Pair<LinkedList<Filter>, LinkedList<Style>> getStyles( XMLStreamReader in, String layerName,
                                                                          Map<String, String> styleNames )
                             throws XMLStreamException {
-        while ( !in.isStartElement() || in.getLocalName() == null
-                || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
-            in.nextTag();
-        }
+        skipToLayer( in );
 
         LinkedList<Style> styles = new LinkedList<Style>();
         LinkedList<Filter> filters = new LinkedList<Filter>();
@@ -252,112 +240,141 @@ public class SLDParser {
                 skipElement( in );
             }
             if ( in.getLocalName().equals( "NamedLayer" ) ) {
-                in.nextTag();
-
-                in.require( START_ELEMENT, null, "Name" );
-                String name = in.getElementText();
-                if ( !name.equals( layerName ) ) {
-                    while ( !( in.isEndElement() && in.getLocalName().equals( "NamedLayer" ) ) ) {
-                        in.next();
-                    }
-                    in.nextTag();
-                    continue;
-                }
-                in.nextTag();
-
-                // skip description
-                if ( in.getLocalName().equals( "Description" ) ) {
-                    skipElement( in );
-                }
-
-                if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
-
-                    while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
-                        in.nextTag();
-
-                        while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeConstraint" ) ) ) {
-                            in.nextTag();
-
-                            // TODO use this
-                            if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
-                                in.getElementText();
-                                in.nextTag();
-                            }
-
-                            if ( in.getLocalName().equals( "Filter" ) ) {
-                                filters.add( Filter110XMLDecoder.parse( in ) );
-                            }
-
-                            if ( in.getLocalName().equals( "Extent" ) ) {
-                                // skip extent, does not make sense to parse it here
-                                skipElement( in );
-                            }
-                        }
-                        in.nextTag();
-                    }
-
-                    in.nextTag();
-                }
-
-                if ( in.getLocalName().equals( "NamedStyle" ) ) {
-                    // does not make sense to reference a named style when configuring it...
-                    skipElement( in );
-                }
-
-                String styleName = null;
-
-                while ( in.hasNext() && in.getLocalName().equals( "UserStyle" ) ) {
-
-                    while ( in.hasNext() && !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
-
-                        in.nextTag();
-
-                        if ( in.getLocalName().equals( "Name" ) ) {
-                            styleName = in.getElementText();
-                            if ( !( styleNames.isEmpty() || styleNames.containsKey( styleName ) ) ) {
-                                continue;
-                            }
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Description" ) ) {
-                            skipElement( in );
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Title" ) ) {
-                            in.getElementText();
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "Abstract" ) ) {
-                            in.getElementText();
-                        }
-
-                        // TODO skipped
-                        if ( in.getLocalName().equals( "IsDefault" ) ) {
-                            in.getElementText();
-                        }
-
-                        if ( in.getLocalName().equals( "FeatureTypeStyle" )
-                             || in.getLocalName().equals( "CoverageStyle" )
-                             || in.getLocalName().equals( "OnlineResource" ) ) {
-                            Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
-                            if ( styleNames.get( styleName ) != null ) {
-                                style.setName( styleNames.get( styleName ) );
-                            }
-                            styles.add( style );
-                        }
-
-                    }
-                    in.nextTag();
-
-                }
-
+                parseNamedLayer( in, layerName, filters, styleNames, styles );
             }
         }
 
         return new Pair<LinkedList<Filter>, LinkedList<Style>>( filters, styles );
+    }
+
+    private static void parseNamedLayer( XMLStreamReader in, String layerName, LinkedList<Filter> filters,
+                                         Map<String, String> styleNames, LinkedList<Style> styles )
+                            throws XMLStreamException {
+        in.nextTag();
+
+        in.require( START_ELEMENT, null, "Name" );
+        String name = in.getElementText();
+        if ( !name.equals( layerName ) ) {
+            while ( !( in.isEndElement() && in.getLocalName().equals( "NamedLayer" ) ) ) {
+                in.next();
+            }
+            in.nextTag();
+            return;
+        }
+        in.nextTag();
+
+        // skip description
+        if ( in.getLocalName().equals( "Description" ) ) {
+            skipElement( in );
+        }
+
+        if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
+            parseConstraints( in, filters );
+        }
+
+        if ( in.getLocalName().equals( "NamedStyle" ) ) {
+            // does not make sense to reference a named style when configuring it...
+            skipElement( in );
+        }
+
+        while ( in.hasNext() && in.getLocalName().equals( "UserStyle" ) ) {
+            parseUserStyle( in, styleNames, styles );
+        }
+    }
+
+    private static void skipToLayer( XMLStreamReader in )
+                            throws XMLStreamException {
+        while ( !in.isStartElement() || in.getLocalName() == null
+                || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
+            in.nextTag();
+        }
+    }
+
+    private static void parseConstraints( XMLStreamReader in, LinkedList<Filter> filters )
+                            throws XMLStreamException {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
+            in.nextTag();
+
+            while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeConstraint" ) ) ) {
+                in.nextTag();
+
+                // TODO use this
+                if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
+                    in.getElementText();
+                    in.nextTag();
+                }
+
+                if ( in.getLocalName().equals( "Filter" ) ) {
+                    filters.add( Filter110XMLDecoder.parse( in ) );
+                }
+
+                if ( in.getLocalName().equals( "Extent" ) ) {
+                    // skip extent, does not make sense to parse it here
+                    skipElement( in );
+                }
+            }
+            in.nextTag();
+        }
+
+        in.nextTag();
+    }
+
+    private static void parseUserStyle( XMLStreamReader in, Map<String, String> styleNames, LinkedList<Style> styles )
+                            throws XMLStreamException {
+        String styleName = null;
+        while ( in.hasNext() && !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
+
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Name" ) ) {
+                styleName = in.getElementText();
+                if ( !( styleNames.isEmpty() || styleNames.containsKey( styleName ) ) ) {
+                    continue;
+                }
+            }
+
+            skipUnusedElements( in );
+
+            parseStyle( in, styleNames, styleName, styles );
+
+        }
+        in.nextTag();
+    }
+
+    private static void parseStyle( XMLStreamReader in, Map<String, String> styleNames, String styleName,
+                                    LinkedList<Style> styles )
+                            throws XMLStreamException {
+        if ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals( "CoverageStyle" )
+             || in.getLocalName().equals( "OnlineResource" ) ) {
+            Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
+            if ( styleNames.get( styleName ) != null ) {
+                style.setName( styleNames.get( styleName ) );
+            }
+            styles.add( style );
+        }
+    }
+
+    private static void skipUnusedElements( XMLStreamReader in )
+                            throws XMLStreamException {
+        // TODO skipped
+        if ( in.getLocalName().equals( "Description" ) ) {
+            skipElement( in );
+        }
+
+        // TODO skipped
+        if ( in.getLocalName().equals( "Title" ) ) {
+            in.getElementText();
+        }
+
+        // TODO skipped
+        if ( in.getLocalName().equals( "Abstract" ) ) {
+            in.getElementText();
+        }
+
+        // TODO skipped
+        if ( in.getLocalName().equals( "IsDefault" ) ) {
+            in.getElementText();
+        }
     }
 
 }
