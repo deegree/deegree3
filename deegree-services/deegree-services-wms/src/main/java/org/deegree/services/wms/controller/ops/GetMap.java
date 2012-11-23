@@ -115,7 +115,7 @@ import org.slf4j.Logger;
 
 /**
  * Constructors must make sure there is an equal number of layers and styles, the VSP maps are filled, and the
- * scale/resolution are calculated properly. Also, with/height and envelope must obviously be set to reasonable values.
+ * scale/resolution are calculated properly. Also, width/height and envelope must obviously be set to reasonable values.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -313,15 +313,7 @@ public class GetMap {
         String sld = map.get( "SLD" );
         String sldBody = map.get( "SLD_BODY" );
 
-        if ( ( ls == null || ls.trim().isEmpty() ) && sld == null && sldBody == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
-        }
-        LinkedList<String> layers = ls == null ? new LinkedList<String>()
-                                              : new LinkedList<String>( asList( ls.split( "," ) ) );
-
-        if ( layers.size() == 1 && layers.get( 0 ).isEmpty() ) {
-            layers.clear();
-        }
+        LinkedList<String> layers = parseLayers( ls, sld, sldBody );
 
         String ss = map.get( "STYLES" );
         if ( ss == null && sld == null && sldBody == null ) {
@@ -336,6 +328,36 @@ public class GetMap {
             handleSLD( sld, sldBody, layers, service );
         }
 
+        parsePixelsize( map );
+
+        format = map.get( "FORMAT" );
+        if ( format == null ) {
+            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), OWSException.MISSING_PARAMETER_VALUE );
+        }
+
+        parseSize( map );
+        parseTransparency( map );
+
+        dimensions = parseDimensionValues( map );
+
+        handleVSPs( service, map );
+    }
+
+    private LinkedList<String> parseLayers( String ls, String sld, String sldBody )
+                            throws OWSException {
+        if ( ( ls == null || ls.trim().isEmpty() ) && sld == null && sldBody == null ) {
+            throw new OWSException( get( "WMS.PARAM_MISSING", "LAYERS" ), OWSException.MISSING_PARAMETER_VALUE );
+        }
+        LinkedList<String> layers = ls == null ? new LinkedList<String>()
+                                              : new LinkedList<String>( asList( ls.split( "," ) ) );
+
+        if ( layers.size() == 1 && layers.get( 0 ).isEmpty() ) {
+            layers.clear();
+        }
+        return layers;
+    }
+
+    private void parsePixelsize( Map<String, String> map ) {
         String psize = map.get( "PIXELSIZE" );
         if ( psize != null ) {
             try {
@@ -345,12 +367,23 @@ public class GetMap {
                 LOG.trace( "Stack trace:", e );
             }
         }
+    }
 
-        format = map.get( "FORMAT" );
-        if ( format == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "FORMAT" ), OWSException.MISSING_PARAMETER_VALUE );
+    private void parseTransparency( Map<String, String> map ) {
+        String t = map.get( "TRANSPARENT" );
+        transparent = t != null && t.equalsIgnoreCase( "true" );
+        if ( transparent && ( format.indexOf( "gif" ) != -1 || format.indexOf( "png" ) != -1 ) ) {
+            bgcolor = new Color( 255, 255, 255, 0 );
+        } else {
+            String col = map.get( "BGCOLOR" );
+            if ( col != null ) {
+                bgcolor = decode( col );
+            }
         }
+    }
 
+    private void parseSize( Map<String, String> map )
+                            throws OWSException {
         String w = map.get( "WIDTH" );
         if ( w == null ) {
             throw new OWSException( get( "WMS.PARAM_MISSING", "WIDTH" ), OWSException.MISSING_PARAMETER_VALUE );
@@ -370,20 +403,6 @@ public class GetMap {
         } catch ( NumberFormatException e ) {
             throw new OWSException( get( "WMS.NOT_A_NUMBER", "HEIGHT", h ), OWSException.INVALID_PARAMETER_VALUE );
         }
-        String t = map.get( "TRANSPARENT" );
-        transparent = t != null && t.equalsIgnoreCase( "true" );
-        if ( transparent && ( format.indexOf( "gif" ) != -1 || format.indexOf( "png" ) != -1 ) ) {
-            bgcolor = new Color( 255, 255, 255, 0 );
-        } else {
-            String col = map.get( "BGCOLOR" );
-            if ( col != null ) {
-                bgcolor = decode( col );
-            }
-        }
-
-        dimensions = parseDimensionValues( map );
-
-        handleVSPs( service, map );
     }
 
     private void handleVSPs( MapService service, Map<String, String> map ) {
@@ -404,11 +423,19 @@ public class GetMap {
                 options.setMaxFeatures( l.getName(), max );
             }
         } else {
-            String[] mfs = maxFeatures.split( "," );
-            if ( mfs.length == this.layers.size() ) {
-                for ( int i = 0; i < mfs.length; ++i ) {
-                    Layer cur = this.layers.get( i );
-                    Integer def = service.getExtensions().getMaxFeatures( cur.getName() );
+            parseMaxFeatures( maxFeatures, service );
+        }
+    }
+
+    private void parseMaxFeatures( String maxFeatures, MapService service ) {
+        String[] mfs = maxFeatures.split( "," );
+        if ( mfs.length == this.layers.size() ) {
+            handleMultipleMaxFeatures( mfs, service );
+        } else {
+            for ( int i = 0; i < mfs.length; ++i ) {
+                Layer cur = this.layers.get( i );
+                Integer def = service.getExtensions().getMaxFeatures( cur.getName() );
+                if ( mfs.length <= i ) {
                     try {
                         Integer val = Integer.valueOf( mfs[i] );
                         options.setMaxFeatures( cur.getName(), def == null ? val : min( def, val ) );
@@ -416,23 +443,23 @@ public class GetMap {
                         LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
                         options.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
                     }
+                } else {
+                    options.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
                 }
-            } else {
-                for ( int i = 0; i < mfs.length; ++i ) {
-                    Layer cur = this.layers.get( i );
-                    Integer def = service.getExtensions().getMaxFeatures( cur.getName() );
-                    if ( mfs.length <= i ) {
-                        try {
-                            Integer val = Integer.valueOf( mfs[i] );
-                            options.setMaxFeatures( cur.getName(), def == null ? val : min( def, val ) );
-                        } catch ( NumberFormatException e ) {
-                            LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
-                            options.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
-                        }
-                    } else {
-                        options.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
-                    }
-                }
+            }
+        }
+    }
+
+    private void handleMultipleMaxFeatures( String[] mfs, MapService service ) {
+        for ( int i = 0; i < mfs.length; ++i ) {
+            Layer cur = this.layers.get( i );
+            Integer def = service.getExtensions().getMaxFeatures( cur.getName() );
+            try {
+                Integer val = Integer.valueOf( mfs[i] );
+                options.setMaxFeatures( cur.getName(), def == null ? val : min( def, val ) );
+            } catch ( NumberFormatException e ) {
+                LOG.info( "The value '{}' for MAX_FEATURES can not be parsed as a number.", mfs[i] );
+                options.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
             }
         }
     }
@@ -447,31 +474,42 @@ public class GetMap {
         } else {
             String[] ss = vals.split( "," );
             if ( ss.length == layers.size() ) {
-                for ( int i = 0; i < ss.length; ++i ) {
-                    T val = defaults.getOption( layers.get( i ).getName() );
-                    try {
-                        setter.setOption( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
-                    } catch ( IllegalArgumentException e ) {
-                        setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
-                        LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
-                                  new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
-                    }
-                }
+                handleEnumVSPAllValues( ss, defaults, setter, enumType, defaultVal );
             } else {
-                for ( int i = 0; i < layers.size(); ++i ) {
-                    T val = defaults.getOption( layers.get( i ).getName() );
-                    if ( ss.length <= i ) {
-                        setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
-                    } else {
-                        try {
-                            setter.setOption( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
-                        } catch ( IllegalArgumentException e ) {
-                            setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
-                            LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
-                                      new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
-                        }
-                    }
+                handleEnumVSPSomeValues( ss, defaults, setter, enumType, defaultVal );
+            }
+        }
+    }
+
+    private <T extends Enum<T>> void handleEnumVSPSomeValues( String[] ss, MapOptionsGetter<T> defaults,
+                                                              MapOptionsSetter<T> setter, Class<T> enumType,
+                                                              T defaultVal ) {
+        for ( int i = 0; i < layers.size(); ++i ) {
+            T val = defaults.getOption( layers.get( i ).getName() );
+            if ( ss.length <= i ) {
+                setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
+            } else {
+                try {
+                    setter.setOption( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+                } catch ( IllegalArgumentException e ) {
+                    setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
+                    LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
+                              new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
                 }
+            }
+        }
+    }
+
+    private <T extends Enum<T>> void handleEnumVSPAllValues( String[] ss, MapOptionsGetter<T> defaults,
+                                                             MapOptionsSetter<T> setter, Class<T> enumType, T defaultVal ) {
+        for ( int i = 0; i < ss.length; ++i ) {
+            T val = defaults.getOption( layers.get( i ).getName() );
+            try {
+                setter.setOption( layers.get( i ).getName(), Enum.valueOf( enumType, ss[i].toUpperCase() ) );
+            } catch ( IllegalArgumentException e ) {
+                setter.setOption( layers.get( i ).getName(), val == null ? defaultVal : val );
+                LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
+                          new Object[] { ss[i], enumType.getSimpleName(), val == null ? defaultVal : val } );
             }
         }
     }
@@ -481,46 +519,10 @@ public class GetMap {
         XMLInputFactory xmlfac = XMLInputFactory.newInstance();
         Pair<LinkedList<Layer>, LinkedList<Style>> pair = null;
         if ( sld != null ) {
-            try {
-                pair = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), service, this );
-            } catch ( MalformedURLException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue",
-                                        "sld" );
-            } catch ( XMLStreamException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue",
-                                        "sld" );
-            } catch ( XMLParsingException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue",
-                                        "sld" );
-            } catch ( ParseException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.DIMENSION_PARAMETER_INVALID", "embeddded in SLD", e.getMessage() ),
-                                        "InvalidDimensionValue", "sld" );
-            } catch ( IOException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue",
-                                        "sld" );
-            }
+            pair = parseSld( xmlfac, sld, service );
         }
         if ( sldBody != null ) {
-            try {
-                pair = parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), service, this );
-            } catch ( XMLParsingException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD_BODY", e.getMessage() ),
-                                        "InvalidParameterValue", "sld_body" );
-            } catch ( XMLStreamException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD_BODY", e.getMessage() ),
-                                        "InvalidParameterValue", "sld_body" );
-            } catch ( ParseException e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( get( "WMS.DIMENSION_PARAMETER_INVALID", "embeddded in SLD", e.getMessage() ),
-                                        "InvalidDimensionValue", "sld_body" );
-            }
+            pair = parseSldBody( xmlfac, sldBody, service );
         }
 
         // if layers are referenced, clear the other layers out, else leave all in
@@ -548,20 +550,68 @@ public class GetMap {
             }
 
             // to get the order right, in case it's different from the SLD order
-            for ( String name : layers ) {
-                LinkedList<Pair<Layer, Style>> l = lays.get( name );
-                if ( l == null ) {
-                    throw new OWSException( get( "WMS.SLD_LAYER_INVALID", name ), "InvalidParameterValue", "layers" );
-                }
-                Pair<ArrayList<Layer>, ArrayList<Style>> p = unzipPair( l );
-                this.layers.addAll( p.first );
-                styles.addAll( p.second );
-            }
+            orderLayers( layers, lays );
         } else {
             if ( pair != null ) {
                 this.layers = pair.first;
                 styles = pair.second;
             }
+        }
+    }
+
+    private void orderLayers( LinkedList<String> layers, HashMap<String, LinkedList<Pair<Layer, Style>>> lays )
+                            throws OWSException {
+        for ( String name : layers ) {
+            LinkedList<Pair<Layer, Style>> l = lays.get( name );
+            if ( l == null ) {
+                throw new OWSException( get( "WMS.SLD_LAYER_INVALID", name ), "InvalidParameterValue", "layers" );
+            }
+            Pair<ArrayList<Layer>, ArrayList<Style>> p = unzipPair( l );
+            this.layers.addAll( p.first );
+            styles.addAll( p.second );
+        }
+    }
+
+    private Pair<LinkedList<Layer>, LinkedList<Style>> parseSldBody( XMLInputFactory xmlfac, String sldBody,
+                                                                     MapService service )
+                            throws OWSException {
+        try {
+            return parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), service, this );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD_BODY", e.getMessage() ), "InvalidParameterValue",
+                                    "sld_body" );
+        } catch ( XMLStreamException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD_BODY", e.getMessage() ), "InvalidParameterValue",
+                                    "sld_body" );
+        } catch ( ParseException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.DIMENSION_PARAMETER_INVALID", "embeddded in SLD", e.getMessage() ),
+                                    "InvalidDimensionValue", "sld_body" );
+        }
+    }
+
+    private Pair<LinkedList<Layer>, LinkedList<Style>> parseSld( XMLInputFactory xmlfac, String sld, MapService service )
+                            throws OWSException {
+        try {
+            return parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), service, this );
+        } catch ( MalformedURLException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue", "sld" );
+        } catch ( XMLStreamException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue", "sld" );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue", "sld" );
+        } catch ( ParseException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.DIMENSION_PARAMETER_INVALID", "embeddded in SLD", e.getMessage() ),
+                                    "InvalidDimensionValue", "sld" );
+        } catch ( IOException e ) {
+            LOG.trace( "Stack trace:", e );
+            throw new OWSException( get( "WMS.SLD_PARSE_ERROR", "SLD", e.getMessage() ), "InvalidParameterValue", "sld" );
         }
     }
 
