@@ -5,8 +5,8 @@
   -->
 
   <ServiceIdentification>
-    <Title>deegree 3 Utah Demo</Title>
-    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+    <Title>deegree 3 CITE Demonstration Suite</Title>
+    <Abstract>deegree CITE Demonstration Suite</Abstract>
     <Fees>none</Fees>
     <AccessConstraints>none</AccessConstraints>
   </ServiceIdentification>
@@ -15,8 +15,8 @@
     <ProviderName>lat/lon GmbH</ProviderName>
     <ProviderSite>http://www.lat-lon.de</ProviderSite>
     <ServiceContact>
-      <IndividualName>Andreas Schmitz</IndividualName>
-      <PositionName>Software developer</PositionName>
+      <IndividualName>Sebastian Goerke</IndividualName>
+      <PositionName>Consultant</PositionName>
       <Phone>0228/18496-0</Phone>
       <Facsimile>0228/18496-29</Facsimile>
       <ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
