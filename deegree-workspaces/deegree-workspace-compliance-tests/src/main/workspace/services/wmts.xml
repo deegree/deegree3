@@ -1,0 +1,7 @@
+<deegreeWMTS xmlns="http://www.deegree.org/services/wmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/services/wmts wmts.xsd">
+
+  <ServiceConfiguration>
+    <ThemeId>wmts-theme</ThemeId>
+  </ServiceConfiguration>
+
+</deegreeWMTS>

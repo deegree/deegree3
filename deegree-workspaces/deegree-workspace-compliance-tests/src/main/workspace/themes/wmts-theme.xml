@@ -1,0 +1,16 @@
+<Themes xmlns="http://www.deegree.org/themes/standard" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
+
+  <LayerStoreId>deegree-cite-tilelayers</LayerStoreId>
+
+  <Theme>
+    <Identifier>base</Identifier>
+    <d:Title>Root theme</d:Title>
+    <s:CRS>urn:ogc:def:crs:EPSG::4326</s:CRS>
+    <Theme>
+      <Identifier>cite</Identifier>
+      <d:Title>cite</d:Title>
+      <Layer>cite</Layer>
+    </Theme>
+  </Theme>
+
+</Themes>

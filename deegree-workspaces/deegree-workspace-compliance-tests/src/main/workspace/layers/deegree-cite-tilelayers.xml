@@ -1,0 +1,7 @@
+<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/layers/tile/3.2.0/tile.xsd" configVersion="3.2.0">
+  <TileLayer>
+    <l:Name>cite</l:Name>
+    <d:Title>cite</d:Title>
+    <TileDataSet tileStoreId="deegree-cite-tiles">cite</TileDataSet>
+  </TileLayer>
+</TileLayers>
