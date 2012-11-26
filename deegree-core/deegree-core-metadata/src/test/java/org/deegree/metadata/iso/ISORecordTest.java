@@ -69,6 +69,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -85,6 +86,7 @@ public class ISORecordTest {
 
     private static final URL DATASET = ISORecordTest.class.getResource( "full.xml" );
 
+    @Ignore
     @Test
     public void testFull()
                             throws Exception {
@@ -95,6 +97,7 @@ public class ISORecordTest {
         Assert.assertArrayEquals( expected, actual );
     }
 
+    @Ignore
     @Test
     public void testBrief()
                             throws Exception {
@@ -105,6 +108,7 @@ public class ISORecordTest {
         Assert.assertArrayEquals( expected, actual );
     }
 
+    @Ignore
     @Test
     public void testSummary()
                             throws Exception {
