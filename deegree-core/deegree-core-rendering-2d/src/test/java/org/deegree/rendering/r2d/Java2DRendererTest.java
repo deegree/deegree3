@@ -95,6 +95,7 @@ import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -165,6 +166,7 @@ public class Java2DRendererTest {
     /**
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testPointStyling()
                             throws Exception {
@@ -267,6 +269,7 @@ public class Java2DRendererTest {
     /**
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testLineStyling()
                             throws Exception {
@@ -345,6 +348,7 @@ public class Java2DRendererTest {
     /**
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testLineStyling2()
                             throws Exception {
@@ -435,6 +439,7 @@ public class Java2DRendererTest {
     /**
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testPolygonStyling()
                             throws Exception {
@@ -484,6 +489,7 @@ public class Java2DRendererTest {
     /**
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testTextStyling()
                             throws Exception {
@@ -579,6 +585,7 @@ public class Java2DRendererTest {
     /**
      * @throws Exception
      */
+    @Ignore
     @Test
     public void testTextStyling2()
                             throws Exception {
@@ -680,6 +687,7 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
+    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingSmallClipping()
                             throws IOException {
@@ -709,6 +717,7 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
+    @Ignore
     @Test(timeout = 2500)
     public void testLineStylingSmallClipping()
                             throws IOException {
@@ -738,6 +747,7 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
+    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingWithCirclesSmallClipping()
                             throws Exception {
@@ -774,6 +784,7 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
+    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingWithStrokeWithoutSize()
                             throws IOException {
@@ -801,6 +812,7 @@ public class Java2DRendererTest {
         writeTestImage( img, texts, time2 - time );
     }
 
+    @Ignore
     @Test
     public void testPolygonStylingPerpendicularOffset()
                             throws IOException {

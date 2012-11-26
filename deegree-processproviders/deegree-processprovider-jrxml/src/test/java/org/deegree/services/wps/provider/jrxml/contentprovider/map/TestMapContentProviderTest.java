@@ -71,6 +71,7 @@ import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.contentprovider.Utils;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -120,6 +121,7 @@ public class TestMapContentProviderTest {
      * @throws XMLStreamException
      * @throws ProcessletException
      */
+    @Ignore
     @Test
     public void testPrepareJrxmlAndReadInputParameters()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError {
@@ -174,6 +176,7 @@ public class TestMapContentProviderTest {
      * @throws XMLStreamException
      * @throws ProcessletException
      */
+    @Ignore
     @Test
     public void testPrepareJrxmlAndReadInputParametersWFS()
                             throws URISyntaxException, IOException, XMLStreamException, FactoryConfigurationError,
