@@ -18,7 +18,7 @@
       <!-- [1] Image format -->
       <Format>image/png</Format>
       <!-- [1] CRS for querying the remote service -->
-      <CRS>EPSG:4326</CRS>
+      <CRS>CRS:84</CRS>
     </RequestParams>
   </TileDataSet>
 
