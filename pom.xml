@@ -131,7 +131,7 @@
         <plugin>
           <groupId>org.antlr</groupId>
           <artifactId>antlr3-maven-plugin</artifactId>
-          <version>3.2</version>
+          <version>3.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1021,7 +1021,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.2</version>
+        <version>3.4</version>
       </dependency>
       <dependency>
         <groupId>net.sf.squirrel-sql.thirdparty.non-maven</groupId>
