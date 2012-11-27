@@ -4,6 +4,20 @@
 Metadata store configuration
 ============================
 
+Metadata stores are data stores that provide access to metadata records. The two common use cases for metadata stores are:
+
+* Accessing via CSW
+* Providing of metadata for web service resources (TBD)
+
+The remainder of this chapter describes some relevant terms and the metadata store configuration files in detail. You can access this configuration level by clicking on the **metadata stores** link in the administration console. The configuration files are located in the **datasources/metadata/** directory of the deegree workspace.
+
+.. figure:: images/workspace-overview-metadata.png
+   :figwidth: 80%
+   :width: 80%
+   :target: _images/workspace-overview-metadata.png
+
+   Metadata store resources provide access to metadata records
+
 ----------------------------
 Memory ISO Metadata store 
 ----------------------------

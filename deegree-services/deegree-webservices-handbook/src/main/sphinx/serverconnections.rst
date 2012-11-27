@@ -4,9 +4,14 @@
 Server connections
 ==================
 
-Server connections are used to configure parameters necessary to connect other resources to a server. A server can be anything from a database server to another OGC webservice.
+Server connections are used to configure parameters necessary to connect other resources to a server. There are currently two types of server connection resources, JDBC connections (to connect to an SQL database) and remote OWS connections (to connect to other OGC webservices).
 
-There are currently two types of server connections, JDBC connections (to connect to a database) and remote OWS connections (to connect to other OGC webservices).
+.. figure:: images/workspace-overview-connection.png
+   :figwidth: 80%
+   :width: 80%
+   :target: _images/workspace-overview-connection.png
+
+   Server connection resources define how to obtain a connection to a remote server
 
 .. _anchor-configuration-jdbc:
 

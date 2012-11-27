@@ -4,16 +4,20 @@
 Tile store configuration
 ========================
 
-Tile stores are data sources that provide access to pre-rendered map tiles. The common use cases for tile stores are:
+Tile stores are data stores that provide access to pre-rendered map tiles. The common use case for tile stores is to provide data for tile layers.
 
-* Provide data for layers in the WMTS
-* Provide data for tile layers in the WMS (no on-the-fly reprojection possible on GetMap request)
+The remainder of this chapter describes some relevant terms and the tile store configuration files in detail. You can access this configuration level by clicking on the **tile stores** link in the administration console. The configuration files are located in the **datasources/tile/** directory of the deegree workspace.
 
-The remainder of this chapter describes some relevant terms and the tile store configuration files in detail. You can access this configuration level by clicking on the ``tile stores`` link in the administration console. The configuration files are located in the ``datasources/tile/`` directory of the deegree workspace.
+.. figure:: images/workspace-overview-tile.png
+   :figwidth: 80%
+   :width: 80%
+   :target: _images/workspace-overview-tile.png
 
---------------------------
+   Tile store resources provide access to pre-rendered map tiles
+
+------------------------------------------------
 Tile stores, tile data sets and tile matrix sets
---------------------------
+------------------------------------------------
 
 A tile store is what you configure in a single tile store configuration file. It defines one or more (stored) tile data sets. Other resources such as the tile layer configuration usually refer to a specific tile data set from a tile store.
 

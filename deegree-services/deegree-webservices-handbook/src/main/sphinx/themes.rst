@@ -12,6 +12,13 @@ To configure a theme, you should already have a couple of layers configured. Rig
 
 A theme always has exactly one root node (theme). A theme can contain zero or more sub-themes, and zero or more layers.
 
+.. figure:: images/workspace-overview-theme.png
+   :figwidth: 80%
+   :width: 80%
+   :target: _images/workspace-overview-theme.png
+
+   Theme resources group layers into trees
+
 ---------------
 Standard themes
 ---------------

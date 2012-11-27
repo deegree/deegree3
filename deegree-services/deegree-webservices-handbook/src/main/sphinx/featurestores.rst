@@ -4,12 +4,19 @@
 Feature store configuration
 ===========================
 
-Feature stores are data sources that provide access to stored features. The two most common use cases for feature stores are:
+Feature stores are data stores that provide access to stored features. The two most common use cases for feature stores are:
 
 * Accessing via WFS
-* Providing of data for vector layers in the WMS
+* Providing of data for feature layers
 
-The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking on the ``feature stores`` link in the administration console. The configuration files have to be created or edited in the ``datasources/feature/`` directory of the deegree workspace.
+The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking on the **feature stores** link in the administration console. The configuration files are located in the **datasources/feature/** subdirectory of the active deegree workspace directory.
+
+.. figure:: images/workspace-overview-feature.png
+   :figwidth: 80%
+   :width: 80%
+   :target: _images/workspace-overview-feature.png
+
+   Feature store resources provide access to geo objects
 
 -----------------------------------------------
 Features, feature types and application schemas
