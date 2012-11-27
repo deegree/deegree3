@@ -7,7 +7,7 @@ Feature store configuration
 Feature stores are data sources that provide access to stored features. The two most common use cases for feature stores are:
 
 * Accessing via WFS
-* Provides data for vector layers in the WMS
+* Providing of data for vector layers in the WMS
 
 The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking on the ``feature stores`` link in the administration console. The configuration files have to be created or edited in the ``datasources/feature/`` directory of the deegree workspace.
 
@@ -19,24 +19,30 @@ Features are abstractions of real-world objects, such as rivers, buildings, stre
 
 Feature types define classes of features. For example, a feature type ``River`` could define a class of river features that all have the same properties
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Simple vs. complex feature types
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Simple vs. rich features and feature types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some feature type are much more complex than others. Traditionally, GIS software only copes with "simple" feature types:
+Some feature types have a more complex structure than others. Traditionally, GIS software only copes with "simple" feature types:
 
 * Every property is either simple (string, number, date, etc.) or a geometry
 * Only a single property with one name is allowed
 
-Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, complex feature types additionally allow the following:
+Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, rich feature types additionally allow the following:
 
 * Multiple properties with the same name
 * Properties that contain other features
-* Properties that reference other features
+* Properties that reference other features or GML objects
 * Properties that contain GML core datatypes which are not geometries (e.g. code types or units of measure)
 * Properties that contain generic XML
 
-All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support complex feature types.
+.. topic:: Example of a rich feature instance encoded in GML
+
+   .. literalinclude:: xml/feature_complex.xml
+      :language: xml
+
+.. hint::
+   All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support complex feature types.
 
 ^^^^^^^^^^^^^^^^^^^
 Application schemas
@@ -56,7 +62,7 @@ These kinds of application schemas can be served using the SQL feature store or 
 Shape feature store
 -------------------
 
-The shape feature store serves a feature type from an ESRI shape file. It is currently not transaction capable. The configuration format for the deegree shape feature store is defined by schema file http://schemas.deegree.org/datasource/feature/shape/3.1.0/shape.xsd.
+The shape feature store serves a feature type from an ESRI shape file. It is currently not transaction capable and only supports simple feature types.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -103,7 +109,7 @@ This configuration will set up a feature store based on the shape file ``/tmp/ri
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
 
-The following table lists all available configuration options. When specifiying them, their order must be respected.
+The configuration format for the deegree shape feature store is defined by schema file http://schemas.deegree.org/datasource/feature/shape/3.1.0/shape.xsd. The following table lists all available configuration options. When specifiying them, their order must be respected.
 
 .. table:: Options for ``ShapeFeatureStore`` configuration files
 
@@ -131,7 +137,7 @@ The following table lists all available configuration options. When specifiying 
 Memory feature store
 --------------------
 
-The memory feature store serves feature types that are defined by a GML application schema and are stored in memory. It is transaction capable. The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd.
+The memory feature store serves feature types that are defined by a GML application schema and are stored in memory. It is transaction capable and supports rich GML application schemas.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -171,7 +177,7 @@ This configuration will set up a memory feature store with the following setting
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
 
-The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+The configuration format for the deegree memory feature store is defined by schema file http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
 .. table:: Options for ``Memory Feature Store`` configuration files
 
@@ -189,7 +195,7 @@ The following table lists all available configuration options (the complex ones 
 Simple SQL feature store
 ------------------------
 
-The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead. The configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd.
+The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -215,7 +221,7 @@ More complex configuration example
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
 
-The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+The configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
 .. table:: Options for ``Simple SQL feature store`` configuration files
 
@@ -243,12 +249,10 @@ The following table lists all available configuration options (the complex ones 
 SQL feature store
 -----------------
 
-The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following backends:
+The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following backends:
 
 * PostgreSQL (8.3, 8.4, 9.0, 9.1) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
-
-The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -280,7 +284,7 @@ This configuration maps two feature types from an GML application schema to a re
 Configuration options
 ^^^^^^^^^^^^^^^^^^^^^
 
-The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected.
+The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected.
 
 .. table:: Options for ``SQL feature store`` configuration files
 
