@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.utils.templating;
 
 import java.io.IOException;
@@ -61,12 +61,13 @@ import org.deegree.feature.utils.templating.lang.Definition;
  */
 public class Templating2ParserTest {
 
-    public static void main( String[] args ) throws RecognitionException, IOException {
-        CharStream input = new ANTLRInputStream(Templating2Parser.class.getResourceAsStream("html2.gfi"));
-        Templating2Lexer lexer = new Templating2Lexer(input);
-        Templating2Parser parser = new Templating2Parser(new CommonTokenStream(lexer));
+    public static void main( String[] args )
+                            throws RecognitionException, IOException {
+        CharStream input = new ANTLRInputStream( Templating2Parser.class.getResourceAsStream( "html2.gfi" ) );
+        Templating2Lexer lexer = new Templating2Lexer( input );
+        Templating2Parser parser = new Templating2Parser( new CommonTokenStream( lexer ) );
         Map<String, Definition> defs = parser.definitions();
-        System.out.println(defs);
+        System.out.println( defs );
     }
-    
+
 }

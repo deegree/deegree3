@@ -28,7 +28,7 @@ template[Map<String, Definition> defs]
 @init {
   TemplateDefinition templdef = new TemplateDefinition();
 }:
-  SpecialConstructStart 'template ' n = Name '>' templatebody[templdef]+ { $defs.put($n.text, templdef); templdef.name = $n.text; };
+  SpecialConstructStart 'template ' n = Name TagClose templatebody[templdef]+ { $defs.put($n.text, templdef); templdef.name = $n.text; };
 
 templatebody[TemplateDefinition def]:
   templatebodytext { $def.body.add($templatebodytext.text); }
@@ -47,6 +47,9 @@ templatebodytext returns [String text]:
   t = ValidChars { $text = $t.text; }
   | t = Name { $text = $t.text; }
   | t = WS { $text = $t.text; }
+  | t = TagClose { $text = $t.text; }
+  | t = Star { $text = $t.text; }
+  | t = Colon { $text = $t.text; }
   ; 
 
 map[Map<String, Definition> defs]
@@ -60,15 +63,15 @@ kvp[Map<String, String> map]:
   l = KvpLeft+ '=' r = KvpRight+ NewLine { $map.put($l.text.trim(), $r.text.trim()); };
 
 featurecall:
-  SpecialConstructStart 'feature ' templateselector ':' Name '>';
+  SpecialConstructStart 'feature ' templateselector Colon Name '>';
 
 propertycall:
-  SpecialConstructStart 'property ' templateselector ':' Name '>';
+  SpecialConstructStart 'property ' templateselector Colon Name '>';
 
 templateselector:
   'not' WS* '(' templateselector ')'
-  | '*' WS* Name+ WS*
-  | WS* Name+ WS* ',' templateselector
+  | '*' (WS* Name WS*)?
+  | WS* Name WS* (',' templateselector)?
   ;
 
 name returns [Object name]:
@@ -114,5 +117,8 @@ SpecialConstructStart: '<?';
 ExplicitTemplateEnd: '</?>';
 Name: (Letter | Digit | '_')+;
 Colon: ':';
+Star: '*';
 WS: (' ' | '\t' | '\r' | '\n' | '\f' | '\b');
-ValidChars: '<' ~'?' | ~'<'; 
+TagOpen: '<';
+TagClose: '>';
+ValidChars: TagOpen ~('?' | TagClose | Colon | Star | TagOpen)? | ~(TagOpen | TagClose | Colon | Star) ~(TagOpen | TagClose | Colon | Star)?; 
