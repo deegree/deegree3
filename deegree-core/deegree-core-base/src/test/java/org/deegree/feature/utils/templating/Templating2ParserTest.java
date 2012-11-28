@@ -42,11 +42,14 @@
 package org.deegree.feature.utils.templating;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.deegree.feature.utils.templating.lang.Definition;
 
 /**
  * TODO add class documentation here
@@ -59,11 +62,11 @@ import org.antlr.runtime.RecognitionException;
 public class Templating2ParserTest {
 
     public static void main( String[] args ) throws RecognitionException, IOException {
-        CharStream input = new ANTLRInputStream(Templating2Parser.class.getResourceAsStream("html.gfi"));
+        CharStream input = new ANTLRInputStream(Templating2Parser.class.getResourceAsStream("html2.gfi"));
         Templating2Lexer lexer = new Templating2Lexer(input);
         Templating2Parser parser = new Templating2Parser(new CommonTokenStream(lexer));
-        parser.definition();
-        System.out.println(parser);
+        Map<String, Definition> defs = parser.definitions();
+        System.out.println(defs);
     }
     
 }
