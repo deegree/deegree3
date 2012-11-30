@@ -53,6 +53,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
+import org.deegree.maven.ithelper.ServiceIntegrationTestHelper;
 
 /**
  * <code>HttpUtils</code>
@@ -64,7 +65,7 @@ import org.apache.http.protocol.BasicHttpContext;
  */
 public class HttpUtils {
 
-    public static HttpClient getAuthenticatedHttpClient() {
+    public static HttpClient getAuthenticatedHttpClient( ServiceIntegrationTestHelper helper ) {
         DefaultHttpClient client = new DefaultHttpClient();
         HttpConnectionParams.setConnectionTimeout( client.getParams(), 30000 );
         HttpConnectionParams.setSoTimeout( client.getParams(), 1200000 );
