@@ -7,9 +7,9 @@
   <description>Maven plugin for tasks related to building deegree</description>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</url>
+    <connection>scm:git:git://github.com/occamlabs/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:occamlabs/deegree3.git</developerConnection>
+    <url>https://github.com/occamlabs/deegree3.git</url>
   </scm>
 
   <parent>
