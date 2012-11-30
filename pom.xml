@@ -9,9 +9,9 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk</url>
+    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
+    <url>https://github.com/deegree/deegree3.git</url>
   </scm>
 
   <repositories>
@@ -166,7 +166,6 @@
         <version>2.1</version>
         <configuration>
           <preparationGoals>clean install</preparationGoals>
-          <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <arguments>-e</arguments>
         </configuration>
