@@ -175,10 +175,7 @@ public class WMSController extends AbstractOWS {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.2.0/wms_configuration.xsd";
 
-    /**
-     * Default GML info formats. Will only be used if not overridden by config.
-     */
-    public final HashSet<String> defaultGMLGFIFormats = new LinkedHashSet<String>();
+    private final HashSet<String> defaultGMLGFIFormats = new LinkedHashSet<String>();
 
     private final HashMap<String, FeatureInfoSerializer> featureInfoSerializers = new HashMap<String, FeatureInfoSerializer>();
 
