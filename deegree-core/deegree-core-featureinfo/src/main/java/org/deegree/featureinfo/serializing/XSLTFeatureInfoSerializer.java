@@ -1,4 +1,4 @@
-package org.deegree.services.wms.controller.plugins;
+package org.deegree.featureinfo.serializing;
 
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.slf4j.LoggerFactory.getLogger;

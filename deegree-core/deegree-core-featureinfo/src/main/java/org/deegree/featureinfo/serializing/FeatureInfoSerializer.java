@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wms.controller.plugins;
+package org.deegree.featureinfo.serializing;
 
 import java.io.OutputStream;
 import java.util.Map;
