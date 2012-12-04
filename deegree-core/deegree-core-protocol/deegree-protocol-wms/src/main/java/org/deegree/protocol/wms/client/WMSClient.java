@@ -917,6 +917,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             wmsVersion = Version.parseVersion( version );
         } else {
             LOG.warn( "No version attribute in WMS capabilities document. Defaulting to 1.1.1." );
+            wmsVersion = VERSION_111;
         }
         if ( VERSION_111.equals( wmsVersion ) ) {
             return new WMS111CapabilitiesAdapter( root );
