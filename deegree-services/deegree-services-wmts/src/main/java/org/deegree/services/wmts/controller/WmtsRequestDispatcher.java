@@ -42,7 +42,6 @@
 package org.deegree.services.wmts.controller;
 
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Map;
@@ -50,8 +49,10 @@ import java.util.Map;
 import javax.servlet.ServletException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -74,11 +75,16 @@ class WmtsRequestDispatcher {
 
     private TileHandler tileHandler;
 
-    WmtsRequestDispatcher( DeegreeServicesMetadataType mainMetadataConf, DeegreeWorkspace workspace,
-                           WmtsBuilder builder, String wmtsId ) {
+    private FeatureInfoHandler featureInfoHandler;
+
+    WmtsRequestDispatcher( XMLAdapter controllerConf, DeegreeServicesMetadataType mainMetadataConf,
+                           DeegreeWorkspace workspace, WmtsBuilder builder, String wmtsId )
+                            throws ResourceInitException {
         capabilitiesHandler = new CapabilitiesHandler( mainMetadataConf, workspace, builder.getMetadataUrlTemplate(),
                                                        wmtsId, builder.getThemes() );
         tileHandler = new TileHandler( builder.getThemes() );
+        featureInfoHandler = new FeatureInfoHandler( builder.getFeatureInfoFormatsConf(), controllerConf, workspace,
+                                                     builder.getThemes() );
     }
 
     void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map, Version version )
@@ -93,7 +99,15 @@ class WmtsRequestDispatcher {
             }
             break;
         case GetFeatureInfo:
-            throw new OWSException( "The GetFeatureInfo operation is not supported yet.", OPERATION_NOT_SUPPORTED );
+            try {
+                featureInfoHandler.getFeatureInfo( map, response );
+            } catch ( OWSException e ) {
+                throw e;
+            } catch ( Throwable e ) {
+                LOG.trace( "Stack trace:", e );
+                throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
+            }
+            break;
         case GetTile:
             tileHandler.getTile( map, response );
             break;
