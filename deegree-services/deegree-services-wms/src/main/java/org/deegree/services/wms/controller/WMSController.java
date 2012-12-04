@@ -53,13 +53,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -102,10 +98,6 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.FeatureInfoParams;
-import org.deegree.featureinfo.templating.TemplatingLexer;
-import org.deegree.featureinfo.templating.TemplatingParser;
-import org.deegree.featureinfo.templating.java_cup.runtime.Symbol;
-import org.deegree.featureinfo.templating.lang.PropertyTemplateCall;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerRef;
@@ -510,38 +502,6 @@ public class WMSController extends AbstractOWS {
         }
         BufferedImage img = service.getLegend( glg );
         sendImage( img, response, glg.getFormat() );
-    }
-
-    private static void runTemplate( HttpResponseBuffer response, String fiFile, FeatureCollection col,
-                                     boolean geometries )
-                            throws IOException {
-        PrintWriter out = new PrintWriter( new OutputStreamWriter( response.getOutputStream(), "UTF-8" ) );
-
-        try {
-            InputStream in;
-            if ( fiFile == null ) {
-                in = WMSController.class.getResourceAsStream( "html.gfi" );
-            } else {
-                in = new FileInputStream( fiFile );
-            }
-
-            Symbol s = new TemplatingParser( new TemplatingLexer( new InputStreamReader( in, "UTF-8" ) ) ).parse();
-            @SuppressWarnings(value = "unchecked")
-            HashMap<String, Object> tmpl = (HashMap<String, Object>) s.value;
-            StringBuilder sb = new StringBuilder();
-            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, geometries );
-            out.println( sb.toString() );
-        } catch ( Exception e ) {
-            if ( fiFile == null ) {
-                LOG.error( "Could not load internal template for GFI response." );
-            } else {
-                LOG.error( "Could not load template '{}' for GFI response.", fiFile );
-            }
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            out.close();
-        }
-        response.flushBuffer();
     }
 
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
