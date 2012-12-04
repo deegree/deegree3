@@ -41,15 +41,15 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a planar surface patch (={@link PolygonPatch}) has a hole
- * (interior ring) that intersects it's shell (exterior ring).
+ * {@link GeometryValidationEvent} that indicates that a planar surface patch (={@link PolygonPatch}) has a hole (interior ring)
+ * that intersects it's shell (exterior ring).
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEvent {
+public class InteriorRingTouchesExterior extends AbstractGeometryValidationEvent {
 
     private final PolygonPatch patch;
 
@@ -57,10 +57,8 @@ public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEv
 
     private final Point location;
 
-    private final boolean singlePoint;
-
     /**
-     * Creates a new {@link InteriorRingIntersectsExterior} instance.
+     * Creates a new {@link InteriorRingTouchesExterior} instance.
      * 
      * @param patch
      *            offending patch, never <code>null</code>
@@ -70,16 +68,13 @@ public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEv
      *            location of the intersection, may be <code>null</code>
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the patch is part of)
-     * @param singlePoint
-     *            <code>true</code> if the intersection is just a single point, <code>false</code> otherwise
      */
-    public InteriorRingIntersectsExterior( PolygonPatch patch, int ringIdx, Point location,
-                                           List<Object> geometryParticleHierarchy, boolean singlePoint ) {
+    public InteriorRingTouchesExterior( PolygonPatch patch, int ringIdx, Point location,
+                                        List<Object> geometryParticleHierarchy ) {
         super( geometryParticleHierarchy );
         this.patch = patch;
         this.ringIdx = ringIdx;
         this.location = location;
-        this.singlePoint = singlePoint;
     }
 
     /**
@@ -94,7 +89,7 @@ public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEv
     /**
      * Returns the index of the affected interior ring.
      * 
-     * @return index of the affected interior ring (starting at 0)
+     * @return index of affected interior ring (starting at 0)
      */
     public int getRingIdx() {
         return ringIdx;
@@ -103,19 +98,10 @@ public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEv
     /**
      * Returns the location of the intersection.
      * 
-     * @return location of the intersection, may be <code>null</code>
+     * @return location of intersection, may be <code>null</code>
      */
     public Point getLocation() {
         return location;
-    }
-
-    /**
-     * Returns whether the intersection is just a single point.
-     * 
-     * @return <code>true</code> if the intersection is just a single point, <code>false</code> otherwise
-     */
-    public boolean isSinglePoint() {
-        return singlePoint;
     }
 
 }
