@@ -40,12 +40,14 @@ import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.write;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
+import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
@@ -564,9 +566,11 @@ public class WMSController extends AbstractOWS {
             }
         }
 
+        String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
+
         try {
             FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, response.getOutputStream(),
-                                                              geometries, null, type, crs, response.getXMLWriter() );
+                                                              geometries, loc, type, crs, response.getXMLWriter() );
             featureInfoManager.serializeFeatureInfo( params );
             response.flushBuffer();
         } catch ( XMLStreamException e ) {
