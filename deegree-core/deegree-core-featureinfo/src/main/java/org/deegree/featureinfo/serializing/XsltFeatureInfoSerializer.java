@@ -21,9 +21,9 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 
-public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
+public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
 
-    private static final Logger LOG = getLogger( XSLTFeatureInfoSerializer.class );
+    private static final Logger LOG = getLogger( XsltFeatureInfoSerializer.class );
 
     private final GMLVersion gmlVersion;
 
@@ -31,7 +31,7 @@ public class XSLTFeatureInfoSerializer implements FeatureInfoSerializer {
 
     private final DeegreeWorkspace workspace;
 
-    public XSLTFeatureInfoSerializer( GMLVersion version, URL xslt, DeegreeWorkspace workspace ) {
+    public XsltFeatureInfoSerializer( GMLVersion version, URL xslt, DeegreeWorkspace workspace ) {
         this.gmlVersion = version;
         this.xslt = xslt;
         this.workspace = workspace;

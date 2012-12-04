@@ -109,8 +109,9 @@ import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.featureinfo.serializing.FeatureInfoGmlWriter;
 import org.deegree.featureinfo.serializing.FeatureInfoSerializer;
-import org.deegree.featureinfo.serializing.XSLTFeatureInfoSerializer;
+import org.deegree.featureinfo.serializing.XsltFeatureInfoSerializer;
 import org.deegree.featureinfo.templating.TemplatingLexer;
 import org.deegree.featureinfo.templating.TemplatingParser;
 import org.deegree.featureinfo.templating.java_cup.runtime.Symbol;
@@ -355,7 +356,7 @@ public class WMSController extends AbstractOWS {
                     } else {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
-                        XSLTFeatureInfoSerializer xslt = new XSLTFeatureInfoSerializer(
+                        XsltFeatureInfoSerializer xslt = new XsltFeatureInfoSerializer(
                                                                                         version,
                                                                                         controllerConf.resolve( xsltFile.getValue() ),
                                                                                         workspace );

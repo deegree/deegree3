@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.wms.controller;
+package org.deegree.featureinfo.serializing;
 
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
@@ -58,7 +58,7 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Writes GML <code>GetFeatureInfo</code> responses for the {@link WMSController}.
+ * Writes GML <code>GetFeatureInfo</code> responses. TODO: adapt this to the serializer interface.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -66,7 +66,7 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision$, $Date$
  */
-class FeatureInfoGmlWriter {
+public class FeatureInfoGmlWriter {
 
     private static final String WFS_NS = "http://www.opengis.net/wfs";
 
@@ -82,7 +82,7 @@ class FeatureInfoGmlWriter {
      * @param version
      *            gml version, must not be <code>null</code>
      */
-    FeatureInfoGmlWriter( GMLVersion version ) {
+    public FeatureInfoGmlWriter( GMLVersion version ) {
         gmlNs = version.getNamespace();
         if ( !version.equals( GML_2 ) ) {
             fidAttr = new QName( gmlNs, "id" );
@@ -106,7 +106,7 @@ class FeatureInfoGmlWriter {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    void export( FeatureCollection fc, GMLStreamWriter gmlWriter, String noNamespaceSchemaLocation,
+    public void export( FeatureCollection fc, GMLStreamWriter gmlWriter, String noNamespaceSchemaLocation,
                  Map<String, String> bindings )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
