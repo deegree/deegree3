@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -34,31 +34,55 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.validation;
+package org.deegree.gml.geometry.validation;
+
+import java.util.List;
 
 import org.deegree.geometry.validation.event.GeometryValidationEvent;
 
 /**
- * Implementations of this interface are passed to {@link GeometryValidator} on construction.
+ * A {@link GeometryValidationEvent} augmented with information on document positions and names of affected GML elements.
  * 
- * @see GeometryValidator
- * @see GeometryValidationEvent
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public interface GeometryValidationEventHandler {
+public class GmlGeometryValidationEvent {
+
+    private final GeometryValidationEvent event;
+
+    private final List<GmlElementIdentifier> affectedElements;
 
     /**
-     * Called when a {@link GeometryValidationEvent} occurs.
+     * Creates a new {@link GmlGeometryValidationEvent} instance.
      * 
      * @param event
      *            validation event, never <code>null</code>
-     * @return <code>true</code>, if the event should indicate that the geometry is invalid, otherwise
-     *         <code>false</code>
+     * @param affectedElements
+     *            position and names of affected GML elements, never <code>null</code>
      */
-    public boolean fireEvent( GeometryValidationEvent event );
+    public GmlGeometryValidationEvent( GeometryValidationEvent event, List<GmlElementIdentifier> affectedElements ) {
+        this.event = event;
+        this.affectedElements = affectedElements;
+    }
+
+    /**
+     * Returns the validation event.
+     * 
+     * @return validation event, never <code>null</code>
+     */
+    public GeometryValidationEvent getEvent() {
+        return event;
+    }
+
+    /**
+     * Returns the affected elements.
+     * 
+     * @return affected elements, never <code>null</code>
+     */
+    public List<GmlElementIdentifier> getAffectedElements() {
+        return affectedElements;
+    }
 
 }

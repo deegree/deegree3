@@ -41,14 +41,16 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * Identifies a GML element and it's position in a document for providing validation information.
+ * Identifies a GML element and it's position in a GML stream for providing location information.
+ * 
+ * @see GmlStreamGeometryValidator
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  *
  * @version $Revision: $, $Date: $
  */
-public class GMLElementIdentifier {
+public class GmlElementIdentifier {
 
     private QName elementName;
 
@@ -57,13 +59,13 @@ public class GMLElementIdentifier {
     private int columnNumber;
 
     /**
-     * Creates a new {@link GMLElementIdentifier} for identifying the opening element that the given xml stream
+     * Creates a new {@link GmlElementIdentifier} for identifying the opening element that the given xml stream
      * currently points at.
      *
      * @param xmlStream
      *            must point at an open element event
      */
-    public GMLElementIdentifier( XMLStreamReader xmlStream ) {
+    public GmlElementIdentifier( XMLStreamReader xmlStream ) {
         if ( xmlStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
             String msg = "Cannot create GMLElementIdentifier. XMLStreamReader does not point at a START_ELEMENT event.";
             throw new IllegalArgumentException( msg );
