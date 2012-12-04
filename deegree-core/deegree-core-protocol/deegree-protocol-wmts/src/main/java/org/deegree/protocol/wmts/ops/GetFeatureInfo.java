@@ -108,6 +108,9 @@ public class GetFeatureInfo {
             // for friends of the WMS...
             infoFormat = map.get( "INFO_FORMAT" );
         }
+        if ( infoFormat == null ) {
+            throw new OWSException( "The INFOFORMAT parameter is missing.", MISSING_PARAMETER_VALUE, "INFOFORMAT" );
+        }
         this.tileMatrixSet = map.get( "TILEMATRIXSET" );
         this.tileMatrix = map.get( "TILEMATRIX" );
         parseTileRowCol( map );
@@ -118,23 +121,21 @@ public class GetFeatureInfo {
                             throws OWSException {
         String i = map.get( "I" );
         if ( i == null ) {
-            throw new OWSException( "The I parameter is missing.", MISSING_PARAMETER_VALUE, "GetFeatureInfo" );
+            throw new OWSException( "The I parameter is missing.", MISSING_PARAMETER_VALUE, "I" );
         }
         try {
             this.i = Integer.parseInt( i );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( "The I parameter value of '" + i + "' is not valid.", INVALID_PARAMETER_VALUE,
-                                    "GetFeatureInfo" );
+            throw new OWSException( "The I parameter value of '" + i + "' is not valid.", INVALID_PARAMETER_VALUE, "I" );
         }
         String j = map.get( "J" );
         if ( j == null ) {
-            throw new OWSException( "The J parameter is missing.", MISSING_PARAMETER_VALUE, "GetFeatureInfo" );
+            throw new OWSException( "The J parameter is missing.", MISSING_PARAMETER_VALUE, "J" );
         }
         try {
             this.j = Integer.parseInt( j );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( "The J parameter value of '" + j + "' is not valid.", INVALID_PARAMETER_VALUE,
-                                    "GetFeatureInfo" );
+            throw new OWSException( "The J parameter value of '" + j + "' is not valid.", INVALID_PARAMETER_VALUE, "J" );
         }
     }
 
@@ -142,23 +143,23 @@ public class GetFeatureInfo {
                             throws OWSException {
         String row = map.get( "TILEROW" );
         if ( row == null ) {
-            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "GetFeatureInfo" );
+            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "TILEROW" );
         }
         try {
             this.tileRow = Integer.parseInt( row );
         } catch ( NumberFormatException e ) {
             throw new OWSException( "The TILEROW parameter value of '" + row + "' is not a valid index.",
-                                    INVALID_PARAMETER_VALUE, "GetFeatureInfo" );
+                                    INVALID_PARAMETER_VALUE, "TILEROW" );
         }
         String col = map.get( "TILECOL" );
         if ( col == null ) {
-            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "GetFeatureInfo" );
+            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "TILECOL" );
         }
         try {
             this.tileCol = Integer.parseInt( col );
         } catch ( NumberFormatException e ) {
             throw new OWSException( "The TILECOL parameter value of '" + col + "' is not a valid index.",
-                                    INVALID_PARAMETER_VALUE, "GetFeatureInfo" );
+                                    INVALID_PARAMETER_VALUE, "TILECOL" );
         }
     }
 
