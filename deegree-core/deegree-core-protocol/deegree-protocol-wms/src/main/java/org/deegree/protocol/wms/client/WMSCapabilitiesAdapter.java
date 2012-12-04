@@ -115,6 +115,9 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 
     private Map<WMSRequestType, LinkedList<String>> parseFormats( OperationsMetadata operationsMetadata ) {
         Map<WMSRequestType, LinkedList<String>> opToFormats = new HashMap<WMSRequestType, LinkedList<String>>();
+        if ( operationsMetadata == null ) {
+            return opToFormats;
+        }
         for ( Operation operation : operationsMetadata.getOperation() ) {
             String operationName = operation.getName();
             XPath xp = new XPath( "//" + getPrefix() + operationName + "/" + getPrefix() + "Format", nsContext );
