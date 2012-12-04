@@ -58,6 +58,19 @@ import org.deegree.geometry.primitive.segments.Circle;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.validation.event.CurveDiscontinuity;
+import org.deegree.geometry.validation.event.CurveSelfIntersection;
+import org.deegree.geometry.validation.event.DuplicatePoints;
+import org.deegree.geometry.validation.event.ExteriorRingOrientation;
+import org.deegree.geometry.validation.event.InteriorRingIntersectsExterior;
+import org.deegree.geometry.validation.event.InteriorRingOrientation;
+import org.deegree.geometry.validation.event.InteriorRingOutsideExterior;
+import org.deegree.geometry.validation.event.InteriorRingTouchesExterior;
+import org.deegree.geometry.validation.event.InteriorRingsIntersect;
+import org.deegree.geometry.validation.event.InteriorRingsNested;
+import org.deegree.geometry.validation.event.InteriorRingsTouch;
+import org.deegree.geometry.validation.event.RingNotClosed;
+import org.deegree.geometry.validation.event.GeometryValidationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,7 +241,7 @@ public class GeometryValidator {
                     if ( lastPoint != null ) {
                         if ( point.equals( lastPoint ) ) {
                             LOG.debug( "Found duplicate control points." );
-                            if ( !eventHandler.curvePointDuplication( curve, point, affectedGeometryParticles2 ) ) {
+                            if ( !fireEvent( new DuplicatePoints( curve, point, affectedGeometryParticles2 ) ) ) {
                                 isValid = false;
                             }
                         }
@@ -249,7 +262,7 @@ public class GeometryValidator {
             if ( lastSegmentEndPoint != null ) {
                 if ( startPoint.get0() != lastSegmentEndPoint.get0() || startPoint.get1() != lastSegmentEndPoint.get1() ) {
                     LOG.debug( "Found discontinuous segments." );
-                    if ( !eventHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles2 ) ) {
+                    if ( !fireEvent( new CurveDiscontinuity( curve, segmentIdx, affectedGeometryParticles2 ) ) ) {
                         isValid = false;
                     }
                 }
@@ -266,25 +279,16 @@ public class GeometryValidator {
         if ( selfIntersection ) {
             LOG.debug( "Detected self-intersection." );
             Point location = getPoint( isSimpleOp.getNonSimpleLocation(), curve.getCoordinateSystem() );
-            if ( !eventHandler.curveSelfIntersection( curve, location, affectedGeometryParticles2 ) ) {
+            if ( !fireEvent( new CurveSelfIntersection( curve, location, affectedGeometryParticles2 ) ) ) {
                 isValid = false;
             }
         }
 
         if ( curve instanceof Ring ) {
-            LOG.debug( "Ring geometry. Testing for self-intersection." );
-            if ( selfIntersection ) {
-                LOG.debug( "Detected self-intersection." );
-                Point location = getPoint( isSimpleOp.getNonSimpleLocation(), curve.getCoordinateSystem() );
-                if ( !eventHandler.ringSelfIntersection( (Ring) curve, location, affectedGeometryParticles2 ) ) {
-                    isValid = false;
-                }
-            }
-
             LOG.debug( "Ring geometry. Testing if it's closed. " );
             if ( !curve.isClosed() ) {
                 LOG.debug( "Not closed." );
-                if ( !eventHandler.ringNotClosed( (Ring) curve, affectedGeometryParticles2 ) ) {
+                if ( !fireEvent( new RingNotClosed( (Ring) curve, affectedGeometryParticles2 ) ) ) {
                     isValid = false;
                 }
             }
@@ -322,7 +326,6 @@ public class GeometryValidator {
         LOG.debug( "Surface patch. Validating rings and spatial ring relations." );
 
         try {
-
             // validate and transform exterior ring to linearized JTS geometry
             Ring exteriorRing = patch.getExteriorRing();
             if ( !validateCurve( exteriorRing, affectedGeometryParticles2 ) ) {
@@ -330,11 +333,9 @@ public class GeometryValidator {
             }
             LinearRing exteriorJTSRing = getJTSRing( exteriorRing );
             LOG.debug( "Surface patch. Validating exterior ring orientation." );
-            if ( !CGAlgorithms.isCCW( exteriorJTSRing.getCoordinates() ) ) {
-                LOG.debug( "Wrong orientation." );
-                if ( !eventHandler.exteriorRingCW( patch, affectedGeometryParticles2 ) ) {
-                    isValid = false;
-                }
+            boolean isClockwise = !CGAlgorithms.isCCW( exteriorJTSRing.getCoordinates() );
+            if ( !fireEvent( new ExteriorRingOrientation( patch, isClockwise, affectedGeometryParticles2 ) ) ) {
+                isValid = false;
             }
             Polygon exteriorJTSRingAsPolygons = jtsFactory.createPolygon( exteriorJTSRing, null );
 
@@ -350,17 +351,15 @@ public class GeometryValidator {
                 LinearRing interiorJTSRing = getJTSRing( interiorRing );
                 LOG.debug( "Surface patch. Validating interior ring orientation." );
                 interiorJTSRings.add( interiorJTSRing );
-                if ( CGAlgorithms.isCCW( interiorJTSRing.getCoordinates() ) ) {
-                    LOG.debug( "Wrong orientation." );
-                    if ( !eventHandler.interiorRingCCW( patch, interiorRingIdx++, affectedGeometryParticles2 ) ) {
-                        isValid = false;
-                    }
+                isClockwise = !CGAlgorithms.isCCW( interiorJTSRing.getCoordinates() );
+                if ( !fireEvent( new InteriorRingOrientation( patch, interiorRingIdx++, isClockwise,
+                                                              affectedGeometryParticles2 ) ) ) {
+                    isValid = false;
                 }
                 interiorJTSRingsAsPolygons.add( jtsFactory.createPolygon( interiorJTSRing, null ) );
             }
 
             // TODO implement more efficient algorithms for tests below
-
             LOG.debug( "Surface patch. Validating spatial relations between exterior ring and interior rings." );
             for ( int ringIdx = 0; ringIdx < interiorJTSRings.size(); ringIdx++ ) {
                 LinearRing interiorJTSRing = interiorJTSRings.get( ringIdx );
@@ -369,33 +368,33 @@ public class GeometryValidator {
                 Point location = getPoint( intersection.getCoordinate(), null );
                 if ( exteriorJTSRing.touches( interiorJTSRing ) ) {
                     LOG.debug( "Exterior touches interior." );
-                    if ( !eventHandler.interiorRingTouchesExterior( patch, ringIdx, location,
-                                                                    affectedGeometryParticles2 ) ) {
+                    if ( !fireEvent( new InteriorRingTouchesExterior( patch, ringIdx, location,
+                                                                      affectedGeometryParticles2 ) ) ) {
                         isValid = false;
                     }
                 }
                 if ( exteriorJTSRing.intersects( interiorJTSRing ) ) {
                     LOG.debug( "Exterior intersects interior." );
-                    if ( !eventHandler.interiorRingIntersectsExterior( patch, ringIdx, location,
-                                                                       affectedGeometryParticles2 ) ) {
+                    if ( !fireEvent( new InteriorRingIntersectsExterior( patch, ringIdx, location,
+                                                                         affectedGeometryParticles2 ) ) ) {
                         isValid = false;
                     }
                 }
                 if ( !interiorJTSRing.within( exteriorJTSRingAsPolygons ) ) {
                     LOG.debug( "Interior not within interior." );
-                    if ( !eventHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
+                    if ( !fireEvent( new InteriorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) ) {
                         isValid = false;
                     }
                 }
                 if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
                     LOG.debug( "Exterior within interior." );
-                    if ( !eventHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
+                    if ( !fireEvent( new InteriorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) ) {
                         isValid = false;
                     }
                 }
                 if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
                     LOG.debug( "Exterior within interior." );
-                    if ( !eventHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
+                    if ( !fireEvent( new InteriorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) ) {
                         isValid = false;
                     }
                 }
@@ -417,27 +416,27 @@ public class GeometryValidator {
 
                     if ( interior1JTSRing.touches( interior2JTSRing ) ) {
                         LOG.debug( "Interior touches interior." );
-                        if ( !eventHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, location,
-                                                               affectedGeometryParticles2 ) ) {
+                        if ( !fireEvent( new InteriorRingsTouch( patch, ring1Idx, ring2Idx, location,
+                                                                 affectedGeometryParticles2 ) ) ) {
                             isValid = false;
                         }
                     }
                     if ( interior1JTSRing.intersects( interior2JTSRing ) ) {
                         LOG.debug( "Interior intersects interior." );
-                        if ( !eventHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, location,
-                                                                   affectedGeometryParticles2 ) ) {
+                        if ( !fireEvent( new InteriorRingsIntersect( patch, ring1Idx, ring2Idx, location,
+                                                                     affectedGeometryParticles2 ) ) ) {
                             isValid = false;
                         }
                     }
                     if ( interior1JTSRing.within( interior2JTSRingAsPolygon ) ) {
                         LOG.debug( "Interior within interior." );
-                        if ( !eventHandler.interiorRingsWithin( patch, ring2Idx, ring1Idx, affectedGeometryParticles2 ) ) {
+                        if ( !fireEvent( new InteriorRingsNested( patch, ring2Idx, ring1Idx, affectedGeometryParticles2 ) ) ) {
                             isValid = false;
                         }
                     }
                     if ( interior2JTSRing.within( interior1JTSRingAsPolygon ) ) {
                         LOG.debug( "Interior within interior." );
-                        if ( !eventHandler.interiorRingsWithin( patch, ring1Idx, ring2Idx, affectedGeometryParticles2 ) ) {
+                        if ( !fireEvent( new InteriorRingsNested( patch, ring1Idx, ring2Idx, affectedGeometryParticles2 ) ) ) {
                             isValid = false;
                         }
                     }
@@ -537,4 +536,9 @@ public class GeometryValidator {
         }
         return geomFac.createPoint( null, coords, crs );
     }
+
+    private boolean fireEvent( GeometryValidationEvent event ) {
+        return eventHandler.fireEvent( event );
+    }
+
 }
