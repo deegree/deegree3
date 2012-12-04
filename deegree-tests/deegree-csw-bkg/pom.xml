@@ -152,7 +152,7 @@
         <repository>
           <id>deegree-restricted</id>
           <name>deegree-restricted</name>
-          <url>http://artefacts.deegree.org/ext-libs-restricted</url>
+          <url>http://repo.deegree.org/content/repositories/private3rdparty/</url>
         </repository>
       </repositories>
       <dependencies>
