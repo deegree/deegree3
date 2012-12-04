@@ -22,7 +22,7 @@
   <LayerStoreId>layer_coverage_utah_dem30</LayerStoreId>
   <LayerStoreId>layer_coverage_utah_dem90</LayerStoreId>
   <LayerStoreId>layer_remotewms_utah_springs</LayerStoreId>
-  <LayerStoreId>layer_remotewms_utah_geology</LayerStoreId>
+<!--  <LayerStoreId>layer_remotewms_utah_geology</LayerStoreId>-->
   <LayerStoreId>layer_tile_utah_ortho</LayerStoreId>
   
   <Theme>
@@ -177,11 +177,11 @@
         <d:Title>Springs of Utah cascaded</d:Title>
         <Layer>springscascaded</Layer>
       </Theme>
-      <Theme>
+    <!--  <Theme>
         <Identifier>utahlithologycascaded</Identifier>
         <d:Title>Utah Lithology cascaded</d:Title>
         <Layer>utahlithology</Layer>
-      </Theme>
+      </Theme>-->
     </Theme>
     
   </Theme>

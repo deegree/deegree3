@@ -869,8 +869,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         map.put( "height", Integer.toString( getMap.getHeight() ) );
         map.put( "transparent", "true" );
         Envelope bbox = getMap.getBoundingBox();
-        if ( wmsVersion.equals( VERSION_111 )
-             || getMap.getCoordinateSystem().getAxis()[0].getOrientation() == Axis.AO_EAST ) {
+        if ( axisFlipped( getMap ) ) {
             map.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
                              + bbox.getMax().get1() );
         } else {
@@ -904,12 +903,21 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         return conn.getInputStream();
     }
 
+    private boolean axisFlipped( GetMap getMap ) {
+        ICRS crs = getMap.getCoordinateSystem();
+        if ( crs.getAlias().startsWith( "EPSG:" ) ) {
+            crs = CRSManager.getCRSRef( "urn:ogc:def:crs:EPSG::" + crs.getAlias().substring( 5 ) );
+        }
+        return wmsVersion.equals( VERSION_111 ) || crs.getAxis()[0].getOrientation() == Axis.AO_EAST;
+    }
+
     protected WMSCapabilitiesAdapter getCapabilitiesAdapter( OMElement root, String version )
                             throws IOException {
         if ( version != null ) {
             wmsVersion = Version.parseVersion( version );
         } else {
             LOG.warn( "No version attribute in WMS capabilities document. Defaulting to 1.1.1." );
+            wmsVersion = VERSION_111;
         }
         if ( VERSION_111.equals( wmsVersion ) ) {
             return new WMS111CapabilitiesAdapter( root );
