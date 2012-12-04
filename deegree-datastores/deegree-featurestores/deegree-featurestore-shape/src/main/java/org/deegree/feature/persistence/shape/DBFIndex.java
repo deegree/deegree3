@@ -78,7 +78,7 @@ public class DBFIndex {
      */
     public DBFIndex( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
                      List<Mapping> mappings ) throws IOException {
-        new DbfIndexImporter( connid, dbf, file, envelopes, mappings ).createIndex();
+        new DbfIndexImporter( connid = file.getName(), dbf, file, envelopes, mappings ).createIndex();
     }
 
     /**

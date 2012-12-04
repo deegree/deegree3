@@ -43,7 +43,6 @@ import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.post;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -54,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
@@ -62,13 +62,13 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.client.WMSClient;
+import org.deegree.protocol.wms.ops.GetMap;
 
 /**
  * 
@@ -128,7 +128,7 @@ public class ServiceIntegrationTestHelper {
         String address = createBaseURL() + "services/wms?request=GetCapabilities&version=1.1.1&service=" + service;
         String currentLayer = null;
         try {
-            WMSClient111 client = new WMSClient111( new URL( address ), 360, 360 );
+            WMSClient client = new WMSClient( new URL( address ), 360, 360 );
             for ( String layer : client.getNamedLayers() ) {
                 log.info( "Retrieving map for layer " + layer );
                 currentLayer = layer;
@@ -142,11 +142,11 @@ public class ServiceIntegrationTestHelper {
                     }
                     bbox = new GeometryTransformer( CRSManager.lookup( srs ) ).transform( bbox );
                 }
-                Pair<BufferedImage, String> map = client.getMap( layers, 100, 100, bbox, CRSManager.lookup( srs ),
-                                                                 client.getFormats( GetMap ).getFirst(), true, false,
-                                                                 -1, false, null );
-                if ( map.first == null ) {
-                    throw new MojoFailureException( "Retrieving map for " + layer + " failed: " + map.second );
+                GetMap gm = new GetMap( layers, 100, 100, bbox, CRSManager.lookup( srs ),
+                                        client.getFormats( GetMap ).getFirst(), true );
+                Object img = ImageIO.read( client.getMap( gm ) );
+                if ( img == null ) {
+                    throw new MojoFailureException( "Retrieving map for " + layer + " failed." );
                 }
             }
         } catch ( MalformedURLException e ) {

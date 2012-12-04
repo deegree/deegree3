@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.16-SNAPSHOT</version>
+  <version>1.17-SNAPSHOT</version>
   <name>deegree-maven-plugin</name>
   <description>Maven plugin for tasks related to building deegree</description>
 
   <scm>
-    <connection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/uncoupled/deegree-maven-plugin</url>
+    <connection>scm:git:git://github.com/occamlabs/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:occamlabs/deegree3.git</developerConnection>
+    <url>https://github.com/occamlabs/deegree3.git</url>
   </scm>
 
   <parent>
@@ -48,10 +48,9 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2.1</version>
         <configuration>
            <preparationGoals>clean install</preparationGoals>
-           <tagBase>svn+ssh://svn.wald.intevation.org/deegree/deegree3/tags</tagBase>
         </configuration>
       </plugin>
     </plugins>
@@ -79,6 +78,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
+      <version>3.2-pre11</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-protocol-wms</artifactId>
       <version>3.2-pre11</version>
     </dependency>
   </dependencies>

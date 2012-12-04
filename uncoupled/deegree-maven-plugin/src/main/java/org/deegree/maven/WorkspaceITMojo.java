@@ -94,7 +94,7 @@ public class WorkspaceITMojo extends AbstractMojo {
             String url = helper.createBaseURL() + "config/upload/iut.zip";
             File file = a.getFile();
             try {
-                HttpClient client = HttpUtils.getAuthenticatedHttpClient();
+                HttpClient client = HttpUtils.getAuthenticatedHttpClient( helper );
 
                 getLog().info( "Sending against: " + helper.createBaseURL() + "config/delete/iut" );
                 HttpGet get = new HttpGet( helper.createBaseURL() + "config/delete/iut" );
