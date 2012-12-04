@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamWriter;
 
@@ -116,6 +117,10 @@ public class FeatureInfoManager {
         for ( String f : defaultGMLGFIFormats ) {
             supportedFeatureInfoFormats.put( f, "" );
         }
+    }
+
+    public Set<String> getSupportedFormats() {
+        return supportedFeatureInfoFormats.keySet();
     }
 
     public void serializeFeatureInfo( FeatureInfoParams params )
