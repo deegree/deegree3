@@ -72,11 +72,11 @@ import org.deegree.tile.tilematrixset.TileMatrixSetManager;
  */
 class TileDataSetBuilder {
 
-    private RemoteWMSTileStoreJAXB config;
+    private final RemoteWMSTileStoreJAXB config;
 
-    private RemoteWMS wms;
+    private final RemoteWMS wms;
 
-    private TileMatrixSetManager tmsMgr;
+    private final TileMatrixSetManager tmsMgr;
 
     TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, TileMatrixSetManager tmsMgr ) {
         this.config = config;
@@ -96,13 +96,14 @@ class TileDataSetBuilder {
             }
 
             RequestParams params = cfg.getRequestParams();
-            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat() ) );
+            boolean getFeaturesSupported = cfg.getGetFeatureInfo().isEnabled();
+            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat(), getFeaturesSupported ) );
         }
         return map;
     }
 
     private DefaultTileDataSet buildTileDataSet( RequestParams requestParams, TileMatrixSet tms, WMSClient client,
-                                                 String outputFormat ) {
+                                                 String outputFormat, boolean getFeaturesSupported ) {
         List<String> layers = splitNullSafe( requestParams.getLayers() );
         List<String> styles = splitNullSafe( requestParams.getStyles() );
         String format = requestParams.getFormat();
@@ -117,8 +118,7 @@ class TileDataSetBuilder {
             TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs );
             dataLevels.add( 0, m );
         }
-
-        return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
+        return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat, getFeaturesSupported );
     }
 
     private static List<String> splitNullSafe( String csv ) {

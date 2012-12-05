@@ -125,7 +125,7 @@ class TileDataSetBuilder {
 
         List<TileDataLevel> dataLevels = buildTileDataLevels( localTileMatrixSet, remoteTileMatrixSet, requestParams,
                                                               outputFormat );
-        return new DefaultTileDataSet( dataLevels, localTileMatrixSet, "image/" + outputFormat );
+        return new DefaultTileDataSet( dataLevels, localTileMatrixSet, "image/" + outputFormat, false );
     }
 
     private TileMatrixSet getLocalTileMatrixSet( String requestTileMatrixSetId, String workspaceTileMatrixSetId )

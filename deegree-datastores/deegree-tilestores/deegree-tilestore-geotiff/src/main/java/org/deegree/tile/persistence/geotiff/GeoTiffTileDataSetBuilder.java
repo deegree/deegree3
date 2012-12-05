@@ -101,7 +101,7 @@ class GeoTiffTileDataSetBuilder {
             levels.add( new GeoTIFFTileDataLevel( tm, file, idx++, xoff, yoff, numx, numy ) );
         }
 
-        return new DefaultTileDataSet( levels, tms, format );
+        return new DefaultTileDataSet( levels, tms, format, false );
     }
 
 }

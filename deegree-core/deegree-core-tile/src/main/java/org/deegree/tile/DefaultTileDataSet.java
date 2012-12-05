@@ -74,6 +74,8 @@ public class DefaultTileDataSet implements TileDataSet {
 
     private final String format;
 
+    private final boolean isGetFeaturesSupported;
+
     /**
      * Creates a new {@link DefaultTileDataSet} instance.
      * 
@@ -83,14 +85,19 @@ public class DefaultTileDataSet implements TileDataSet {
      *            corresponding matrix set metadata, must not be <code>null</code>
      * @param format
      *            native image format, must not be <code>null</code>
+     * @param isGetFeaturesSupported
+     *            <code>true</code>, if the tiles support the retrieval of feature information, <code>false</code>
+     *            otherwise
      */
-    public DefaultTileDataSet( List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format ) {
+    public DefaultTileDataSet( List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format,
+                               boolean isGetFeaturesSupported ) {
         this.levels = new LinkedHashMap<String, TileDataLevel>();
         for ( TileDataLevel m : levels ) {
             this.levels.put( m.getMetadata().getIdentifier(), m );
         }
         this.metadata = tileMatrixSet;
         this.format = format;
+        this.isGetFeaturesSupported = isGetFeaturesSupported;
     }
 
     @Override
@@ -164,5 +171,10 @@ public class DefaultTileDataSet implements TileDataSet {
     @Override
     public String getNativeImageFormat() {
         return format;
+    }
+
+    @Override
+    public boolean isGetFeaturesSupported() {
+        return isGetFeaturesSupported;
     }
 }

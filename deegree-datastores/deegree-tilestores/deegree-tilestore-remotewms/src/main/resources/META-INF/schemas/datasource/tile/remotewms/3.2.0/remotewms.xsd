@@ -72,6 +72,14 @@
                   </sequence>
                 </complexType>
               </element>
+              <element name="GetFeatureInfo">
+                <annotation>
+                  <documentation>Controls whether GetFeatureInfo-queries are enabled</documentation>
+                </annotation>
+                <complexType>
+                  <attribute name="enabled" type="boolean" />
+                </complexType>
+              </element>
             </sequence>
           </complexType>
         </element>
