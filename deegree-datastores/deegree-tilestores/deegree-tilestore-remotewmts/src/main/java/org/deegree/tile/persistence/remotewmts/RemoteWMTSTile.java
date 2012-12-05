@@ -49,6 +49,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.http.CloseRequiredInputStream;
 import org.deegree.protocol.wmts.client.GetTileResponse;
@@ -146,5 +147,11 @@ class RemoteWMTSTile implements Tile {
     @Override
     public Envelope getEnvelope() {
         return envelope;
+    }
+
+    @Override
+    public FeatureCollection getFeatures( int i, int j, int limit )
+                            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException( "Feature retrieval is not implemented for the RemoteWMTSTileStore." );
     }
 }

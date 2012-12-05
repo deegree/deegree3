@@ -302,4 +302,10 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
         }
         return metadata.getPostUrls( operationName );
     }
+
+    protected void closeQuietly( OwsHttpResponse response ) {
+        if (response != null) {
+            response.close();
+        }
+    }
 }

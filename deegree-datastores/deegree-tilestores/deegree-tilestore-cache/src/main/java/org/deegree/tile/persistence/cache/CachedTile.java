@@ -50,20 +50,20 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 import org.slf4j.Logger;
 
 /**
- * <code>CachedTile</code>
+ * A {@link Tile} that is backed by a {@link CachingTileStore}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class CachedTile implements Tile {
 
     private static final Logger LOG = getLogger( CachedTile.class );
@@ -84,8 +84,8 @@ public class CachedTile implements Tile {
             return ImageIO.read( new ByteArrayInputStream( bs ) );
         } catch ( IOException e ) {
             String msg = "Error decoding image from byte array: " + e.getMessage();
-            LOG.debug (msg);
-            LOG.trace( msg, e ); 
+            LOG.debug( msg );
+            LOG.trace( msg, e );
             throw new TileIOException( e.getMessage(), e );
         }
     }
@@ -98,5 +98,11 @@ public class CachedTile implements Tile {
     @Override
     public Envelope getEnvelope() {
         return envelope;
+    }
+
+    @Override
+    public FeatureCollection getFeatures( int i, int j, int limit )
+                            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException( "Feature retrieval is not supported by the CachingTileStore." );
     }
 }

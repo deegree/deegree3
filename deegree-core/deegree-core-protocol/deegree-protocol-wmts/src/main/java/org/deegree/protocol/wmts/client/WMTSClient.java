@@ -134,10 +134,8 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
      */
     public TileMatrixSet getTileMatrixSet( String tileMatrixSetId )
                             throws XMLStreamException {
-        System.out.println ("Looking for: " + tileMatrixSetId);
         List<TileMatrixSet> tileMatrixSets = getTileMatrixSets();
         for ( TileMatrixSet tileMatrixSet : tileMatrixSets ) {
-            System.out.println (tileMatrixSet.getIdentifier());
             if ( tileMatrixSet.getIdentifier().equals( tileMatrixSetId ) ) {
                 return tileMatrixSet;
             }
