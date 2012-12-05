@@ -108,6 +108,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.SimpleProperty;
+import org.deegree.feature.types.DynamicAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
@@ -382,7 +383,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         params.put( "format", getFormats( GetMap ).getFirst() );
         params.put( "feature_count", Integer.toString( gfi.getFeatureCount() ) );
 
-        if ( wmsVersion == VERSION_111 ) {
+        if ( wmsVersion.equals( VERSION_111 ) ) {
             params.put( "x", Integer.toString( gfi.getX() ) );
             params.put( "y", Integer.toString( gfi.getY() ) );
             params.put( "srs", gfi.getCoordinateSystem().getAlias() );
@@ -444,6 +445,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     private FeatureCollection readGml2FeatureCollection( XMLStreamReader xmlReader )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
+        reader.setApplicationSchema( new DynamicAppSchema() );
         return reader.readFeatureCollection();
     }
 

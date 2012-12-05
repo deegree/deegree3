@@ -42,7 +42,6 @@
 package org.deegree.services.wmts.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.stream.XMLStreamException;
@@ -50,17 +49,13 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.featureinfo.FeatureInfoParams;
-import org.deegree.layer.LayerData;
-import org.deegree.layer.LayerQuery;
 import org.deegree.layer.persistence.tile.TileLayer;
 import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
-import org.deegree.tile.TileMatrix;
 
 /**
  * Responsible for fetching features from tile layers, prepared to immediately be serialized.
@@ -84,23 +79,11 @@ class FeatureInfoFetcher {
     FeatureInfoParams fetch( HttpResponseBuffer response )
                             throws OWSException, IOException, XMLStreamException {
         TileDataSet tds = layer.getTileDataSet( gfi.getTileMatrixSet() );
-
         TileDataLevel tdl = tds.getTileDataLevel( gfi.getTileMatrix() );
-        TileMatrix tm = tdl.getMetadata();
         Tile t = tdl.getTile( gfi.getTileCol(), gfi.getTileRow() );
-
-        LayerQuery q = new LayerQuery( t.getEnvelope(), (int) tm.getTilePixelsX(), (int) tm.getTilePixelsY(),
-                                       gfi.getI(), gfi.getJ(), 999, null, null, null, null, null, t.getEnvelope() );
-        LayerData data = layer.infoQuery( q, new ArrayList<String>() );
-        FeatureCollection col = data == null ? null : data.info();
-        if ( col == null ) {
-            col = new GenericFeatureCollection();
-        }
-
+        FeatureCollection col = t.getFeatures( gfi.getI(), gfi.getJ(), 10 );
         ICRS crs = tds.getTileMatrixSet().getSpatialMetadata().getEnvelope().getCoordinateSystem();
-
         HashMap<String, String> nsBindings = new HashMap<String, String>();
-
         return new FeatureInfoParams( nsBindings, col, gfi.getInfoFormat(), response.getOutputStream(), false, null,
                                       null, crs, response.getXMLWriter() );
     }
