@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -172,7 +172,7 @@ public class ConfigUtils {
         Quality quali = null;
         Interpolation interpol = null;
         int maxFeats = -1;
-        int rad = -1;
+        int rad = 1;
         try {
             alias = Antialias.valueOf( cfg.getAntiAliasing() );
         } catch ( Throwable e ) {
@@ -191,7 +191,9 @@ public class ConfigUtils {
         if ( cfg.getMaxFeatures() != null ) {
             maxFeats = cfg.getMaxFeatures();
         }
-        if ( cfg.getFeatureInfoRadius() != null ) {
+        if ( cfg.getFeatureInfo() != null && cfg.getFeatureInfo().isEnabled() ) {
+            rad = cfg.getFeatureInfo().getPixelRadius().intValue();
+        } else if ( cfg.getFeatureInfoRadius() != null ) {
             rad = cfg.getFeatureInfoRadius();
         }
         return new MapOptions( quali, interpol, alias, maxFeats, rad );

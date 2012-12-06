@@ -83,8 +83,11 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private final XMLStreamWriter writer;
+    private static final String INFO_FORMAT_GML_31 = "application/gml+xml; version=3.1";
+    
+    private static final String INFO_FORMAT_HTML = "text/html";
 
+    private final XMLStreamWriter writer;
 
     private final ServiceProvider provider;
 
@@ -107,7 +110,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
             mdurltemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
         }
         this.mdurltemplate = mdurltemplate;
-        this.mdwriter = new WmtsCapabilitiesMetadataWriter(writer, identification);
+        this.mdwriter = new WmtsCapabilitiesMetadataWriter( writer, identification );
     }
 
     public void export100()
@@ -134,8 +137,6 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement(); // Capabilities
     }
-
-
 
     private void exportThemes( List<Theme> themes )
                             throws XMLStreamException {
@@ -273,6 +274,10 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         }
         for ( String fmt : fmts ) {
             writeElement( writer, WMTSNS, "Format", fmt );
+        }
+        if ( md.isQueryable() ) {
+            writeElement( writer, WMTSNS, "InfoFormat", INFO_FORMAT_GML_31 );
+            writeElement( writer, WMTSNS, "InfoFormat", INFO_FORMAT_HTML );
         }
         for ( TileDataSet tds : tl.getTileDataSets() ) {
             writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );

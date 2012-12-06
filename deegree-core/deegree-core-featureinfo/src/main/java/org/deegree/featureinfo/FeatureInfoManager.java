@@ -47,6 +47,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -125,6 +126,7 @@ public class FeatureInfoManager {
 
     public void serializeFeatureInfo( FeatureInfoParams params )
                             throws IOException {
+
         String format = params.getFormat();
         FeatureInfoSerializer serializer = featureInfoSerializers.get( format );
         if ( serializer != null ) {
@@ -133,61 +135,65 @@ public class FeatureInfoManager {
         }
 
         String fiFile = supportedFeatureInfoFormats.get( format );
-        if ( !fiFile.isEmpty() ) {
+        if ( fiFile != null && !fiFile.isEmpty() ) {
             runTemplate( params.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries() );
-            return;
-        }
-
-        handleGmlOutput( format, params );
-        if ( format.equalsIgnoreCase( "text/plain" ) ) {
-            PrintWriter out = new PrintWriter( new OutputStreamWriter( params.getOutputStream(), "UTF-8" ) );
-            for ( Feature f : params.getFeatureCollection() ) {
-                out.println( f.getName().getLocalPart() + ":" );
-                for ( Property p : f.getProperties() ) {
-                    out.println( "  " + p.getName().getLocalPart() + ": " + p.getValue() );
-                }
-                out.println();
-            }
-            out.close();
-        }
-
-        if ( format.equalsIgnoreCase( "text/html" ) ) {
+        } else if ( isGml( format ) ) {
+            handleGmlOutput( format, params );
+        } else if ( format.equalsIgnoreCase( "text/plain" ) ) {
+            handlePlainTextOutput( params );
+        } else if ( format.equalsIgnoreCase( "text/html" ) ) {
             runTemplate( params.getOutputStream(), null, params.getFeatureCollection(), params.isWithGeometries() );
         }
+        throw new IOException( "FeatureInfo format '" + format + "' is unknown." );
+    }
+
+    private boolean isGml( String format ) {
+        return format.equalsIgnoreCase( "application/vnd.ogc.gml" ) || format.equalsIgnoreCase( "text/xml" )
+               || defaultGMLGFIFormats.contains( format.toLowerCase() );
+    }
+
+    private void handlePlainTextOutput( FeatureInfoParams params )
+                            throws UnsupportedEncodingException {
+        PrintWriter out = new PrintWriter( new OutputStreamWriter( params.getOutputStream(), "UTF-8" ) );
+        for ( Feature f : params.getFeatureCollection() ) {
+            out.println( f.getName().getLocalPart() + ":" );
+            for ( Property p : f.getProperties() ) {
+                out.println( "  " + p.getName().getLocalPart() + ": " + p.getValue() );
+            }
+            out.println();
+        }
+        out.close();
     }
 
     private void handleGmlOutput( String format, FeatureInfoParams params ) {
-        if ( format.equalsIgnoreCase( "application/vnd.ogc.gml" ) || format.equalsIgnoreCase( "text/xml" )
-             || defaultGMLGFIFormats.contains( format.toLowerCase() ) ) {
-            try {
-                XMLStreamWriter xmlWriter = params.getXmlWriter();
+        try {
+            XMLStreamWriter xmlWriter = params.getXmlWriter();
 
-                // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
-                HashMap<String, String> bindings = new HashMap<String, String>();
-                String ns = determineNamespace( params );
-                if ( ns != null ) {
-                    bindings.put( ns, params.getSchemaLocation() );
-                    if ( !params.getNsBindings().containsValue( ns ) ) {
-                        params.getNsBindings().put( "app", ns );
-                    }
+            // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
+            HashMap<String, String> bindings = new HashMap<String, String>();
+            String ns = determineNamespace( params );
+            if ( ns != null ) {
+                bindings.put( ns, params.getSchemaLocation() );
+                if ( !params.getNsBindings().containsValue( ns ) ) {
+                    params.getNsBindings().put( "app", ns );
                 }
-                if ( !params.getNsBindings().containsKey( "app" ) ) {
-                    params.getNsBindings().put( "app", "http://www.deegree.org/app" );
-                }
-                bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
-
-                GMLVersion gmlVersion = getGmlVersion( format );
-
-                GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
-                gmlWriter.setOutputCrs( params.getCrs() );
-                gmlWriter.setNamespaceBindings( params.getNsBindings() );
-                gmlWriter.setExportGeometries( params.isWithGeometries() );
-                new FeatureInfoGmlWriter( gmlVersion ).export( params.getFeatureCollection(), gmlWriter,
-                                                               ns == null ? params.getSchemaLocation() : null, bindings );
-            } catch ( Throwable e ) {
-                LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
             }
+            if ( !params.getNsBindings().containsKey( "app" ) ) {
+                params.getNsBindings().put( "app", "http://www.deegree.org/app" );
+            }
+            bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
+
+            GMLVersion gmlVersion = getGmlVersion( format );
+
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
+            gmlWriter.setOutputCrs( params.getCrs() );
+            gmlWriter.setNamespaceBindings( params.getNsBindings() );
+            gmlWriter.setExportGeometries( params.isWithGeometries() );
+            new FeatureInfoGmlWriter( gmlVersion ).export( params.getFeatureCollection(), gmlWriter,
+                                                           ns == null ? params.getSchemaLocation() : null, bindings );
+        } catch ( Throwable e ) {
+            LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         }
     }
 

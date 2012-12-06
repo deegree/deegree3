@@ -87,5 +87,4 @@ class FeatureInfoFetcher {
         return new FeatureInfoParams( nsBindings, col, gfi.getInfoFormat(), response.getOutputStream(), false, null,
                                       null, crs, response.getXMLWriter() );
     }
-
 }

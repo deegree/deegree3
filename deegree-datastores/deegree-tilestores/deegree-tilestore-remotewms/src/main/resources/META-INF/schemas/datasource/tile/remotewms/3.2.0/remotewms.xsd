@@ -72,9 +72,9 @@
                   </sequence>
                 </complexType>
               </element>
-              <element name="GetFeatureInfo">
+              <element name="GetFeatureInfo" minOccurs="0">
                 <annotation>
-                  <documentation>Controls whether GetFeatureInfo-queries are enabled</documentation>
+                  <documentation>Controls whether GetFeatureInfo-queries are enabled, if element is omitted: enabled</documentation>
                 </annotation>
                 <complexType>
                   <attribute name="enabled" type="boolean" />

@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_DEFINED;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +62,8 @@ import org.deegree.theme.Themes;
 /**
  * Responsible for handling GetFeatureInfo requests.
  * 
- * @author <a href="mailto:name@company.com">Your Name</a>
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: stranger $
  * 
  * @version $Revision: $, $Date: $
@@ -87,11 +91,27 @@ class FeatureInfoHandler {
     void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException, XMLStreamException {
         GetFeatureInfo gfi = new GetFeatureInfo( map );
-        TileLayer l = layers.get( gfi.getLayer() );
+        TileLayer l = checkLayerConfigured( gfi );
+        checkLayerFeatureInfoEnabled( gfi, l );
         FeatureInfoFetcher fetcher = new FeatureInfoFetcher( l, gfi );
         FeatureInfoParams params = fetcher.fetch( response );
-
         featureInfoManager.serializeFeatureInfo( params );
     }
 
+    private TileLayer checkLayerConfigured( GetFeatureInfo gfi )
+                            throws OWSException {
+        TileLayer l = layers.get( gfi.getLayer() );
+        if ( l == null ) {
+            throw new OWSException( "No layer with name '" + gfi.getLayer() + "' configured.", LAYER_NOT_DEFINED );
+        }
+        return l;
+    }
+
+    private void checkLayerFeatureInfoEnabled( GetFeatureInfo gfi, TileLayer l )
+                            throws OWSException {
+        if ( !l.getMetadata().isQueryable() ) {
+            throw new OWSException( "Layer '" + gfi.getLayer() + "' not configured for FeatureInfo.",
+                                    OPERATION_NOT_SUPPORTED );
+        }
+    }
 }

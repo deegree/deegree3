@@ -96,7 +96,10 @@ class TileDataSetBuilder {
             }
 
             RequestParams params = cfg.getRequestParams();
-            boolean getFeaturesSupported = cfg.getGetFeatureInfo().isEnabled();
+            boolean getFeaturesSupported = true;
+            if ( cfg.getGetFeatureInfo() != null ) {
+                getFeaturesSupported = cfg.getGetFeatureInfo().isEnabled();
+            }
             map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat(), getFeaturesSupported ) );
         }
         return map;

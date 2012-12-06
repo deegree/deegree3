@@ -1,13 +1,21 @@
-<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd" configVersion="3.2.0">
+<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:l="http://www.deegree.org/layers/base" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd"
+  configVersion="3.2.0">
   <TileLayer>
     <l:Name>pyramid</l:Name>
     <d:Title>IT tile layer uncached</d:Title>
     <l:MetadataSetId>mdsetid</l:MetadataSetId>
+    <l:LayerOptions>
+      <l:FeatureInfoRadius>-1</l:FeatureInfoRadius>
+    </l:LayerOptions>
     <TileDataSet tileStoreId="pyramid">utah</TileDataSet>
   </TileLayer>
   <TileLayer>
     <l:Name>cache</l:Name>
     <d:Title>IT tile layer cached</d:Title>
+    <l:LayerOptions>
+      <l:FeatureInfoRadius>-1</l:FeatureInfoRadius>
+    </l:LayerOptions>    
     <TileDataSet tileStoreId="cache">utah</TileDataSet>
   </TileLayer>
   <TileLayer>
@@ -38,11 +46,17 @@
   <TileLayer>
     <l:Name>filesystem</l:Name>
     <d:Title>IT tile layer filesystem</d:Title>
+    <l:LayerOptions>
+      <l:FeatureInfoRadius>-1</l:FeatureInfoRadius>
+    </l:LayerOptions>    
     <TileDataSet tileStoreId="filesystem">filesystem</TileDataSet>
   </TileLayer>
   <TileLayer>
     <l:Name>utah4326</l:Name>
     <d:Title>IT tile layer utah4326</d:Title>
+    <l:LayerOptions>
+      <l:FeatureInfoRadius>-1</l:FeatureInfoRadius>
+    </l:LayerOptions>    
     <TileDataSet tileStoreId="utah4326">utah4326</TileDataSet>
   </TileLayer>
   <TileLayer>
@@ -53,6 +67,9 @@
   <TileLayer>
     <l:Name>remotewmts</l:Name>
     <d:Title>IT tile layer remotewmts</d:Title>
+    <l:LayerOptions>
+      <l:FeatureInfoRadius>-1</l:FeatureInfoRadius>
+    </l:LayerOptions>
     <TileDataSet tileStoreId="remotewmts">satellite</TileDataSet>
   </TileLayer>
 </TileLayers>
