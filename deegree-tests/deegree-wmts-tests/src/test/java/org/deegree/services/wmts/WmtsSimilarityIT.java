@@ -70,15 +70,15 @@ import org.slf4j.Logger;
  */
 
 @RunWith(Parameterized.class)
-public class WMTSIntegrationTest {
+public class WmtsSimilarityIT {
 
-    private static final Logger LOG = getLogger( WMTSIntegrationTest.class );
+    private static final Logger LOG = getLogger( WmtsSimilarityIT.class );
 
     private String request;
 
     private List<byte[]> response;
 
-    public WMTSIntegrationTest( Object wasXml, String request, List<byte[]> response ) {
+    public WmtsSimilarityIT( Object wasXml, String request, List<byte[]> response ) {
         // we only use .kvp for WMTS
         this.request = request;
         this.response = response;
