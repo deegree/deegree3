@@ -193,7 +193,6 @@ Let's have a look at an example:
         <Format>image/png</Format>
         <CRS>EPSG:4326</CRS>
       </RequestParams>
-      <GetFeatureInfo enabled="true" />
     </TileDataSet>
   ...
   </RemoteWMSTileStore>
@@ -207,7 +206,6 @@ Let's have a look at an example:
  * The styles parameter must correspond to the layers parameter (works the same like GetMap)
  * The format parameter specifies the image format to request from the WMS
  * The CRS parameter specifies which CRS to use when requesting
-* The get feature info tag can be used to switch off get feature info cascading, default is that get feature info is enabled
 
 ----------------------
 Remote WMTS tile store
