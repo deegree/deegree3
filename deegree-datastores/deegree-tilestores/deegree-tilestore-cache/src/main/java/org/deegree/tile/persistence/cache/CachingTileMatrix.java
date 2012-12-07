@@ -42,9 +42,7 @@
 package org.deegree.tile.persistence.cache;
 
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 
-import org.apache.commons.io.IOUtils;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
@@ -60,11 +58,11 @@ import org.deegree.tile.TileMatrix;
 
 public class CachingTileMatrix implements TileDataLevel {
 
-    private TileDataLevel tileMatrix;
+    private final TileDataLevel tileMatrix;
 
-    private Cache cache;
+    private final Cache cache;
 
-    private String identifier;
+    private final String identifier;
 
     public CachingTileMatrix( TileDataLevel tileMatrix, Cache cache ) {
         this.tileMatrix = tileMatrix;
@@ -81,18 +79,7 @@ public class CachingTileMatrix implements TileDataLevel {
     public Tile getTile( long x, long y ) {
         Tile tile = tileMatrix.getTile( x, y );
         String key = identifier + "_" + x + "_" + y;
-        Element elem = cache.get( key );
-        byte[] bs = elem == null ? null : (byte[]) elem.getValue();
-        if ( bs != null ) {
-            return new CachedTile( bs, tile.getEnvelope() );
-        }
-        try {
-            bs = IOUtils.toByteArray( tile.getAsStream() );
-            cache.put( new Element( key, bs ) );
-            return new CachedTile( bs, tile.getEnvelope() );
-        } catch ( Throwable e ) {
-            return tile;
-        }
+        return new CachedTile( tile, cache, key );
     }
 
 }

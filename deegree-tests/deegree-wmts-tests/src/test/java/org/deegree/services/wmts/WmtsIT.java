@@ -45,10 +45,17 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.ows.metadata.operation.Operation;
+import org.deegree.commons.utils.net.DURL;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidator;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;
@@ -65,9 +72,11 @@ import org.junit.Test;
  */
 public class WmtsIT {
 
-    private static final String ENDPOINT_BASE_URL = "http://localhost:" + 8080 + "/deegree-webservices/services?";
+    private static final String ENDPOINT_BASE_URL = "http://localhost:" + System.getProperty( "portnumber" )
+                                                    + "/deegree-wmts-tests/services?";
 
-    private static final String ENDPOINT_URL = "http://localhost:" + 8080 + "/deegree-webservices/services?"
+    private static final String ENDPOINT_URL = "http://localhost:" + System.getProperty( "portnumber" )
+                                               + "/deegree-wmts-tests/services?"
                                                + "service=WMTS&request=GetCapabilities&version=1.0.0";
 
     @Test
@@ -98,8 +107,11 @@ public class WmtsIT {
 
     @Test
     public void testGetFeatureInfoNonGfiLayer()
-                            throws MalformedURLException, IOException {
-        doGetFeatureInfo( "pyramid", "utah", "57142.857142857145", "text/html" );
+                            throws MalformedURLException, IOException, XMLStreamException, FactoryConfigurationError {
+        InputStream response = doGetFeatureInfo( "pyramid", "utah", "57142.857142857145", "text/html" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( response );
+        XMLStreamUtils.skipStartDocument( xmlStream );
+        Assert.assertEquals( new QName( CommonNamespaces.OWS_11_NS, "ExceptionReport" ), xmlStream.getName() );
     }
 
     @Test
@@ -110,10 +122,10 @@ public class WmtsIT {
         String[] schemaUrls = new String[2];
         schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
         schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
-        List<String> errors = SchemaValidator.validate( response, schemaUrls );        
+        List<String> errors = SchemaValidator.validate( response, schemaUrls );
         Assert.assertEquals( 0, errors.size() );
     }
-    
+
     @Test
     public void testGetFeatureInfoRemoteWmsCachedGmlOutputValid()
                             throws MalformedURLException, IOException {
@@ -122,7 +134,7 @@ public class WmtsIT {
         String[] schemaUrls = new String[2];
         schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
         schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
-        List<String> errors = SchemaValidator.validate( response, schemaUrls );        
+        List<String> errors = SchemaValidator.validate( response, schemaUrls );
         Assert.assertEquals( 0, errors.size() );
     }
 
@@ -138,7 +150,7 @@ public class WmtsIT {
 
     private InputStream performGetRequest( String request )
                             throws MalformedURLException, IOException {
-        return new URL( ENDPOINT_BASE_URL + request ).openStream();
+        return new DURL( ENDPOINT_BASE_URL + request ).openStream();
     }
 
     private WMTSClient initClient() {

@@ -50,6 +50,10 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
+
+import org.apache.commons.io.IOUtils;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
@@ -60,6 +64,7 @@ import org.slf4j.Logger;
  * A {@link Tile} that is backed by a {@link CachingTileStore}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
@@ -68,23 +73,27 @@ public class CachedTile implements Tile {
 
     private static final Logger LOG = getLogger( CachedTile.class );
 
-    private byte[] bs;
+    private final Tile tile;
 
-    private Envelope envelope;
+    private final Cache cache;
 
-    public CachedTile( byte[] bs, Envelope envelope ) {
-        this.bs = bs;
-        this.envelope = envelope;
+    private final String key;
+
+    private byte[] data;
+
+    public CachedTile( Tile tile, Cache cache, String key ) {
+        this.tile = tile;
+        this.cache = cache;
+        this.key = key;
     }
 
     @Override
     public BufferedImage getAsImage()
                             throws TileIOException {
         try {
-            return ImageIO.read( new ByteArrayInputStream( bs ) );
+            return ImageIO.read( new ByteArrayInputStream( getData() ) );
         } catch ( IOException e ) {
             String msg = "Error decoding image from byte array: " + e.getMessage();
-            LOG.debug( msg );
             LOG.trace( msg, e );
             throw new TileIOException( e.getMessage(), e );
         }
@@ -92,17 +101,35 @@ public class CachedTile implements Tile {
 
     @Override
     public InputStream getAsStream() {
-        return new ByteArrayInputStream( bs );
+        return new ByteArrayInputStream( getData() );
     }
 
     @Override
     public Envelope getEnvelope() {
-        return envelope;
+        return tile.getEnvelope();
     }
 
     @Override
     public FeatureCollection getFeatures( int i, int j, int limit )
                             throws UnsupportedOperationException {
-        throw new UnsupportedOperationException( "Feature retrieval is not supported by the CachingTileStore." );
+        return tile.getFeatures( i, j, limit );
+    }
+
+    private synchronized byte[] getData() {
+        if ( data == null ) {
+            Element elem = cache.get( key );
+            if ( elem == null ) {
+                try {
+                    data = IOUtils.toByteArray( tile.getAsStream() );
+                    cache.put( new Element( key, data ) );
+                } catch ( IOException e ) {
+                    LOG.trace( e.getMessage(), e );
+                    throw new TileIOException( e.getMessage(), e );
+                }
+            } else {
+                data = (byte[]) elem.getValue();
+            }
+        }
+        return data;
     }
 }
