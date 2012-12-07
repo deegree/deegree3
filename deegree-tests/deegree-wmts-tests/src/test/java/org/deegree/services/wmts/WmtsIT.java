@@ -42,11 +42,9 @@
 package org.deegree.services.wmts;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -68,7 +66,7 @@ public class WmtsIT {
 
     @Test
     public void testGetCapabilities()
-                            throws MalformedURLException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, IOException {
         String req = base + "?request=GetCapabilities&service=WMTS&version=1.0.0";
         XMLStreamReader in = XMLInputFactory.newInstance().createXMLStreamReader( new URL( req ).openStream() );
         boolean gfiFound = false;
