@@ -114,4 +114,8 @@ class FeatureInfoHandler {
                                     OPERATION_NOT_SUPPORTED );
         }
     }
+
+    public FeatureInfoManager getManager() {
+        return featureInfoManager;
+    }
 }

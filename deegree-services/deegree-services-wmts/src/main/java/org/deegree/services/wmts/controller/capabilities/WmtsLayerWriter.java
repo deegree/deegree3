@@ -116,14 +116,7 @@ public class WmtsLayerWriter extends OWSCapabilitiesXMLAdapter {
         for ( String fmt : fmts ) {
             writeElement( writer, WMTSNS, "Format", fmt );
         }
-        boolean queryable = false;
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            if ( tds.isGetFeaturesSupported() ) {
-                queryable = true;
-                break;
-            }
-        }
-        if ( queryable ) {
+        if ( md.isQueryable() ) {
             for ( String fmt : mgr.getSupportedFormats() ) {
                 writeElement( writer, WMTSNS, "InfoFormat", fmt );
             }

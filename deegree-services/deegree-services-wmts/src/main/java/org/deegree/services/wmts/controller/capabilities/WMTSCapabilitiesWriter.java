@@ -81,11 +81,8 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private static final String INFO_FORMAT_GML_31 = "application/gml+xml; version=3.1";
-    
-    private static final String INFO_FORMAT_HTML = "text/html";
-
     private final XMLStreamWriter writer;
+
     private final ServiceProvider provider;
 
     private final List<Theme> themes;
@@ -247,8 +244,4 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-        }
-        if ( md.isQueryable() ) {
-            writeElement( writer, WMTSNS, "InfoFormat", INFO_FORMAT_GML_31 );
-            writeElement( writer, WMTSNS, "InfoFormat", INFO_FORMAT_HTML );
 }
