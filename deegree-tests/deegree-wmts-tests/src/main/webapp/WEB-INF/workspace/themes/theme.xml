@@ -47,6 +47,11 @@
       <Layer>remotewms_dominant_vegetation</Layer>
     </Theme>    
     <Theme>
+      <Identifier>remotewms_dominant_vegetation_cached</Identifier>
+      <d:Title>IT test layer remotewms (Dominant Vegetation)</d:Title>
+      <Layer>remotewms_dominant_vegetation_cached</Layer>
+    </Theme>    
+    <Theme>
       <Identifier>filesystem</Identifier>
       <d:Title>IT test layer filesystem</d:Title>
       <Layer>filesystem</Layer>
