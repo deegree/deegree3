@@ -94,4 +94,8 @@ class FeatureInfoHandler {
         featureInfoManager.serializeFeatureInfo( params );
     }
 
+    FeatureInfoManager getManager() {
+        return featureInfoManager;
+    }
+
 }

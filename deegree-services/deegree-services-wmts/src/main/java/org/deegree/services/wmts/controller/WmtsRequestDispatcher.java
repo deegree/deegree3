@@ -80,11 +80,11 @@ class WmtsRequestDispatcher {
     WmtsRequestDispatcher( XMLAdapter controllerConf, DeegreeServicesMetadataType mainMetadataConf,
                            DeegreeWorkspace workspace, WmtsBuilder builder, String wmtsId )
                             throws ResourceInitException {
-        capabilitiesHandler = new CapabilitiesHandler( mainMetadataConf, workspace, builder.getMetadataUrlTemplate(),
-                                                       wmtsId, builder.getThemes() );
-        tileHandler = new TileHandler( builder.getThemes() );
         featureInfoHandler = new FeatureInfoHandler( builder.getFeatureInfoFormatsConf(), controllerConf, workspace,
                                                      builder.getThemes() );
+        capabilitiesHandler = new CapabilitiesHandler( mainMetadataConf, workspace, builder.getMetadataUrlTemplate(),
+                                                       wmtsId, builder.getThemes(), featureInfoHandler.getManager() );
+        tileHandler = new TileHandler( builder.getThemes() );
     }
 
     void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map, Version version )
