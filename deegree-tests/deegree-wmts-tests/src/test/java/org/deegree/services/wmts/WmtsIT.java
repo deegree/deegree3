@@ -43,12 +43,16 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.ows.metadata.operation.Operation;
+import org.deegree.commons.xml.schema.SchemaValidator;
+import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -89,9 +93,7 @@ public class WmtsIT {
         WMTSClient client = initClient();
         Layer pyramidLayer = client.getLayer( "remotewms" );
         assertNotNull( pyramidLayer );
-        assertEquals( 2, pyramidLayer.getInfoFormats().size() );
-        assertEquals( "application/gml+xml; version=3.1", pyramidLayer.getInfoFormats().get( 0 ) );
-        assertEquals( "text/html", pyramidLayer.getInfoFormats().get( 1 ) );
+        Assert.assertNotSame( 0, pyramidLayer.getInfoFormats().size() );
     }
 
     @Test
@@ -99,11 +101,29 @@ public class WmtsIT {
                             throws MalformedURLException, IOException {
         doGetFeatureInfo( "pyramid", "utah", "57142.857142857145", "text/html" );
     }
+
+    @Test
+    public void testGetFeatureInfoRemoteWmsGmlOutputValid()
+                            throws MalformedURLException, IOException {
+        InputStream response = doGetFeatureInfo( "remotewms_dominant_vegetation", "utah", "57142.857142857145",
+                                                 "application/gml+xml; version=3.1" );
+        String[] schemaUrls = new String[2];
+        schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
+        schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
+        List<String> errors = SchemaValidator.validate( response, schemaUrls );        
+        Assert.assertEquals( 0, errors.size() );
+    }
     
     @Test
-    public void testGetFeatureInfoRemoteWmsGml()
+    public void testGetFeatureInfoRemoteWmsCachedGmlOutputValid()
                             throws MalformedURLException, IOException {
-        InputStream response = doGetFeatureInfo( "remotewms", "utah", "57142.857142857145", "application/gml+xml; version=3.1" );
+        InputStream response = doGetFeatureInfo( "remotewms_dominant_vegetation_cached", "utah", "57142.857142857145",
+                                                 "application/gml+xml; version=3.1" );
+        String[] schemaUrls = new String[2];
+        schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
+        schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
+        List<String> errors = SchemaValidator.validate( response, schemaUrls );        
+        Assert.assertEquals( 0, errors.size() );
     }
 
     private InputStream doGetFeatureInfo( String layer, String tileMatrixSet, String tileMatrixId, String infoFormat )
