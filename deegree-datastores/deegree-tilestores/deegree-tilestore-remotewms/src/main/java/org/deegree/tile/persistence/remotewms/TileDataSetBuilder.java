@@ -96,14 +96,13 @@ class TileDataSetBuilder {
             }
 
             RequestParams params = cfg.getRequestParams();
-            boolean getFeaturesSupported = cfg.getGetFeatureInfo() == null ? true : cfg.getGetFeatureInfo().isEnabled();
-            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat(), getFeaturesSupported ) );
+            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat() ) );
         }
         return map;
     }
 
     private DefaultTileDataSet buildTileDataSet( RequestParams requestParams, TileMatrixSet tms, WMSClient client,
-                                                 String outputFormat, boolean getFeaturesSupported ) {
+                                                 String outputFormat ) {
         List<String> layers = splitNullSafe( requestParams.getLayers() );
         List<String> styles = splitNullSafe( requestParams.getStyles() );
         String format = requestParams.getFormat();
@@ -118,7 +117,7 @@ class TileDataSetBuilder {
             TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs );
             dataLevels.add( 0, m );
         }
-        return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat, getFeaturesSupported );
+        return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
     }
 
     private static List<String> splitNullSafe( String csv ) {

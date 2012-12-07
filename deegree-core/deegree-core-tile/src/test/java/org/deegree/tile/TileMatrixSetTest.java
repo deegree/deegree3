@@ -90,7 +90,7 @@ public class TileMatrixSetTest extends TestCase {
             when( tm.getTile( 0, 0 ) ).thenReturn( t );
 
             TileMatrixSet metadata = new TileMatrixSet( "default", null, Collections.singletonList( md ), smd );
-            tms = new DefaultTileDataSet( Collections.singletonList( tm ), metadata, "image/png", false );
+            tms = new DefaultTileDataSet( Collections.singletonList( tm ), metadata, "image/png" );
         } catch ( UnknownCRSException e ) {
             throw new RuntimeException( e );
         }

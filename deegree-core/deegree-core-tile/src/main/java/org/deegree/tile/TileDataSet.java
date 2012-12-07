@@ -95,12 +95,5 @@ public interface TileDataSet {
      * @return mime type, never <code>null</code>
      */
     String getNativeImageFormat();
-    
-    /**
-     * Returns whether the retrieval of features is supported.
-     * 
-     * @see {@link Tile#getFeatures(int, int, int)}
-     * @return <code>true</code>, if feature retrieval is supported, <code>false</code> otherwise
-     */
-    boolean isGetFeaturesSupported();
+
 }

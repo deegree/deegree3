@@ -131,7 +131,6 @@ class RemoteWMSTile implements Tile {
 
     @Override
     public FeatureCollection getFeatures( int i, int j, int limit ) {
-
         FeatureCollection fc = null;
         try {
             List<String> layers = new ArrayList<String>();

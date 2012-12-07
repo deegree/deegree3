@@ -121,7 +121,7 @@ public class FileSystemTileStoreProvider implements TileStoreProvider {
 
                 String format = "image/" + layout.getFileType();
 
-                DefaultTileDataSet dataset = new DefaultTileDataSet( list, tms, format, false );
+                DefaultTileDataSet dataset = new DefaultTileDataSet( list, tms, format );
                 layout.setTileMatrixSet( dataset );
                 map.put( id, dataset );
             }

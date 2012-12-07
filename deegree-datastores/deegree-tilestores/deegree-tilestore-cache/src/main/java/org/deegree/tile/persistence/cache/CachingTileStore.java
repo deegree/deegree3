@@ -97,8 +97,7 @@ public class CachingTileStore implements TileStore {
                 list.add( new CachingTileMatrix( tm, cache ) );
             }
             TileDataSet cachingDataset = new DefaultTileDataSet( list, cachedDataset.getTileMatrixSet(),
-                                                                 cachedDataset.getNativeImageFormat(),
-                                                                 cachedDataset.isGetFeaturesSupported() );
+                                                                 cachedDataset.getNativeImageFormat() );
             this.tileMatrixSets.put( id, cachingDataset );
         }
     }
