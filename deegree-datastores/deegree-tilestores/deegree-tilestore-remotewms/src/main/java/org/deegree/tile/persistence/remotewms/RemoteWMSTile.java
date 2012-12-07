@@ -130,8 +130,7 @@ class RemoteWMSTile implements Tile {
     }
 
     @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
+    public FeatureCollection getFeatures( int i, int j, int limit ) {
 
         FeatureCollection fc = null;
         try {
