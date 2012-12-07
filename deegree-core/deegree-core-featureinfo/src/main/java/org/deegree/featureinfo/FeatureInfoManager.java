@@ -143,8 +143,9 @@ public class FeatureInfoManager {
             handlePlainTextOutput( params );
         } else if ( format.equalsIgnoreCase( "text/html" ) ) {
             runTemplate( params.getOutputStream(), null, params.getFeatureCollection(), params.isWithGeometries() );
+        } else {
+            throw new IOException( "FeatureInfo format '" + format + "' is unknown." );   
         }
-        throw new IOException( "FeatureInfo format '" + format + "' is unknown." );
     }
 
     private boolean isGml( String format ) {

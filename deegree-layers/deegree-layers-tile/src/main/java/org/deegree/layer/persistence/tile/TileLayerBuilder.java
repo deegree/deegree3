@@ -132,7 +132,6 @@ class TileLayerBuilder {
             md.setScaleDenominators( p );
         }
         md.setMetadataId( cfg.getMetadataSetId() );
-        md.setQueryable( false );
         return new TileLayer( md, datasets );
     }
 
