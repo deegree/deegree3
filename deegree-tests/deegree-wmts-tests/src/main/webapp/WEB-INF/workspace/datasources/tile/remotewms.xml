@@ -4,8 +4,6 @@
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewms http://schemas.deegree.org/datasource/tile/remotewms/3.2.0/remotewms.xsd"
   configVersion="3.2.0">
 
-
-  <!-- [1]: Id of the remote OWS to connect to (must be a WMS instance) -->
   <RemoteWMSId>utah</RemoteWMSId>
 
   <TileDataSet>
@@ -13,11 +11,20 @@
     <TileMatrixSetId>utah</TileMatrixSetId>
     <OutputFormat>image/png</OutputFormat>
     <RequestParams>
-      <!-- [1] Comma-separated list of layer names -->
       <Layers>SatelliteProvo,DominantVegetation</Layers>
-      <!-- [0..1] Comma-separated list of styles -->
       <Styles>default,default</Styles>
-      <!-- [1] Image format -->
+      <Format>image/png</Format>
+      <CRS>EPSG:26912</CRS>
+    </RequestParams>
+  </TileDataSet>
+
+  <TileDataSet>
+    <Identifier>remotewms_dominant_vegetation</Identifier>
+    <TileMatrixSetId>utah</TileMatrixSetId>
+    <OutputFormat>image/png</OutputFormat>
+    <RequestParams>
+      <Layers>DominantVegetation</Layers>
+      <Styles>default</Styles>
       <Format>image/png</Format>
       <CRS>EPSG:26912</CRS>
     </RequestParams>

@@ -106,12 +106,6 @@ public class WmtsIT {
         InputStream response = doGetFeatureInfo( "remotewms", "utah", "57142.857142857145", "application/gml+xml; version=3.1" );
     }
 
-    @Test
-    public void testGetFeatureInfoRemoteWmsHtml()
-                            throws MalformedURLException, IOException {
-        InputStream response = doGetFeatureInfo( "remotewms", "utah", "57142.857142857145", "text/html" );
-    }   
-
     private InputStream doGetFeatureInfo( String layer, String tileMatrixSet, String tileMatrixId, String infoFormat )
                             throws MalformedURLException, IOException {
         String request = "service=WMTS&version=1.0.0&request=GetFeatureInfo&style=default&tilerow=1&tilecol=1&i=1&j=1";

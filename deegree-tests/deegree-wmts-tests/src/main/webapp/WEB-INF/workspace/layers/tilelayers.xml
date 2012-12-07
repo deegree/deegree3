@@ -44,6 +44,11 @@
     <TileDataSet tileStoreId="remotewms_cache">remotewms</TileDataSet>
   </TileLayer>
   <TileLayer>
+    <l:Name>remotewms_dominant_vegetation</l:Name>
+    <d:Title>IT tile layer remotewms dominant vegetation</d:Title>
+    <TileDataSet tileStoreId="remotewms">remotewms_dominant_vegetation</TileDataSet>
+  </TileLayer>  
+  <TileLayer>
     <l:Name>filesystem</l:Name>
     <d:Title>IT tile layer filesystem</d:Title>
     <l:LayerOptions>
