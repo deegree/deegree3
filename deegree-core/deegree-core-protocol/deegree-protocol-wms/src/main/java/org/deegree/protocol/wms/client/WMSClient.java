@@ -995,4 +995,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     public OMElement getExtendedCapabilities( String prefix, String localName, String namespaceUri ) {
         return capaDoc.getExtendedCapabilities( prefix, localName, namespaceUri );
     }
+
+    public int getConnectTimeout() {
+        return connectionTimeout;
+    }
+
+    public int getReadTimeout() {
+        return requestTimeout;
+    }
+
 }

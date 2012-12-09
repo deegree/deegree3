@@ -46,6 +46,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +121,12 @@ class RemoteWMSTile implements Tile {
                 return new ByteArrayInputStream( out.toByteArray() );
             }
             return client.getMap( gm );
+        } catch ( SocketTimeoutException e ) {
+            String msg = "Error performing GetMap request, read timed out (timeout configured is "
+                         + client.getReadTimeout() + " seconds).";
+            throw new TileIOException( msg );
+        } catch ( UnknownHostException e ) {
+            throw new TileIOException( "Error performing GetMap request, host could not be resolved: " + e.getMessage() );
         } catch ( IOException e ) {
             throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
         }
@@ -143,6 +151,12 @@ class RemoteWMSTile implements Tile {
             ICRS crs = gm.getCoordinateSystem();
             GetFeatureInfo request = new GetFeatureInfo( layers, width, height, i, j, bbox, crs, limit );
             fc = client.doGetFeatureInfo( request, null );
+        } catch ( SocketTimeoutException e ) {
+            String msg = "Error performing GetMap request, read timed out (timeout configured is "
+                         + client.getReadTimeout() + " seconds).";
+            throw new TileIOException( msg );
+        } catch ( UnknownHostException e ) {
+            throw new TileIOException( "Error performing GetMap request, host could not be resolved: " + e.getMessage() );
         } catch ( Exception e ) {
             String msg = "Error executing GetFeatureInfo request on remote server: " + e.getMessage();
             throw new RuntimeException( msg, e );
