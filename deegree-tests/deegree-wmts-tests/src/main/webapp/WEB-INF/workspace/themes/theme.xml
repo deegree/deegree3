@@ -71,6 +71,11 @@
       <d:Title>IT test layer remotewmts</d:Title>
       <Layer>remotewmts</Layer>
     </Theme>
+    <Theme>
+      <Identifier>faulty</Identifier>
+      <d:Title>IT test layer faulty config</d:Title>
+      <Layer>faulty</Layer>
+    </Theme>
   </Theme>
 
 </Themes>

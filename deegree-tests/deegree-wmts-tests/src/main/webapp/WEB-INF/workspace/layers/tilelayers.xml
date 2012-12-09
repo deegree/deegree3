@@ -80,4 +80,9 @@
     </l:LayerOptions>
     <TileDataSet tileStoreId="remotewmts">satellite</TileDataSet>
   </TileLayer>
+  <TileLayer>
+    <l:Name>faulty</l:Name>
+    <d:Title>IT tile layer remotewms broken config</d:Title>
+    <TileDataSet tileStoreId="faulty">faulty</TileDataSet>
+  </TileLayer>
 </TileLayers>
