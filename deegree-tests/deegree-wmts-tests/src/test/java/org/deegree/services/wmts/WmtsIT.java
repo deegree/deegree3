@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts;
 
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.OWS_11_NS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -48,6 +50,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -56,6 +59,7 @@ import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;
@@ -138,6 +142,34 @@ public class WmtsIT {
         Assert.assertEquals( 0, errors.size() );
     }
 
+    @Test
+    public void testGetTileFaultyLayer()
+                            throws MalformedURLException, IOException, XMLStreamException {
+        String req = "SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=faulty&STYLE=default&TILEMATRIXSET=utah&"
+                     + "TILEMATRIX=28571.428571428572&TILEROW=1&TILECOL=1&FORMAT=image%2Fpng";
+        checkException( req );
+    }
+
+    @Test
+    public void testGetFeatureInfoFaultyLayer()
+                            throws MalformedURLException, IOException, XMLStreamException {
+        String req = "SERVICE=WMTS&REQUEST=GetFeatureInfo&VERSION=1.0.0&LAYER=faulty&STYLE=default&TILEMATRIXSET=utah&"
+                     + "TILEMATRIX=28571.428571428572&TILEROW=1&TILECOL=1&FORMAT=image%2Fpng&"
+                     + "infoformat=text/html&i=10&j=10";
+        checkException( req );
+    }
+
+    private void checkException( String req )
+                            throws MalformedURLException, IOException, XMLStreamException {
+        InputStream ins = performGetRequest( req );
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        XMLStreamReader in = fac.createXMLStreamReader( ins );
+        XMLStreamUtils.skipStartDocument( in );
+        in.require( START_ELEMENT, OWS_11_NS, "ExceptionReport" );
+        in.nextTag();
+        in.require( START_ELEMENT, OWS_11_NS, "Exception" );
+    }
+
     private InputStream doGetFeatureInfo( String layer, String tileMatrixSet, String tileMatrixId, String infoFormat )
                             throws MalformedURLException, IOException {
         String request = "service=WMTS&version=1.0.0&request=GetFeatureInfo&style=default&tilerow=1&tilecol=1&i=1&j=1";
@@ -160,4 +192,5 @@ public class WmtsIT {
             throw new RuntimeException( "Unable to initialize WMTSClient: " + t.getMessage(), t );
         }
     }
+
 }
