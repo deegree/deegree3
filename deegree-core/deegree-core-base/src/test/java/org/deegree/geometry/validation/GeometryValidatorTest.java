@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.validation;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.io.IOException;
 import java.net.URL;
@@ -50,18 +51,20 @@ import junit.framework.Assert;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLVersion;
+import org.deegree.geometry.validation.event.CurveDiscontinuity;
+import org.deegree.geometry.validation.event.CurveSelfIntersection;
+import org.deegree.geometry.validation.event.ExteriorRingOrientation;
+import org.deegree.geometry.validation.event.GeometryValidationEvent;
+import org.deegree.geometry.validation.event.InteriorRingIntersectsExterior;
+import org.deegree.geometry.validation.event.InteriorRingOrientation;
+import org.deegree.geometry.validation.event.InteriorRingOutsideExterior;
+import org.deegree.geometry.validation.event.InteriorRingsIntersect;
+import org.deegree.geometry.validation.event.RingNotClosed;
 import org.deegree.gml.geometry.GML3GeometryReaderTest;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
- * Testcases that check the correct determination of topological errors by the {@link GeometryValidator}.
+ * Testcases that check the correct determination of topological properties by the {@link GeometryValidator}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -84,15 +87,15 @@ public class GeometryValidatorTest {
     }
 
     @Test
-    public void validateInvalidCurve()
+    public void validateCurveDiscontinuity()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Curve_discontinuity.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
         Assert.assertEquals( 1, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.CURVE_DISCONTINUITY, eventHandler.getEvents().get( 0 ) );
+        Assert.assertEquals( CurveDiscontinuity.class, eventHandler.getEvents().get( 0 ).getClass() );
     }
 
     @Test
@@ -107,42 +110,40 @@ public class GeometryValidatorTest {
     }
 
     @Test
-    public void validateInvalidRing()
+    public void validateRingNotClosed()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Ring_not_closed.gml" );
-        Assert.assertFalse( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
+        Assert.assertTrue( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
         Assert.assertEquals( 1, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.RING_NOT_CLOSED, eventHandler.getEvents().get( 0 ) );
+        Assert.assertEquals( RingNotClosed.class, eventHandler.getEvents().get( 0 ).getClass() );
     }
 
     @Test
-    public void validateInvalidRing2()
+    public void validateRingSelfIntersection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Ring_self_intersection.gml" );
-        Assert.assertFalse( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
-        Assert.assertEquals( 2, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.CURVE_SELF_INTERSECTION, eventHandler.getEvents().get( 0 ) );
-        Assert.assertEquals( ValidationEventType.RING_SELF_INTERSECTION, eventHandler.getEvents().get( 1 ) );
+        Assert.assertTrue( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
+        Assert.assertEquals( 1, eventHandler.getEvents().size() );
+        Assert.assertEquals( CurveSelfIntersection.class, eventHandler.getEvents().get( 0 ).getClass() );
     }
 
     @Test
-    public void validateInvalidRing3()
+    public void validateInvalidRingNotClosedAndSelfIntersection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Ring_not_closed_and_self_intersection.gml" );
-        Assert.assertFalse( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
-        Assert.assertEquals( 3, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.CURVE_SELF_INTERSECTION, eventHandler.getEvents().get( 0 ) );
-        Assert.assertEquals( ValidationEventType.RING_SELF_INTERSECTION, eventHandler.getEvents().get( 1 ) );
-        Assert.assertEquals( ValidationEventType.RING_NOT_CLOSED, eventHandler.getEvents().get( 2 ) );
+        Assert.assertTrue( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
+        Assert.assertEquals( 2, eventHandler.getEvents().size() );
+        Assert.assertEquals( CurveSelfIntersection.class, eventHandler.getEvents().get( 0 ).getClass() );
+        Assert.assertEquals( RingNotClosed.class, eventHandler.getEvents().get( 1 ).getClass() );
     }
 
     @Test
@@ -153,236 +154,158 @@ public class GeometryValidatorTest {
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "Polygon.gml" );
         Assert.assertTrue( validator.validateGeometry( geom ) );
-        Assert.assertTrue( eventHandler.getEvents().isEmpty() );
+        Assert.assertEquals( 3, eventHandler.getEvents().size() );
+        Assert.assertFalse( ( (ExteriorRingOrientation) eventHandler.getEvents().get( 0 ) ).isClockwise() );
+        Assert.assertTrue( ( (InteriorRingOrientation) eventHandler.getEvents().get( 1 ) ).isClockwise() );
+        Assert.assertTrue( ( (InteriorRingOrientation) eventHandler.getEvents().get( 2 ) ).isClockwise() );
     }
 
     @Test
-    public void validateInvalidPolygon1()
+    public void validatePolygonExteriorClockwise()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_exterior_clockwise.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( 1, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.SURFACE_EXTERIOR_RING_CW, eventHandler.getEvents().get( 0 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 3, eventHandler.getEvents().size() );
+        Assert.assertTrue( ( (ExteriorRingOrientation) eventHandler.getEvents().get( 0 ) ).isClockwise() );
+        Assert.assertTrue( ( (InteriorRingOrientation) eventHandler.getEvents().get( 1 ) ).isClockwise() );
+        Assert.assertTrue( ( (InteriorRingOrientation) eventHandler.getEvents().get( 2 ) ).isClockwise() );
     }
 
     @Test
-    public void validateInvalidPolygon2()
+    public void validatePolygonInteriorsCounterClockwise()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_counterclockwise.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( 2, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_CCW, eventHandler.getEvents().get( 0 ) );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_CCW, eventHandler.getEvents().get( 1 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 3, eventHandler.getEvents().size() );
+        Assert.assertFalse( ( (ExteriorRingOrientation) eventHandler.getEvents().get( 0 ) ).isClockwise() );
+        Assert.assertFalse( ( (InteriorRingOrientation) eventHandler.getEvents().get( 1 ) ).isClockwise() );
+        Assert.assertFalse( ( (InteriorRingOrientation) eventHandler.getEvents().get( 2 ) ).isClockwise() );
     }
 
     @Test
-    public void validateInvalidPolygon3()
+    public void validatePolygonExteriorNotClosed()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_exterior_not_closed.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
         Assert.assertEquals( 1, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.RING_NOT_CLOSED, eventHandler.getEvents().get( 0 ) );
+        Assert.assertEquals( RingNotClosed.class, eventHandler.getEvents().get( 0 ).getClass() );
     }
 
     @Test
-    public void validateInvalidPolygon4()
+    public void validatePolygonInteriorOutsideExterior()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_outside_exterior.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( 1, eventHandler.getEvents().size() );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_OUTSIDE_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 3, eventHandler.getEvents().size() );
+        Assert.assertEquals( InteriorRingOutsideExterior.class, eventHandler.getEvents().get( 2 ).getClass() );
     }
 
     @Test
-    public void validateInvalidPolygon5()
+    public void validatePolygonInteriorsTouch()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_touch.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT, eventHandler.getEvents().get( 0 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 4, eventHandler.getEvents().size() );
+        InteriorRingsIntersect event = (InteriorRingsIntersect) eventHandler.getEvents().get( 3 );
+        Assert.assertTrue( event.isSinglePoint() );
     }
 
     @Test
-    public void validateInvalidPolygon6()
+    public void validateInvalidPolygonInteriorsIntersect()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_intersect.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT, eventHandler.getEvents().get( 0 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 4, eventHandler.getEvents().size() );
+        Assert.assertEquals( InteriorRingsIntersect.class, eventHandler.getEvents().get( 3 ).getClass() );
     }
 
     @Test
-    public void validateInvalidPolygon7()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
-        GeometryValidator validator = new GeometryValidator( eventHandler );
-        Geometry geom = parseGeometry( "invalid/Polygon_interior_outside_exterior.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_OUTSIDE_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );
-    }
-
-    @Test
-    public void validateInvalidPolygon8()
+    public void validatePolygonInteriorTouchesExterior()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_touches_exterior.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 4, eventHandler.getEvents().size() );
+        InteriorRingIntersectsExterior intersectionEvent = (InteriorRingIntersectsExterior) eventHandler.getEvents().get( 3 );
+        Assert.assertTrue( intersectionEvent.isSinglePoint() );
     }
 
     @Test
-    public void validateInvalidPolygon9()
+    public void validatePolygonInteriorIntersectsExterior()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_intersects_exterior.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
-        Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        InteriorRingIntersectsExterior intersectionEvent = (InteriorRingIntersectsExterior) eventHandler.getEvents().get( 3 );
+        Assert.assertFalse( intersectionEvent.isSinglePoint() );        
+    }
+    
+    @Test
+    public void validatePolygonInteriorIntersectsExteriorSinglePointOnly()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
+        GeometryValidator validator = new GeometryValidator( eventHandler );
+        Geometry geom = parseGeometry( "Polygon_interior_intersects_exterior_single_point_only.gml" );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        InteriorRingIntersectsExterior intersectionEvent = (InteriorRingIntersectsExterior) eventHandler.getEvents().get( 2 );
+        Assert.assertTrue( intersectionEvent.isSinglePoint() );        
     }
 
+    @Test
+    public void validatePolygonInteriorIntersectsExteriorTwoPoints()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
+        GeometryValidator validator = new GeometryValidator( eventHandler );
+        Geometry geom = parseGeometry( "Polygon_interior_intersects_exterior_two_points.gml" );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        InteriorRingIntersectsExterior intersectionEvent = (InteriorRingIntersectsExterior) eventHandler.getEvents().get( 2 );
+        Assert.assertFalse( intersectionEvent.isSinglePoint() );        
+    }
+    
     private Geometry parseGeometry( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         URL docURL = GML3GeometryReaderTest.class.getResource( BASE_DIR + fileName );
-        return GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL ).readGeometry();
+        return createGMLStreamReader( GML_31, docURL ).readGeometry();
     }
 }
 
 class DummyValidationEventHandler implements GeometryValidationEventHandler {
 
-    private static final Logger LOG = getLogger( DummyValidationEventHandler.class );
-
-    private List<ValidationEventType> events = new ArrayList<ValidationEventType>();
+    private final List<GeometryValidationEvent> events = new ArrayList<GeometryValidationEvent>();
 
     @Override
-    public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.CURVE_DISCONTINUITY );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
+    public boolean fireEvent( GeometryValidationEvent event ) {
+        events.add( event );
+        return true;
     }
 
-    @Override
-    public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.CURVE_DUPLICATE_POINT );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.CURVE_SELF_INTERSECTION );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean exteriorRingCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_EXTERIOR_RING_CW );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingCCW( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RING_CCW );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, Point location,
-                                                   List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RING_OUTSIDE_EXTERIOR );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, Point lcation,
-                                                List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RING_TOUCHES_EXTERIOR );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
-                                           List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
-                                       List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_TOUCH );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx,
-                                        List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_NESTED );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean ringNotClosed( Ring ring, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.RING_NOT_CLOSED );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    @Override
-    public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles ) {
-        events.add( ValidationEventType.RING_SELF_INTERSECTION );
-        printAffectedGeometryParticles( affectedGeometryParticles );
-        return false;
-    }
-
-    List<ValidationEventType> getEvents() {
+    List<GeometryValidationEvent> getEvents() {
         return events;
     }
 
-    private void printAffectedGeometryParticles( List<Object> affectedGeometryParticles ) {
-        String indent = "";
-        for ( Object object : affectedGeometryParticles ) {
-            LOG.debug( indent + "-" + object );
-            indent += "  ";
-        }
-    }
 }
