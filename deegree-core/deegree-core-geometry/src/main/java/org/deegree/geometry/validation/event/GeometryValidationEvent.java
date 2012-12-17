@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2012 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,32 +33,27 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+package org.deegree.geometry.validation.event;
 
-package org.deegree.geometry.validation;
+import java.util.List;
 
-import org.deegree.geometry.validation.event.GeometryValidationEvent;
+import org.deegree.geometry.validation.GeometryValidator;
 
 /**
- * Implementations of this interface are passed to {@link GeometryValidator} on construction.
+ * An event that indicates that the {@link GeometryValidator} detected a topological property.
  * 
- * @see GeometryValidator
- * @see GeometryValidationEvent
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public interface GeometryValidationEventHandler {
+public interface GeometryValidationEvent {
 
     /**
-     * Called when a {@link GeometryValidationEvent} occurs.
+     * Returns the hierarchy of affected geometry particles, bottom-up.
      * 
-     * @param event
-     *            validation event, never <code>null</code>
-     * @return <code>true</code>, if the event should indicate that the geometry is invalid, otherwise
-     *         <code>false</code>
+     * @return hierarchy of affected geometry particles, never <code>null</code>
      */
-    public boolean fireEvent( GeometryValidationEvent event );
+    List<Object> getGeometryParticleHierarchy();
 
 }
