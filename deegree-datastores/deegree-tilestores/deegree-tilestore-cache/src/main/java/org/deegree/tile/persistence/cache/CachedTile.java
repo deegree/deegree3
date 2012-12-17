@@ -120,7 +120,12 @@ public class CachedTile implements Tile {
             Element elem = cache.get( key );
             if ( elem == null ) {
                 try {
-                    data = IOUtils.toByteArray( tile.getAsStream() );
+                    InputStream is = tile.getAsStream();
+                    if ( is == null ) {
+                        data = new byte[] {};
+                    } else {
+                        data = IOUtils.toByteArray( is );
+                    }
                     cache.put( new Element( key, data ) );
                 } catch ( IOException e ) {
                     LOG.trace( e.getMessage(), e );

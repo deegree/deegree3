@@ -914,6 +914,8 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         conn.connect();
         LOG.debug( "Connected." );
 
+        System.out.println(conn.getHeaderFields());
+        
         return conn.getInputStream();
     }
 
