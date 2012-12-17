@@ -38,6 +38,7 @@ package org.deegree.protocol.wms.client;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.abs;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
@@ -81,11 +82,13 @@ import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -118,6 +121,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.layer.LayerRef;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
+import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
@@ -865,7 +869,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
     }
 
     public InputStream getMap( GetMap getMap )
-                            throws IOException {
+                            throws IOException, OWSException {
         Map<String, String> map = new HashMap<String, String>();
         map.put( "request", "GetMap" );
         map.put( "version", wmsVersion.toString() );
@@ -914,8 +918,17 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         conn.connect();
         LOG.debug( "Connected." );
 
-        System.out.println(conn.getHeaderFields());
-        
+        String fld = conn.getHeaderField( "Content-Type" );
+        if ( fld != null && !( fld.startsWith( getMap.getFormat() ) || fld.startsWith( "image" ) ) ) {
+            XMLInputFactory fac = XMLInputFactory.newInstance();
+            try {
+                OWSExceptionReport rep = OWSExceptionReader.parseExceptionReport( fac.createXMLStreamReader( conn.getInputStream() ) );
+                throw rep.getExceptions().get( 0 );
+            } catch ( Throwable e ) {
+                throw new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE );
+            }
+        }
+
         return conn.getInputStream();
     }
 

@@ -54,6 +54,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
@@ -134,6 +135,8 @@ class RemoteWMSTile implements Tile {
         } catch ( UnknownHostException e ) {
             throw new TileIOException( "Error performing GetMap request, host could not be resolved: " + e.getMessage() );
         } catch ( IOException e ) {
+            throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
+        } catch ( OWSException e ) {
             throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
         }
     }
