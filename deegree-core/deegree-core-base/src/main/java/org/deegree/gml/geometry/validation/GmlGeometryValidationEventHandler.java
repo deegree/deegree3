@@ -1,10 +1,10 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Copyright (C) 2001-2012 by:
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,21 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.geometry.validation;
+ ----------------------------------------------------------------------------*/
+package org.deegree.gml.geometry.validation;
 
-enum ValidationEventType {
-    CURVE_DISCONTINUITY,
-    CURVE_DUPLICATE_POINT,
-    CURVE_SELF_INTERSECTION,
-    RING_NOT_CLOSED,
-    RING_SELF_INTERSECTION,
-    SURFACE_EXTERIOR_RING_CW,
-    SURFACE_INTERIOR_RING_CCW,
-    SURFACE_INTERIOR_RING_OUTSIDE_EXTERIOR,
-    SURFACE_INTERIOR_RING_TOUCHES_EXTERIOR,
-    SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR,
-    SURFACE_INTERIOR_RINGS_TOUCH,
-    SURFACE_INTERIOR_RINGS_NESTED,
-    SURFACE_INTERIOR_RINGS_INTERSECT
+/**
+ * Implementations of this interface are passed to {@link GmlStreamGeometryValidator} on construction.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public interface GmlGeometryValidationEventHandler {
+
+    void parsingError( GmlElementIdentifier geometryElement, Exception e );
+
+    boolean topologicalEvent( GmlGeometryValidationEvent event );
+
 }
