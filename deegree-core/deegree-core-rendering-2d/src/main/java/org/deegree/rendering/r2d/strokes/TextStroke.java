@@ -544,8 +544,8 @@ public class TextStroke implements Stroke {
     private Shape handleUpsideDown( Shape shape ) {
         if ( linePlacement.preventUpsideDown && isUpsideDown( shape ) ) {
             final Shape originalShape = shape;
-            shape = (Shape) Proxy.newProxyInstance( getClass().getClassLoader(), new Class[] { Shape.class },
-                                                    new InvocationHandler() {
+            shape = (Shape) Proxy.newProxyInstance( Thread.currentThread().getContextClassLoader(),
+                                                    new Class[] { Shape.class }, new InvocationHandler() {
 
                                                         @Override
                                                         public Object invoke( Object proxy, Method method, Object[] args )
