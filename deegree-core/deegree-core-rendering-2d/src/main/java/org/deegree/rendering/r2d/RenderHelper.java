@@ -180,7 +180,7 @@ public class RenderHelper {
         double scale = 0;
 
         if ( crs == null ) {
-            throw new RuntimeException( "Invalid crs: " + crs );
+            throw new IllegalArgumentException( "Null crs when trying to calculate scale." );
         }
 
         if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
