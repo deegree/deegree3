@@ -56,7 +56,6 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
