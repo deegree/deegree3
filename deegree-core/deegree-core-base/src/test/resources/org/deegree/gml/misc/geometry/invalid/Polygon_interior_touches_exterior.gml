@@ -12,7 +12,7 @@
 	</interior>	
 	<interior>
 		<LinearRing>
-			<posList>9 1 9 2 10.0 2 10.0 1 9 1</posList>
+			<posList>9 1 9 2 10.0 1 9 1</posList>
 		</LinearRing>
 	</interior>
 </Polygon>
