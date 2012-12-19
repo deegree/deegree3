@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
@@ -75,12 +74,6 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 
     private static final Logger LOG = LoggerFactory.getLogger( ModuleInfo.class );
 
-    private static Collection<ModuleInfo> modulesInfo = Collections.emptyList();
-
-    private final URL classpath;
-
-    private final String groupId;
-
     private final String artifactId;
 
     private final String version;
@@ -91,28 +84,12 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 
     private final String buildBy;
 
-    private ModuleInfo( URL classpath, String groupId, String artifactId, String version, String scmRevision,
-                        String buildDate, String buildBy ) {
-        this.classpath = classpath;
-        this.groupId = groupId;
+    private ModuleInfo( String artifactId, String version, String scmRevision, String buildDate, String buildBy ) {
         this.artifactId = artifactId;
         this.version = version;
         this.scmRevision = scmRevision;
         this.buildDate = buildDate;
         this.buildBy = buildBy;
-    }
-
-    /**
-     * Returns the URL of the module's classpath.
-     * 
-     * @return url, never <code>null</code>
-     */
-    public URL getClasspath() {
-        return classpath;
-    }
-
-    public String getGroupId() {
-        return groupId;
     }
 
     public String getArtifactId() {
@@ -126,31 +103,6 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
      */
     public String getVersion() {
         return version;
-    }
-
-    /**
-     * Returns the date string when the current build was created.
-     * 
-     * @return the date as String
-     */
-    public String getBuildDate() {
-        return buildDate;
-    }
-
-    /**
-     * Returns the name of the builder.
-     * 
-     * @return the name of the builder
-     */
-    public String getBuildBy() {
-        return buildBy;
-    }
-
-    /**
-     * @return the svn revision number
-     */
-    public String getSvnRevision() {
-        return scmRevision;
     }
 
     /**
@@ -216,7 +168,6 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 String buildArtifactId = props.getProperty( "build.artifactId" );
                 String buildDate = props.getProperty( "build.date" );
                 String buildRev = props.getProperty( "build.svnrev" );
-                String pomGroupId = null;
                 String pomVersion = null;
 
                 resources = r.getResources( Pattern.compile( "pom\\.properties" ) );
@@ -232,14 +183,12 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                             LOG.warn( "ArtifactId mismatch for module on path: " + classpathURL
                                       + " (buildinfo.properties vs. pom.properties)." );
                         }
-                        pomGroupId = props.getProperty( "groupId" );
                         pomVersion = props.getProperty( "version" );
                     } finally {
                         closeQuietly( pomInputStream );
                     }
                 }
-                moduleInfo = new ModuleInfo( classpathURL, pomGroupId, buildArtifactId, pomVersion, buildRev,
-                                             buildDate, buildBy );
+                moduleInfo = new ModuleInfo( buildArtifactId, pomVersion, buildRev, buildDate, buildBy );
             } finally {
                 closeQuietly( buildInfoStream );
             }
@@ -272,7 +221,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
             sb.append( "-" );
             sb.append( version );
         }
-        sb.append( " (svn revision " );
+        sb.append( " (git commit " );
         sb.append( scmRevision );
         sb.append( " build@" );
         sb.append( buildDate );

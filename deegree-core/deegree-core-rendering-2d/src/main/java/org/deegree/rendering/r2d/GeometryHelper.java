@@ -135,7 +135,7 @@ class GeometryHelper {
             ICRS crs = null;
             try {
                 crs = ( (Geometry) g ).getCoordinateSystem();
-                if ( transformer.equals( crs ) ) {
+                if ( transformer.getTargetCRS().equals( crs ) ) {
                     return g;
                 }
                 T g2 = transformer.transform( g );

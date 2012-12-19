@@ -622,9 +622,9 @@ public class SymbologyParser {
                 ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decodeBase64( in.getElementText() ) );
                 return new Triple<InputStream, String, Continuation<StringBuffer>>( bis, null, null );
             }
-            if ( format.equalsIgnoreCase( "xml" ) ) {
-                // TODO
-            }
+            // if ( format.equalsIgnoreCase( "xml" ) ) {
+            // // TODO
+            // }
         } else if ( in.isStartElement() ) {
             Location loc = in.getLocation();
             LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -861,11 +861,6 @@ public class SymbologyParser {
 
             if ( in.getLocalName().equals( "Graphic" ) ) {
                 final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
-
-                if ( pair == null ) {
-                    return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name, common.loc,
-                                                         common.line, common.col );
-                }
 
                 baseOrEvaluated.graphic = pair.first;
 
