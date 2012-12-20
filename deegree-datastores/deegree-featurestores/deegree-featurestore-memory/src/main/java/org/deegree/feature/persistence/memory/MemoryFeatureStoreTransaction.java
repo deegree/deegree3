@@ -407,7 +407,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         }
-        feature.setEnvelope( null );
+        feature.setEnvelope( feature.calcEnvelope() );        
         return feature;
     }
 
