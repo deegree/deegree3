@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,10 +65,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.gml.utils.GMLObjectVisitor;
-import org.deegree.gml.utils.GMLObjectWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +85,7 @@ class StoredFeatures {
 
     private final ICRS storageCRS;
 
-    final TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator( );
+    final TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 
     final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
@@ -161,27 +157,9 @@ class StoredFeatures {
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Building spatial index took {} [ms]", elapsed );
 
-        // (re-) build id lookup table
-        begin = System.currentTimeMillis();
-        idToObject.clear();
-        GMLObjectVisitor visitor = new GMLObjectVisitor() {
-
-            @Override
-            public boolean visitGeometry( Geometry geom ) {
-                idToObject.put( geom.getId(), geom );
-                return true;
-            }
-
-            @Override
-            public boolean visitFeature( Feature feature ) {
-                idToObject.put( feature.getId(), feature );
-                return true;
-            }
-        };
-
         for ( FeatureCollection fc : ftToFeatures.values() ) {
             for ( Feature f : fc ) {
-                new GMLObjectWalker( visitor ).traverse( f );
+                idToObject.put( f.getId(), f );
             }
         }
         elapsed = System.currentTimeMillis() - begin;
