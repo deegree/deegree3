@@ -162,6 +162,7 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                             // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
                         } else {
                             f = null;
+                            // Wake reading thread
                             notify();
                         }
                     }
@@ -198,10 +199,11 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                     }
                     try {
                         wait(1000);
-                    } catch(InterruptedException ex) {                        
+                    } catch(InterruptedException ex) {
+                        // Ignore
+                    }
                 }
             }
-        }
         }
 
         private Feature next() {
