@@ -9,11 +9,11 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3.git</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3.git</url>
   </scm>
-
+  
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -27,14 +27,15 @@
     </repository>
   </repositories>
 
+
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <id>latlon-releases</id>
+      <url>http://artefacts.lat-lon/libs-release-local</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>latlon-snapshots</id>
+      <url>http://artefacts.lat-lon/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 
