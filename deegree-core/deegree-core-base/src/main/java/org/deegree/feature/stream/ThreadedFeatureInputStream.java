@@ -151,18 +151,20 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                         if ( f == null ) {
                             f = iter.next();
                         }
+                        synchronized ( this ) {
                         if ( !featureQueue.offer( f ) ) {
                             // wait until we get notified that queue needs to be filled up again
-                            synchronized ( this ) {
-                                // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
-                                sleeping = true;
-                                wait();
-                                sleeping = false;
-                                // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
-                            }
+
+                            // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
+                            sleeping = true;
+                            wait();
+                            sleeping = false;
+                            // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
                         } else {
                             f = null;
+                            notify();
                         }
+                    }
                     }
                 } catch ( InterruptedException e ) {
                     LOG.debug( "Got interrupted." );
@@ -185,16 +187,21 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
             if ( fill > 0 ) {
                 return true;
             }
-            while ( true ) {
-                // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
-                if ( finished && featureQueue.isEmpty() ) {
-                    return false;
+            synchronized (this) {
+                while ( true ) {
+                    // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
+                    if ( finished && featureQueue.isEmpty() ) {
+                        return false;
+                    }
+                    if ( !featureQueue.isEmpty() ) {
+                        return true;
+                    }
+                    try {
+                        wait(1000);
+                    } catch(InterruptedException ex) {                        
                 }
-                if ( !featureQueue.isEmpty() ) {
-                    return true;
-                }
-                // TODO what about sleeping here? (but avoid deadlock)
             }
+        }
         }
 
         private Feature next() {
