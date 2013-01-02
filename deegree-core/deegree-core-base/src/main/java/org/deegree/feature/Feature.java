@@ -126,7 +126,7 @@ public interface Feature extends GMLObject {
     /**
      * Returns the envelope aggregated from all geometry/envelope properties of the feature.
      * 
-     * @return envelope of all geometry properties of the feature
+     * @return envelope of all geometry properties of the feature, can be <code>null</code> (no envelope)
      */
     public Envelope calcEnvelope();
 
