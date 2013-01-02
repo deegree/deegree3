@@ -199,6 +199,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
 
+        int deleted = 0;        
         for ( ResourceId id : filter.getSelectedIds() ) {
             GMLObject obj = sf.idToObject.get( id.getRid() );
             if ( obj != null ) {
@@ -206,13 +207,15 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     Feature f = (Feature) obj;
                     FeatureType ft = f.getType();
                     sf.ftToFeatures.get( ft ).remove( f );
+                    deleted++;
                 }
+                sf.idToObject.remove( id.getRid() );
             }
             if ( lock != null ) {
                 lock.release( id.getRid() );
             }
         }
-        return filter.getSelectedIds().size();
+        return deleted;
     }
 
     @Override
@@ -404,7 +407,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         }
-        feature.setEnvelope( null );
+        feature.setEnvelope( feature.calcEnvelope() );        
         return feature;
     }
 
