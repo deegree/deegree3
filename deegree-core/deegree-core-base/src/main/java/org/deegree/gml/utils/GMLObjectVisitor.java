@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,11 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.utils;
 
+import org.deegree.commons.tom.Reference;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 
 /**
- * Implementations
+ * Visitor interface for the {@link GMLObjectWalker}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -49,14 +50,29 @@ import org.deegree.geometry.Geometry;
 public interface GMLObjectVisitor {
 
     /**
+     * Called when a {@link Geometry} node is encountered.
+     * 
      * @param geom
-     * @return
+     *            geometry, never <code>null</code>
+     * @return <code>true</code>, if children of this node shall be traversed, <code>false</code> otherwise
      */
     public boolean visitGeometry( Geometry geom );
 
     /**
+     * Called when a {@link Feature} node is encountered.
+     * 
      * @param feature
-     * @return
+     *            feature, never <code>null</code>
+     * @return <code>true</code>, if children of this node shall be traversed, <code>false</code> otherwise
      */
     public boolean visitFeature( Feature feature );
+
+    /**
+     * Called when a {@link Reference} node is encountered.
+     * 
+     * @param ref
+     *            reference, never <code>null</code>
+     * @return <code>true</code>, if the referenced object shall be traversed, <code>false</code> otherwise
+     */
+    public boolean visitReference( Reference<?> ref );
 }
