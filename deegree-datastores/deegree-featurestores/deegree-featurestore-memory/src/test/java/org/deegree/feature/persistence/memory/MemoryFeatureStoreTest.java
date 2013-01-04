@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,8 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+package org.deegree.feature.persistence.memory;
 
-package org.deegree.feature.persistence;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,7 +61,8 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.persistence.memory.MemoryFeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.Filter;
@@ -67,7 +70,9 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
@@ -86,7 +91,7 @@ import org.junit.Test;
  */
 public class MemoryFeatureStoreTest {
 
-    private static final String BASE_DIR = "../../gml/feature/testdata/features/";
+    private static final String BASE_DIR = "../../../gml/feature/testdata/features/";
 
     private MemoryFeatureStore store;
 
@@ -99,11 +104,20 @@ public class MemoryFeatureStoreTest {
 
         DeegreeWorkspace.getInstance().initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        store = new MemoryFeatureStore( docURL, schema );
+        store = new MemoryFeatureStore( schema, null );
+
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+        gmlStream.setApplicationSchema( schema );
+        FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
+        gmlStream.getIdContext().resolveLocalRefs();
+
+        FeatureStoreTransaction ta = store.acquireTransaction();
+        ta.performInsert( fc, USE_EXISTING ).size();
+        ta.commit();
     }
 
     @After
