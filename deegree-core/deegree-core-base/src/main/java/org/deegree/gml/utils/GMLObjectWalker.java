@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.tom.ElementNode;
+import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -103,15 +103,16 @@ public class GMLObjectWalker {
      * @param node
      *            start node, must not be <code>null</code>
      */
-    @SuppressWarnings("unchecked")
     public void traverse( GMLObject node ) {
-
-        if ( node instanceof GMLReference<?> ) {
-            if ( ( (GMLReference<GMLObject>) node ).isResolved() ) {
-                node = ( (GMLReference<GMLObject>) node ).getReferencedObject();
-            } else {
-                return;
+        if ( node instanceof Reference<?> ) {
+            Reference<?> ref = (Reference<?>) node;
+            if ( visitor.visitReference( ref ) ) {
+                if ( ref.isResolved() ) {
+                    node = (GMLObject) ref.getReferencedObject();
+                    traverse( node );
+                }
             }
+            return;
         }
 
         if ( !visited.contains( node ) ) {
