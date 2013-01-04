@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.memory;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.File;
 import java.net.URL;
@@ -67,7 +68,6 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
-import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +157,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                         gmlStream.getIdContext().resolveLocalRefs();
 
                         FeatureStoreTransaction ta = fs.acquireTransaction();
-                        int fids = ta.performInsert( fc, IDGenMode.USE_EXISTING ).size();
+                        int fids = ta.performInsert( fc, USE_EXISTING ).size();
                         LOG.info( "Inserted " + fids + " features." );
                         ta.commit();
                     } catch ( Exception e ) {
