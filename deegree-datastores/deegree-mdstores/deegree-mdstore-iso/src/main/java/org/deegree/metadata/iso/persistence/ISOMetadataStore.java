@@ -296,7 +296,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-		}
+		} finally {
+        	close(connection);
+        }
     }
 
     @Override
