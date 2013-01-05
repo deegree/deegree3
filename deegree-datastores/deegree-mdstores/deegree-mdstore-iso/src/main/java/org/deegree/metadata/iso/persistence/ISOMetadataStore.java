@@ -287,7 +287,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecordById( final List<String> idList, final QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        Connection connection;
+        Connection connection = null;
 		try {
 			connection = getConnection();
 			return new QueryHelper( dialect, getQueryables() ).executeGetRecordById( idList, connection );
