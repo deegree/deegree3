@@ -396,7 +396,7 @@ public class DeegreeWorkspace {
      * 
      * @throws ResourceInitException
      */
-    public synchronized void initAll()
+    public void initAll()
                             throws ResourceInitException {
         ImageIO.scanForPlugins();
         initManagers();
@@ -408,7 +408,7 @@ public class DeegreeWorkspace {
     /**
      * Unloads all resources associated with this context, as well as ALL STATIC ones.
      */
-    public synchronized void destroyAll() {
+    public void destroyAll() {
         for ( ResourceManager m : managers ) {
             m.shutdown();
         }
