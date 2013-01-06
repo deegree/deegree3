@@ -41,12 +41,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.commons.dbcp.ConnectionFactory;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.dbcp.DelegatingConnection;
-import org.apache.commons.dbcp.DriverManagerConnectionFactory;
-import org.apache.commons.dbcp.PoolableConnectionFactory;
-import org.apache.commons.dbcp.PoolingDataSource;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.slf4j.Logger;
 
@@ -65,9 +61,7 @@ public class ConnectionPool {
 
     private final String id;
 
-    private final PoolingDataSource ds;
-
-    private final GenericObjectPool<Connection> pool;
+    private final BasicDataSource ds;
 
     /**
      * Creates a new {@link ConnectionPool} instance.
@@ -81,17 +75,17 @@ public class ConnectionPool {
      * @param maxActive
      */
     public ConnectionPool( String id, String connectURI, String user, String password, boolean readOnly, int minIdle,
-                    int maxActive ) {
-
+                           int maxActive ) {
         this.id = id;
-        pool = new GenericObjectPool<Connection>( null );
-        pool.setMinIdle( minIdle );
-        pool.setMaxActive( maxActive );
-
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
-        // TODO make this configurable
-        new PoolableConnectionFactory( connectionFactory, pool, null, null, readOnly, true );
-        ds = new PoolingDataSource( pool );
+        ds = new BasicDataSource();
+        ds.setUrl( connectURI );
+        ds.setUsername( user );
+        ds.setPassword( password );
+        ds.setDefaultReadOnly( readOnly );
+        ds.setMaxWait( 1000 ); // TODO externalize
+        ds.setInitialSize( 1 ); // TODO externalize
+        ds.setMinIdle( minIdle );
+        ds.setMaxActive( maxActive );
         // needed, so users can retrieve the underlying connection from pooled
         // connections, e.g. to access the
         // LargeObjectManager from a PGConnection
@@ -107,7 +101,7 @@ public class ConnectionPool {
     public Connection getConnection()
                             throws SQLException {
         LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
-                   new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
+                   new Object[] { id, ds.getNumActive(), ds.getNumIdle() } );
         return ds.getConnection();
     }
 
@@ -116,12 +110,11 @@ public class ConnectionPool {
      */
     public void destroy()
                             throws Exception {
-        pool.close();
+        ds.close();
     }
 
     public void invalidate( DelegatingConnection conn )
                             throws Exception {
         conn.getDelegate().close();
-        pool.invalidateObject( conn );
     }
 }
