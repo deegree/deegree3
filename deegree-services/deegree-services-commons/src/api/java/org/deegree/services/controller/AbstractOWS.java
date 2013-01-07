@@ -127,9 +127,9 @@ public abstract class AbstractOWS implements OWS {
 
     protected DeegreeWorkspace workspace;
 
-    private URL configURL;
+    private final URL configURL;
 
-    protected ImplementationMetadata<?> serviceInfo;
+    protected final ImplementationMetadata<?> serviceInfo;
 
     private String configId;
 

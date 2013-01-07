@@ -69,7 +69,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
-class QueryHelper extends SqlHelper {
+final class QueryHelper extends SqlHelper {
 
     private static final Logger LOG = getLogger( QueryHelper.class );
 

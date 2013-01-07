@@ -56,7 +56,6 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
@@ -295,7 +294,7 @@ public class DeegreeWorkspace {
      * 
      * @return the default workspace, never <code>null</code>
      */
-    public static DeegreeWorkspace getInstance() {
+    public static synchronized DeegreeWorkspace getInstance() {
         return nameToWs.get( DEFAULT_WORKSPACE );
     }
 
@@ -396,7 +395,7 @@ public class DeegreeWorkspace {
      * 
      * @throws ResourceInitException
      */
-    public synchronized void initAll()
+    public void initAll()
                             throws ResourceInitException {
         ImageIO.scanForPlugins();
         initManagers();
@@ -408,7 +407,7 @@ public class DeegreeWorkspace {
     /**
      * Unloads all resources associated with this context, as well as ALL STATIC ones.
      */
-    public synchronized void destroyAll() {
+    public void destroyAll() {
         for ( ResourceManager m : managers ) {
             m.shutdown();
         }

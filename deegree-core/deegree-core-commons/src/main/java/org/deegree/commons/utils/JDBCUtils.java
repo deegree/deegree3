@@ -78,11 +78,19 @@ public final class JDBCUtils {
      * 
      * @param conn
      */
-    public static void close( Connection conn ) {
-        try {
-            conn.close();
-        } catch ( Exception ex ) {
-            //
+    public static void close(final Connection conn ) {
+    	close(conn, null);
+    }
+    
+    public static void close(final Connection conn, final Logger log ) {	
+    	if ( conn != null ) {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Connection: " + e.getMessage() );
+                }
+            }
         }
     }
 
@@ -91,11 +99,19 @@ public final class JDBCUtils {
      * 
      * @param resultSet
      */
-    public static void close( ResultSet resultSet ) {
-        try {
-            resultSet.close();
-        } catch ( Exception ex ) {
-            //
+    public static void close(final ResultSet resultSet ) {
+    	close(resultSet, null);
+    }
+    
+    public static void close(final ResultSet resultSet, final Logger log ) {
+    	if ( resultSet != null ) {
+            try {
+            	resultSet.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close ResultSet: " + e.getMessage() );
+                }
+            }
         }
     }
 
@@ -104,12 +120,18 @@ public final class JDBCUtils {
      * 
      * @param stmt
      */
-    public static void close( Statement stmt ) {
-        if ( stmt != null ) {
+    public static void close(final Statement stmt) {
+    	close(stmt, null);
+    }
+    
+    public static void close(final Statement stmt, final Logger log ) {
+    	if ( stmt != null ) {
             try {
                 stmt.close();
-            } catch ( Exception ex ) {
-                //
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Statement: " + e.getMessage() );
+                }
             }
         }
     }
@@ -128,33 +150,11 @@ public final class JDBCUtils {
      *            used to log error messages, may be null
      */
     public static void close( ResultSet rs, Statement stmt, Connection conn, Logger log ) {
-        if ( rs != null ) {
-            try {
-                rs.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close ResultSet: " + e.getMessage() );
-                }
-            }
-        }
-        if ( stmt != null ) {
-            try {
-                stmt.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close Statement: " + e.getMessage() );
-                }
-            }
-        }
-        if ( conn != null ) {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close Connection: " + e.getMessage() );
-                }
-            }
-        }
+        close(rs, log);
+        
+        close(stmt, log);
+        
+        close(conn, log);
     }
 
     public static String determinePostGISVersion( Connection conn, Logger log ) {
@@ -206,8 +206,8 @@ public final class JDBCUtils {
      *             if an execution timeout or a database access error occurs; this method is called on a closed
      *             <code>PreparedStatement</code> or the SQL statement does not return a <code>ResultSet</code> object
      */
-    public static ResultSet executeQuery( final PreparedStatement stmt, ConnectionManager connManager, String connId,
-                                          long executionTimeout )
+    public static ResultSet executeQuery( final PreparedStatement stmt, final ConnectionManager connManager, final String connId,
+                                          final long executionTimeout )
                             throws SQLException {
         if ( executionTimeout <= 0 ) {
             return stmt.executeQuery();
@@ -221,16 +221,20 @@ public final class JDBCUtils {
                 }
             }, executionTimeout );
         } catch ( CancellationException e ) {
-            stmt.cancel();
-            Connection conn = stmt.getConnection();
-            String msg = "Database query has been cancelled, because query execution timeout (" + executionTimeout
+        	Connection conn = null;
+        	String msg = null;
+        	try {
+        		stmt.cancel();
+				conn = stmt.getConnection();
+			    msg = "Database query has been cancelled, because query execution timeout (" + executionTimeout
                          + "[ms]) has been exceeded.";
-            try {
                 // This is necessary, because cancelled connections appear not to be reusable, so errors occur if a
                 // cancelled connection is returned to the pool and re-used (at least on PostgreSQL)
-                connManager.invalidate( connId, conn );
+                ConnectionManager.invalidate( connId, conn );
             } catch ( Throwable t ) {
                 msg += "Invalidation of connection failed: " + t.getMessage();
+            } finally {
+            	JDBCUtils.close(conn, null);
             }
             throw new SQLException( msg );
         } catch ( InterruptedException e ) {

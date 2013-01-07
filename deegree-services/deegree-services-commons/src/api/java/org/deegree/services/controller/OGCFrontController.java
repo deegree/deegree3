@@ -1151,7 +1151,7 @@ public class OGCFrontController extends HttpServlet {
      * @throws IOException
      * @throws ServletException
      */
-    public void reload()
+    public synchronized void reload()
                             throws IOException, URISyntaxException, ServletException {
         destroyWorkspace();
         try {
