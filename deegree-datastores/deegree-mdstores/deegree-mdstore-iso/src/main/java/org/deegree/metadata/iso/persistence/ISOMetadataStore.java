@@ -40,6 +40,7 @@ import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private final String connectionId;
 
-    private ISOMetadataStoreConfig config;
+    private final ISOMetadataStoreConfig config;
 
     private Type connectionType;
 
@@ -222,10 +223,10 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
+    public void init( final DeegreeWorkspace workspace )
                             throws ResourceInitException {
         LOG.debug( "init" );
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        final ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         connectionType = mgr.getType( connectionId );
         if ( connectionType == PostgreSQL ) {
             Connection conn = null;
@@ -241,13 +242,22 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     }
 
     @Override
-    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
+    public MetadataResultSet<ISORecord> getRecords( final MetadataQuery query )
                             throws MetadataStoreException {
-        String operationName = "getRecords";
+        final String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-
-        QueryHelper exe = new QueryHelper( dialect, getQueryables() );
-        return exe.execute( query, getConnection() );
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            return new QueryHelper( dialect, getQueryables() ).execute( query, connection );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+        } finally {
+        	close(connection);
+        }
     }
 
     /**
@@ -255,38 +265,50 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
      * 
      * @throws MetadataStoreException
      */
-    public int getRecordCount( MetadataQuery query )
+    public int getRecordCount( final MetadataQuery query )
                             throws MetadataStoreException {
-        String resultTypeName = "hits";
+        final String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
+        Connection connection = null;
         try {
-            return new QueryHelper( dialect, getQueryables() ).executeCounting( query, getConnection() );
-        } catch ( Throwable t ) {
-            LOG.debug( t.getMessage(), t );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
+			connection = getConnection();
+			return new QueryHelper( dialect, getQueryables() ).executeCounting( query, connection );
+        } catch ( Exception e ) {
+            LOG.debug( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+        	close(connection);
         }
     }
 
     @Override
-    public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
+    public MetadataResultSet<ISORecord> getRecordById( final List<String> idList, final QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new QueryHelper( dialect, getQueryables() );
-        return qh.executeGetRecordById( idList, getConnection() );
+        Connection connection;
+		try {
+			connection = getConnection();
+			return new QueryHelper( dialect, getQueryables() ).executeGetRecordById( idList, connection );
+		} catch (SQLException e) {
+			LOG.debug( e.getMessage(), e );
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
+            LOG.debug( msg );
+            throw new MetadataStoreException( msg );
+		}
     }
 
     @Override
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
-        Connection conn = getConnection();
         try {
+        	Connection conn = getConnection();
             ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, getQueryables(), config.getAnyText() );
-        } catch ( Throwable e ) {
+        } catch ( SQLException e ) {
             LOG.error( "error " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            throw new MetadataStoreException( e.getMessage(), e );
         }
         return ta;
     }
@@ -302,17 +324,12 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
      * </p>
      * 
      * @return connection with auto commit set to off, never <code>null</code>
-     * @throws MetadataStoreException
+     * @throws SQLException
      */
     private Connection getConnection()
-                            throws MetadataStoreException {
-        Connection conn = null;
-        try {
-            conn = ConnectionManager.getConnection( connectionId );
-            conn.setAutoCommit( false );
-        } catch ( Throwable e ) {
-            throw new MetadataStoreException( e.getMessage() );
-        }
+                            throws SQLException {
+        Connection conn = ConnectionManager.getConnection( connectionId );
+        conn.setAutoCommit( false );
         return conn;
     }
 
