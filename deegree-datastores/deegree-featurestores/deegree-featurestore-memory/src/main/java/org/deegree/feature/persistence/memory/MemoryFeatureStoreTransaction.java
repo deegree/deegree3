@@ -206,13 +206,14 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 if ( obj instanceof Feature ) {
                     Feature f = (Feature) obj;
                     sf.removeFeature( f );
+                    deleted++;
                 }
             }
             if ( lock != null ) {
                 lock.release( id.getRid() );
             }
         }
-        return filter.getSelectedIds().size();
+        return deleted;
     }
 
     @Override
