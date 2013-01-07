@@ -152,20 +152,20 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                             f = iter.next();
                         }
                         synchronized ( this ) {
-                        if ( !featureQueue.offer( f ) ) {
-                            // wait until we get notified that queue needs to be filled up again
+                            if ( !featureQueue.offer( f ) ) {
+                                // wait until we get notified that queue needs to be filled up again
 
-                            // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
-                            sleeping = true;
-                            wait();
-                            sleeping = false;
-                            // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
-                        } else {
-                            f = null;
-                            // Wake reading thread
-                            notify();
+                                // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
+                                sleeping = true;
+                                wait();
+                                sleeping = false;
+                                // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
+                            } else {
+                                f = null;
+                                // Wake reading thread
+                                notify();
+                            }
                         }
-                    }
                     }
                 } catch ( InterruptedException e ) {
                     LOG.debug( "Got interrupted." );
@@ -173,6 +173,12 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
             } finally {
                 finished = true;
                 rs.close();
+                
+                // Consumer may still be waiting for more input
+                synchronized ( this ) {
+                    notify();
+                }
+                
                 LOG.debug( "Producer thread exiting" );
             }
         }
