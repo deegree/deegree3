@@ -73,11 +73,19 @@ public final class JDBCUtils {
      * 
      * @param conn
      */
-    public static void close( Connection conn ) {
-        try {
-            conn.close();
-        } catch ( Exception ex ) {
-            //
+    public static void close( final Connection conn ) {
+        close( conn, null );
+    }
+
+    public static void close( final Connection conn, final Logger log ) {
+        if ( conn != null ) {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Connection: " + e.getMessage() );
+                }
+            }
         }
     }
 
@@ -86,11 +94,19 @@ public final class JDBCUtils {
      * 
      * @param resultSet
      */
-    public static void close( ResultSet resultSet ) {
-        try {
-            resultSet.close();
-        } catch ( Exception ex ) {
-            //
+    public static void close( final ResultSet resultSet ) {
+        close( resultSet, null );
+    }
+
+    public static void close( final ResultSet resultSet, final Logger log ) {
+        if ( resultSet != null ) {
+            try {
+                resultSet.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close ResultSet: " + e.getMessage() );
+                }
+            }
         }
     }
 
@@ -99,12 +115,18 @@ public final class JDBCUtils {
      * 
      * @param stmt
      */
-    public static void close( Statement stmt ) {
+    public static void close( final Statement stmt ) {
+        close( stmt, null );
+    }
+
+    public static void close( final Statement stmt, final Logger log ) {
         if ( stmt != null ) {
             try {
                 stmt.close();
-            } catch ( Exception ex ) {
-                //
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Statement: " + e.getMessage() );
+                }
             }
         }
     }
@@ -123,33 +145,11 @@ public final class JDBCUtils {
      *            used to log error messages, may be null
      */
     public static void close( ResultSet rs, Statement stmt, Connection conn, Logger log ) {
-        if ( rs != null ) {
-            try {
-                rs.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close ResultSet: " + e.getMessage() );
-                }
-            }
-        }
-        if ( stmt != null ) {
-            try {
-                stmt.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close Statement: " + e.getMessage() );
-                }
-            }
-        }
-        if ( conn != null ) {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                if ( log != null ) {
-                    log.error( "Unable to close Connection: " + e.getMessage() );
-                }
-            }
-        }
+        close( rs, log );
+
+        close( stmt, log );
+
+        close( conn, log );
     }
 
     public static String determinePostGISVersion( Connection conn, Logger log ) {

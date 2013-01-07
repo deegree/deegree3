@@ -241,7 +241,7 @@ public class DeegreeWorkspace {
      * 
      * @return the default workspace, never <code>null</code>
      */
-    public static DeegreeWorkspace getInstance() {
+    public static synchronized DeegreeWorkspace getInstance() {
         return nameToWs.get( DEFAULT_WORKSPACE );
     }
 
