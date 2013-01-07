@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,35 +68,39 @@ public class SQLDialectManager extends AbstractBasicResourceManager {
     private ServiceLoader<SQLDialectProvider> loader;
 
     private Map<Type, SQLDialectProvider> typeToDialectProvider;
+    
+    @Override
+    protected void init(final DeegreeWorkspace workspace, final File resourceDir) {
+    	super.init(workspace, resourceDir);
+    	if ( typeToDialectProvider == null ) {
+    		typeToDialectProvider = new HashMap<Type, SQLDialectProvider>();
+    		try {
+    			for ( SQLDialectProvider provider : loader ) {
+    				LOG.debug( "SQLDialectProvider: " + provider + ", db type: " + provider.getSupportedType() );
+    				Type sqlType = provider.getSupportedType();
+    				if ( typeToDialectProvider.containsKey( sqlType ) ) {
+    					LOG.error( "Multiple SQLDialectProvider implementations for db type: '" + sqlType
+    							+ "' on classpath -- omitting '" + provider.getClass().getName() + "'." );
+    					continue;
+    				}
+    				typeToDialectProvider.put( sqlType, provider );
+    			}
+    		} catch ( Exception e ) {
+    			LOG.error( e.getMessage(), e );
+    		}
+    	}
+    }
 
-    public synchronized SQLDialect create( String connId )
+    public SQLDialect create(final String connId )
                             throws ResourceInitException {
 
-        if ( typeToDialectProvider == null ) {
-            typeToDialectProvider = new HashMap<Type, SQLDialectProvider>();
-            try {
-                for ( SQLDialectProvider provider : loader ) {
-                    LOG.debug( "SQLDialectProvider: " + provider + ", db type: " + provider.getSupportedType() );
-                    Type sqlType = provider.getSupportedType();
-                    if ( typeToDialectProvider.containsKey( sqlType ) ) {
-                        LOG.error( "Multiple SQLDialectProvider implementations for db type: '" + sqlType
-                                   + "' on classpath -- omitting '" + provider.getClass().getName() + "'." );
-                        continue;
-                    }
-                    typeToDialectProvider.put( sqlType, provider );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
-        }
-
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        Type connType = mgr.getType( connId );
+        final ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        final Type connType = mgr.getType( connId );
         if ( connType == null ) {
             throw new ResourceInitException( "No JDBC connection with id '" + connId + "' defined." );
         }
         LOG.debug( "Connection type is {}.", connType );
-        SQLDialectProvider provider = typeToDialectProvider.get( connType );
+        final SQLDialectProvider provider = typeToDialectProvider.get( connType );
         if ( provider != null ) {
             LOG.debug( "Found dialect provider {}", provider.getClass().getSimpleName() );
             return provider.create( connId, workspace );
