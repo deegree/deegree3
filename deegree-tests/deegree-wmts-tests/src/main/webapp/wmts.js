@@ -120,6 +120,8 @@ OpenLayers.DOTS_PER_INCH = 90.72;
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_cache', layer: 'remotewms_cache', matrixSet: 'utah', format: 'image/png'}));
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'filesystem', layer: 'filesystem', matrixSet: 'utah', format: 'image/png'}));
     map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewmts', layer: 'remotewmts', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_dominant_vegetation', layer: 'remotewms_dominant_vegetation', matrixSet: 'utah', format: 'image/png'}));
+    map.addLayer(new OpenLayers.Format.WMTSCapabilities().createLayer(caps, {name: 'remotewms_dominant_vegetation_cached', layer: 'remotewms_dominant_vegetation_cached', matrixSet: 'utah', format: 'image/png'}));
 
     map.setCenter(new OpenLayers.LonLat(0, 0), 0)
     map.addControl(new OpenLayers.Control.LayerSwitcher())

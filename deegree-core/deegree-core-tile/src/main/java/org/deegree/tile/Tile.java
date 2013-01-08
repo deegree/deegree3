@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -43,6 +43,7 @@ package org.deegree.tile;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -89,4 +90,21 @@ public interface Tile {
      * @return the envelope, never <code>null</code>
      */
     Envelope getEnvelope();
+
+    /**
+     * Retrieves the features located at a particular pixel position of the specified tile.
+     * 
+     * @param i
+     *            column index of pixel within the tile, counted from left, starting at zero
+     * @param j
+     *            row index of pixel within the tile, counted from top, starting at zero
+     * @param limit
+     *            maximum number of features to return
+     * @return features located at the specified position, can be empty or <code>null</code>
+     * @throws UnsupportedOperationException
+     *             if the implementation does not support retrieving of features
+     */
+    FeatureCollection getFeatures( int i, int j, int limit )
+                            throws UnsupportedOperationException;
+
 }

@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-geometry</artifactId>
+      <artifactId>deegree-core-base</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

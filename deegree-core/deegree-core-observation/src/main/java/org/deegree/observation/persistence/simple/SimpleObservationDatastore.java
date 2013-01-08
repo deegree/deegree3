@@ -188,7 +188,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
                     SimpleMeasurement measurement = new SimpleMeasurement( measurementBase, date, p, results );
                     measurements.add( measurement );
                 } else {
-                    LOG.error( "no procedure found for result set {}, {}", date, results );
+                    LOG.debug( "no procedure found for result set {}, {}", date, results );
                 }
             }
 

@@ -103,7 +103,7 @@ public class WMTSController extends AbstractOWS {
 
         this.metadataUrlTemplate = builder.getMetadataUrlTemplate();
 
-        dispatcher = new WmtsRequestDispatcher( mainMetadataConf, workspace, builder, getId() );
+        dispatcher = new WmtsRequestDispatcher( controllerConf, mainMetadataConf, workspace, builder, getId() );
     }
 
     @Override

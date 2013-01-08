@@ -22,7 +22,7 @@
       <!-- The default,  compliant with OWS 1.1.0 spec. -->
       <!-- HTTPStatusCodeForExceptions>400</HTTPStatusCodeForExceptions -->
       <!-- Non standard code for CITE/TeamEngine tests. They expect 200 :/ -->
-      <!-- HTTPStatusCodeForExceptions>200</HTTPStatusCodeForExceptions -->
+      <HTTPStatusCodeForExceptions>200</HTTPStatusCodeForExceptions>
     </OWSOptions>
   </PublishedInformation>
 </deegreeSOS>

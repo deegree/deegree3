@@ -87,7 +87,7 @@
             </goals>
             <configuration>
               <excludes>
-                <exclude>**/*IntegrationTest.java</exclude>
+                <exclude>**/*IT.java</exclude>
               </excludes>
               <skip>false</skip>
             </configuration>
@@ -100,7 +100,7 @@
             </goals>
             <configuration>
               <includes>
-                <include>**/*IntegrationTest.java</include>
+                <include>**/*IT.java</include>
               </includes>
               <skip>false</skip>
             </configuration>

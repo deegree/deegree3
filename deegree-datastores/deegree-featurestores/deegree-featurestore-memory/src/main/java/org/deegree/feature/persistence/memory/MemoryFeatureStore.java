@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,24 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.feature.persistence.memory;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -65,16 +57,12 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.reference.GmlDocumentIdContext;
-import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
  * {@link FeatureStore} implementation that keeps the feature instances in memory.
  * 
  * @see FeatureStore
+ * @see StoredFeatures
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -91,17 +79,17 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private Thread transactionHolder;
 
-    DefaultLockManager lockManager;
+    private DefaultLockManager lockManager;
 
-    StoredFeatures storedFeatures;
+    private StoredFeatures storedFeatures;
 
     /**
-     * Creates a new {@link MemoryFeatureStore} for the given {@link AppSchema}.
+     * Creates a new {@link MemoryFeatureStore} instance for the given {@link AppSchema}.
      * 
      * @param schema
      *            application schema, must not be <code>null</code>
      * @param storageCRS
-     *            crs used for storing geometries, may be <code>null</code>
+     *            crs used for stored geometries, may be <code>null</code> (no transformation on inserts)
      * @throws FeatureStoreException
      */
     MemoryFeatureStore( AppSchema schema, ICRS storageCRS ) throws FeatureStoreException {
@@ -110,37 +98,6 @@ public class MemoryFeatureStore implements FeatureStore {
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
         // TODO
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
-    }
-
-    /**
-     * Creates a new {@link MemoryFeatureStore} that is backed by the given GML file.
-     * 
-     * @param docURL
-     * @param schema
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     * @throws UnknownCRSException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     * @throws FeatureStoreException
-     * @throws ReferenceResolvingException
-     */
-    public MemoryFeatureStore( URL docURL, AppSchema schema ) throws XMLStreamException, XMLParsingException,
-                            UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException,
-                            ReferenceResolvingException {
-
-        this( schema, null );
-
-        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
-        gmlReader.setApplicationSchema( schema );
-        FeatureCollection fc = gmlReader.readFeatureCollection();
-        gmlReader.close();
-        GmlDocumentIdContext idContext = gmlReader.getIdContext();
-        idContext.resolveLocalRefs();
-
-        FeatureStoreTransaction ta = acquireTransaction();
-        ta.performInsert( fc, IDGenMode.USE_EXISTING );
-        ta.commit();
     }
 
     @Override
@@ -248,7 +205,8 @@ public class MemoryFeatureStore implements FeatureStore {
             }
         }
 
-        this.activeTransaction = new MemoryFeatureStoreTransaction( this );
+        StoredFeatures workingCopy = new StoredFeatures( schema, storageCRS, storedFeatures );
+        this.activeTransaction = new MemoryFeatureStoreTransaction( this, workingCopy, lockManager );
         this.transactionHolder = Thread.currentThread();
         return this.activeTransaction;
     }
@@ -258,12 +216,14 @@ public class MemoryFeatureStore implements FeatureStore {
      * {@link #acquireTransaction()}.
      * <p>
      * The transaction should be terminated, i.e. commit() or rollback() must have been called before.
+     * </p>
      * 
      * @param ta
-     *            the DatastoreTransaction to be returned
+     *            the transaction to be released, must not be <code>null</code>
+     * @param newFeatures
      * @throws FeatureStoreException
      */
-    void releaseTransaction( MemoryFeatureStoreTransaction ta )
+    void releaseTransaction( MemoryFeatureStoreTransaction ta, StoredFeatures newFeatures )
                             throws FeatureStoreException {
         if ( ta.getStore() != this ) {
             String msg = Messages.getMessage( "TA_NOT_OWNER" );
@@ -272,6 +232,9 @@ public class MemoryFeatureStore implements FeatureStore {
         if ( ta != this.activeTransaction ) {
             String msg = Messages.getMessage( "TA_NOT_ACTIVE" );
             throw new FeatureStoreException( msg );
+        }
+        if ( newFeatures != null ) {
+            storedFeatures = newFeatures;
         }
         this.activeTransaction = null;
         this.transactionHolder = null;
@@ -295,7 +258,7 @@ public class MemoryFeatureStore implements FeatureStore {
         Envelope ftEnv = null;
         FeatureType ft = schema.getFeatureType( ftName );
         if ( ft != null ) {
-            FeatureCollection fc = storedFeatures.ftToFeatures.get( ft );
+            FeatureCollection fc = storedFeatures.getFeatures( ft );
             if ( fc != null ) {
                 ftEnv = fc.getEnvelope();
             }

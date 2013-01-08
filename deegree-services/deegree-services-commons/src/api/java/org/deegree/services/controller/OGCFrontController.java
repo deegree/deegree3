@@ -527,7 +527,14 @@ public class OGCFrontController extends HttpServlet {
                            + " ms before sending exception." );
                 LOG.debug( e.getMessage(), e );
                 OWSException ex = new OWSException( e.getLocalizedMessage(), "InvalidRequest" );
-                sendException( null, ex, responseBuffer, null );
+                OWS ows = null;
+                try {
+                    ows = determineOWSByPath( request );
+                } catch ( OWSException e2 ) {
+                    sendException( ows, e2, responseBuffer, null );
+                    return;
+                }
+                sendException( ows, ex, responseBuffer, null );
             }
             LOG.debug( "Handling HTTP-POST request with status 'success' took: "
                        + ( System.currentTimeMillis() - entryTime ) + " ms." );

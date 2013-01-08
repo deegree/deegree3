@@ -1,0 +1,1 @@
+?SERVICE=WMTS&REQUEST=GetFeatureInfo&VERSION=1.0.0&LAYER=remotewms_dominant_vegetation&STYLE=default&TILEMATRIXSET=utah&TILEMATRIX=14285.714285714286&TILEROW=0&TILECOL=6&FORMAT=image%2Fpng&i=10&j=10&infoformat=text/html

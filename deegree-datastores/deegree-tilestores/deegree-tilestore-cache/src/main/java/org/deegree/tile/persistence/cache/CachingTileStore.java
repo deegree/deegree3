@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -38,7 +38,6 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.tile.persistence.cache;
 
 import java.util.ArrayList;
@@ -63,23 +62,22 @@ import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 
 /**
- * <code>CachingTileStore</code>
+ * {@link TileStore} that acts as a caching proxy to another {@link TileStore}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class CachingTileStore implements TileStore {
 
-    private TileStore tileStore;
-
-    private Map<String, DefaultTileDataSet> tileMatrixSets;
+    private final TileStore tileStore;
 
     private final CacheManager cacheManager;
 
-    private Cache cache;
+    private final Cache cache;
+
+    private Map<String, TileDataSet> tileMatrixSets;
 
     public CachingTileStore( TileStore tileStore, CacheManager cacheManager, String cacheName ) {
         this.tileStore = tileStore;
@@ -91,15 +89,16 @@ public class CachingTileStore implements TileStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         Collection<String> ids = tileStore.getTileDataSetIds();
-        tileMatrixSets = new HashMap<String, DefaultTileDataSet>();
+        tileMatrixSets = new HashMap<String, TileDataSet>();
         for ( String id : ids ) {
-            TileDataSet tms = tileStore.getTileDataSet( id );
+            TileDataSet cachedDataset = tileStore.getTileDataSet( id );
             List<TileDataLevel> list = new ArrayList<TileDataLevel>();
-            for ( TileDataLevel tm : tms.getTileDataLevels() ) {
+            for ( TileDataLevel tm : cachedDataset.getTileDataLevels() ) {
                 list.add( new CachingTileMatrix( tm, cache ) );
             }
-            this.tileMatrixSets.put( id,
-                                     new DefaultTileDataSet( list, tms.getTileMatrixSet(), tms.getNativeImageFormat() ) );
+            TileDataSet cachingDataset = new DefaultTileDataSet( list, cachedDataset.getTileMatrixSet(),
+                                                                 cachedDataset.getNativeImageFormat() );
+            this.tileMatrixSets.put( id, cachingDataset );
         }
     }
 
@@ -167,5 +166,4 @@ public class CachingTileStore implements TileStore {
     public TileStoreTransaction acquireTransaction( String id ) {
         throw new UnsupportedOperationException( "CachingTileStore does not support transactions." );
     }
-
 }

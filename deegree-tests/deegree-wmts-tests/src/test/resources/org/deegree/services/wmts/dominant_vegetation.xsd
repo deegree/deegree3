@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/app"
+  xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+  <element name="SGID500_DominantVegetation" substitutionGroup="gml:_Feature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="OBJECTID" minOccurs="0" type="decimal" />
+            <element name="CODE" minOccurs="0" type="decimal" />
+            <element name="DOM" minOccurs="0" type="string" />
+            <element name="SS1" minOccurs="0" type="string" />
+            <element name="SS2" minOccurs="0" type="string" />
+            <element name="SS3" minOccurs="0" type="string" />
+            <element name="SS4" minOccurs="0" type="string" />
+            <element name="SS5" minOccurs="0" type="string" />
+            <element name="SS6" minOccurs="0" type="string" />
+            <element name="SS7" minOccurs="0" type="string" />
+            <element name="SS8" minOccurs="0" type="string" />
+            <element name="SS9" minOccurs="0" type="string" />
+            <element name="SS10" minOccurs="0" type="string" />
+            <element name="LAB" minOccurs="0" type="string" />
+            <element name="SHAPE_AREA" minOccurs="0" type="decimal" />
+            <element name="SHAPE_LEN" minOccurs="0" type="decimal" />
+            <element name="GEOM" minOccurs="0" type="gml:MultiPolygonPropertyType" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+</schema>

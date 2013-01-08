@@ -28,31 +28,11 @@
     </repository>
   </repositories>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr3-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>antlr</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-coverage</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
