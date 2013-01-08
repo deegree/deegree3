@@ -151,17 +151,20 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                         if ( f == null ) {
                             f = iter.next();
                         }
-                        if ( !featureQueue.offer( f ) ) {
-                            // wait until we get notified that queue needs to be filled up again
-                            synchronized ( this ) {
+                        synchronized ( this ) {
+                            if ( !featureQueue.offer( f ) ) {
+                                // wait until we get notified that queue needs to be filled up again
+
                                 // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
                                 sleeping = true;
                                 wait();
                                 sleeping = false;
                                 // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
+                            } else {
+                                f = null;
+                                // Wake reading thread
+                                notify();
                             }
-                        } else {
-                            f = null;
                         }
                     }
                 } catch ( InterruptedException e ) {
@@ -170,6 +173,12 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
             } finally {
                 finished = true;
                 rs.close();
+                
+                // Consumer may still be waiting for more input
+                synchronized ( this ) {
+                    notify();
+                }
+                
                 LOG.debug( "Producer thread exiting" );
             }
         }
@@ -185,15 +194,21 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
             if ( fill > 0 ) {
                 return true;
             }
-            while ( true ) {
-                // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
-                if ( finished && featureQueue.isEmpty() ) {
-                    return false;
+            synchronized (this) {
+                while ( true ) {
+                    // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
+                    if ( finished && featureQueue.isEmpty() ) {
+                        return false;
+                    }
+                    if ( !featureQueue.isEmpty() ) {
+                        return true;
+                    }
+                    try {
+                        wait(1000);
+                    } catch(InterruptedException ex) {
+                        // Ignore
+                    }
                 }
-                if ( !featureQueue.isEmpty() ) {
-                    return true;
-                }
-                // TODO what about sleeping here? (but avoid deadlock)
             }
         }
 
