@@ -110,9 +110,7 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
 
             TileMatrixSetManager tmsMgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
             TileDataSetBuilder builder = new TileDataSetBuilder( config, (RemoteWMS) wms, tmsMgr );
-
             Map<String, TileDataSet> map = builder.extractTileDataSets();
-
             return new GenericTileStore( map );
         } catch ( ResourceInitException e ) {
             throw e;

@@ -124,7 +124,7 @@ public class MapOptions {
     }
 
     /**
-     * @return the featureInfoRadius
+     * @return the featureInfoRadius, a value < 1 means disabled
      */
     public int getFeatureInfoRadius() {
         return featureInfoRadius;
@@ -132,7 +132,7 @@ public class MapOptions {
 
     /**
      * @param featureInfoRadius
-     *            the featureInfoRadius to set
+     *            the featureInfoRadius to set, a value < 1 means disabled
      */
     public void setFeatureInfoRadius( int featureInfoRadius ) {
         this.featureInfoRadius = featureInfoRadius;

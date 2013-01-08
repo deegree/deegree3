@@ -55,22 +55,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +87,6 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ReferenceResolvingException;
-import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
@@ -103,18 +95,11 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
-import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.utils.templating.TemplatingLexer;
-import org.deegree.feature.utils.templating.TemplatingParser;
-import org.deegree.feature.utils.templating.java_cup.runtime.Symbol;
-import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamWriter;
+import org.deegree.featureinfo.FeatureInfoManager;
+import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerRef;
@@ -151,9 +136,7 @@ import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.services.wms.controller.plugins.FeatureInfoSerializer;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
-import org.deegree.services.wms.controller.plugins.XSLTFeatureInfoSerializer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
@@ -175,20 +158,10 @@ public class WMSController extends AbstractOWS {
 
     private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.2.0/wms_configuration.xsd";
 
-    /**
-     * Default GML info formats. Will only be used if not overridden by config.
-     */
-    public final HashSet<String> defaultGMLGFIFormats = new LinkedHashSet<String>();
-
-    private final HashMap<String, FeatureInfoSerializer> featureInfoSerializers = new HashMap<String, FeatureInfoSerializer>();
-
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
 
     /** The list of supported image formats. */
     public final LinkedList<String> supportedImageFormats = new LinkedList<String>();
-
-    /** The list of supported info formats. */
-    public final LinkedHashMap<String, String> supportedFeatureInfoFormats = new LinkedHashMap<String, String>();
 
     protected MapService service;
 
@@ -206,6 +179,8 @@ public class WMSController extends AbstractOWS {
 
     private String configId;
 
+    private FeatureInfoManager featureInfoManager;
+
     public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
         try {
@@ -214,14 +189,7 @@ public class WMSController extends AbstractOWS {
         } catch ( URISyntaxException e ) {
             // then no configId will be available
         }
-        defaultGMLGFIFormats.add( "application/gml+xml; version=2.1" );
-        defaultGMLGFIFormats.add( "application/gml+xml; version=3.0" );
-        defaultGMLGFIFormats.add( "application/gml+xml; version=3.1" );
-        defaultGMLGFIFormats.add( "application/gml+xml; version=3.2" );
-        defaultGMLGFIFormats.add( "text/xml; subtype=gml/2.1.2" );
-        defaultGMLGFIFormats.add( "text/xml; subtype=gml/3.0.1" );
-        defaultGMLGFIFormats.add( "text/xml; subtype=gml/3.1.1" );
-        defaultGMLGFIFormats.add( "text/xml; subtype=gml/3.2.1" );
+        featureInfoManager = new FeatureInfoManager( true );
     }
 
     /**
@@ -335,11 +303,6 @@ public class WMSController extends AbstractOWS {
 
         try {
             // put in the default formats
-            supportedFeatureInfoFormats.put( "application/vnd.ogc.gml", "" );
-            supportedFeatureInfoFormats.put( "text/xml", "" );
-            supportedFeatureInfoFormats.put( "text/plain", "" );
-            supportedFeatureInfoFormats.put( "text/html", "" );
-
             supportedImageFormats.add( "image/png" );
             supportedImageFormats.add( "image/png; subtype=8bit" );
             supportedImageFormats.add( "image/png; mode=8bit" );
@@ -350,26 +313,20 @@ public class WMSController extends AbstractOWS {
 
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
-                    String format = t.getFormat();
-                    defaultGMLGFIFormats.remove( format );
                     if ( t.getFile() != null ) {
-                        supportedFeatureInfoFormats.put( format,
-                                                         new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
+                        featureInfoManager.addOrReplaceFormat( t.getFormat(),
+                                                               new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
                     } else {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
-                        XSLTFeatureInfoSerializer xslt = new XSLTFeatureInfoSerializer(
-                                                                                        version,
-                                                                                        controllerConf.resolve( xsltFile.getValue() ),
-                                                                                        workspace );
-                        featureInfoSerializers.put( format, xslt );
+                        featureInfoManager.addOrReplaceXsltFormat( t.getFormat(),
+                                                                   controllerConf.resolve( xsltFile.getValue() ),
+                                                                   version, workspace );
                     }
                 }
             }
 
-            for ( String f : defaultGMLGFIFormats ) {
-                supportedFeatureInfoFormats.put( f, "" );
-            }
+            featureInfoManager.finalizeConfiguration();
 
             // if ( pi.getImageFormat() != null ) {
             // for ( ImageFormat f : pi.getImageFormat() ) {
@@ -549,38 +506,6 @@ public class WMSController extends AbstractOWS {
         sendImage( img, response, glg.getFormat() );
     }
 
-    private static void runTemplate( HttpResponseBuffer response, String fiFile, FeatureCollection col,
-                                     boolean geometries )
-                            throws IOException {
-        PrintWriter out = new PrintWriter( new OutputStreamWriter( response.getOutputStream(), "UTF-8" ) );
-
-        try {
-            InputStream in;
-            if ( fiFile == null ) {
-                in = WMSController.class.getResourceAsStream( "html.gfi" );
-            } else {
-                in = new FileInputStream( fiFile );
-            }
-
-            Symbol s = new TemplatingParser( new TemplatingLexer( new InputStreamReader( in, "UTF-8" ) ) ).parse();
-            @SuppressWarnings(value = "unchecked")
-            HashMap<String, Object> tmpl = (HashMap<String, Object>) s.value;
-            StringBuilder sb = new StringBuilder();
-            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, geometries );
-            out.println( sb.toString() );
-        } catch ( Exception e ) {
-            if ( fiFile == null ) {
-                LOG.error( "Could not load internal template for GFI response." );
-            } else {
-                LOG.error( "Could not load template '{}' for GFI response.", fiFile );
-            }
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            out.close();
-        }
-        response.flushBuffer();
-    }
-
     private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
 
@@ -641,84 +566,15 @@ public class WMSController extends AbstractOWS {
             }
         }
 
-        FeatureInfoSerializer serializer = featureInfoSerializers.get( format );
-        if ( serializer != null ) {
-            serializer.serialize( nsBindings, col, response.getOutputStream() );
+        String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
+
+        try {
+            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, response.getOutputStream(),
+                                                              geometries, loc, type, crs, response.getXMLWriter() );
+            featureInfoManager.serializeFeatureInfo( params );
             response.flushBuffer();
-            return;
-        }
-
-        String fiFile = supportedFeatureInfoFormats.get( format );
-        if ( !fiFile.isEmpty() ) {
-            runTemplate( response, fiFile, col, geometries );
-            return;
-        }
-
-        if ( format.equalsIgnoreCase( "application/vnd.ogc.gml" ) || format.equalsIgnoreCase( "text/xml" )
-             || defaultGMLGFIFormats.contains( format.toLowerCase() ) ) {
-            try {
-                XMLStreamWriter xmlWriter = response.getXMLWriter();
-                String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
-
-                // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
-                HashMap<String, String> bindings = new HashMap<String, String>();
-                String ns = type == null ? null : type.getName().getNamespaceURI();
-                if ( ns != null && ns.isEmpty() ) {
-                    ns = null;
-                }
-                if ( ns != null ) {
-                    bindings.put( ns, loc );
-                    if ( !nsBindings.containsValue( ns ) ) {
-                        nsBindings.put( "app", ns );
-                    }
-                }
-                if ( !nsBindings.containsKey( "app" ) ) {
-                    nsBindings.put( "app", "http://www.deegree.org/app" );
-                }
-                bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
-
-                GMLVersion gmlVersion = GMLVersion.GML_2;
-                if ( format.endsWith( "3.0" ) || format.endsWith( "3.0.1" ) ) {
-                    gmlVersion = GMLVersion.GML_30;
-                }
-                if ( format.endsWith( "3.1" ) || format.endsWith( "3.1.1" ) ) {
-                    gmlVersion = GMLVersion.GML_31;
-                }
-                if ( format.endsWith( "3.2" ) || format.endsWith( "3.2.1" ) ) {
-                    gmlVersion = GMLVersion.GML_32;
-                }
-
-                GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
-                gmlWriter.setOutputCrs( crs );
-                gmlWriter.setNamespaceBindings( nsBindings );
-                gmlWriter.setExportGeometries( geometries );
-                new FeatureInfoGmlWriter( gmlVersion ).export( col, gmlWriter, ns == null ? loc : null, bindings );
-            } catch ( XMLStreamException e ) {
-                LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "Could not instantiate the geometry transformer for output srs '{}'."
-                          + " Aborting GetFeatureInfo response.", crs );
-                LOG.trace( "Stack trace:", e );
-            } catch ( TransformationException e ) {
-                LOG.warn( "Could transform to output srs '{}'. Aborting GetFeatureInfo response.", crs );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        if ( format.equalsIgnoreCase( "text/plain" ) ) {
-            PrintWriter out = new PrintWriter( new OutputStreamWriter( response.getOutputStream(), "UTF-8" ) );
-            for ( Feature f : col ) {
-                out.println( f.getName().getLocalPart() + ":" );
-                for ( Property p : f.getProperties() ) {
-                    out.println( "  " + p.getName().getLocalPart() + ": " + p.getValue() );
-                }
-                out.println();
-            }
-            out.close();
-        }
-
-        if ( format.equalsIgnoreCase( "text/html" ) ) {
-            runTemplate( response, null, col, geometries );
+        } catch ( XMLStreamException e ) {
+            throw new IOException( e.getLocalizedMessage(), e );
         }
     }
 
@@ -785,7 +641,7 @@ public class WMSController extends AbstractOWS {
     private void checkGetFeatureInfo( GetFeatureInfo gfi )
                             throws OWSException {
         if ( gfi.getInfoFormat() != null && !gfi.getInfoFormat().equals( "" )
-             && !supportedFeatureInfoFormats.containsKey( gfi.getInfoFormat() ) ) {
+             && !featureInfoManager.getSupportedFormats().contains( gfi.getInfoFormat() ) ) {
             throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), OWSException.INVALID_FORMAT );
         }
     }
@@ -793,7 +649,7 @@ public class WMSController extends AbstractOWS {
     private void checkGetFeatureInfo( Version version, org.deegree.protocol.wms.ops.GetFeatureInfo gfi )
                             throws OWSException {
         if ( gfi.getInfoFormat() != null && !gfi.getInfoFormat().equals( "" )
-             && !supportedFeatureInfoFormats.containsKey( gfi.getInfoFormat() ) ) {
+             && !featureInfoManager.getSupportedFormats().contains( gfi.getInfoFormat() ) ) {
             throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), OWSException.INVALID_FORMAT );
         }
         if ( service.isNewStyle() ) {
@@ -1002,6 +858,10 @@ public class WMSController extends AbstractOWS {
             }
         }
         return metadataURLTemplate;
+    }
+
+    public FeatureInfoManager getFeatureInfoManager() {
+        return featureInfoManager;
     }
 
     /**

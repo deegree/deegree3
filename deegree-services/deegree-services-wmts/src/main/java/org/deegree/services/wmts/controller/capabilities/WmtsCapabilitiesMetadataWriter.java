@@ -114,10 +114,12 @@ class WmtsCapabilitiesMetadataWriter extends OWSCapabilitiesXMLAdapter {
 
         List<Domain> params = new ArrayList<Domain>();
         List<Domain> constraints = new ArrayList<Domain>();
+        constraints.add( new Domain( "GetEncoding", Collections.singletonList( "KVP" ) ) );
         List<OMElement> mdEls = new ArrayList<OMElement>();
 
         operations.add( new Operation( "GetCapabilities", dcps, params, constraints, mdEls ) );
         operations.add( new Operation( "GetTile", dcps, params, constraints, mdEls ) );
+        operations.add( new Operation( "GetFeatureInfo", dcps, params, constraints, mdEls ) );
 
         OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
 

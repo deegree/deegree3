@@ -1,0 +1,730 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://deegree3-demo.deegree.org/utah-workspace/services?request=DTD" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>
+<WMT_MS_Capabilities version="1.1.1" updateSequence="0">
+  <Service>
+    <Name>OGC:WMS</Name>
+    <Title>deegree 3 Utah Demo</Title>
+    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>Andreas Schmitz</ContactPerson>
+        <ContactOrganization>lat/lon GmbH</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>Software developer</ContactPosition>
+      <ContactAddress>
+        <AddressType>postal</AddressType>
+        <Address>Aennchenstr. 19</Address>
+        <City>Bonn</City>
+        <StateOrProvince>NRW</StateOrProvince>
+        <PostCode>53177</PostCode>
+        <Country>Germany</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone>0228/18496-0</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>0228/18496-29</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+    </ContactInformation>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.faultyhost.org/utah-workspace/services?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>image/png; subtype=8bit</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/tiff</Format>
+        <Format>image/x-ms-bmp</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.faultyhost.org/utah-workspace/services?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>text/xml</Format>
+        <Format>text/plain</Format>
+        <Format>text/html</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.faultyhost.org/utah-workspace/services?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+      <GetLegendGraphic>
+        <Format>image/png</Format>
+        <Format>image/png; subtype=8bit</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/tiff</Format>
+        <Format>image/x-ms-bmp</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.faultyhost.org/utah-workspace/services?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetLegendGraphic>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/vnd.ogc.se_inimage</Format>
+      <Format>application/vnd.ogc.se_blank</Format>
+    </Exception>
+    <Layer queryable="1">
+      <Title>deegree 3 utahDemo</Title>
+      <SRS>EPSG:4326</SRS>
+      <SRS>CRS:84</SRS>
+      <SRS>EPSG:26912</SRS>
+      <SRS>EPSG:900913</SRS>
+      <LatLonBoundingBox minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+      <BoundingBox SRS="EPSG:4326" minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+      <BoundingBox SRS="CRS:84" minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+      <BoundingBox SRS="EPSG:26912" minx="100476.23787037673" miny="3921352.4198389575" maxx="800069.5257187326" maxy="4776951.513572968"/>
+      <BoundingBox SRS="EPSG:900913" minx="-1.284630024145667E7" miny="4223209.497778415" maxx="-1.1988510770970767E7" maxy="5321204.097666849"/>
+      <Layer queryable="1">
+        <Name>Administration</Name>
+        <Title>Administration of Utah</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-114.59873177730816" miny="36.606950125256354" maxx="-108.59333743018736" maxy="42.2744951948555"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.59873177730816" miny="36.606950125256354" maxx="-108.59333743018736" maxy="42.2744951948555"/>
+        <BoundingBox SRS="CRS:84" minx="-114.59873177730816" miny="36.606950125256354" maxx="-108.59333743018736" maxy="42.2744951948555"/>
+        <BoundingBox SRS="EPSG:26912" minx="178096.78511713102" miny="4051271.5244480483" maxx="715250.9645130071" maxy="4686527.676106436"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.2757072467004884E7" miny="4384461.3958229795" maxx="-1.2088555026270593E7" maxy="5202186.592406015"/>
+        <Layer queryable="1">
+          <Name>Municipalities</Name>
+          <Title>Municipalities of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.10409619098975" miny="36.97507417364635" maxx="-109.20784177780945" maxy="42.00778484247841"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.10409619098975" miny="36.97507417364635" maxx="-109.20784177780945" maxy="42.00778484247841"/>
+          <BoundingBox SRS="CRS:84" minx="-114.10409619098975" miny="36.97507417364635" maxx="-109.20784177780945" maxy="42.00778484247841"/>
+          <BoundingBox SRS="EPSG:26912" minx="242775.503125" miny="4096010.55" maxx="648439.003125" maxy="4650654.05"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2702009885407686E7" miny="4435633.017756199" maxx="-1.2156961337338135E7" maxy="5162145.64703959"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Municipalities</Title>
+            <LegendURL width="115" height="54">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Municipalities&amp;style=Municipalities&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Municipalities</Name>
+            <Title>Municipalities</Title>
+            <LegendURL width="115" height="54">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Municipalities&amp;style=Municipalities&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>Counties</Name>
+          <Title>Counties of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+          <BoundingBox SRS="EPSG:26912" minx="208255.63810790988" miny="4090441.8771670717" maxx="687079.4405803197" maxy="4658786.495463555"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2721223556622842E7" miny="4433539.877172383" maxx="-1.2122542156902583E7" maxy="5166126.620378495"/>
+          <Layer queryable="1">
+            <Name>CountyBoundaries</Name>
+            <Title>Counties of Utah</Title>
+            <SRS>EPSG:4326</SRS>
+            <SRS>CRS:84</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:900913</SRS>
+            <LatLonBoundingBox minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+            <BoundingBox SRS="EPSG:4326" minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+            <BoundingBox SRS="CRS:84" minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+            <BoundingBox SRS="EPSG:26912" minx="228563.30312499998" miny="4094785.05" maxx="673991.803125" maxy="4653591.55"/>
+            <BoundingBox SRS="EPSG:900913" minx="-1.272122355662284E7" miny="4433539.877172383" maxx="-1.2122542156902583E7" maxy="5166126.620378495"/>
+            <Style>
+              <Name>default</Name>
+              <Title>1</Title>
+              <LegendURL width="32" height="27">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=CountyBoundaries&amp;style=1&amp;format=image/png"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>2</Name>
+              <Title>2</Title>
+              <LegendURL width="32" height="27">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=CountyBoundaries&amp;style=2&amp;format=image/png"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>1</Name>
+              <Title>1</Title>
+              <LegendURL width="32" height="27">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=CountyBoundaries&amp;style=1&amp;format=image/png"/>
+              </LegendURL>
+            </Style>
+          </Layer>
+          <Layer>
+            <Name>CountyNames</Name>
+            <Title>Countynames of Utah</Title>
+            <SRS>EPSG:4326</SRS>
+            <SRS>CRS:84</SRS>
+            <SRS>EPSG:26912</SRS>
+            <SRS>EPSG:900913</SRS>
+            <LatLonBoundingBox minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+            <BoundingBox SRS="EPSG:4326" minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+            <BoundingBox SRS="CRS:84" minx="-114.27669553615597" miny="36.96005102483228" maxx="-108.8986490192882" maxy="42.03435215725377"/>
+            <BoundingBox SRS="EPSG:26912" minx="228563.30312499998" miny="4094785.05" maxx="673991.803125" maxy="4653591.55"/>
+            <BoundingBox SRS="EPSG:900913" minx="-1.272122355662284E7" miny="4433539.877172383" maxx="-1.2122542156902583E7" maxy="5166126.620378495"/>
+            <Style>
+              <Name>default</Name>
+              <Title>CountyNames</Title>
+              <LegendURL width="32" height="27">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=CountyNames&amp;style=CountyNames&amp;format=image/png"/>
+              </LegendURL>
+            </Style>
+            <Style>
+              <Name>CountyNames</Name>
+              <Title>CountyNames</Title>
+              <LegendURL width="32" height="27">
+                <Format>image/png</Format>
+                <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=CountyNames&amp;style=CountyNames&amp;format=image/png"/>
+              </LegendURL>
+            </Style>
+            <ScaleHint min="4.9E-324" max="1399.9999999999998"/>
+          </Layer>
+        </Layer>
+        <Layer queryable="1">
+          <Name>ZipCodes</Name>
+          <Title>Zipcodes of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.27701397873396" miny="36.960025007352904" maxx="-108.8992824705565" maxy="42.034027694510854"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27701397873396" miny="36.960025007352904" maxx="-108.8992824705565" maxy="42.034027694510854"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27701397873396" miny="36.960025007352904" maxx="-108.8992824705565" maxy="42.034027694510854"/>
+          <BoundingBox SRS="EPSG:26912" minx="228535.503125" miny="4094783.05" maxx="673940.203125" maxy="4653555.55"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.272125900548847E7" miny="4433536.252575415" maxx="-1.2122612672375211E7" maxy="5166077.991296337"/>
+          <Style>
+            <Name>default</Name>
+            <Title>ZipCodes</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=ZipCodes&amp;style=ZipCodes&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>ZipCodes</Name>
+            <Title>ZipCodes</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=ZipCodes&amp;style=ZipCodes&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>StateBoundary</Name>
+          <Title>State of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.59873177730816" miny="36.606950125256354" maxx="-108.59333743018736" maxy="42.2744951948555"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.59873177730816" miny="36.606950125256354" maxx="-108.59333743018736" maxy="42.2744951948555"/>
+          <BoundingBox SRS="CRS:84" minx="-114.59873177730816" miny="36.606950125256354" maxx="-108.59333743018736" maxy="42.2744951948555"/>
+          <BoundingBox SRS="EPSG:26912" minx="202961.80312499998" miny="4056408.05" maxx="698540.103125" maxy="4680253.85"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2757072467004884E7" miny="4384461.3958229795" maxx="-1.2088555026270593E7" maxy="5202186.592406015"/>
+          <Style>
+            <Name>default</Name>
+            <Title>StateBoundary</Title>
+            <LegendURL width="32" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=StateBoundary&amp;style=StateBoundary&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>StateBoundary</Name>
+            <Title>StateBoundary</Title>
+            <LegendURL width="32" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=StateBoundary&amp;style=StateBoundary&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+      <Layer queryable="1">
+        <Name>Transportation</Name>
+        <Title>Transportation in Utah</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <BoundingBox SRS="CRS:84" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <BoundingBox SRS="EPSG:26912" minx="208052.7317793392" miny="4090423.7501402344" maxx="687144.6770911838" maxy="4658518.135440542"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.2721476385917505E7" miny="4433517.084757225" maxx="-1.2122461097225284E7" maxy="5165754.705380805"/>
+        <Layer queryable="1">
+          <Name>Railroads</Name>
+          <Title>Railroads of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.24832657362532" miny="37.203524669308955" maxx="-108.96894668916417" maxy="42.00687771951982"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.24832657362532" miny="37.203524669308955" maxx="-108.96894668916417" maxy="42.00687771951982"/>
+          <BoundingBox SRS="CRS:84" minx="-114.24832657362532" miny="37.203524669308955" maxx="-108.96894668916417" maxy="42.00687771951982"/>
+          <BoundingBox SRS="EPSG:26912" minx="230801.30312499998" miny="4121761.25" maxx="668239.903125" maxy="4650543.05"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2718065538159596E7" miny="4467513.5972890165" maxx="-1.213036765771713E7" maxy="5162009.74876159"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Railroads</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Railroads&amp;style=Railroads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Railroads</Name>
+            <Title>Railroads</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Railroads&amp;style=Railroads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>Roads</Name>
+          <Title>Roads of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653316.05"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2721476385917505E7" miny="4433517.084757225" maxx="-1.2122461097225284E7" maxy="5165754.705380805"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Roads</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Roads&amp;style=Roads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Roads</Name>
+            <Title>Roads</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Roads&amp;style=Roads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>Airports</Name>
+          <Title>Airports in Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.1712168359058" miny="36.9667415418057" maxx="-109.00084442825835" maxy="41.84832107029991"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.1712168359058" miny="36.9667415418057" maxx="-109.00084442825835" maxy="41.84832107029991"/>
+          <BoundingBox SRS="CRS:84" minx="-114.1712168359058" miny="36.9667415418057" maxx="-109.00084442825835" maxy="41.84832107029991"/>
+          <BoundingBox SRS="EPSG:26912" minx="236550.003125" miny="4095276.25" maxx="666006.603125" maxy="4632938.05"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2709481721421456E7" miny="4434472.000412715" maxx="-1.2133918497790549E7" maxy="5138285.68559902"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Airports</Title>
+            <LegendURL width="130" height="54">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Airports&amp;style=Airports&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Airports</Name>
+            <Title>Airports</Title>
+            <LegendURL width="130" height="54">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Airports&amp;style=Airports&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+      <Layer queryable="1">
+        <Name>Elevation</Name>
+        <Title>Elevation Data of Utah</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-114.27637522988542" miny="36.95998094499182" maxx="-108.89924318191146" maxy="42.03261963178724"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.27637522988542" miny="36.95998094499182" maxx="-108.89924318191146" maxy="42.03261963178724"/>
+        <BoundingBox SRS="CRS:84" minx="-114.27637522988542" miny="36.95998094499182" maxx="-108.89924318191146" maxy="42.03261963178724"/>
+        <BoundingBox SRS="EPSG:26912" minx="208283.89791279502" miny="4090434.1136976695" maxx="687026.7082341779" maxy="4658593.084625775"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.2721187900291907E7" miny="4433530.1140781185" maxx="-1.2122608298783252E7" maxy="5165866.959780006"/>
+        <Layer queryable="1">
+          <Name>DEM90</Name>
+          <Title>DEM 90m Raster of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-112.01570060341308" miny="39.99464707650181" maxx="-110.99941150574418" maxy="41.00483632549545"/>
+          <BoundingBox SRS="EPSG:4326" minx="-112.01570060341308" miny="39.99464707650181" maxx="-110.99941150574418" maxy="41.00483632549545"/>
+          <BoundingBox SRS="CRS:84" minx="-112.01570060341308" miny="39.99464707650181" maxx="-110.99941150574418" maxy="41.00483632549545"/>
+          <BoundingBox SRS="EPSG:26912" minx="414577.85845" miny="4427642.5441" maxx="500049.48965" maxy="4539293.9402"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.246953075202373E7" miny="4865164.437736072" maxx="-1.2356397967172474E7" maxy="5013055.046927911"/>
+          <Style>
+            <Name>default</Name>
+            <Title>DEM</Title>
+            <LegendURL width="96" height="378">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=DEM90&amp;style=DEM&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>DEM</Name>
+            <Title>DEM</Title>
+            <LegendURL width="96" height="378">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=DEM90&amp;style=DEM&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>DEM30</Name>
+          <Title>DEM 30m Raster of Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-111.62664700316454" miny="39.99887778346177" maxx="-111.4996812590396" maxy="40.1254393746457"/>
+          <BoundingBox SRS="EPSG:4326" minx="-111.62664700316454" miny="39.99887778346177" maxx="-111.4996812590396" maxy="40.1254393746457"/>
+          <BoundingBox SRS="CRS:84" minx="-111.62664700316454" miny="39.99887778346177" maxx="-111.4996812590396" maxy="40.1254393746457"/>
+          <BoundingBox SRS="EPSG:26912" minx="446606.94453" miny="4427820.0" maxx="457346.94453" maxy="4441800.0"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2426221503352774E7" miny="4865779.203394245" maxx="-1.2412087741368597E7" maxy="4884187.566186773"/>
+          <Dimension name="elevation" units="EPSG:4979" unitSymbol="m"/>
+          <Extent name="elevation" default="0/3500/0" nearestValue="1">0/3500/0</Extent>
+          <Style>
+            <Name>default</Name>
+            <Title>DEM</Title>
+            <LegendURL width="96" height="378">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=DEM30&amp;style=DEM&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>DEM</Name>
+            <Title>DEM</Title>
+            <LegendURL width="96" height="378">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=DEM30&amp;style=DEM&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>ElevationContours</Name>
+          <Title>Elevationcontours in Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.27637522988542" miny="36.95998094499182" maxx="-108.89924318191146" maxy="42.03261963178724"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27637522988542" miny="36.95998094499182" maxx="-108.89924318191146" maxy="42.03261963178724"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27637522988542" miny="36.95998094499182" maxx="-108.89924318191146" maxy="42.03261963178724"/>
+          <BoundingBox SRS="EPSG:26912" minx="208283.89791279502" miny="4090434.1136976695" maxx="687026.7082341779" maxy="4658593.084625775"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2721187900291907E7" miny="4433530.1140781185" maxx="-1.2122608298783252E7" maxy="5165866.959780006"/>
+        </Layer>
+      </Layer>
+      <Layer queryable="1">
+        <Name>Hydrology</Name>
+        <Title>Hydrology of Utah</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+        <BoundingBox SRS="EPSG:4326" minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+        <BoundingBox SRS="CRS:84" minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+        <BoundingBox SRS="EPSG:26912" minx="100476.23787037673" miny="3921352.4198389575" maxx="800069.5257187326" maxy="4776951.513572968"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.284630024145667E7" miny="4223209.497778415" maxx="-1.1988510770970767E7" maxy="5321204.097666849"/>
+        <Layer queryable="1">
+          <Name>Rivers</Name>
+          <Title>Rivers in Utah County</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-111.94616042756441" miny="39.80903702672721" maxx="-110.87028008856753" maxy="40.557232764622874"/>
+          <BoundingBox SRS="EPSG:4326" minx="-111.94616042756441" miny="39.80903702672721" maxx="-110.87028008856753" maxy="40.557232764622874"/>
+          <BoundingBox SRS="CRS:84" minx="-111.94616042756441" miny="39.80903702672721" maxx="-110.87028008856753" maxy="40.557232764622874"/>
+          <BoundingBox SRS="EPSG:26912" minx="419891.2000000002" miny="4406981.4399999995" maxx="510982.33000000037" maxy="4489611.100000001"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2461789575058583E7" miny="4838230.741257934" maxx="-1.2342023123566953E7" maxy="4947251.333270782"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Rivers</Title>
+            <LegendURL width="32" height="54">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Rivers&amp;style=Rivers&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Rivers</Name>
+            <Title>Rivers</Title>
+            <LegendURL width="32" height="54">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Rivers&amp;style=Rivers&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>GroundWater</Name>
+          <Title>Groundwater in Utah County</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-112.10560086174773" miny="39.87192681942704" maxx="-111.55300510117496" maxy="40.45529050544871"/>
+          <BoundingBox SRS="EPSG:4326" minx="-112.10560086174773" miny="39.87192681942704" maxx="-111.55300510117496" maxy="40.45529050544871"/>
+          <BoundingBox SRS="CRS:84" minx="-112.10560086174773" miny="39.87192681942704" maxx="-111.55300510117496" maxy="40.45529050544871"/>
+          <BoundingBox SRS="EPSG:26912" minx="406249.5999999996" miny="4414117.5" maxx="452710.1000000002" maxy="4478441.35"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2479538403003728E7" miny="4847348.450662587" maxx="-1.2418023724322246E7" maxy="4932326.1170419995"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Groundwater</Title>
+            <LegendURL width="201" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=GroundWater&amp;style=Groundwater&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Groundwater</Name>
+            <Title>Groundwater</Title>
+            <LegendURL width="201" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=GroundWater&amp;style=Groundwater&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>Lakes</Name>
+          <Title>Lakes in Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+          <BoundingBox SRS="EPSG:4326" minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+          <BoundingBox SRS="CRS:84" minx="-115.40027851288826" miny="35.43540497508244" maxx="-107.69462459394548" maxy="43.06062467392451"/>
+          <BoundingBox SRS="EPSG:26912" minx="141176.703125" miny="3928511.55" maxx="769369.103125" maxy="4767571.05"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.284630024145667E7" miny="4223209.497778415" maxx="-1.1988510770970767E7" maxy="5321204.097666849"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Lakes</Title>
+            <LegendURL width="32" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Lakes&amp;style=Lakes&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Lakes</Name>
+            <Title>Lakes</Title>
+            <LegendURL width="32" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Lakes&amp;style=Lakes&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>Springs</Name>
+          <Title>Springs in Utah</Title>
+          <SRS>EPSG:4326</SRS>
+          <SRS>CRS:84</SRS>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:900913</SRS>
+          <LatLonBoundingBox minx="-114.35034239452517" miny="36.960539034789484" maxx="-108.85921784043649" maxy="42.13202081796548"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.35034239452517" miny="36.960539034789484" maxx="-108.85921784043649" maxy="42.13202081796548"/>
+          <BoundingBox SRS="CRS:84" minx="-114.35034239452517" miny="36.960539034789484" maxx="-108.85921784043649" maxy="42.13202081796548"/>
+          <BoundingBox SRS="EPSG:26912" minx="222877.60312500002" miny="4095023.25" maxx="676987.303125" maxy="4664436.05"/>
+          <BoundingBox SRS="EPSG:900913" minx="-1.2729421887395026E7" miny="4433607.86398061" maxx="-1.211815269815143E7" maxy="5180776.083083171"/>
+          <Style>
+            <Name>default</Name>
+            <Title>Springs</Title>
+            <LegendURL width="32" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Springs&amp;style=Springs&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>Springs</Name>
+            <Title>Springs</Title>
+            <LegendURL width="32" height="27">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Springs&amp;style=Springs&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+      <Layer queryable="1">
+        <Name>SatelliteProvo</Name>
+        <Title>Satellite Image of Provo</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-111.69169655778458" miny="40.18440871813573" maxx="-111.61305522469267" maxy="40.25317155578754"/>
+        <BoundingBox SRS="EPSG:4326" minx="-111.69169655778458" miny="40.18440871813573" maxx="-111.61305522469267" maxy="40.25317155578754"/>
+        <BoundingBox SRS="CRS:84" minx="-111.69169655778458" miny="40.18440871813573" maxx="-111.61305522469267" maxy="40.25317155578754"/>
+        <BoundingBox SRS="EPSG:26912" minx="441175.0" miny="4448454.0" maxx="447811.0" maxy="4456038.0"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.2433462786649406E7" miny="4892776.349603759" maxx="-1.242470847349431E7" maxy="4902800.973067479"/>
+      </Layer>
+      <Layer queryable="1">
+        <Name>DominantVegetation</Name>
+        <Title>Dominant vegetation in Utah</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-114.27891133809095" miny="36.95837146137942" maxx="-108.89917982504252" maxy="42.032928574757605"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.27891133809095" miny="36.95837146137942" maxx="-108.89917982504252" maxy="42.032928574757605"/>
+        <BoundingBox SRS="CRS:84" minx="-114.27891133809095" miny="36.95837146137942" maxx="-108.89917982504252" maxy="42.032928574757605"/>
+        <BoundingBox SRS="EPSG:26912" minx="228373.403125" miny="4094604.55" maxx="673951.703125" maxy="4653433.55"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.2721470218565943E7" miny="4433305.893149196" maxx="-1.2122601245928863E7" maxy="5165913.26179389"/>
+        <Style>
+          <Name>default</Name>
+          <Title>DominantVegetation</Title>
+          <LegendURL width="203" height="27">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=DominantVegetation&amp;style=DominantVegetation&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>DominantVegetation</Name>
+          <Title>DominantVegetation</Title>
+          <LegendURL width="203" height="27">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=DominantVegetation&amp;style=DominantVegetation&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>EnergyResources</Name>
+        <Title>Energyresources in Utah</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-114.15601990195164" miny="36.97284527637212" maxx="-108.89894534029372" maxy="42.03034629007543"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.15601990195164" miny="36.97284527637212" maxx="-108.89894534029372" maxy="42.03034629007543"/>
+        <BoundingBox SRS="CRS:84" minx="-114.15601990195164" miny="36.97284527637212" maxx="-108.89894534029372" maxy="42.03034629007543"/>
+        <BoundingBox SRS="EPSG:26912" minx="238558.403125" miny="4095892.05" maxx="673978.203125" maxy="4653145.55"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.270779000647206E7" miny="4435322.444553829" maxx="-1.2122575143206028E7" maxy="5165526.25560005"/>
+        <Style>
+          <Name>default</Name>
+          <Title>EnergyResources</Title>
+          <LegendURL width="129" height="189">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=EnergyResources&amp;style=EnergyResources&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>EnergyResources</Name>
+          <Title>EnergyResources</Title>
+          <LegendURL width="129" height="189">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=EnergyResources&amp;style=EnergyResources&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>Cities</Name>
+        <Title>Cities in Utah County</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-112.10848880337072" miny="39.85405289878031" maxx="-111.02862814904832" maxy="40.46009771191307"/>
+        <BoundingBox SRS="EPSG:4326" minx="-112.10848880337072" miny="39.85405289878031" maxx="-111.02862814904832" maxy="40.46009771191307"/>
+        <BoundingBox SRS="CRS:84" minx="-112.10848880337072" miny="39.85405289878031" maxx="-111.02862814904832" maxy="40.46009771191307"/>
+        <BoundingBox SRS="EPSG:26912" minx="406009.5" miny="4412136.300000001" maxx="497551.2999999998" maxy="4478826.0"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.247985988719464E7" miny="4844756.255077693" maxx="-1.2359650349027779E7" maxy="4933029.423807245"/>
+        <Style>
+          <Name>default</Name>
+          <Title>Cities</Title>
+          <LegendURL width="158" height="81">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Cities&amp;style=Cities&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>Cities</Name>
+          <Title>Cities</Title>
+          <LegendURL width="158" height="81">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=Cities&amp;style=Cities&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="1">
+        <Name>WeatherStations</Name>
+        <Title>Weatherstations in Utah County</Title>
+        <SRS>EPSG:4326</SRS>
+        <SRS>CRS:84</SRS>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:900913</SRS>
+        <LatLonBoundingBox minx="-113.01934846637089" miny="38.440287470710686" maxx="-111.56629505010868" maxy="41.025094027971484"/>
+        <BoundingBox SRS="EPSG:4326" minx="-113.01934846637089" miny="38.440287470710686" maxx="-111.56629505010868" maxy="41.025094027971484"/>
+        <BoundingBox SRS="CRS:84" minx="-113.01934846637089" miny="38.440287470710686" maxx="-111.56629505010868" maxy="41.025094027971484"/>
+        <BoundingBox SRS="EPSG:26912" minx="330187.5966164868" miny="4256460.6503901705" maxx="450589.437745681" maxy="4541709.090664327"/>
+        <BoundingBox SRS="EPSG:900913" minx="-1.258125632106395E7" miny="4641811.743951113" maxx="-1.2419503154670214E7" maxy="5016043.732141797"/>
+        <Dimension name="time" units="ISO8601" unitSymbol=""/>
+        <Extent name="time" default="2009-01-01T00:00:00Z" nearestValue="1">2009-01-01T00:00:00Z/2009-01-07T00:00:00Z/P</Extent>
+        <Style>
+          <Name>default</Name>
+          <Title>Weatherstations</Title>
+          <LegendURL width="174" height="27">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=WeatherStations&amp;style=Weatherstations&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+        <Style>
+          <Name>Weatherstations</Name>
+          <Title>Weatherstations</Title>
+          <LegendURL width="174" height="27">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=WeatherStations&amp;style=Weatherstations&amp;format=image/png"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMT_MS_Capabilities>

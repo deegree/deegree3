@@ -150,7 +150,7 @@ class WmsCapabilities130MetadataWriter {
 
     private void writeInfoFormats( XMLStreamWriter writer )
                             throws XMLStreamException {
-        for ( String f : controller.supportedFeatureInfoFormats.keySet() ) {
+        for ( String f : controller.getFeatureInfoManager().getSupportedFormats() ) {
             writeElement( writer, "Format", f );
         }
     }

@@ -42,7 +42,6 @@ package org.deegree.services.wmts.controller.capabilities;
 
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +56,7 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -64,8 +64,6 @@ import org.deegree.layer.persistence.tile.TileLayer;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.theme.Theme;
-import org.deegree.theme.Themes;
-import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 
@@ -79,12 +77,11 @@ import org.deegree.tile.TileMatrixSet;
  */
 public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
-    private static final String WMTSNS = "http://www.opengis.net/wmts/1.0";
+    static final String WMTSNS = "http://www.opengis.net/wmts/1.0";
 
     private static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
 
     private final XMLStreamWriter writer;
-
 
     private final ServiceProvider provider;
 
@@ -94,8 +91,11 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
     private WmtsCapabilitiesMetadataWriter mdwriter;
 
+    private WmtsLayerWriter layerWriter;
+
     public WMTSCapabilitiesWriter( XMLStreamWriter writer, ServiceIdentification identification,
-                                   ServiceProvider provider, List<Theme> themes, String mdurltemplate ) {
+                                   ServiceProvider provider, List<Theme> themes, String mdurltemplate,
+                                   FeatureInfoManager mgr ) {
         this.writer = writer;
         this.provider = provider;
         this.themes = themes;
@@ -107,7 +107,8 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
             mdurltemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
         }
         this.mdurltemplate = mdurltemplate;
-        this.mdwriter = new WmtsCapabilitiesMetadataWriter(writer, identification);
+        this.mdwriter = new WmtsCapabilitiesMetadataWriter( writer, identification );
+        this.layerWriter = new WmtsLayerWriter( mgr, writer, this );
     }
 
     public void export100()
@@ -135,8 +136,6 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement(); // Capabilities
     }
 
-
-
     private void exportThemes( List<Theme> themes )
                             throws XMLStreamException {
         if ( themes.isEmpty() ) {
@@ -162,7 +161,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-    private void exportMetadata( LayerMetadata md, boolean idOnly, String otherid )
+    void exportMetadata( LayerMetadata md, boolean idOnly, String otherid )
                             throws XMLStreamException {
         if ( !idOnly ) {
             Description desc = md.getDescription();
@@ -201,13 +200,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         // actually used tile matrix sets are going to be collected the first way through the layers
         Set<TileMatrixSet> matrixSets = new LinkedHashSet<TileMatrixSet>();
 
-        for ( Theme t : themes ) {
-            for ( Layer l : Themes.getAllLayers( t ) ) {
-                if ( l instanceof TileLayer ) {
-                    exportLayer( matrixSets, (TileLayer) l );
-                }
-            }
-        }
+        layerWriter.writeLayers( themes, matrixSets );
 
         for ( TileMatrixSet tms : matrixSets ) {
             exportTileMatrixSet( tms );
@@ -251,35 +244,4 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-    private void exportLayer( Set<TileMatrixSet> matrixSets, TileLayer tl )
-                            throws XMLStreamException {
-        LayerMetadata md = tl.getMetadata();
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            matrixSets.add( tds.getTileMatrixSet() );
-        }
-
-        writer.writeStartElement( WMTSNS, "Layer" );
-
-        exportMetadata( md, true, null );
-        writer.writeStartElement( WMTSNS, "Style" );
-        writeElement( writer, OWS110_NS, "Identifier", "default" );
-        writer.writeEndElement();
-        List<String> fmts = new ArrayList<String>();
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            String fmt = tds.getNativeImageFormat();
-            if ( !fmts.contains( fmt ) ) {
-                fmts.add( fmt );
-            }
-        }
-        for ( String fmt : fmts ) {
-            writeElement( writer, WMTSNS, "Format", fmt );
-        }
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
-            writeElement( writer, WMTSNS, "TileMatrixSet", tds.getTileMatrixSet().getIdentifier() );
-            writer.writeEndElement();
-        }
-
-        writer.writeEndElement();
-    }
 }

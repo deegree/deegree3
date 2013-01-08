@@ -181,16 +181,16 @@ Using option element ``CustomFormat``, it possible to plug-in your own Java clas
 
 * ``MimeType``: Mime types associated with this format configuration (and announced in GetCapabilities)
 * ``JavaClass``: Therefore, an implementation of interface ``org.deegree.services.wfs.format.CustomFormat`` must be present on the classpath.
-* ``Config``: 
+* ``Config``:
 
 ^^^^^^^^^^^^^^^^^^^^
 Controlling Metadata
 ^^^^^^^^^^^^^^^^^^^^
 
 These settings affect the metadata returned in the GetCapabilities response.
- 
+
 * ``MetadataURLTemplate``:
-* ``FeatureTypeMetadata``:  
+* ``FeatureTypeMetadata``:
 
 * ``ExtendedCapabilities``: By default, the GetCapabilites response does not contain any extended capabilities elements in the OperationsMetadata section. The child elements of this option will be included in the OperationMetadata section to provide these extended capabilities, e.g. an ``inspire_ds:ExtendedCapabilities`` element. The attribute ``wfsVersions`` is as white-space separated list of WFS versions (1.0.0, 1.1.0 or 2.0.0) for which the extended capabilities shall be returned.
 
@@ -315,6 +315,8 @@ Here is an example snippet of the content section:
 
   </ServiceConfiguration>
 
+.. _anchor-featureinfo-configuration:
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom feature info formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -338,16 +340,171 @@ The configuration for the XSLT approach looks like this:
 
   <FeatureInfoFormats>
     <GetFeatureInfoFormat>
-      <XSLTFile>../customformat.xsl</XSLTFile>
+      <XSLTFile gmlVersion="GML_32">../customformat.xsl</XSLTFile>
       <Format>text/html</Format>
     </GetFeatureInfoFormat>
   </FeatureInfoFormats>
 
 Of course it is possible to define as many custom formats as you want, as long as you use a different mime type for each (just duplicate the ``GetFeatureInfoFormat`` element). If you use one of the default formats, the default output will be overridden with your configuration.
 
-In order to write your XSLT script, it is best to develop it against a GetFeatureInfo output in GML 2 format, that's the input the XSLT script will get. It is not possible yet to receive a different format for XSLT input.
+In order to write your XSLT script, you'll need to develop it against a specific GML version (namespaces between GML versions may differ, GML output itself will differ). The default is GML 3.2, you can override it by specifying the ``gmlVersion`` attribute on the ``XSLTFile`` element. Valid GML version strings are ``GML_2``, ``GML_30``, ``GML_31`` and ``GML_32``.
 
-If you want to learn more about the templating format, http://wiki.deegree.org/deegreeWiki/deegree3/WMSConfiguration#GetFeatureInfoHTML is a starting point. (TODO describe properly)
+If you want to learn more about the templating format, read the following sections.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FeatureInfo templating format
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The templating format can be used to create text based output formats for featureinfo output. It uses a number of definitions, rules and special constructs to replace content with other content based on feature and property values. Please note that you should make sure your file is UTF-8 encoded if you're using umlauts.
+
+""""""""""""""""""""
+Introduction/Example
+""""""""""""""""""""
+
+This section gives a quick overview how the format works and demonstrates the development of a small sample HTML output.
+
+On top level, you can have a number of *template definitions*. A template always has a name, and there always needs to be a template named ``start`` (yes, it's the one we start with).
+
+A simple valid templating file that does not actually depend on the features coming in looks like this:
+
+.. code-block:: xml
+
+  <?template start>
+  <html>
+  <body>
+    <p>Hello</p>
+  </body>
+  </html>
+
+A featureinfo request will now always yield the body of this template. In order to use the features coming in, you need to define other templates, and call them from a template. So let's add another template, and call it from the ``start`` template:
+
+.. code-block:: xml
+
+  <?template start>
+  <html>
+  <body>
+  <ul>
+  <?feature *:myfeaturetemplate>
+  </ul>
+  </body>
+  </html>
+
+  <?template myfeaturetemplate>
+  <li>I have a feature</li>
+
+What happens now is that first the body of the ``start`` template is being output. In that output, the ``<?feature *:myfeaturetemplate>`` is replaced with the content of the ``myfeaturetemplate`` template for each feature in the feature collection. So if your query hits five features, you'll get five ``li`` tags like in the template. The asterisk is used to select all features, it's possible to limit the number of objects matched. See below in the reference section for a detailed explanation on how it works.
+
+Within the ``myfeaturetemplate`` template you have switched context. In the ``start`` template your context is the feature collection, and you can call *feature templates*. In the ``myfeaturetemplate`` you 'went down' the tree and are now in a feature context, where you can call *property templates*. So what can we do in a feature context? Let's start simple by writing out the feature type name. Change the ``myfeaturetemplate`` like this:
+
+.. code-block:: xml
+
+  <?template myfeaturetemplate>
+  <li>I have a <?name> feature</li>
+
+What happens now is that for each use of the ``myfeaturetemplate`` the ``<?name>`` part is being replaced with the name of the feature type of the feature you hit. So if you hit two features, each of a different type, you get two different ``li`` tags in the document, each with its name written in it.
+
+So deegree only replaces the *template call* in the ``start`` template with its replacement once the special constructs in the *called* template are all replaced, and all the special constructs/calls within *that* template are all replaced, ... and so on.
+
+Let's take it to the next level. What's you really want to do in featureinfo responses is of course get the value of the features' properties. So let's add another template, and call it from the ``myfeaturetemplate`` template:
+
+.. code-block:: xml
+
+  <?template myfeaturetemplate>
+  <li>I have a <?name> feature and properties: <?property *:mypropertytemplate></li>
+
+  <?template mypropertytemplate>
+  <?name>=<?value>
+
+Now you also get all property names and values in the ``li`` item. Note that again you switched the context in the template, now you are at property level. The ``<?name>`` and ``<?value>`` special constructs yield the property name and value, respectively (remember, we're at property level here).
+
+While that's already nice, people often put non human readable values in properties, even property names are sometimes not human readable. In order to fix that, you often have code lists mapping the codes to proper text. To use these, there's a special kind of template called a *map*. A map is like a simple property file. Let's have a look at how to define one:
+
+.. code-block:: xml
+
+  <?map mycodelistmap>
+  code1=Street
+  code2=Highway
+  code3=Railway
+
+  <?map mynamecodelistmap>
+  tp=Type of way
+
+Looks simple enough. Instead of ``template`` we use map, after that comes the name. Then we just map codes to values. So how do we use this? Instead of just using the ``<?name>`` or ``<?value>`` we push it through the map:
+
+.. code-block:: xml
+
+  <?template mypropertytemplate>
+  <?name:map mynamecodelistmap>=<?value:map mycodelistmap>
+
+Here the name of the property is replaced with values from the ``mynamecodelistmap``, the value is replaced with values from the ``mycodelistmap``. If the map does not contain a fitting mapping, the original value is used instead.
+
+That concludes the introduction, the next section explains all available special constructs in detail.
+
+"""""""""""""""""""""""""""""
+Templating special constructs
+"""""""""""""""""""""""""""""
+
+This section shows all available special constructs. The selectors are explained in the table below. The validity describes in which context the construct can be used (and where the description applies). The validity can be one of *top level* (which means it's the definition of something), *featurecollection* (the ``start`` template), *feature* (a template on feature level), *property* (a template on property level) or *map* (a map definition).
+
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| Construct                     | Validity          | Description                                                                                     |
++===============================+===================+=================================================================================================+
+| <?template *name*>            | top level         | defines a template with name *name*                                                             |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?map *name*>                 | top level         | defines a map with name *name*                                                                  |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?feature *selector*:*name*>  | featurecollection | calls the template with name *name* for features matching the selector *selector*               |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?property *selector*:*name*> | feature           | calls the template with name *name* for properties matching the selector *selector*             |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name>                       | feature           | evaluates to the feature type name                                                              |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name>                       | property          | evaluates to the property name                                                                  |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name:map *name*>            | feature           | uses the map *name* to map the feature type name to a value                                     |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name:map *name*>            | property          | uses the map *name* to map the property name to a value                                         |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?value>                      | property          | evaluates to the property's value                                                               |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?value:map *name*>           | property          | uses the map *name* to map the property's value to another value                                |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?index>                      | feature           | evaluates to the index of the feature (in the list of matches from the previous template call)  |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?index>                      | property          | evaluates to the index of the property (in the list of matches from the previous template call) |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?gmlid>                      | feature           | evaluates to the feature's gml:id                                                               |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?odd:*name*>                 | feature           | calls the *name* template if the index of the current feature is odd                            |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?odd:*name*>                 | property          | calls the *name* template if the index of the current property is odd                           |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?even:*name*>                | feature           | calls the *name* template if the index of the current feature is even                           |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?even:*name*>                | property          | calls the *name* template if the index of the current property is even                          |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?link>                       | property          | evaluates to a HTML <a href> link with the value of the property as target and text             |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?link:*prefix*>              | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?link:*prefix*:*text*>       | property          | the text of the link will be *text* instead of the link address                                 |
++-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+
+The selector for properties and features is a kind of pattern matching on the object's name.
+
++--------------------------+----------------------------------------------------------+
+| Selector                 | Description                                              |
++==========================+==========================================================+
+| \*                       | matches all objects                                      |
++--------------------------+----------------------------------------------------------+
+| \* *text*                | matches all objects with names ending in *text*          |
++--------------------------+----------------------------------------------------------+
+| *text* \*                | matches all objects with names starting with *text*      |
++--------------------------+----------------------------------------------------------+
+| not(*selector*)          | matches all objects not matching the selector *selector* |
++--------------------------+----------------------------------------------------------+
+| *selector1*, *selector2* | matches all objects matching *selector1* and *selector2* |
++--------------------------+----------------------------------------------------------+
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
@@ -419,6 +576,17 @@ The following table lists all available configuration options. When specifiying 
 | ThemeId                  | 0..n         | String  | Limits themes to use                                                         |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 
+Below the ``ServiceConfiguration`` section you can specify custom featureinfo format handlers:
+
+.. code-block:: xml
+  ...
+  </ServiceConfiguration>
+  <FeatureInfoFormats>
+  ...
+  </FeatureInfoFormats>
+
+Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured.
+
 .. _anchor-configuration-csw:
 
 -----------------------------------
@@ -433,7 +601,7 @@ In deegree terminology, a deegree CSW provides access to metadata records stored
    :target: _images/workspace-csw.png
 
    A CSW resource is connected to exactly one metadata store resource
-   
+
 .. tip::
   In order to fully understand deegree CSW configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-metadatastore` describes the configuration of metadatastores.
 
@@ -443,7 +611,7 @@ The deegree CSW config file format is defined by schema file http://schemas.deeg
 
    .. literalinclude:: xml/csw_basic.xml
       :language: xml
-   
+
 The following table lists all available configuration options. When specifiying them, their order must be respected.
 
 .. table:: Options for ``deegreeCSW``
@@ -472,7 +640,7 @@ The following table lists all available configuration options. When specifiying 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Extended Functionality
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-* deegree3 CSW (up to 3.2-pre11) supports JSON as additional output format. Use *outputFormat="application/json"* in your GetRecords or GetRecordById Request to get the matching records in JSON.  
+* deegree3 CSW (up to 3.2-pre11) supports JSON as additional output format. Use *outputFormat="application/json"* in your GetRecords or GetRecordById Request to get the matching records in JSON.
 
 
 .. _anchor-configuration-wps:
@@ -522,7 +690,7 @@ This type of metadata is attached to the datasets that a service offers (e.g. la
 Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
-Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. It is not defined by the OGC specifications, but by extensions, such as the INSPIRE service specifications. deegree treats this section as a generic XML element and does not validate it. Please have a look at the service specific section for configuring this type of metadata. 
+Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. It is not defined by the OGC specifications, but by extensions, such as the INSPIRE service specifications. deegree treats this section as a generic XML element and does not validate it. Please have a look at the service specific section for configuring this type of metadata.
 
 ------------------------
 Controller configuration

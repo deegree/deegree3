@@ -46,12 +46,13 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 
 /**
- * A {@link Tile} that is backed by an image file on the file system.
+ * A {@link Tile} that is backed by a {@link FileSystemTileStore}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -104,5 +105,11 @@ class FileSystemTile implements Tile {
     @Override
     public Envelope getEnvelope() {
         return bbox;
+    }
+
+    @Override
+    public FeatureCollection getFeatures( int i, int j, int limit )
+                            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException( "Feature retrieval is not supported by the FileSystemTileStore." );
     }
 }
