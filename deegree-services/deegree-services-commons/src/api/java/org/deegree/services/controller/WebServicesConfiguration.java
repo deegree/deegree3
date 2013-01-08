@@ -460,4 +460,22 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
             values.remove( value );
         }
     }
+
+    OWS getSingleConfiguredService() {
+        ResourceState<OWS>[] states = getStates();
+        OWS found = null;
+        for ( ResourceState<OWS> s : states ) {
+            if ( s.getResource() != null && found == null ) {
+                found = s.getResource();
+            } else if ( s.getResource() != null ) {
+                return null;
+            }
+        }
+        return found;
+    }
+
+    boolean isSingleServiceConfigured() {
+        return getSingleConfiguredService() != null;
+    }
+
 }
