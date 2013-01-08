@@ -43,7 +43,7 @@ package org.deegree.tile;
  * 
  * @version $Revision$, $Date$
  */
-public class TileIOException extends Exception {
+public class TileIOException extends RuntimeException {
 
     private static final long serialVersionUID = -336113433539622673L;
 

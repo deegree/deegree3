@@ -55,6 +55,8 @@ public class Layer {
 
     private final List<String> formats;
 
+    private final List<String> infoFormats;
+
     private final List<String> tileMatrixSets;
 
     /**
@@ -67,13 +69,17 @@ public class Layer {
      * @param formats
      *            supported valid output MIME types for a tile, must not be <code>null</code> and contain at least one
      *            entry
+     * @param infoFormats
+     *            supported valid output FeatureInfo output formats, may be empty, but never <code>null</code>
      * @param tileMatrixSets
      *            identifiers of the tile matrix sets, must not be <code>null</code> and contain at least one entry
      */
-    Layer( String identifier, List<Style> styles, List<String> formats, List<String> tileMatrixSets ) {
+    Layer( String identifier, List<Style> styles, List<String> formats, List<String> infoFormats,
+           List<String> tileMatrixSets ) {
         this.identifier = identifier;
         this.styles = styles;
         this.formats = formats;
+        this.infoFormats = infoFormats;
         this.tileMatrixSets = tileMatrixSets;
     }
 
@@ -102,6 +108,15 @@ public class Layer {
      */
     public List<String> getFormats() {
         return formats;
+    }
+
+    /**
+     * Returns the supported valid output formats for a FeatureInfo document request.
+     * 
+     * @return supported valid output FeatureInfo output formats, may be empty, but never <code>null</code>
+     */
+    public List<String> getInfoFormats() {
+        return infoFormats;
     }
 
     /**

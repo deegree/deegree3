@@ -103,6 +103,26 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         return layers;
     }
 
+    /**
+     * Returns metadata on the specified layer.
+     * 
+     * @param layerId
+     *            identifier of the layer, must not be <code>null</code>
+     * @return metadata on the offered layers, may be <code>null</code> (no such layer)
+     * @throws XMLStreamException
+     *             if parsing the <code>wmts:Layer</code> elements in the capabilities document fails
+     */
+    public Layer getLayer( String layerId )
+                            throws XMLStreamException {
+        List<Layer> layers = getLayers();
+        for ( Layer layer : layers ) {
+            if ( layer.getIdentifier().equals( layerId ) ) {
+                return layer;
+            }
+        }
+        return null;
+    }
+
     private synchronized void initLayerInformation()
                             throws XMLStreamException {
         layers = capaDoc.parseLayers();
@@ -134,10 +154,8 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
      */
     public TileMatrixSet getTileMatrixSet( String tileMatrixSetId )
                             throws XMLStreamException {
-        System.out.println ("Looking for: " + tileMatrixSetId);
         List<TileMatrixSet> tileMatrixSets = getTileMatrixSets();
         for ( TileMatrixSet tileMatrixSet : tileMatrixSets ) {
-            System.out.println (tileMatrixSet.getIdentifier());
             if ( tileMatrixSet.getIdentifier().equals( tileMatrixSetId ) ) {
                 return tileMatrixSet;
             }

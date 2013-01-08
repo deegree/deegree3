@@ -53,6 +53,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
+import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeManager;
 import org.slf4j.Logger;
@@ -77,6 +78,8 @@ class WmtsBuilder {
     private String metadataUrlTemplate;
 
     private ArrayList<Theme> themes;
+
+    private FeatureInfoFormatsType featureInfoConf;
 
     WmtsBuilder( XMLAdapter controllerConf, DeegreeWorkspace workspace ) throws ResourceInitException {
         DeegreeWMTS conf;
@@ -103,6 +106,8 @@ class WmtsBuilder {
             }
             themes.add( t );
         }
+
+        featureInfoConf = conf.getFeatureInfoFormats();
     }
 
     String getMetadataUrlTemplate() {
@@ -111,6 +116,10 @@ class WmtsBuilder {
 
     List<Theme> getThemes() {
         return themes;
+    }
+
+    FeatureInfoFormatsType getFeatureInfoFormatsConf() {
+        return featureInfoConf;
     }
 
 }
