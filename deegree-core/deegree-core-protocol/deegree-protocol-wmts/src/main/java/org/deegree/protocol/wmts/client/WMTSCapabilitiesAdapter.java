@@ -94,6 +94,8 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
     private static final QName FORMAT = new QName( WMTS_100_NS, "Format" );
 
+    private static final QName INFO_FORMAT = new QName( WMTS_100_NS, "InfoFormat" );
+
     private static final QName TILE_MATRIX_SET_LINK = new QName( WMTS_100_NS, "TileMatrixSetLink" );
 
     private static final QName TILE_MATRIX_SET_LIMITS = new QName( WMTS_100_NS, "TileMatrixSetLimits" );
@@ -199,6 +201,12 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         }
 
         // <element name="InfoFormat" type="ows:MimeType" minOccurs="0" maxOccurs="unbounded">
+        List<String> infoFormats = new ArrayList<String>();
+        while ( xmlStream.isStartElement() && INFO_FORMAT.equals( xmlStream.getName() ) ) {
+            infoFormats.add( xmlStream.getElementText().trim() );
+            nextElement( xmlStream );
+        }
+
         // <element ref="wmts:Dimension" minOccurs="0" maxOccurs="unbounded">
 
         // <element ref="wmts:TileMatrixSetLink" maxOccurs="unbounded">
@@ -214,7 +222,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
             xmlStream.next();
         }
 
-        return new Layer( identifier, styles, formats, tileMatrixSets );
+        return new Layer( identifier, styles, formats, infoFormats, tileMatrixSets );
     }
 
     private Style parseStyle( XMLStreamReader xmlStream )

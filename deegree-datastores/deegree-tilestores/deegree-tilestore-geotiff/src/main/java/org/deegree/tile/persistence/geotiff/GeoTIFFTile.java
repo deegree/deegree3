@@ -52,20 +52,20 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 
 /**
- * <code>GeoTIFFTile</code> is a Tile implementation that reads from a GeoTIFF/BigTIFF file, through
- * ImageIO/imageio-ext. Uses an object pool to cache readers (they take a long time to startup).
+ * A {@link Tile} that is read from a GeoTIFF/BigTIFF file, through ImageIO/imageio-ext. Uses an object pool to cache
+ * readers (they take a long time to startup). </p>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class GeoTIFFTile implements Tile {
 
     // private static final Logger LOG = getLogger( GeoTIFFTile.class );
@@ -97,7 +97,7 @@ public class GeoTIFFTile implements Tile {
             reader = (ImageReader) readerPool.borrowObject();
             BufferedImage img = reader.readTile( imageIndex, x, y );
             if ( img.getWidth() != sizeX || img.getHeight() != sizeY ) {
-                Hashtable table = new Hashtable();
+                Hashtable<Object, Object> table = new Hashtable<Object, Object>();
                 String[] props = img.getPropertyNames();
                 if ( props != null ) {
                     for ( String p : props ) {
@@ -139,5 +139,11 @@ public class GeoTIFFTile implements Tile {
     @Override
     public Envelope getEnvelope() {
         return envelope;
+    }
+
+    @Override
+    public FeatureCollection getFeatures( int i, int j, int limit )
+                            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException( "Feature retrieval is not supported by the GeoTIFFTileStore." );
     }
 }

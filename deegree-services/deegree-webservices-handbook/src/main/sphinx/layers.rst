@@ -198,7 +198,9 @@ The rendering options are basically the same as the WMS layer options. Here's a 
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
 | MaxFeatures            | 0..1              | Integer   | Maximum number of features to render at once, default is 10000                                    |
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
-| FeatureInfoRadius      | 0..1              | Integer   | Number of pixels to consider when doing GetFeatureInfo, default is 1                              |
+| FeatureInfo            | 0..1              | None      | attribute *enabled*: if false, feature info is disabled (default is true)                         |
++------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
+| FeatureInfo            | 0..1              | None      | attribute *pixelRadius*: Number of pixels to consider when doing GetFeatureInfo, default is 1     |
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
 
 Here is an example snippet:

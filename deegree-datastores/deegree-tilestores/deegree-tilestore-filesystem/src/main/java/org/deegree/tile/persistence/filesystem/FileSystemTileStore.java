@@ -54,7 +54,7 @@ public class FileSystemTileStore extends GenericTileStore {
      * Creates a new {@link FileSystemTileStore} instance.
      * 
      * @param tileDataSets
-     *            the tile data sets to serve
+     *            the tile data sets to serve, must not be <code>null</code>
      */
     public FileSystemTileStore( Map<String, TileDataSet> tileDataSets ) {
         super( tileDataSets );

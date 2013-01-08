@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,27 +33,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.feature.persistence.memory;
 
 import static org.deegree.feature.i18n.Messages.getMessage;
-import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REMOVE;
-import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REPLACE;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
@@ -66,8 +60,9 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
-import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -79,12 +74,10 @@ import org.deegree.geometry.linearization.GeometryLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
-import org.deegree.protocol.wfs.transaction.action.UpdateAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,27 +104,33 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final StoredFeatures sf;
 
+    private final LockManager lockManager;
+
     /**
      * Creates a new {@link MemoryFeatureStoreTransaction} instance.
      * 
      * @param fs
-     *            invoking feature store instance, never <code>null</code>
+     *            invoking feature store instance, must not be <code>null</code>
+     * @param sf
+     *            copy of features to work on, must not be <code>null</code>
+     * @param lockManager
+     *            lock manager, must not be <code>null</code>
      */
-    MemoryFeatureStoreTransaction( MemoryFeatureStore fs ) {
+    MemoryFeatureStoreTransaction( MemoryFeatureStore fs, StoredFeatures sf, LockManager lockManager ) {
         this.fs = fs;
-        this.sf = new StoredFeatures( fs.getSchema(), fs.getStorageCRS(), fs.storedFeatures );
+        this.sf = sf;
+        this.lockManager = lockManager;
     }
 
     @Override
     public void commit()
                             throws FeatureStoreException {
         try {
-            sf.buildMaps();
+            sf.rebuildIndexes();
         } catch ( UnknownCRSException e ) {
             throw new FeatureStoreException( e.getMessage() );
         }
-        fs.storedFeatures = sf;
-        fs.releaseTransaction( this );
+        fs.releaseTransaction( this, sf );
     }
 
     @Override
@@ -149,15 +148,16 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
         }
 
-        FeatureCollection fc = sf.ftToFeatures.get( ft );
+        FeatureCollection fc = sf.getFeatures( ft );
         int deleted = 0;
         if ( fc != null ) {
             try {
-                FeatureCollection delete = fc.getMembers( filter, sf.evaluator );
+                TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
+                FeatureCollection delete = fc.getMembers( filter, evaluator );
 
                 // check if all can be deleted
                 for ( Feature feature : delete ) {
-                    if ( !fs.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
+                    if ( !lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
                         if ( lockId == null ) {
                             throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID",
                                                                              feature.getId() ), "lockId" );
@@ -169,7 +169,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
                 deleted = delete.size();
                 for ( Feature feature : delete ) {
-                    fc.remove( feature );
+                    sf.removeFeature( feature );
                     if ( lock != null ) {
                         lock.release( feature.getId() );
                     }
@@ -189,7 +189,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         // check if all features can be deleted
         for ( ResourceId id : filter.getSelectedIds() ) {
-            if ( !fs.lockManager.isFeatureModifiable( id.getRid(), lockId ) ) {
+            if ( !lockManager.isFeatureModifiable( id.getRid(), lockId ) ) {
                 if ( lockId == null ) {
                     throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id.getRid() ),
                                                          "lockId" );
@@ -199,20 +199,21 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
 
+        int deleted = 0;
         for ( ResourceId id : filter.getSelectedIds() ) {
-            GMLObject obj = sf.idToObject.get( id.getRid() );
+            GMLObject obj = sf.getObjectById( id.getRid() );
             if ( obj != null ) {
                 if ( obj instanceof Feature ) {
                     Feature f = (Feature) obj;
-                    FeatureType ft = f.getType();
-                    sf.ftToFeatures.get( ft ).remove( f );
+                    sf.removeFeature( f );
+                    deleted++;
                 }
             }
             if ( lock != null ) {
                 lock.release( id.getRid() );
             }
         }
-        return filter.getSelectedIds().size();
+        return deleted;
     }
 
     @Override
@@ -242,7 +243,9 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         LOG.debug( "Assigning ids / finding features and geometries took {} [ms]", elapsed );
 
         begin = System.currentTimeMillis();
-        sf.addFeatures( features );
+        for ( Feature feature : features ) {
+            sf.addFeature( feature );
+        }
         elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Adding of features took {} [ms]", elapsed );
 
@@ -270,6 +273,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
             @Override
             public boolean visitFeature( Feature feature ) {
+                return true;
+            }
+
+            @Override
+            public boolean visitReference( Reference<?> ref ) {
                 return true;
             }
         };
@@ -319,6 +327,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     feature.setId( id );
                     features.add( feature );
                 }
+                return true;
+            }
+
+            @Override
+            public boolean visitReference( Reference<?> ref ) {
                 return true;
             }
         };
@@ -404,7 +417,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         }
-        feature.setEnvelope( null );
+        feature.setEnvelope( feature.calcEnvelope() );
         return feature;
     }
 
@@ -469,15 +482,16 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
         }
 
-        FeatureCollection fc = sf.ftToFeatures.get( ft );
+        FeatureCollection fc = sf.getFeatures( ft );
         List<String> updatedFids = new ArrayList<String>();
         if ( fc != null ) {
             try {
-                FeatureCollection update = fc.getMembers( filter, sf.evaluator );
+                TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
+                FeatureCollection update = fc.getMembers( filter, evaluator );
 
                 // check if all features can be updated
                 for ( Feature feature : update ) {
-                    if ( !fs.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
+                    if ( !lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
                         if ( lockId == null ) {
                             throw new MissingParameterException( getMessage( "TA_UPDATE_LOCKED_NO_LOCK_ID",
                                                                              feature.getId() ), "lockId" );
@@ -489,76 +503,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
                 for ( Feature feature : update ) {
                     updatedFids.add( feature.getId() );
-                    for ( ParsedPropertyReplacement replacement : replacementProps ) {
-                        Property prop = replacement.getNewValue();
-                        UpdateAction updateAction = replacement.getUpdateAction();
-                        GenericProperty newProp = new GenericProperty( prop.getType(), null );
-                        if ( prop.getValue() != null ) {
-                            newProp.setValue( prop.getValue() );
-                        } else if ( !prop.getChildren().isEmpty() && prop.getChildren().get( 0 ) != null ) {
-                            newProp.setChildren( prop.getChildren() );
-                        } else if ( updateAction == null ) {
-                            updateAction = REMOVE;
-                        }
-
-                        if ( updateAction == null ) {
-                            updateAction = REPLACE;
-                        }
-
-                        int idx = replacement.getIndex();
-                        switch ( updateAction ) {
-                        case INSERT_AFTER:
-                            List<Property> ps = feature.getProperties();
-                            ListIterator<Property> iter = ps.listIterator();
-                            while ( iter.hasNext() ) {
-                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
-                                    --idx;
-                                }
-                                if ( idx < 0 ) {
-                                    iter.add( newProp );
-                                    break;
-                                }
-                            }
-                            break;
-                        case INSERT_BEFORE:
-                            ps = feature.getProperties();
-                            iter = ps.listIterator();
-                            while ( iter.hasNext() ) {
-                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
-                                    --idx;
-                                }
-                                if ( idx == 0 ) {
-                                    iter.add( newProp );
-                                    break;
-                                }
-                            }
-                            break;
-                        case REMOVE:
-                            ps = feature.getProperties();
-                            iter = ps.listIterator();
-                            while ( iter.hasNext() ) {
-                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
-                                    iter.remove();
-                                }
-                            }
-                            break;
-                        case REPLACE:
-                            ps = feature.getProperties();
-                            iter = ps.listIterator();
-                            while ( iter.hasNext() ) {
-                                if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
-                                    --idx;
-                                }
-                                if ( idx < 0 ) {
-                                    iter.set( newProp );
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-
-                        validateProperties( feature, feature.getProperties() );
-                    }
+                    sf.updateFeature( feature, replacementProps );
                     if ( lock != null ) {
                         lock.release( feature.getId() );
                     }
@@ -568,55 +513,6 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
         return updatedFids;
-    }
-
-    private void validateProperties( Feature feature, List<Property> props ) {
-        Map<PropertyType, Integer> ptToCount = new HashMap<PropertyType, Integer>();
-        for ( Property prop : props ) {
-
-            if ( prop.getValue() instanceof Geometry ) {
-                Geometry geom = (Geometry) prop.getValue();
-                if ( geom != null ) {
-                    Property current = feature.getProperties( prop.getType().getName() ).get( 0 );
-                    Geometry currentGeom = current != null ? ( (Geometry) current.getValue() ) : null;
-                    // check compatibility (CRS) for geometry replacements (CITE
-                    // wfs:wfs-1.1.0-Transaction-tc7.2)
-                    if ( currentGeom != null && currentGeom.getCoordinateDimension() != geom.getCoordinateDimension() ) {
-                        String msg = "Cannot replace given geometry property '" + prop.getType().getName()
-                                     + "' with given value (wrong dimension).";
-                        throw new InvalidParameterValueException( msg );
-                    }
-                    // check compatibility (geometry type) for geometry replacements (CITE
-                    // wfs:wfs-1.1.0-Transaction-tc10.1)
-                    QName qname = new QName( "http://cite.opengeospatial.org/gmlsf", "surfaceProperty" );
-                    if ( !( geom instanceof Surface ) && prop.getType().getName().equals( qname ) ) {
-                        String msg = "Cannot replace given geometry property '" + prop.getType().getName()
-                                     + "' with given value (wrong type).";
-                        throw new InvalidParameterValueException( msg );
-                    }
-                }
-            }
-
-            Integer count = ptToCount.get( prop.getType() );
-            if ( count == null ) {
-                count = 1;
-            } else {
-                count++;
-            }
-            ptToCount.put( prop.getType(), count );
-        }
-        for ( PropertyType pt : feature.getType().getPropertyDeclarations() ) {
-            int count = ptToCount.get( pt ) == null ? 0 : ptToCount.get( pt );
-            if ( count < pt.getMinOccurs() ) {
-                String msg = "Update would result in invalid feature: property '" + pt.getName()
-                             + "' must be present at least " + pt.getMinOccurs() + " time(s).";
-                throw new InvalidParameterValueException( msg );
-            } else if ( pt.getMaxOccurs() != -1 && count > pt.getMaxOccurs() ) {
-                String msg = "Update would result in invalid feature: property '" + pt.getName()
-                             + "' must be present no more than " + pt.getMaxOccurs() + " time(s).";
-                throw new InvalidParameterValueException( msg );
-            }
-        }
     }
 
     @Override
@@ -639,6 +535,6 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void rollback()
                             throws FeatureStoreException {
-        fs.releaseTransaction( this );
+        fs.releaseTransaction( this, null );
     }
 }

@@ -71,8 +71,6 @@ public class LayerMetadata {
 
     private DoublePair scaleDenominators = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
 
-    private boolean queryable = true;
-
     private List<FeatureType> featureTypes = new ArrayList<FeatureType>();
 
     private int cascaded;
@@ -160,7 +158,10 @@ public class LayerMetadata {
      * @return the queryable
      */
     public boolean isQueryable() {
-        return queryable;
+        if ( mapOptions == null ) {
+            return true;
+        }
+        return mapOptions.getFeatureInfoRadius() > 0;
     }
 
     /**
@@ -168,7 +169,21 @@ public class LayerMetadata {
      *            the queryable to set
      */
     public void setQueryable( boolean queryable ) {
-        this.queryable = queryable;
+        if ( mapOptions != null ) {
+            if ( queryable ) {
+                if ( mapOptions.getFeatureInfoRadius() < 1 ) {
+                    mapOptions.setFeatureInfoRadius( 1 );
+                }
+            } else {
+                if ( mapOptions.getFeatureInfoRadius() > 0 ) {
+                    mapOptions.setFeatureInfoRadius( 0 );
+                }
+            }
+        } else if ( queryable ) {
+            mapOptions = new MapOptions( null, null, null, -1, 1 );
+        } else {
+            mapOptions = new MapOptions( null, null, null, -1, 0 );
+        }
     }
 
     /**
