@@ -36,6 +36,10 @@
       <id>deegree-snapshots</id>
       <url>http://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
+    <site>
+      <id>apidoc.deegree.org</id>
+      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
+    </site>
   </distributionManagement>
 
   <pluginRepositories>
