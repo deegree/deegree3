@@ -591,6 +591,9 @@ public class OGCFrontController extends HttpServlet {
             // remove start "/"
             String serviceId = pathInfo.substring( 1 );
             ows = serviceConfiguration.get( serviceId );
+            if ( ows == null && serviceConfiguration.isSingleServiceConfigured() ) {
+                ows = serviceConfiguration.getSingleConfiguredService();
+            }
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
                 OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
@@ -619,6 +622,9 @@ public class OGCFrontController extends HttpServlet {
             }
 
             ows = serviceConfiguration.get( serviceId );
+            if ( ows == null && serviceConfiguration.isSingleServiceConfigured() ) {
+                ows = serviceConfiguration.getSingleConfiguredService();
+            }
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
                 OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
