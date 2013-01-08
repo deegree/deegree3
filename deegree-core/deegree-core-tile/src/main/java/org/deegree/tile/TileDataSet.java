@@ -95,4 +95,5 @@ public interface TileDataSet {
      * @return mime type, never <code>null</code>
      */
     String getNativeImageFormat();
+
 }

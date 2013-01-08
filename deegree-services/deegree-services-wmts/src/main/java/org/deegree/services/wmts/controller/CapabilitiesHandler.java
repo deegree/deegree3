@@ -53,6 +53,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -79,9 +80,12 @@ class CapabilitiesHandler {
 
     private List<Theme> themes;
 
+    private FeatureInfoManager mgr;
+
     CapabilitiesHandler( DeegreeServicesMetadataType mainMetadataConf, DeegreeWorkspace workspace,
-                             String metadataUrlTemplate, String wmtsId, List<Theme> themes ) {
+                         String metadataUrlTemplate, String wmtsId, List<Theme> themes, FeatureInfoManager mgr ) {
         this.themes = themes;
+        this.mgr = mgr;
         identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
         provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
 
@@ -102,7 +106,7 @@ class CapabilitiesHandler {
                             throws XMLStreamException {
         // GetCapabilities gc =
         GetCapabilitiesKVPParser.parse( map );
-        new WMTSCapabilitiesWriter( writer, identification, provider, themes, metadataUrlTemplate ).export100();
+        new WMTSCapabilitiesWriter( writer, identification, provider, themes, metadataUrlTemplate, mgr ).export100();
     }
 
 }

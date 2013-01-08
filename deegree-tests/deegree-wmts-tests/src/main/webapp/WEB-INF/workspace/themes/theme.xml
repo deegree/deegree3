@@ -1,6 +1,6 @@
 <Themes xmlns="http://www.deegree.org/themes/standard" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd">
 
-  <LayerStoreId>pyramid</LayerStoreId>
+  <LayerStoreId>tilelayers</LayerStoreId>
 
   <Theme>
     <Identifier>base</Identifier>
@@ -42,6 +42,16 @@
       <Layer>remotewms_cache</Layer>
     </Theme>
     <Theme>
+      <Identifier>remotewms_dominant_vegetation</Identifier>
+      <d:Title>IT test layer remotewms (Dominant Vegetation)</d:Title>
+      <Layer>remotewms_dominant_vegetation</Layer>
+    </Theme>    
+    <Theme>
+      <Identifier>remotewms_dominant_vegetation_cached</Identifier>
+      <d:Title>IT test layer remotewms (Dominant Vegetation)</d:Title>
+      <Layer>remotewms_dominant_vegetation_cached</Layer>
+    </Theme>    
+    <Theme>
       <Identifier>filesystem</Identifier>
       <d:Title>IT test layer filesystem</d:Title>
       <Layer>filesystem</Layer>
@@ -60,6 +70,11 @@
       <Identifier>remotewmts</Identifier>
       <d:Title>IT test layer remotewmts</d:Title>
       <Layer>remotewmts</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>faulty</Identifier>
+      <d:Title>IT test layer faulty config</d:Title>
+      <Layer>faulty</Layer>
     </Theme>
   </Theme>
 

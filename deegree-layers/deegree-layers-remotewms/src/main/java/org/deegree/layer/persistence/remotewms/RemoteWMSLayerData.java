@@ -38,7 +38,6 @@ package org.deegree.layer.persistence.remotewms;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Map;
 
 import org.deegree.commons.utils.Pair;
@@ -99,9 +98,9 @@ public class RemoteWMSLayerData implements LayerData {
     @Override
     public FeatureCollection info() {
         try {
-            FeatureCollection col = client.getFeatureInfo( gfi, extraParams );
+            FeatureCollection col = client.doGetFeatureInfo( gfi, extraParams );
             return col;
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
             LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }

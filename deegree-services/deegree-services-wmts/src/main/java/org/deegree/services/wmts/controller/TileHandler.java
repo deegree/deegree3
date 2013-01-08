@@ -44,6 +44,7 @@ package org.deegree.services.wmts.controller;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
 
 /**
- * <code>GetTileHandler</code>
+ * Responsible for handling GetTile requests.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -127,9 +128,13 @@ class TileHandler {
 
         InputStream in = null;
         try {
-            copy( in = t.getAsStream(), response.getOutputStream() );
+            in = t.getAsStream();
+            if ( in == null ) {
+                throw new OWSException( "Tile yielded no data.", NO_APPLICABLE_CODE );
+            }
+            copy( in, response.getOutputStream() );
         } catch ( Throwable e ) {
-            throw new ServletException( e );
+            throw new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE );
         } finally {
             closeQuietly( in );
         }

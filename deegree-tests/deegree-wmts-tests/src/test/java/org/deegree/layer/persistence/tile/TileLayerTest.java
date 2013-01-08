@@ -75,7 +75,7 @@ public class TileLayerTest {
     @Test
     public void testMetadataId() {
         LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
-        Layer l = mgr.get( "pyramid" ).get( "pyramid" );
+        Layer l = mgr.get( "tilelayers" ).get( "pyramid" );
         Assert.assertEquals( "mdsetid", l.getMetadata().getMetadataId() );
     }
 

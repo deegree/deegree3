@@ -72,11 +72,11 @@ import org.deegree.tile.tilematrixset.TileMatrixSetManager;
  */
 class TileDataSetBuilder {
 
-    private RemoteWMSTileStoreJAXB config;
+    private final RemoteWMSTileStoreJAXB config;
 
-    private RemoteWMS wms;
+    private final RemoteWMS wms;
 
-    private TileMatrixSetManager tmsMgr;
+    private final TileMatrixSetManager tmsMgr;
 
     TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, TileMatrixSetManager tmsMgr ) {
         this.config = config;
@@ -117,7 +117,6 @@ class TileDataSetBuilder {
             TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs );
             dataLevels.add( 0, m );
         }
-
         return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
     }
 
