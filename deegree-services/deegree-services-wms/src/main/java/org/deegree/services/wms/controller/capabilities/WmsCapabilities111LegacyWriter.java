@@ -45,7 +45,6 @@ import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElement;
@@ -146,9 +145,9 @@ class WmsCapabilities111LegacyWriter {
     private void writeMetadataUrls( XMLStreamWriter writer, Layer layer )
                             throws XMLStreamException {
         if ( layer.getAuthorityURL() != null ) {
-            writer.writeStartElement( WMSNS, "AuthorityURL" );
+            writer.writeStartElement( "AuthorityURL" );
             writer.writeAttribute( "name", "fromISORecord" );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeStartElement( "OnlineResource" );
             writer.writeNamespace( XLINK_PREFIX, XLNNS );
             writer.writeAttribute( XLNNS, "href", layer.getAuthorityURL() );
             writer.writeEndElement();
@@ -156,7 +155,7 @@ class WmsCapabilities111LegacyWriter {
         }
 
         if ( layer.getAuthorityIdentifier() != null ) {
-            writer.writeStartElement( WMSNS, "Identifier" );
+            writer.writeStartElement( "Identifier" );
             writer.writeAttribute( "authority", "fromISORecord" );
             writer.writeCharacters( layer.getAuthorityIdentifier() );
             writer.writeEndElement();
