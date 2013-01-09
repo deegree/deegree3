@@ -47,11 +47,14 @@ import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -73,6 +76,8 @@ import org.slf4j.Logger;
 public class RemoteWMSIntegrationTest {
 
     private static final Logger LOG = getLogger( RemoteWMSIntegrationTest.class );
+
+    private static int numFailed = 0;
 
     private String request;
 
@@ -96,11 +101,30 @@ public class RemoteWMSIntegrationTest {
         base += "/deegree-wms-remoteows-tests/services" + request;
         LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
+        byte[] bsin = IOUtils.toByteArray( in );
+        in.close();
         double sim = 0;
 
         for ( byte[] response : this.response ) {
+            in = new ByteArrayInputStream( bsin );
             sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
         }
+
+        if ( Math.abs( 1.0 - sim ) > 0.01 ) {
+            System.out.println( "Trying to store request/response in tempdir: expected/response" + ++numFailed + ".tif" );
+            try {
+                int idx = 0;
+                for ( byte[] response : this.response ) {
+                    IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
+                                                                   + "/remoteows_expected" + ++idx + "_" + numFailed
+                                                                   + ".tif" ) );
+                }
+                IOUtils.write( bsin, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
+                                                           + "/remoteows_response" + numFailed + ".tif" ) );
+            } catch ( Throwable t ) {
+            }
+        }
+
         Assert.assertEquals( "Images are not similar enough (" + base + ").", 1.0, sim, 0.01 );
     }
 
