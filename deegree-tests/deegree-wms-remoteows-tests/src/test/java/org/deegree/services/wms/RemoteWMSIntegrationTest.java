@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -96,9 +97,12 @@ public class RemoteWMSIntegrationTest {
         base += "/deegree-wms-remoteows-tests/services" + request;
         LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
+        byte[] bsin = IOUtils.toByteArray( in );
+        in.close();
         double sim = 0;
 
         for ( byte[] response : this.response ) {
+            in = new ByteArrayInputStream( bsin );
             sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
         }
         Assert.assertEquals( "Images are not similar enough (" + base + ").", 1.0, sim, 0.01 );
