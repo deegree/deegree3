@@ -40,6 +40,8 @@ import static org.deegree.commons.ows.exception.OWSException.INVALID_SRS;
 import static org.deegree.services.i18n.Messages.get;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
@@ -82,7 +84,9 @@ public class WMSController111 extends WMSControllerBase {
     @Override
     public void sendException( OWSException ex, HttpResponseBuffer response, WMSController controller )
                             throws ServletException {
-        controller.sendException( null, exceptionSerializer, ex, response );
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put( "Content-Disposition", "inline; filename=\"exception.xml\"" );
+        controller.sendException( headers, exceptionSerializer, ex, response );
     }
 
     @Override
