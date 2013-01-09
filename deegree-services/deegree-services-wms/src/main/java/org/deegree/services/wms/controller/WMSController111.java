@@ -119,6 +119,7 @@ public class WMSController111 extends WMSControllerBase {
                                 WMSController controller, OWSMetadataProvider metadata )
                             throws IOException {
         response.setContentType( "application/vnd.ogc.wms_xml" );
+        response.addHeader( "Content-Disposition", "inline; filename=\"capabilities.xml\"" );
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();
             new Capabilities111XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
