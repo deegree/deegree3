@@ -36,25 +36,44 @@
 
 package org.deegree.commons.jdbc;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceInitException;
+import org.junit.After;
 import org.junit.Test;
 
 public class ConnectionManagerTest {
 
-    // TODO use configuration that works in every environment (derby??)
-
+	private ConnectionManager connectionManager;
+	
+	@After
+	public void tearDown() {
+		connectionManager.shutdown();
+	}
+	
+	
     @Test
-    public void testConnectionAllocation() {
-        //
-        // URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
-        // ConnectionManager.addConnections( configURL);
-        //
-        // Connection[] conns = new Connection[20];
-        // for ( int i = 0; i < conns.length; i++ ) {
-        // conns [i] = ConnectionManager.getConnection( "conn1" );
-        // }
-        //
-        // for ( int i = 0; i < conns.length; i++ ) {
-        // conns [i].close();
-        // }
+    public void testGetConnectionInitialzedFromResource() throws URISyntaxException, IOException, SQLException, ResourceInitException {
+        // build
+    	URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
+    	String tmpDir = System.getProperty("java.io.tmpdir");
+		DeegreeWorkspace workspace = DeegreeWorkspace.getInstance("UnitTest", new File(tmpDir));
+		workspace.initAll();
+    	this.connectionManager = new ConnectionManager();
+    	// operate
+    	this.connectionManager.init(new File(configURL.toURI()), workspace);
+    	// compare
+         Connection connection = ConnectionManager.getConnection( "conn1" );
+         assertNotNull(connection);
+        
     }
+
 }

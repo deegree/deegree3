@@ -41,6 +41,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DelegatingConnection;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
@@ -65,9 +68,7 @@ class ConnectionPool {
 
     private final String id;
 
-    private final PoolingDataSource ds;
-
-    private final GenericObjectPool pool;
+    private final BasicDataSource ds;
 
     /**
      * Creates a new {@link ConnectionPool} instance.
@@ -84,14 +85,15 @@ class ConnectionPool {
                     int maxActive ) {
 
         this.id = id;
-        pool = new GenericObjectPool( null );
-        pool.setMinIdle( minIdle );
-        pool.setMaxActive( maxActive );
-
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
-        // TODO make this configurable
-        new PoolableConnectionFactory( connectionFactory, pool, null, null, readOnly, true );
-        ds = new PoolingDataSource( pool );
+        ds = new BasicDataSource();
+        ds.setUrl(connectURI);
+        ds.setUsername(user);
+        ds.setPassword(password);
+        ds.setDefaultReadOnly(readOnly);
+        ds.setMaxWait(1000); // TODO externalize
+        ds.setInitialSize(1); // TODO externalize
+        ds.setMinIdle(minIdle);
+        ds.setMaxActive(maxActive);
         // needed, so users can retrieve the underlying connection from pooled
         // connections, e.g. to access the
         // LargeObjectManager from a PGConnection
@@ -107,7 +109,7 @@ class ConnectionPool {
     Connection getConnection()
                             throws SQLException {
         LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
-                   new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
+                   new Object[] { id, ds.getNumActive(), ds.getNumIdle() } );
         return ds.getConnection();
     }
 
@@ -116,12 +118,11 @@ class ConnectionPool {
      */
     void destroy()
                             throws Exception {
-        pool.close();
+        ds.close();
     }
 
     void invalidate( DelegatingConnection conn )
                             throws Exception {
         conn.getDelegate().close();
-        pool.invalidateObject( conn );
     }
 }
