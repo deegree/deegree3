@@ -302,6 +302,7 @@
       <plugin>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-maven-plugin</artifactId>
+        <version>1.18</version>
       </plugin>
     </plugins>
   </reporting>
