@@ -111,16 +111,17 @@ public class RemoteWMSIntegrationTest {
         }
 
         if ( Math.abs( 1.0 - sim ) > 0.01 ) {
-            System.out.println( "Trying to store request/response in tempdir: expected/response" + ++numFailed + ".tif" );
+            System.out.println( "Trying to store request/response in tempdir: remoteows_expected/response"
+                                + ++numFailed + ".png" );
             try {
                 int idx = 0;
                 for ( byte[] response : this.response ) {
                     IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
                                                                    + "/remoteows_expected" + ++idx + "_" + numFailed
-                                                                   + ".tif" ) );
+                                                                   + ".png" ) );
                 }
                 IOUtils.write( bsin, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
-                                                           + "/remoteows_response" + numFailed + ".tif" ) );
+                                                           + "/remoteows_response" + numFailed + ".png" ) );
             } catch ( Throwable t ) {
             }
         }
