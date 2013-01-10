@@ -477,7 +477,7 @@ public class GetMap {
 
     private void handleSLD( String sld, String sldBody, LinkedList<String> layers, MapService service )
                             throws OWSException {
-        XMLInputFactory xmlfac = XMLInputFactory.newInstance();
+        XMLInputFactory xmlfac = XMLInputFactoryUtils.newSafeInstance();
         Pair<LinkedList<Layer>, LinkedList<Style>> pair = null;
         if ( sld != null ) {
             try {

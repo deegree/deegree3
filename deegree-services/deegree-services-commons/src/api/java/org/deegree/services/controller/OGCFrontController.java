@@ -346,12 +346,12 @@ public class OGCFrontController extends HttpServlet {
                                            + request.getRemotePort();
                     if ( multiParts != null && multiParts.size() > 0 ) {
                         InputStream is = multiParts.get( 0 ).getInputStream();
-                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, is );
+                        xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId, is );
                     } else {
                         // decode query string
                         String decodedString = URLDecoder.decode( queryString, DEFAULT_ENCODING );
                         StringReader reader = new StringReader( decodedString );
-                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, reader );
+                        xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId, reader );
                     }
                     if ( isSOAPRequest( xmlStream ) ) {
                         dispatchSOAPRequest( xmlStream, request, response, multiParts );
