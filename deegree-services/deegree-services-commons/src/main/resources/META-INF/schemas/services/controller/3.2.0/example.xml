@@ -1,0 +1,8 @@
+<deegreeServiceController configVersion="3.2.0" xmlns="http://www.deegree.org/services/controller"
+  xsi:schemaLocation="http://www.deegree.org/services/controller http://schemas.deegree.org/services/controller/3.2.0/controller.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ReportedUrls>
+    <Services>http://www.mygeoportal.com/services</Services>
+    <Resources>http://www.mygeoportal.com/resources</Resources>
+  </ReportedUrls>
+</deegreeServiceController>

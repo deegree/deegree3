@@ -1,7 +1,7 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -40,10 +40,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.services.resources.ResourcesServlet;
 import org.slf4j.Logger;
 
 /**
- * Encapsulates security and other information that are associated with the currently processed request.
+ * Encapsulates security and URL information that are associated with a currently processed {@link OGCFrontController}
+ * request.
  * 
  * @see OGCFrontController#getServletContext()
  * 
@@ -56,25 +58,41 @@ public class RequestContext {
 
     private static final Logger LOG = getLogger( RequestContext.class );
 
-    private final String requestedEndpointUrl;
+    private final String hardcodedServicesUrl;
+
+    private final String hardcodedResourcesUrl;
+
+    private final String pathInfo;
 
     private final Credentials credentials;
 
     private final String webappBaseUrl;
 
+    private final String requestedEndpointUrl;
+
     /**
      * @param request
-     *            request for which the context will be created
+     *            request for which the context will be created, must not be <code>null</code>
      * @param credentials
-     *            credentials associated with the request
+     *            credentials associated with the request, can be <code>null</code>
+     * @param hardcodedServicesUrl
+     *            URL to be used for accessing the OGCFrontController, can be <code>null</code> (derive from request)
+     * @param hardcodedResourcesUrl
+     *            URL to be used for accessing the ResourcesServlet, can be <code>null</code> (derive from request)
      */
-    RequestContext( HttpServletRequest request, Credentials credentials ) {
-        requestedEndpointUrl = request.getRequestURL().toString();
+    RequestContext( HttpServletRequest request, Credentials credentials, String hardcodedServicesUrl,
+                    String hardcodedResourcesUrl ) {
+        this.hardcodedServicesUrl = hardcodedServicesUrl;
+        this.hardcodedResourcesUrl = hardcodedResourcesUrl;
         this.credentials = credentials;
+        pathInfo = request.getPathInfo();
+        requestedEndpointUrl = request.getRequestURL().toString();
         webappBaseUrl = deriveWebappBaseUrl( requestedEndpointUrl, request );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Request URL: " + requestedEndpointUrl );
-            LOG.debug( "Webapp Base URL: " + webappBaseUrl );
+            LOG.debug( "Webapp base URL (derived from request): " + webappBaseUrl );
+            LOG.debug( "Hardcoded services URL: " + hardcodedServicesUrl );
+            LOG.debug( "Hardcoded resources URL: " + hardcodedResourcesUrl );
         }
     }
 
@@ -84,7 +102,7 @@ public class RequestContext {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Servlet path: " + servletPath );
             LOG.debug( "Path Info: " + pathInfo );
-        }        
+        }
         int webappBaseUrlLength = requestedEndpointUrl.length() - servletPath.length();
         if ( pathInfo != null ) {
             webappBaseUrlLength -= pathInfo.length();
@@ -93,21 +111,39 @@ public class RequestContext {
     }
 
     /**
-     * Returns the endpoint URL that was used to contact the {@link OGCFrontController} and initiated the request.
+     * Returns the URL for contacting the {@link OGCFrontController} instance via HTTP (including OGC service instance
+     * path info, if available).
      * 
-     * @return the endpoint URL, never <code>null</code>
+     * @return the URL (without trailing slash or question mark), never <code>null</code>
      */
-    public String getRequestedEndpointUrl() {
+    public String getServiceUrl() {
+        if ( hardcodedServicesUrl != null ) {
+            return getServiceUrlWithPathInfo( hardcodedServicesUrl );
+        }
         return requestedEndpointUrl;
     }
 
+    private String getServiceUrlWithPathInfo( String hardcodedUrl ) {
+        String url = hardcodedUrl.trim();
+        if ( url.endsWith( "/" ) || url.endsWith( "?" ) ) {
+            url = url.substring( 0, url.length() - 1 );
+        }
+        if ( pathInfo != null ) {
+            url += pathInfo;
+        }
+        return url;
+    }
+
     /**
-     * Returns the base webapp URL that was used to contact the {@link OGCFrontController} and initiated the request.
+     * Returns the URL for contacting the {@link ResourcesServlet} instance via HTTP.
      * 
-     * @return the base webapp URL (without trailing slash or questionmark), never <code>null</code>
+     * @return the URL (without trailing slash or question mark), never <code>null</code>
      */
-    public String getRequestedWebappBaseUrl() {
-        return webappBaseUrl;
+    public String getResourcesUrl() {
+        if ( hardcodedResourcesUrl != null ) {
+            return hardcodedResourcesUrl;
+        }
+        return webappBaseUrl + "/resources";
     }
 
     /**
