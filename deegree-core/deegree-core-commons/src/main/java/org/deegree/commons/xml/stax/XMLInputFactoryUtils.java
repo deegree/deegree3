@@ -17,7 +17,7 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  Contact information:
- 
+
  IDgis bv
  Boomkamp 16, 7461 AX Rijssen
  The Netherlands
@@ -51,18 +51,18 @@ import javax.xml.stream.XMLInputFactory;
 
 public class XMLInputFactoryUtils {
 
-	/**
-	 * Creates an XMLInputFactory with unsafe features disabled. Such an XMLInputFactory 
-	 * is to be used for parsing untrusted xml such as incoming post requests.
-	 * 
-	 * @return
-	 */
-	public static XMLInputFactory newSafeInstance() {
-		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-		
-		inputFactory.setProperty( "javax.xml.stream.isReplacingEntityReferences", false );
+    /**
+     * Creates an XMLInputFactory with unsafe features disabled. Such an XMLInputFactory is to be used for parsing
+     * untrusted xml such as incoming post requests.
+     * 
+     * @return
+     */
+    public static XMLInputFactory newSafeInstance() {
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+
+        inputFactory.setProperty( "javax.xml.stream.isReplacingEntityReferences", false );
         inputFactory.setProperty( "javax.xml.stream.isSupportingExternalEntities", false );
-        
+
         return inputFactory;
-	}
+    }
 }
