@@ -24,4 +24,5 @@ deegree Webservices
    renderstyles
    serverconnections
    processproviders
+   restapi
    glossary
