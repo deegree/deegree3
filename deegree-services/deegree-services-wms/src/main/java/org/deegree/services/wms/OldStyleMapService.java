@@ -160,9 +160,12 @@ class OldStyleMapService {
                 while ( layers.hasNext() ) {
                     Layer l = layers.next();
                     Style s = styles.next();
+
+                    s = s.filter( scale );
+
                     DoublePair scales = l.getScaleHint();
                     LOG.debug( "Scale settings are: {}, current scale is {}.", scales, scale );
-                    if ( scales.first > scale || scales.second < scale ) {
+                    if ( scales.first > scale || scales.second < scale || ( !s.isDefault() && s.getRules().isEmpty() ) ) {
                         LOG.debug( "Not showing layer '{}' because of its scale constraint.",
                                    l.getName() == null ? l.getTitle() : l.getName() );
                         continue;
@@ -179,6 +182,11 @@ class OldStyleMapService {
 
             if ( queries.size() == 1 ) {
                 handleCollectedQueries( queries, ftToLayer, ftToStyle, gm, g );
+                return;
+            }
+
+            if ( queries.isEmpty() ) {
+                LOG.debug( "No queries found when collecting, probably due to scale constraints in the layers/styles." );
                 return;
             }
 
