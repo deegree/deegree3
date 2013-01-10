@@ -52,7 +52,7 @@ import javax.xml.stream.XMLInputFactory;
 public class XMLInputFactoryUtils {
 
 	/**
-	 * Creates an XMLInputFactory with unsafe features disabled. Such a XMLInputFactory 
+	 * Creates an XMLInputFactory with unsafe features disabled. Such an XMLInputFactory 
 	 * is to be used for parsing untrusted xml such as incoming post requests.
 	 * 
 	 * @return
