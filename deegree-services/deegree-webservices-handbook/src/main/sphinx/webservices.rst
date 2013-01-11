@@ -2,7 +2,7 @@
 Webservice configuration
 ========================
 
-This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The configuration files are located in the **services/** subdirectory of the active deegree workspace directory.
+This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-services.png
    :figwidth: 80%
@@ -10,6 +10,9 @@ This chapter describes the deegree webservices configuration files. You can acce
    :target: _images/workspace-overview-services.png
 
    Web services are the top-level resources of the deegree workspace
+
+.. tip::
+  Webservice configuration files are ordinary deegree workspace resources, but the identifier of a webservice resource (config file name without suffix) serves a special function. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for all configured services is ``http://localhost:8080/deegree-webservices/services``. However, if you have multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In such cases, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to select one of your WMS instances.
 
 .. _anchor-configuration-wfs:
 
