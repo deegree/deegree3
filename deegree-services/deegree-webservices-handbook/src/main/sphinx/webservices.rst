@@ -39,7 +39,7 @@ The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuratio
    .. literalinclude:: xml/wfs_basic.xml
       :language: xml
 
-This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries. A more complex configuration that restricts the offered WFS protocol versions, enables transactions, has multiple coordinate reference systems and limits GML output to 3.2 looks like this:
+This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries. A more complex configuration example looks like this:
 
 .. topic:: WFS config example 2: More complex configuration
 
@@ -73,7 +73,7 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
-| MetadataURLTemplate     | 0..1        | String  | Template for generating URLs to feature type metadata            |
+| MetadataURLTemplate     | 0..1        | String  | Template for generating URLs to feature type metadata records    |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | FeatureTypeMetadata     | 0..n        | Complex | Metadata for feature types reported in GetCapabilities response  |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
@@ -82,17 +82,28 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 
 The remainder of this section describes these options and their sub-options in detail.
 
-^^^^^^^^^^^^^
-Basic options
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
+General options
+^^^^^^^^^^^^^^^
 
-* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) are activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any combination of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
+* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) will be activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any combination of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
 * ``FeatureStoreId``: By default, all feature stores in your deegree workspace  will be used for serving feature types. In some cases, this may not be what you want, e.g. because you have two different WFS instances running, or you don't want all feature types used in your WMS for rendering to be available via your WFS. Use the ``FeatureStoreId`` option to explicitly set the feature stores that this WFS should use.
-* ``EnableTransactions``: By default, WFS-T requests will be rejected. Setting this element to ``true`` will enable support for transactions in the WFS. Note that not all feature store implementations implement transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
 * ``EnableResponseBuffering``: By default, WFS responses are directly streamed to the client. This is very much recommended and even a requirement for transferring large responses efficiently. The only drawback happens if exceptions occur, after a partial response has already been transferred. In this case, the client will receive part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response could be generated successfully, it will be transferred. If an exception happens at any time the buffer will be discarded, and an exception report will be sent to the client. Buffering is performed in memory, but switches to a temp file in case the buffer grows bigger than 1 MiB.
 * ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 * ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
 * ``QueryCheckAreaOfUse``: By default, spatial query constraints are not checked with regard to the area of validity of the CRS. Set this option to ``true`` to enforce this check.
+
+^^^^^^^^^^^^
+Transactions
+^^^^^^^^^^^^
+
+By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support in the WFS.
+
+.. tip::
+  Not every feature store implementation supports transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
+
+.. tip::
+  Currently, transactions can only be enabled if your WFS is attached to a single feature store.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
@@ -166,7 +177,6 @@ By default, GML geometries will be encoded using 6 decimal places for CRS with d
 
 * ``DecimalCoordinatesFormatter``: Empty element, attribute ``places`` specifies the number of decimal places.
 * ``CustomCoordinateFormatter``: By specifiying this element, an implementation of Java interface ``org.deegree.geometry.io.CoordinateFormatter`` can be instantiated. Child element ``JavaClass`` contains the qualified name of the Java class (which must be on the classpath).
-
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adding custom output formats
