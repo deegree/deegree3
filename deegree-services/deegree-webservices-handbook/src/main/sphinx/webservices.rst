@@ -12,7 +12,7 @@ This chapter describes the deegree webservices configuration files. You can acce
    Web services are the top-level resources of the deegree workspace
 
 .. tip::
-  Webservice configuration files are ordinary deegree workspace resources, but the identifier of a webservice resource (config file name without suffix) serves a special function. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for all configured services is ``http://localhost:8080/deegree-webservices/services``. However, if you have multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In such cases, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to select one of your WMS instances.
+  Webservice configuration files are ordinary deegree workspace resources, but the identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the WMS instance that you want to connect to.
 
 .. _anchor-configuration-wfs:
 
@@ -30,7 +30,7 @@ A deegree WFS configuration consists of a WFS configuration file and any number 
    A WFS resource is connected to any number of feature store resources
 
 .. tip::
-  In order to fully master deegree WFS configuration, you will have to read chapter :ref:`anchor-configuration-featurestore` as well.
+  In order to fully master deegree WFS configuration, you will have to understand :ref:`anchor-configuration-featurestore` as well.
 
 The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuration example looks like this:
 
@@ -39,14 +39,14 @@ The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuratio
    .. literalinclude:: xml/wfs_basic.xml
       :language: xml
 
-This will setup a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as the coordinate system for returned GML geometries. A more complex configuration that restricts the offered WFS protocol versions, enables transactions, has multiple coordinate reference systems and limits GML output to 3.2 looks like this:
+This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries. A more complex configuration that restricts the offered WFS protocol versions, enables transactions, has multiple coordinate reference systems and limits GML output to 3.2 looks like this:
 
 .. topic:: WFS config example 2: More complex configuration
 
    .. literalinclude:: xml/wfs_complex.xml
       :language: xml
 
-The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.1.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.1.0``. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
 .. table:: Options for ``deegreeWFS``
 
@@ -57,7 +57,7 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | FeatureStoreId           | 0..n         | String  | Limits feature stores to use                                                 |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| EnableTransactions       | 0..1         | Boolean | Enables transactions (WFS-T operations)                                      |
+| EnableTransactions       | 0..1         | Complex | Enables transactions (WFS-T operations)                                      |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | DisableResponseBuffering | 0..1         | Boolean | Controls response buffering                                                  |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
@@ -66,6 +66,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 | QueryMaxFeatures         | 0..1         | Integer | Limits maximum number of features returned by a GetFeature request           |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | QueryCheckAreaOfUse      | 0..1         | Boolean | Enforces checking of spatial query constraints against CRS area              |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| StoredQuery              | 0..n         | String  | File name to StoredQueryDefinition (WFS 2.0.0 only)                          |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | GMLFormat                | 0..n         | Complex | GML format configuration                                                     |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
@@ -86,7 +88,7 @@ Basic options
 
 * ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) are activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
 * ``FeatureStoreId``: By default, all feature stores in your deegree workspace  will be used for serving feature types. In some cases, this may not be what you want, e.g. because you have two different WFS instances running, or you don't want all feature types used in your WMS for rendering to be available via your WFS. Use the ``FeatureStoreId`` option to explicitly set the feature stores that this WFS should use.
-* ``DisableResponseBuffering``: By default, generated responses are directly written to the WFS client. This is usually fine and even a requirement for transferring large responses efficiently. The only drawback occurs when exceptions occur, after a partial response has already been transferred. In such case, the response will contain part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response was generated successfully, it will be transferred. Otherwise, only an exception report will be generated.
+* ``DisableResponseBuffering``: By default, generated responses are directly written to the WFS client. This is usually fine and even a requirement for transferring large responses efficiently. The only drawback occurs when exceptions occur, after a partial response has already been transferred. In this case, the response will contain part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response was generated successfully, it will be transferred. If an exception happens at any time, only an exception report will be sent to the client.
 * ``EnableTransactions``: By default, WFS-T requests will be rejected. Setting this element to ``true`` will enable support for transactions in the WFS. Note that not all feature store implementations implement transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
 * ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 * ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
@@ -202,6 +204,21 @@ These settings affect the metadata returned in the GetCapabilities response.
    .. literalinclude:: xml/wfs_extendedcapabilities.xml
       :language: xml
 
+^^^^^^^^^^^^^^
+Stored queries
+^^^^^^^^^^^^^^
+
+Besides standard (or ad hoc) queries, WFS 2.0.0 introduces so-called stored queries. When WFS 2.0.0 support is activated, your WFS will automatically support the well-known stored query ``urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById`` (defined in the WFS 2.0.0 specification). It can be used to query a feature instance by specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0). In order to define custom stored queries, use the ``StoredQuery`` element to specify the file name of a StoredQueryDefinition file. The given file name (can be relative) must point to a valid WFS 2.0.0 StoredQueryDefinition file. Here's an example:
+
+.. topic:: Example for a WFS 2.0.0 StoredQueryDefinition file
+
+   .. literalinclude:: xml/wfs_storedquerydefinition.xml
+      :language: xml
+
+This example is actually usable if your WFS is set up to serve the ad:Address feature type from INSPIRE Annex I. It defines the stored query ``urn:x-inspire:storedQuery:GetAddressesForStreet`` for retrieving ad:Address features that are located in the specified street. The street name is passed using parameter ``streetName``. If your WFS instance can be reached at ``http://localhost:8080/services``, you could use the request ``http://localhost:8080/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat`` to fetch the ad:Address features in street Madame Curiestraat.
+
+.. tip::
+  deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries`` and the ``DescribeStoredQueries`` operations. However, there is no support for ``CreateStoredQuery`` and ``DropStoredQuery`` at the moment.
 
 .. _anchor-configuration-wms:
 
