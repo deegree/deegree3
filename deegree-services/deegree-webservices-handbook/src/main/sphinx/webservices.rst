@@ -12,7 +12,7 @@ This chapter describes the deegree webservices configuration files. You can acce
    Web services are the top-level resources of the deegree workspace
 
 .. tip::
-  Webservice configuration files are ordinary deegree workspace resources, but the identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the WMS instance that you want to connect to.
+  Webservice configuration files are ordinary deegree workspace resources, but the identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service instance that you want to connect to explicitly.
 
 .. _anchor-configuration-wfs:
 
@@ -46,39 +46,39 @@ This will create a deegree WFS with the feature types from all configured featur
    .. literalinclude:: xml/wfs_complex.xml
       :language: xml
 
-The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
 .. table:: Options for ``deegreeWFS``
 
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| Option                   | Cardinality  | Value   | Description                                                                  |
-+==========================+==============+=========+==============================================================================+
-| SupportedVersions        | 0..1         | Complex | Limits active OGC protocol versions                                          |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| FeatureStoreId           | 0..n         | String  | Limits feature stores to use                                                 |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| EnableTransactions       | 0..1         | Complex | Enables transactions (WFS-T operations)                                      |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| DisableResponseBuffering | 0..1         | Boolean | Controls response buffering                                                  |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| QueryCRS                 | 1..n         | String  | Announced CRS, first element is the default CRS                              |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| QueryMaxFeatures         | 0..1         | Integer | Limits maximum number of features returned by a GetFeature request           |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| QueryCheckAreaOfUse      | 0..1         | Boolean | Enforces checking of spatial query constraints against CRS area              |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| StoredQuery              | 0..n         | String  | File name to StoredQueryDefinition (WFS 2.0.0 only)                          |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| GMLFormat                | 0..n         | Complex | GML format configuration                                                     |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| CustomFormat             | 0..n         | Complex | Custom format configuration                                                  |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| MetadataURLTemplate      | 0..1         | String  | Template for generating URLs to feature type metadata                        |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| FeatureTypeMetadata      | 0..n         | Complex | Metadata for feature types reported in GetCapabilities response              |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| Option                  | Cardinality | Value   | Description                                                      |
++=========================+=============+=========+==================================================================+
+| SupportedVersions       | 0..1        | Complex | Activated OGC protocol versions, default: all                    |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| FeatureStoreId          | 0..n        | String  | Feature stores to attach, default: all                           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| EnableTransactions      | 0..1        | Complex | Enable transactions (WFS-T operations), default: false           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| EnableResponseBuffering | 0..1        | Boolean | Enable response buffering (expensive), default: false            |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| QueryCRS                | 1..n        | String  | Announced CRS, first element is the default CRS                  |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| QueryMaxFeatures        | 0..1        | Integer | Limit of features returned in a response, default: 15000         |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| QueryCheckAreaOfUse     | 0..1        | Boolean | Check spatial query constraints against CRS area, default: false |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| StoredQuery             | 0..n        | String  | File name of StoredQueryDefinition                               |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| GMLFormat               | 0..n        | Complex | GML format configuration                                         |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| MetadataURLTemplate     | 0..1        | String  | Template for generating URLs to feature type metadata            |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| FeatureTypeMetadata     | 0..n        | Complex | Metadata for feature types reported in GetCapabilities response  |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ExtendedCapabilities    | 0..n        | Complex | Extended Metadata reported in GetCapabilities response           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 
 The remainder of this section describes these options and their sub-options in detail.
 
@@ -86,10 +86,10 @@ The remainder of this section describes these options and their sub-options in d
 Basic options
 ^^^^^^^^^^^^^
 
-* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) are activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
+* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) are activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any combination of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
 * ``FeatureStoreId``: By default, all feature stores in your deegree workspace  will be used for serving feature types. In some cases, this may not be what you want, e.g. because you have two different WFS instances running, or you don't want all feature types used in your WMS for rendering to be available via your WFS. Use the ``FeatureStoreId`` option to explicitly set the feature stores that this WFS should use.
-* ``DisableResponseBuffering``: By default, generated responses are directly written to the WFS client. This is usually fine and even a requirement for transferring large responses efficiently. The only drawback occurs when exceptions occur, after a partial response has already been transferred. In this case, the response will contain part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response was generated successfully, it will be transferred. If an exception happens at any time, only an exception report will be sent to the client.
 * ``EnableTransactions``: By default, WFS-T requests will be rejected. Setting this element to ``true`` will enable support for transactions in the WFS. Note that not all feature store implementations implement transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
+* ``EnableResponseBuffering``: By default, WFS responses are directly streamed to the client. This is very much recommended and even a requirement for transferring large responses efficiently. The only drawback happens if exceptions occur, after a partial response has already been transferred. In this case, the client will receive part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response could be generated successfully, it will be transferred. If an exception happens at any time the buffer will be discarded, and an exception report will be sent to the client. Buffering is performed in memory, but switches to a temp file in case the buffer grows bigger than 1 MiB.
 * ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 * ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
 * ``QueryCheckAreaOfUse``: By default, spatial query constraints are not checked with regard to the area of validity of the CRS. Set this option to ``true`` to enforce this check.

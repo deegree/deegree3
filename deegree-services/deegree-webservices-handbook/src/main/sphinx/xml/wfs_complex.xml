@@ -12,7 +12,7 @@
   <FeatureStoreId>inspire-ad</FeatureStoreId>
 
   <EnableTransactions idGen="UseExisting">true</EnableTransactions>
-  <DisableResponseBuffering>true</DisableResponseBuffering>
+  <EnableResponseBuffering>false</EnableResponseBuffering>
 
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
