@@ -136,7 +136,10 @@ You may select example requests from the drop-down menu and click on the "Send" 
 Example workspace 2: INSPIRE in action
 --------------------------------------
 
-This workspace is a basic INSPIRE View and Discovery Service setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers. The workspace is pre-configured to store the INSPIRE features in memory, but can be changed to use PostGIS or Oracle as storage backend.
+This workspace is a basic INSPIRE View and Download Services setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers.
+
+.. tip::
+  This workspace is pre-configured to keep INSPIRE features in memory, but can easily be adapted to use PostGIS or Oracle as storage backend (see :ref:`anchor-configuration-sqlfeaturestore`).
 
 After downloading and activating the "deegree-workspace-inspire" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 

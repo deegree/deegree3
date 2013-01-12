@@ -51,6 +51,7 @@ deegree WMS is an implementation of the `OGC Web Map Service specification <http
 * Nearly complete support for raster symbolizing as defined in SE (with some extensions)
 * Complete support for TIME/ELEVATION and other dimensions for both feature and raster data
 * Supports numerous backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
+* Can render rich data models directly
 
 .. tip::
   In order to learn about configuring a deegree-based WMS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WMS configurations. Continue with :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wms`.

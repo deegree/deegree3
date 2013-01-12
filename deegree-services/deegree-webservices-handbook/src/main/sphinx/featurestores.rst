@@ -252,6 +252,8 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 | LODStatement                | 0..n        | Complex | Statements for specific WMS scale ranges                                     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
+.. _anchor-configuration-sqlfeaturestore:
+
 -----------------
 SQL feature store
 -----------------
