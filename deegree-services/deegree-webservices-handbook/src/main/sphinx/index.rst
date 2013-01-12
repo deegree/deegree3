@@ -26,4 +26,5 @@ deegree Webservices
    processproviders
    crs
    restapi
-   glossary
+   javamodules
+
