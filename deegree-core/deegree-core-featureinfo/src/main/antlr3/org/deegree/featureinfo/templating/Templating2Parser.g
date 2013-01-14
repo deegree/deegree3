@@ -8,23 +8,22 @@ options {
 package org.deegree.featureinfo.templating;
 
 import org.deegree.featureinfo.templating.lang.*;
-import java.util.Map;
 import java.util.HashMap;
 }
 
-definitions returns [Map<String, Definition> definitions]
+definitions returns [HashMap<String, Definition> definitions]
 @init {
   $definitions = new HashMap<String, Definition>();
 }:
   definition[$definitions]+ EOF
   ;
 
-definition[Map<String, Definition> defs]:
+definition[HashMap<String, Definition> defs]:
   template[$defs] ExplicitTemplateEnd?
   | map[$defs] ExplicitTemplateEnd?
   ;
 
-template[Map<String, Definition> defs]
+template[HashMap<String, Definition> defs]
 @init {
   TemplateDefinition templdef = new TemplateDefinition();
 }:
@@ -58,14 +57,14 @@ templatebodytext returns [String text]:
   | t = BracketRight { $text = $t.text; }
   ;
 
-map[Map<String, Definition> defs]
+map[HashMap<String, Definition> defs]
 @init {
   MapDefinition mapdef = new MapDefinition();
 }:
   MapDefinitionStart n = ID TagClose kvp[mapdef.map]+ { $defs.put($n.text, mapdef); mapdef.name = $n.text; }
   ;
 
-kvp[Map<String, String> map]:
+kvp[HashMap<String, String> map]:
   l = KvpLeft+ Equals r = KvpRight+ NewLine { $map.put($l.text.trim(), $r.text.trim()); };
 
 featurecall:
