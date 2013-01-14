@@ -1,3 +1,5 @@
+.. _anchor-configuration-service:
+
 ========================
 Webservice configuration
 ========================

@@ -4,81 +4,33 @@
 Configuration basics
 ====================
 
-In the previous chapter, you learned how to access and login to the deegree services console and how to download and activate example workspaces. In order to be able to adapt an example workspace (or to create your own workspace from scratch), you need to understand the different types of workspace resources (e.g. data access) and how to configure them. This chapter describes the overall structure of a deegree workspace, while the remaining chapters describe the individual configuration formats in full detail.
+In the previous chapter, you learned how to access and log in to the deegree services console and how to download and activate example workspaces. In order to adapt an example workspace (or to create your own workspace from scratch), this chapter provides you with the basic concepts of deegree webservices configuration:
 
-----------------------------------------------
-Where do I find deegree's configuration files?
-----------------------------------------------
+* The deegree workspace and the active workspace directory
+* Workspace files and resources
+* Workspace directories and resource types
+* Resource identifiers and dependencies
+* Capabilities and limitations of the services console
 
-Although deegree webservices comes with a basic web console for configuration, it is usually necessary to edit and create XML files in order to configure deegree webservices according to your needs. The services console currently provides an interface to help with a few tasks (such as downloading example configurations), but it's main purpose is to help with creating and editing the different types of XML configuration files in the active deegree workspace.
+The final section of this chapter describes recommended practices for creating your own workspace. The remaining chapters of the documentation describe the individual workspace resource formats in detail.
 
-^^^^^^^^^^^^^^^^^^^^^^
-Linux/Solaris/Mac OS X
-^^^^^^^^^^^^^^^^^^^^^^
-
-On UNIX-like systems (Linux/Solaris/MacOS X), deegree's configuration files are located in folder ``$HOME/.deegree/``. Note that ``$HOME`` is determined by the user that started the web application container that runs deegree. If you started the ZIP version of deegree as user "kelvin", then the directory will be something like ``/home/kelvin/.deegree``.
-
-.. tip::
-  In order to use a different folder for deegree's configuration files, you can set the system environment variable ``DEEGREE_WORKSPACE_ROOT``. Note that the user running the web application container must have read/write access to this directory.
-
-^^^^^^^
-Windows
-^^^^^^^
-
-On Windows, deegree's configuration files are located in folder ``%USERPROFILE%/.deegree/``. Note that ``%USERPROFILE%`` is determined by the user that started the web application container that runs deegree. If you started the ZIP version of deegree as user "kelvin", then the directory will be something like ``C:\Users\kelvin\.deegree`` or ``C:\Dokumente und Einstellungen\kelvin\.deegree``.
+---------------------
+The deegree workspace
+---------------------
 
 .. tip::
-  In order to use a different folder for deegree's configuration files, you can set the system environment variable ``DEEGREE_WORKSPACE_ROOT``.  Note that the user running the web application container must have read/write access to this directory.
+  This documentation sometimes uses the term **the workspace** and sometimes the term **a workspace**. In conjunction with the definite article ("the"), workspace refers to the general concept or the active workspace configuration. When used with the indefinite article ("a workspace"), it refers to an instance of a workspace (e.g. the example workspaces described in chapter :ref:`anchor-lightly`).
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Workspaces and global configuration files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Besides the workspace configuration files, deegree webservices support a small number of global configuration files. Subdirectories in the deegree configuration directory are workspace directories:
-
-.. raw:: latex
-
-   \begin{table}
-   \begin{center}
-
-.. table:: Global configuration files and workspace directories
-+------------------------+------------------------------------------+
-| File name              | Function                                 |
-+========================+==========================================+
-| <subdirectory>         | Workspace directory                      |
-+------------------------+------------------------------------------+
-| console.pw             | Password for services console            |
-+------------------------+------------------------------------------+
-| proxy.xml              | Proxy settings                           |
-+------------------------+------------------------------------------+
-| webapps.properties     | Selects the active workspace             |
-+------------------------+------------------------------------------+
-
-.. raw:: latex
-
-   \end{center}
-   \caption{Global configuration files and workspace directories}
-   \end{table}
-
-.. tip::
-  Usually, you don't need to take care of any files that are located in this directory. In order to adapt deegree webservices to your needs, you will need to create or edit configuration files in the active workspace directory. Therefore, the rest of the documentation will refer to configuration files in the (active) workspace directory.
-
-------------------------------
-What is the deegree workspace?
-------------------------------
-
-The deegree workspace is the active configuration for a deegree webservices instance. It consists of XML files organized in a well-defined directory structure that control the different configuration aspects:
+The deegree workspace is the modular, resource-oriented and extensible configuration concept used by deegree webservices. The following diagram shows the different types of resources that it contains:
 
 .. figure:: images/workspace-overview.png
-   :figwidth: 90%
-   :width: 90%
    :target: _images/workspace-overview.png
 
    Configuration aspects of deegree workspaces
 
-The following table gives an overview of the different types of workspace aspects
+The following table provides a short description of the different types of workspace resources:
 
-.. table:: Workspace aspects
+.. table:: Workspace resource types
 
 +---------------------------------+------------------------------------------------------------------------------+
 | Configuration aspect            | Description                                                                  |
@@ -106,30 +58,84 @@ The following table gives an overview of the different types of workspace aspect
 | Server connections (remote OWS) | Connections to remote OGC web services                                       |
 +---------------------------------+------------------------------------------------------------------------------+
 
------------------------------
-What are workspace resources?
------------------------------
+---------------------------------------
+Where is the deegree workspace located?
+---------------------------------------
 
-A workspace directory consists of XML files organized in a well-defined directory structure. Each XML file corresponds to a "workspace resource". When the workspace is initialized, a resource will be created for every XML file. The type of created resource depends on the directory and the configuration format. Here's an example:
+The active deegree workspace is part of the ``.deegree`` directory which stores some global configuration files along with the workspace. The location of this directory depends on your operating system.
 
-.. figure:: images/workspace-overview.png
-   :figwidth: 90%
-   :width: 90%
-   :target: _images/workspace-overview.png
+^^^^^^^^^^^^^^^^^^^^^^
+Linux/Solaris/Mac OS X
+^^^^^^^^^^^^^^^^^^^^^^
 
-   Example workspace directory
+On UNIX-like systems (Linux/Solaris/MacOS X), deegree's configuration files are located in folder ``$HOME/.deegree/``. Note that ``$HOME`` is determined by the user that started the web application container that runs deegree. If you started the ZIP version of deegree as user "kelvin", then the directory will be something like ``/home/kelvin/.deegree``.
 
-When the above workspace is initialized, the following deegree resources will be created:
+.. tip::
+  In order to use a different folder for deegree's configuration files, you can set the system environment variable ``DEEGREE_WORKSPACE_ROOT``. Note that the user running the web application container must have read/write access to this directory.
 
-* A JDBC connection pool with id ````
-* A Data Store for metadata with id ````
-* A Web Service with id ````
+^^^^^^^
+Windows
+^^^^^^^
 
-As you may guess, the configuration file format has to match the workspace subdirectory, e.g. you should only put MetadataStore configuration files into ``datasources/metadata``. The following table provides an overview on the directories and the expected type of configuration file:
+On Windows, deegree's configuration files are located in folder ``%USERPROFILE%/.deegree/``. Note that ``%USERPROFILE%`` is determined by the user that started the web application container that runs deegree. If you started the ZIP version of deegree as user "kelvin", then the directory will be something like ``C:\Users\kelvin\.deegree`` or ``C:\Dokumente und Einstellungen\kelvin\.deegree``.
 
-.. table:: Workspace directory structure
+.. tip::
+  In order to use a different folder for deegree's configuration files, you can set the system environment variable ``DEEGREE_WORKSPACE_ROOT``.  Note that the user running the web application container must have read/write access to this directory.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Global configuration files and the active workspace
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you downloaded all four example workspaces (as described in :ref:`anchor-lightly`), set a console password and the proxy parameters, your ``.deegree`` directory will look like this:
+
+.. figure:: images/workspace-root.png
+   :target: _images/workspace-root.png
+
+   Example ``.deegree`` directory
+
+As you see, this ``.deegree`` directory contains four subdirectories. Every subdirectory corresponds to a deegree workspace. Besides the configuration files inside the workspace, a small number of global configuration files exist:
+
+.. raw:: latex
+
+   \begin{table}
+   \begin{center}
+
+.. table:: Global configuration files and workspace directories
++------------------------+------------------------------------------+
+| File name              | Function                                 |
++========================+==========================================+
+| <subdirectory>         | Workspace directory                      |
++------------------------+------------------------------------------+
+| console.pw             | Password for services console            |
++------------------------+------------------------------------------+
+| proxy.xml              | Proxy settings                           |
++------------------------+------------------------------------------+
+| webapps.properties     | Selects the active workspace             |
++------------------------+------------------------------------------+
+
+.. raw:: latex
+
+   \end{center}
+   \caption{Global configuration files and workspace directories}
+   \end{table}
+
+Note that only a single workspace can be active at a time. The information on the active one is stored in file ``webapps.properties``.
+
+.. tip::
+  Usually, you don't need to take care of the three files that are located at the top level of this directory. The services console creates and modifies them as required (e.g. when switching to a different workspace). In order to adapt deegree webservices to your needs, create or edit configuration files in the active workspace directory. The rest of the documentation will refer to configuration files in the (active) workspace directory.
+
+.. tip::
+  If you are running multiple deegree webservices instances on one machine, every instance can use a different workspace. The file ``webapps.properties`` stores the active workspace for every instance separately.
+
+--------------------------------------------
+Structure of the deegree workspace directory
+--------------------------------------------
+
+The workspace directory organizes XML configuration files in a well-defined directory structure. When deegree starts up, the active workspace directory is determined and the following subdirectories are scanned for XML resource configuration files:
+
+.. table:: Workspace resource directories
 +------------------------+---------------------------------+
-| Directory              | Configuration aspect            |
+| Resource directory     | Configuration aspect            |
 +========================+=================================+
 | services/              | Web services                    |
 +------------------------+---------------------------------+
@@ -142,7 +148,7 @@ As you may guess, the configuration file format has to match the workspace subdi
 | datasources/tile/      | Tile Stores                     |
 +------------------------+---------------------------------+
 | layers/                | Map Layers (Layer)              |
-+----------------------------------------------------------+
++------------------------+---------------------------------+
 | styles/                | Map Layers (Style)              |
 +------------------------+---------------------------------+
 | themes/                | Map Layers (Theme)              |
@@ -154,25 +160,65 @@ As you may guess, the configuration file format has to match the workspace subdi
 | datasources/remoteows/ | Server Connections (Remote OWS) |
 +------------------------+---------------------------------+
 
+Workspaces may contain additional directories. The major difference is that these directories are not scanned for resource files on startup. Some common ones are:
+
+.. table:: Additional workspace directories
++-----------------------+-------------------------------------------+
+| Directory             | Used for                                  |
++=======================+===========================================+
+| appschemas/           | GML application schemas                   |
++-----------------------+-------------------------------------------+
+| data/                 | Datasets (GML, GeoTIFF, ...)              |
++-----------------------+-------------------------------------------+
+| manager/              | Example requests (for the generic client) |
++-----------------------+-------------------------------------------+
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Workspace files and resources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to understand the relation between workspace files and resources, let's have a look at an example:
+
+.. figure:: images/workspace-example.png
+   :target: _images/workspace-example.png
+
+   Example workspace directory
+
+As noted, deegree scans the well-known resource directories for XML files (``*.xml``) on startup (note that it will omit directory ``manager``). For every file found, deegree will check the type of configuration format (by determining the root element name). If it is a known format, a corresponding resource will be initialized:
+
+* A JDBC connection pool with id ``conn1``
+* A metadata store with id ``iso19115``
+* A web service with id ``csw``
+
+The individual configuration formats and their options are described in the later chapters of the documentation.
+
 .. tip::
-  deegree will try to process configuration files in the well-known directories into active resources of the corresponding type. Other directories in the workspace will not be scanned for resource configurations and can be used for other purposes (e.g. providing GeoTIFF files along with the workspace).
+  You may wonder why the ``main.xml`` and the ``metadata.xml`` files are not considered as web services. These filenames are not treated as resource files, but in a special manner. See :ref:`anchor-configuration-service` for details.
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Dependencies between workspace resources
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. tip::
+  The configuration format has to match the workspace subdirectory, e.g. only metadata store configuration files belong into ``datasources/metadata``.
 
-The former example will result in the following setup:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Resource identifiers and dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. figure:: images/workspace-csw.png
-   :figwidth: 90%
-   :width: 90%
-   :target: _images/workspace-csw.png
+It has already been hinted that resources have an identifier, e.g. for file ``jdbc/conn1.xml`` a JDBC connection pool with identifier ``conn1`` is created. You probably have guessed that the identifier is derived from the file name (file name minus suffix), but you may wonder what purpose the identifier serves. The identifier is used for wiring resources. For example, the ISO SQL metadata store requires a JDBC pool. Therefore, the corresponding configuration format has an element to specify it:
 
-   Workspace components involved in a deegree CSW configuration
+.. topic:: Example for wiring resources
+
+   .. literalinclude:: xml/workspace_dependencies.xml
+      :language: xml
+
+In this example, the ISO SQL metadata store is wired to JDBC connection pool ``conn1``. Many deegree resource configuration files contain such references to dependent resources. Some resources offer auto-wiring. For example, every CSW instance needs to connect to a metadata store for data access. If the CSW configuration omits the reference to the metadata store, it is assumed that there's exactly one metadata store defined in the workspace and deegree will automatically connect the CSW to this store.
+
+.. tip::
+  The required dependencies are specific to every type of resource and are documented for every resource configuration format.
 
 -------------------------------------------------------
 Using the service console to manage workspace resources
 -------------------------------------------------------
+
+
 
 The service console has a corresponding menu entry for every type of workspace resource. For example, if you would like to add/remove/edit a coverage store, you would click on "data stores -> coverage". This opens a view with a list of all configured coverage stores. If you activated the Utah workspace (see :ref:`anchor-workspace-utah`), you should see the following list:
 
