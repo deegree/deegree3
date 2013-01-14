@@ -58,9 +58,9 @@ The following table provides a short description of the different types of works
 | Server connections (remote OWS) | Connections to remote OGC web services                                       |
 +---------------------------------+------------------------------------------------------------------------------+
 
----------------------------------------
-Where is the deegree workspace located?
----------------------------------------
+---------------------------------
+Location of the deegree workspace
+---------------------------------
 
 The active deegree workspace is part of the ``.deegree`` directory which stores some global configuration files along with the workspace. The location of this directory depends on your operating system.
 
@@ -122,7 +122,7 @@ As you see, this ``.deegree`` directory contains four subdirectories. Every subd
 Note that only a single workspace can be active at a time. The information on the active one is stored in file ``webapps.properties``.
 
 .. tip::
-  Usually, you don't need to take care of the three files that are located at the top level of this directory. The services console creates and modifies them as required (e.g. when switching to a different workspace). In order to adapt deegree webservices to your needs, create or edit configuration files in the active workspace directory. The rest of the documentation will refer to configuration files in the (active) workspace directory.
+  Usually, you don't need to care about the three files that are located at the top level of this directory. The services console creates and modifies them as required (e.g. when switching to a different workspace). In order to adapt deegree webservices to your needs, create or edit configuration files in the active workspace directory. The remaining documentation will always refer to configuration files in the (active) workspace directory.
 
 .. tip::
   If you are running multiple deegree webservices instances on one machine, every instance can use a different workspace. The file ``webapps.properties`` stores the active workspace for every instance separately.
@@ -160,7 +160,7 @@ The workspace directory organizes XML configuration files in a well-defined dire
 | datasources/remoteows/ | Server Connections (Remote OWS) |
 +------------------------+---------------------------------+
 
-Workspaces may contain additional directories. The major difference is that these directories are not scanned for resource files on startup. Some common ones are:
+A workspace directory may contain additional directories to provide additional files along with the configuration. The major difference is that these directories are not scanned for resource files on startup. Some common ones are:
 
 .. table:: Additional workspace directories
 +-----------------------+-------------------------------------------+
@@ -184,7 +184,7 @@ In order to understand the relation between workspace files and resources, let's
 
    Example workspace directory
 
-As noted, deegree scans the well-known resource directories for XML files (``*.xml``) on startup (note that it will omit directory ``manager``). For every file found, deegree will check the type of configuration format (by determining the root element name). If it is a known format, a corresponding resource will be initialized:
+As noted, deegree scans the well-known resource directories for XML files (``*.xml``) on startup (note that it will omit directory ``manager``, as it is not a well-known resource directory). For every file found, deegree will check the type of configuration format (by determining the root element name). If it is a supported format, a corresponding resource will be initialized. For the example, this results in the following setup:
 
 * A JDBC connection pool with id ``conn1``
 * A metadata store with id ``iso19115``
@@ -193,10 +193,10 @@ As noted, deegree scans the well-known resource directories for XML files (``*.x
 The individual configuration formats and their options are described in the later chapters of the documentation.
 
 .. tip::
-  You may wonder why the ``main.xml`` and the ``metadata.xml`` files are not considered as web services. These filenames are not treated as resource files, but in a special manner. See :ref:`anchor-configuration-service` for details.
+  You may wonder why the ``main.xml`` and ``metadata.xml`` files are not considered as web services. These filenames are not treated as resource files, but in a special manner. See :ref:`anchor-configuration-service` for details.
 
 .. tip::
-  The configuration format has to match the workspace subdirectory, e.g. only metadata store configuration files belong into ``datasources/metadata``.
+  The configuration format has to match the workspace subdirectory, e.g. metadata store configuration files are only considered when they are located in ``datasources/metadata``.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Resource identifiers and dependencies
@@ -214,11 +214,9 @@ In this example, the ISO SQL metadata store is wired to JDBC connection pool ``c
 .. tip::
   The required dependencies are specific to every type of resource and are documented for every resource configuration format.
 
--------------------------------------------------------
-Using the service console to manage workspace resources
--------------------------------------------------------
-
-
+-------------------------------------------
+Using the service console for configuration
+-------------------------------------------
 
 The service console has a corresponding menu entry for every type of workspace resource. For example, if you would like to add/remove/edit a coverage store, you would click on "data stores -> coverage". This opens a view with a list of all configured coverage stores. If you activated the Utah workspace (see :ref:`anchor-workspace-utah`), you should see the following list:
 
@@ -242,10 +240,6 @@ The details of the individual configuration formats are described in the later c
 
 Deleting a workspace resource is straight-forward ("Delete"). You can also turn off a workspace resource temporarily ("Deactivate").
 
----------------------------------------------------------
-Using the service console to add a new workspace resource
----------------------------------------------------------
-
 In order to add a new workspace resource, use the "Create new" link. Note that you always have to specify an identifier for every new resource. 
 
 .. figure:: images/browser.png
@@ -255,12 +249,31 @@ In order to add a new workspace resource, use the "Create new" link. Note that y
 
    Adding a new WPS with identifier "mywps"
 
-----------------------------------------
-Creating your own workspace from scratch
-----------------------------------------
+--------------------------------------
+Best practices for creating workspaces
+--------------------------------------
 
-You should have a basic understanding of the deegree workspace concepts now. If you want to configure deegree webservices for your own scenario, you will probably understand
-Now you should know how to create and edit resources in the deegree workspace. But you may be wondering how to find out which exact workspace resources you need for a specific scenario.
+You should have a basic understanding of deegree workspace concepts now. The remainder of this chapter provides hints for creating a deegree workspace for your scenario.
 
-TBD
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Find out which resources you need
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Start from example or from scratch
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Use a validating XML editor
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Check the resource status and errors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+^^^^^^^^^^^^
+Getting help
+^^^^^^^^^^^^
+
+
 
