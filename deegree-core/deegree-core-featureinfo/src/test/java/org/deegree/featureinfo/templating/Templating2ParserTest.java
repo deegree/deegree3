@@ -42,7 +42,6 @@
 package org.deegree.featureinfo.templating;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.antlr.runtime.ANTLRInputStream;
@@ -63,9 +62,17 @@ public class Templating2ParserTest {
 
     public static void main( String[] args )
                             throws RecognitionException, IOException {
-        CharStream input = new ANTLRInputStream( Templating2Parser.class.getResourceAsStream( "html2.gfi" ) );
+        CharStream input = new ANTLRInputStream( Templating2ParserTest.class.getResourceAsStream( "../html.gfi" ) );
         Templating2Lexer lexer = new Templating2Lexer( input );
-        Templating2Parser parser = new Templating2Parser( new CommonTokenStream( lexer ) );
+        CommonTokenStream cts = new CommonTokenStream( lexer );
+//        cts.consume();
+        cts.fill();
+        System.out.println(cts.getTokens());
+//        for(Object o : cts.getTokens()){
+//            Token t = (Token) o;
+//            System.out.println(t.getType()+ ":" +t.getText());
+//        }
+        Templating2Parser parser = new Templating2Parser( cts );
         Map<String, Definition> defs = parser.definitions();
         System.out.println( defs );
     }
