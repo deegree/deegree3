@@ -53,8 +53,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,10 +82,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.deegree.client.core.utils.MessageUtils;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -107,8 +109,6 @@ public class RequestBean implements Serializable {
     private static final Logger LOG = getLogger( RequestBean.class );
 
     private File requestsBaseDir;
-
-    private String targetUrl;
 
     private String selectedService;
 
@@ -149,6 +149,8 @@ public class RequestBean implements Serializable {
     private TreeMap<String, Map<String, Map<String, List<String>>>> allRequests = new TreeMap<String, Map<String, Map<String, List<String>>>>();
 
     private String responseFile;
+    
+    private String workspaceService= "";
 
     public File getRequestsBaseDir() {
         return requestsBaseDir;
@@ -156,14 +158,6 @@ public class RequestBean implements Serializable {
 
     public void setRequestsBaseDir( File requestsBaseDir ) {
         this.requestsBaseDir = requestsBaseDir;
-    }
-
-    public String getTargetUrl() {
-        return targetUrl;
-    }
-
-    public void setTargetUrl( String targetUrl ) {
-        this.targetUrl = targetUrl;
     }
 
     public String getSelectedService() {
@@ -293,16 +287,6 @@ public class RequestBean implements Serializable {
     @PostConstruct
     public void init() {
         allRequests.clear();
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        URL url;
-        try {
-            url = new URL( ctx.getRequestScheme(), ctx.getRequestServerName(), ctx.getRequestServerPort(),
-                           ctx.getRequestContextPath() );
-            this.targetUrl = url.toExternalForm() + "/services";
-        } catch ( MalformedURLException e ) {
-            LOG.debug( "Constructing the url was a problem..." );
-            LOG.trace( "Stack trace:", e );
-        }
 
         initRequestMap();
 
@@ -368,12 +352,31 @@ public class RequestBean implements Serializable {
         allRequests.clear();
         initRequestMap();
     }
+    
+    public String getEndpoint() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        
+        return ctx.getRequestScheme() + "://" 
+                            + ctx.getRequestServerName() + ":" 
+                            + ctx.getRequestServerPort()
+                            + ctx.getRequestContextPath() + "/services";
+    }
+    
+    public String getTargetUrl() {
+        if(workspaceService.equals( "" )) {
+            return getEndpoint();
+        } else {
+            return getEndpoint() + "/" + workspaceService;
+        }
+    }
 
     public void sendRequest()
                             throws UnsupportedEncodingException {
         if ( !request.startsWith( "<?xml" ) ) {
             request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + request;
         }
+        
+        String targetUrl = getTargetUrl();
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + request );
         if ( targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0 ) {
             InputStream is = new ByteArrayInputStream( request.getBytes( "UTF-8" ) );
@@ -578,6 +581,8 @@ public class RequestBean implements Serializable {
      * 
      */
     public void sendKVPRequest() {
+        String targetUrl = getTargetUrl();
+        
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + kvpRequestSel );
         if ( targetUrl != null && targetUrl.length() > 0 && kvpRequestSel != null && kvpRequestSel.length() > 0 ) {
             Map<String, String> header = new HashMap<String, String>();
@@ -625,4 +630,36 @@ public class RequestBean implements Serializable {
     // public String toString() {
     // return generateToString( this );
     // }
+    
+    @SuppressWarnings("rawtypes")
+    public List<String> getWorkspaceServices() {
+        ArrayList<String> activeServices = new ArrayList<String>();
+        activeServices.add( "" );
+        
+        DeegreeWorkspace workspace = OGCFrontController.getServiceWorkspace();
+        WebServicesConfiguration config = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        if ( config != null ) {
+            for ( ResourceState state : config.getStates() ) {
+                StateType type = state.getType();
+                if ( type == StateType.init_ok ) {
+                    activeServices.add( state.getId() );
+                }
+            }
+        }
+
+        return activeServices;
+    }
+    
+    public void setWorkspaceService(String workspaceService) {
+        for ( String currentWorkspaceService : getWorkspaceServices() ) {
+            if ( currentWorkspaceService.equals( workspaceService ) ) {
+                this.workspaceService = workspaceService;
+                break;
+            }
+        }
+    }
+    
+    public String getWorkspaceService() {
+        return workspaceService;
+    }
 }
