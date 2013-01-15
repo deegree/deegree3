@@ -20,6 +20,7 @@ import org.deegree.featureinfo.templating.java_cup.runtime.Symbol;
  * on 2/24/10 3:10 PM from the specification file
  * <tt>Templating.flex</tt>
  */
+@Deprecated
 public class TemplatingLexer implements Scanner {
 
     /** This character denotes the end of file */
