@@ -35,6 +35,8 @@ For the remainder of the chapter, only the **general** section is relevant. The 
 * **send requests**: Send raw XML requests
 * **see layers**: Display WMS layers
 
+.. _anchor-downloading-workspaces:
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Downloading and activating example workspaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
