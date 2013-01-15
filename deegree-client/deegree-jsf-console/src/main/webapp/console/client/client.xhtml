@@ -31,13 +31,13 @@
 		<h:panelGroup style="width: 95%; margin-left: 2%; margin-right: 2%;">
 			<h:panelGrid>
 				<h:column>
+					<h:outputText value="Choose:" />
 					<h:selectOneMenu id="servicesSel"
 						value="#{requestBean.selectedService}">
 						<f:selectItems value="#{requestBean.services}" var="service"
 							itemLabel="#{service}" itemValue="#{service}" />
 						<f:ajax render="requestProfilesSel requestsSel requestArea" />
 					</h:selectOneMenu>
-					<h:outputText value="Choose:" />
 					<h:selectOneMenu id="requestProfilesSel"
 						value="#{requestBean.selectedReqProfile}"
 						style="margin-right: 20px;">
@@ -66,16 +66,18 @@
 						styleClass="textarea" />
 				</h:column>
 				<h:column>
-					<h:outputLabel value="URL: " for="url" />
-					<h:inputText id="url" value="#{requestBean.targetUrl}"
-						style="width: 550px; margin-right: 20px;" required="true"
-						requiredMessage="Enter a valid URL">
-						<f:validator validatorId="org.deegree.URLValidator" />
-					</h:inputText>
+					<h:outputLabel value="URL: #{requestBean.endpoint}/" for="workspaceService" />
+					<h:selectOneMenu id="workspaceService"
+						value="#{requestBean.workspaceService}"
+						style="margin-right: 20px;">
+						<f:selectItems value="#{requestBean.workspaceServices}"
+							var="workspaceService" itemLabel="#{workspaceService}"
+							itemValue="#{workspaceService}" />
+					</h:selectOneMenu>
 
 					<h:commandButton id="sendBt" value="send"
 						action="#{requestBean.sendRequest}" style="text-align: right;">
-						<f:ajax execute="url requestArea"
+						<f:ajax execute="workspaceService requestArea"
 							render="sendMgs result downloadLink" onevent="blockInput" />
 					</h:commandButton>
 
