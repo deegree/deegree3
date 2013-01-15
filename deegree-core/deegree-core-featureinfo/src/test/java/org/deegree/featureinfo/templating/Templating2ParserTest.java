@@ -44,11 +44,14 @@ package org.deegree.featureinfo.templating;
 import java.io.IOException;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.deegree.featureinfo.templating.lang.Definition;
+import org.junit.Test;
 
 /**
  * TODO add class documentation here
@@ -60,21 +63,57 @@ import org.deegree.featureinfo.templating.lang.Definition;
  */
 public class Templating2ParserTest {
 
-    public static void main( String[] args )
-                            throws RecognitionException, IOException {
-        CharStream input = new ANTLRInputStream( Templating2ParserTest.class.getResourceAsStream( "../html.gfi" ) );
+    @Test
+    public void testMapDefinition()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "map.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 2, defs.size() );
+        Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
+    public void testError()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "error.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 1, defs.size() );
+        Assert.assertEquals( 1, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
+    public void testUtah1()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "utahdemo.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 3, defs.size() );
+        Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
+    public void testUtah2()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "utahdemo2.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 6, defs.size() );
+        Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
+    public void testStandardTemplate()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "../html.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 4, defs.size() );
+        Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    private static Templating2Parser getParser( String name )
+                            throws IOException {
+        CharStream input = new ANTLRInputStream( Templating2ParserTest.class.getResourceAsStream( name ) );
         Templating2Lexer lexer = new Templating2Lexer( input );
         CommonTokenStream cts = new CommonTokenStream( lexer );
-//        cts.consume();
-        cts.fill();
-        System.out.println(cts.getTokens());
-//        for(Object o : cts.getTokens()){
-//            Token t = (Token) o;
-//            System.out.println(t.getType()+ ":" +t.getText());
-//        }
-        Templating2Parser parser = new Templating2Parser( cts );
-        Map<String, Definition> defs = parser.definitions();
-        System.out.println( defs );
+        return new Templating2Parser( cts );
     }
 
 }

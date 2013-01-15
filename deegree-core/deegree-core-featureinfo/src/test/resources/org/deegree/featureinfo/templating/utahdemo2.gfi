@@ -62,7 +62,7 @@
 <?template options>
 opt = document.getElementById('<?name>')
 if(!opt){
-  opt = newnode(sw, 'option', '<?name>')
+  opt = newnode(sw, 'option', '<?name:map ftname>')
   opt.setAttribute('id', '<?name>')
   opt.setAttribute('value', '<?name>')
 }
@@ -97,6 +97,14 @@ if(!first) first = <?name>_switchfunction
 
 <?template properties>
 row = tr(table)
-td(row, '<?name>').style.cssText = odd ? oddStyle : evenStyle
+td(row, '<?name:map props>').style.cssText = odd ? oddStyle : evenStyle
 td(row, '<?value>').style.cssText = odd ? oddStyle : evenStyle
 odd = !odd
+
+<?map props>
+NAME=Name
+POP_2000=Population
+STATE=State
+
+<?map ftname>
+SGID93_LOCATION_UDOTMap_CityLocations=Cities in Utah County

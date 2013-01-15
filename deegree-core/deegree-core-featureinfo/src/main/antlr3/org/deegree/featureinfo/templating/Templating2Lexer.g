@@ -33,13 +33,12 @@ Comma: ',';
 Colon: ':';
 TagOpen: '<';
 TagClose: '>';
-Map: 'map ';
+MapSpace: 'map ';
 Not: 'not';
 BracketLeft: '(';
 BracketRight: ')';
 
+Kvp: '\n'* (~('=' | '<' | '>' | '?' | '/' | '\n'))+ '=' (~('\n'))+ '\n'*;
 ID: (Letter | Digit | '_')+;
-KvpLeft: (~('=' | '<' | '>' | '?' | '/' | '\n'))+;
-KvpRight: (~('\n'))+;
 
 Rest: ~('<')+;

@@ -7,6 +7,7 @@
 package org.deegree.featureinfo.templating;
 
 /** CUP generated class containing symbol constants. */
+@Deprecated
 public class TemplatingSymbols {
   /* terminals */
   public static final int NOT_TOKEN = 20;

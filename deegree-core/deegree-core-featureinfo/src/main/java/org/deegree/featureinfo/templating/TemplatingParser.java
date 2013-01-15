@@ -32,6 +32,7 @@ import org.deegree.featureinfo.templating.lang.Value;
  * 
  * @version Tue Jan 26 15:08:06 CET 2010
  */
+@Deprecated
 public class TemplatingParser extends lr_parser {
 
     /** Default constructor. */

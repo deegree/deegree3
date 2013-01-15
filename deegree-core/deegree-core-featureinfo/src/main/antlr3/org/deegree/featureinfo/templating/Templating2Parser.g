@@ -31,8 +31,8 @@ template[HashMap<String, Definition> defs]
 
 templatebody[TemplateDefinition def]:
   templatebodytext { $def.body.add($templatebodytext.text); }
-  | featurecall
-  | propertycall
+  | featurecall { $def.body.add($featurecall.call); }
+  | propertycall { $def.body.add($propertycall.call); }
   | name { $def.body.add($name.name); }
   | value { $def.body.add($value.value); }
   | odd { $def.body.add($odd.even); }
@@ -50,9 +50,9 @@ templatebodytext returns [String text]:
   | t = TagOpen { $text = $t.text; }
   | t = Star { $text = $t.text; }
   | t = Colon { $text = $t.text; }
-  | t = KvpLeft { $text = $t.text; }
-  | t = KvpRight { $text = $t.text; }
+  | t = Kvp { $text = $t.text; }
   | t = Equals { $text = $t.text; }
+  | t = Comma { $text = $t.text; }
   | t = BracketLeft { $text = $t.text; }
   | t = BracketRight { $text = $t.text; }
   ;
@@ -61,22 +61,32 @@ map[HashMap<String, Definition> defs]
 @init {
   MapDefinition mapdef = new MapDefinition();
 }:
-  MapDefinitionStart n = ID TagClose kvp[mapdef.map]+ { $defs.put($n.text, mapdef); mapdef.name = $n.text; }
+  MapDefinitionStart n = ID TagClose kvp[mapdef.map]+ WS* { $defs.put($n.text, mapdef); mapdef.name = $n.text; }
   ;
 
 kvp[HashMap<String, String> map]:
-  l = KvpLeft+ Equals r = KvpRight+ NewLine { $map.put($l.text.trim(), $r.text.trim()); };
+  k = Kvp { String[] ss = $k.text.trim().split("="); $map.put(ss[0], ss[1]); };
 
-featurecall:
-  FeatureCallStart templateselector Colon ID TagClose;
+featurecall returns [FeatureTemplateCall call]
+@init {
+  List<String> patterns = new ArrayList<String>();
+}:
+  FeatureCallStart templateselector[patterns] Colon ID TagClose { $call = new FeatureTemplateCall($ID.text, patterns, $templateselector.negate); };
 
-propertycall:
-  PropertyCallStart templateselector Colon ID TagClose;
+propertycall returns [PropertyTemplateCall call]
+@init {
+    List<String> patterns = new ArrayList<String>();
+}:
+  PropertyCallStart templateselector[patterns] Colon ID TagClose { $call = new PropertyTemplateCall($ID.text, patterns, $templateselector.negate); };
 
-templateselector:
-  Not WS* BracketLeft templateselector BracketRight
-  | Star (WS* ID WS*)?
-  | WS* ID WS* (Comma templateselector)?
+templateselector[List<String> patterns] returns [Boolean negate]:
+  Not WS* BracketLeft templatepatterns[patterns] BracketRight { $negate = true; }
+  | templatepatterns[patterns] { $negate = false; }
+  ;
+
+templatepatterns[List<String> patterns]:
+  Star (WS* p = ID WS*)? (Comma templatepatterns[patterns])? { if($p != null) patterns.add("*" + $p.text); else patterns.add("*"); }
+  | WS* p = ID WS* (Comma templatepatterns[patterns])? { patterns.add($p.text); }
   ;
 
 name returns [Object name]:
