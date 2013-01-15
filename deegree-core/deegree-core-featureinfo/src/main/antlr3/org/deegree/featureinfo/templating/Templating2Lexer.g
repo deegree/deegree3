@@ -21,9 +21,9 @@ Index: '<?index>';
 GmlId: '<?gmlid>';
 ExplicitTemplateEnd: '</?>';
 
-fragment Letter: ('a'..'z' | 'A'..'Z');
-fragment Digit: ('0'..'9');
-fragment WS: ' ' | '\n' | '\t' | '\r' | '\f';
+fragment Letter: { Character.isLetter( input.LA(1) ) }? .;
+fragment Digit: { Character.isDigit( input.LA(1) ) }? .;
+fragment WS: { Character.isWhitespace( input.LA(1) ) }? .;
 
 Url: (Letter+ '://' (ID | '/' | '.')+);
 

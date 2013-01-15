@@ -73,6 +73,15 @@ public class Templating2ParserTest {
     }
 
     @Test
+    public void testMapDefinitionUmlauts()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "mapumlauts.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 2, defs.size() );
+        Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
     public void testError()
                             throws IOException, RecognitionException {
         Templating2Parser parser = getParser( "error.gfi" );
