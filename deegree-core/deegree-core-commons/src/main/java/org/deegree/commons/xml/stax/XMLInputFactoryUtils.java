@@ -60,8 +60,7 @@ public class XMLInputFactoryUtils {
     public static XMLInputFactory newSafeInstance() {
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 
-        inputFactory.setProperty( "javax.xml.stream.isReplacingEntityReferences", false );
-        inputFactory.setProperty( "javax.xml.stream.isSupportingExternalEntities", false );
+        inputFactory.setProperty( XMLInputFactory.SUPPORT_DTD, false );
 
         return inputFactory;
     }
