@@ -136,7 +136,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             return 1;
         }
 
-        QueryHelper qh = new QueryHelper( dialect, queryables );
+        IQueryHelper qh = new QueryHelper( dialect, queryables );
         try {
             MetadataQuery query = new MetadataQuery( null, null, (OperatorFilter) update.getConstraint(), null, 1,
                                                      Integer.MIN_VALUE );

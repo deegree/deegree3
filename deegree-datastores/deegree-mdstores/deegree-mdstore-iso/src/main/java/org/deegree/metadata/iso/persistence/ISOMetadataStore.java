@@ -246,7 +246,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
 
-        QueryHelper exe = new QueryHelper( dialect, getQueryables() );
+        IQueryHelper exe = new QueryHelper( dialect, getQueryables() );
         return exe.execute( query, getConnection() );
     }
 
@@ -273,7 +273,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new QueryHelper( dialect, getQueryables() );
+        IQueryHelper qh = new QueryHelper( dialect, getQueryables() );
         return qh.executeGetRecordById( idList, getConnection() );
     }
 
