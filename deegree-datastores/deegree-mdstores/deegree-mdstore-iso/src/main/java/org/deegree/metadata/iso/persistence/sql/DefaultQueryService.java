@@ -71,14 +71,14 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
-public class DefaultQueryHelper extends AbstractSqlHelper implements QueryHelper {
+class DefaultQueryService extends AbstractSqlHelper implements QueryService {
 
-    private static final Logger LOG = getLogger( DefaultQueryHelper.class );
+    private static final Logger LOG = getLogger( DefaultQueryService.class );
 
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     private static final int DEFAULT_FETCH_SIZE = 100;
 
-    public DefaultQueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
+    public DefaultQueryService( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
 
