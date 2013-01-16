@@ -59,8 +59,9 @@ import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspecto
 import org.deegree.metadata.iso.persistence.inspectors.NamespaceNormalizationInspector;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.iso.persistence.queryable.QueryableConverter;
-import org.deegree.metadata.iso.persistence.sql.DefaultQueryHelper;
-import org.deegree.metadata.iso.persistence.sql.QueryHelper;
+import org.deegree.metadata.iso.persistence.sql.QueryService;
+import org.deegree.metadata.iso.persistence.sql.ServiceManager;
+import org.deegree.metadata.iso.persistence.sql.ServiceManagerProvider;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -223,8 +224,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
 
-        QueryHelper exe = new DefaultQueryHelper( dialect, getQueryables() );
-        return exe.execute( query, getConnection() );
+        QueryService queryService = getReadOnlySqlService();
+        return queryService.execute( query, getConnection() );
     }
 
     /**
@@ -237,7 +238,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         try {
-            return new DefaultQueryHelper( dialect, getQueryables() ).executeCounting( query, getConnection() );
+            QueryService queryService = getReadOnlySqlService();
+            return queryService.executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
@@ -250,7 +252,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new DefaultQueryHelper( dialect, getQueryables() );
+        QueryService qh = getReadOnlySqlService();
         return qh.executeGetRecordById( idList, getConnection() );
     }
 
@@ -308,4 +310,11 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public ResourceMetadata<? extends Resource> getMetadata() {
         return metadata;
     }
+    
+    private QueryService getReadOnlySqlService()
+                            throws MetadataStoreException {
+        ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
+        return serviceManager.getQueryService( dialect, queryables );
+    }
+    
 }
