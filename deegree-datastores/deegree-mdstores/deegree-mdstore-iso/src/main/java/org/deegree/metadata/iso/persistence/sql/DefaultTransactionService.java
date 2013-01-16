@@ -90,32 +90,19 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
-public class TransactionHelper extends AbstractSqlHelper {
+class DefaultTransactionService extends AbstractSqlHelper implements TransactionService {
 
-    private static final Logger LOG = getLogger( TransactionHelper.class );
+    private static final Logger LOG = getLogger( DefaultTransactionService.class );
 
     private AnyText anyTextConfig;
 
-    public TransactionHelper( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
+    public DefaultTransactionService( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
         super( dialect, queryables );
         this.anyTextConfig = anyTextConfig;
 
     }
 
-    /**
-     * Generates and inserts the maindatabasetable that is needed for the queryable properties databasetables to derive
-     * from.
-     * <p>
-     * BE AWARE: the "modified" attribute is get from the first position in the list. The backend has the possibility to
-     * add one such attribute. In the xsd-file there are more possible...
-     * 
-     * @param conn
-     *            the SQL connection
-     * @return the primarykey of the inserted dataset which is the foreignkey for the queryable properties
-     *         databasetables
-     * @throws MetadataStoreException
-     * @throws XMLStreamException
-     */
+    @Override
     public int executeInsert( Connection conn, ISORecord rec )
                             throws MetadataStoreException, XMLStreamException {
         int internalId = 0;
@@ -146,6 +133,7 @@ public class TransactionHelper extends AbstractSqlHelper {
         return internalId;
     }
 
+    @Override
     public int executeDelete( Connection connection, AbstractWhereBuilder builder )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "delete-statement" ) );
@@ -202,19 +190,7 @@ public class TransactionHelper extends AbstractSqlHelper {
         return deleted;
     }
 
-    /**
-     * 
-     * @param conn
-     *            the database connection
-     * @param rec
-     *            the record to update
-     * @param fileIdentifier
-     *            the fileIdentifer of the record to update, can be <code>null</code> when the identifer of the record
-     *            is the one to use for updating
-     * @return the database id of the updated record
-     * @throws MetadataStoreException
-     *             if updating fails
-     */
+    @Override
     public int executeUpdate( Connection conn, ISORecord rec, String fileIdentifier )
                             throws MetadataStoreException {
         PreparedStatement stmt = null;

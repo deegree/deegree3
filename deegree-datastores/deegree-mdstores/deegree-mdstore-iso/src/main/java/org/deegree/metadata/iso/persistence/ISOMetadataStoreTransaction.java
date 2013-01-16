@@ -15,9 +15,10 @@ import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
-import org.deegree.metadata.iso.persistence.sql.DefaultQueryHelper;
-import org.deegree.metadata.iso.persistence.sql.QueryHelper;
-import org.deegree.metadata.iso.persistence.sql.TransactionHelper;
+import org.deegree.metadata.iso.persistence.sql.QueryService;
+import org.deegree.metadata.iso.persistence.sql.ServiceManager;
+import org.deegree.metadata.iso.persistence.sql.ServiceManagerProvider;
+import org.deegree.metadata.iso.persistence.sql.TransactionService;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -90,8 +91,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             AbstractWhereBuilder builder = dialect.getWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(),
                                                                     null, false );
 
-            TransactionHelper transactionHelper = new TransactionHelper( dialect, queryables, anyTextConfig );
-            return transactionHelper.executeDelete( conn, builder );
+            TransactionService transactionService = getTransactionalSqlService();
+            return transactionService.executeDelete( conn, builder );
 
         } catch ( Exception e ) {
             throw new MetadataStoreException( e.getMessage() );
@@ -110,8 +111,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
                 if ( record != null ) {
                     ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    TransactionHelper transactionHelper = new TransactionHelper( dialect, queryables, anyTextConfig );
-                    transactionHelper.executeInsert( conn, rec );
+                    TransactionService transactionService = getTransactionalSqlService();
+                    transactionService.executeInsert( conn, rec );
                     identifierList.add( rec.getIdentifier() );
                 }
             } catch ( XMLStreamException e ) {
@@ -125,7 +126,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateOperation update )
                             throws MetadataStoreException, MetadataInspectorException {
-        TransactionHelper generateQP = new TransactionHelper( dialect, queryables, anyTextConfig );
+        TransactionService generateQP = getTransactionalSqlService();
         int result = 0;
 
         if ( update.getRecord() != null && update.getConstraint() == null ) {
@@ -139,7 +140,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             return 1;
         }
 
-        QueryHelper qh = new DefaultQueryHelper( dialect, queryables );
+        QueryService qh = getReadOnlySqlService();
         try {
             MetadataQuery query = new MetadataQuery( null, null, (OperatorFilter) update.getConstraint(), null, 1,
                                                      Integer.MIN_VALUE );
@@ -218,4 +219,23 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             JDBCUtils.close( conn );
         }
     }
+
+    private QueryService getReadOnlySqlService()
+                            throws MetadataStoreException {
+        ServiceManager serviceManager = getServiceManager();
+        return serviceManager.getQueryService( dialect, queryables );
+    }
+
+    private TransactionService getTransactionalSqlService()
+                            throws MetadataStoreException {
+        ServiceManager serviceManager = getServiceManager();
+        return serviceManager.getTransactionService( dialect, queryables, anyTextConfig );
+    }
+
+    private ServiceManager getServiceManager()
+                            throws MetadataStoreException {
+        ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
+        return serviceManager;
+    }
+
 }
