@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -90,13 +90,13 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
-class TransactionHelper extends SqlHelper {
+public class TransactionHelper extends AbstractSqlHelper {
 
     private static final Logger LOG = getLogger( TransactionHelper.class );
 
     private AnyText anyTextConfig;
 
-    TransactionHelper( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
+    public TransactionHelper( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
         super( dialect, queryables );
         this.anyTextConfig = anyTextConfig;
 
@@ -116,7 +116,7 @@ class TransactionHelper extends SqlHelper {
      * @throws MetadataStoreException
      * @throws XMLStreamException
      */
-    int executeInsert( Connection conn, ISORecord rec )
+    public int executeInsert( Connection conn, ISORecord rec )
                             throws MetadataStoreException, XMLStreamException {
         int internalId = 0;
         InsertRow ir = new InsertRow( new TableName( mainTable ), null );
@@ -215,7 +215,7 @@ class TransactionHelper extends SqlHelper {
      * @throws MetadataStoreException
      *             if updating fails
      */
-    int executeUpdate( Connection conn, ISORecord rec, String fileIdentifier )
+    public int executeUpdate( Connection conn, ISORecord rec, String fileIdentifier )
                             throws MetadataStoreException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
