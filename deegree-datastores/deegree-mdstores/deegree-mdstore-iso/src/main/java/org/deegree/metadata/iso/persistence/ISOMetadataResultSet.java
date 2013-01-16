@@ -53,7 +53,7 @@ import org.deegree.metadata.persistence.XMLMetadataResultSet;
  * 
  * @version $Revision: 30651 $, $Date: 2011-05-05 11:40:31 +0200 (Do, 05. Mai 2011) $
  */
-class ISOMetadataResultSet extends XMLMetadataResultSet<ISORecord> {
+public class ISOMetadataResultSet extends XMLMetadataResultSet<ISORecord> {
 
     public ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt ) {
         super( rs, conn, stmt );

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import java.util.ArrayList;
 import java.util.List;

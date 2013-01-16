@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
@@ -51,6 +51,8 @@ import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.ISOMetadataResultSet;
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
@@ -69,17 +71,17 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
-class DefaultQueryHelper extends SqlHelper implements QueryHelper{
+public class DefaultQueryHelper extends AbstractSqlHelper implements QueryHelper {
 
     private static final Logger LOG = getLogger( DefaultQueryHelper.class );
 
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
-    public static final int DEFAULT_FETCH_SIZE = 100;
+    private static final int DEFAULT_FETCH_SIZE = 100;
 
-    DefaultQueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
+    public DefaultQueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
-    
+
     @Override
     public ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
                             throws MetadataStoreException {
