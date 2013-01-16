@@ -49,9 +49,7 @@ import java.util.List;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.Filters;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.spatial.BBOX;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.persistence.MetadataQuery;
@@ -71,17 +69,17 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
-class QueryHelper extends SqlHelper implements IQueryHelper {
+class QueryHelper extends SqlHelper implements IQueryHelper{
 
     private static final Logger LOG = getLogger( QueryHelper.class );
 
-    public QueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
+    /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
+    public static final int DEFAULT_FETCH_SIZE = 100;
+
+    QueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
-
-    /* (non-Javadoc)
-     * @see org.deegree.metadata.iso.persistence.IQueryHelper#execute(org.deegree.metadata.persistence.MetadataQuery, java.sql.Connection)
-     */
+    
     @Override
     public ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
                             throws MetadataStoreException {
@@ -89,26 +87,15 @@ class QueryHelper extends SqlHelper implements IQueryHelper {
         PreparedStatement preparedStatement = null;
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query, conn );
-            
-            //
-            String geoConstraint = "MDSYS.SDO_GEOMETRY(2003,4326,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3),MDSYS.SDO_ORDINATE_ARRAY(-180,-90, 180, 90))";
-            String rankingSnippet = "ABS(SDO_GEOM.SDO_AREA(X1.bbox, 0.005) - SDO_GEOM.SDO_AREA(geoConstraint, 0.005)) * SDO_GEOM.SDO_DISTANCE(SDO_GEOM.SDO_CENTROID(X1.bbox, 0.005), SDO_GEOM.SDO_CENTROID(geoConstraint, 0.005), 0.005)";
-            rankingSnippet = rankingSnippet.replace("geoConstraint", geoConstraint );
+
             StringBuilder idSelect = getPreparedStatementDatasetIDs( builder );
-            BBOX box = Filters.extractPrefilterBBoxConstraint( query.getFilter() );
-            //
+
             // TODO: use SQLDialect
             if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == MSSQL ) {
                 String oldHeader = idSelect.toString();
                 idSelect = idSelect.append( " from (" ).append( oldHeader );
                 idSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
-            }          
-            //
-            String aliasNameForRankingSnippet = "";
-            if (idSelect.toString().contains( "X1.ranking_geographic" )) {
-                aliasNameForRankingSnippet = idSelect.toString().split( "X1.ranking_geographic " )[1].split( " " )[1];
             }
-            //
             if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 )
                  && dialect.getDBType() == Oracle ) {
                 String oldHeader = idSelect.toString();
@@ -117,25 +104,14 @@ class QueryHelper extends SqlHelper implements IQueryHelper {
                 if ( query.getStartPosition() != 1 ) {
                     idSelect.append( "select a.*, ROWNUM rnum from (" );
                 }
-                oldHeader = oldHeader.replace( "X1.ranking_geographic", rankingSnippet );
-
-                //
                 idSelect.append( oldHeader );
             }
 
             getPSBody( builder, idSelect );
-            
             if ( builder.getOrderBy() != null ) {
                 idSelect.append( " ORDER BY " );
-                String orderBy = builder.getOrderBy().getSQL().toString();
-                //
-                if (orderBy.contains( "X1.ranking_geographic") && !"".equals(aliasNameForRankingSnippet))
-                    orderBy = orderBy.replace( "X1.ranking_geographic", aliasNameForRankingSnippet );
-                //
-                idSelect.append( orderBy );
+                idSelect.append( builder.getOrderBy().getSQL() );
             }
-            
-            
 
             if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == PostgreSQL ) {
                 idSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
@@ -235,9 +211,6 @@ class QueryHelper extends SqlHelper implements IQueryHelper {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.metadata.iso.persistence.IQueryHelper#executeCounting(org.deegree.metadata.persistence.MetadataQuery, java.sql.Connection)
-     */
     @Override
     public int executeCounting( MetadataQuery query, Connection conn )
                             throws MetadataStoreException, FilterEvaluationException, UnmappableException {
@@ -279,9 +252,6 @@ class QueryHelper extends SqlHelper implements IQueryHelper {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.metadata.iso.persistence.IQueryHelper#executeGetRecordById(java.util.List, java.sql.Connection)
-     */
     @Override
     public ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
                             throws MetadataStoreException {
