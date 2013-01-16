@@ -90,7 +90,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
-class DefaultTransactionService extends AbstractSqlHelper implements TransactionService {
+public class DefaultTransactionService extends AbstractSqlHelper implements TransactionService {
 
     private static final Logger LOG = getLogger( DefaultTransactionService.class );
 
