@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataResultSet.java $
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/TransactionHelper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,34 +33,35 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.List;
 
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.metadata.iso.ISORecord;
-import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.XMLMetadataResultSet;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.metadata.iso.persistence.ISOMetadataResultSet;
+import org.deegree.metadata.persistence.MetadataQuery;
+import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.filter.UnmappableException;
 
 /**
- * {@link MetadataResultSet} for the {@link ISOMetadataStore}.
+ * Interface describing read access to sql backend.
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
+ * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: 30651 $, $Date: 2011-05-05 11:40:31 +0200 (Do, 05. Mai 2011) $
+ * @version $Revision: $, $Date: $
  */
-public class ISOMetadataResultSet extends XMLMetadataResultSet<ISORecord> {
+public interface QueryService {
 
-    public ISOMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt ) {
-        super( rs, conn, stmt );
-    }
+    ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
+                            throws MetadataStoreException;
 
-    @Override
-    protected ISORecord getRecord( XMLStreamReader xmlReader ) {
-        return new ISORecord( xmlReader );
-    }
+    int executeCounting( MetadataQuery query, Connection conn )
+                            throws MetadataStoreException, FilterEvaluationException, UnmappableException;
+
+    ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
+                            throws MetadataStoreException;
+
 }
