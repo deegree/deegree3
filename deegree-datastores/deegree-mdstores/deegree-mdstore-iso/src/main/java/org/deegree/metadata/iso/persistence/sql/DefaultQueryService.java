@@ -300,7 +300,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
         return new ISOMetadataResultSet( rs, conn, stmt );
     }
 
-    private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
+    protected AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
                                         (OperatorFilter) query.getFilter(), query.getSorting(), false );
