@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools</artifactId>
-    <version>3.2-pre13-SNAPSHOT</version>
+    <version>3.2-pre13-jrcportal-SNAPSHOT</version>
   </parent>
 
   <repositories>
