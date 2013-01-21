@@ -211,42 +211,184 @@ It has already been hinted that resources have an identifier, e.g. for file ``jd
 In this example, the ISO metadata store is wired to JDBC connection pool ``conn1``. Many deegree resource configuration files contain such references to dependent resources. Some resources perform auto-wiring. For example, every CSW instance needs to connect to a metadata store for accessing stored metadata records. If the CSW configuration omits the reference to the metadata store, it is assumed that there's exactly one metadata store defined in the workspace and deegree will automatically connect the CSW to this store.
 
 .. tip::
-  The required dependencies are specific to every type of resource and are documented for every resource configuration format.
+  The required dependencies are specific to every type of resource and are documented for each resource configuration format.
 
--------------------------------------------
-Using the service console for configuration
--------------------------------------------
+------------------------------------------------
+Using the service console for managing resources
+------------------------------------------------
 
-The service console has a corresponding menu entry for every type of workspace resource. For example, if you would like to add/remove/edit a coverage store, you would click on "data stores -> coverage". This opens a view with a list of all configured coverage stores. If you activated the Utah workspace (see :ref:`anchor-workspace-utah`), you should see the following list:
+As an alternative to dealing with the workspace resource configuration files directly on the filesystem, you can also use the service console for this task. The service console has a corresponding menu entry for every type of workspace resource. All resource menu entries are grouped in the lower menu on the left:
 
-.. figure:: images/browser.png
+.. figure:: images/console_resources.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_resources.jpg
 
-   Configuring coverage stores
+   Workspace resource menu entries
 
-As you can see, the Utah demo workspace defines three coverage stores in total. Each configured coverage store (and every deegree workspace resource in general) has a corresponding XML file, which you can edit by clicking the "Edit" button:
+Although the console offers additional functionality for some resource types, the basic management of resources is always identical.
 
-.. figure:: images/browser.png
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Displaying configured resources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to display the configured workspace resources of a certain type, click on the corresponding menu entry. The following screenshot shows the metadata store resources in deegree-workspace-csw:
+
+.. figure:: images/console_metadata_stores.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_metadata_stores.jpg
 
-   Editing a coverage store configuration
+   Displaying metadata store resources
 
-The details of the individual configuration formats are described in the later chapters. The built-in XML editor allows to edit the contents of the configuration file, which controls the behaviour of th workspace resource. In the example, it describes the raster file that this coverage store accesses. You can save the changes ("Save") or discard them ("Cancel"). Additionally, you may turn on syntax highlighting and look at the XML schema of the configuration ("Display Schema").
+The right part of the window displays a table with all configured metadata store resources. In this case, the workspace contains a single resource with identifier "iso19115" which is in status "On".
 
-Deleting a workspace resource is straight-forward ("Delete"). You can also turn off a workspace resource temporarily ("Deactivate").
+^^^^^^^^^^^^^^^^^^^^^^^
+Deactivating a resource
+^^^^^^^^^^^^^^^^^^^^^^^
 
-In order to add a new workspace resource, use the "Create new" link. Note that you always have to specify an identifier for every new resource. 
+The "Deactivate" link allows to turn off a resource temporarily (while keeping the configuration):
 
-.. figure:: images/browser.png
+.. figure:: images/console_deactivate.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_deactivate.jpg
 
-   Adding a new WPS with identifier "mywps"
+   Deactivate action
+
+After clicking on "Deactivate", the status of the resource will be "Off", and the "Deactivate" link will change to "Activate". Also, the "Reload" link at the top will turn red to notify that there may be changes that need to be propagated to dependent resources:
+
+.. figure:: images/console_deactivated.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_deactivated.jpg
+
+   Deactivated a resource
+
+.. tip::
+  When a resource is being deactivated, the suffix of the corresponding configuration file is changed to ".ignore". Reactivating changes the suffix back to ".xml".
+
+^^^^^^^^^^^^^^^^^^
+Editing a resource
+^^^^^^^^^^^^^^^^^^
+
+By clicking on the "Edit" link, you can edit the corresponding XML configuration inside your browser:
+
+.. figure:: images/console_edit.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_edit.jpg
+
+   Edit action
+
+The XML configuration will be displayed:
+
+.. figure:: images/console_editing.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_editing.jpg
+
+   Editing a resource configuration
+
+You can now perform configuration changes in the text area and click on "Save". Or click any of the links:
+
+* Display Schema: Displays the XML schema file for the resource configuration format.
+* Cancel: Discards any changes.
+* Turn on highlighting: Perform syntax highlighting.
+
+If there are no (syntactical) errors in the configuration, the "Save" link will take you back to the corresponding resource view. Before actually saving the file, the service console will perform an XML validation of the file and display any syntactical errors:
+
+.. figure:: images/console_edit_error.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_edit_error.jpg
+
+   Displaying a syntax error
+
+In this case, the mandatory "JDBCConnId" element was removed, which violates the configuration schema. This needs to be corrected, before "Save" will actually save the file to the workspace directory.
+
+^^^^^^^^^^^^^^^^^^^
+Deleting a resource
+^^^^^^^^^^^^^^^^^^^
+
+The "Delete" link will deactivate the resource and delete the corresponding configuration file from the workspace:
+
+.. figure:: images/console_delete.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_delete.jpg
+
+   Delete action
+
+^^^^^^^^^^^^^^^^^^^^^^^
+Creating a new resource
+^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to add a new resource, enter a new identifier in the text field, select a resource sub-type from the drop-down and click on "Create new":
+
+.. figure:: images/console_add.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_add.jpg
+
+   Adding a WMS resource with identifier "mywms"
+
+The next steps depend on the type of resource, but generally you have to choose between different options and the result will be a new resource configuration file in the workspace.
+
+.. _anchor-console-errors:
+
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Displaying error messages
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+One of the most helpful features of the console is that it can help to detect and fix errors in a workspace setup. For example, if you delete (or deactivate) JDBC connection "conn1" in deegree-workspace-csw and click "[Reload]", you will see the following:
+
+.. figure:: images/console_error.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_error.jpg
+
+   Errors in resource categories
+
+The red exclamation marks near "services" and "metadata" show that these resource categories have resources with errors. Let's click on the metadata link to see what's going on:
+
+.. figure:: images/console_error2.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_error2.jpg
+
+   Resource "iso19115" has an error
+
+The metadata resource view reveals that the metadata store "iso19115" has an error. Clicking on "Show errors" leads to:
+
+.. figure:: images/console_error3.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_error3.jpg
+
+   Details on the problem with "iso19115"
+
+The error message gives an important hint: "No JDBC connection pool with id 'conn1' defined." deegree was unable to initialize the metadata store, because it refers to a JDBC connection pool "conn1". You may wonder what the error in the services category is about:
+
+.. figure:: images/console_error4.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_error4.jpg
+
+   Details on the problem with "csw"
+
+As you see, the problem with the service resource ("There is no MetadataStore configured, ensure that exactly one store is available!) is actually a consequence of the other issue. Because deegree couldn't initialize the metadata store, it was also unable to start up the CSW correctly. If you add a new JDBC connection "conn1" and click on "[Reload]", both problems should disappear.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Resource type specific actions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In addition to the common management functionality, some resource views offer additional actions. This is described in the corresponding chapters, but here's a short overview:
+
+* Web Services: Display service capabilities ("Capabilities"), edit service metadata ("Edit metadata"), edit controller configuration ("Edit global config")
+* Feature Stores: Display feature types and number of stored features ("Info"), Import GML feature collections ("Loader"), Mapping wizard ("Create new" SQL feature store)
+* Metadata Stores: Import metadata sets ("Loader"), create database tables ("Setup tables")
+* Server Connections (JDBC): Test database connection ("Test")
 
 --------------------------------------
 Best practices for creating workspaces
@@ -258,9 +400,9 @@ This section provides some hints for creating a deegree workspace.
 Start from example or from scratch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For creating your own workspace, you have two options. Option 1 is to use an existing workspace as a template and adapt it to your needs. Option 2 is to start from scratch, using an empty workspace. Adapting an existing workspace makes a lot of sense if your use-case is close to the scenario of the workspace. For example, if you want to set up INSPIRE View and Download Services, it is a good option to use the inspire workspace as a starting point.
+For creating your own workspace, you have two options. Option 1 is to use an existing workspace as a template and adapt it to your needs. Option 2 is to start from scratch, using an empty workspace. Adapting an existing workspace makes a lot of sense if your use-case is close to the scenario of the workspace. For example, if you want to set up INSPIRE View and Download Services, it is a good option to use :ref:`anchor-workspace-inspire` as a starting point.
 
-In order to create a new workspace, you will have to create a new directory in the ``.deegree`` workspace.
+In order to create a new workspace, simply create a new directory in the ``.deegree`` directory.
 
 .. figure:: images/workspace-new.png
    :target: _images/workspace-new.png
@@ -279,9 +421,9 @@ The first step is to identify the types of workspace resources that you need for
 * A WMS instance requires 1..n themes
 * A CSW instance requires a single metadata store
 
-Now you have to dig deeper: What kinds of feature stores exist? Maybe you will find out that what you want is an SQL feature store. So you read the respective part of the documentation and see that an SQL feature store requires a JDBC connection pool resource. Do the same research for the WMS dependencies: What is a theme? In short, you have to answer the following questions for every encountered resource:
+Now you have to dig deeper: What kinds of feature stores exist? Maybe you will find out that what you want is an SQL feature store. So you read the respective part of the documentation and see that an SQL feature store requires a JDBC connection pool resource. Do the same research for the WMS dependencies. A WMS depends on a theme. Find out what a theme is and what it requires. In short, you have to answer the following questions for every encountered resource:
 
-* What does this resource type do?
+* What does resource do?
 * How is it configured?
 * On which resources does this resource depend?
 
@@ -296,14 +438,14 @@ Use a validating XML editor
 
 All deegree XML configuration files have a corresponding XML schema, which allows to detect syntactical errors easily. The editor built into the services console performs validation when you save a configuration file. If the contents is not valid according to the schema, the file will not be saved, but an error message will be displayed:
 
-.. figure:: images/browser.png
+.. figure:: images/console_edit_error.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_edit_error.jpg
 
    The services console displays an XML syntax error
 
-If you prefer to use another editor for editing deegree's configuration files, it is highly recommended to choose a validating XML editor. Successfully tested editors are Eclipse and Altova XML Spy, but any schema-aware editor should work.
+If you prefer to use a different editor for editing deegree's configuration files, it is highly recommended to choose a validating XML editor. Successfully tested editors are Eclipse and Altova XML Spy, but any schema-aware editor should work.
 
 .. tip::
   In case you are able to understand XML schema, you can also use the schema file to find out about the available config options. deegree's schema files are hosted at http://schemas.deegree.org.
@@ -312,28 +454,28 @@ If you prefer to use another editor for editing deegree's configuration files, i
 Check the resource status and error messages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The services console has a very helpful feature: It displays an error if a resource cannot be initialized and provides an error message, if this is not the case. Here's an example:
+As pointed out in :ref:`anchor-console-errors`, the service console indicates errors if resources cannot be initialized. Here's an example:
 
-.. figure:: images/browser.png
+.. figure:: images/console_error3.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_error3.jpg
 
-   Adding a new WPS with identifier "mywps"
+   Error message
 
-In this case, it was not possible to initialize the JDBC connection (and the resources that depend on it). You can spot resource classes and resources that have errors easily, as they have a red exclamation mark. Click on the respective resource level and on the "Errors" near the resource to see the error message. After fixing the error, click on "Reload" to re-initialize the workspace. If your fix was successful, the exclamation mark should be gone.
+In this case, it was not possible to initialize the JDBC connection (and the resources that depend on it). You can spot resource categories and resources that have errors easily, as they have a red exclamation mark. Click on the respective resource level and on "Errors" near the broken resource to see the error message. After fixing the error, click on "Reload" to re-initialize the workspace. If your fix was successful, the exclamation mark will be gone.
 
-Additional information can be found in the deegree log. If you're running the ZIP version, switch to the terminal window. When initializing the workspace resources, information on every resource will be logged, along with error messages.
+Additional information can be found in the deegree log. If you're running the ZIP version, switch to the terminal window. When initializing workspace resources, information on every resource will be logged, along with error messages.
 
-.. figure:: images/browser.png
+.. figure:: images/terminal.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/terminal.png
 
-   Log messages in the terminal window
+   Log messages in the deegree log
 
 .. tip::
-  If you deployed the WAR version, the location of the deegree log depends on your web application container. For Tomcat, you will find the deegree log in file ``catalina.out`` in the ``log/`` directory.
+  If you deployed the WAR version, the location of the deegree log depends on your web application container. For Tomcat, you will find it in file ``catalina.out`` in the ``log/`` directory.
 
 .. tip::
   More logging can be activated by adjusting file ``log4j.properties`` in the ``/WEB-INF/classes/`` directory of the deegree webapplication.
