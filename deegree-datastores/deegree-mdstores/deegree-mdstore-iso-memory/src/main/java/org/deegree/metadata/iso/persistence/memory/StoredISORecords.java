@@ -36,11 +36,15 @@
 package org.deegree.metadata.iso.persistence.memory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.metadata.MetadataRecord;
@@ -78,18 +82,19 @@ public class StoredISORecords {
      * 
      * @param recordDirectories
      *            directories to read records from
+     * @throws IOException 
      */
-    StoredISORecords( List<File> recordDirectories ) {
+    StoredISORecords( List<File> recordDirectories ) throws IOException {
         addRecords( recordDirectories );
     }
 
-    private void addRecords( List<File> recordDirectories ) {
+    private void addRecords( List<File> recordDirectories ) throws IOException {
         for ( File dir : recordDirectories ) {
             loadRecords( dir );
         }
     }
 
-    private void loadRecords( File recordDirectory ) {
+    private void loadRecords( File recordDirectory ) throws IOException {
         File[] records = recordDirectory.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
@@ -128,8 +133,12 @@ public class StoredISORecords {
         return false;
     }
 
-    private void loadRecord( File recordFile ) {
-        MetadataRecord record = MetadataRecordFactory.create( recordFile );
+    private void loadRecord( File recordFile ) throws IOException {
+        FileInputStream recordStream = new FileInputStream( recordFile );
+        OMElement document = new XMLAdapter( recordStream ).getRootElement();
+        document.build();
+        MetadataRecord record = MetadataRecordFactory.create( document );
+        recordStream.close();
         if ( !( record instanceof ISORecord ) ) {
             LOG.debug( "Ignore record {}: is not a ISO19139 record.", recordFile.getName() );
             return;
