@@ -30,7 +30,7 @@ The following table provides a short description of the different types of works
 .. table:: Workspace resource types
 
 +---------------------------------+------------------------------------------------------------------------------+
-| Configuration aspect            | Description                                                                  |
+| Resource type                   | Description                                                                  |
 +=================================+==============================================================================+
 | Web Services                    | Web services (WFS, WMS, WMTS, CSW, WPS)                                      |
 +---------------------------------+------------------------------------------------------------------------------+
@@ -55,9 +55,11 @@ The following table provides a short description of the different types of works
 | Server connections (remote OWS) | Connections to remote OGC web services                                       |
 +---------------------------------+------------------------------------------------------------------------------+
 
----------------------------------
-Location of the deegree workspace
----------------------------------
+Physically, every configured resource corresponds to an XML configuration file in the active workspace directory.
+
+-------------------------------------------
+Location of the deegree workspace directory
+-------------------------------------------
 
 The active deegree workspace is part of the ``.deegree`` directory which stores a few global configuration files along with the workspace. The location of this directory depends on your operating system.
 
@@ -119,20 +121,20 @@ As you see, this ``.deegree`` directory contains four subdirectories. Every subd
 Note that only a single workspace can be active at a time. The information on the active one is stored in file ``webapps.properties``.
 
 .. tip::
-  Usually, you don't need to care about the three files that are located at the top level of this directory. The service console creates and modifies them as required (e.g. when switching to a different workspace). In order to adapt deegree webservices to your needs, create or edit configuration files in the active workspace directory. The remaining documentation will always refer to configuration files in the (active) workspace directory.
+  Usually, you don't need to care about the three files that are located at the top level of this directory. The service console creates and modifies them as required (e.g. when switching to a different workspace). In order to create a deegree webservices setup, you will need to create or edit resource configuration files in the active workspace directory. The remaining documentation will always refer to files in the (active) workspace directory.
 
 .. tip::
-  When multiple deegree webservices instances run on a single machine, every instance can use a different workspace. The file ``webapps.properties`` stores the active workspace for every instance separately.
+  When multiple deegree webservices instances run on a single machine, every instance can use a different workspace. The file ``webapps.properties`` stores the active workspace for every deegree webapp separately.
 
 --------------------------------------------
 Structure of the deegree workspace directory
 --------------------------------------------
 
-The workspace directory organizes XML configuration files in a well-defined directory structure. When deegree starts up, the active workspace directory is determined and the following subdirectories are scanned for XML resource configuration files:
+The workspace directory is a container for resource files with a well-defined directory structure. When deegree starts up, the active workspace directory is determined and the following subdirectories are scanned for XML resource configuration files:
 
-.. table:: Workspace resource directories
+.. table:: Well-known workspace resource directories
 +------------------------+---------------------------------+
-| Resource directory     | Configuration aspect            |
+| Directory              | Resource type                   |
 +========================+=================================+
 | services/              | Web services                    |
 +------------------------+---------------------------------+
@@ -157,7 +159,7 @@ The workspace directory organizes XML configuration files in a well-defined dire
 | datasources/remoteows/ | Server Connections (Remote OWS) |
 +------------------------+---------------------------------+
 
-A workspace directory may contain additional directories to provide additional files along with the configuration. The major difference is that these directories are not scanned for resource files on startup. Some common ones are:
+A workspace directory may contain additional directories to provide additional files along with the resource configurations. The major difference is that these directories are not scanned for resource files. Some common ones are:
 
 .. table:: Additional workspace directories
 +-----------------------+-------------------------------------------+
@@ -174,23 +176,23 @@ A workspace directory may contain additional directories to provide additional f
 Workspace files and resources
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In order to understand the relation between workspace files and resources, let's have a look at an example:
+In order to clarify the relation between workspace files and resources, let's have a look at an example:
 
 .. figure:: images/workspace-example.png
    :target: _images/workspace-example.png
 
    Example workspace directory
 
-As noted, deegree scans the well-known resource directories for XML files (``*.xml``) on startup (note that it will omit directory ``manager``, as it is not a well-known resource directory). For every file found, deegree will check the type of configuration format (by determining the root element name). If it is a supported format, a corresponding resource will be initialized. For the example, this results in the following setup:
+As noted, deegree scans the well-known resource directories for XML files (``*.xml``) on startup (note that it will omit directory ``manager``, as it is not a well-known resource directory). For every file found, deegree will check the type of configuration format (by determining the name of the XML root element). If it is a recognized format, deegree will try to create and initialize a corresponding resource. For the example, this results in the following setup:
 
-* A JDBC connection pool with id ``conn1``
 * A metadata store with id ``iso19115``
+* A JDBC connection pool with id ``conn1``
 * A web service with id ``csw``
 
-The individual configuration formats and their options are described in the later chapters of the documentation.
+The individual XML resource formats and their options are described in the later chapters of the documentation.
 
 .. tip::
-  You may wonder why the ``main.xml`` and ``metadata.xml`` files are not considered as web service resource files. These two filenames are treated in a special manner. See :ref:`anchor-configuration-service` for details.
+  You may wonder why the ``main.xml`` and ``metadata.xml`` files are not considered as web service resource files. These two filenames are reserved and treated specifically. See :ref:`anchor-configuration-service` for details.
 
 .. tip::
   The configuration format has to match the workspace subdirectory, e.g. metadata store configuration files are only considered when they are located in ``datasources/metadata``.
@@ -199,14 +201,14 @@ The individual configuration formats and their options are described in the late
 Resource identifiers and dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It has already been hinted that resources have an identifier, e.g. for file ``jdbc/conn1.xml`` a JDBC connection pool with identifier ``conn1`` is created. You probably have guessed that the identifier is derived from the file name (file name minus suffix), but you may wonder what purpose the identifier serves. The identifier is used for wiring resources. For example, the ISO SQL metadata store requires a JDBC pool. Therefore, the corresponding configuration format has an element to specify it:
+It has already been hinted that resources have an identifier, e.g. for file ``jdbc/conn1.xml`` a JDBC connection pool with identifier ``conn1`` is created. You probably have guessed that the identifier is derived from the file name (file name minus suffix), but you may wonder what purpose the identifier serves. The identifier is used for wiring resources. For example, an ISO metadata store resource requires a JDBC pool, because it provides the actual connections to the SQL database. Therefore, the corresponding resource configuration format has an element to specify it:
 
-.. topic:: Example for wiring resources
+.. topic:: Example for wiring workspace resources
 
    .. literalinclude:: xml/workspace_dependencies.xml
       :language: xml
 
-In this example, the ISO SQL metadata store is wired to JDBC connection pool ``conn1``. Many deegree resource configuration files contain such references to dependent resources. Some resources offer auto-wiring. For example, every CSW instance needs to connect to a metadata store for data access. If the CSW configuration omits the reference to the metadata store, it is assumed that there's exactly one metadata store defined in the workspace and deegree will automatically connect the CSW to this store.
+In this example, the ISO metadata store is wired to JDBC connection pool ``conn1``. Many deegree resource configuration files contain such references to dependent resources. Some resources perform auto-wiring. For example, every CSW instance needs to connect to a metadata store for accessing stored metadata records. If the CSW configuration omits the reference to the metadata store, it is assumed that there's exactly one metadata store defined in the workspace and deegree will automatically connect the CSW to this store.
 
 .. tip::
   The required dependencies are specific to every type of resource and are documented for every resource configuration format.
