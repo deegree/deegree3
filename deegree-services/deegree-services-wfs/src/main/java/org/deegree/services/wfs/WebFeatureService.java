@@ -246,8 +246,12 @@ public class WebFeatureService extends AbstractOWS {
             this.enableTransactions = enableTransactions.isValue();
             this.idGenMode = parseIdGenMode( enableTransactions.getIdGen() );
         }
-        disableBuffering = ( jaxbConfig.isDisableResponseBuffering() != null ) ? jaxbConfig.isDisableResponseBuffering()
-                                                                              : true;
+        if ( jaxbConfig.isEnableResponseBuffering() != null ) {
+            disableBuffering = !jaxbConfig.isEnableResponseBuffering();
+        } else if ( jaxbConfig.isDisableResponseBuffering() != null ) {
+            disableBuffering = jaxbConfig.isDisableResponseBuffering();
+        }
+
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();

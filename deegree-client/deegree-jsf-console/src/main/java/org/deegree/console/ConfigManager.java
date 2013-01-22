@@ -37,6 +37,7 @@ package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
+import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -133,7 +134,7 @@ public class ConfigManager implements Serializable {
     }
 
     public ConfigManager() {
-        File proxyLocation = new File( getServiceWorkspace().getLocation(), "proxy.xml" );
+        File proxyLocation = new File( getWorkspaceRoot(), "proxy.xml" );
         URL example = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
         URL schema = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
         proxyConfig = new Config( proxyLocation, schema, example, "/console/jsf/proxy" );
