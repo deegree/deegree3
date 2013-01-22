@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides access to service-related stored resources, e.g. XML schema files.
+ * Provides access to service-related resources stored in the active workspace, e.g. XML schema files.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -67,7 +67,7 @@ public class ResourcesServlet extends HttpServlet {
     private static final long serialVersionUID = -2072170206703402474L;
 
     /**
-     * Returns the HTTP URL for retrieving the specified resource.
+     * Returns the URL for retrieving the specified workspace file via HTTP.
      * <p>
      * NOTE: This method will only return a correct result if the calling thread originated in the
      * {@link #doGet(HttpServletRequest, HttpServletResponse)} or
@@ -75,14 +75,12 @@ public class ResourcesServlet extends HttpServlet {
      * such a thread).
      * </p>
      * 
-     * @param resourcePath
-     * 
-     * @return the HTTP URL (for GET requests)
+     * @param workspaceFilePath
+     *            relative path to the workspace file, must not be <code>null</code>
+     * @return the URL, never <code>null</code>
      */
-    public static String getHttpGetURL( String resourcePath ) {
-        String url = OGCFrontController.getWebappBaseURL();
-        // TODO retrieve from config (web.xml)
-        return url + "/resources/" + resourcePath;
+    public static String getUrl( String workspaceFilePath ) {
+        return OGCFrontController.getResourcesUrl() + "/" + workspaceFilePath;
     }
 
     @Override

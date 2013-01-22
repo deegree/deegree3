@@ -118,9 +118,9 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
-import org.deegree.services.jaxb.controller.DCPType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
+import org.deegree.services.resources.ResourcesServlet;
 import org.slf4j.Logger;
 
 /**
@@ -175,6 +175,10 @@ public class OGCFrontController extends HttpServlet {
 
     // make fields transient, serialized servlets are a bad idea IMHO
     private transient DeegreeServiceControllerType mainConfig;
+
+    private transient String hardcodedServicesUrl;
+
+    private transient String hardcodedResourcesUrl;
 
     private transient final ThreadLocal<RequestContext> CONTEXT = new ThreadLocal<RequestContext>();
 
@@ -236,45 +240,39 @@ public class OGCFrontController extends HttpServlet {
     }
 
     /**
-     * Returns the HTTP URL for communicating with the OGCFrontController over the web (for POST requests).
+     * Returns the HTTP URL for accessing the {@link OGCFrontController}/{@link OWS} (using POST requests).
      * <p>
-     * NOTE: This method will only return a correct result if the calling thread originated in the
+     * NOTE: This includes OGC service instance path info (service identifier), if available. This method will only
+     * return a correct result if the calling thread originated in the
      * {@link #doGet(HttpServletRequest, HttpServletResponse)} or
      * {@link #doPost(HttpServletRequest, HttpServletResponse)} of this class (or has been spawned as a child thread by
      * such a thread).
      * </p>
      * 
-     * @return the HTTP URL (for POST requests)
+     * @return URL, never <code>null</code> (without trailing slash or question mark)
      */
     public static String getHttpPostURL() {
-        String url = getConfiguredHttpPostUrl();
-        if ( url == null ) {
-            url = getContext().getRequestedEndpointUrl();
-        }
-        return url;
+        return getContext().getServiceUrl();
     }
 
     /**
-     * Returns the HTTP URL for communicating with the OGCFrontController over the web (for GET requests).
+     * Returns the HTTP URL for accessing the {@link OGCFrontController}/{@link OWS} (using GET requests).
      * <p>
-     * NOTE: This method will only return a correct result if the calling thread originated in the
+     * NOTE: This includes OGC service instance path info (service identifier), if available. This method will only
+     * return a correct result if the calling thread originated in the
      * {@link #doGet(HttpServletRequest, HttpServletResponse)} or
      * {@link #doPost(HttpServletRequest, HttpServletResponse)} of this class (or has been spawned as a child thread by
      * such a thread).
      * </p>
      * 
-     * @return the HTTP URL (for GET requests)
+     * @return URL (for GET requests), never <code>null</code> (with trailing question mark)
      */
     public static String getHttpGetURL() {
-        String url = getConfiguredHttpGetUrl();
-        if ( url == null ) {
-            url = getContext().getRequestedEndpointUrl() + "?";
-        }
-        return url;
+        return getContext().getServiceUrl() + "?";
     }
 
     /**
-     * Returns the HTTP URL for accessing the webapp.
+     * Returns the HTTP URL for accessing the {@link ResourcesServlet}.
      * <p>
      * NOTE: This method will only return a correct result if the calling thread originated in the
      * {@link #doGet(HttpServletRequest, HttpServletResponse)} or
@@ -282,32 +280,10 @@ public class OGCFrontController extends HttpServlet {
      * such a thread).
      * </p>
      * 
-     * @return the HTTP URL (for GET requests)
+     * @return URL, never <code>null</code> (without trailing slash or question mark)
      */
-    public static String getWebappBaseURL() {
-        String url = getConfiguredHttpGetUrl();
-        if ( url == null ) {
-            url = getContext().getRequestedWebappBaseUrl();
-        } else {
-            url = url.substring( 0, url.lastIndexOf( '/' ) );
-        }
-        return url;
-    }
-
-    private static String getConfiguredHttpGetUrl() {
-        DCPType configuredDcp = getInstance().mainConfig.getDCP();
-        if ( configuredDcp != null && configuredDcp.getHTTPGet() != null ) {
-            return configuredDcp.getHTTPGet();
-        }
-        return null;
-    }
-
-    private static String getConfiguredHttpPostUrl() {
-        DCPType configuredDcp = getInstance().mainConfig.getDCP();
-        if ( configuredDcp != null && configuredDcp.getHTTPPost() != null ) {
-            return configuredDcp.getHTTPPost();
-        }
-        return null;
+    public static String getResourcesUrl() {
+        return getContext().getResourcesUrl();
     }
 
     /**
@@ -1147,7 +1123,31 @@ public class OGCFrontController extends HttpServlet {
         workspace.initAll();
         serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
         mainConfig = serviceConfiguration.getMainConfiguration();
+        if ( mainConfig != null ) {
+            initHardcodedUrls( mainConfig );
+        }
         LOG.info( "" );
+    }
+
+    private void initHardcodedUrls( DeegreeServiceControllerType mainConfig ) {
+        if ( mainConfig.getReportedUrls() != null ) {
+            hardcodedServicesUrl = mainConfig.getReportedUrls().getServices();
+            hardcodedResourcesUrl = mainConfig.getReportedUrls().getResources();
+            hardcodedServicesUrl = removeTrailingSlashOrQuestionMark( hardcodedServicesUrl );
+            hardcodedResourcesUrl = removeTrailingSlashOrQuestionMark( hardcodedResourcesUrl );
+        } else if ( mainConfig.getDCP() != null ) {
+            if ( mainConfig.getDCP().getHTTPGet() != null ) {
+                hardcodedServicesUrl = mainConfig.getDCP().getHTTPGet();
+            } else if ( mainConfig.getDCP().getHTTPPost() != null ) {
+                hardcodedServicesUrl = mainConfig.getDCP().getHTTPPost();
+            } else if ( mainConfig.getDCP().getSOAP() != null ) {
+                hardcodedServicesUrl = mainConfig.getDCP().getSOAP();
+            }
+            if ( hardcodedServicesUrl != null ) {
+                hardcodedServicesUrl = removeTrailingSlashOrQuestionMark( hardcodedServicesUrl );
+                hardcodedResourcesUrl = hardcodedServicesUrl + "/../resources";
+            }
+        }
     }
 
     private void destroyWorkspace() {
@@ -1450,9 +1450,16 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private void bindContextToThread( HttpServletRequest request, Credentials credentials ) {
-        RequestContext context = new RequestContext( request, credentials );
+        RequestContext context = new RequestContext( request, credentials, hardcodedServicesUrl, hardcodedResourcesUrl );
         CONTEXT.set( context );
         LOG.debug( "Initialized RequestContext for Thread " + Thread.currentThread() + "=" + context );
+    }
+
+    private String removeTrailingSlashOrQuestionMark( String url ) {
+        if ( url.endsWith( "?" ) || url.endsWith( "/" ) ) {
+            return url.substring( 0, url.length() - 1 );
+        }
+        return url;
     }
 
     /**
