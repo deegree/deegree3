@@ -109,6 +109,7 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.services.OWS;
@@ -374,12 +375,12 @@ public class OGCFrontController extends HttpServlet {
                                            + request.getRemotePort();
                     if ( multiParts != null && multiParts.size() > 0 ) {
                         InputStream is = multiParts.get( 0 ).getInputStream();
-                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, is );
+                        xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId, is );
                     } else {
                         // decode query string
                         String decodedString = URLDecoder.decode( queryString, DEFAULT_ENCODING );
                         StringReader reader = new StringReader( decodedString );
-                        xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId, reader );
+                        xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId, reader );
                     }
                     if ( isSOAPRequest( xmlStream ) ) {
                         dispatchSOAPRequest( xmlStream, request, responseBuffer, multiParts );
@@ -512,7 +513,7 @@ public class OGCFrontController extends HttpServlet {
 
                     String dummySystemId = "HTTP Post request from " + request.getRemoteAddr() + ":"
                                            + request.getRemotePort();
-                    XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( dummySystemId,
+                    XMLStreamReader xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId,
                                                                                                      requestInputStream );
                     // skip to start tag of root element
                     XMLStreamUtils.nextElement( xmlStream );
