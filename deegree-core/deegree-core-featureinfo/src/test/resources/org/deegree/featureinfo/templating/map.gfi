@@ -1,0 +1,7 @@
+<?map props>
+NAME=Name
+POP_2000=Population
+STATE=State
+
+<?map ftname>
+SGID93_LOCATION_UDOTMap_CityLocations=Cities in Utah County

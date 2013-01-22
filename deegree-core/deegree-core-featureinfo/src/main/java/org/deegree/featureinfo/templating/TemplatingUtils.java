@@ -47,15 +47,16 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.featureinfo.FeatureInfoManager;
-import org.deegree.featureinfo.templating.java_cup.runtime.Symbol;
 import org.deegree.featureinfo.templating.lang.PropertyTemplateCall;
 import org.slf4j.Logger;
 
@@ -83,11 +84,15 @@ public class TemplatingUtils {
                 in = new FileInputStream( fiFile );
             }
 
-            Symbol s = new TemplatingParser( new TemplatingLexer( new InputStreamReader( in, "UTF-8" ) ) ).parse();
-            @SuppressWarnings(value = "unchecked")
-            HashMap<String, Object> tmpl = (HashMap<String, Object>) s.value;
+            CharStream input = new ANTLRInputStream( in );
+            Templating2Lexer lexer = new Templating2Lexer( input );
+            CommonTokenStream cts = new CommonTokenStream( lexer );
+            cts.fill();
+            Templating2Parser parser = new Templating2Parser( cts );
+            HashMap<String, Object> defs = (HashMap) parser.definitions();
+
             StringBuilder sb = new StringBuilder();
-            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, geometries );
+            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, defs, col, geometries );
             out.println( sb.toString() );
         } catch ( Throwable e ) {
             if ( fiFile == null ) {
