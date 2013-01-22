@@ -27,12 +27,6 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-base</artifactId>
-      <version>${project.version}</version>
-      <type>deegree-workspace</type>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
       <artifactId>deegree-processprovider-jrxml</artifactId>
       <version>${project.version}</version>
     </dependency>

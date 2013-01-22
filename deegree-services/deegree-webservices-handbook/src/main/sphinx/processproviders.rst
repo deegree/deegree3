@@ -1,3 +1,5 @@
+.. _anchor-configuration-processproviders:
+
 ==============================
 Process provider configuration
 ==============================
@@ -17,7 +19,10 @@ The remainder of this chapter describes some relevant terms and the process prov
 Java process provider
 ---------------------
 
+TODO. Some information is available here: http://wiki.deegree.org/deegreeWiki/deegree3/HowToCreateWPSProcesses. It's for deegree 3.0, but basically applies to 3.2 as well.
+
 -------------------------
 Sextante process provider
 -------------------------
 
+TODO. Some information is available here: http://wiki.deegree.org/deegreeWiki/deegree3/ProcessingService#Sextante_processes_.28work_in_progress.29. It's for deegree 3.0, but basically applies to 3.2 as well.

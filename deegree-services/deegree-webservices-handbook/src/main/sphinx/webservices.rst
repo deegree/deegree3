@@ -1,8 +1,10 @@
+.. _anchor-configuration-service:
+
 ========================
 Webservice configuration
 ========================
 
-This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The configuration files are located in the **services/** subdirectory of the active deegree workspace directory.
+This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-services.png
    :figwidth: 80%
@@ -10,6 +12,9 @@ This chapter describes the deegree webservices configuration files. You can acce
    :target: _images/workspace-overview-services.png
 
    Web services are the top-level resources of the deegree workspace
+
+.. tip::
+  The identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service instance that you want to connect to explicitly.
 
 .. _anchor-configuration-wfs:
 
@@ -27,7 +32,7 @@ A deegree WFS configuration consists of a WFS configuration file and any number 
    A WFS resource is connected to any number of feature store resources
 
 .. tip::
-  In order to fully master deegree WFS configuration, you will have to read chapter :ref:`anchor-configuration-featurestore` as well.
+  In order to fully master deegree WFS configuration, you will have to understand :ref:`anchor-configuration-featurestore` as well.
 
 The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuration example looks like this:
 
@@ -36,58 +41,71 @@ The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuratio
    .. literalinclude:: xml/wfs_basic.xml
       :language: xml
 
-This will setup a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as the coordinate system for returned GML geometries. A more complex configuration that restricts the offered WFS protocol versions, enables transactions, has multiple coordinate reference systems and limits GML output to 3.2 looks like this:
+This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries. A more complex configuration example looks like this:
 
 .. topic:: WFS config example 2: More complex configuration
 
    .. literalinclude:: xml/wfs_complex.xml
       :language: xml
 
-The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.1.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.1.0``. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifiying them, their order must be respected.
+The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
 .. table:: Options for ``deegreeWFS``
 
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| Option                   | Cardinality  | Value   | Description                                                                  |
-+==========================+==============+=========+==============================================================================+
-| SupportedVersions        | 0..1         | Complex | Limits active OGC protocol versions                                          |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| FeatureStoreId           | 0..n         | String  | Limits feature stores to use                                                 |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| EnableTransactions       | 0..1         | Boolean | Enables transactions (WFS-T operations)                                      |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| DisableResponseBuffering | 0..1         | Boolean | Controls response buffering                                                  |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| QueryCRS                 | 1..n         | String  | Announced CRS, first element is the default CRS                              |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| QueryMaxFeatures         | 0..1         | Integer | Limits maximum number of features returned by a GetFeature request           |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| QueryCheckAreaOfUse      | 0..1         | Boolean | Enforces checking of spatial query constraints against CRS area              |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| GMLFormat                | 0..n         | Complex | GML format configuration                                                     |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| CustomFormat             | 0..n         | Complex | Custom format configuration                                                  |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| MetadataURLTemplate      | 0..1         | String  | Template for generating URLs to feature type metadata                        |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| FeatureTypeMetadata      | 0..n         | Complex | Metadata for feature types reported in GetCapabilities response              |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
-| ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
-+--------------------------+--------------+---------+------------------------------------------------------------------------------+
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| Option                  | Cardinality | Value   | Description                                                      |
++=========================+=============+=========+==================================================================+
+| SupportedVersions       | 0..1        | Complex | Activated OGC protocol versions, default: all                    |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| FeatureStoreId          | 0..n        | String  | Feature stores to attach, default: all                           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| EnableTransactions      | 0..1        | Complex | Enable transactions (WFS-T operations), default: false           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| EnableResponseBuffering | 0..1        | Boolean | Enable response buffering (expensive), default: false            |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| QueryCRS                | 1..n        | String  | Announced CRS, first element is the default CRS                  |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| QueryMaxFeatures        | 0..1        | Integer | Limit of features returned in a response, default: 15000         |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| QueryCheckAreaOfUse     | 0..1        | Boolean | Check spatial query constraints against CRS area, default: false |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| StoredQuery             | 0..n        | String  | File name of StoredQueryDefinition                               |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| GMLFormat               | 0..n        | Complex | GML format configuration                                         |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| MetadataURLTemplate     | 0..1        | String  | Template for generating URLs to feature type metadata records    |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| FeatureTypeMetadata     | 0..n        | Complex | Metadata for feature types reported in GetCapabilities response  |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ExtendedCapabilities    | 0..n        | Complex | Extended Metadata reported in GetCapabilities response           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 
 The remainder of this section describes these options and their sub-options in detail.
 
-^^^^^^^^^^^^^
-Basic options
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
+General options
+^^^^^^^^^^^^^^^
 
-* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) are activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
+* ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) will be activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any combination of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
 * ``FeatureStoreId``: By default, all feature stores in your deegree workspace  will be used for serving feature types. In some cases, this may not be what you want, e.g. because you have two different WFS instances running, or you don't want all feature types used in your WMS for rendering to be available via your WFS. Use the ``FeatureStoreId`` option to explicitly set the feature stores that this WFS should use.
-* ``DisableResponseBuffering``: By default, generated responses are directly written to the WFS client. This is usually fine and even a requirement for transferring large responses efficiently. The only drawback occurs when exceptions occur, after a partial response has already been transferred. In such case, the response will contain part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response was generated successfully, it will be transferred. Otherwise, only an exception report will be generated.
-* ``EnableTransactions``: By default, WFS-T requests will be rejected. Setting this element to ``true`` will enable support for transactions in the WFS. Note that not all feature store implementations implement transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
+* ``EnableResponseBuffering``: By default, WFS responses are directly streamed to the client. This is very much recommended and even a requirement for transferring large responses efficiently. The only drawback happens if exceptions occur, after a partial response has already been transferred. In this case, the client will receive part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response could be generated successfully, it will be transferred. If an exception happens at any time the buffer will be discarded, and an exception report will be sent to the client. Buffering is performed in memory, but switches to a temp file in case the buffer grows bigger than 1 MiB.
 * ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 * ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
 * ``QueryCheckAreaOfUse``: By default, spatial query constraints are not checked with regard to the area of validity of the CRS. Set this option to ``true`` to enforce this check.
+
+^^^^^^^^^^^^
+Transactions
+^^^^^^^^^^^^
+
+By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support in the WFS.
+
+.. tip::
+  Not every feature store implementation supports transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
+
+.. tip::
+  Currently, transactions can only be enabled if your WFS is attached to a single feature store.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
@@ -162,7 +180,6 @@ By default, GML geometries will be encoded using 6 decimal places for CRS with d
 * ``DecimalCoordinatesFormatter``: Empty element, attribute ``places`` specifies the number of decimal places.
 * ``CustomCoordinateFormatter``: By specifiying this element, an implementation of Java interface ``org.deegree.geometry.io.CoordinateFormatter`` can be instantiated. Child element ``JavaClass`` contains the qualified name of the Java class (which must be on the classpath).
 
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adding custom output formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -199,6 +216,21 @@ These settings affect the metadata returned in the GetCapabilities response.
    .. literalinclude:: xml/wfs_extendedcapabilities.xml
       :language: xml
 
+^^^^^^^^^^^^^^
+Stored queries
+^^^^^^^^^^^^^^
+
+Besides standard (or ad hoc) queries, WFS 2.0.0 introduces so-called stored queries. When WFS 2.0.0 support is activated, your WFS will automatically support the well-known stored query ``urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById`` (defined in the WFS 2.0.0 specification). It can be used to query a feature instance by specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0). In order to define custom stored queries, use the ``StoredQuery`` element to specify the file name of a StoredQueryDefinition file. The given file name (can be relative) must point to a valid WFS 2.0.0 StoredQueryDefinition file. Here's an example:
+
+.. topic:: Example for a WFS 2.0.0 StoredQueryDefinition file
+
+   .. literalinclude:: xml/wfs_storedquerydefinition.xml
+      :language: xml
+
+This example is actually usable if your WFS is set up to serve the ad:Address feature type from INSPIRE Annex I. It defines the stored query ``urn:x-inspire:storedQuery:GetAddressesForStreet`` for retrieving ad:Address features that are located in the specified street. The street name is passed using parameter ``streetName``. If your WFS instance can be reached at ``http://localhost:8080/services``, you could use the request ``http://localhost:8080/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat`` to fetch the ad:Address features in street Madame Curiestraat.
+
+.. tip::
+  deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries`` and the ``DescribeStoredQueries`` operations. However, there is no support for ``CreateStoredQuery`` and ``DropStoredQuery`` at the moment.
 
 .. _anchor-configuration-wms:
 
@@ -649,7 +681,7 @@ Extended Functionality
 Web Processing Service (WPS)
 ----------------------------
 
-In deegree terminology, a deegree WPS allows the execution of (usually geospatial) processes from process providers.
+In deegree terminology, a deegree WPS allows the execution of geospatial processes from process providers.
 
 .. figure:: images/workspace-wps.png
    :figwidth: 90%
@@ -657,6 +689,74 @@ In deegree terminology, a deegree WPS allows the execution of (usually geospatia
    :target: _images/workspace-wps.png
 
    Workspace components involved in a deegree WPS configuration
+
+.. tip::
+  In order to fully master deegree WPS configuration, you will have to understand :ref:`anchor-configuration-processproviders` as well.
+
+There are no mandatory options, therefore, a minimal valid WPS configuration example looks like this:
+
+.. code-block:: xml
+  
+  <deegreeWPS configVersion="3.2.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.2.0/wps_configuration.xsd">  
+  </deegreeWPS>
+
+A more complex configuration example looks like this:
+
+.. code-block:: xml
+  
+  <deegreeWPS configVersion="3.2.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.2.0/wps_configuration.xsd">
+  
+    <SupportedVersions>
+      <Version>1.0.0</Version>
+    </SupportedVersions>
+  
+    <DefaultExecutionManager>
+      <StorageDir>../var/wps/</StorageDir>
+      <TrackedExecutions>1000</TrackedExecutions>
+      <InputDiskSwitchLimit>1048576</InputDiskSwitchLimit>
+    </DefaultExecutionManager>
+  
+  </deegreeWPS>
+
+The deegree WPS config file format is defined by schema file http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd. The root element is ``deegreeWPS`` and the config attribute must be ``3.1.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
+
+.. table:: Options for ``deegreeWPS``
+
++-------------------------+-------------+---------+-----------------------------------------------+
+| Option                  | Cardinality | Value   | Description                                   |
++=========================+=============+=========+===============================================+
+| SupportedVersions       | 0..1        | Complex | Activated OGC protocol versions, default: all |
++-------------------------+-------------+---------+-----------------------------------------------+
+| DefaultExecutionManager | 0..1        | Complex | Settings for tracking process executions      |
++-------------------------+-------------+---------+-----------------------------------------------+
+
+The remainder of this section describes these options and their sub-options in detail.
+
+* ``SupportedVersions``: By default, all implemented WMS protocol versions are activated. Currently, this is just 1.0.0 anyway. Alternatively you can control offered WPS protocol versions using the element ``SupportedVersions``. This element allows the child element ``<Version>1.0.0</Version>`` for now.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Execution manager settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TODO explain execution manager
+
+The ``DefaultExecutionManager`` option has the following sub-options:
+
+.. table:: Options for ``DefaultExecutionManager``
+
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Option               | Cardinality | Value   | Description                                                                   |
++======================+=============+=========+===============================================================================+
+| StorageDir           | 0..1        | String  | Directory for storing execution-related data, default: Java tempdir           |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| TrackedExecutions    | 0..1        | Integer | Number of executions to track, default: 100                                   |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| InputDiskSwitchLimit | 0..1        | Integer | Limit in bytes, before a ComplexInputInput is written to disk, default: 1 MiB |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+
+TODO explain parameters in detail
 
 ----------------------
 Metadata configuration
@@ -696,37 +796,56 @@ Extended capabilities are generic metadata sections below the ``OperationsMetada
 Controller configuration
 ------------------------
 
-The controller configuration is used to configure various global aspect common to all services.
+The controller configuration is used to configure various global aspects that affect all services.
 
-Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, if you want the default behaviour, you can even omit the file completely.
+Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, if you want the default behaviour, just omit the file completely.
 
 An empty example file looks like follows:
 
 .. code-block:: xml
 
   <?xml version='1.0'?>
-  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.0.0'>
+  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.2.0'>
   </deegreeServiceController>
+
+The following table lists all available configuration options. When specifiying them, their order must be respected.
+
+.. table:: Options for ``deegreeServiceController``
+
++-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| Option                  | Cardinality  | Value   | Description                                                                                  |
++=========================+==============+=========+==============================================================================================+
+| ReportedUrls            | 0..1         | Complex | Hardcode reported URLs in service responses                                                  |
++-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| PreventClassloaderLeaks | 0..1         | Boolean | TODO                                                                                         |
++-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| RequestLogging          | 0..1         | Complex | TODO                                                                                         |
++-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
+| ValidateResponses       | 0..1         | Boolean | TODO                                                                                         |
++-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
 
 The following sections describe the available options in detail.
 
-^^^^^^^^^^^^^^^^^^^^^
-Service endpoint URLs
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
+Reported URLs
+^^^^^^^^^^^^^
 
-Sometimes it is desirable to override the service endpoint URLs, for example when using deegree in a proxy setup. You can override the URLs used for HTTP GET, POST and SOAP separately.
+Web service responses sometimes contain URLs that refer back to the service, for example in capabilities documents (responses to GetCapabilities requests). By default, deegree derives these URLs from the incoming request, so you don't have to think about this, even when your server has multiple network interfaces or hostnames. However, sometimes it is required to override these URLs, for example when using deegree behind a proxy or load balancer.
 
-To do that, put a fragment like the following into the ``main.xml``:
+.. tip::
+  If you don't have a proxy setup that requires it, don't configure the reported URLs. In standard setups, the default behaviour works best.
+
+To override the reported URLs, put a fragment like the following into the ``main.xml``:
 
 .. code-block:: xml
 
-  <DCP>
-    <HTTPGet>http://services.deegree.org</HTTPGet>
-    <HTTPPost>http://services.deegree.org</HTTPPost>
-    <SOAP>http://soap.deegree.org</SOAP>
-  </DCP>
+  <ReportedUrls>
+    <Services>http://www.mygeoportal.com/ows</Services>
+    <Resources>http://www.mygeoportal.com/ows-resources</Resources>
+  </ReportedUrls>
 
-TODO:
+For this example, deegree would report ``http://www.mygeoportal.com/ows`` as service endpoint URL in capabilities responses, regardless of the real connection details of the deegree server. If a specific service is contacted on the deegree server, for example via a request to ``http://realnameofdeegreemachine:8080/deegree-webservices/services/inspire-wfs-ad``, deegree would report ``http://www.mygeoportal.com/ows/inspire-wfs-ad``.
 
-describe ConfiguredServices, PreventClassloaderLeaks, RequestLogging, ValidateResponses
+The URL configured by ``Resources`` relates to the reported URL of the ``resources`` servlet, which allows to access parts of the active deegree workspace via HTTP. Currently, this is only used in WFS DescribeFeatureType responses that access GML application schema directories.
+
 
