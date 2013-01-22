@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.2-pre13-jrcportal-SNAPSHOT</version>
+    <version>3.2-pre13-jrcportal2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -26,7 +26,28 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>latlon-repo</id>
+      <url>http://artefacts.lat-lon/repo</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>latlon-releases</id>
+      <url>http://artefacts.lat-lon/libs-release-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>latlon-snapshots</id>
+      <url>http://artefacts.lat-lon/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <profiles>
     <profile>
