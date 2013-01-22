@@ -371,7 +371,7 @@ public class FeatureLayer extends Layer {
         return datastore != null && datastore.isAvailable();
     }
 
-    static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {
+    static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox, ValueReference geomProp ) {
         if ( ft == null ) {
             if ( operator == null ) {
                 return null;
@@ -379,11 +379,16 @@ public class FeatureLayer extends Layer {
             return new OperatorFilter( operator );
         }
         LinkedList<Operator> list = new LinkedList<Operator>();
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType
-                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
-                list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
-                                   new Intersects( new ValueReference( pt.getName() ), clickBox ) ) );
+
+        if ( geomProp != null ) {
+            list.add( new And( new BBOX( geomProp, clickBox ), new Intersects( geomProp, clickBox ) ) );
+        } else {
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                if ( pt instanceof GeometryPropertyType
+                     && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
+                    list.add( new And( new BBOX( new ValueReference( pt.getName() ), clickBox ),
+                                       new Intersects( new ValueReference( pt.getName() ), clickBox ) ) );
+                }
             }
         }
         if ( list.size() > 1 ) {
@@ -440,6 +445,18 @@ public class FeatureLayer extends Layer {
                 }
             }
 
+            Set<Expression> exprs = new HashSet<Expression>();
+
+            final ValueReference geomProp;
+
+            exprs.addAll( Styles.getGeometryExpressions( style ) );
+
+            if ( exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference ) {
+                geomProp = (ValueReference) exprs.iterator().next();
+            } else {
+                geomProp = null;
+            }
+
             final Operator operator = filter == null ? null : filter.getOperator();
 
             QName featureType = style == null ? null : style.getFeatureType();
@@ -452,16 +469,17 @@ public class FeatureLayer extends Layer {
                                            new Mapper<Query, FeatureType>() {
                                                @Override
                                                public Query apply( FeatureType u ) {
-                                                   return new Query( u.getName(), buildFilter( operator, u, clickBox ),
-                                                                     -1, fi.getFeatureCount(), -1 );
+                                                   return new Query( u.getName(), buildFilter( operator, u, clickBox,
+                                                                                               geomProp ), -1,
+                                                                     fi.getFeatureCount(), -1 );
                                                }
                                            } );
                 clearNulls( queries );
                 col = clearDuplicates( datastore.query( queries.toArray( new Query[queries.size()] ) ) );
             } else {
                 FeatureType ft = datastore.getSchema().getFeatureType( featureType );
-                Query query = new Query( featureType, buildFilter( operator, ft, clickBox ), -1, fi.getFeatureCount(),
-                                         -1 );
+                Query query = new Query( featureType, buildFilter( operator, ft, clickBox, geomProp ), -1,
+                                         fi.getFeatureCount(), -1 );
                 col = clearDuplicates( datastore.query( query ) );
             }
 
