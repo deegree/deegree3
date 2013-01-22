@@ -44,7 +44,7 @@ The following table provides a short description of the different types of works
 +---------------------------------+------------------------------------------------------------------------------+
 | Map Layers (Layer)              | Map layers based on data stores and styles                                   |
 +---------------------------------+------------------------------------------------------------------------------+
-| Map Layers (Style)              | Styling rules for features and converages                                    |
+| Map Layers (Style)              | Styling rules for features and coverages                                     |
 +---------------------------------+------------------------------------------------------------------------------+
 | Map Layers (Theme)              | Layer trees based on individual layers                                       |
 +---------------------------------+------------------------------------------------------------------------------+
