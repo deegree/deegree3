@@ -538,7 +538,7 @@ public abstract class AbstractOWS implements OWS {
             if ( additionalHeaders != null && additionalHeaders.size() > 0 ) {
                 for ( String key : additionalHeaders.keySet() ) {
                     String value = additionalHeaders.get( key );
-                    if ( key != null && "".equals( key ) && value != null ) {
+                    if ( key != null && !"".equals( key ) && value != null ) {
                         response.addHeader( key, value );
                     }
                 }

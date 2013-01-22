@@ -48,7 +48,32 @@ _________________
 SLD/SE extensions
 _________________
 
-TBD
+
+---------------------------------
+Use of TTF files as Mark symbols
+---------------------------------
+
+You can use TrueType font files to use custom vector symbols in a ``Mark`` element:
+
+.. code-block:: xml
+
+  <Mark>
+    <OnlineResource xlink:href="filepath/yousans.ttf" />
+    <Format>ttf</Format>
+    <MarkIndex>99</MarkIndex>
+    <Fill>
+      <SvgParameter name="fill">#000000</SvgParameter>
+      ...
+    </Fill>
+    <Stroke>
+      <SvgParameter name="stroke-opacity">0</SvgParameter>
+      ...
+    </Stroke>
+  </Mark>
+
+To find out what index you need to access, have a look at this post_ on the mailinglist which explains it very well.
+
+.. _post: http://osgeo-org.1560.n6.nabble.com/SE-Styling-MarkIndex-glyph-index-tt5022210.html#a5026571
 
 __________________________
 Filter encoding extensions
@@ -80,4 +105,3 @@ Let's have a look at an example:
   ...
 
 In this case, the stroke width will be one pixel for scales around 500000, and will get bigger as you zoom in (and the scale denominator gets smaller). Scale denominators above 500000 will yield invisible strokes with a width of zero.
-

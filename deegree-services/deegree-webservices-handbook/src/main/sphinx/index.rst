@@ -24,4 +24,7 @@ deegree Webservices
    renderstyles
    serverconnections
    processproviders
-   glossary
+   crs
+   restapi
+   javamodules
+

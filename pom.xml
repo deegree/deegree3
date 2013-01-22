@@ -36,6 +36,10 @@
       <id>deegree-snapshots</id>
       <url>http://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
+    <site>
+      <id>apidoc.deegree.org</id>
+      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
+    </site>
   </distributionManagement>
 
   <pluginRepositories>
@@ -101,7 +105,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.16</version>
+          <version>1.18</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -294,6 +298,11 @@
           <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-maven-plugin</artifactId>
+        <version>1.18</version>
       </plugin>
     </plugins>
   </reporting>
@@ -1024,11 +1033,6 @@
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
         <version>3.4</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.squirrel-sql.thirdparty.non-maven</groupId>
-        <artifactId>java-cup</artifactId>
-        <version>0.11a</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

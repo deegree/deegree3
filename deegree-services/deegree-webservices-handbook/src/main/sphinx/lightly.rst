@@ -22,7 +22,7 @@ The service console is a web-based administration interface for configuring your
    deegree webservices administration console
 
 .. tip::
-  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2-pre11. The port number and webapp name depend on your installation/deployment.
+  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2. The port number and webapp name depend on your installation/deployment details.
 
 .. tip::
   You can access the service console from other machines on your network by exchanging *localhost* with the name or IP address of the machine that runs deegree webservices.
@@ -31,9 +31,12 @@ For the remainder of the chapter, only the **general** section is relevant. The 
 
 * **workspaces**: Download and activate example configurations
 * **proxy**: Configure proxy settings
+* **password**: Set a password for accessing the service console
 * **module info**: Display loaded deegree modules
-* **send requests**: Send raw XML requests
+* **send requests**: Send raw OGC web service requests
 * **see layers**: Display WMS layers
+
+.. _anchor-downloading-workspaces:
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Downloading and activating example workspaces
@@ -73,9 +76,9 @@ You can now activate the downloaded workspace by clicking on "Start". Again, thi
 
 .. _anchor-workspace-utah:
 
-----------------------------------------
-Example workspace 1: Webmapping for Utah
-----------------------------------------
+-------------------------------------------------
+Example workspace 1: Webmapping Services for Utah
+-------------------------------------------------
 
 The Utah example workspace contains a web mapping setup based on data from Utah. It contains a WMS configuration with some raster and vector layers and some nice render styles. Raster data is read from GeoTIFF files, vector data is backed by shapefiles. Additionally, a WFS is configured that allows to access the raw vector data in GML format.
 
@@ -132,11 +135,14 @@ You may select example requests from the drop-down menu and click on the "Send" 
 
 .. _anchor-workspace-inspire:
 
---------------------------------------
-Example workspace 2: INSPIRE in action
---------------------------------------
+---------------------------------------------
+Example workspace 2: INSPIRE Network Services
+---------------------------------------------
 
-This workspace is a basic INSPIRE View and Discovery Service setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers. The workspace is pre-configured to store the INSPIRE features in memory, but can be changed to use PostGIS or Oracle as storage backend.
+This workspace is a basic INSPIRE View and Download Services setup. It contains a transactional WFS configured for all Annex I Data Themes and a WMS that is configured to display some of the Data Theme layers.
+
+.. tip::
+  This workspace is pre-configured to keep INSPIRE features in memory, but can easily be adapted to use PostGIS or Oracle as storage backend (see :ref:`anchor-configuration-sqlfeaturestore`).
 
 After downloading and activating the "deegree-workspace-inspire" workspace, you can click on the "see layers" link, which opens a simple web map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
@@ -187,11 +193,11 @@ The example requests also contain a lot of examples for the query possibilities 
 
 .. _anchor-workspace-csw:
 
--------------------------------------------
-Example workspace 3: An ISO catalogue setup
--------------------------------------------
+---------------------------------------------------
+Example workspace 3: An ISO Catalogue Service setup
+---------------------------------------------------
 
-This workspace contains a catalogue service setup that is compliant to the ISO Application Profile. After downloading and starting it, you will have to setup tables in a PostGIS database first (TBD describe Oracle). You will need to have an empty and spatially-enabled PostGIS database handy that can be accessed from the machine that runs the deegree webservices.
+This workspace contains a catalogue service setup that complies to the ISO Application Profile. After downloading and starting it, you will have to setup tables in a PostGIS database first (TBD describe Oracle). You will need to have an empty and spatially-enabled PostGIS database handy that can be accessed from the machine that runs the deegree webservices.
 
 As a first step, you will have to create a JDBC connection to your PostGIS database:
 
@@ -210,7 +216,6 @@ Click on "server connections -> jdbc", enter "iso" as the connection id and clic
    :target: _images/browser.png
 
    Creating a JDBC connection
-
 
 You will now be prompted to enter the connection parameters for your database. Make sure to enter the correct connection information (use "Test connection" to check it) and click "OK". You now have a working connection to your database, but we need to create the required database tables as well. Change to the metadata store view ("data stores -> metadata") and click the "Setup tables" link:
 
@@ -236,9 +241,9 @@ After successful insertion (click "Send"), some records will be inserted into th
 
 .. _anchor-workspace-wps:
 
----------------------------------------
-Example workspace 4: Processing service
----------------------------------------
+------------------------------------------------
+Example workspace 4: Web Processing Service demo
+------------------------------------------------
 
 This workspace contains a WPS setup with some simple example processes. After downloading and starting it, you can click on "send requests" in order to fire some example requests to the WPS. Use the right-most drop-down menu to select an example request and click "Send" to send it to the WPS:
 

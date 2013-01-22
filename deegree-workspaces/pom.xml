@@ -37,7 +37,6 @@
   <modules>
     <module>deegree-workspace-aixm</module>
     <module>deegree-workspace-alkis</module>
-    <module>deegree-workspace-base</module>
     <module>deegree-workspace-compliance-tests</module>    
     <module>deegree-workspace-csw</module>
     <module>deegree-workspace-csw-memory-tests</module>    

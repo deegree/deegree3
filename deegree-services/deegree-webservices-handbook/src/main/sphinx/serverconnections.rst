@@ -19,7 +19,9 @@ Server connections are used to configure parameters necessary to connect other r
 JDBC connections
 ----------------
 
-TBD
+TODO
+
+By default, deegree webservices ships with PostgreSQL and Derby JDBC drivers. If you want to make a connection to any other SQL database, you will need to add a compatible JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
 
 ----------------------
 Remote OWS connections

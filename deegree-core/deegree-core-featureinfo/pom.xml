@@ -38,6 +38,9 @@
             <goals>
               <goal>antlr</goal>
             </goals>
+            <configuration>
+                <libDirectory>target/generated-sources/antlr3/org/deegree/featureinfo/templating/</libDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>
