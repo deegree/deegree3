@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add documentation here
+ * Responsible for representing and evaluating the <code>Intersects</code> operator.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -95,12 +95,14 @@ public class Intersects extends SpatialOperator {
                     }
                 }
             }
-            for ( Property prop : f.getExtraProperties().getProperties() ) {
-                if ( prop.getValue() instanceof Geometry ) {
-                    Geometry geom = (Geometry) prop.getValue();
-                    Geometry transformedGeom = getCompatibleGeometry( geometry, geom );
-                    if ( transformedGeom.intersects( geometry ) ) {
-                        return true;
+            if ( f.getExtraProperties() != null ) {
+                for ( Property prop : f.getExtraProperties().getProperties() ) {
+                    if ( prop.getValue() instanceof Geometry ) {
+                        Geometry geom = (Geometry) prop.getValue();
+                        Geometry transformedGeom = getCompatibleGeometry( geometry, geom );
+                        if ( transformedGeom.intersects( geometry ) ) {
+                            return true;
+                        }
                     }
                 }
             }
