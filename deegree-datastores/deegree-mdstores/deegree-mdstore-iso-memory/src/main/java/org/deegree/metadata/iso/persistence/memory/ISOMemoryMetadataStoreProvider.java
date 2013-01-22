@@ -96,13 +96,13 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
             } else {
                 insertDirectory = recordDirectories.get( 0 );
             }
+            
+            return new ISOMemoryMetadataStore( recordDirectories, insertDirectory );
         } catch ( Exception e ) {
             String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
             LOG.error( msg, e );
             throw new ResourceInitException( msg, e );
         }
-        // TODO: transact
-        return new ISOMemoryMetadataStore( recordDirectories, insertDirectory );
     }
 
     @SuppressWarnings("unchecked")

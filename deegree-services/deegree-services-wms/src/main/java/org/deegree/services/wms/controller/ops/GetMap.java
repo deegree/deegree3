@@ -89,6 +89,7 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
@@ -516,7 +517,7 @@ public class GetMap {
 
     private void handleSLD( String sld, String sldBody, LinkedList<String> layers, MapService service )
                             throws OWSException {
-        XMLInputFactory xmlfac = XMLInputFactory.newInstance();
+        XMLInputFactory xmlfac = XMLInputFactoryUtils.newSafeInstance();
         Pair<LinkedList<Layer>, LinkedList<Style>> pair = null;
         if ( sld != null ) {
             pair = parseSld( xmlfac, sld, service );

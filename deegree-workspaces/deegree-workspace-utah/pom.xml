@@ -31,12 +31,6 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-base</artifactId>
-      <version>${project.version}</version>
-      <type>deegree-workspace</type>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
       <artifactId>utah-demodata</artifactId>
       <version>3.2</version>
       <type>zip</type>

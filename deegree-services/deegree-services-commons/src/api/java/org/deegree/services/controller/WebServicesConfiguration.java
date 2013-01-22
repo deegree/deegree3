@@ -83,7 +83,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
 
-    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/controller/3.0.0/controller.xsd" );
+    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 

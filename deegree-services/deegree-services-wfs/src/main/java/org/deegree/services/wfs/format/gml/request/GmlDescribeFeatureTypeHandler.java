@@ -226,7 +226,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                 if ( uri.startsWith( wsAppSchemaBaseURL ) ) {
                     String relativePath = uri.substring( wsAppSchemaBaseURL.length() );
                     if ( options.getAppSchemaBaseURL() == null ) {
-                        return ResourcesServlet.getHttpGetURL( APPSCHEMAS + "/" + relativePath );
+                        return ResourcesServlet.getUrl( APPSCHEMAS + "/" + relativePath );
                     }
                     return options.getAppSchemaBaseURL() + "/" + relativePath;
                 }

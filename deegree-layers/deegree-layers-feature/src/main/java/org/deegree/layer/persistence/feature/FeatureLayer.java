@@ -173,7 +173,7 @@ public class FeatureLayer extends AbstractLayer {
 
         filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
 
-        QName featureType = style == null ? this.featureType : style.getFeatureType();
+        QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
 
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), featureType ) );
 

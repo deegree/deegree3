@@ -36,6 +36,7 @@
 package org.deegree.metadata.iso.persistence.memory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -72,8 +73,9 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
      *            never <code>null</code> but may be empty when no directories exists
      * @param transactionalDirectory
      *            directory to store inserted records, can be <code>null</code> if transactions are not allowed
+     * @throws IOException 
      */
-    public ISOMemoryMetadataStore( List<File> recordDirectories, File transactionalDirectory ) {
+    public ISOMemoryMetadataStore( List<File> recordDirectories, File transactionalDirectory ) throws IOException {
         this.insertDirectory = transactionalDirectory;
         storedIsoRecords = new StoredISORecords( recordDirectories );
     }
