@@ -104,7 +104,7 @@ Click on the "+" icon on the right side to see a list of available layers. Tick 
 You can drag the map by holding the mouse button and moving your mouse. Zooming can be done by the controls on the left or using the mouse wheel. 
 Alternatively, you can open a rectangle by holding the SHIFT key and clicking the mouse button in the map area.
 
-In order to send some requests against the WFS, you may use the "send requests" link in the service console (go back first to the console). A simple interface for sending XML requests will open up. This interface is meant for testing the behaviour of your web service on the protocol level and contains some reasonable example requests.
+In order to send some requests against the WFS, you may use the "send requests" link in the service console (you may need to go back in your browser first). A simple interface for sending XML requests will open up. This interface is meant for testing the behaviour of your web service on the protocol level and contains some reasonable example requests.
 
 .. figure:: images/console_workspace_utah3.jpg
    :figwidth: 60%
@@ -113,7 +113,7 @@ In order to send some requests against the WFS, you may use the "send requests" 
 
    Sending example requests
 
-You may select example requests from the drop-down menu and click on the "Send" button. The server response will be displayed.
+Select one of the example requests from the drop-down menu and click on the "Send" button. The server response will be displayed.
 
 .. figure:: images/console_workspace_utah4.jpg
    :figwidth: 60%
@@ -122,6 +122,9 @@ You may select example requests from the drop-down menu and click on the "Send" 
 
    Sending example requests
 
+.. tip::
+  WFS request types and their format are specified in the `OGC Web Feature Service specification <http://www.opengeospatial.org/standards/wfs>`_.
+  
 .. tip::
   Instead of using the built-in layer preview or the generic XML client, you may use any compliant OGC client for accessing the WMS and WFS. Successfully tested desktop clients include Quantum GIS (install WFS plugin for accessing WFS), uDig, OpenJUMP and deegree iGeoDesktop. The service address to enter in your client is: http://localhost:8080/services.
 
@@ -197,7 +200,7 @@ The example requests also contain a lot of examples for the query possibilities 
 Example workspace 3: An ISO Catalogue Service setup
 ---------------------------------------------------
 
-This workspace contains a catalogue service setup that complies to the ISO Application Profile. After downloading and starting it, you will have to setup tables in a PostGIS database first (TBD describe Oracle). You will need to have an empty and spatially-enabled PostGIS database handy that can be accessed from the machine that runs the deegree webservices.
+This workspace contains a catalogue service (CSW) setup that complies to the ISO Application Profile. After downloading and starting it, you will have to setup tables in a PostGIS database first (TBD describe Oracle). You will need to have an empty and spatially-enabled PostGIS database handy that can be accessed from the machine that runs the deegree webservices.
 
 As a first step, you will have to create a JDBC connection to your PostGIS database:
 
