@@ -16,7 +16,7 @@
         var opt
 
         
-opt = document.getElementById('SGID500_DominantVegetation')
+opt = document.getElementById('<?name>')
 if(!opt){
   opt = newnode(sw, 'option', 'SGID500_DominantVegetation')
   opt.setAttribute('id', 'SGID500_DominantVegetation')
