@@ -39,41 +39,54 @@ package org.deegree.commons.jdbc;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class ConnectionManagerTest {
+/**
+ * @author last edited by: $Author: lyn $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class ConnectionManagerIT {
 
-	private ConnectionManager connectionManager;
-	
-	@After
-	public void tearDown() {
-		connectionManager.shutdown();
-	}
-	
-	
+    private static final String JDBCCONFIGNAME = "jdbc_connection.xml";
+
+    @Ignore("Ignored until the database connection is set correctly. Must be a valid connection, otherweise the test fails!")
     @Test
-    public void testGetConnectionInitialzedFromResource() throws URISyntaxException, IOException, SQLException, ResourceInitException {
+    public void testGetConnectionInitialzedFromResource()
+                            throws URISyntaxException, IOException, SQLException, ResourceInitException {
         // build
-    	URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
-    	String tmpDir = System.getProperty("java.io.tmpdir");
-		DeegreeWorkspace workspace = DeegreeWorkspace.getInstance("UnitTest", new File(tmpDir));
-		workspace.initAll();
-    	this.connectionManager = new ConnectionManager();
-    	// operate
-    	this.connectionManager.init(new File(configURL.toURI()), workspace);
-    	// compare
-         Connection connection = ConnectionManager.getConnection( "conn1" );
-         assertNotNull(connection);
-        
+        File workspaceDir = setupWorkspace();
+        DeegreeWorkspace workspace = DeegreeWorkspace.getInstance( "UnitTest", workspaceDir );
+        // operate
+        workspace.initAll();
+        // compare
+        Connection connection = ConnectionManager.getConnection( "jdbc_connection" );
+        assertNotNull( connection );
+    }
+
+    private File setupWorkspace()
+                            throws IOException, FileNotFoundException {
+        File workspaceDir = File.createTempFile( "UnitTest", "d3workspace" );
+        workspaceDir.delete();
+        workspaceDir.mkdir();
+        InputStream jdbcConfig = ConnectionManagerIT.class.getResourceAsStream( JDBCCONFIGNAME );
+        workspaceDir.mkdir();
+        File jdbcDir = new File( workspaceDir, "jdbc" );
+        jdbcDir.mkdir();
+        IOUtils.copy( jdbcConfig, new FileOutputStream( new File( jdbcDir, JDBCCONFIGNAME ) ) );
+        return workspaceDir;
     }
 
 }

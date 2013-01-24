@@ -107,7 +107,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      * @param jdbcDir
      */
     @SuppressWarnings("unchecked")
-    public void init( File jdbcDir, DeegreeWorkspace workspace ) {
+    private void init( DeegreeWorkspace workspace ) {
 
         JDBCParamsManager paramsMgr = workspace.getSubsystemManager( JDBCParamsManager.class );
         if ( paramsMgr.getStates().length == 0 ) {
@@ -316,7 +316,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     public void startup( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
         dir = new File( workspace.getLocation(), "jdbc" );
-        init( dir, workspace );
+        init( workspace );
     }
 
     @Override

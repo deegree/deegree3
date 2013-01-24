@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JDBCConnection xmlns="http://www.deegree.org/jdbc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/jdbc ../../../../../../main/resources/META-INF/schemas/jdbc/3.0.0/jdbc.xsd"
+	configVersion="3.0.0">
+	<Url>jdbc:postgresql://hurricane:5432/deegreetest</Url>
+	<User>deegreetest</User>
+	<Password>deegreetest</Password>
+</JDBCConnection>
