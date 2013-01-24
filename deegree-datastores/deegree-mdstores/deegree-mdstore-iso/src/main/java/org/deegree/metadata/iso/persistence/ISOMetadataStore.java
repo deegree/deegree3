@@ -148,7 +148,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                 inspectorChain.add( new MetadataSchemaValidationInspector<ISORecord>() );
             }
             if ( nn != null ) {
-                inspectorChain.add( new NamespaceNormalizationInspector(nn) );
+                inspectorChain.add( new NamespaceNormalizationInspector( nn ) );
             }
         }
         // hard coded because there is no configuration planned
@@ -201,11 +201,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         return connectionType;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#destroy()
-     */
     @Override
     public void destroy() {
         LOG.debug( "destroy" );
@@ -246,9 +241,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         final String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-        Connection connection = null;
         try {
-            connection = getConnection();
+            Connection connection = getConnection();
             return new QueryHelper( dialect, getQueryables() ).execute( query, connection );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -256,7 +250,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-        	close(connection);
+            // Don't close the ResultSet or PreparedStatement if no error occurs, the ResultSet is needed in the
+            // ISOMetadataResultSet and both will be closed by
+            // org.deegree.metadata.persistence.XMLMetadataResultSet#close().
         }
     }
 
@@ -269,17 +265,18 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         final String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
-        Connection connection = null;
         try {
-			connection = getConnection();
-			return new QueryHelper( dialect, getQueryables() ).executeCounting( query, connection );
+            Connection connection = getConnection();
+            return new QueryHelper( dialect, getQueryables() ).executeCounting( query, connection );
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
-        	close(connection);
+            // Don't close the ResultSet or PreparedStatement if no error occurs, the ResultSet is needed in the
+            // ISOMetadataResultSet and both will be closed by
+            // org.deegree.metadata.persistence.XMLMetadataResultSet#close().
         }
     }
 
@@ -288,16 +285,18 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
         Connection connection = null;
-		try {
-			connection = getConnection();
-			return new QueryHelper( dialect, getQueryables() ).executeGetRecordById( idList, connection );
-		} catch (SQLException e) {
-			LOG.debug( e.getMessage(), e );
+        try {
+            connection = getConnection();
+            return new QueryHelper( dialect, getQueryables() ).executeGetRecordById( idList, connection );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
-		} finally {
-        	close(connection);
+        } finally {
+            // Don't close the ResultSet or PreparedStatement if no error occurs, the ResultSet is needed in the
+            // ISOMetadataResultSet and both will be closed by
+            // org.deegree.metadata.persistence.XMLMetadataResultSet#close().
         }
     }
 
@@ -306,7 +305,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
         try {
-        	Connection conn = getConnection();
+            Connection conn = getConnection();
             ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, getQueryables(), config.getAnyText() );
         } catch ( SQLException e ) {
             LOG.error( "error " + e.getMessage(), e );
