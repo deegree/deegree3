@@ -71,12 +71,6 @@ public abstract class AbstractBasicResourceManager implements ResourceManager {
     // keys: resource identifiers, values: resource states
     protected Map<String, ResourceState> idToState = Collections.synchronizedMap( new HashMap<String, ResourceState>() );
 
-    // TODO this should happen in the constructor to ensure that it is always invoked!!!
-    protected void init( DeegreeWorkspace workspace, File resourceDir ) {
-        this.workspace = workspace;
-        this.dir = resourceDir;
-    }
-
     protected abstract ResourceProvider getProvider( URL url );
 
     protected abstract void remove( String id );
