@@ -37,6 +37,7 @@ package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.metadata.i18n.Messages.getMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
@@ -53,7 +54,6 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
-import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
 import org.deegree.metadata.iso.persistence.inspectors.FIInspector;
@@ -62,6 +62,9 @@ import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspecto
 import org.deegree.metadata.iso.persistence.inspectors.NamespaceNormalizationInspector;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.iso.persistence.queryable.QueryableConverter;
+import org.deegree.metadata.iso.persistence.sql.QueryService;
+import org.deegree.metadata.iso.persistence.sql.ServiceManager;
+import org.deegree.metadata.iso.persistence.sql.ServiceManagerProvider;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -124,10 +127,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         this.connectionId = config.getJDBCConnId();
         this.config = config;
 
-        // this.varToValue = new HashMap<String, String>();
-        // String systemStartDate = "2010-11-16";
-        // varToValue.put( "${SYSTEM_START_DATE}", systemStartDate );
-        // build inspector chain
         Inspectors inspectors = config.getInspectors();
         if ( inspectors != null ) {
             FileIdentifierInspector fi = inspectors.getFileIdentifierInspector();
@@ -240,13 +239,13 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataResultSet<ISORecord> getRecords( final MetadataQuery query )
                             throws MetadataStoreException {
         final String operationName = "getRecords";
-        LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
+        LOG.debug( getMessage( "INFO_EXEC", operationName ) );
         try {
-            Connection connection = getConnection();
-            return new QueryHelper( dialect, getQueryables() ).execute( query, connection );
+            QueryService queryService = getReadOnlySqlService();
+            return queryService.execute( query, getConnection() );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
+            String msg = getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } finally {
@@ -264,15 +263,14 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public int getRecordCount( final MetadataQuery query )
                             throws MetadataStoreException {
         final String resultTypeName = "hits";
-        LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
+        LOG.debug( getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         try {
-            Connection connection = getConnection();
-            return new QueryHelper( dialect, getQueryables() ).executeCounting( query, connection );
+            QueryService queryService = getReadOnlySqlService();
+            return queryService.executeCounting( query, getConnection() );
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
+            throw new MetadataStoreException( 
+                                             getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() ) );
         } finally {
             // Don't close the ResultSet or PreparedStatement if no error occurs, the ResultSet is needed in the
             // ISOMetadataResultSet and both will be closed by
@@ -283,16 +281,13 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public MetadataResultSet<ISORecord> getRecordById( final List<String> idList, final QName[] recordTypeNames )
                             throws MetadataStoreException {
-        LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        Connection connection = null;
+        LOG.debug( getMessage( "INFO_EXEC", "getRecordsById" ) );
         try {
-            connection = getConnection();
-            return new QueryHelper( dialect, getQueryables() ).executeGetRecordById( idList, connection );
+            QueryService qh = getReadOnlySqlService();
+            return qh.executeGetRecordById( idList, getConnection() );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
+            throw new MetadataStoreException( getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() ) );
         } finally {
             // Don't close the ResultSet or PreparedStatement if no error occurs, the ResultSet is needed in the
             // ISOMetadataResultSet and both will be closed by
@@ -342,4 +337,11 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public List<Queryable> getQueryables() {
         return queryables;
     }
+
+    private QueryService getReadOnlySqlService()
+                            throws MetadataStoreException {
+        ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
+        return serviceManager.getQueryService( dialect, queryables );
+    }
+
 }

@@ -1,75 +1,86 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-sqldialect-oracle</artifactId>
-  <name>deegree-sqldialect-oracle</name>
-  <packaging>jar</packaging>
-  <description>SQL dialect for Oracle Spatial</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>deegree-sqldialect-oracle</artifactId>
+	<name>deegree-sqldialect-oracle</name>
+	<packaging>jar</packaging>
+	<description>SQL dialect for Oracle Spatial</description>
 
-  <properties>
-    <deegree.module.status>rework</deegree.module.status>
-  </properties>
+	<properties>
+		<deegree.module.status>rework</deegree.module.status>
+	</properties>
 
-  <parent>
-    <groupId>org.deegree</groupId>
-    <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.2-pre13-connection-pool-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>org.deegree</groupId>
+		<artifactId>deegree-core-sqldialect</artifactId>
+		<version>3.2-pre13-jrcportal2-SNAPSHOT</version>
+	</parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-                <repository>
-                        <id>latlon-repo</id>
-                        <url>http://artefacts.lat-lon/repo</url>
-                        <releases>
-                                <updatePolicy>never</updatePolicy>
-                        </releases>
-                        <snapshots>
-                                <enabled>true</enabled>
-                        </snapshots>
-                </repository>
-                <repository>
-                        <id>deegree-restricted</id>
-                        <url>http://repo.deegree.org/content/repositories/private3rdparty/</url>
-                </repository>
+	<repositories>
+		<repository>
+			<id>deegree-repo</id>
+			<url>http://repo.deegree.org/content/groups/public</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>latlon-repo</id>
+			<url>http://artefacts.lat-lon/repo</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>deegree-restricted</id>
+			<url>http://repo.deegree.org/content/repositories/private3rdparty/</url>
+		</repository>
+	</repositories>
 
-  </repositories>
+	<distributionManagement>
+		<repository>
+			<id>latlon-releases</id>
+			<url>http://artefacts.lat-lon/libs-release-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>latlon-snapshots</id>
+			<url>http://artefacts.lat-lon/libs-snapshot-local</url>
+		</snapshotRepository>
+	</distributionManagement>
 
-  <profiles>
-    <profile>
-      <id>oracle</id>
-      <repositories>
-        <repository>
-          <id>deegree-restricted</id>
-          <name>deegree-restricted</name>
-          <url>http://repo.deegree.org/content/repositories/private3rdparty</url>
-        </repository>
-      </repositories>
-      <dependencies>
-        <!-- This module can be build with one of the following dependencies -->
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc6</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
+	<profiles>
+		<profile>
+			<id>oracle</id>
+			<repositories>
+				<repository>
+					<id>deegree-restricted</id>
+					<name>deegree-restricted</name>
+					<url>http://repo.deegree.org/content/repositories/private3rdparty</url>
+				</repository>
+			</repositories>
+			<dependencies>
+				<!-- This module can be build with one of the following dependencies -->
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-sqldialect-commons</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.deegree</groupId>
+			<artifactId>deegree-sqldialect-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
 
 </project>
 
