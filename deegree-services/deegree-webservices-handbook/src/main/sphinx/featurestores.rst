@@ -133,7 +133,7 @@ The configuration format for the deegree shape feature store is defined by schem
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | File                        | 1..1        | String  | Path to shape file (can be relative)                                         |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| Encoding                    | 0..1        | Integer | Encoding of text fields in dbf file                                          |
+| Encoding                    | 0..1        | String  | Encoding of text fields in dbf file                                          |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | GenerateAlphanumericIndexes | 0..1        | Boolean | Set to true, if an index for alphanumeric fields should be generated         |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
