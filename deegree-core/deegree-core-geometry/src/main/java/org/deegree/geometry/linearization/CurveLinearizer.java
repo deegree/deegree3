@@ -96,7 +96,7 @@ public class CurveLinearizer {
 
     private static Logger LOG = LoggerFactory.getLogger( CurveLinearizer.class );
 
-    private static final double EPSILON = 1E-12;
+    private static final double EPSILON = 1E-6;
 
     private final GeometryFactory geomFac;
 
