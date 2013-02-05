@@ -50,6 +50,7 @@ import static org.deegree.geometry.validation.GeometryFixer.invertOrientation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -75,39 +76,43 @@ import com.vividsolutions.jts.geom.LinearRing;
  */
 class OrientationFixer {
 
-    static Geometry fixOrientation( Geometry geom ) {
+    static Geometry fixOrientation( Geometry geom, ICRS defaultCrs ) {
         switch ( geom.getGeometryType() ) {
         case PRIMITIVE_GEOMETRY:
-            return fixOrientation( (GeometricPrimitive) geom );
+            return fixOrientation( (GeometricPrimitive) geom, defaultCrs );
         case MULTI_GEOMETRY:
-            return fixOrientation( (MultiGeometry<?>) geom );
+            return fixOrientation( (MultiGeometry<?>) geom, defaultCrs );
         default: {
             throw new UnsupportedOperationException();
         }
         }
     }
 
-    private static Geometry fixOrientation( GeometricPrimitive geom ) {
+    private static Geometry fixOrientation( GeometricPrimitive geom, ICRS defaultCrs ) {
         if ( geom.getPrimitiveType() == Surface ) {
-            return fixOrientation( (Surface) geom );
+            return fixOrientation( (Surface) geom, defaultCrs );
         }
         return geom;
     }
 
-    private static Geometry fixOrientation( Surface geom ) {
+    private static Geometry fixOrientation( Surface geom, ICRS defaultCrs ) {
         if ( geom.getSurfaceType() == Polygon ) {
-            return fixOrientation( (Polygon) geom );
+            return fixOrientation( (Polygon) geom, defaultCrs );
         }
         throw new UnsupportedOperationException();
     }
 
-    private static Geometry fixOrientation( Polygon geom ) {
+    private static Geometry fixOrientation( Polygon geom, ICRS defaultCrs ) {
+        ICRS crs = geom.getCoordinateSystem();
+        if ( crs == null ) {
+            crs = defaultCrs;
+        }
         Ring exteriorRing = fixOrientation( geom.getExteriorRing(), false );
-        List<Ring> interiorRings = fixInteriorOrientation( geom.getInteriorRings() );
-        return new DefaultPolygon( null, geom.getCoordinateSystem(), null, exteriorRing, interiorRings );
+        List<Ring> interiorRings = fixInteriorOrientation( geom.getInteriorRings(), crs );
+        return new DefaultPolygon( null, crs, null, exteriorRing, interiorRings );
     }
 
-    private static List<Ring> fixInteriorOrientation( List<Ring> interiorRings ) {
+    private static List<Ring> fixInteriorOrientation( List<Ring> interiorRings, ICRS defaultCrs ) {
         if ( interiorRings == null ) {
             return null;
         }
@@ -136,22 +141,24 @@ class OrientationFixer {
     }
 
     @SuppressWarnings("unchecked")
-    private static Geometry fixOrientation( MultiGeometry<?> geom ) {
-
+    private static Geometry fixOrientation( MultiGeometry<?> geom, ICRS defaultCrs ) {
+        ICRS crs = geom.getCoordinateSystem();
+        if ( crs == null ) {
+            crs = defaultCrs;
+        }
         List fixedMembers = new ArrayList<Object>( geom.size() );
         for ( Geometry member : geom ) {
-            Geometry fixedMember = fixOrientation( member );
+            Geometry fixedMember = fixOrientation( member, crs );
             fixedMembers.add( fixedMember );
         }
 
         switch ( geom.getMultiGeometryType() ) {
         case MULTI_GEOMETRY:
-            return new DefaultMultiGeometry<Geometry>( null, geom.getCoordinateSystem(), null,
-                                                       (List<Geometry>) fixedMembers );
+            return new DefaultMultiGeometry<Geometry>( null, crs, null, (List<Geometry>) fixedMembers );
         case MULTI_POLYGON:
-            return new DefaultMultiPolygon( null, geom.getCoordinateSystem(), null, (List<Polygon>) fixedMembers );
+            return new DefaultMultiPolygon( null, crs, null, (List<Polygon>) fixedMembers );
         case MULTI_SURFACE:
-            return new DefaultMultiSurface( null, geom.getCoordinateSystem(), null, (List<Surface>) fixedMembers );
+            return new DefaultMultiSurface( null, crs, null, (List<Surface>) fixedMembers );
         default:
             throw new UnsupportedOperationException();
         }
