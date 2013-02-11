@@ -98,7 +98,6 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -120,6 +119,7 @@ import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.resources.ResourcesServlet;
+import org.deegree.workspace.standard.ModuleInfo;
 import org.slf4j.Logger;
 
 /**
@@ -702,6 +702,7 @@ public class OGCFrontController extends HttpServlet {
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
                                                                                : securityConfiguration.getCredentialsProvider();
+        LOG.debug( "credentials provider: " + ( credentialsProvider != null ? credentialsProvider.getClass() : null ) );
 
         // extract (deegree specific) security information and bind to current thread
         try {
@@ -1131,6 +1132,7 @@ public class OGCFrontController extends HttpServlet {
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
         }
+        securityConfiguration = SecurityConfiguration.getInstance();
         LOG.info( "" );
     }
 
