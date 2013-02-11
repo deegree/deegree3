@@ -208,7 +208,7 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         return getTile( request, httpClient );
     }
 
-    public GetTileResponse getTile( GetTile request, OwsHttpClient httpClient )
+    private GetTileResponse getTile( GetTile request, OwsHttpClient httpClient )
                             throws IOException, OWSExceptionReport, XMLStreamException {
         Map<String, String> kvp = buildGetTileKvpMap( request );
         URL endPoint = getGetUrl( WMTSConstants.WMTSRequestType.GetTile.name() );
