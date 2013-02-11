@@ -66,6 +66,9 @@ import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.protocol.wmts.ops.GetTile;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.RequestContext;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 import org.slf4j.Logger;
@@ -148,7 +151,16 @@ class RemoteWMTSTile implements Tile {
 
         CloseRequiredInputStream is = null;
         try {
-            GetTileResponse response = client.getTile( request );
+            GetTileResponse response;
+            RequestContext requestContext = OGCFrontController.getContext();
+            if ( requestContext != null && requestContext.getCredentials() != null ) {
+                Credentials credentials = requestContext.getCredentials();
+                String user = credentials.getUser();
+                String password = credentials.getPassword();
+                response = client.getTile( request, 5, 60, user, password );
+            } else {
+                response = client.getTile( request );
+            }
             is = response.getAsRawResponse().getAsBinaryStream();
         } catch ( Exception e ) {
             throw new TileIOException( e.getMessage(), e );
