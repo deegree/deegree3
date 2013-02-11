@@ -870,6 +870,11 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
     public InputStream getMap( GetMap getMap )
                             throws IOException, OWSException {
+        return getMap( getMap, httpBasicUser, httpBasicPass );
+    }
+
+    public InputStream getMap( GetMap getMap, String httpBasicUser, String httpBasicPassword )
+                            throws IOException, OWSException {
         Map<String, String> map = new HashMap<String, String>();
         map.put( "request", "GetMap" );
         map.put( "version", wmsVersion.toString() );
@@ -912,7 +917,8 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         URL theUrl = new URL( query );
         LOG.debug( "Connecting to URL " + theUrl );
         URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
-                                                           getHttpProxyPassword( true ), httpBasicUser, httpBasicPass );
+                                                           getHttpProxyPassword( true ), httpBasicUser,
+                                                           httpBasicPassword );
         conn.setConnectTimeout( connectionTimeout * 1000 );
         conn.setReadTimeout( requestTimeout * 1000 );
         conn.connect();
