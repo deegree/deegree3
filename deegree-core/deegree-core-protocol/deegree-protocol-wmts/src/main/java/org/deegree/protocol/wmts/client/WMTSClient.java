@@ -188,9 +188,10 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
      * @throws XMLStreamException
      */
     public GetTileResponse getTile( GetTile request, int connectionTimeout, int readTimeout, String user,
-                                    String password )
+                                    String password, Map<String, String> header )
                             throws IOException, OWSExceptionReport, XMLStreamException {
-        return getTile( request, new OwsHttpClientImpl( connectionTimeout * 1000, readTimeout * 1000, user, password ) );
+        return getTile( request, new OwsHttpClientImpl( connectionTimeout * 1000, readTimeout * 1000, user, password ),
+                        header );
     }
 
     /**
@@ -205,14 +206,14 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
      */
     public GetTileResponse getTile( GetTile request )
                             throws IOException, OWSExceptionReport, XMLStreamException {
-        return getTile( request, httpClient );
+        return getTile( request, httpClient, null );
     }
 
-    private GetTileResponse getTile( GetTile request, OwsHttpClient httpClient )
+    private GetTileResponse getTile( GetTile request, OwsHttpClient httpClient, Map<String, String> header )
                             throws IOException, OWSExceptionReport, XMLStreamException {
         Map<String, String> kvp = buildGetTileKvpMap( request );
         URL endPoint = getGetUrl( WMTSConstants.WMTSRequestType.GetTile.name() );
-        OwsHttpResponse response = httpClient.doGet( endPoint, kvp, null );
+        OwsHttpResponse response = httpClient.doGet( endPoint, kvp, header );
         response.assertHttpStatus200();
         response.assertNoXmlContentTypeAndExceptionReport();
         return new GetTileResponse( response );
