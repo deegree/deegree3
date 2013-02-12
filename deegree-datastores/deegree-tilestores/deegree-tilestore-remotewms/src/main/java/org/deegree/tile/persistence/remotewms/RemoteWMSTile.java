@@ -55,6 +55,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.axiom.om.util.Base64;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -131,6 +132,9 @@ class RemoteWMSTile implements Tile {
                 } else {
                     user = credentials.getUser();
                     password = credentials.getPassword();
+                    String encode = Base64.encode( ( user + ":" + password ).getBytes() );
+                    String value = "Basic " + encode;
+                    additionalHeader.put( "AUTHORIZATION", value );
                 }
             }
             InputStream map = client.getMap( gm, user, password, additionalHeader );
