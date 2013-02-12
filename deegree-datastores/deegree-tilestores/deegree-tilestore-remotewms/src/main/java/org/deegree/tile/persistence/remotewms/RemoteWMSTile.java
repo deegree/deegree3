@@ -146,7 +146,7 @@ class RemoteWMSTile implements Tile {
                     password = credentials.getPassword();
                     String encode = Base64.encode( ( user + ":" + password ).getBytes() );
                     String value = "Basic " + encode;
-                    additionalHeader.put( "AUTHORIZATION", value );
+                    additionalHeader.put( "Authorization", value );
                 }
             }
             InputStream map = client.getMap( gm, user, password, additionalHeader );
