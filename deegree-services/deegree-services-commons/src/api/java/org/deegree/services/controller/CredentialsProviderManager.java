@@ -77,6 +77,9 @@ public class CredentialsProviderManager {
         } else if ( authentication.getHttpDigestCredentialsProvider() != null ) {
             LOG.debug( "digestAuth not implemented yet" );
             throw new UnsupportedOperationException( "digestAuth not implemented yet" );
+        } else if ( authentication.getEcasHttpBasicCredentialsProvider() != null ) {
+            // TODO
+            // credentialProvider = new ...
         }
         return credentialProvider;
     }
