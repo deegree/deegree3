@@ -873,10 +873,11 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
     public InputStream getMap( GetMap getMap )
                             throws IOException, OWSException {
-        return getMap( getMap, httpBasicUser, httpBasicPass );
+        return getMap( getMap, httpBasicUser, httpBasicPass, null );
     }
 
-    public InputStream getMap( GetMap getMap, String httpBasicUser, String httpBasicPassword )
+    public InputStream getMap( GetMap getMap, String httpBasicUser, String httpBasicPassword,
+                               Map<String, String> additionalHeader )
                             throws IOException, OWSException {
         Map<String, String> map = new HashMap<String, String>();
         map.put( "request", "GetMap" );
@@ -921,7 +922,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         LOG.debug( "Send get request: " + theUrl );
         OwsHttpClient httpClient = new OwsHttpClientImpl( connectionTimeout * 1000, requestTimeout * 1000,
                                                           httpBasicUser, httpBasicPassword );
-        OwsHttpResponse response = httpClient.doGet( theUrl, null, null );
+        OwsHttpResponse response = httpClient.doGet( theUrl, null, additionalHeader );
         HttpResponse httpResponse = response.getAsHttpResponse();
         InputStream responseStream = httpResponse.getEntity().getContent();
 

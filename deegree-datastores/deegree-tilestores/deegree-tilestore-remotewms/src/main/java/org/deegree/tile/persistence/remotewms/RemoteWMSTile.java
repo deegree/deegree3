@@ -49,7 +49,9 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -63,6 +65,7 @@ import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.EcasCredentials;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.RequestContext;
 import org.deegree.tile.Tile;
@@ -119,14 +122,18 @@ class RemoteWMSTile implements Tile {
         try {
             String user = null;
             String password = null;
+            Map<String, String> additionalHeader = new HashMap<String, String>();
             RequestContext requestContext = OGCFrontController.getContext();
             if ( requestContext != null && requestContext.getCredentials() != null ) {
                 Credentials credentials = requestContext.getCredentials();
-                user = credentials.getUser();
-                password = credentials.getPassword();
+                if ( credentials instanceof EcasCredentials ) {
+                    additionalHeader.put( "ECAS_ST", ( (EcasCredentials) credentials ).getTicket() );
+                } else {
+                    user = credentials.getUser();
+                    password = credentials.getPassword();
+                }
             }
-
-            InputStream map = client.getMap( gm, user, password );
+            InputStream map = client.getMap( gm, user, password, additionalHeader );
 
             if ( map == null ) {
                 throw new TileIOException( "A tile could not be fetched from remote WMS for an unknown reason." );
