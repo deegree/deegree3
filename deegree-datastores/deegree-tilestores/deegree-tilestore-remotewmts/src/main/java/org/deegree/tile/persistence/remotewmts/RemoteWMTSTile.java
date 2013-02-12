@@ -46,9 +46,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.axiom.om.util.Base64;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.http.CloseRequiredInputStream;
@@ -56,6 +59,7 @@ import org.deegree.protocol.wmts.client.GetTileResponse;
 import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.EcasCredentials;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.RequestContext;
 import org.deegree.tile.Tile;
@@ -130,9 +134,20 @@ class RemoteWMTSTile implements Tile {
             RequestContext requestContext = OGCFrontController.getContext();
             if ( requestContext != null && requestContext.getCredentials() != null ) {
                 Credentials credentials = requestContext.getCredentials();
-                String user = credentials.getUser();
-                String password = credentials.getPassword();
-                response = client.getTile( request, 5, 60, user, password );
+                String user = null;
+                String password = null;
+                Map<String, String> additionalHeader = new HashMap<String, String>();
+                if ( credentials instanceof EcasCredentials ) {
+                    additionalHeader.put( "ECAS_ST", ( (EcasCredentials) credentials ).getTicket() );
+                } else {
+                    user = credentials.getUser();
+                    password = credentials.getPassword();
+                    String encode = Base64.encode( ( user + ":" + password ).getBytes() );
+                    String value = "Basic " + encode;
+                    additionalHeader.put( "Authorization", value );
+                }
+                response = client.getTile( request, 5, 60, user, password, additionalHeader );
+
             } else {
                 response = client.getTile( request );
             }
