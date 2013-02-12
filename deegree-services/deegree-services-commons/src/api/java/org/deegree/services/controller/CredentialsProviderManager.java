@@ -36,6 +36,7 @@
 package org.deegree.services.controller;
 
 import org.deegree.services.authentication.DeegreeAuthentication;
+import org.deegree.services.authentication.EcasAndHttpBasicAuthentication;
 import org.deegree.services.authentication.HttpBasicAuthentication;
 import org.deegree.services.authentication.SOAPAuthentication;
 import org.deegree.services.jaxb.security.CredentialsProviderType;
@@ -63,24 +64,24 @@ public class CredentialsProviderManager {
      */
     public static CredentialsProvider create( CredentialsProviderType authentication ) {
 
-        CredentialsProvider credentialProvider = null;
+        CredentialsProvider credentialsProvider = null;
 
         if ( authentication.getHttpBasicCredentialsProvider() != null ) {
-            credentialProvider = new HttpBasicAuthentication();
+            credentialsProvider = new HttpBasicAuthentication();
             LOG.debug( "httpBasicAuth" );
         } else if ( authentication.getDeegreeCredentialsProvider() != null ) {
-            credentialProvider = new DeegreeAuthentication();
+            credentialsProvider = new DeegreeAuthentication();
             LOG.debug( "deegreeAuth" );
         } else if ( authentication.getSOAPCredentialsProvider() != null ) {
-            credentialProvider = new SOAPAuthentication();
+            credentialsProvider = new SOAPAuthentication();
             LOG.debug( "SOAPAuth" );
         } else if ( authentication.getHttpDigestCredentialsProvider() != null ) {
             LOG.debug( "digestAuth not implemented yet" );
             throw new UnsupportedOperationException( "digestAuth not implemented yet" );
         } else if ( authentication.getEcasHttpBasicCredentialsProvider() != null ) {
-            // TODO
-            // credentialProvider = new ...
+            credentialsProvider = new EcasAndHttpBasicAuthentication();
+            LOG.debug( "Basic and Ecas Auth" );
         }
-        return credentialProvider;
+        return credentialsProvider;
     }
 }
