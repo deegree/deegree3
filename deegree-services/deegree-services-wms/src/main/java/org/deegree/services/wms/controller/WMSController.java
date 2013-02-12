@@ -177,15 +177,12 @@ public class WMSController extends AbstractOWS {
 
     private String metadataURLTemplate;
 
-    private String configId;
-
     private FeatureInfoManager featureInfoManager;
 
     public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
         try {
             File f = new File( configURL.toURI() );
-            this.configId = f.getName().substring( 0, f.getName().length() - 4 );
         } catch ( URISyntaxException e ) {
             // then no configId will be available
         }
@@ -753,6 +750,14 @@ public class WMSController extends AbstractOWS {
 
         // override service metadata if available from manager
         OWSMetadataProvider metadata = null;
+        WebServicesConfiguration wsc = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        ResourceState<OWS>[] states = wsc.getStates();
+        String configId = null;
+        for ( ResourceState<OWS> st : states ) {
+            if ( st.getResource() == this ) {
+                configId = st.getId();
+            }
+        }
         if ( configId != null ) {
             OWSMetadataProviderManager mgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
             ResourceState<OWSMetadataProvider> state = mgr.getState( configId );
