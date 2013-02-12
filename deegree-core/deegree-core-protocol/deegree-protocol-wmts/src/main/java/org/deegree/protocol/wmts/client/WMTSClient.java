@@ -51,6 +51,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClient;
+import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wmts.WMTSConstants;
 import org.deegree.protocol.wmts.ops.GetTile;
@@ -173,12 +174,41 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
      * 
      * @param request
      *            <code>GetTile</code> requests, must not be <code>null</code>
+     * @param connectionTimeout
+     *            in seconds
+     * @param readTimeout
+     *            in seconds
+     * @param user
+     *            may be null
+     * @param password
+     *            may be null
+     * @return server response, never <code>null</code>
+     * @throws IOException
+     * @throws OWSExceptionReport
+     * @throws XMLStreamException
+     */
+    public GetTileResponse getTile( GetTile request, int connectionTimeout, int readTimeout, String user,
+                                    String password )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getTile( request, new OwsHttpClientImpl( connectionTimeout * 1000, readTimeout * 1000, user, password ) );
+    }
+
+    /**
+     * Performs the given {@link GetTile} request.
+     * 
+     * @param request
+     *            <code>GetTile</code> requests, must not be <code>null</code>
      * @return server response, never <code>null</code>
      * @throws IOException
      * @throws OWSExceptionReport
      * @throws XMLStreamException
      */
     public GetTileResponse getTile( GetTile request )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getTile( request, httpClient );
+    }
+
+    private GetTileResponse getTile( GetTile request, OwsHttpClient httpClient )
                             throws IOException, OWSExceptionReport, XMLStreamException {
         Map<String, String> kvp = buildGetTileKvpMap( request );
         URL endPoint = getGetUrl( WMTSConstants.WMTSRequestType.GetTile.name() );

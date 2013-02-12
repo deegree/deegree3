@@ -62,6 +62,9 @@ import org.deegree.layer.LayerRef;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.RequestContext;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 
@@ -114,7 +117,16 @@ class RemoteWMSTile implements Tile {
     public InputStream getAsStream()
                             throws TileIOException {
         try {
-            InputStream map = client.getMap( gm );
+            String user = null;
+            String password = null;
+            RequestContext requestContext = OGCFrontController.getContext();
+            if ( requestContext != null && requestContext.getCredentials() != null ) {
+                Credentials credentials = requestContext.getCredentials();
+                user = credentials.getUser();
+                password = credentials.getPassword();
+            }
+
+            InputStream map = client.getMap( gm, user, password );
 
             if ( map == null ) {
                 throw new TileIOException( "A tile could not be fetched from remote WMS for an unknown reason." );
