@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata.provider;
 
+import static java.util.Collections.emptyList;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -51,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.dom.DOMSource;
@@ -59,12 +61,18 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.jaxb.metadata.DatasetMetadataType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.slf4j.Logger;
 
 /**
@@ -128,11 +136,48 @@ public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderPr
                     list.add( new XMLAdapter( xmlStream ).getRootElement() );
                 }
             }
-            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities, null );
+            List<DatasetMetadata> datasets = convertDatasetMetadataFromJAXB( md.getValue().getDatasetMetadata() );
+            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities, datasets );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );
         }
+    }
+
+    private List<DatasetMetadata> convertDatasetMetadataFromJAXB( org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType.DatasetMetadata jaxbDatasetMetadata ) {
+        List<DatasetMetadata> datasets = new ArrayList<DatasetMetadata>();
+        if ( jaxbDatasetMetadata != null ) {
+            for ( DatasetMetadataType jaxbEl : jaxbDatasetMetadata.getDataset() ) {
+                datasets.add( convertDatasetMetadataFromJAXB( jaxbEl, jaxbDatasetMetadata.getMetadataUrlTemplate() ) );
+            }
+        }
+        return datasets;
+    }
+
+    private DatasetMetadata convertDatasetMetadataFromJAXB( DatasetMetadataType jaxbEl, String metadataUrlPattern ) {
+        QName name = jaxbEl.getName();
+        List<LanguageString> titles = convertToLanguageStrings( jaxbEl.getTitle() );
+        List<LanguageString> abstracts = convertToLanguageStrings( jaxbEl.getAbstract() );
+        List<Pair<List<LanguageString>, CodeType>> keywords = emptyList();
+        String url = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
+        return new DatasetMetadata( name, titles, abstracts, keywords, url );
+    }
+
+    private String buildMetadataUrl( String pattern, String datasetId ) {
+        if ( pattern == null || datasetId == null ) {
+            return null;
+        }
+        return StringUtils.replaceAll( pattern, "${metadataSetId}", datasetId );
+    }
+
+    private List<LanguageString> convertToLanguageStrings( List<LanguageStringType> strings ) {
+        List<LanguageString> languageStrings = new ArrayList<LanguageString>();
+        if ( strings != null ) {
+            for ( LanguageStringType string : strings ) {
+                languageStrings.add( new LanguageString( string.getValue(), string.getLang() ) );
+            }
+        }
+        return languageStrings;
     }
 
     @Override

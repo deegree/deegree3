@@ -16,8 +16,14 @@
     <sequence>
       <element name="ServiceIdentification" type="md:ServiceIdentificationType" minOccurs="0" />
       <element name="ServiceProvider" type="md:ServiceProviderType" minOccurs="0" />
-      <element name="MetadataURLTemplate" minOccurs="0" type="string" />
-      <element name="DatasetMetadata" type="md:DatasetMetadataType" minOccurs="0" maxOccurs="unbounded" />
+      <element name="DatasetMetadata" minOccurs="0">
+        <complexType>
+          <sequence>
+            <element name="MetadataUrlTemplate" minOccurs="0" type="string" />
+            <element name="Dataset" type="md:DatasetMetadataType" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="ExtendedCapabilities" type="md:ExtendedCapabilitiesType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
     <attribute name="configVersion" type="md:ConfigVersionType" use="required" />
@@ -124,6 +130,7 @@
     <restriction base="string">
       <enumeration value="3.0.0" />
       <enumeration value="3.1.0" />
+      <enumeration value="3.2.0" />
     </restriction>
   </simpleType>
 
