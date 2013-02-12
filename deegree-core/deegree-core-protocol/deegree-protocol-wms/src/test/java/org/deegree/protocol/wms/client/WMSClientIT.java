@@ -115,8 +115,8 @@ public class WMSClientIT {
         int height = 1344;
         Point min = new DefaultPoint( null, null, null, new double[] { -13576802.349306, 3950355.8690833 } );
         Point max = new DefaultPoint( null, null, null, new double[] { -11258008.659664, 5594057.7250333 } );
-        Envelope envelope = new DefaultEnvelope( min, max );
         ICRS crs = CRSManager.lookup( "EPSG:900913" );
+        Envelope envelope = new DefaultEnvelope( "test", crs, null, min, max );
         String format = "image/png";
         boolean transparent = false;
         GetMap getMap = new GetMap( layers, width, height, envelope, crs, format, transparent );
