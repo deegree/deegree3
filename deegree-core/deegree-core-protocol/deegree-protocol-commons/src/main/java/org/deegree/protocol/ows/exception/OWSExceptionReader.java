@@ -147,7 +147,9 @@ public class OWSExceptionReader {
      */
     public static OWSExceptionReport parseExceptionReport( XMLStreamReader reader )
                             throws NoSuchElementException, XMLStreamException {
-
+        while ( reader.getEventType() != XMLStreamReader.START_ELEMENT ) {
+            reader.next();
+        }
         // <attribute name="version" use="required">
         String version = reader.getAttributeValue( null, "version" );
 
