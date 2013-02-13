@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.2-pre13-jrcportal3-SNAPSHOT</version>
+    <version>3.2-pre13-jrcportal3</version>
   </parent>
 
   <repositories>
