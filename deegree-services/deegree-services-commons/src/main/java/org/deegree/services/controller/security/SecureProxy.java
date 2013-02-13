@@ -79,6 +79,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
+import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.RequestLogger;
@@ -103,7 +104,7 @@ public class SecureProxy extends HttpServlet {
 
     private transient CredentialsProvider credentialsProvider;
 
-    transient XMLInputFactory inFac = XMLInputFactory.newInstance();
+    transient XMLInputFactory inFac = XMLInputFactoryUtils.newSafeInstance();
 
     transient XMLOutputFactory outFac = XMLOutputFactory.newInstance();
 

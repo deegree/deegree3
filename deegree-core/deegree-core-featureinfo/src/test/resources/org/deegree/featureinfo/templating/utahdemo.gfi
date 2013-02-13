@@ -1,0 +1,14 @@
+<?template start>
+<html>
+<body>
+<ul>
+<?feature *:myfeaturetemplate>
+</ul>
+</body>
+</html>
+
+<?template myfeaturetemplate>
+<li>I have a <?name> feature and properties <?property *:mypropertytemplate></li>
+
+<?template mypropertytemplate>
+<?name>=<?value>

@@ -204,6 +204,9 @@ Simple SQL feature store
 
 The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead.
 
+.. tip::
+  If you want to use the simple SQL feature store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -252,14 +255,19 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 | LODStatement                | 0..n        | Complex | Statements for specific WMS scale ranges                                     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
+.. _anchor-configuration-sqlfeaturestore:
+
 -----------------
 SQL feature store
 -----------------
 
 The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following backends:
 
-* PostgreSQL (8.3, 8.4, 9.0, 9.1) with PostGIS extension (1.4, 1.5, 2.0)
+* PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
+
+.. tip::
+  If you want to use the SQL feature store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -460,7 +468,7 @@ This snippet defines the feature id mapping and the id generation behaviour for 
 Mapping a GML application schema
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The former sections assumed a mapping configuration that didn't specify a GML application schema. If a GML application schema is specified in the SQL feature store configuration, the mapping possibilities are extended. Although configuration is similar to a configuration, there are some differences as described in the following table:
+The former sections assumed a mapping configuration that didn't specify a GML application schema. If a GML application schema is specified in the SQL feature store configuration, the mapping possibilities are extended further. Although configuration with a GML application schema is similar, there are some differences as described in the following table:
 
 .. table:: Blabla
 
@@ -503,9 +511,41 @@ The ``FeatureTypeMapping`` element has the following attributes:
 .. hint::
    In schema-driven mode, every mapped feature type must be defined in the referenced GML schema file. It is however not necessary to map all feature types defined in the schema. Unmapped feature types will be known to the feature store (e.g. a WFS will list them in a GetCapabilities response), but not queryable.
 
-""""""""""
-Properties
-""""""""""
+""""""""""""""""""""
+Recommended workflow
+""""""""""""""""""""
+
+Manually tailoring an SQL feature store configuration for a rich GML application schema may appear to be a dauting task at first sight. Especially when you are still trying to figure out how the configuration concepts work, you will be using a trial-and-error strategy. Here are some general practices to make this as painless as possible.
+
+* Map one feature type at a time. Only when you're satisfied with the mapping, move on to the next feature type.
+* When changing the configuration file, make sure that the status of the feature store stays green. If an exclamation mark occurs, you have an error in your configuration.
+* Use the "Reload" link of the services console to activate your changes.
+
+Start with a single **FeatureTypeMapping**. Provide the table name and the mapping for the feature identifier. If there's no error, you can already query the feature type! Here's a minimal configuration example:
+
+.. topic:: SQL FeatureStore (schema-driven mode): Start configuration
+
+   .. literalinclude:: xml/sqlfeaturestore_schemadriven1.xml
+      :language: xml
+
+It's very useful to have an active WFS configuration, so you can use WFS GetFeature-requests to check whether your feature mapping works as expected. You can use your web browser for that. After each configuration change, perform a GetFeature-request to see the effect. Suitable WFS requests depend on the WFS version, the GML version and the name of the feature type.
+
+* WFS 1.0.0 (GML 2): http://localhost:8080/services?service=WFS&version=1.0.0&request=GetFeature&typeName=ad:Address&maxFeatures=5
+* WFS 1.1.0 (GML 3.1): http://localhost:8080/services?service=WFS&version=1.1.0&request=GetFeature&typeName=ad:Address&maxFeatures=5
+* WFS 2.0.0 (GML 3.2): http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=5
+
+In order to successfully create a mapping of a feature type from a GML application schema, you have to understand the structure and the data types of the feature type. For example, if you want to map the **ad:Address** feature type from INSPIRE Annex I, you have to know that it has a required property called **ad:inspireId** that has a child element with name **base:Identifier**. Ultimately, this structure is given by the corresponding GML application schema files, so you can analyze these files to find that out. Internally, deegree does the same to find out about feature types. Here's a full list of possible options to help with this task:
+
+* Manually (or with the help of a generic XML tool such as XMLSpy) analyze the the structure of the feature type you want to map
+* Use the services console to auto-generate a mapping configuration. It should reflect the structure and datatypes correctly and will be a good starting point to. Adapt it to your own database tables and columns. Auto-generate the mapping, create a copy of the file and again start with a minimal version (feature type by feature type).
+* Use the deegree support options (mailing lists, commercial support) to get help.
+
+.. hint::
+   The deegree project aims for a full user-interface to help with all steps of creating mapping configurations. If you are interested in working on this (or funding it), don't hesitate to contact the project bodies.
+
+""""""""""""""""""
+Mapping properties
+""""""""""""""""""
 
 In order to add mappings for properties of the feature type, the following mapping elements are available:
 
@@ -516,9 +556,159 @@ In order to add mappings for properties of the feature type, the following mappi
 
 Mapping the actual content of a feature works by associating XML nodes with columns in the database. In the beginning of the feature type mapping, the current node is the root element of the feature ``ad:Address`` and the current table is ``ad_address``.
 
-^^^^^^^^^^^^
+""""""""""""""""""""""""""
+Changing the table context
+""""""""""""""""""""""""""
+
+When mapping a rich GML application schema to a database, you usually have to map data from multiple tables to a single feature type. The configuration offers the **Join** element to change the current table context, i.e. to move to another table in the relational model.
+
+At the beginning of a **FeatureTypeMapping**, the current table context is the one specified by the **table** attribute. In the following example snippet, this would be table **ad_address**.
+
+.. topic:: SQL FeatureStore: Initial table context
+
+   .. literalinclude:: xml/sqlfeaturestore_tablecontext.xml
+      :language: xml
+
+Note that all mapped columns stem from table **ad_address**. This is fine, as each feature can only have a single **gml:identifier** property. However, when mapping a property that may occur any number of times, we will have to access the values for this property in a separate table. 
+
+.. topic:: SQL FeatureStore: Changing the table context
+
+   .. literalinclude:: xml/sqlfeaturestore_join1.xml
+      :language: xml
+
+In this example, property **gml:identifier** is mapped as before (the data values stem from table **ad_address**). In contrast to that, the property **ad:position** can occur any number of times for a single **ad_address** feature instance. In order to reflect that in the relational model, the values for this property have to be taken from/stored in a separate table. The feature type table (ad_address) must have a 1:n relation to this table.
+
+The **Join** element is used to define such a change in the table context (in other words: a relation/join between two tables). A **Join** element may only occur as the first child element of any of the mapping elements (Primitive, Geometry, Feature or Complex). It changes from the current table context to another one. In the example, the table context in the mapping of property **ad:position** is changed from **ad_address** to **ad_address_ad_position**. All mapping instructions that follow the **Join** element refer to the new table context. For example, the geometry value is taken from **ad_address_ad_position.ad_geographicposition_ad_geometry_value**.
+
+The following table lists all available options for **Join** elements.
+
+.. table:: Options for **Join** elements
+
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| Option                      | Cardinality | Value   | Description                                                                                       |
++=============================+=============+=========+===================================================================================================+
+| @table                      | 1..1        | String  | Name of the target table to change to.                                                            |
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| @fromColumns                | 1..1        | String  | One or more columns that define the join key in the source table.                                 |
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| @toColumns                  | 1..1        | String  | One or more columns that define the join key in the target table.                                 |
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| @orderColumns               | 0..1        | String  | One or more columns hat define the order of the joined rows.                                      |
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| @numbered                   | 0..1        | Boolean | Set to true, if orderColumns refers to a single column that contains natural numbers [1,2,3,...]. |
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| AutoKeyColumn               | 0..n        | Complex | Columns in the target table that store autogenerated keys (only required for transactions).       |
++-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+
+Attributes **fromColumns**, **toColumns** and **orderColumns** may each contain one or more columns. When specifying multiple columns, they must be given as a whitespace-separated list. **orderColumns** is used to force a specific ordering on the joined table rows. If this attribute is omitted, the order of joined rows is not defined and reconstructed feature instances may vary each time they are fetched from the database. In the above example, this would mean that the multiple **ad:position** properties of an **ad:Address** feature may change their order.
+
+In case that the order column stores the child index of the XML element, the **numbered** attribute should be set to **true**. In this special case, filtering on property names with child indexes will be correctly mapped to SQL WHERE clauses as in the following WFS example request.
+
+.. topic:: SQL FeatureStore: WFS query with child index
+
+   .. literalinclude:: xml/sqlfeaturestore_indexquery.xml
+      :language: xml
+
+In the above example, only those **ad:Address** features will be returned where the geometry in the third **ad:position** property has an intersection with the specified bounding box. If only other **ad:position** properties (e.g. the first one) matches this constraint, they will not be included in the output.
+
+The **AutoKeyColumn** configuration option is only required when you want to use transactions on your feature store and your relational model is non-canonical. Ideally, the mapping will only change the table context in case the feature type model allows for multiple child elements at that point. In other words: if the XML schema has **maxOccurs** set to **unbounded** for an element, the relational model should have a corresponding 1:n relation. For a 1:n relation, the target table of the context change should have a foreign key column that points to the primary key column of the source table of the context change. This is important, as the SQL feature store has to propagate keys from the source table to the target table and store them there as well.
+
+If the joined table is the origin of other joins, than it is important that the SQL feature store can generate primary keys for the join table. If not configured otherwise, it is assumed that column **id** stores the primary key and that the database will auto-generate values on insert using database mechanisms such as sequences or triggers.
+
+If this is not the case, use the **AutoKeyColumn** options to define the columns that make up the primary key in the join table and how the values for these columns should be generated on insert. Here's an example:
+
+.. topic:: SQL FeatureStore: Key propagation for transactions
+
+   .. literalinclude:: xml/sqlfeaturestore_join2.xml
+      :language: xml
+
+In this example snippet, the primary key for table **B** is stored in column **pk1** and values for this column are generated using the UUID generator. There's another change in the table context from B to C. Rows in table C have a key stored in column **parentfk** that corresponds to the **B.pk1**. On insert, values generated for **B.pk1** will be propagated and stored for new rows in this table as well. The following table lists the options for **AutoKeyColumn** elements.
+
+Inside a **AutoKeyColumn** element, you may use the same key generators that are available for feature id generation (see above).
+
+
+""""""""""""
 BLOB mapping
-^^^^^^^^^^^^
+""""""""""""
 
 An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping.
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+Auto-generating a mapping configuration and tables
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Although it may not always result in usable configurations, the services console can be used to automatically derive a mapping configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can try this possibility to create a working set up a very quickly.
+
+.. hint::
+   As every (optional) attribute and element will be considered in the mapping, you may easily end up with hundreds of tables or columns.
+
+Here's a walkthrough based on the INSPIRE workspace, but you should be able to use these instructions with other GML application schemas as well. Make sure that the INSPIRE workspace has been downloaded and activated as described in :ref:`anchor-workspace-inspire`. As a prerequisite, you will have to create an empty, spatially-enabled PostGIS or Oracle database that you can connect to from your deegree installation.
+
+As a first step, create a JDBC connection to your database:
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Creating a JDBC connection
+
+Click on "server connections -> jdbc", enter "inspire" (or an other identifier) as the connection id and click on "Create new":
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Creating a JDBC connection
+
+Ensure that deegree can connect to the database:
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Testing the JDBC connection
+
+Now, change to "data stores -> feature". We will have to delete the existing (memory-based) feature store. Click on "Delete".
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Deleting the memory-based feature store
+
+Enter "inspire" as name for the new feature store, select SQL and click on "Create new":
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Creating a new SQL feature store configuration
+
+Select "Create tables from GML application schema" and click "Next":
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Mapping a new SQL feature store configuration
+
+You can now select the GML application schema files to be used. For this walkthrough, just tick the Addresses.xsd file, which contains the Addresses Data Theme (if you select all files, hundreds of feature types from INPIRE Annex I will be mapped). Scroll down and click "Next".
+
+.. hint::
+   This view presents any .xsd files that are located below the **appschemas** directory of your deegree workspace. If you want to map any other GML application schema (such as GeoSciML or CityGML), place a copy of the application schema files into the **appschemas** directory (using your favorite method, e.g. a file browser) and click on "Rescan". You should now have the option to select the files of this application schema in the services console view.
+
+.. figure:: images/browser.png
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/browser.png
+
+   Mapping a new SQL feature store configuration
+
+You will be presented with a rough analysis of the feature types contained in the selected GML application schema files.
 

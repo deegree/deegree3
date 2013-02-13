@@ -68,8 +68,8 @@ public class WSDL {
     }
 
     public String getRestURL() {
-        return OGCFrontController.getContext().getRequestedEndpointUrl()
-               + "/../rest"
+        return OGCFrontController.getContext().getResourcesUrl()
+               + "../rest"
                + UriBuilder.fromResource( WSDLResource.class ).path( WSDLResource.class, "get" ).build( "ALL" ).toString();
     }
 }

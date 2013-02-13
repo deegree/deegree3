@@ -45,14 +45,5 @@
     </plugins>
   </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-base</artifactId>
-      <version>${project.version}</version>
-      <type>deegree-workspace</type>
-    </dependency>
-  </dependencies>
-
 </project>
 

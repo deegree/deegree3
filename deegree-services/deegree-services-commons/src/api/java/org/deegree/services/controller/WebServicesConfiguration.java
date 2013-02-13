@@ -83,7 +83,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
 
-    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/controller/3.0.0/controller.xsd" );
+    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
@@ -460,4 +460,22 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
             values.remove( value );
         }
     }
+
+    OWS getSingleConfiguredService() {
+        ResourceState<OWS>[] states = getStates();
+        OWS found = null;
+        for ( ResourceState<OWS> s : states ) {
+            if ( s.getResource() != null && found == null ) {
+                found = s.getResource();
+            } else if ( s.getResource() != null ) {
+                return null;
+            }
+        }
+        return found;
+    }
+
+    boolean isSingleServiceConfigured() {
+        return getSingleConfiguredService() != null;
+    }
+
 }

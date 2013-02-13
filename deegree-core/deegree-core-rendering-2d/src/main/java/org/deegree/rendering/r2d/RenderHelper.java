@@ -180,7 +180,7 @@ public class RenderHelper {
         double scale = 0;
 
         if ( crs == null ) {
-            throw new RuntimeException( "Invalid crs: " + crs );
+            throw new IllegalArgumentException( "Null crs when trying to calculate scale." );
         }
 
         if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
@@ -232,44 +232,30 @@ public class RenderHelper {
 
     public static Pair<Envelope, DoublePair> getWorldToScreenTransform( AffineTransform worldToScreen, Envelope bbox,
                                                                         int width, int height ) {
-        boolean xy = true;
-        double scalex = width / bbox.getSpan0();
-        double scaley = height / bbox.getSpan1();
-        try {
-            if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
-                 && !bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
-                xy = bbox.getCoordinateSystem().getAxis()[0].getOrientation() == Axis.AO_EAST;
-            }
-        } catch ( ReferenceResolvingException e ) {
-            LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
-            LOG.debug( "Stack trace:", e );
-        } catch ( Throwable e ) {
-            LOG.warn( "Could not transform bbox, assuming it's in meter..." );
-            LOG.debug( "Stack trace:", e );
-        }
-
-        if ( !xy ) {
-            CRSRef swapped = CRSManager.getCRSRef( bbox.getCoordinateSystem().getAlias(), true );
-            GeometryTransformer t = new GeometryTransformer( swapped );
-            try {
-                bbox = t.transform( bbox );
-            } catch ( Throwable e ) {
-                LOG.warn( "Could not swap bbox axis order, image will probably be flipped/broken." );
-                LOG.debug( "Stack trace:", e );
-            }
-        }
-
-        if ( xy ) {
-            // we have to flip horizontally, so invert y scale and add the screen height
-            worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
-            worldToScreen.scale( scalex, -scaley );
+        
+        // we have to flip horizontally, so invert y-axis and move y-axis with screen height
+        worldToScreen.scale( 1, -1 );
+        worldToScreen.translate( 0, -height );
+        
+        // calculate scalex, scaley and swap axis if necessary
+        final double scalex, scaley;
+        if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
+                && !bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) 
+                && bbox.getCoordinateSystem().getAxis()[0].getOrientation() != Axis.AO_EAST ) {
+            
+    		worldToScreen.scale( -1, 1 );
+    		worldToScreen.rotate( Math.PI / 2 );
+    		
+    		scalex = height / bbox.getSpan0();
+            scaley = width / bbox.getSpan1();
         } else {
-            // recalculate scale with correct bbox
-            scalex = width / bbox.getSpan0();
+        	scalex = width / bbox.getSpan0();
             scaley = height / bbox.getSpan1();
-            worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
-            worldToScreen.scale( scalex, -scaley );
         }
+        
+        worldToScreen.scale( scalex, scaley );
+        worldToScreen.translate( -bbox.getMin().get0(), -bbox.getMin().get1() );
+        
         return new Pair<Envelope, DoublePair>( bbox, new DoublePair( scalex, scaley ) );
     }
 
