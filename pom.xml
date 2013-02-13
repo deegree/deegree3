@@ -26,7 +26,7 @@
       </snapshots>
     </repository>
     <repository>
-      <id>deegree-repo</id>
+      <id>latlon-repo</id>
       <url>http://artefacts.lat-lon/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
