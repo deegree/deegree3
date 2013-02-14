@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -127,11 +128,20 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
     @Override
     public DatasetMetadata getDatasetMetadata( QName name ) {
-        return datasetNameToMetadata.get( name );
+        DatasetMetadata md = datasetNameToMetadata.get( name );
+        if ( md == null ) {
+            for ( Entry<QName, DatasetMetadata> e : datasetNameToMetadata.entrySet() ) {
+                if ( e.getKey().getLocalPart().equalsIgnoreCase( name.getLocalPart() ) ) {
+                    return e.getValue();
+                }
+            }
+        }
+        return md;
     }
 
     @Override
     public Map<String, String> getExternalMetadataAuthorities() {
         return authorities;
     }
+
 }
