@@ -807,6 +807,17 @@ Configuration for the template looks like this:
   ...
   </DatasetMetadata>
 
+You can also configure ``ExternalMetadataAuthority`` elements, which are currently only used by the WMS. You can define multiple authorities, with the authority URL as text content and a unique ``name`` attribute. For each dataset you can define an ID for an authority by refering to that name. This will generate an ``AuthorityURL`` and ``Identifier`` pair in WMS capabilities documents (version 1.3.0 only).
+
+Configuration for an external authority looks like this:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+    <ExternalMetadataAuthority name="myorg">http://www.myauthority.org/metadataregistry/</ExternalMetadataAuthority>
+  ...
+  </DatasetMetadata>
+
 Now follows the list of the actual dataset metadata. You can add as many as you need:
 
 .. code-block:: xml
@@ -836,7 +847,10 @@ For each dataset, you can configure the metadata as outlined in the following ta
 +-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
 | Abstract                | 0..n         | String        | can be multilingual by using the ``lang`` attribute                                          |
 +-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
-| MetadataSetId           | 0..1         | String        | is used to generate ``MetadataURL``s, see above                                              |
+| MetadataSetId           | 0..1         | String        | is used to generate ``MetadataURL`` s, see above                                             |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| ExternalMetadataSetId   | 0..n         | String        | is used to generate ``AuthorityURL`` s and ``Identifier`` s for WMS, see above. Refer to an  |
+|                         |              |               | authority using the ``authority`` attribute.                                                 |
 +-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
 
 ^^^^^^^^^^^^^^^^^^^^^
