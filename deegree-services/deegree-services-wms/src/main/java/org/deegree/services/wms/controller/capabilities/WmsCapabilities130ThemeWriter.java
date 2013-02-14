@@ -201,7 +201,7 @@ class WmsCapabilities130ThemeWriter {
     // please note that this does NOT support writing of description metadata at the moment!
     private void writeMetadataFromProvider( XMLStreamWriter writer, String name )
                             throws XMLStreamException {
-        if ( name == null ) {
+        if ( name == null || metadata == null ) {
             return;
         }
 
