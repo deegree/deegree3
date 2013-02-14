@@ -168,23 +168,21 @@ class WmsCapabilities130ThemeWriter {
 
     private void writeMetadataUrls( XMLStreamWriter writer, Theme theme )
                             throws XMLStreamException {
+        String id = null, name = null;
+
+        inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
+            if ( l.getMetadata().getName() != null ) {
+                name = l.getMetadata().getName();
+            }
+            if ( l.getMetadata().getMetadataId() != null ) {
+                id = l.getMetadata().getMetadataId();
+                break inner;
+            }
+        }
+
+        writeMetadataFromProvider( writer, name );
+
         if ( controller.getMetadataURLTemplate() != null ) {
-            String id = null, name = null;
-
-            inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
-                if ( l.getMetadata().getName() != null ) {
-                    name = l.getMetadata().getName();
-                }
-                if ( l.getMetadata().getMetadataId() != null ) {
-                    id = l.getMetadata().getMetadataId();
-                    break inner;
-                }
-            }
-
-            if ( id == null ) {
-                writeMetadataFromProvider( writer, name );
-                return;
-            }
             String mdurlTemplate = controller.getMetadataURLTemplate();
             if ( mdurlTemplate.isEmpty() ) {
                 mdurlTemplate = getUrl;
@@ -194,15 +192,22 @@ class WmsCapabilities130ThemeWriter {
                 mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
             }
 
-            writeMetadataUrl( writer, StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
+            if ( id != null ) {
+                writeMetadataUrl( writer, StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
+            }
         }
     }
 
     // please note that this does NOT support writing of description metadata at the moment!
     private void writeMetadataFromProvider( XMLStreamWriter writer, String name )
                             throws XMLStreamException {
+        if ( name == null ) {
+            return;
+        }
+
         Map<String, String> auths = metadata.getExternalMetadataAuthorities();
         DatasetMetadata md = metadata.getDatasetMetadata( new QName( name ) );
+
         if ( md != null ) {
             for ( StringPair ext : md.getExternalUrls() ) {
                 String url = auths.get( ext.first );
@@ -228,6 +233,9 @@ class WmsCapabilities130ThemeWriter {
 
     private void writeMetadataUrl( XMLStreamWriter writer, String url )
                             throws XMLStreamException {
+        if ( url == null ) {
+            return;
+        }
         writer.writeStartElement( WMSNS, "MetadataURL" );
         writer.writeAttribute( "type", "ISO19115:2003" );
         writeElement( writer, WMSNS, "Format", "application/xml" );
