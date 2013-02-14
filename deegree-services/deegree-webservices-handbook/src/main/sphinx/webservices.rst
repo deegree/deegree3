@@ -773,7 +773,7 @@ In order to configure the service identification and service provider informatio
 * Create a global ``metadata.xml`` file in the ``services`` directory of the workspace (options apply for all configured web services)
 * Create an instance specific ``xyz_metadata.xml`` file (options apply only for web service with configuration file name ``xyz.xml``)
 
-If both files are present, the instance specific file takes precedence. The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.0.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.0.0``.
+If both files are present, the instance specific file takes precedence. The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.2.0``.
 
 .. topic:: Example for ``metadata.xml``
 
@@ -784,7 +784,60 @@ If both files are present, the instance specific file takes precedence. The meta
 Dataset metadata
 ^^^^^^^^^^^^^^^^
 
-This type of metadata is attached to the datasets that a service offers (e.g. layers for the WMS or feature types for the WFS). Please have a look at the service specific section for configuring this type of metadata.
+This type of metadata is attached to the datasets that a service offers (e.g. layers for the WMS or feature types for the WFS). The services themselves may have specific mechanisms to override this metadata, so make sure to have a look at the appropriate service sections. However, some metadata configuration can be done right here.
+
+To start with, you'll need to add a ``DatasetMetadata`` container element:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+  ...
+  </DatasetMetadata>
+
+Apart from the descriptive metadata (title, abstract etc.) for each dataset, you can also configure ``MetadataURL``s, external metadata links and metadata as well as external metadata IDs.
+
+For general ``MetadataURL`` configuration, you can configure the element ``MetadataUrlTemplate``. Its content can be any URL, which may contain the pattern ``${metadataSetId}``. For each dataset (layer, feature type) the service will output a ``MetadataURL`` based on that pattern, if a ``MetadataSetId`` has been configured for that dataset (see below). The template is optional, if omitted, no ``MetadataURL`` will be produced.
+
+Configuration for the template looks like this:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+    <MetadataUrlTemplate>http://some.url.de/csw?request=GetRecordById&amp;service=CSW&amp;version=2.0.2&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=${metadataSetId}</MetadataUrlTemplate>
+  ...
+  </DatasetMetadata>
+
+Now follows the list of the actual dataset metadata. You can add as many as you need:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+    <MetadataUrlTemplate>...</MetadataUrlTemplate>
+    ...
+    <Dataset>
+    ...
+    </Dataset>
+    <Dataset>
+    ...
+    </Dataset>
+    ...
+  </DatasetMetadata>
+
+For each dataset, you can configure the metadata as outlined in the following table:
+
+.. table:: Metadata options for ``Dataset``
+
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| Option                  | Cardinality  | Value         | Description                                                                                  |
++=========================+==============+===============+==============================================================================================+
+| Name                    | 1            | String/QName  | the layer/feature type name you refer to                                                     |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| Title                   | 0..n         | String        | can be multilingual by using the ``lang`` attribute                                          |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| Abstract                | 0..n         | String        | can be multilingual by using the ``lang`` attribute                                          |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| MetadataSetId           | 0..1         | String        | is used to generate ``MetadataURL``s, see above                                              |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
