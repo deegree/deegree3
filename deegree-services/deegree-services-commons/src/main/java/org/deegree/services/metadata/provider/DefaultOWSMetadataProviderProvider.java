@@ -67,11 +67,14 @@ import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.jaxb.metadata.DatasetMetadataType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
+import org.deegree.services.jaxb.metadata.ExternalMetadataAuthorityType;
+import org.deegree.services.jaxb.metadata.ExternalMetadataSetIdType;
 import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.slf4j.Logger;
 
@@ -137,7 +140,13 @@ public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderPr
                 }
             }
             List<DatasetMetadata> datasets = convertDatasetMetadataFromJAXB( md.getValue().getDatasetMetadata() );
-            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities, datasets );
+            Map<String, String> authorities = new HashMap<String, String>();
+            if ( md.getValue().getDatasetMetadata() != null ) {
+                for ( ExternalMetadataAuthorityType at : md.getValue().getDatasetMetadata().getExternalMetadataAuthority() ) {
+                    authorities.put( at.getName(), at.getValue() );
+                }
+            }
+            return new DefaultOWSMetadataProvider( smd.first, smd.second, extendedCapabilities, datasets, authorities );
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( "Unable to read service metadata config.", e );
@@ -160,7 +169,11 @@ public class DefaultOWSMetadataProviderProvider implements OWSMetadataProviderPr
         List<LanguageString> abstracts = convertToLanguageStrings( jaxbEl.getAbstract() );
         List<Pair<List<LanguageString>, CodeType>> keywords = emptyList();
         String url = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
-        return new DatasetMetadata( name, titles, abstracts, keywords, url );
+        List<StringPair> externalUrls = new ArrayList<StringPair>();
+        for ( ExternalMetadataSetIdType tp : jaxbEl.getExternalMetadataSetId() ) {
+            externalUrls.add( new StringPair( tp.getAuthority(), tp.getValue() ) );
+        }
+        return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
     }
 
     private String buildMetadataUrl( String pattern, String datasetId ) {

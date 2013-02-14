@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 
 /**
  * Encapsulates metadata on a dataset (layer, feature type, etc.) served by an OGC web service (as reported in the
@@ -58,6 +59,8 @@ public class DatasetMetadata extends Description {
 
     private final String url;
 
+    private List<StringPair> externalUrls;
+
     /**
      * Creates a new {@link DatasetMetadata} instance.
      * 
@@ -71,12 +74,16 @@ public class DatasetMetadata extends Description {
      *            keywords for the dataset, may be <code>null</code> (no keywords)
      * @param url
      *            metadata url, may be <code>null</code> (no metadata url)
+     * @param externalUrls
+     *            pairs of authority name and authority identifiers, may be empty but not <code>null</code>
      */
     public DatasetMetadata( QName name, List<LanguageString> titles, List<LanguageString> abstracts,
-                            List<Pair<List<LanguageString>, CodeType>> keywords, String url ) {
+                            List<Pair<List<LanguageString>, CodeType>> keywords, String url,
+                            List<StringPair> externalUrls ) {
         super( name.getLocalPart(), titles, abstracts, keywords );
         this.name = name;
         this.url = url;
+        this.externalUrls = externalUrls;
     }
 
     /**
@@ -96,4 +103,12 @@ public class DatasetMetadata extends Description {
     public String getUrl() {
         return url;
     }
+
+    /**
+     * @return the external metadata urls (authority name plus identifier), may be empty but not <code>null</code>
+     */
+    public List<StringPair> getExternalUrls() {
+        return externalUrls;
+    }
+
 }

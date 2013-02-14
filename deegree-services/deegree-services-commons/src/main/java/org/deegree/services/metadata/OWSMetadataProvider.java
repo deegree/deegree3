@@ -93,6 +93,11 @@ public interface OWSMetadataProvider extends Resource {
     List<DatasetMetadata> getDatasetMetadata();
 
     /**
+     * @return a mapping from metadata authority name to authority url
+     */
+    Map<String, String> getExternalMetadataAuthorities();
+
+    /**
      * Returns data metadata for the specified dataset.
      * 
      * @param name
@@ -100,4 +105,5 @@ public interface OWSMetadataProvider extends Resource {
      * @return metadata, possibly <code>null</code> (no metadata available)
      */
     DatasetMetadata getDatasetMetadata( QName name );
+
 }
