@@ -36,54 +36,34 @@
 
 package org.deegree.style.se.parser;
 
-import static java.awt.Font.TRUETYPE_FONT;
-import static java.awt.Font.TYPE1_FONT;
-import static java.awt.Font.createFont;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Double.parseDouble;
-import static java.lang.Float.parseFloat;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsRelaxedQName;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.resolve;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
-import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
-import static org.deegree.style.styling.components.Stroke.LineCap.BUTT;
-import static org.deegree.style.styling.components.Stroke.LineJoin.ROUND;
+import static org.deegree.style.se.parser.SymbologyParsingHelper.parseCommon;
 import static org.deegree.style.styling.components.UOM.Foot;
 import static org.deegree.style.styling.components.UOM.Metre;
 import static org.deegree.style.styling.components.UOM.Pixel;
 import static org.deegree.style.styling.components.UOM.mm;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.Color;
-import java.awt.FontFormatException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.Location;
@@ -93,7 +73,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -108,6 +87,7 @@ import org.deegree.filter.expression.custom.se.Categorize;
 import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLEncoder;
+import org.deegree.style.se.parser.SymbologyParsingHelper.Common;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.se.unevaluated.Symbolizer;
@@ -126,16 +106,11 @@ import org.deegree.style.styling.components.Font.Style;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Halo;
 import org.deegree.style.styling.components.LinePlacement;
-import org.deegree.style.styling.components.Mark;
-import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.PerpendicularOffsetType;
 import org.deegree.style.styling.components.PerpendicularOffsetType.Substraction;
 import org.deegree.style.styling.components.PerpendicularOffsetType.Type;
 import org.deegree.style.styling.components.Stroke;
-import org.deegree.style.styling.components.Stroke.LineCap;
-import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.deegree.style.styling.components.UOM;
-import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
 /**
@@ -162,11 +137,13 @@ public class SymbologyParser {
      */
     public static final SymbologyParser INSTANCE = new SymbologyParser();
 
+    private SymbologyParserContext context = new SymbologyParserContext( this );
+
     /**
      * Constructs one which does not collect source snippets.
      */
     public SymbologyParser() {
-        // default values
+
     }
 
     /**
@@ -205,641 +182,6 @@ public class SymbologyParser {
         return resolved;
     }
 
-    private static void checkCommon( Common common, XMLStreamReader in )
-                            throws XMLStreamException {
-        if ( in.getLocalName().equals( "Name" ) ) {
-            common.name = in.getElementText();
-        }
-        Location l = in.getLocation();
-        if ( in.getLocalName().startsWith( "Geometry" ) ) {
-            common.loc = l.getSystemId();
-            common.line = l.getLineNumber();
-            common.col = l.getColumnNumber();
-            in.nextTag();
-            common.geometry = parseExpression( in );
-            in.nextTag();
-        }
-        if ( in.getLocalName().equals( "Description" ) ) {
-            while ( !( in.isEndElement() && in.getLocalName().equals( "Description" ) ) ) {
-                in.nextTag();
-                if ( in.getLocalName().equals( "Title" ) ) {
-                    common.title = in.getElementText();
-                } else if ( in.getLocalName().equals( "Abstract" ) ) {
-                    common.abstract_ = in.getElementText();
-                } else if ( in.isStartElement() ) {
-                    Location loc = l;
-                    LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                               new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                    skipElement( in );
-                }
-            }
-        }
-        // in case of SLD 1.0.0:
-        if ( in.getLocalName().equals( "Title" ) ) {
-            common.title = in.getElementText();
-            in.nextTag();
-        }
-        if ( in.getLocalName().equals( "Abstract" ) ) {
-            common.abstract_ = in.getElementText();
-            in.nextTag();
-        }
-    }
-
-    private Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Fill" );
-
-        Fill base = new Fill();
-        Continuation<Fill> contn = null;
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Fill" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().equals( "GraphicFill" ) ) {
-                in.nextTag();
-                final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
-                if ( pair != null ) {
-                    base.graphic = pair.first;
-                    if ( pair.second != null ) {
-                        contn = new Continuation<Fill>( contn ) {
-                            @Override
-                            public void updateStep( Fill base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                pair.second.evaluate( base.graphic, f, evaluator );
-                            }
-                        };
-                    }
-                }
-                in.nextTag();
-            } else if ( in.getLocalName().endsWith( "Parameter" ) ) {
-                String cssName = in.getAttributeValue( null, "name" );
-                if ( cssName.equals( "fill" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Fill>() {
-                        @Override
-                        public void update( Fill obj, String val ) {
-                            // keep alpha value
-                            int alpha = obj.color.getAlpha();
-                            obj.color = decodeWithAlpha( val );
-                            obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
-                        }
-                    }, contn ).second;
-                }
-
-                if ( cssName.equals( "fill-opacity" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Fill>() {
-                        @Override
-                        public void update( Fill obj, String val ) {
-                            // keep original color
-                            float alpha = max( 0, min( 1, parseFloat( val ) ) );
-                            float[] cols = obj.color.getRGBColorComponents( null );
-                            obj.color = new Color( cols[0], cols[1], cols[2], alpha );
-                        }
-                    }, contn ).second;
-                }
-            } else if ( in.isStartElement() ) {
-                Location loc = in.getLocation();
-                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                           new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                skipElement( in );
-            }
-
-        }
-
-        in.require( END_ELEMENT, null, "Fill" );
-
-        return new Pair<Fill, Continuation<Fill>>( base, contn );
-    }
-
-    private Pair<Stroke, Continuation<Stroke>> parseStroke( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Stroke" );
-
-        Stroke base = new Stroke();
-        Continuation<Stroke> contn = null;
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Stroke" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().endsWith( "Parameter" ) ) {
-                String name = in.getAttributeValue( null, "name" );
-
-                if ( name.equals( "stroke" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            // keep alpha value
-                            int alpha = obj.color.getAlpha();
-                            obj.color = decodeWithAlpha( val );
-                            obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
-                        }
-                    }, contn ).second;
-                } else if ( name.equals( "stroke-opacity" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            // keep original color
-                            float alpha = Float.parseFloat( val );
-                            float[] cols = obj.color.getRGBColorComponents( null );
-                            obj.color = new Color( cols[0], cols[1], cols[2], alpha );
-                        }
-                    }, contn ).second;
-                } else if ( name.equals( "stroke-width" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            obj.width = Double.parseDouble( val );
-                        }
-                    }, contn ).second;
-                } else if ( name.equals( "stroke-linejoin" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            try {
-                                obj.linejoin = LineJoin.valueOf( val.toUpperCase() );
-                            } catch ( IllegalArgumentException e ) {
-                                LOG.warn( "Used invalid value '{}' for line join.", val );
-                                obj.linejoin = ROUND;
-                            }
-                        }
-                    }, contn ).second;
-                } else if ( name.equals( "stroke-linecap" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            try {
-                                obj.linecap = LineCap.valueOf( val.toUpperCase() );
-                            } catch ( IllegalArgumentException e ) {
-                                LOG.warn( "Used invalid value '{}' for line cap.", val );
-                                obj.linecap = BUTT;
-                            }
-                        }
-                    }, contn ).second;
-                } else if ( name.equals( "stroke-dasharray" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            // , is not strictly allowed, but we don't lose anything by being flexible
-                            if ( val.contains( "," ) ) {
-                                obj.dasharray = splitAsDoubles( val, "," );
-                            } else {
-                                obj.dasharray = splitAsDoubles( val, "\\s" );
-                            }
-                        }
-                    }, contn ).second;
-                } else if ( name.equals( "stroke-dashoffset" ) ) {
-                    contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                        @Override
-                        public void update( Stroke obj, String val ) {
-                            obj.dashoffset = Double.parseDouble( val );
-                        }
-                    }, contn ).second;
-                } else {
-                    Location loc = in.getLocation();
-                    LOG.error( "Found unknown parameter '{}' at line {}, column {}, skipping.",
-                               new Object[] { name, loc.getLineNumber(), loc.getColumnNumber() } );
-                    skipElement( in );
-                }
-
-                in.require( END_ELEMENT, null, null );
-            } else if ( in.getLocalName().equals( "GraphicFill" ) ) {
-                in.nextTag();
-                final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
-                if ( pair != null ) {
-                    base.fill = pair.first;
-                    if ( pair.second != null ) {
-                        contn = new Continuation<Stroke>( contn ) {
-                            @Override
-                            public void updateStep( Stroke base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                pair.second.evaluate( base.fill, f, evaluator );
-                            }
-                        };
-                    }
-                }
-                in.require( END_ELEMENT, null, "Graphic" );
-                in.nextTag();
-                in.require( END_ELEMENT, null, "GraphicFill" );
-            } else if ( in.getLocalName().equals( "GraphicStroke" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "GraphicStroke" ) ) ) {
-                    in.nextTag();
-
-                    if ( in.getLocalName().equals( "Graphic" ) ) {
-                        final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
-
-                        if ( pair != null ) {
-                            base.stroke = pair.first;
-                            if ( pair.second != null ) {
-                                contn = new Continuation<Stroke>( contn ) {
-                                    @Override
-                                    public void updateStep( Stroke base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                        pair.second.evaluate( base.stroke, f, evaluator );
-                                    }
-                                };
-                            }
-                        }
-
-                        in.require( END_ELEMENT, null, "Graphic" );
-                    } else if ( in.getLocalName().equals( "InitialGap" ) ) {
-                        contn = updateOrContinue( in, "InitialGap", base, new Updater<Stroke>() {
-                            @Override
-                            public void update( Stroke obj, String val ) {
-                                obj.strokeInitialGap = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                        in.require( END_ELEMENT, null, "InitialGap" );
-                    } else if ( in.getLocalName().equals( "Gap" ) ) {
-                        contn = updateOrContinue( in, "Gap", base, new Updater<Stroke>() {
-                            @Override
-                            public void update( Stroke obj, String val ) {
-                                obj.strokeGap = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                        in.require( END_ELEMENT, null, "Gap" );
-                    } else if ( in.getLocalName().equals( "PositionPercentage" ) ) {
-                        contn = updateOrContinue( in, "PositionPercentage", base, new Updater<Stroke>() {
-                            @Override
-                            public void update( Stroke obj, String val ) {
-                                obj.positionPercentage = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                        in.require( END_ELEMENT, null, "PositionPercentage" );
-                    } else if ( in.isStartElement() ) {
-                        Location loc = in.getLocation();
-                        LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                                   new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                        skipElement( in );
-                    }
-
-                }
-            } else if ( in.isStartElement() ) {
-                LOG.error( "Found unknown element '{}', skipping.", in.getLocalName() );
-                skipElement( in );
-            }
-        }
-
-        in.require( END_ELEMENT, null, "Stroke" );
-
-        return new Pair<Stroke, Continuation<Stroke>>( base, contn );
-    }
-
-    private Pair<Mark, Continuation<Mark>> parseMark( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Mark" );
-
-        Mark base = new Mark();
-        Continuation<Mark> contn = null;
-
-        in.nextTag();
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Mark" ) ) ) {
-            if ( in.isEndElement() ) {
-                in.nextTag();
-            }
-
-            if ( in.getLocalName().equals( "WellKnownName" ) ) {
-                String wkn = in.getElementText();
-                try {
-                    base.wellKnown = SimpleMark.valueOf( wkn.toUpperCase() );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.warn( "Specified unsupported WellKnownName of '{}', using square instead.", wkn );
-                    base.wellKnown = SimpleMark.SQUARE;
-                }
-            } else
-                sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
-                    LOG.debug( "Loading mark from external file." );
-                    Triple<InputStream, String, Continuation<StringBuffer>> pair = getOnlineResourceOrInlineContent( in );
-                    if ( pair == null ) {
-                        in.nextTag();
-                        break sym;
-                    }
-                    InputStream is = pair.first;
-                    in.nextTag();
-
-                    in.require( START_ELEMENT, null, "Format" );
-                    String format = in.getElementText();
-                    in.require( END_ELEMENT, null, "Format" );
-
-                    in.nextTag();
-                    if ( in.getLocalName().equals( "MarkIndex" ) ) {
-                        base.markIndex = Integer.parseInt( in.getElementText() );
-                    }
-
-                    if ( is != null ) {
-                        try {
-                            java.awt.Font font = null;
-                            if ( format.equalsIgnoreCase( "ttf" ) ) {
-                                font = createFont( TRUETYPE_FONT, is );
-                            }
-                            if ( format.equalsIgnoreCase( "type1" ) ) {
-                                font = createFont( TYPE1_FONT, is );
-                            }
-
-                            if ( format.equalsIgnoreCase( "svg" ) ) {
-                                base.shape = ShapeHelper.getShapeFromSvg( is, pair.second );
-                            }
-
-                            if ( font == null && base.shape == null ) {
-                                LOG.warn( "Mark was not loaded, because the format '{}' is not supported.", format );
-                                break sym;
-                            }
-
-                            if ( font != null && base.markIndex >= font.getNumGlyphs() - 1 ) {
-                                LOG.warn( "The font only contains {} glyphs, but the index given was {}.",
-                                          font.getNumGlyphs(), base.markIndex );
-                                break sym;
-                            }
-
-                            base.font = font;
-                        } catch ( FontFormatException e ) {
-                            LOG.debug( "Stack trace:", e );
-                            LOG.warn( "The file was not a valid '{}' file: '{}'", format, e.getLocalizedMessage() );
-                        } catch ( IOException e ) {
-                            LOG.debug( "Stack trace:", e );
-                            LOG.warn( "The file could not be read: '{}'.", e.getLocalizedMessage() );
-                        } finally {
-                            closeQuietly( is );
-                        }
-                    }
-                } else if ( in.getLocalName().equals( "Fill" ) ) {
-                    final Pair<Fill, Continuation<Fill>> fill = parseFill( in );
-                    base.fill = fill.first;
-                    if ( fill.second != null ) {
-                        contn = new Continuation<Mark>( contn ) {
-                            @Override
-                            public void updateStep( Mark base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                fill.second.evaluate( base.fill, f, evaluator );
-                            }
-                        };
-                    }
-                } else if ( in.getLocalName().equals( "Stroke" ) ) {
-                    final Pair<Stroke, Continuation<Stroke>> stroke = parseStroke( in );
-                    base.stroke = stroke.first;
-                    if ( stroke.second != null ) {
-                        contn = new Continuation<Mark>( contn ) {
-                            @Override
-                            public void updateStep( Mark base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                stroke.second.evaluate( base.stroke, f, evaluator );
-                            }
-                        };
-                    }
-                } else if ( in.isStartElement() ) {
-                    Location loc = in.getLocation();
-                    LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                               new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                    skipElement( in );
-                }
-        }
-
-        in.require( END_ELEMENT, null, "Mark" );
-
-        return new Pair<Mark, Continuation<Mark>>( base, contn );
-    }
-
-    private Triple<InputStream, String, Continuation<StringBuffer>> getOnlineResourceOrInlineContent( XMLStreamReader in )
-                            throws XMLStreamException {
-        if ( in.getLocalName().equals( "OnlineResource" ) ) {
-            String str = in.getAttributeValue( XLNNS, "href" );
-
-            if ( str == null ) {
-                Continuation<StringBuffer> contn = updateOrContinue( in, "OnlineResource", new StringBuffer(),
-                                                                     SBUPDATER, null ).second;
-                return new Triple<InputStream, String, Continuation<StringBuffer>>( null, null, contn );
-            }
-
-            String strUrl = null;
-            try {
-                URL url = resolve( str, in );
-                strUrl = url.toExternalForm();
-                LOG.debug( "Loading from URL '{}'", url );
-                in.nextTag();
-                return new Triple<InputStream, String, Continuation<StringBuffer>>( url.openStream(), strUrl, null );
-            } catch ( IOException e ) {
-                LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not retrieve content at URL '{}'.", str );
-                return null;
-            }
-        } else if ( in.getLocalName().equals( "InlineContent" ) ) {
-            String format = in.getAttributeValue( null, "encoding" );
-            if ( format.equalsIgnoreCase( "base64" ) ) {
-                ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decodeBase64( in.getElementText() ) );
-                return new Triple<InputStream, String, Continuation<StringBuffer>>( bis, null, null );
-            }
-            // if ( format.equalsIgnoreCase( "xml" ) ) {
-            // // TODO
-            // }
-        } else if ( in.isStartElement() ) {
-            Location loc = in.getLocation();
-            LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                       new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-            skipElement( in );
-        }
-
-        return null;
-    }
-
-    private Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic( final XMLStreamReader in )
-                            throws IOException, XMLStreamException {
-        // TODO color replacement
-
-        in.require( START_ELEMENT, null, "ExternalGraphic" );
-
-        String format = null;
-        BufferedImage img = null;
-        String url = null;
-        Triple<InputStream, String, Continuation<StringBuffer>> pair = null;
-        Continuation<List<BufferedImage>> contn = null; // needs to be list to be updateable by reference...
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "ExternalGraphic" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().equals( "Format" ) ) {
-                format = in.getElementText();
-            } else if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
-                pair = getOnlineResourceOrInlineContent( in );
-            } else if ( in.isStartElement() ) {
-                Location loc = in.getLocation();
-                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                           new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                skipElement( in );
-            }
-        }
-
-        try {
-            if ( pair != null ) {
-                if ( pair.first != null && format != null && ( format.toLowerCase().indexOf( "svg" ) == -1 ) ) {
-                    img = ImageIO.read( pair.first );
-                }
-                url = pair.second;
-
-                final Continuation<StringBuffer> sbcontn = pair.third;
-
-                if ( pair.third != null ) {
-                    final LinkedHashMap<String, BufferedImage> cache = new LinkedHashMap<String, BufferedImage>( 256 ) {
-                        private static final long serialVersionUID = -6847956873232942891L;
-
-                        @Override
-                        protected boolean removeEldestEntry( Map.Entry<String, BufferedImage> eldest ) {
-                            return size() > 256; // yeah, hardcoded max size... TODO
-                        }
-                    };
-                    contn = new Continuation<List<BufferedImage>>() {
-                        @Override
-                        public void updateStep( List<BufferedImage> base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                            StringBuffer sb = new StringBuffer();
-                            sbcontn.evaluate( sb, f, evaluator );
-                            String file = sb.toString();
-                            if ( cache.containsKey( file ) ) {
-                                base.add( cache.get( file ) );
-                                return;
-                            }
-                            try {
-                                BufferedImage i = ImageIO.read( resolve( file, in ) );
-                                base.add( i );
-                                cache.put( file, i );
-                            } catch ( MalformedURLException e ) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch ( IOException e ) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                }
-            }
-        } finally {
-            if ( pair != null ) {
-                try {
-                    pair.first.close();
-                } catch ( Exception e ) {
-                    LOG.trace( "Stack trace when closing input stream:", e );
-                }
-            }
-        }
-
-        return new Triple<BufferedImage, String, Continuation<List<BufferedImage>>>( img, url, contn );
-    }
-
-    private Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Graphic" );
-
-        Graphic base = new Graphic();
-        Continuation<Graphic> contn = null;
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Graphic" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().equals( "Mark" ) ) {
-                final Pair<Mark, Continuation<Mark>> pair = parseMark( in );
-
-                if ( pair != null ) {
-                    base.mark = pair.first;
-                    if ( pair.second != null ) {
-                        contn = new Continuation<Graphic>( contn ) {
-                            @Override
-                            public void updateStep( Graphic base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                pair.second.evaluate( base.mark, f, evaluator );
-                            }
-                        };
-                    }
-                }
-            } else if ( in.getLocalName().equals( "ExternalGraphic" ) ) {
-                try {
-                    final Triple<BufferedImage, String, Continuation<List<BufferedImage>>> p = parseExternalGraphic( in );
-                    if ( p.third != null ) {
-                        contn = new Continuation<Graphic>( contn ) {
-                            @Override
-                            public void updateStep( Graphic base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                LinkedList<BufferedImage> list = new LinkedList<BufferedImage>();
-                                p.third.evaluate( list, f, evaluator );
-                                base.image = list.poll();
-                            }
-                        };
-                    } else {
-                        base.image = p.first;
-                        base.imageURL = p.second;
-                    }
-                } catch ( IOException e ) {
-                    LOG.debug( "Stack trace", e );
-                    LOG.warn( "External graphic could not be loaded. Location: line '{}' column '{}' of file '{}'.",
-                              new Object[] { in.getLocation().getLineNumber(), in.getLocation().getColumnNumber(),
-                                            in.getLocation().getSystemId() } );
-                }
-            } else if ( in.getLocalName().equals( "Opacity" ) ) {
-                contn = updateOrContinue( in, "Opacity", base, new Updater<Graphic>() {
-                    public void update( Graphic obj, String val ) {
-                        obj.opacity = Double.parseDouble( val );
-                    }
-                }, contn ).second;
-            } else if ( in.getLocalName().equals( "Size" ) ) {
-                contn = updateOrContinue( in, "Size", base, new Updater<Graphic>() {
-                    public void update( Graphic obj, String val ) {
-                        obj.size = Double.parseDouble( val );
-                    }
-                }, contn ).second;
-            } else if ( in.getLocalName().equals( "Rotation" ) ) {
-                contn = updateOrContinue( in, "Rotation", base, new Updater<Graphic>() {
-                    public void update( Graphic obj, String val ) {
-                        obj.rotation = Double.parseDouble( val );
-                    }
-                }, contn ).second;
-            } else if ( in.getLocalName().equals( "AnchorPoint" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "AnchorPoint" ) ) ) {
-                    in.nextTag();
-
-                    if ( in.getLocalName().equals( "AnchorPointX" ) ) {
-                        contn = updateOrContinue( in, "AnchorPointX", base, new Updater<Graphic>() {
-                            public void update( Graphic obj, String val ) {
-                                obj.anchorPointX = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                    } else if ( in.getLocalName().equals( "AnchorPointY" ) ) {
-                        contn = updateOrContinue( in, "AnchorPointY", base, new Updater<Graphic>() {
-                            public void update( Graphic obj, String val ) {
-                                obj.anchorPointY = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                    } else if ( in.isStartElement() ) {
-                        Location loc = in.getLocation();
-                        LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                                   new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                        skipElement( in );
-                    }
-                }
-            } else if ( in.getLocalName().equals( "Displacement" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "Displacement" ) ) ) {
-                    in.nextTag();
-
-                    if ( in.getLocalName().equals( "DisplacementX" ) ) {
-                        contn = updateOrContinue( in, "DisplacementX", base, new Updater<Graphic>() {
-                            public void update( Graphic obj, String val ) {
-                                obj.displacementX = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                    } else if ( in.getLocalName().equals( "DisplacementY" ) ) {
-                        contn = updateOrContinue( in, "DisplacementY", base, new Updater<Graphic>() {
-                            public void update( Graphic obj, String val ) {
-                                obj.displacementY = Double.parseDouble( val );
-                            }
-                        }, contn ).second;
-                    } else if ( in.isStartElement() ) {
-                        Location loc = in.getLocation();
-                        LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                                   new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                        skipElement( in );
-                    }
-                }
-            } else if ( in.isStartElement() ) {
-                Location loc = in.getLocation();
-                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                           new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                skipElement( in );
-            }
-        }
-        in.require( END_ELEMENT, null, "Graphic" );
-
-        return new Pair<Graphic, Continuation<Graphic>>( base, contn );
-    }
-
     /**
      * @param in
      * @param uom
@@ -857,10 +199,10 @@ public class SymbologyParser {
         while ( !( in.isEndElement() && in.getLocalName().equals( "PointSymbolizer" ) ) ) {
             in.nextTag();
 
-            checkCommon( common, in );
+            parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Graphic" ) ) {
-                final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
+                final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic( in );
 
                 baseOrEvaluated.graphic = pair.first;
 
@@ -959,7 +301,7 @@ public class SymbologyParser {
         while ( !( in.isEndElement() && in.getLocalName().equals( "RasterSymbolizer" ) ) ) {
             in.nextTag();
 
-            checkCommon( common, in );
+            parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Opacity" ) ) {
                 contn = updateOrContinue( in, "Opacity", baseOrEvaluated, new Updater<RasterStyling>() {
@@ -1144,10 +486,10 @@ public class SymbologyParser {
         while ( !( in.isEndElement() && in.getLocalName().equals( "LineSymbolizer" ) ) ) {
             in.nextTag();
 
-            checkCommon( common, in );
+            parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
-                final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( in );
+                final Pair<Stroke, Continuation<Stroke>> pair = context.strokeParser.parseStroke( in );
 
                 if ( pair != null ) {
                     baseOrEvaluated.stroke = pair.first;
@@ -1204,10 +546,10 @@ public class SymbologyParser {
         while ( !( in.isEndElement() && in.getLocalName().equals( "PolygonSymbolizer" ) ) ) {
             in.nextTag();
 
-            checkCommon( common, in );
+            parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
-                final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( in );
+                final Pair<Stroke, Continuation<Stroke>> pair = context.strokeParser.parseStroke( in );
 
                 if ( pair != null ) {
                     baseOrEvaluated.stroke = pair.first;
@@ -1222,7 +564,7 @@ public class SymbologyParser {
                     }
                 }
             } else if ( in.getLocalName().equals( "Fill" ) ) {
-                final Pair<Fill, Continuation<Fill>> fillPair = parseFill( in );
+                final Pair<Fill, Continuation<Fill>> fillPair = context.fillParser.parseFill( in );
 
                 if ( fillPair != null ) {
                     baseOrEvaluated.fill = fillPair.first;
@@ -1400,7 +742,7 @@ public class SymbologyParser {
         while ( !( in.isEndElement() && in.getLocalName().equals( "TextSymbolizer" ) ) ) {
             in.nextTag();
 
-            checkCommon( common, in );
+            parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Label" ) ) {
                 Pair<String, Continuation<StringBuffer>> res = updateOrContinue( in, "Label", new StringBuffer(),
@@ -1537,7 +879,7 @@ public class SymbologyParser {
                     }
                 }
             } else if ( in.getLocalName().equals( "Fill" ) ) {
-                final Pair<Fill, Continuation<Fill>> fillPair = parseFill( in );
+                final Pair<Fill, Continuation<Fill>> fillPair = context.fillParser.parseFill( in );
                 if ( fillPair != null ) {
                     baseOrEvaluated.fill = fillPair.first;
 
@@ -1644,7 +986,7 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "Fill" ) ) {
-                final Pair<Fill, Continuation<Fill>> fillPair = parseFill( in );
+                final Pair<Fill, Continuation<Fill>> fillPair = context.fillParser.parseFill( in );
 
                 if ( fillPair != null ) {
                     baseOrEvaluated.fill = fillPair.first;
@@ -1796,12 +1138,7 @@ public class SymbologyParser {
         return null;
     }
 
-    /**
-     * @param in
-     * @return a new style
-     * @throws XMLStreamException
-     */
-    public org.deegree.style.se.unevaluated.Style parseFeatureTypeOrCoverageStyle( XMLStreamReader in )
+    private org.deegree.style.se.unevaluated.Style tryOnlineResource( XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             try {
@@ -1823,6 +1160,20 @@ public class SymbologyParser {
                 LOG.debug( "Stack trace:", e );
             }
         }
+        return null;
+    }
+
+    /**
+     * @param in
+     * @return a new style
+     * @throws XMLStreamException
+     */
+    public org.deegree.style.se.unevaluated.Style parseFeatureTypeOrCoverageStyle( XMLStreamReader in )
+                            throws XMLStreamException {
+        org.deegree.style.se.unevaluated.Style res = tryOnlineResource( in );
+        if ( res != null ) {
+            return res;
+        }
 
         LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> result = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
@@ -1834,7 +1185,7 @@ public class SymbologyParser {
         while ( !( in.isEndElement() && ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals( "CoverageStyle" ) ) ) ) {
             in.nextTag();
 
-            checkCommon( common, in );
+            parseCommon( common, in );
 
             // TODO unused
             if ( in.getLocalName().equals( "SemanticTypeIdentifier" ) ) {
@@ -1850,68 +1201,88 @@ public class SymbologyParser {
                 in.getElementText(); // AndThrowItAwayImmediately
             }
 
-            if ( in.getLocalName().equals( "Rule" ) || in.getLocalName().equals( "OnlineResource" ) ) {
-                XMLStreamReader localReader = in;
-                if ( in.getLocalName().equals( "OnlineResource" ) ) {
-                    try {
-                        URL url = parseOnlineResource( in );
-                        localReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
-                                                                                           url.openStream() );
-                    } catch ( IOException e ) {
-                        LOG.warn( "Error '{}' while resolving/accessing remote Rule document.", e.getLocalizedMessage() );
-                        LOG.debug( "Stack trace:", e );
-                    }
-                }
-
-                Common ruleCommon = new Common( in.getLocation() );
-                double minScale = NEGATIVE_INFINITY;
-                double maxScale = POSITIVE_INFINITY;
-
-                Filter filter = null;
-                LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
-
-                while ( !( localReader.isEndElement() && localReader.getLocalName().equals( "Rule" ) ) ) {
-                    localReader.nextTag();
-
-                    checkCommon( ruleCommon, localReader );
-
-                    if ( localReader.getLocalName().equals( "Filter" ) ) {
-                        filter = Filter110XMLDecoder.parse( localReader );
-                    }
-
-                    if ( localReader.getLocalName().equals( "ElseFilter" ) ) {
-                        filter = ELSEFILTER;
-                        localReader.nextTag();
-                    }
-
-                    if ( localReader.getLocalName().equals( "MinScaleDenominator" ) ) {
-                        minScale = parseDouble( localReader.getElementText() );
-                    }
-                    if ( localReader.getLocalName().equals( "MaxScaleDenominator" ) ) {
-                        maxScale = parseDouble( localReader.getElementText() );
-                    }
-
-                    // TODO legendgraphic
-                    if ( localReader.isStartElement() && localReader.getLocalName().endsWith( "Symbolizer" ) ) {
-
-                        Triple<Symbolizer<?>, Continuation<StringBuffer>, String> parsedSym = parseSymbolizer( localReader );
-                        if ( parsedSym.second != null ) {
-                            labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
-                        }
-                        if ( collectXMLSnippets && parsedSym.third != null ) {
-                            labelXMLTexts.put( (Symbolizer) parsedSym.first, parsedSym.third );
-                        }
-                        syms.add( parsedSym.first );
-                    }
-                }
-
-                FilterContinuation contn = new FilterContinuation( filter, syms, ruleCommon );
-                DoublePair scales = new DoublePair( minScale, maxScale );
-                result.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scales ) );
-            }
+            maybeParseRule( in, labels, labelXMLTexts, result );
         }
 
         return new org.deegree.style.se.unevaluated.Style( result, labels, labelXMLTexts, common.name, featureTypeName );
+    }
+
+    private void maybeParseRule( XMLStreamReader in,
+                                 HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels,
+                                 HashMap<Symbolizer<TextStyling>, String> labelXMLTexts,
+                                 LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> result )
+                            throws XMLStreamException {
+        if ( in.getLocalName().equals( "Rule" ) || in.getLocalName().equals( "OnlineResource" ) ) {
+            XMLStreamReader localReader = prepareReaderOnlineResource( in );
+            Common ruleCommon = new Common( in.getLocation() );
+            double minScale = NEGATIVE_INFINITY;
+            double maxScale = POSITIVE_INFINITY;
+
+            Filter filter = null;
+            LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
+
+            while ( !( localReader.isEndElement() && localReader.getLocalName().equals( "Rule" ) ) ) {
+                localReader.nextTag();
+
+                parseCommon( ruleCommon, localReader );
+
+                if ( localReader.getLocalName().equals( "Filter" ) ) {
+                    filter = Filter110XMLDecoder.parse( localReader );
+                }
+
+                if ( localReader.getLocalName().equals( "ElseFilter" ) ) {
+                    filter = ELSEFILTER;
+                    localReader.nextTag();
+                }
+
+                if ( localReader.getLocalName().equals( "MinScaleDenominator" ) ) {
+                    minScale = parseDouble( localReader.getElementText() );
+                }
+                if ( localReader.getLocalName().equals( "MaxScaleDenominator" ) ) {
+                    maxScale = parseDouble( localReader.getElementText() );
+                }
+
+                parseRuleSymbolizer( localReader, labels, labelXMLTexts, syms );
+            }
+
+            FilterContinuation contn = new FilterContinuation( filter, syms, ruleCommon );
+            DoublePair scales = new DoublePair( minScale, maxScale );
+            result.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scales ) );
+        }
+    }
+
+    private XMLStreamReader prepareReaderOnlineResource( XMLStreamReader in )
+                            throws XMLStreamException {
+        XMLStreamReader localReader = in;
+        if ( in.getLocalName().equals( "OnlineResource" ) ) {
+            try {
+                URL url = parseOnlineResource( in );
+                localReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(), url.openStream() );
+            } catch ( IOException e ) {
+                LOG.warn( "Error '{}' while resolving/accessing remote Rule document.", e.getLocalizedMessage() );
+                LOG.debug( "Stack trace:", e );
+            }
+        }
+        return localReader;
+    }
+
+    private void parseRuleSymbolizer( XMLStreamReader localReader,
+                                      HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels,
+                                      HashMap<Symbolizer<TextStyling>, String> labelXMLTexts,
+                                      LinkedList<Symbolizer<?>> syms )
+                            throws XMLStreamException {
+        // TODO legendgraphic
+        if ( localReader.isStartElement() && localReader.getLocalName().endsWith( "Symbolizer" ) ) {
+
+            Triple<Symbolizer<?>, Continuation<StringBuffer>, String> parsedSym = parseSymbolizer( localReader );
+            if ( parsedSym.second != null ) {
+                labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
+            }
+            if ( collectXMLSnippets && parsedSym.third != null ) {
+                labelXMLTexts.put( (Symbolizer) parsedSym.first, parsedSym.third );
+            }
+            syms.add( parsedSym.first );
+        }
     }
 
     static class ElseFilter implements Filter {
@@ -1973,38 +1344,4 @@ public class SymbologyParser {
 
     }
 
-    /**
-     * <code>Common</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 31398 $, $Date: 2011-08-02 09:03:40 +0200 (Tue, 02 Aug 2011) $
-     */
-    public static class Common {
-        public Common() {
-            // without location
-        }
-
-        Common( Location loc ) {
-            this.loc = loc.getSystemId();
-            line = loc.getLineNumber();
-            col = loc.getColumnNumber();
-        }
-
-        /***/
-        public String name;
-
-        /***/
-        public String title;
-
-        /***/
-        public String abstract_;
-
-        Expression geometry;
-
-        String loc;
-
-        int line, col;
-    }
 }

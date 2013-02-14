@@ -103,7 +103,7 @@ class GeometryClipper {
                 if ( jtsOrig == jtsClipped ) {
                     return geom;
                 }
-                geom = OrientationFixer.fixOrientation( clippedGeometry );
+                geom = OrientationFixer.fixOrientation( clippedGeometry, clippedGeometry.getCoordinateSystem() );
             } catch ( UnsupportedOperationException e ) {
                 // use original geometry if intersection not supported by JTS
                 return geom;
