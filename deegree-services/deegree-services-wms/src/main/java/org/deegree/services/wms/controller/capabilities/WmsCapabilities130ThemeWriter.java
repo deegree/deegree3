@@ -59,6 +59,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -200,9 +201,29 @@ class WmsCapabilities130ThemeWriter {
     // please note that this does NOT support writing of description metadata at the moment!
     private void writeMetadataFromProvider( XMLStreamWriter writer, String name )
                             throws XMLStreamException {
+        Map<String, String> auths = metadata.getExternalMetadataAuthorities();
         DatasetMetadata md = metadata.getDatasetMetadata( new QName( name ) );
-        String url = md.getUrl();
-        writeMetadataUrl( writer, url );
+        if ( md != null ) {
+            for ( StringPair ext : md.getExternalUrls() ) {
+                String url = auths.get( ext.first );
+                writer.writeStartElement( WMSNS, "AuthorityURL" );
+                writer.writeAttribute( "name", ext.first );
+                writer.writeStartElement( WMSNS, "OnlineResource" );
+                writer.writeAttribute( XLNNS, "type", "simple" );
+                writer.writeAttribute( XLNNS, "href", url );
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
+            for ( StringPair ext : md.getExternalUrls() ) {
+                writer.writeStartElement( WMSNS, "Identifier" );
+                writer.writeAttribute( "authority", ext.first );
+                writer.writeCharacters( ext.second );
+                writer.writeEndElement();
+            }
+
+            String url = md.getUrl();
+            writeMetadataUrl( writer, url );
+        }
     }
 
     private void writeMetadataUrl( XMLStreamWriter writer, String url )
