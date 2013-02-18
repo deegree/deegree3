@@ -75,12 +75,6 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
-| MetadataURLTemplate     | 0..1        | String  | Template for generating URLs to feature type metadata records    |
-+-------------------------+-------------+---------+------------------------------------------------------------------+
-| FeatureTypeMetadata     | 0..n        | Complex | Metadata for feature types reported in GetCapabilities response  |
-+-------------------------+-------------+---------+------------------------------------------------------------------+
-| ExtendedCapabilities    | 0..n        | Complex | Extended Metadata reported in GetCapabilities response           |
-+-------------------------+-------------+---------+------------------------------------------------------------------+
 
 The remainder of this section describes these options and their sub-options in detail.
 
@@ -199,22 +193,6 @@ Using option element ``CustomFormat``, it possible to plug-in your own Java clas
 * ``MimeType``: Mime types associated with this format configuration (and announced in GetCapabilities)
 * ``JavaClass``: Therefore, an implementation of interface ``org.deegree.services.wfs.format.CustomFormat`` must be present on the classpath.
 * ``Config``:
-
-^^^^^^^^^^^^^^^^^^^^
-Controlling Metadata
-^^^^^^^^^^^^^^^^^^^^
-
-These settings affect the metadata returned in the GetCapabilities response.
-
-* ``MetadataURLTemplate``:
-* ``FeatureTypeMetadata``:
-
-* ``ExtendedCapabilities``: By default, the GetCapabilites response does not contain any extended capabilities elements in the OperationsMetadata section. The child elements of this option will be included in the OperationMetadata section to provide these extended capabilities, e.g. an ``inspire_ds:ExtendedCapabilities`` element. The attribute ``wfsVersions`` is as white-space separated list of WFS versions (1.0.0, 1.1.0 or 2.0.0) for which the extended capabilities shall be returned.
-
-.. topic:: Example for ``ExtendedCapabilities`` option
-
-   .. literalinclude:: xml/wfs_extendedcapabilities.xml
-      :language: xml
 
 ^^^^^^^^^^^^^^
 Stored queries
