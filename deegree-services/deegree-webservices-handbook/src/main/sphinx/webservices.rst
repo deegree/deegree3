@@ -93,13 +93,24 @@ General options
 Transactions
 ^^^^^^^^^^^^
 
-By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support in the WFS.
+By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support. This option has the optional attribute ``idGenMode`` which controls how ids of inserted features (the values in the gml:id attribute) are treated. There are three id generation modes available:
 
-.. tip::
+* **UseExisting**: The original gml:id values from the input are stored. This may lead to errors if the provided ids are already in use.
+* **GenerateNew** (default): New and unique ids are generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
+* **ReplaceDuplicate**: The WFS will try to use the original gml:id values that have been provided in the input. In case a certain identifier already exists in the backend, a new and unique identifier will be generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
+
+.. hint::
+  Currently, transactions can only be enabled if your WFS is attached to a single feature store.
+
+.. hint::
   Not every feature store implementation supports transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
 
-.. tip::
-  Currently, transactions can only be enabled if your WFS is attached to a single feature store.
+.. hint::
+  The details of the id generation depend on the feature store implementation/configuration.
+
+.. hint::
+   In a WFS 1.1.0 insert, the id generation mode can be overridden by attribute *idGenMode* of the ``Insert`` element. WFS 1.0.0 and WFS 2.0.0 don't support to specify the id generation mode on a request basis.
+
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
@@ -198,7 +209,7 @@ Using option element ``CustomFormat``, it possible to plug-in your own Java clas
 Stored queries
 ^^^^^^^^^^^^^^
 
-Besides standard (or ad hoc) queries, WFS 2.0.0 introduces so-called stored queries. When WFS 2.0.0 support is activated, your WFS will automatically support the well-known stored query ``urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById`` (defined in the WFS 2.0.0 specification). It can be used to query a feature instance by specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0). In order to define custom stored queries, use the ``StoredQuery`` element to specify the file name of a StoredQueryDefinition file. The given file name (can be relative) must point to a valid WFS 2.0.0 StoredQueryDefinition file. Here's an example:
+Besides standard ('ad hoc') queries, WFS 2.0.0 introduces so-called stored queries. When WFS 2.0.0 support is activated, your WFS will automatically support the well-known stored query ``urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById`` (defined in the WFS 2.0.0 specification). It can be used to query a feature instance by specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0). In order to define custom stored queries, use the ``StoredQuery`` element to specify the file name of a StoredQueryDefinition file. The given file name (can be relative) must point to a valid WFS 2.0.0 StoredQueryDefinition file. Here's an example:
 
 .. topic:: Example for a WFS 2.0.0 StoredQueryDefinition file
 

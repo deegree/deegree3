@@ -1,6 +1,6 @@
-<deegreeWFS xmlns="http://www.deegree.org/services/wfs"
-  xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0"
+<deegreeWFS configVersion="3.2.0"
+  xmlns="http://www.deegree.org/services/wfs"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wfs
   http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd">
 
