@@ -764,21 +764,70 @@ Metadata configuration
 
 This section describes the configuration for the different types of metadata that a service reports in the ``GetCapabilities`` response. These options don't affect the data that the service offers or the behaviour of the service. It merely changes the descriptive metadata that the service reports.
 
-^^^^^^^^^^^^^^^^
-Service metadata
-^^^^^^^^^^^^^^^^
+In order to configure the metadata for a web service instance ``xyz``, create a corresponding ``xyz_metadata.xml`` file in the ``services`` directory of the workspace. The actual service type does not matter, the configuration works for all types of service alike.
 
-In order to configure the service identification and service provider information that web services return in ``GetCapabilities`` responses, you have two options:
-
-* Create a global ``metadata.xml`` file in the ``services`` directory of the workspace (options apply for all configured web services)
-* Create an instance specific ``xyz_metadata.xml`` file (options apply only for web service with configuration file name ``xyz.xml``)
-
-If both files are present, the instance specific file takes precedence. The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.2.0``.
-
-.. topic:: Example for ``metadata.xml``
+.. topic:: Example for ``deegreeServicesMetadata``
 
    .. literalinclude:: xml/service_metadata.xml
       :language: xml
+
+The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
+
+.. table:: Options for ``deegreeServicesMetadata``
+
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| Option                  | Cardinality | Value   | Description                                                      |
++=========================+=============+=========+==================================================================+
+| ServiceIdentification   | 1..1        | Complex | Metadata that describes the service                              |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ServiceProvider         | 1..1        | Complex | Metadata that describes the provider of the service              |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| DatasetMetadata         | 0..1        | Complex | Metadata on the datasets provided by the service                 |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ExtendedCapabilities    | 0..n        | Complex | Extended Metadata reported in OperationsMetadata section         |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+
+The remainder of this section describes these options and their sub-options in detail.
+
+^^^^^^^^^^^^^^^^^^^^^^
+Service identification
+^^^^^^^^^^^^^^^^^^^^^^
+
+The ``ServiceIdentification`` option has the following sub-options:
+
+.. table:: Options for ``ServiceIdentification``
+
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Option               | Cardinality | Value   | Description                                                                   |
++======================+=============+=========+===============================================================================+
+| Title                | 0..n        | String  | Title of the service                                                          |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Abstract             | 0..n        | String  | Abstract                                                                      |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Keywords             | 0..n        | Complex | Keywords that describe the service                                            |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Fees                 | 0..1        | String  | Fees that apply for using this service                                        |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| AccessConstraints    | 0..n        | String  | Access constraints for this service                                           |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+
+^^^^^^^^^^^^^^^^
+Service provider
+^^^^^^^^^^^^^^^^
+
+The ``ServiceProvider`` option has the following sub-options:
+
+.. table:: Options for ``ServiceProvider``
+
++----------------+-------------+---------+-------------------------------------+
+| Option         | Cardinality | Value   | Description                         |
++================+=============+=========+=====================================+
+| ProviderName   | 0..1        | String  | Name of the service provider        |
++----------------+-------------+---------+-------------------------------------+
+| ProviderSite   | 0..1        | String  | Website of the service provider     |
++----------------+-------------+---------+-------------------------------------+
+| ServiceContact | 0..1        | Complex | Contact information                 |
++----------------+-------------+---------+-------------------------------------+
 
 ^^^^^^^^^^^^^^^^
 Dataset metadata
@@ -857,7 +906,7 @@ For each dataset, you can configure the metadata as outlined in the following ta
 Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
-Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. It is not defined by the OGC specifications, but by extensions, such as the INSPIRE service specifications. deegree treats this section as a generic XML element and does not validate it. Please have a look at the service specific section for configuring this type of metadata.
+Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. They are not defined by the OGC service specifications, but by additional guidance documents, such as the INSPIRE Network Service TGs. deegree treats this section as a generic XML element and includes it in the output. If your service supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and 2.0.0), you may include multiple ``ExtendedCapabilities`` elements in the metadata configuration and use attribute ``protocolVersions`` to indicate the version that you want to define the extended capabilities for.
 
 ------------------------
 Controller configuration
@@ -897,7 +946,7 @@ The following sections describe the available options in detail.
 Reported URLs
 ^^^^^^^^^^^^^
 
-Web service responses sometimes contain URLs that refer back to the service, for example in capabilities documents (responses to GetCapabilities requests). By default, deegree derives these URLs from the incoming request, so you don't have to think about this, even when your server has multiple network interfaces or hostnames. However, sometimes it is required to override these URLs, for example when using deegree behind a proxy or load balancer.
+Some web service responses contain URLs that refer back to the service, for example in capabilities documents (responses to GetCapabilities requests). By default, deegree derives these URLs from the incoming request, so you don't have to think about this, even when your server has multiple network interfaces or hostnames. However, sometimes it is required to override these URLs, for example when using deegree behind a proxy or load balancer.
 
 .. tip::
   If you don't have a proxy setup that requires it, don't configure the reported URLs. In standard setups, the default behaviour works best.
