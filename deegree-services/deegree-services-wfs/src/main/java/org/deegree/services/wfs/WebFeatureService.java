@@ -86,6 +86,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -468,7 +469,8 @@ public class WebFeatureService extends AbstractOWS {
                 List<Pair<List<LanguageString>, CodeType>> keywords = null;
                 String url = getMetadataURL( metadataUrlTemplate, ftMd );
                 try {
-                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords, url );
+                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords, url,
+                                                                Collections.<StringPair> emptyList() );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
@@ -498,7 +500,8 @@ public class WebFeatureService extends AbstractOWS {
                     }
                 }
             }
-            provider = new DefaultOWSMetadataProvider( serviceId, serviceProvider, wfsVersionToExtendedCaps, ftMetadata );
+            provider = new DefaultOWSMetadataProvider( serviceId, serviceProvider, wfsVersionToExtendedCaps,
+                                                       ftMetadata, Collections.<String, String> emptyMap() );
         }
         return provider;
     }
