@@ -107,7 +107,7 @@ public class Capabilities130XMLAdapter {
         this.service = service;
         this.controller = controller;
         metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
-        themeWriter = new WmsCapabilities130ThemeWriter( controller, this, getUrl );
+        themeWriter = new WmsCapabilities130ThemeWriter( controller, this, getUrl, metadata );
     }
 
     /**

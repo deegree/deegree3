@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -75,9 +76,11 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
     private final Map<String, List<OMElement>> extendedCapabilities;
 
+    private final Map<String, String> authorities;
+
     public DefaultOWSMetadataProvider( ServiceIdentification si, ServiceProvider sp,
                                        Map<String, List<OMElement>> extendedCapabilities,
-                                       List<DatasetMetadata> datasetMetadata ) {
+                                       List<DatasetMetadata> datasetMetadata, Map<String, String> authorities ) {
         this.serviceIdentification = si;
         this.serviceProvider = sp;
         this.extendedCapabilities = extendedCapabilities;
@@ -89,6 +92,7 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
         for ( DatasetMetadata dsMd : this.datasetMetadata ) {
             this.datasetNameToMetadata.put( dsMd.getQName(), dsMd );
         }
+        this.authorities = authorities;
     }
 
     @Override
@@ -124,6 +128,20 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
     @Override
     public DatasetMetadata getDatasetMetadata( QName name ) {
-        return datasetNameToMetadata.get( name );
+        DatasetMetadata md = datasetNameToMetadata.get( name );
+        if ( md == null ) {
+            for ( Entry<QName, DatasetMetadata> e : datasetNameToMetadata.entrySet() ) {
+                if ( e.getKey().getLocalPart().equalsIgnoreCase( name.getLocalPart() ) ) {
+                    return e.getValue();
+                }
+            }
+        }
+        return md;
     }
+
+    @Override
+    public Map<String, String> getExternalMetadataAuthorities() {
+        return authorities;
+    }
+
 }
