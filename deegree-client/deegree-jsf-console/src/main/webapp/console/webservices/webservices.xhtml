@@ -4,16 +4,14 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
     <ui:define name="extraButtons">
-
-    <td><h:panelGroup rendered="#{config.state=='init_ok'}">
+    <td><h:commandButton styleClass="buttonInfo" value="Edit metadata" action="#{config.editMetadata}"/></td>
+    <td><h:panelGroup rendered="#{config.state=='init_ok'}">   
         <dg:externalLink styleClass="buttonInfo" target="_blank" href="#{config.capabilitiesURL}"
             title="#{labels.webservices_cap}" />
     </h:panelGroup></td>
 
     </ui:define>
     <ui:define name="extraConfig">
-        <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_md}"
-            action="#{webServiceConfigManager.metadataConfig.edit}" />
         <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_global}"
             action="#{webServiceConfigManager.mainConfig.edit}" />
     </ui:define>
