@@ -39,7 +39,7 @@ In order to run the ZIP version, extract it into a directory of your choice. Aft
 * Linux/Solaris: ``start-deegree-linux.sh`` (when starting via a Desktop Environment such as Gnome, choose "Run in terminal")
 * Mac OS X: ``start-deegree-osx.cmd``
 
-You should now have a terminal window on your screen with a lot of log messages: 
+You should now see a terminal window on your screen with a lot of log messages: 
 
 .. figure:: images/terminal.png
    :figwidth: 60%
