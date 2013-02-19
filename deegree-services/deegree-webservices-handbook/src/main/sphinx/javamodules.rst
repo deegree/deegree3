@@ -22,6 +22,8 @@ The following deegree modules support connecting to Oracle Spatial databases (10
 
 However, for copyright reasons, deegree webservices cannot ship the required Oracle JDBC driver. In order to enable Oracle connectivity, you need to add a compatible Oracle JDBC6-type driver (e.g. ``ojdbc6-11.2.0.2.jar``) to the classpath  as discussed in the introduction of this chapter. Reload your deegree workspace (or the webapp/web application container if you added it by some other means than putting it into the ``modules/`` directory).
 
+Additionally, you need to add module deegree-sqldialect-oracle, which can be downloaded at:
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Code for custom processes
 ^^^^^^^^^^^^^^^^^^^^^^^^^

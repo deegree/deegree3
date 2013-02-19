@@ -447,8 +447,7 @@ The manual configuration allows you to pick out a layer, rename it, and optional
 
 .. code-block:: xml
 
-
-  <RemoteWMSLayers ...>
+  <RemoteWMSLayers>
     ...
     <Layer>
       <OriginalName>cite:BasicPolygons</OriginalName>
