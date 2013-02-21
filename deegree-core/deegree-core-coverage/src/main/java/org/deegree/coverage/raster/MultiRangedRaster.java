@@ -43,6 +43,8 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class represents an AbstractRaster with multiple ranges.
@@ -259,6 +261,16 @@ public class MultiRangedRaster extends AbstractRaster {
             return raster.getRasterDataInfo();
         }
         return null;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return null;
+    }
+
+    @Override
+    public void init() {
+        
     }
 
 }

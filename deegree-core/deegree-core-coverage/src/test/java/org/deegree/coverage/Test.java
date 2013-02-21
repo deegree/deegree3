@@ -39,9 +39,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.coverage;
 
-import java.util.List;
+import java.io.File;
+
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
@@ -51,14 +54,15 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class Test {
 
-    void init();
-
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+    @org.junit.Test
+    public void testSomething() {
+        Workspace ws = new DefaultWorkspace(
+                                             new File(
+                                                       "/home/stranger/.deegree/deegree-workspace-utah-3.2-pre9-20120717.234406-9" ) );
+        ws.init();
+        ws.destroy();
+    }
 
 }

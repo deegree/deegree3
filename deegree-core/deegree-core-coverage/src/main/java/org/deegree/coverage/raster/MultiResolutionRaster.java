@@ -50,6 +50,8 @@ import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,4 +190,15 @@ public class MultiResolutionRaster extends AbstractCoverage {
     public ResolutionInfo getResolutionInfo() {
         return this.resolutionInfo;
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return null;
+    }
+
+    @Override
+    public void init() {
+        
+    }
+
 }

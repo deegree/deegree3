@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
 /**
@@ -49,6 +49,10 @@ package org.deegree.workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResourceLocation {
+public interface ResourceLocation<T extends Resource> {
+
+    String getNamespace();
+
+    ResourceIdentifier<T> getIdentifier();
 
 }

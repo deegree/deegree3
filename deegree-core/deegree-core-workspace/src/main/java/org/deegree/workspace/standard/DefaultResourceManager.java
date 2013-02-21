@@ -41,12 +41,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceManagerMetadata;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 
@@ -62,18 +68,36 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
 
     private ResourceManagerMetadata<T> metadata;
 
+    private Map<ResourceIdentifier<T>, ResourceMetadata<T>> map;
+
+    private Map<String, ResourceProvider<T>> nsToProvider;
+
     public DefaultResourceManager( ResourceManagerMetadata<T> metadata ) {
         this.metadata = metadata;
     }
 
     @Override
     public void init( Workspace workspace ) {
-        // setup managers
+        nsToProvider = new HashMap<String, ResourceProvider<T>>();
+        // load providers
         Iterator<? extends ResourceProvider<T>> iter = ServiceLoader.load( metadata.getProviderClass(),
                                                                            workspace.getModuleClassLoader() ).iterator();
         while ( iter.hasNext() ) {
-            iter.next();
-            // todo init
+            ResourceProvider<T> prov = iter.next();
+            nsToProvider.put( prov.getNamespace(), prov );
+        }
+
+        List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
+        map = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>( list.size() );
+
+        for ( ResourceLocation<T> loc : list ) {
+            ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
+            if ( prov != null ) {
+                ResourceMetadata<T> md = prov.create( loc );
+                map.put( md.getIdentifier(), md );
+            } else {
+                // log no provider available
+            }
         }
     }
 

@@ -39,9 +39,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.coverage.persistence;
 
-import java.util.List;
+import org.deegree.coverage.Coverage;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * TODO add class documentation here
@@ -51,14 +53,11 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class CoverageStoreManager extends DefaultResourceManager<Coverage> {
 
-    void init();
-
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+    public CoverageStoreManager() {
+        super( new DefaultResourceManagerMetadata<Coverage>( CoverageStoreProvider.class, "coverage stores",
+                                                             "datasources/coverage" ) );
+    }
 
 }

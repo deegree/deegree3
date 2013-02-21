@@ -39,9 +39,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.workspace.standard;
 
-import java.util.List;
+import java.util.Set;
+
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -51,14 +57,58 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class DefaultResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
 
-    void init();
+    private ResourceLocation<T> location;
 
-    void destroy();
+    private ResourceProvider<T> provider;
 
-    ClassLoader getModuleClassLoader();
+    public DefaultResourceMetadata( ResourceLocation<T> location, ResourceProvider<T> provider ) {
+        this.location = location;
+        this.provider = provider;
+    }
 
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+    @Override
+    public ResourceLocation<T> getLocation() {
+        return location;
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public ResourceIdentifier<T> getIdentifier() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResourceProvider<T> getProvider() {
+        return provider;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.workspace.ResourceMetadata#getDependencies()
+     */
+    @Override
+    public Set<ResourceMetadata<? extends Resource>> getDependencies() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.workspace.ResourceMetadata#getRelatedResources()
+     */
+    @Override
+    public Set<ResourceMetadata<? extends Resource>> getRelatedResources() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

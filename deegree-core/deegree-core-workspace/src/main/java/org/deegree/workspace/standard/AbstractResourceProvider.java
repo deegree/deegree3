@@ -39,9 +39,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.workspace.standard;
 
-import java.util.List;
+import java.net.URL;
+
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -51,14 +56,17 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public abstract class AbstractResourceProvider<T extends Resource> implements ResourceProvider<T> {
 
-    void init();
+    @Override
+    public ResourceMetadata<T> create( ResourceLocation<T> location ) {
+        if ( !getNamespace().equals( location.getNamespace() ) ) {
+            return null;
+        }
+        DefaultResourceMetadata<T> md = new DefaultResourceMetadata<T>( location, this );
+        return md;
+    }
 
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+    public abstract URL getSchema();
 
 }

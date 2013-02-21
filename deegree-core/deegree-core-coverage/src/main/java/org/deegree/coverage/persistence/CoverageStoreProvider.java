@@ -38,10 +38,15 @@
  Germany
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+----------------------------------------------------------------------------*/
+package org.deegree.coverage.persistence;
 
-import java.util.List;
+import java.net.URL;
+
+import org.deegree.coverage.Coverage;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -51,14 +56,23 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class CoverageStoreProvider extends  AbstractResourceProvider<Coverage>{
 
-    void init();
+    @Override
+    public String getNamespace() {
+        return null;
+    }
 
-    void destroy();
+    @Override
+    public ResourceMetadata<Coverage> create( ResourceLocation<Coverage> location ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+    @Override
+    public URL getSchema() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

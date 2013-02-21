@@ -42,6 +42,8 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class represents a single raster with multiple bands.
@@ -100,7 +102,7 @@ public class SimpleRaster extends AbstractRaster {
     // public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterGeoReference
     // rasterReference ) {
     // this( envelope, rasterReference );
-    //        
+    //
     // }
 
     /**
@@ -112,8 +114,7 @@ public class SimpleRaster extends AbstractRaster {
      */
     public SimpleRaster createCompatibleSimpleRaster( BandType[] bands ) {
         RasterData data = this.getRasterData();
-        RasterData newRaster = data.createCompatibleWritableRasterData(
-                                                                        new RasterRect( 0, 0, getColumns(), getRows() ),
+        RasterData newRaster = data.createCompatibleWritableRasterData( new RasterRect( 0, 0, getColumns(), getRows() ),
                                                                         bands );
         return new SimpleRaster( newRaster, getEnvelope(), getRasterReference() );
     }
@@ -301,4 +302,15 @@ public class SimpleRaster extends AbstractRaster {
         }
 
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return null;
+    }
+
+    @Override
+    public void init() {
+
+    }
+
 }

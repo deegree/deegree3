@@ -45,6 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -52,7 +53,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.apache.commons.io.FileUtils;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -143,6 +148,22 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public ClassLoader getModuleClassLoader() {
         return moduleClassLoader;
+    }
+
+    @Override
+    public <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata ) {
+        List<ResourceLocation<T>> list = new ArrayList<ResourceLocation<T>>();
+        File dir = new File( directory, metadata.getWorkspacePath() );
+        URI base = dir.getAbsoluteFile().toURI();
+        for ( File f : FileUtils.listFiles( dir, new String[] { "xml" }, true ) ) {
+            URI uri = f.getAbsoluteFile().toURI();
+            uri = base.relativize( uri );
+            String p = uri.getPath();
+            p = p.substring( 0, p.length() - 4 );
+            list.add( new DefaultResourceLocation<T>( f, new DefaultResourceIdentifier<T>( metadata.getProviderClass(),
+                                                                                           p ) ) );
+        }
+        return list;
     }
 
 }

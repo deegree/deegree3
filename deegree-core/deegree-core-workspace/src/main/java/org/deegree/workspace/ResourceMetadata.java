@@ -53,7 +53,7 @@ import java.util.Set;
  */
 public interface ResourceMetadata<T extends Resource> {
 
-    ResourceLocation getLocation();
+    ResourceLocation<T> getLocation();
 
     void init();
     

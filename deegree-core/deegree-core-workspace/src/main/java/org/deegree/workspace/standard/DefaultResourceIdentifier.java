@@ -39,9 +39,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.workspace.standard;
 
-import java.util.List;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -51,14 +53,25 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class DefaultResourceIdentifier<T extends Resource> implements ResourceIdentifier<T> {
 
-    void init();
+    private Class<? extends ResourceProvider<T>> provider;
 
-    void destroy();
+    private String id;
 
-    ClassLoader getModuleClassLoader();
+    public DefaultResourceIdentifier( Class<? extends ResourceProvider<T>> provider, String id ) {
+        this.provider = provider;
+        this.id = id;
+    }
 
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public Class<? extends ResourceProvider<T>> getProvider() {
+        return provider;
+    }
 
 }

@@ -64,7 +64,7 @@ import org.deegree.geometry.Envelope;
  * 
  * @version $Revision$, $Date$
  */
-public interface Coverage extends Resource {
+public interface Coverage extends Resource, org.deegree.workspace.Resource {
 
     /**
      * Returns the (spatial) domain of this coverage.
