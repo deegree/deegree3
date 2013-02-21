@@ -47,6 +47,7 @@
     <module>deegree-core-tile</module>    
     <module>deegree-core-time</module>
     <module>deegree-core-protocol</module>
+    <module>deegree-core-workspace</module>
   </modules>
 
 </project>
