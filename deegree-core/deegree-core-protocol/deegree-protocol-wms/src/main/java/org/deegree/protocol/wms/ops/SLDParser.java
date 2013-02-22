@@ -53,6 +53,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -85,7 +86,7 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
-    public static Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> parse( XMLStreamReader in, RequestBase gm )
+    public static Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> parse( XMLStreamReader in, RequestBase gm )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
@@ -94,6 +95,7 @@ public class SLDParser {
 
         LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
         LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
+        LinkedList<OperatorFilter> filters = new LinkedList<OperatorFilter>();
 
         while ( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) {
             if ( in.getLocalName().equals( "NamedLayer" ) ) {
@@ -111,7 +113,7 @@ public class SLDParser {
                     skipElement( in );
                 }
 
-                boolean foundFilter = false;
+                OperatorFilter filter = null;
                 if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
 
                     while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
@@ -127,9 +129,7 @@ public class SLDParser {
                             }
 
                             if ( in.getLocalName().equals( "Filter" ) ) {
-                                OperatorFilter filter = (OperatorFilter) Filter110XMLDecoder.parse( in );
-                                gm.addSldFilter( layerName, filter );
-                                foundFilter = true;
+                                filter = (OperatorFilter) Filter110XMLDecoder.parse( in );                                
                             }
 
                             if ( in.getLocalName().equals( "Extent" ) ) {
@@ -157,18 +157,14 @@ public class SLDParser {
                     }
 
                     in.nextTag();
-                }
-
-                if ( !foundFilter ) {
-                    // else having the same layer multiple times with and without filter won't work properly
-                    gm.addSldFilter( layerName, null );
-                }
+                }                
 
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
                     in.nextTag();
                     String name = in.getElementText();
                     layers.add( new LayerRef( layerName ) );
                     styles.add( new StyleRef( name ) );
+                    filters.add( filter );
 
                     in.nextTag(); // out of name
                     in.nextTag(); // out of named style
@@ -210,6 +206,7 @@ public class SLDParser {
                             Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
                             layers.add( new LayerRef( layerName ) );
                             styles.add( new StyleRef( style ) );
+                            filters.add( filter );
                         }
                     }
 
@@ -221,7 +218,7 @@ public class SLDParser {
             }
         }
 
-        return new Pair<LinkedList<LayerRef>, LinkedList<StyleRef>>( layers, styles );
+        return new Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>>( layers, styles, filters );
     }
 
     /**
