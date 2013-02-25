@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.2-pre15-SNAPSHOT</version>
+  <version>3.2-pre16-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -12,6 +12,7 @@
     <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
     <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
     <url>https://github.com/deegree/deegree3.git</url>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -170,7 +171,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.4</version>
         <configuration>
           <preparationGoals>clean install</preparationGoals>
           <autoVersionSubmodules>true</autoVersionSubmodules>
