@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.sql.id;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -252,27 +253,31 @@ public class TableDependencies {
     /**
      * Performs a lookup for the specified key propagation.
      * 
-     * @param fromTable
-     *            source table, must not be <code>null</code>
-     * @param fromColumns
-     *            primary key columns (in source table), must not be <code>null</code> and contain at least one entry
-     * @param toTable
-     *            target table, must not be <code>null</code>
-     * @param toColumns
-     *            foreign key columns (in target table), must not be <code>null</code> and contain at least one entry
+     * @param table1
+     *            first table, must not be <code>null</code>
+     * @param table1KeyColumns
+     *            key columns (of first table), must not be <code>null</code> and contain at least one entry
+     * @param table2
+     *            second table, must not be <code>null</code>
+     * @param table2KeyColumns
+     *            key columns (of second table), must not be <code>null</code> and contain at least one entry
      * @return key propagation, can be <code>null</code> (no such propagation defined)
      */
-    public KeyPropagation findKeyPropagation( TableName fromTable, List<SQLIdentifier> fromColumns, TableName toTable,
-                                              List<SQLIdentifier> toColumns ) {
-        Set<KeyPropagation> candidates = tableToChildren.get( fromTable );
-        KeyPropagation fromToTo = new KeyPropagation( fromTable, fromColumns, toTable, toColumns );
-        KeyPropagation toToFrom = new KeyPropagation( toTable, toColumns, fromTable, fromColumns );
+    public KeyPropagation findKeyPropagation( TableName table1, List<SQLIdentifier> table1KeyColumns, TableName table2,
+                                              List<SQLIdentifier> table2KeyColumns ) {
+        KeyPropagation fromToTo = new KeyPropagation( table1, table1KeyColumns, table2, table2KeyColumns );
+        KeyPropagation toToFrom = new KeyPropagation( table2, table2KeyColumns, table1, table1KeyColumns );
 
-        if ( candidates != null ) {
-            for ( KeyPropagation candidate : candidates ) {
-                if ( candidate.equals( fromToTo ) || candidate.equals( toToFrom ) ) {
-                    return candidate;
-                }
+        Set<KeyPropagation> candidates = new HashSet<KeyPropagation>();
+        if ( tableToChildren.get( table1 ) != null ) {
+            candidates.addAll( tableToChildren.get( table1 ) );
+        }
+        if ( tableToChildren.get( table2 ) != null ) {
+            candidates.addAll( tableToChildren.get( table2 ) );
+        }
+        for ( KeyPropagation candidate : candidates ) {
+            if ( candidate.equals( fromToTo ) || candidate.equals( toToFrom ) ) {
+                return candidate;
             }
         }
         return null;
