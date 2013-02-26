@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.ops;
 
-import static org.deegree.commons.utils.CollectionUtils.unzipPair;
+import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.deegree.protocol.wms.ops.SLDParser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -51,7 +51,7 @@ import java.util.ListIterator;
 import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerRef;
 import org.deegree.style.StyleRef;
@@ -69,8 +69,7 @@ public abstract class RequestBase {
 
     private static final Logger LOG = getLogger( RequestBase.class );
 
-    // layer names may occur multiple times
-    private List<Pair<String, OperatorFilter>> sldFilters = new ArrayList<Pair<String, OperatorFilter>>();
+    protected LinkedList<OperatorFilter> filters = null;
 
     protected LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
 
@@ -81,23 +80,19 @@ public abstract class RequestBase {
     public abstract double getScale();
 
     public abstract List<LayerRef> getLayers();
-
-    public void addSldFilter( String layerName, OperatorFilter filter ) {
-        sldFilters.add( new Pair<String, OperatorFilter>( layerName, filter ) );
+    
+    public List<OperatorFilter> getFilters() {
+        return filters;
     }
 
-    public List<Pair<String, OperatorFilter>> getSldFilters() {
-        return sldFilters;
-    }
-
-    protected void handleSLD( String sld, String sldBody, LinkedList<LayerRef> layers )
+    protected void handleSLD( String sld, String sldBody )
                             throws OWSException {
-        layers = new LinkedList<LayerRef>( layers );
+        
         XMLInputFactory xmlfac = XMLInputFactory.newInstance();
-        Pair<LinkedList<LayerRef>, LinkedList<StyleRef>> pair = null;
+        Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> triple = null;
         if ( sld != null ) {
             try {
-                pair = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), this );
+                triple = parse( xmlfac.createXMLStreamReader( sld, new URL( sld ).openStream() ), this );
             } catch ( ParseException e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( "The embedded dimension value in the SLD parameter value was invalid: "
@@ -110,7 +105,7 @@ public abstract class RequestBase {
         }
         if ( sldBody != null ) {
             try {
-                pair = parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), this );
+                triple = parse( xmlfac.createXMLStreamReader( new StringReader( sldBody ) ), this );
             } catch ( ParseException e ) {
                 LOG.trace( "Stack trace:", e );
                 throw new OWSException( "The embedded dimension value in the SLD_BODY parameter value was invalid: "
@@ -123,23 +118,26 @@ public abstract class RequestBase {
         }
 
         // if layers are referenced, clear the other layers out, else leave all in
-        if ( pair != null && !layers.isEmpty() ) {
+        if ( triple != null && !layers.isEmpty() ) {
             // it might be in SLD that a layer has multiple styles, so we need to map to a list here
-            HashMap<String, LinkedList<Pair<LayerRef, StyleRef>>> lays = new HashMap<String, LinkedList<Pair<LayerRef, StyleRef>>>();
+            HashMap<String, LinkedList<Triple<LayerRef, StyleRef, OperatorFilter>>> lays = new HashMap<String, LinkedList<Triple<LayerRef, StyleRef, OperatorFilter>>>();
 
-            ListIterator<LayerRef> it = pair.first.listIterator();
-            ListIterator<StyleRef> st = pair.second.listIterator();
+            ListIterator<LayerRef> it = triple.first.listIterator();
+            ListIterator<StyleRef> st = triple.second.listIterator();
+            ListIterator<OperatorFilter> ft = triple.third.listIterator();
             while ( it.hasNext() ) {
                 LayerRef lRef = it.next();
                 StyleRef sRef = st.next();
+                OperatorFilter f = ft.next();
                 if ( !layers.contains( lRef ) ) {
                     it.remove();
                     st.remove();
+                    ft.remove();
                 } else {
                     String name = lRef.getName();
-                    LinkedList<Pair<LayerRef, StyleRef>> list = lays.get( name );
+                    LinkedList<Triple<LayerRef, StyleRef, OperatorFilter>> list = lays.get( name );
                     if ( list == null ) {
-                        list = new LinkedList<Pair<LayerRef, StyleRef>>();
+                        list = new LinkedList<Triple<LayerRef, StyleRef, OperatorFilter>>();
                         lays.put( name, list );
                     }
 
@@ -147,27 +145,33 @@ public abstract class RequestBase {
                         sRef = new StyleRef( "default" );
                     }
 
-                    list.add( new Pair<LayerRef, StyleRef>( lRef, sRef ) );
+                    list.add( new Triple<LayerRef, StyleRef, OperatorFilter>( lRef, sRef, f ) );
                 }
             }
 
             this.layers.clear();
             this.styles.clear();
+            
+            this.filters = new LinkedList<OperatorFilter>();
+            
             // to get the order right, in case it's different from the SLD order
             for ( LayerRef lRef : layers ) {
-                LinkedList<Pair<LayerRef, StyleRef>> l = lays.get( lRef.getName() );
+                LinkedList<Triple<LayerRef, StyleRef, OperatorFilter>> l = lays.get( lRef.getName() );
                 if ( l == null ) {
                     throw new OWSException( "The SLD NamedLayer " + lRef.getName() + " is invalid.",
                                             "InvalidParameterValue", "layers" );
                 }
-                Pair<ArrayList<LayerRef>, ArrayList<StyleRef>> p = unzipPair( l );
-                this.layers.addAll( p.first );
-                styles.addAll( p.second );
+                
+                Triple<ArrayList<LayerRef>, ArrayList<StyleRef>, ArrayList<OperatorFilter>> t = unzip( l );
+                this.layers.addAll( t.first );
+                this.styles.addAll( t.second );
+                this.filters.addAll( t.third );
             }
         } else {
-            if ( pair != null ) {
-                this.layers = pair.first;
-                styles = pair.second;
+            if ( triple != null ) {
+                this.layers = triple.first;
+                this.styles = triple.second;
+                this.filters = triple.third;
             }
         }
     }
