@@ -37,6 +37,7 @@ package org.deegree.commons.xml.jaxb;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
@@ -52,6 +53,7 @@ import javax.xml.validation.SchemaFactory;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -71,29 +73,30 @@ public class JAXBUtils {
      * Call this once you're done in the thread that uses jaxb (un-)marshalling.
      */
     public static void fixThreadLocalLeaks() {
-          LOG.warn ("Not fixing JAXB classloader leaks. Code needs updating.");
-//        try {
-//            Field f = ClassFactory.class.getDeclaredField( "tls" );
-//            f.setAccessible( true );
-//            ( (ThreadLocal<?>) f.get( null ) ).set( null );
-//            f = Coordinator.class.getDeclaredField( "activeTable" );
-//            f.setAccessible( true );
-//            ( (ThreadLocal<?>) f.get( null ) ).set( null );
-//        } catch ( java.lang.SecurityException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        } catch ( NoSuchFieldException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        } catch ( IllegalArgumentException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        } catch ( IllegalAccessException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        }
+        LOG.warn( "Not fixing JAXB classloader leaks. Code needs updating." );
+        // try {
+        // Field f = ClassFactory.class.getDeclaredField( "tls" );
+        // f.setAccessible( true );
+        // ( (ThreadLocal<?>) f.get( null ) ).set( null );
+        // f = Coordinator.class.getDeclaredField( "activeTable" );
+        // f.setAccessible( true );
+        // ( (ThreadLocal<?>) f.get( null ) ).set( null );
+        // } catch ( java.lang.SecurityException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // } catch ( NoSuchFieldException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // } catch ( IllegalArgumentException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // } catch ( IllegalAccessException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // }
     }
 
+    @Deprecated
     public static Object unmarshall( String jaxbPackage, URL schemaLocation, URL url, DeegreeWorkspace workspace )
                             throws JAXBException {
         Object o = null;
@@ -109,6 +112,26 @@ public class JAXBUtils {
             throw e;
         } catch ( Throwable e ) {
             LOG.error( "Error in configuration file '{}': {}", url, e.getLocalizedMessage() );
+            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
+        }
+        return o;
+    }
+
+    public static Object unmarshall( String jaxbPackage, URL schemaLocation, InputStream input, Workspace workspace )
+                            throws JAXBException {
+        Object o = null;
+        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation, workspace );
+        try {
+            o = u.unmarshal( input );
+        } catch ( JAXBException e ) {
+            LOG.error( "Error in configuration file" );
+            // whyever they use the linked exception here...
+            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
+            LOG.error( "Error: " + e.getLinkedException().getMessage() );
+            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
+            throw e;
+        } catch ( Throwable e ) {
+            LOG.error( "Error in configuration file: {}", e.getLocalizedMessage() );
             LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
         }
         return o;
@@ -155,6 +178,49 @@ public class JAXBUtils {
      *             if the {@link Unmarshaller} could not be created.
      */
     private static Unmarshaller getUnmarshaller( String jaxbPackage, URL schemaLocation, DeegreeWorkspace workspace )
+                            throws JAXBException {
+
+        JAXBContext jc = null;
+        try {
+            if ( workspace == null ) {
+                jc = JAXBContext.newInstance( jaxbPackage );
+            } else {
+                jc = JAXBContext.newInstance( jaxbPackage, workspace.getModuleClassLoader() );
+            }
+        } catch ( JAXBException e ) {
+            LOG.error( "Unable to instantiate JAXBContext for package '{}'", jaxbPackage );
+            throw e;
+        }
+
+        Unmarshaller u = jc.createUnmarshaller();
+        if ( schemaLocation != null ) {
+            Schema configSchema = getSchemaForUrl( schemaLocation );
+            if ( configSchema != null ) {
+                u.setSchema( configSchema );
+            } else {
+                LOG.warn( "Not performing schema validation, because the schema could not be loaded from '{}'.",
+                          schemaLocation );
+            }
+        }
+        return u;
+    }
+
+    /**
+     * Creates a JAXB {@link Unmarshaller} which is instantiated with the given classpath (as well as the common
+     * configuration classpath). If the given schemalocation is not <code>null</code>, the unmarshaller will validate
+     * against the schema file loaded from the given location.
+     * 
+     * @param jaxbPackage
+     *            used for instantiating the unmarshaller
+     * @param schemaLocation
+     *            if not <code>null</code> this method will try to load the schema from location and set the validation
+     *            in the unmarshaller. This location could be:
+     *            "/META-INF/schemas/[SERVICE_NAME]/[VERSION]/[SERVICE_NAME]_service_configuration.xsd"
+     * @return an unmarshaller which can be used to unmarshall a document with jaxb
+     * @throws JAXBException
+     *             if the {@link Unmarshaller} could not be created.
+     */
+    private static Unmarshaller getUnmarshaller( String jaxbPackage, URL schemaLocation, Workspace workspace )
                             throws JAXBException {
 
         JAXBContext jc = null;

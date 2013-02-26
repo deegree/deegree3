@@ -41,6 +41,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.io.File;
+import java.io.InputStream;
+
 /**
  * TODO add class documentation here
  * 
@@ -54,5 +57,11 @@ public interface ResourceLocation<T extends Resource> {
     String getNamespace();
 
     ResourceIdentifier<T> getIdentifier();
+
+    InputStream getAsStream();
+
+    InputStream resolve( String path );
+
+    File resolveToFile( String path );
 
 }

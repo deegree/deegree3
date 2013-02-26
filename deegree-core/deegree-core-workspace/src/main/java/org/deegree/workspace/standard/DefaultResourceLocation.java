@@ -113,4 +113,36 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         return identifier;
     }
 
+    @Override
+    public InputStream getAsStream() {
+        try {
+            return new FileInputStream( file );
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public InputStream resolve( String path ) {
+        try {
+            return new FileInputStream( resolveToFile( path ) );
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return identifier.toString();
+    }
+
+    @Override
+    public File resolveToFile( String path ) {
+        return new File( file.toURI().resolve( path ) );
+    }
+
 }

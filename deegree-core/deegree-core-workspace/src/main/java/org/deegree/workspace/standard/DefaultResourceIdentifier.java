@@ -74,4 +74,9 @@ public class DefaultResourceIdentifier<T extends Resource> implements ResourceId
         return provider;
     }
 
+    @Override
+    public String toString() {
+        return provider.getSimpleName() + ":" + id;
+    }
+
 }

@@ -49,8 +49,10 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.commons.io.FileUtils;
@@ -79,18 +81,23 @@ public class DefaultWorkspace implements Workspace {
 
     private List<ModuleInfo> wsModules;
 
+    private Map<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>> resourceManagers;
+
     public DefaultWorkspace( File directory ) {
         this.directory = directory;
     }
 
     @Override
     public void init() {
+        resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
         initClassloader();
 
         // setup managers
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
         while ( iter.hasNext() ) {
-            iter.next().init( this );
+            ResourceManager<? extends Resource> mgr = iter.next();
+            mgr.init( this );
+            resourceManagers.put( (Class) mgr.getClass(), mgr );
         }
     }
 
@@ -164,6 +171,11 @@ public class DefaultWorkspace implements Workspace {
                                                                                            p ) ) );
         }
         return list;
+    }
+
+    @Override
+    public <T extends Resource> ResourceManager<T> getResourceManager( Class<ResourceManager<T>> managerClass ) {
+        return (ResourceManager<T>) resourceManagers.get( managerClass );
     }
 
 }

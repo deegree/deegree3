@@ -47,6 +47,7 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -59,13 +60,14 @@ import org.deegree.workspace.ResourceProvider;
 public abstract class AbstractResourceProvider<T extends Resource> implements ResourceProvider<T> {
 
     @Override
-    public ResourceMetadata<T> create( ResourceLocation<T> location ) {
+    public ResourceMetadata<T> create( Workspace workspace, ResourceLocation<T> location ) {
         if ( !getNamespace().equals( location.getNamespace() ) ) {
             return null;
         }
-        DefaultResourceMetadata<T> md = new DefaultResourceMetadata<T>( location, this );
-        return md;
+        return createFromLocation( workspace, location );
     }
+
+    public abstract ResourceMetadata<T> createFromLocation( Workspace workspace, ResourceLocation<T> location );
 
     public abstract URL getSchema();
 

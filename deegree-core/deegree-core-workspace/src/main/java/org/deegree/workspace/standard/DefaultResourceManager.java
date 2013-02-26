@@ -55,6 +55,8 @@ import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -65,6 +67,8 @@ import org.deegree.workspace.Workspace;
  * @version $Revision: $, $Date: $
  */
 public class DefaultResourceManager<T extends Resource> implements ResourceManager<T> {
+
+    private static Logger LOG = LoggerFactory.getLogger( DefaultResourceManager.class );
 
     private ResourceManagerMetadata<T> metadata;
 
@@ -90,13 +94,19 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
         map = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>( list.size() );
 
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up {}.", metadata.getName() );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
         for ( ResourceLocation<T> loc : list ) {
             ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
             if ( prov != null ) {
-                ResourceMetadata<T> md = prov.create( loc );
+                LOG.info( "Scanning resource {} with provider {}.", loc, prov.getClass().getSimpleName() );
+                ResourceMetadata<T> md = prov.create( workspace, loc );
+                md.init();
                 map.put( md.getIdentifier(), md );
             } else {
-                // log no provider available
+                LOG.warn( "Not scanning resource {}, no provider found for namespace {}.", loc, loc.getNamespace() );
             }
         }
     }

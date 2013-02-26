@@ -41,13 +41,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -57,13 +58,21 @@ import org.deegree.workspace.ResourceProvider;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DefaultResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
+public abstract class AbstractResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
 
-    private ResourceLocation<T> location;
+    protected Workspace workspace;
 
-    private ResourceProvider<T> provider;
+    protected ResourceLocation<T> location;
 
-    public DefaultResourceMetadata( ResourceLocation<T> location, ResourceProvider<T> provider ) {
+    protected AbstractResourceProvider<T> provider;
+
+    protected Set<ResourceMetadata<? extends Resource>> dependencies = new HashSet<ResourceMetadata<? extends Resource>>();
+
+    protected T resource;
+
+    public AbstractResourceMetadata( Workspace workspace, ResourceLocation<T> location,
+                                     AbstractResourceProvider<T> provider ) {
+        this.workspace = workspace;
         this.location = location;
         this.provider = provider;
     }
@@ -74,41 +83,34 @@ public class DefaultResourceMetadata<T extends Resource> implements ResourceMeta
     }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
     public ResourceIdentifier<T> getIdentifier() {
-        // TODO Auto-generated method stub
-        return null;
+        return location.getIdentifier();
     }
 
     @Override
-    public ResourceProvider<T> getProvider() {
+    public AbstractResourceProvider<T> getProvider() {
         return provider;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.ResourceMetadata#getDependencies()
-     */
     @Override
     public Set<ResourceMetadata<? extends Resource>> getDependencies() {
-        // TODO Auto-generated method stub
-        return null;
+        return new HashSet<ResourceMetadata<? extends Resource>>( dependencies );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.ResourceMetadata#getRelatedResources()
-     */
     @Override
     public Set<ResourceMetadata<? extends Resource>> getRelatedResources() {
-        // TODO Auto-generated method stub
-        return null;
+        Set<ResourceMetadata<? extends Resource>> set = new HashSet<ResourceMetadata<? extends Resource>>();
+        Set<ResourceMetadata<? extends Resource>> deps = getDependencies();
+        set.addAll( set );
+        for ( ResourceMetadata<? extends Resource> md : deps ) {
+            set.addAll( md.getRelatedResources() );
+        }
+        return set;
+    }
+
+    @Override
+    public T getResource() {
+        return resource;
     }
 
 }

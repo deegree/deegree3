@@ -55,14 +55,16 @@ public interface ResourceMetadata<T extends Resource> {
 
     ResourceLocation<T> getLocation();
 
-    void init();
-    
+    T init();
+
     ResourceIdentifier<T> getIdentifier();
 
     ResourceProvider<T> getProvider();
-    
+
     Set<ResourceMetadata<? extends Resource>> getDependencies();
 
     Set<ResourceMetadata<? extends Resource>> getRelatedResources();
-    
+
+    T getResource();
+
 }

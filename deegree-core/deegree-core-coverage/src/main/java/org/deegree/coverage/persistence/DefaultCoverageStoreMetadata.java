@@ -1,64 +1,58 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2009 by:
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2012 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
 
-package org.deegree.coverage.raster.utils;
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.coverage.persistence;
 
 import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
-import org.deegree.coverage.persistence.CoverageBuilder;
-import org.deegree.coverage.persistence.DefaultCoverageStoreMetadata.QTreeInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -75,32 +69,56 @@ import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterFile;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
 import org.deegree.coverage.raster.io.jaxb.RasterConfig;
+import org.deegree.coverage.raster.utils.RasterBuilder;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>RasterBuilder</code> recursively enters a given directory and creates a {@link TiledRaster} from found
- * image files.
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
  * 
+ * @version $Revision: $, $Date: $
  */
-public class RasterBuilder implements CoverageBuilder {
-
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/coverage/raster";
-
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
-
-    private static final URL CONFIG_SCHEMA = RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd" );
+public class DefaultCoverageStoreMetadata extends AbstractResourceMetadata<Coverage> {
 
     private final static Logger LOG = LoggerFactory.getLogger( RasterBuilder.class );
 
-    private DeegreeWorkspace workspace;
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
+
+    public DefaultCoverageStoreMetadata( Workspace workspace, ResourceLocation<Coverage> location,
+                                         AbstractResourceProvider<Coverage> provider ) {
+        super( workspace, location, provider );
+    }
+
+    @Override
+    public Coverage init() {
+        try {
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
+                                                  workspace );
+
+            if ( config instanceof MultiResolutionRasterConfig ) {
+                return resource = fromJAXB( (MultiResolutionRasterConfig) config, null );
+            }
+            if ( config instanceof RasterConfig ) {
+                return resource = fromJAXB( (RasterConfig) config, null, null );
+            }
+            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
+            // return null;
+        } catch ( Throwable e ) {
+            // throw new ResourceInitException( "IO-Error while creating coverage store.", e );
+        }
+        return null;
+    }
 
     /**
      * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by
@@ -133,7 +151,7 @@ public class RasterBuilder implements CoverageBuilder {
         List<File> result = new LinkedList<File>();
         for ( File f : toplevelDir.listFiles() ) {
             if ( f.isDirectory() ) {
-                double res = RasterBuilder.getPixelResolution( null, f );
+                double res = getPixelResolution( null, f );
                 if ( !Double.isNaN( res ) ) {
                     result.add( f );
                 } else {
@@ -169,17 +187,12 @@ public class RasterBuilder implements CoverageBuilder {
         return mrr;
     }
 
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NS;
-    }
-
     /**
      * @param mrrConfig
      * @param adapter
      * @return a corresponding raster
      */
-    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter, ICRS parentCrs ) {
+    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, ICRS parentCrs ) {
         if ( mrrConfig != null ) {
             String defCRS = mrrConfig.getStorageCRS();
             ICRS crs = null;
@@ -195,7 +208,7 @@ public class RasterBuilder implements CoverageBuilder {
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
                 if ( resolution != null ) {
-                    AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options, crs );
+                    AbstractRaster rasterLevel = fromJAXB( resolution, options, crs );
                     mrr.addRaster( rasterLevel );
                 }
             }
@@ -219,8 +232,7 @@ public class RasterBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster, null if files could not be fund
      */
-    private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options,
-                                     ICRS parentCrs ) {
+    private AbstractRaster fromJAXB( AbstractRasterType config, RasterIOOptions options, ICRS parentCrs ) {
         if ( config != null ) {
             String defCRS = config.getStorageCRS();
             ICRS crs = null;
@@ -248,7 +260,7 @@ public class RasterBuilder implements CoverageBuilder {
                     rOptions.add( RasterIOOptions.IMAGE_INDEX, imageIndex.toString() );
                 }
                 if ( directory != null ) {
-                    File rasterFiles = new File( adapter.resolve( directory.getValue().trim() ).toURI() );
+                    File rasterFiles = location.resolveToFile( directory.getValue().trim() );
                     boolean recursive = directory.isRecursive();
                     if ( crs != null ) {
                         rOptions.add( RasterIOOptions.CRS, crs.getAlias() );
@@ -257,7 +269,7 @@ public class RasterBuilder implements CoverageBuilder {
                 }
                 if ( file != null ) {
                     file = file.trim();
-                    final File loc = new File( adapter.resolve( file ).toURI() );
+                    final File loc = location.resolveToFile( file );
                     if ( !loc.exists() ) {
                         LOG.warn( "Given raster file location does not exist: " + loc.getAbsolutePath() );
                         return null;
@@ -269,18 +281,9 @@ public class RasterBuilder implements CoverageBuilder {
                     }
                     return raster;
                 }
-            } catch ( MalformedURLException e ) {
-                if ( directory != null ) {
-                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
-                              directory.getValue() );
-                } else {
-                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.", file );
-                }
             } catch ( IOException e ) {
                 LOG.warn( "Could not load the file {}, corresponding data will not be available: {}", file,
                           e.getLocalizedMessage() );
-            } catch ( URISyntaxException e ) {
-                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file );
             }
         }
         throw new NullPointerException( "The configured raster datasource may not be null." );
@@ -526,41 +529,34 @@ public class RasterBuilder implements CoverageBuilder {
         return Math.max( 3, (int) Math.ceil( leafSize / rw ) );
     }
 
-    @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
-    }
+    /**
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class QTreeInfo {
+        /***/
+        public Envelope envelope;
 
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
+        /***/
+        public RasterGeoReference rasterGeoReference;
 
-    @Override
-    public Coverage create( URL configUrl )
-                            throws ResourceInitException {
-        try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
+        /***/
+        public int numberOfObjects;
 
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configUrl.toString() );
-
-            if ( config instanceof MultiResolutionRasterConfig ) {
-                return fromJAXB( (MultiResolutionRasterConfig) config, resolver, null );
-            }
-            if ( config instanceof RasterConfig ) {
-                return fromJAXB( (RasterConfig) config, resolver, null, null );
-            }
-            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
-            return null;
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "IO-Error while creating coverage store.", e );
+        /**
+         * @param envelope
+         * @param rasterGeoReference
+         * @param numberOfObjects
+         */
+        public QTreeInfo( Envelope envelope, RasterGeoReference rasterGeoReference, int numberOfObjects ) {
+            this.envelope = envelope;
+            this.rasterGeoReference = rasterGeoReference;
+            this.numberOfObjects = numberOfObjects;
         }
+
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
 }
