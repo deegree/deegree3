@@ -101,7 +101,7 @@ public class TypedObjectNodeXPathEvaluator implements XPathEvaluator<TypedObject
 
         // simple property with just a simple element step?
         QName simplePropName = propName.getAsQName();
-        if ( bindings != null
+        if ( bindings != null && simplePropName != null
              && ( simplePropName.getNamespaceURI() == null || simplePropName.getNamespaceURI().isEmpty() ) ) {
             QName altName = bindings.get( simplePropName.getLocalPart() );
             if ( altName != null ) {

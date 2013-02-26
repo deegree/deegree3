@@ -16,11 +16,27 @@
     <sequence>
       <element name="ServiceIdentification" type="md:ServiceIdentificationType" minOccurs="0" />
       <element name="ServiceProvider" type="md:ServiceProviderType" minOccurs="0" />
-      <element name="MetadataURLTemplate" minOccurs="0" type="string" />
-      <element name="DatasetMetadata" type="md:DatasetMetadataType" minOccurs="0" maxOccurs="unbounded" />
+      <element name="DatasetMetadata" minOccurs="0">
+        <complexType>
+          <sequence>
+            <element name="MetadataUrlTemplate" minOccurs="0" type="string" />
+            <element name="ExternalMetadataAuthority" type="md:ExternalMetadataAuthorityType" minOccurs="0"
+              maxOccurs="unbounded" />
+            <element name="Dataset" type="md:DatasetMetadataType" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="ExtendedCapabilities" type="md:ExtendedCapabilitiesType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
     <attribute name="configVersion" type="md:ConfigVersionType" use="required" />
+  </complexType>
+
+  <complexType name="ExternalMetadataAuthorityType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="name" type="string" />
+      </extension>
+    </simpleContent>
   </complexType>
 
   <complexType name="ServiceIdentificationType">
@@ -124,6 +140,7 @@
     <restriction base="string">
       <enumeration value="3.0.0" />
       <enumeration value="3.1.0" />
+      <enumeration value="3.2.0" />
     </restriction>
   </simpleType>
 
@@ -133,7 +150,16 @@
       <element name="Title" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
       <element name="Abstract" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
       <element name="MetadataSetId" type="string" minOccurs="0" />
+      <element name="ExternalMetadataSetId" type="md:ExternalMetadataSetIdType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
+  </complexType>
+
+  <complexType name="ExternalMetadataSetIdType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="authority" type="string" />
+      </extension>
+    </simpleContent>
   </complexType>
 
   <complexType name="ExtendedCapabilitiesType">
