@@ -41,12 +41,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
-import java.net.URL;
-
 import org.deegree.coverage.Coverage;
-import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * TODO add class documentation here
@@ -56,23 +53,11 @@ import org.deegree.workspace.Workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DefaultCoverageStoreProvider extends CoverageStoreProvider {
+public class CoverageManager extends DefaultResourceManager<Coverage> {
 
-    private static final URL CONFIG_SCHEMA = DefaultCoverageStoreProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd" );
-
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/coverage/raster";
-    }
-
-    @Override
-    public ResourceMetadata<Coverage> createFromLocation( Workspace workspace, ResourceLocation<Coverage> location ) {
-        return new DefaultCoverageStoreMetadata( workspace, location, this );
-    }
-
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
+    public CoverageManager() {
+        super( new DefaultResourceManagerMetadata<Coverage>( CoverageProvider.class, "coverage stores",
+                                                             "datasources/coverage" ) );
     }
 
 }

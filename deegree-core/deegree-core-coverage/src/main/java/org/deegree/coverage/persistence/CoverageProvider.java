@@ -39,7 +39,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.coverage.persistence;
+
+import org.deegree.coverage.Coverage;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -49,10 +52,8 @@ package org.deegree.workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResourceIdentifier<T extends Resource> extends Comparable<ResourceIdentifier<T>> {
+public abstract class CoverageProvider extends AbstractResourceProvider<Coverage> {
 
-    String getId();
-
-    Class<? extends ResourceProvider<T>> getProvider();
+    // marker class specializing provider
 
 }

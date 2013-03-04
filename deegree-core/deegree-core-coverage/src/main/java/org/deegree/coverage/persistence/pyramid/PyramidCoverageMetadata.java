@@ -39,11 +39,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.persistence;
+package org.deegree.coverage.persistence.pyramid;
+
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+
+import javax.xml.bind.JAXBException;
 
 import org.deegree.coverage.Coverage;
-import org.deegree.workspace.standard.DefaultResourceManager;
-import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import org.deegree.coverage.persistence.pyramid.jaxb.Pyramid;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -53,11 +60,25 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CoverageStoreManager extends DefaultResourceManager<Coverage> {
+public class PyramidCoverageMetadata extends AbstractResourceMetadata<Coverage> {
 
-    public CoverageStoreManager() {
-        super( new DefaultResourceManagerMetadata<Coverage>( CoverageStoreProvider.class, "coverage stores",
-                                                             "datasources/coverage" ) );
+    public PyramidCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
+                                         AbstractResourceProvider<Coverage> provider ) {
+        super( workspace, location, provider );
+    }
+
+    @Override
+    public PyramidCoverageBuilder prepare() {
+        Pyramid config;
+        try {
+            config = (Pyramid) unmarshall( "org.deegree.coverage.persistence.pyramid.jaxb", provider.getSchema(),
+                                                   location.getAsStream(), workspace );
+            return new PyramidCoverageBuilder( location, config );
+        } catch ( JAXBException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

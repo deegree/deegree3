@@ -53,6 +53,6 @@ public interface ResourceProvider<T extends Resource> {
 
     String getNamespace();
     
-    ResourceMetadata<T> create( Workspace workspace, ResourceLocation<T> location );
+    ResourceMetadata<T> read( Workspace workspace, ResourceLocation<T> location );
 
 }

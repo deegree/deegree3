@@ -49,6 +49,8 @@ import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -60,6 +62,8 @@ import org.deegree.workspace.Workspace;
  */
 public abstract class AbstractResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
 
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractResourceMetadata.class );
+
     protected Workspace workspace;
 
     protected ResourceLocation<T> location;
@@ -67,8 +71,6 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     protected AbstractResourceProvider<T> provider;
 
     protected Set<ResourceMetadata<? extends Resource>> dependencies = new HashSet<ResourceMetadata<? extends Resource>>();
-
-    protected T resource;
 
     public AbstractResourceMetadata( Workspace workspace, ResourceLocation<T> location,
                                      AbstractResourceProvider<T> provider ) {
@@ -109,8 +111,50 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     }
 
     @Override
-    public T getResource() {
-        return resource;
+    public int compareTo( ResourceMetadata<? extends Resource> o ) {
+        Set<ResourceMetadata<? extends Resource>> deps = new HashSet<ResourceMetadata<? extends Resource>>();
+        collectDependencies( deps, getDependencies() );
+        if ( deps.contains( o ) ) {
+            return 1;
+        }
+        deps = new HashSet<ResourceMetadata<? extends Resource>>();
+        collectDependencies( deps, o.getDependencies() );
+        if ( deps.contains( this ) ) {
+            return -1;
+        }
+
+        // else compare the identifiers
+        return getIdentifier().compareTo( (ResourceIdentifier) o.getIdentifier() );
+    }
+
+    private void collectDependencies( Set<ResourceMetadata<? extends Resource>> visited,
+                                      Set<ResourceMetadata<? extends Resource>> deps ) {
+        for ( ResourceMetadata<? extends Resource> md : deps ) {
+            if ( visited.contains( md ) ) {
+                LOG.error( "Circular dependencies chain detected when loading resource {}!", getIdentifier() );
+                return;
+            }
+            visited.add( md );
+            collectDependencies( visited, md.getDependencies() );
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return location.getIdentifier().hashCode();
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        if ( !( obj instanceof ResourceMetadata ) ) {
+            return false;
+        }
+        return location.getIdentifier().equals( ( (ResourceMetadata) obj ).getLocation().getIdentifier() );
+    }
+
+    @Override
+    public String toString() {
+        return location.getIdentifier().toString();
     }
 
 }

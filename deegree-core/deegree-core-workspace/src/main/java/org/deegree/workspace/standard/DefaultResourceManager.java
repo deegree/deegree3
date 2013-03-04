@@ -102,13 +102,16 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
             ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
             if ( prov != null ) {
                 LOG.info( "Scanning resource {} with provider {}.", loc, prov.getClass().getSimpleName() );
-                ResourceMetadata<T> md = prov.create( workspace, loc );
-                md.init();
+                ResourceMetadata<T> md = prov.read( workspace, loc );
+                md.prepare();
                 map.put( md.getIdentifier(), md );
             } else {
                 LOG.warn( "Not scanning resource {}, no provider found for namespace {}.", loc, loc.getNamespace() );
             }
         }
+        
+        // TODO make sure resource metadata objects are sorted
+
     }
 
     @Override

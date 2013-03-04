@@ -60,7 +60,7 @@ import org.deegree.workspace.Workspace;
 public abstract class AbstractResourceProvider<T extends Resource> implements ResourceProvider<T> {
 
     @Override
-    public ResourceMetadata<T> create( Workspace workspace, ResourceLocation<T> location ) {
+    public ResourceMetadata<T> read( Workspace workspace, ResourceLocation<T> location ) {
         if ( !getNamespace().equals( location.getNamespace() ) ) {
             return null;
         }

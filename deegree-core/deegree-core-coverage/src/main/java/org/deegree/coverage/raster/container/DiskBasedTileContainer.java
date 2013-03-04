@@ -57,7 +57,7 @@ import java.util.List;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.QTree;
 import org.deegree.coverage.ResolutionInfo;
-import org.deegree.coverage.persistence.DefaultCoverageStoreMetadata.QTreeInfo;
+import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;

@@ -58,7 +58,7 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
-import org.deegree.coverage.persistence.DefaultCoverageStoreMetadata.QTreeInfo;
+import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;

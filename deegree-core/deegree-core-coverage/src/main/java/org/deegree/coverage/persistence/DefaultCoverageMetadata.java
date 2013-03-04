@@ -41,7 +41,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.Coverage;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
@@ -52,8 +56,25 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class CoverageStoreProvider extends AbstractResourceProvider<Coverage> {
+public class DefaultCoverageMetadata extends AbstractResourceMetadata<Coverage> {
 
-    // marker class specializing provider
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
+
+    public DefaultCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
+                                         AbstractResourceProvider<Coverage> provider ) {
+        super( workspace, location, provider );
+    }
+
+    @Override
+    public DefaultCoverageBuilder prepare() {
+        try {
+            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
+                                                  workspace );
+            return new DefaultCoverageBuilder( config, location );
+        } catch ( Throwable e ) {
+            // throw new ResourceInitException( "IO-Error while creating coverage store.", e );
+        }
+        return null;
+    }
 
 }

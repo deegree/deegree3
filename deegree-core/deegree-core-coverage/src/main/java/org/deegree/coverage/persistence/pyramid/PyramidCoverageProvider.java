@@ -39,7 +39,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.coverage.persistence.pyramid;
+
+import java.net.URL;
+
+import org.deegree.coverage.Coverage;
+import org.deegree.coverage.persistence.CoverageProvider;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -49,10 +57,23 @@ package org.deegree.workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResourceIdentifier<T extends Resource> extends Comparable<ResourceIdentifier<T>> {
+public class PyramidCoverageProvider extends CoverageProvider {
 
-    String getId();
+    private static final URL CONFIG_SCHEMA = PyramidCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.1.0/pyramid.xsd" );
 
-    Class<? extends ResourceProvider<T>> getProvider();
+    @Override
+    public String getNamespace() {
+        return "http://www.deegree.org/datasource/coverage/pyramid";
+    }
+
+    @Override
+    public ResourceMetadata<Coverage> createFromLocation( Workspace workspace, ResourceLocation<Coverage> location ) {
+        return new PyramidCoverageMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
+    }
 
 }

@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -69,15 +68,12 @@ import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterFile;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
 import org.deegree.coverage.raster.io.jaxb.RasterConfig;
-import org.deegree.coverage.raster.utils.RasterBuilder;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.AbstractResourceMetadata;
-import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,34 +85,28 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DefaultCoverageStoreMetadata extends AbstractResourceMetadata<Coverage> {
+public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 
-    private final static Logger LOG = LoggerFactory.getLogger( RasterBuilder.class );
+    private final static Logger LOG = LoggerFactory.getLogger( DefaultCoverageBuilder.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
+    private Object config;
 
-    public DefaultCoverageStoreMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                         AbstractResourceProvider<Coverage> provider ) {
-        super( workspace, location, provider );
+    private ResourceLocation<Coverage> location;
+
+    public DefaultCoverageBuilder( Object config, ResourceLocation<Coverage> location ) {
+        this.config = config;
+        this.location = location;
     }
 
     @Override
-    public Coverage init() {
-        try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
-                                                  workspace );
-
-            if ( config instanceof MultiResolutionRasterConfig ) {
-                return resource = fromJAXB( (MultiResolutionRasterConfig) config, null );
-            }
-            if ( config instanceof RasterConfig ) {
-                return resource = fromJAXB( (RasterConfig) config, null, null );
-            }
-            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
-            // return null;
-        } catch ( Throwable e ) {
-            // throw new ResourceInitException( "IO-Error while creating coverage store.", e );
+    public Coverage build() {
+        if ( config instanceof MultiResolutionRasterConfig ) {
+            return fromJAXB( (MultiResolutionRasterConfig) config, null );
         }
+        if ( config instanceof RasterConfig ) {
+            return fromJAXB( (RasterConfig) config, null, null );
+        }
+        LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
         return null;
     }
 

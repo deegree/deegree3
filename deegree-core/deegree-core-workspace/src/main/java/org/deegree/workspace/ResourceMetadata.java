@@ -51,11 +51,11 @@ import java.util.Set;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResourceMetadata<T extends Resource> {
+public interface ResourceMetadata<T extends Resource> extends Comparable<ResourceMetadata<? extends Resource>> {
 
     ResourceLocation<T> getLocation();
 
-    T init();
+    ResourceBuilder<T> prepare();
 
     ResourceIdentifier<T> getIdentifier();
 
@@ -64,7 +64,5 @@ public interface ResourceMetadata<T extends Resource> {
     Set<ResourceMetadata<? extends Resource>> getDependencies();
 
     Set<ResourceMetadata<? extends Resource>> getRelatedResources();
-
-    T getResource();
 
 }

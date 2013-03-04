@@ -41,7 +41,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence.pyramid;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.coverage.raster.io.RasterIOOptions.CRS;
 import static org.deegree.coverage.raster.io.RasterIOOptions.IMAGE_INDEX;
 import static org.deegree.coverage.raster.io.RasterIOOptions.OPT_FORMAT;
@@ -65,10 +64,8 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.AbstractResourceMetadata;
-import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,43 +77,22 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class PyramidCoverageStoreMetadata extends AbstractResourceMetadata<Coverage> {
+public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
 
-    private static Logger LOG = LoggerFactory.getLogger( PyramidCoverageStoreMetadata.class );
+    private static Logger LOG = LoggerFactory.getLogger( PyramidCoverageBuilder.class );
 
-    public PyramidCoverageStoreMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                         AbstractResourceProvider<Coverage> provider ) {
-        super( workspace, location, provider );
-    }
+    private ResourceLocation<Coverage> location;
 
-    private static ICRS getCRS( IIOMetadata metaData ) {
-        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
-        try {
-            int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
-            String epsgCode = null;
-            if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
-                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
-            } else if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic ) {
-                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey );
-            }
-            if ( epsgCode != null && epsgCode.length() != 0 ) {
-                try {
-                    return CRSManager.lookup( "EPSG:" + epsgCode );
-                } catch ( UnknownCRSException e ) {
-                    LOG.error( "No coordinate system found for EPSG:" + epsgCode );
-                }
-            }
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read crs information in GeoTIFF" );
-        }
-        return null;
+    private Pyramid config;
+
+    public PyramidCoverageBuilder( ResourceLocation<Coverage> location, Pyramid config ) {
+        this.location = location;
+        this.config = config;
     }
 
     @Override
-    public Coverage init() {
+    public Coverage build() {
         try {
-            Pyramid config = (Pyramid) unmarshall( "org.deegree.coverage.persistence.pyramid.jaxb",
-                                                   provider.getSchema(), location.getAsStream(), workspace );
             Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix( "tiff" );
             ImageReader reader = null;
             while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
@@ -158,9 +134,32 @@ public class PyramidCoverageStoreMetadata extends AbstractResourceMetadata<Cover
                 mrr.addRaster( raster );
             }
             mrr.setCoordinateSystem( crs );
-            return resource = mrr;
+            return mrr;
         } catch ( Throwable e ) {
             // throw new ResourceInitException( "Could not read pyramid configuration file.", e );
+        }
+        return null;
+    }
+
+    private static ICRS getCRS( IIOMetadata metaData ) {
+        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
+        try {
+            int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
+            String epsgCode = null;
+            if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
+                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
+            } else if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic ) {
+                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey );
+            }
+            if ( epsgCode != null && epsgCode.length() != 0 ) {
+                try {
+                    return CRSManager.lookup( "EPSG:" + epsgCode );
+                } catch ( UnknownCRSException e ) {
+                    LOG.error( "No coordinate system found for EPSG:" + epsgCode );
+                }
+            }
+        } catch ( UnsupportedOperationException ex ) {
+            LOG.debug( "couldn't read crs information in GeoTIFF" );
         }
         return null;
     }

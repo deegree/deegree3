@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
 /**
@@ -49,10 +49,8 @@ package org.deegree.workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResourceIdentifier<T extends Resource> extends Comparable<ResourceIdentifier<T>> {
+public interface ResourceBuilder<T extends Resource> {
 
-    String getId();
-
-    Class<? extends ResourceProvider<T>> getProvider();
+    T build();
 
 }
