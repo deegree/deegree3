@@ -53,7 +53,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.deegree.commons.config.ResourceInitException;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.pyramid.jaxb.Pyramid;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -120,8 +120,8 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
             iis.close();
 
             if ( crs == null ) {
-                throw new ResourceInitException(
-                                                 "No CRS information could be read from GeoTIFF, and none was configured. Please configure a CRS or add one to the GeoTIFF." );
+                throw new ResourceInitException( "No CRS information could be read from GeoTIFF, and none was "
+                                                 + " configured. Please configure a CRS or add one to the GeoTIFF." );
             }
 
             for ( int i = 0; i < num; ++i ) {
@@ -135,10 +135,9 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
             }
             mrr.setCoordinateSystem( crs );
             return mrr;
-        } catch ( Throwable e ) {
-            // throw new ResourceInitException( "Could not read pyramid configuration file.", e );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( "Could not read pyramid configuration file.", e );
         }
-        return null;
     }
 
     private static ICRS getCRS( IIOMetadata metaData ) {

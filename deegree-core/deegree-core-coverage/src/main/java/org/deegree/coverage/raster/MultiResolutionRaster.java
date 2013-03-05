@@ -198,7 +198,7 @@ public class MultiResolutionRaster extends AbstractCoverage {
 
     @Override
     public void init() {
-        
+        // nothing to do
     }
 
 }

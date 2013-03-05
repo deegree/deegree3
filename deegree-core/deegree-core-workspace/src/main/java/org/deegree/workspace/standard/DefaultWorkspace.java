@@ -108,7 +108,11 @@ public class DefaultWorkspace implements Workspace {
 
         for ( ResourceMetadata<? extends Resource> md : metadata ) {
             ResourceBuilder<? extends Resource> builder = md.prepare();
-            builder.build();
+            if ( builder != null ) {
+                builder.build();
+            } else {
+                LOG.error( "Unable to build resource {}, no description provided.", md.getIdentifier() );
+            }
         }
     }
 

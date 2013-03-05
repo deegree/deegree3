@@ -73,6 +73,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,7 +205,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
             }
             return mrr;
         }
-        throw new NullPointerException( "The configured multi resolution raster may not be null." );
+        throw new ResourceInitException( "The configured multi resolution raster may not be null." );
     }
 
     private RasterIOOptions getOptions( MultiResolutionRasterConfig config, ICRS parentCrs ) {
@@ -276,7 +277,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                           e.getLocalizedMessage() );
             }
         }
-        throw new NullPointerException( "The configured raster datasource may not be null." );
+        throw new ResourceInitException( "The configured raster datasource may not be null." );
     }
 
     /**
