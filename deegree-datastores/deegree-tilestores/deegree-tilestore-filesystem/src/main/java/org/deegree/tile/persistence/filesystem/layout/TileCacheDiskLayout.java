@@ -121,8 +121,7 @@ public class TileCacheDiskLayout implements DiskLayout {
 
     private String getLevelDirectory( TileDataLevel tileMatrix ) {
         DecimalFormat formatter = new DecimalFormat( "00" );
-        int num = set.getTileDataLevels().size();
-        int tileMatrixIndex = num - 1 - set.getTileDataLevels().indexOf( tileMatrix );
+        int tileMatrixIndex = set.getTileDataLevels().indexOf( tileMatrix );
         return formatter.format( tileMatrixIndex );
     }
 
