@@ -1,4 +1,4 @@
-<deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
+<deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0"
   xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd">
 
@@ -33,7 +33,7 @@
   <DatasetMetadata>
     <MetadataUrlTemplate>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</MetadataUrlTemplate>
     <Dataset>
-      <Name>ad:Address</Name>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:Address</Name>
       <Title>ad:Address</Title>
       <Abstract>Harmonized INSPIRE Addresses (Annex I)</Abstract>
       <MetadataSetId>beefcafe-beef-cafe-beef-cafebeefcaf</MetadataSetId>

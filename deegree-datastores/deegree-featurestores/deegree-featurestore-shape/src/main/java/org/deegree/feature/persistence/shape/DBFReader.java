@@ -39,6 +39,7 @@ package org.deegree.feature.persistence.shape;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
+import static org.deegree.commons.utils.StringUtils.concat;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -51,6 +52,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -271,15 +273,7 @@ public class DBFReader {
         }
 
         if ( map != null ) {
-            types.clear();
-            for ( Mapping m : mappings ) {
-                if ( m.fieldname == null ) {
-                    types.add( new GeometryPropertyType( new QName( namespace, m.propname, prefix ), 0, 1, null, null,
-                                                         geomType, DIM_2_OR_3, BOTH ) );
-                } else {
-                    types.add( properties.get( m.fieldname ) );
-                }
-            }
+            createCustomMappedProperties( geomType, mappings, types, namespace, prefix );
         } else {
             types.add( new GeometryPropertyType( new QName( namespace, "geometry", prefix ), 0, 1, null, null,
                                                  geomType, DIM_2_OR_3, BOTH ) );
@@ -287,7 +281,26 @@ public class DBFReader {
         // TODO
         // properly determine the dimension from SHP type
         featureType = new GenericFeatureType( ftName, types, false );
+    }
 
+    private void createCustomMappedProperties( GeometryType geomType, List<Mapping> mappings,
+                                               LinkedList<PropertyType> types, String namespace, String prefix ) {
+        types.clear();
+        for ( Mapping m : mappings ) {
+            if ( m.fieldname == null ) {
+                types.add( new GeometryPropertyType( new QName( namespace, m.propname, prefix ), 0, 1, null, null,
+                                                     geomType, DIM_2_OR_3, BOTH ) );
+            } else {
+                PropertyType pt = properties.get( m.fieldname );
+                if ( pt == null ) {
+                    List<String> fieldNames = new ArrayList<String>( properties.keySet() );
+                    String msg = "Error in mapping. DBF file does not have a field with name '" + m.fieldname
+                                 + "'. Defined fields are: " + concat( fieldNames, ", " );
+                    throw new IllegalArgumentException( msg );
+                }
+                types.add( pt );
+            }
+        }
     }
 
     private static String getString( byte[] bs, Charset encoding )

@@ -330,7 +330,7 @@ public class GetMap extends RequestBase {
             this.styles = handleKVPStyles( ss, layers.size() );
         } else {
             // TODO think about whether STYLES has to be handled here as well
-            handleSLD( sld, sldBody, layers );
+            handleSLD( sld, sldBody );
         }
 
         String psize = map.get( "PIXELSIZE" );
