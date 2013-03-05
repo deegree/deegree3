@@ -606,7 +606,7 @@ Below the ``ServiceConfiguration`` section you can specify custom featureinfo fo
   ...
   </FeatureInfoFormats>
 
-Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured.
+Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured. Take note that the GetFeatureInfo operation is currently only supported for remote WMS tile store backends.
 
 .. _anchor-configuration-csw:
 
