@@ -4,10 +4,6 @@
 				<inspire_common:URL>http://www.inspire-geoportal.eu/discovery/csw?SERVICE=CSW&amp;REQUEST=GetCapabilities</inspire_common:URL>
 				<inspire_common:MediaType>application/vnd.ogc.wms_xml</inspire_common:MediaType>
 			</inspire_common:ResourceLocator>
-			<inspire_common:ResourceLocator>
-				<inspire_common:URL>http://vap-xgeodev.jrc.it:8080/geonetwork</inspire_common:URL>
-				<inspire_common:MediaType>text/html</inspire_common:MediaType>
-			</inspire_common:ResourceLocator>
 			<inspire_common:ResourceType>service</inspire_common:ResourceType>
 			<inspire_common:TemporalReference>
 				<inspire_common:TemporalExtent>
@@ -47,14 +43,14 @@
 			</inspire_common:Keyword>
 			<inspire_common:SupportedLanguages>
 				<inspire_common:DefaultLanguage>
-					<inspire_common:Language>bul</inspire_common:Language>
+					<inspire_common:Language>eng</inspire_common:Language>
 				</inspire_common:DefaultLanguage>
 				<inspire_common:SupportedLanguage>
-					<inspire_common:Language>bul</inspire_common:Language>
+					<inspire_common:Language>eng</inspire_common:Language>
 				</inspire_common:SupportedLanguage>
 			</inspire_common:SupportedLanguages>
 			<inspire_common:ResponseLanguage>
-				<inspire_common:Language>bul</inspire_common:Language>
+				<inspire_common:Language>eng</inspire_common:Language>
 			</inspire_common:ResponseLanguage>
 			<!--For documentation only since MetadataUrl is an optional element-->
 			<inspire_common:MetadataUrl>
