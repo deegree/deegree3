@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -72,7 +73,7 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
 
     private ResourceManagerMetadata<T> metadata;
 
-    private Map<ResourceIdentifier<T>, ResourceMetadata<T>> map;
+    private Map<ResourceIdentifier<T>, ResourceMetadata<T>> metadataMap;
 
     private Map<String, ResourceProvider<T>> nsToProvider;
 
@@ -92,7 +93,7 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         }
 
         List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
-        map = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>( list.size() );
+        metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>( list.size() );
 
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Setting up {}.", metadata.getName() );
@@ -104,14 +105,11 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
                 LOG.info( "Scanning resource {} with provider {}.", loc, prov.getClass().getSimpleName() );
                 ResourceMetadata<T> md = prov.read( workspace, loc );
                 md.prepare();
-                map.put( md.getIdentifier(), md );
+                metadataMap.put( md.getIdentifier(), md );
             } else {
                 LOG.warn( "Not scanning resource {}, no provider found for namespace {}.", loc, loc.getNamespace() );
             }
         }
-        
-        // TODO make sure resource metadata objects are sorted
-
     }
 
     @Override
@@ -121,6 +119,11 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     @Override
     public ResourceManagerMetadata<T> getMetadata() {
         return metadata;
+    }
+
+    @Override
+    public Collection<ResourceMetadata<T>> getResourceMetadata() {
+        return metadataMap.values();
     }
 
 }

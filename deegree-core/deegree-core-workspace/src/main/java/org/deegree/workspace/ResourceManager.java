@@ -41,6 +41,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.util.Collection;
+
 /**
  * TODO add class documentation here
  * 
@@ -57,4 +59,6 @@ public interface ResourceManager<T extends Resource> {
 
     ResourceManagerMetadata<T> getMetadata();
 
+    Collection<ResourceMetadata<T>> getResourceMetadata();
+    
 }

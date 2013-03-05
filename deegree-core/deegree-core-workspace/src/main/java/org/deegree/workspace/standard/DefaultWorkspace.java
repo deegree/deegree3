@@ -54,12 +54,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceManagerMetadata;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -92,12 +95,20 @@ public class DefaultWorkspace implements Workspace {
         resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
         initClassloader();
 
+        TreeSet<ResourceMetadata<? extends Resource>> metadata = new TreeSet<ResourceMetadata<? extends Resource>>();
+
         // setup managers
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
         while ( iter.hasNext() ) {
-            ResourceManager<? extends Resource> mgr = iter.next();
+            ResourceManager<?> mgr = iter.next();
             mgr.init( this );
+            metadata.addAll( mgr.getResourceMetadata() );
             resourceManagers.put( (Class) mgr.getClass(), mgr );
+        }
+
+        for ( ResourceMetadata<? extends Resource> md : metadata ) {
+            ResourceBuilder<? extends Resource> builder = md.prepare();
+            builder.build();
         }
     }
 

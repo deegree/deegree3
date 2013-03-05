@@ -109,7 +109,7 @@ public class DefaultResourceIdentifier<T extends Resource> implements ResourceId
             return false;
         }
 
-        ResourceIdentifier id = (ResourceIdentifier) obj;
+        ResourceIdentifier<? extends Resource> id = (ResourceIdentifier<?>) obj;
 
         return getId().equals( id.getId() ) && getProvider().equals( id.getProvider() );
     }
