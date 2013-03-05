@@ -236,6 +236,9 @@ public class LayerMetadata {
      * @param md
      */
     public void merge( LayerMetadata md ) {
+        if ( md == null ) {
+            return;
+        }
         if ( description == null ) {
             description = md.getDescription();
         } else {
