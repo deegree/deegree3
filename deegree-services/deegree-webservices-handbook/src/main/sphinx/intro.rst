@@ -66,6 +66,7 @@ deegree WMTS is an implementation of the `OGC Web Map Tile Service specification
 * High performance and excellent scalability
 * Supports different backends, such as GeoTIFF, remote WMS or file system tile image hierarchies
 * Supports on-the-fly caching (using EHCache)
+* Supports GetFeatureInfo for remote WMS backends
 
 .. tip::
   In order to learn about configuring a deegree-based WMTS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. TODO: provide example workspace for WMTS. Continue with :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wmts`.
