@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
+<inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
   		<inspire_common:ResourceLocator>
 				<inspire_common:URL>http://www.inspire-geoportal.eu/discovery/csw?SERVICE=CSW&amp;REQUEST=GetCapabilities</inspire_common:URL>
 				<inspire_common:MediaType>application/vnd.ogc.wms_xml</inspire_common:MediaType>
@@ -14,7 +14,7 @@
 				</inspire_common:TemporalExtent>
 			</inspire_common:TemporalReference>
 			<inspire_common:Conformity>
-				<inspire_common:Specification xsi:type="inspire_common:citationInspireInteroperabilityRegulation_eng">
+				<inspire_common:Specification type="inspire_common:citationInspireInteroperabilityRegulation_eng">
 					<inspire_common:Title>COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services</inspire_common:Title>
 					<inspire_common:DateOfPublication>2010-12-08</inspire_common:DateOfPublication>
 					<inspire_common:URI>OJ:L:2010:323:0011:0102:EN:PDF</inspire_common:URI>
@@ -31,10 +31,10 @@
 			</inspire_common:MetadataPointOfContact>
 			<inspire_common:MetadataDate>2010-07-15</inspire_common:MetadataDate>
 			<inspire_common:SpatialDataServiceType>discovery</inspire_common:SpatialDataServiceType>
-			<inspire_common:MandatoryKeyword xsi:type="inspire_common:classificationOfSpatialDataService">
+			<inspire_common:MandatoryKeyword type="inspire_common:classificationOfSpatialDataService">
 				<inspire_common:KeywordValue>humanCatalogueViewer</inspire_common:KeywordValue>
 			</inspire_common:MandatoryKeyword>
-			<inspire_common:Keyword xsi:type="inspire_common:inspireTheme_eng">
+			<inspire_common:Keyword type="inspire_common:inspireTheme_eng">
 				<inspire_common:OriginatingControlledVocabulary>
 					<inspire_common:Title>GEMET - INSPIRE themes</inspire_common:Title>
 					<inspire_common:DateOfPublication>2008-06-01</inspire_common:DateOfPublication>
