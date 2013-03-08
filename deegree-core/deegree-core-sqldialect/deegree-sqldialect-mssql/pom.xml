@@ -1,9 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-sqldialect-oracle</artifactId>
-  <name>deegree-sqldialect-oracle</name>
-  <packaging>jar</packaging>
-  <description>SQL dialect for Oracle Spatial</description>
+  <artifactId>deegree-sqldialect-mssql</artifactId>
+  <packaging>jar</packaging>  
+  <description>SQL dialect for Microsoft SQL Server</description>
 
   <properties>
     <deegree.module.status>rework</deegree.module.status>
@@ -30,7 +30,7 @@
 
   <profiles>
     <profile>
-      <id>oracle</id>
+      <id>mssql</id>
       <repositories>
         <repository>
           <id>deegree-restricted</id>
@@ -40,8 +40,9 @@
       </repositories>
       <dependencies>
         <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc6</artifactId>
+          <groupId>com.microsoft</groupId>
+          <artifactId>sqljdbc4</artifactId>
+          <version>3.0</version>
         </dependency>
       </dependencies>
     </profile>

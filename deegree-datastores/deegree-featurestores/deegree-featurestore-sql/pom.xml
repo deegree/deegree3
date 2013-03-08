@@ -81,8 +81,8 @@
       </repositories>
       <dependencies>
         <dependency>
-          <artifactId>latlon-sqldialect-mssql</artifactId>
-          <groupId>de.latlon</groupId>
+          <artifactId>deegree-sqldialect-mssql</artifactId>
+          <groupId>org.deegree</groupId>
           <version>${project.version}</version>
           <scope>test</scope>
         </dependency>
