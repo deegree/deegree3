@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.2-rc2-SNAPSHOT</version>
+    <version>3.2-rc1</version>
   </parent>
 
   <repositories>
