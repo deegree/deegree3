@@ -190,7 +190,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
 
             RasterGeoReference env = RasterGeoReference.create( OUTER, bbox, newWidth, newHeight );
             RasterData data = rasterDataFromImage( pair.first );
-            SimpleRaster raster = new SimpleRaster( data, bbox, env );
+            SimpleRaster raster = new SimpleRaster( data, bbox, env, null );
 
             SimpleRaster transformed = rtrans.transform( raster, envelope, width, height, BILINEAR ).getAsSimpleRaster();
 
@@ -296,7 +296,7 @@ public class RemoteWMSStore implements RemoteOWSStore {
                     pair.first = img;
                 }
                 RasterData data = rasterDataFromImage( pair.first );
-                SimpleRaster raster = new SimpleRaster( data, bbox, env );
+                SimpleRaster raster = new SimpleRaster( data, bbox, env, null );
 
                 SimpleRaster transformed = rtrans.transform( raster, envelope, width, height, BILINEAR ).getAsSimpleRaster();
 

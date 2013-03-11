@@ -35,12 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.geometry.Envelope;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
@@ -61,6 +62,8 @@ public class SimpleRaster extends AbstractRaster {
 
     private RasterData data;
 
+    private ResourceMetadata<Coverage> metadata;
+
     /**
      * Create a SimpleRaster with no raster data but with an envelope and raster envelope.
      * 
@@ -69,8 +72,9 @@ public class SimpleRaster extends AbstractRaster {
      * @param rasterReference
      *            The raster envelope of the new raster.
      */
-    protected SimpleRaster( Envelope envelope, RasterGeoReference rasterReference ) {
+    protected SimpleRaster( Envelope envelope, RasterGeoReference rasterReference, ResourceMetadata<Coverage> metadata ) {
         super( envelope, rasterReference );
+        this.metadata = metadata;
     }
 
     /**
@@ -83,8 +87,9 @@ public class SimpleRaster extends AbstractRaster {
      * @param rasterReference
      *            The raster envelope of the new raster.
      */
-    public SimpleRaster( RasterData raster, Envelope envelope, RasterGeoReference rasterReference ) {
-        this( envelope, rasterReference );
+    public SimpleRaster( RasterData raster, Envelope envelope, RasterGeoReference rasterReference,
+                         ResourceMetadata<Coverage> metadata ) {
+        this( envelope, rasterReference, metadata );
         this.data = raster;
         // this.rasterDataContainer = new MemoryRasterDataContainer( raster );
     }
@@ -116,7 +121,7 @@ public class SimpleRaster extends AbstractRaster {
         RasterData data = this.getRasterData();
         RasterData newRaster = data.createCompatibleWritableRasterData( new RasterRect( 0, 0, getColumns(), getRows() ),
                                                                         bands );
-        return new SimpleRaster( newRaster, getEnvelope(), getRasterReference() );
+        return new SimpleRaster( newRaster, getEnvelope(), getRasterReference(), metadata );
     }
 
     /**
@@ -130,7 +135,7 @@ public class SimpleRaster extends AbstractRaster {
         RasterData data = this.getRasterData();
         BandType[] bands = data.getDataInfo().bandInfo;
         RasterData newRaster = data.createCompatibleWritableRasterData( new RasterRect( 0, 0, width, height ), bands );
-        return new SimpleRaster( newRaster, this.getEnvelope(), this.getRasterReference() );
+        return new SimpleRaster( newRaster, this.getEnvelope(), this.getRasterReference(), metadata );
     }
 
     /**
@@ -148,7 +153,7 @@ public class SimpleRaster extends AbstractRaster {
         RasterData data = this.getRasterData();
         BandType[] bands = data.getDataInfo().bandInfo;
         RasterData newRaster = data.createCompatibleWritableRasterData( rasterRect, bands );
-        return new SimpleRaster( newRaster, env, rEnv );
+        return new SimpleRaster( newRaster, env, rEnv, metadata );
     }
 
     @Override
@@ -194,7 +199,7 @@ public class SimpleRaster extends AbstractRaster {
         // RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
         // rb: don't need to get a readonly raster data, because it will be filled with data later.
         RasterData view = getRasterData().getSubset( rasterRect, bands );
-        return new SimpleRaster( view, envelope, rasterReference );
+        return new SimpleRaster( view, envelope, rasterReference, metadata );
     }
 
     @Override
@@ -213,7 +218,8 @@ public class SimpleRaster extends AbstractRaster {
      */
     public SimpleRaster getBand( int band ) {
         return new SimpleRaster( getRasterData().getSubset( new RasterRect( 0, 0, getColumns(), getRows() ),
-                                                            new BandType[] {} ), getEnvelope(), getRasterReference() );
+                                                            new BandType[] {} ), getEnvelope(), getRasterReference(),
+                                 metadata );
     }
 
     @Override
@@ -305,12 +311,12 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public ResourceMetadata<? extends Resource> getMetadata() {
-        return null;
+        return metadata;
     }
 
     @Override
     public void init() {
-
+        // nothing to do
     }
 
 }

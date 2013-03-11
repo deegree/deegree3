@@ -53,7 +53,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.deegree.workspace.ResourceInitException;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.pyramid.jaxb.Pyramid;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -65,7 +64,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.workspace.ResourceBuilder;
-import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,12 +81,12 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
 
     private static Logger LOG = LoggerFactory.getLogger( PyramidCoverageBuilder.class );
 
-    private ResourceLocation<Coverage> location;
-
     private Pyramid config;
 
-    public PyramidCoverageBuilder( ResourceLocation<Coverage> location, Pyramid config ) {
-        this.location = location;
+    private ResourceMetadata<Coverage> metadata;
+
+    public PyramidCoverageBuilder( ResourceMetadata<Coverage> metadata, Pyramid config ) {
+        this.metadata = metadata;
         this.config = config;
     }
 
@@ -108,9 +108,9 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
                 crs = CRSManager.getCRSRef( config.getCRS() );
             }
 
-            MultiResolutionRaster mrr = new MultiResolutionRaster();
+            MultiResolutionRaster mrr = new MultiResolutionRaster( metadata );
             String file = config.getPyramidFile();
-            ImageInputStream iis = ImageIO.createImageInputStream( location.resolveToFile( file ) );
+            ImageInputStream iis = ImageIO.createImageInputStream( metadata.getLocation().resolveToFile( file ) );
             reader.setInput( iis );
             int num = reader.getNumImages( true );
             if ( crs == null ) {
@@ -129,7 +129,8 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
                 opts.add( IMAGE_INDEX, "" + i );
                 opts.add( OPT_FORMAT, "tiff" );
                 opts.add( CRS, crs.getAlias() );
-                AbstractRaster raster = RasterFactory.loadRasterFromFile( location.resolveToFile( file ), opts );
+                AbstractRaster raster = RasterFactory.loadRasterFromFile( metadata.getLocation().resolveToFile( file ),
+                                                                          opts );
                 raster.setCoordinateSystem( crs );
                 mrr.addRaster( raster );
             }

@@ -79,7 +79,8 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     @SuppressWarnings("unused")
     private void readTest()
                             throws IOException {
-        GriddedTileContainer cont = GriddedBlobTileContainer.create( new File( System.getProperty( "java.io.tmpdir" ) + File.separatorChar ),
+        GriddedTileContainer cont = GriddedBlobTileContainer.create( new File( System.getProperty( "java.io.tmpdir" )
+                                                                               + File.separatorChar ),
                                                                      new RasterIOOptions( OriginLocation.CENTER ) );
         for ( int x = 0; x < cont.getColumns(); ++x ) {
             for ( int y = 0; y < cont.getRows(); ++y ) {
@@ -102,7 +103,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
         GridMetaInfoFile worldFile = GridMetaInfoFile.readFromFile( new File( infoUrl.toURI() ),
                                                                     new RasterIOOptions( type ) );
         GriddedTileContainer gtc = new GriddedBlobTileContainer( new File( blob.toURI() ), worldFile );
-        return new TiledRaster( gtc );
+        return new TiledRaster( gtc, null );
     }
 
     @Override

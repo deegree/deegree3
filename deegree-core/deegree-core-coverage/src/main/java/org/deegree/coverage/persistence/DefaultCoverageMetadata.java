@@ -61,7 +61,7 @@ public class DefaultCoverageMetadata extends AbstractResourceMetadata<Coverage> 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
 
     public DefaultCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                         AbstractResourceProvider<Coverage> provider ) {
+                                    AbstractResourceProvider<Coverage> provider ) {
         super( workspace, location, provider );
     }
 
@@ -70,7 +70,7 @@ public class DefaultCoverageMetadata extends AbstractResourceMetadata<Coverage> 
         try {
             Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
                                                   workspace );
-            return new DefaultCoverageBuilder( config, location );
+            return new DefaultCoverageBuilder( config, this );
         } catch ( Throwable e ) {
             // throw new ResourceInitException( "IO-Error while creating coverage store.", e );
         }

@@ -706,7 +706,7 @@ public class OldWMSClient111 {
             RasterData rasterData = RasterFactory.rasterDataFromImage( img );
             RasterGeoReference rasterEnv = RasterGeoReference.create( OriginLocation.OUTER, bbox, img.getWidth(),
                                                                       img.getHeight() );
-            SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );
+            SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv, null );
             response.first = raster;
         } else {
             response.second = imageResponse.second;

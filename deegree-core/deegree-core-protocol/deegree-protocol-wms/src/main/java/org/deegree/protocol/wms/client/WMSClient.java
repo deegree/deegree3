@@ -747,7 +747,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                     LOG.debug( "Performing raster transformation." );
                     RasterGeoReference env = RasterGeoReference.create( OUTER, reqEnv, reqWidth, reqHeight );
                     RasterData data = rasterDataFromImage( res.first );
-                    SimpleRaster raster = new SimpleRaster( data, reqEnv, env );
+                    SimpleRaster raster = new SimpleRaster( data, reqEnv, env, null );
 
                     SimpleRaster transformed = rtrans.transform( raster, bbox, width, height, BILINEAR ).getAsSimpleRaster();
 

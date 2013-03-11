@@ -180,7 +180,7 @@ public class ASCReader implements RasterReader {
         RasterData data = RasterDataFactory.createRasterData( width, height, rdi, geoReference, buffer, true,
                                                               FileUtils.getFilename( this.file ), options );
 
-        return new SimpleRaster( data, rasterEnvelope, geoReference );
+        return new SimpleRaster( data, rasterEnvelope, geoReference, null );
     }
 
     /**

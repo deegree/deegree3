@@ -75,6 +75,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,9 +95,12 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 
     private ResourceLocation<Coverage> location;
 
-    public DefaultCoverageBuilder( Object config, ResourceLocation<Coverage> location ) {
+    private ResourceMetadata<Coverage> metadata;
+
+    public DefaultCoverageBuilder( Object config, ResourceMetadata<Coverage> metadata ) {
         this.config = config;
-        this.location = location;
+        this.metadata = metadata;
+        this.location = metadata.getLocation();
     }
 
     @Override
@@ -166,7 +170,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
      */
     private MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories, boolean recursive,
                                                               RasterIOOptions options ) {
-        MultiResolutionRaster mrr = new MultiResolutionRaster();
+        MultiResolutionRaster mrr = new MultiResolutionRaster( metadata );
         for ( File resDir : resolutionDirectories ) {
             if ( resDir != null && resDir.isDirectory() ) {
                 AbstractRaster rasterLevel = buildTiledRaster( resDir, recursive, options );
@@ -195,7 +199,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                 crs = parentCrs;
             }
             RasterIOOptions options = getOptions( mrrConfig, parentCrs );
-            MultiResolutionRaster mrr = new MultiResolutionRaster();
+            MultiResolutionRaster mrr = new MultiResolutionRaster( metadata );
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
                 if ( resolution != null ) {
@@ -360,7 +364,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
      * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location, with
      *         the given extension.
      */
-    private static AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
+    private AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
         File indexFile = new File( directory, "deegree-pyramid.idx" );
         if ( !indexFile.exists() || indexFile.lastModified() < directory.lastModified() ) {
             LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
@@ -392,7 +396,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                 if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
                     // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
                     try {
-                        raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ) );
+                        raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ), metadata );
                         readSingleBlobTile = true;
                     } catch ( IOException e ) {
                         LOG.debug( "Exception occurred: '{}'", e.getLocalizedMessage() );
@@ -416,7 +420,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                     // } else {
                     // container = new MemoryTileContainer( rasters );
                     // }
-                    raster = new TiledRaster( container );
+                    raster = new TiledRaster( container, metadata );
                     raster.setCoordinateSystem( domain.getCoordinateSystem() );
                 }
             } else {
@@ -430,7 +434,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
             indexFile.delete();
             return buildTiledRaster( directory, recursive, options );
         }
-        AbstractRaster raster = new TiledRaster( container );
+        AbstractRaster raster = new TiledRaster( container, metadata );
         raster.setCoordinateSystem( container.getRasterReference().getCrs() );
 
         return raster;

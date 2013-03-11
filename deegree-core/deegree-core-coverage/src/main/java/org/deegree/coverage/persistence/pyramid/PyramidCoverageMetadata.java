@@ -73,7 +73,7 @@ public class PyramidCoverageMetadata extends AbstractResourceMetadata<Coverage> 
         try {
             config = (Pyramid) unmarshall( "org.deegree.coverage.persistence.pyramid.jaxb", provider.getSchema(),
                                                    location.getAsStream(), workspace );
-            return new PyramidCoverageBuilder( location, config );
+            return new PyramidCoverageBuilder( this, config );
         } catch ( JAXBException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();

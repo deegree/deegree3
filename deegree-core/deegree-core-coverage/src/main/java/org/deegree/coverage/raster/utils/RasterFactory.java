@@ -318,7 +318,7 @@ public class RasterFactory {
         }
         ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, opts, null );
 
-        return new SimpleRaster( rasterDataFromImage, envelope, ref );
+        return new SimpleRaster( rasterDataFromImage, envelope, ref, null );
 
     }
 
@@ -877,7 +877,7 @@ public class RasterFactory {
             // data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
             // break;
             // }
-            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference );
+            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference, null );
         }
         return result;
     }

@@ -157,7 +157,7 @@ public class RasterBuilder implements CoverageBuilder {
      */
     private MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories, boolean recursive,
                                                               RasterIOOptions options ) {
-        MultiResolutionRaster mrr = new MultiResolutionRaster();
+        MultiResolutionRaster mrr = new MultiResolutionRaster( null );
         for ( File resDir : resolutionDirectories ) {
             if ( resDir != null && resDir.isDirectory() ) {
                 AbstractRaster rasterLevel = buildTiledRaster( resDir, recursive, options );
@@ -191,7 +191,7 @@ public class RasterBuilder implements CoverageBuilder {
                 crs = parentCrs;
             }
             RasterIOOptions options = getOptions( mrrConfig, parentCrs );
-            MultiResolutionRaster mrr = new MultiResolutionRaster();
+            MultiResolutionRaster mrr = new MultiResolutionRaster( null );
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
                 if ( resolution != null ) {
@@ -398,7 +398,7 @@ public class RasterBuilder implements CoverageBuilder {
                 if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
                     // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
                     try {
-                        raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ) );
+                        raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ), null );
                         readSingleBlobTile = true;
                     } catch ( IOException e ) {
                         LOG.debug( "Exception occurred: '{}'", e.getLocalizedMessage() );
@@ -422,7 +422,7 @@ public class RasterBuilder implements CoverageBuilder {
                     // } else {
                     // container = new MemoryTileContainer( rasters );
                     // }
-                    raster = new TiledRaster( container );
+                    raster = new TiledRaster( container, null );
                     raster.setCoordinateSystem( domain.getCoordinateSystem() );
                 }
             } else {
@@ -436,7 +436,7 @@ public class RasterBuilder implements CoverageBuilder {
             indexFile.delete();
             return buildTiledRaster( directory, recursive, options );
         }
-        AbstractRaster raster = new TiledRaster( container );
+        AbstractRaster raster = new TiledRaster( container, null );
         raster.setCoordinateSystem( container.getRasterReference().getCrs() );
 
         return raster;

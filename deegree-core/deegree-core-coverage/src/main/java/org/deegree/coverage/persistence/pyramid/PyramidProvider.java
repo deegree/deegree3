@@ -131,7 +131,7 @@ public class PyramidProvider implements CoverageBuilder {
                 crs = CRSManager.getCRSRef( config.getCRS() );
             }
 
-            MultiResolutionRaster mrr = new MultiResolutionRaster();
+            MultiResolutionRaster mrr = new MultiResolutionRaster( null );
             String file = config.getPyramidFile();
             File resolved = new File( configUrl.toURI().resolve( file ) );
             ImageInputStream iis = ImageIO.createImageInputStream( resolved );
