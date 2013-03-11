@@ -43,7 +43,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -105,8 +104,6 @@ public abstract class AbstractISOTest {
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            Set<String> connIds = ConnectionManager.getConnectionIds();
-            LOG.info( "publish the connectionIDs: " + connIds + " " );
             if ( mgr.getState( "iso_pg_set_up_tables" ) != null ) {
                 // skip new creation of the connection
                 // Connection connDeleteTables = null;
