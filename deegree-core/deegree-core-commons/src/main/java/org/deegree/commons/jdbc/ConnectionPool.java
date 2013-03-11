@@ -87,6 +87,8 @@ class ConnectionPool {
         ds.setInitialSize(1); // TODO externalize
         ds.setMinIdle(minIdle);
         ds.setMaxActive(maxActive);
+        ds.setTestOnBorrow(true);
+        ds.setValidationQuery("select 'x' from dual");
         // needed, so users can retrieve the underlying connection from pooled
         // connections, e.g. to access the
         // LargeObjectManager from a PGConnection
