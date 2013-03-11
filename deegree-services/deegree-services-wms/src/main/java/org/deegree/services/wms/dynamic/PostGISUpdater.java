@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.dynamic;
 
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.splitAsIntList;
 import static org.deegree.feature.utils.DBUtils.findSrid;
 import static org.deegree.services.wms.MapService.fillInheritedInformation;
@@ -54,6 +53,7 @@ import java.util.List;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
@@ -122,7 +122,8 @@ public class PostGISUpdater extends LayerUpdater {
         Connection conn = null;
         ResultSet rs = null;
         try {
-            conn = getConnection( connid );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             String tableName = sourcetable;
 
             String schema = this.schema;
@@ -186,7 +187,8 @@ public class PostGISUpdater extends LayerUpdater {
         }
         parent.getChildren().removeAll( toRemove );
         try {
-            conn = getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
 
             stmt = conn.prepareStatement( "select name, title, connectionid, sourcetable, sourcequery, symbolcodes, symbolfield, crs, namespace, bboxquery from "
                                           + schema + ".layers" );
