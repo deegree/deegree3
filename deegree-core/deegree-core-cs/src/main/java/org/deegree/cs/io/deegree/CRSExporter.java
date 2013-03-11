@@ -64,7 +64,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
@@ -76,12 +79,12 @@ import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.IPrimeMeridian;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.azimuthal.ILambertAzimuthalEqualArea;
 import org.deegree.cs.projections.azimuthal.IStereographicAlternative;
@@ -111,6 +114,8 @@ public class CRSExporter extends CRSExporterBase {
 
     private final String db_id;
 
+    private DeegreeWorkspace workspace;
+
     public CRSExporter() {
         db_id = null;
     }
@@ -119,6 +124,8 @@ public class CRSExporter extends CRSExporterBase {
      * @param properties
      */
     public CRSExporter( Properties properties ) {
+        workspace = DeegreeWorkspace.getInstance();
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         String user = null;
         if ( properties != null ) {
             user = properties.getProperty( "DB_USER" );
@@ -126,7 +133,8 @@ public class CRSExporter extends CRSExporterBase {
                 String pass = properties.getProperty( "DB_PASSWORD" );
                 String con = properties.getProperty( "DB_CONNECTION" );
                 db_id = "epsg_db_id";
-                ConnectionManager.addConnection( db_id, con, user, pass, 1, 10 );
+                JDBCParams params = new DefaultJDBCParams( con, user, pass, false );
+                mgr.addPool( db_id, params, workspace );
             } else {
                 db_id = null;
             }
