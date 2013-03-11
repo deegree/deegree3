@@ -645,8 +645,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
                             throws MetadataStoreException {
         ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
         try {
-            @SuppressWarnings("static-access")
-            Connection conn = connManager.getConnection( connId );
+            Connection conn = connManager.get( connId );
             conn.setAutoCommit( autoCommit );
             return conn;
         } catch ( SQLException e ) {

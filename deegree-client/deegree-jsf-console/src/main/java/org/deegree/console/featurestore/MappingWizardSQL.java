@@ -335,7 +335,7 @@ public class MappingWizardSQL {
         SQLFeatureStore store = (SQLFeatureStore) resourceState.getResource();
         String[] createStmts = DDLCreator.newInstance( store.getSchema(), store.getDialect() ).getDDL();
         resourceState = fsMgr.deactivate( resourceState.getId() );
-        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5" );
+        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5", ws );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
