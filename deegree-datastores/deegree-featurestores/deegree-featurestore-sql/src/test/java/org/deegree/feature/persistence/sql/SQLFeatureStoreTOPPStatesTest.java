@@ -60,6 +60,8 @@ import junit.framework.Assert;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.test.TestDBProperties;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -179,10 +181,12 @@ public class SQLFeatureStoreTOPPStatesTest {
         ws.getSubsystemManager( FunctionManager.class ).startup( ws );
         ws.getSubsystemManager( SQLFunctionManager.class ).startup( ws );
 
-        ConnectionManager.addConnection( "admin", settings.getAdminUrl(), settings.getAdminUser(),
-                                         settings.getAdminPass(), 1, 10 );
-        ConnectionManager.addConnection( "deegree-test", settings.getUrl(), settings.getUser(), settings.getPass(), 1,
-                                         10 );
+        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        JDBCParams params = new DefaultJDBCParams( settings.getAdminUrl(), settings.getAdminUser(),
+                                                   settings.getAdminPass(), false );
+        mgr.addPool( "admin", params, ws );
+        params = new DefaultJDBCParams( settings.getUrl(), settings.getUser(), settings.getPass(), false );
+        mgr.addPool( "deegree-test", params, ws );
 
         dialect = ws.getSubsystemManager( SQLDialectManager.class ).create( "admin" );
     }
