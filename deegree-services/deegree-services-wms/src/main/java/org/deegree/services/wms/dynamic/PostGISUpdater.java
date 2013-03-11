@@ -135,7 +135,7 @@ public class PostGISUpdater extends LayerUpdater {
                 tableName = tableName.substring( tableName.indexOf( "." ) + 1 );
             }
 
-            int srid = findSrid( connid, tableName, schema );
+            int srid = findSrid( connid, tableName, schema, workspace );
 
             rs = conn.getMetaData().getColumns( null, schema, tableName, null );
             StringBuilder sb = new StringBuilder( "select " );

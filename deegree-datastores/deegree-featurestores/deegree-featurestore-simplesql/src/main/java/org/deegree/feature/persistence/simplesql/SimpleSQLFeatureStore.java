@@ -270,7 +270,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         this.workspace = workspace;
-        featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next() );
+        featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next(), workspace );
         if ( featureType == null ) {
             available = false;
         } else {

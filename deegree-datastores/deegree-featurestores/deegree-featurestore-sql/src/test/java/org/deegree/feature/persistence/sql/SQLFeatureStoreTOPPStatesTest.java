@@ -193,7 +193,8 @@ public class SQLFeatureStoreTOPPStatesTest {
 
     private void createDB()
                             throws SQLException {
-        Connection adminConn = ConnectionManager.getConnection( "admin" );
+        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        Connection adminConn = mgr.get( "admin" );
         try {
             dialect.createDB( adminConn, settings.getDbName() );
         } finally {
@@ -219,7 +220,8 @@ public class SQLFeatureStoreTOPPStatesTest {
         // create tables
         String[] ddl = DDLCreator.newInstance( mappedSchema, dialect ).getDDL();
 
-        Connection conn = ConnectionManager.getConnection( "deegree-test" );
+        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        Connection conn = mgr.get( "deegree-test" );
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
@@ -235,8 +237,9 @@ public class SQLFeatureStoreTOPPStatesTest {
     @After
     public void tearDown()
                             throws Exception {
-        Connection adminConn = ConnectionManager.getConnection( "admin" );
-        ConnectionManager.destroy( "deegree-test" );
+        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        Connection adminConn = mgr.get( "admin" );
+        mgr.deactivate( "deegree-test" );
         try {
             dialect.dropDB( adminConn, settings.getDbName() );
         } finally {
