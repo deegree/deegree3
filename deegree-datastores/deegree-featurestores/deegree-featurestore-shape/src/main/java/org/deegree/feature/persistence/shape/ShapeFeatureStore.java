@@ -158,6 +158,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private final List<Mapping> mappings;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -214,6 +216,7 @@ public class ShapeFeatureStore implements FeatureStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
 
+        this.workspace = workspace;
         if ( shpName.toLowerCase().endsWith( ".shp" ) ) {
             shpName = shpName.substring( 0, shpName.length() - 4 );
         }
@@ -286,7 +289,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
             if ( generateAlphanumericIndexes ) {
                 // set up index
-                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
+                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings, workspace );
             }
 
             ft = dbf.getFeatureType();
@@ -395,7 +398,7 @@ public class ShapeFeatureStore implements FeatureStore {
                                          mappings );
                     if ( generateAlphanumericIndexes ) {
                         // set up index
-                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
+                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings, workspace );
                     }
                     ft = dbf.getFeatureType();
                     schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
