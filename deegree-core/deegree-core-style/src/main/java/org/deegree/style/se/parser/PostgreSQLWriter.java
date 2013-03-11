@@ -40,7 +40,6 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static java.sql.Types.DOUBLE;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.VARCHAR;
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -752,7 +751,6 @@ public class PostgreSQLWriter {
                                                    false );
         mgr.addPool( "configtool", params, workspace );
 
-        ConnectionManager.addConnection( "configtool", "jdbc:postgresql://localhost/configtool", "postgres", "", 5, 20 );
         if ( style.isSimple() ) {
             new PostgreSQLWriter( "configtool", "schematest", workspace ).write( style, null );
         } else {
