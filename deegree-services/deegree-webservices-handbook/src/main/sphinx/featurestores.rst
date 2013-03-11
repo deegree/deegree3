@@ -202,10 +202,10 @@ The configuration format for the deegree memory feature store is defined by sche
 Simple SQL feature store
 ------------------------
 
-The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead.
+The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database, such as PostGIS. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead.
 
 .. tip::
-  If you want to use the simple SQL feature store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
+  If you want to use the simple SQL feature store with Oracle or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -261,13 +261,14 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 SQL feature store
 -----------------
 
-The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following backends:
+The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following databases:
 
 * PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
+* Microsoft SQL Server (2008, 2012)
 
 .. tip::
-  If you want to use the SQL feature store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
+  If you want to use the SQL feature store with Oracle Spatial or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
