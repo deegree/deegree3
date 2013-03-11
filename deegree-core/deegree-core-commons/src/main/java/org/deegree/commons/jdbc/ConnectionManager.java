@@ -89,8 +89,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     private static Logger LOG = LoggerFactory.getLogger( ConnectionManager.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.jdbc.jaxb";
-
     private static final URL CONFIG_SCHEMA = ConnectionManager.class.getResource( "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd" );
 
     private static Map<String, Type> idToType = new HashMap<String, Type>();
