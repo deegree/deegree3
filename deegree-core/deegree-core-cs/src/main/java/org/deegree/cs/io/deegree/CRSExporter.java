@@ -290,7 +290,8 @@ public class CRSExporter extends CRSExporterBase {
                 if ( crsCode != -1 ) {
                     Connection connection = null;
                     try {
-                        connection = ConnectionManager.getConnection( db_id );
+                        ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                        connection = mgr.get( db_id );
                         PreparedStatement ps = connection.prepareStatement( "SELECT a.datum_code,b.datum_name,b.remarks,b.revision_date,b.ellipsoid_code,c.ellipsoid_name,c.remarks,c.revision_date,c.semi_major_axis,c.inv_flattening,c.semi_minor_axis,c.uom_code from epsg_coordinatereferencesystem as a JOIN epsg_datum as b ON a.datum_code=b.datum_code JOIN epsg_ellipsoid as c ON b.ellipsoid_code=c.ellipsoid_code where coord_ref_sys_code=?" );
                         ps.setInt( 1, crsCode );
                         ResultSet rs = ps.executeQuery();
@@ -434,7 +435,8 @@ public class CRSExporter extends CRSExporterBase {
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    connection = ConnectionManager.getConnection( db_id );
+                    ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                    connection = mgr.get( db_id );
                     PreparedStatement ps = connection.prepareStatement( "SELECT prime_meridian_name,greenwich_longitude from epsg_primemeridian where prime_meridian_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();
@@ -509,7 +511,8 @@ public class CRSExporter extends CRSExporterBase {
                 if ( epsgCode != -1 ) {
                     Connection connection = null;
                     try {
-                        connection = ConnectionManager.getConnection( db_id );
+                        ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                        connection = mgr.get( db_id );
                         PreparedStatement ps = connection.prepareStatement( "SELECT b.area_of_use, b.area_west_bound_lon, b.area_south_bound_lat,b.area_east_bound_lon,b.area_north_bound_lat from epsg_coordinatereferencesystem as a JOIN epsg_area as b on a.area_of_use_code=b.area_code where a.coord_ref_sys_code=?" );
                         ps.setInt( 1, epsgCode );
                         ResultSet rs = ps.executeQuery();
@@ -559,7 +562,8 @@ public class CRSExporter extends CRSExporterBase {
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    connection = ConnectionManager.getConnection( db_id );
+                    ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                    connection = mgr.get( db_id );
                     PreparedStatement ps = connection.prepareStatement( "select projection_conv_code from epsg_coordinatereferencesystem where coord_ref_sys_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();

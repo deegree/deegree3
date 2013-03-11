@@ -92,11 +92,12 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
             String connId = config.getJDBCConnId();
-            Connection connection = ConnectionManager.getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            Connection connection = mgr.get( connId );
             connection.close();
 
             rs = new PostgisBackend( connId, ( config.isIsBillboard() ? ModelBackend.Type.TREE
-                                                                     : ModelBackend.Type.BUILDING ) );
+                                                                     : ModelBackend.Type.BUILDING ), workspace );
             // instantiate the texture dir
             List<String> tDirs = config.getTextureDirectory();
             for ( String tDir : tDirs ) {
