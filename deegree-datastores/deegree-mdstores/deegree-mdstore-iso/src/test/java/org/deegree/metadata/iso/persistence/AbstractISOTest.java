@@ -100,6 +100,7 @@ public abstract class AbstractISOTest {
         jdbcPass = TestProperties.getProperty( "iso_store_pass" );
 
         DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+        workspace.initManagers();
 
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
 

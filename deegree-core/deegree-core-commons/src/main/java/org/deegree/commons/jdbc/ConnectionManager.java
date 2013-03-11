@@ -67,6 +67,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.jdbc.param.JDBCParamsManager;
@@ -121,7 +122,10 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
                 LOG.info( "Setting up JDBC connection pool for connection id '" + connId + "'..." + "" );
                 try {
                     addPool( connId, state.getResource(), workspace );
-                    getConnection( connId ).close();
+                    Connection conn = get( connId );
+                    if ( conn != null ) {
+                        conn.close();
+                    }
                     idToState.put( connId, new ResourceState( connId, state.getConfigLocation(), this, init_ok, null,
                                                               null ) );
                 } catch ( Throwable t ) {
@@ -164,11 +168,17 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      * @return connection from the corresponding connection pool, null, if not available
      */
     public Connection get( String id ) {
+        ConnectionPool pool = idToPools.get( id );
+        if ( pool == null ) {
+            throw new RuntimeException( "Connection not configured." );
+        }
+        Connection conn = null;
         try {
-            return getConnection( id );
+            conn = pool.getConnection();
+            return conn;
         } catch ( SQLException e ) {
-            LOG.trace( "Stack trace: ", e );
-            return null;
+            LOG.warn( "JDBC connection {} is not available.", id );
+            throw new RuntimeException( e.getLocalizedMessage(), e );
         }
     }
 
@@ -378,8 +388,25 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     @Override
     public ResourceState deactivate( String id ) {
-        throw new UnsupportedOperationException(
-                                                 "Deactivating of connection pools not supported. Deactivate JDBCParams resource instead." );
+        try {
+            ConnectionPool pool = idToPools.remove( id );
+            if ( pool != null ) {
+                pool.destroy();
+            }
+
+            ResourceState state = getState( id );
+            if ( state == null ) {
+                return null;
+            }
+            idToState.put( id, new ResourceState( id, state.getConfigLocation(), state.getProvider(),
+                                                  StateType.deactivated, null, null ) );
+            idToType.remove( id );
+            return getState( id );
+        } catch ( Exception e ) {
+            LOG.error( "Error when deactivating pool: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return null;
+        }
     }
 
     @Override
