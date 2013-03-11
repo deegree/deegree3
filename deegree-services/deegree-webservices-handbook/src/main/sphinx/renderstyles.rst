@@ -1,8 +1,8 @@
 .. _anchor-configuration-renderstyles:
 
-====================================
-Style configuration
-====================================
+==========
+Map styles
+==========
 
 Style resources are used to obtain information on how to render geo objects (mostly features, but also coverages) into maps. The most common use case is to reference them from a layer configuration, in order to describe how the layer is to be rendered. This chapter assumes the reader is familiar with basic SLD/SE terms. The style configurations do not depend on any other resource.
 

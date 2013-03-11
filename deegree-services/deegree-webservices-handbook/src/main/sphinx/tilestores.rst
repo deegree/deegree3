@@ -1,10 +1,10 @@
 .. _anchor-configuration-tilestore:
 
-========================
-Tile store configuration
-========================
+===========
+Tile stores
+===========
 
-Tile stores are data stores that provide access to pre-rendered map tiles. The common use case for tile stores is to provide data for tile layers.
+Tile stores are resources that provide access to pre-rendered map tiles. The common use case for tile stores is to provide data for tile layers.
 
 The remainder of this chapter describes some relevant terms and the tile store configuration files in detail. You can access this configuration level by clicking on the **tile stores** link in the administration console. The configuration files are located in the **datasources/tile/** directory of the deegree workspace.
 

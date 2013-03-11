@@ -1,8 +1,8 @@
 .. _anchor-configuration-metadatastore:
 
-============================
-Metadata store configuration
-============================
+===============
+Metadata stores
+===============
 
 Metadata stores are data stores that provide access to metadata records. The two common use cases for metadata stores are:
 

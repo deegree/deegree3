@@ -1,10 +1,10 @@
 .. _anchor-configuration-service:
 
-========================
-Webservice configuration
-========================
+============
+Web services
+============
 
-This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
+This chapter describes the configuration of web service resources. You can access this configuration level by clicking the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-services.png
    :figwidth: 80%
@@ -14,7 +14,7 @@ This chapter describes the deegree webservices configuration files. You can acce
    Web services are the top-level resources of the deegree workspace
 
 .. tip::
-  The identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service instance that you want to connect to explicitly.
+  The identifier of a web service resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service instance that you want to connect to explicitly.
 
 .. _anchor-configuration-wfs:
 
@@ -747,9 +747,9 @@ The ``DefaultExecutionManager`` option has the following sub-options:
 
 TODO explain parameters in detail
 
-----------------------
-Metadata configuration
-----------------------
+--------
+Metadata
+--------
 
 This section describes the configuration for the different types of metadata that a service reports in the ``GetCapabilities`` response. These options don't affect the data that the service offers or the behaviour of the service. It merely changes the descriptive metadata that the service reports.
 
@@ -897,9 +897,9 @@ Extended capabilities
 
 Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. They are not defined by the OGC service specifications, but by additional guidance documents, such as the INSPIRE Network Service TGs. deegree treats this section as a generic XML element and includes it in the output. If your service supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and 2.0.0), you may include multiple ``ExtendedCapabilities`` elements in the metadata configuration and use attribute ``protocolVersions`` to indicate the version that you want to define the extended capabilities for.
 
-------------------------
-Controller configuration
-------------------------
+------------------
+Service controller
+------------------
 
 The controller configuration is used to configure various global aspects that affect all services.
 

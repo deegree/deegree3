@@ -1,10 +1,10 @@
 .. _anchor-configuration-featurestore:
 
-===========================
-Feature store configuration
-===========================
+==============
+Feature stores
+==============
 
-Feature stores are data stores that provide access to stored features. The two most common use cases for feature stores are:
+Feature stores are resources that provide access to stored features. The two most common use cases for feature stores are:
 
 * Accessing via WFS
 * Providing of data for feature layers
