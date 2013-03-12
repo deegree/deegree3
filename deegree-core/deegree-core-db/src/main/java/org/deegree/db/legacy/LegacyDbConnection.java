@@ -39,15 +39,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.persistence;
+package org.deegree.db.legacy;
 
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.coverage.Coverage;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.deegree.commons.jdbc.ConnectionPool;
+import org.deegree.db.DbConnection;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceInitException;
-import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.AbstractResourceMetadata;
-import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * TODO add class documentation here
@@ -57,23 +59,52 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DefaultCoverageMetadata extends AbstractResourceMetadata<Coverage> {
+public class LegacyDbConnection implements DbConnection {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
+    private LegacyConnectionMetadata metadata;
 
-    public DefaultCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                    AbstractResourceProvider<Coverage> provider ) {
-        super( workspace, location, provider );
+    private ConnectionPool pool;
+
+    public LegacyDbConnection( String url, String user, String password, boolean readOnly,
+                               LegacyConnectionMetadata metadata ) {
+        this.metadata = metadata;
+        // hardcoded as until 3.2
+        int poolMinSize = 5;
+        int poolMaxSize = 25;
+
+        pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
+                                   poolMaxSize );
     }
 
     @Override
-    public DefaultCoverageBuilder prepare() {
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
         try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
-                                                  workspace );
-            return new DefaultCoverageBuilder( config, this );
+            getConnection().close();
+        } catch ( SQLException e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
+    }
+
+    @Override
+    public Connection getConnection() {
+        try {
+            return pool.getConnection();
+        } catch ( SQLException e ) {
+            throw new ResourceException( e.getLocalizedMessage(), e );
+        }
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            pool.destroy();
         } catch ( Exception e ) {
-            throw new ResourceInitException( "IO-Error while creating coverage store.", e );
+            throw new ResourceException( e.getLocalizedMessage(), e );
         }
     }
 

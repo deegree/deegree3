@@ -39,9 +39,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.db.legacy;
 
-import java.util.List;
+import org.deegree.db.DbConnection;
+import org.deegree.db.legacy.jaxb.JDBCConnection;
+import org.deegree.workspace.ResourceBuilder;
 
 /**
  * TODO add class documentation here
@@ -51,16 +53,21 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class LegacyConnectionBuilder implements ResourceBuilder<DbConnection> {
 
-    void init();
+    private JDBCConnection config;
 
-    void destroy();
+    private LegacyConnectionMetadata metadata;
 
-    ClassLoader getModuleClassLoader();
+    public LegacyConnectionBuilder( JDBCConnection config, LegacyConnectionMetadata metadata ) {
+        this.config = config;
+        this.metadata = metadata;
+    }
 
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
+    @Override
+    public DbConnection build() {
+        return new LegacyDbConnection( config.getUrl(), config.getUser(), config.getPassword(), config.isReadOnly(),
+                                       metadata );
+    }
 
 }

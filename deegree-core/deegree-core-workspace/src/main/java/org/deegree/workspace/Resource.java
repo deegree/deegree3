@@ -54,5 +54,7 @@ public interface Resource {
     ResourceMetadata<? extends Resource> getMetadata();
 
     void init();
+
+    void destroy();
     
 }

@@ -38,10 +38,12 @@
  Germany
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+----------------------------------------------------------------------------*/
+package org.deegree.db;
 
-import java.util.List;
+import java.sql.Connection;
+
+import org.deegree.workspace.Resource;
 
 /**
  * TODO add class documentation here
@@ -51,16 +53,8 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public interface DbConnection extends Resource {
 
-    void init();
-
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
-
+    Connection getConnection();
+    
 }

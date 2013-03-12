@@ -96,22 +96,25 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>( list.size() );
 
         LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up {}.", metadata.getName() );
+        LOG.info( "Scanning for {}.", metadata.getName() );
         LOG.info( "--------------------------------------------------------------------------------" );
 
+        read( list, workspace );
+    }
+
+    private void read( List<ResourceLocation<T>> list, Workspace workspace ) {
         for ( ResourceLocation<T> loc : list ) {
             try {
                 ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
                 if ( prov != null ) {
                     LOG.info( "Scanning resource {} with provider {}.", loc, prov.getClass().getSimpleName() );
                     ResourceMetadata<T> md = prov.read( workspace, loc );
-                    md.prepare();
                     metadataMap.put( md.getIdentifier(), md );
                 } else {
                     LOG.warn( "Not scanning resource {}, no provider found for namespace {}.", loc, loc.getNamespace() );
                 }
             } catch ( Exception e ) {
-                LOG.error( "Unable to prepare resource {}: {}.", loc.getIdentifier(), e.getLocalizedMessage() );
+                LOG.error( "Unable to scan resource {}: {}.", loc.getIdentifier(), e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
             }
         }

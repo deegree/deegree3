@@ -49,20 +49,24 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -86,6 +90,8 @@ public class DefaultWorkspace implements Workspace {
 
     private Map<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>> resourceManagers;
 
+    private Map<ResourceIdentifier<? extends Resource>, Resource> resources;
+
     public DefaultWorkspace( File directory ) {
         this.directory = directory;
     }
@@ -93,32 +99,74 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public void init() {
         resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
+        resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
         initClassloader();
 
-        TreeSet<ResourceMetadata<? extends Resource>> metadata = new TreeSet<ResourceMetadata<? extends Resource>>();
+        TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder = new TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>>();
+
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Scanning and preparing resources." );
+        LOG.info( "--------------------------------------------------------------------------------" );
 
         // setup managers
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
         while ( iter.hasNext() ) {
             ResourceManager<?> mgr = iter.next();
             mgr.init( this );
-            metadata.addAll( mgr.getResourceMetadata() );
+            Collection<? extends ResourceMetadata<? extends Resource>> mds = mgr.getResourceMetadata();
+            for ( ResourceMetadata<? extends Resource> md : mds ) {
+                LOG.info( "Preparing resource {}.", md.getIdentifier() );
+                try {
+                    ResourceBuilder<? extends Resource> builder = md.prepare();
+                    if ( builder == null ) {
+                        LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
+                        continue;
+                    }
+                    metadataToBuilder.put( md, builder );
+                } catch ( Exception e ) {
+                    LOG.error( "Error preparing resource {}: {}", md.getIdentifier(), e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
             resourceManagers.put( (Class) mgr.getClass(), mgr );
         }
 
-        for ( ResourceMetadata<? extends Resource> md : metadata ) {
-            ResourceBuilder<? extends Resource> builder = md.prepare();
-            if ( builder != null ) {
-                builder.build();
-            } else {
-                LOG.error( "Unable to build resource {}, no description provided.", md.getIdentifier() );
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Building and initializing resources." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        for ( Entry<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> e : metadataToBuilder.entrySet() ) {
+            LOG.info( "Building resource {}.", e.getKey().getIdentifier() );
+            try {
+                Resource res = e.getValue().build();
+                if ( res == null ) {
+                    LOG.error( "Unable to build resource {}.", e.getKey().getIdentifier() );
+                    continue;
+                }
+                LOG.info( "Initializing resource {}.", e.getKey().getIdentifier() );
+                res.init();
+                resources.put( res.getMetadata().getIdentifier(), res );
+            } catch ( Exception ex ) {
+                LOG.error( "Unable to build resource {}: {}.", e.getKey().getIdentifier(), ex.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
             }
         }
     }
 
     @Override
     public void destroy() {
+        for ( Resource res : resources.values() ) {
+            try {
+                res.destroy();
+            } catch ( Exception e ) {
+                LOG.warn( "Unable to destroy resource {}: {}", res.getMetadata().getIdentifier(),
+                          e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
         moduleClassLoader = null;
+        resources = null;
+        resourceManagers = null;
     }
 
     private void initClassloader() {
@@ -189,8 +237,8 @@ public class DefaultWorkspace implements Workspace {
     }
 
     @Override
-    public <T extends Resource> ResourceManager<T> getResourceManager( Class<ResourceManager<T>> managerClass ) {
-        return (ResourceManager<T>) resourceManagers.get( managerClass );
+    public <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id ) {
+        return (T) resources.get( new DefaultResourceIdentifier( providerClass, id ) );
     }
 
 }

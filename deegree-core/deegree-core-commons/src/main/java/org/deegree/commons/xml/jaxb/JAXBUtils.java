@@ -266,9 +266,13 @@ public class JAXBUtils {
                 URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" );
                 StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream(),
                                                       descUrl.toExternalForm() );
-                StreamSource spat = new StreamSource( new DURL( spatUrl.toExternalForm() ).openStream(),
-                                                      spatUrl.toExternalForm() );
-                result = sf.newSchema( new Source[] { origSchema, desc, spat } );
+                if ( spatUrl != null ) {
+                    StreamSource spat = new StreamSource( new DURL( spatUrl.toExternalForm() ).openStream(),
+                                                          spatUrl.toExternalForm() );
+                    result = sf.newSchema( new Source[] { origSchema, desc, spat } );
+                } else {
+                    result = sf.newSchema( new Source[] { origSchema, desc } );
+                }
             } catch ( Throwable e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
                            + e.getLocalizedMessage() );

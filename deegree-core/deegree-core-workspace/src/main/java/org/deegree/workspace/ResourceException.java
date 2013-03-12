@@ -41,8 +41,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
-import java.util.List;
-
 /**
  * TODO add class documentation here
  * 
@@ -51,16 +49,16 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class ResourceException extends RuntimeException {
 
-    void init();
+    private static final long serialVersionUID = -3984357304894851693L;
 
-    void destroy();
+    public ResourceException( String msg, Exception cause ) {
+        super( msg, cause );
+    }
 
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
+    public ResourceException( String msg ) {
+        super( msg );
+    }
 
 }

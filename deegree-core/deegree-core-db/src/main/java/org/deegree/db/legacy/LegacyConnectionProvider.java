@@ -39,9 +39,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.db.legacy;
 
-import java.util.List;
+import java.net.URL;
+
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.DbConnection;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -51,16 +57,24 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class LegacyConnectionProvider extends ConnectionProvider {
 
-    void init();
+    static final URL SCHEMA_URL = LegacyConnectionProvider.class.getResource( "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd" );
 
-    void destroy();
+    @Override
+    public String getNamespace() {
+        return "http://www.deegree.org/jdbc";
+    }
 
-    ClassLoader getModuleClassLoader();
+    @Override
+    public ResourceMetadata<DbConnection> createFromLocation( Workspace workspace,
+                                                              ResourceLocation<DbConnection> location ) {
+        return new LegacyConnectionMetadata( workspace, location, this );
+    }
 
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
+    @Override
+    public URL getSchema() {
+        return SCHEMA_URL;
+    }
 
 }

@@ -39,9 +39,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.db;
 
-import java.util.List;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -51,16 +51,8 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public abstract class ConnectionProvider extends AbstractResourceProvider<DbConnection> {
 
-    void init();
-
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
+    // marker class specializing provider
 
 }

@@ -39,9 +39,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
+package org.deegree.db;
 
-import java.util.List;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * TODO add class documentation here
@@ -51,16 +52,11 @@ import java.util.List;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Workspace {
+public class ConnectionManager extends DefaultResourceManager<DbConnection> {
 
-    void init();
-
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
+    public ConnectionManager() {
+        super( new DefaultResourceManagerMetadata<DbConnection>( ConnectionProvider.class, "database connections",
+                                                                 "jdbc" ) );
+    }
 
 }
