@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<inspire_ds:ExtendedCapabilities xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
+<inspire_ds:ExtendedCapabilities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0 http://inspire.ec.europa.eu/schemas/inspire_ds/1.0/inspire_ds.xsd">
   		<inspire_common:ResourceLocator>
 				<inspire_common:URL>http://www.inspire-geoportal.eu/discovery/csw?SERVICE=CSW&amp;REQUEST=GetCapabilities</inspire_common:URL>
 				<inspire_common:MediaType>application/vnd.ogc.wms_xml</inspire_common:MediaType>
