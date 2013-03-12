@@ -53,6 +53,9 @@ templatebodytext returns [String text]:
   | t = Kvp { $text = $t.text; }
   | t = Equals { $text = $t.text; }
   | t = Comma { $text = $t.text; }
+  | t = Slash { $text = $t.text; }
+  | t = Point { $text = $t.text; }
+  | t = Url { $text = $t.text; }
   | t = BracketLeft { $text = $t.text; }
   | t = BracketRight { $text = $t.text; }
   ;
@@ -86,6 +89,7 @@ templateselector[List<String> patterns] returns [Boolean negate]:
 
 templatepatterns[List<String> patterns]:
   Star (WS* p = ID WS*)? (Comma templatepatterns[patterns])? { if($p != null) patterns.add("*" + $p.text); else patterns.add("*"); }
+  | (WS* p = ID WS*) Star (Comma templatepatterns[patterns])? { patterns.add($p.text + "*"); }
   | WS* p = ID WS* (Comma templatepatterns[patterns])? { patterns.add($p.text); }
   ;
 
@@ -104,15 +108,20 @@ even returns [OddEven even]:
   EvenStart Colon n = ID TagClose { $even = new OddEven($n.text, false); };
 
 link returns [Link link]:
-  LinkStart Colon pref = url text = (Colon ~(Colon | TagClose)+)? TagClose
+  LinkStart Colon pref = url TagClose
   {
-    if($text == null) $link = new Link(pref);
-    else $link = new Link(pref, $text.text);
+    if(pref.text == null) $link = new Link(pref.url);
+    else $link = new Link(pref.url, pref.text);
   }
   ;
 
-url returns [String url]:
-  val = Url { $url = $val.text; };
+url returns [String url, String text]:
+  val = Url {
+            $url = $val.text;
+            $text = $url.substring($url.lastIndexOf(":") + 1);
+            $url = $url.substring(0, $url.lastIndexOf(":"));
+            if($text.trim().isEmpty()) $text = null;
+        };
 
 index returns [Index index]:
   Index { $index = new Index(); };

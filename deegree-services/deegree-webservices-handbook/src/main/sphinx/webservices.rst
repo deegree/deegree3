@@ -504,9 +504,7 @@ This section shows all available special constructs. The selectors are explained
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 | <?even:*name*>                | property          | calls the *name* template if the index of the current property is even                          |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link>                       | property          | evaluates to a HTML <a href> link with the value of the property as target and text             |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link:*prefix*>              | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
+| <?link:*prefix*:>             | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 | <?link:*prefix*:*text*>       | property          | the text of the link will be *text* instead of the link address                                 |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
