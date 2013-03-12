@@ -1,10 +1,10 @@
 .. _anchor-configuration-layers:
 
-====================================
-Layer configuration
-====================================
+==========
+Map layers
+==========
 
-A layer is the description on how to combine a data store and a style resource into a map. Each layer configuration can be used to define one or more layers. The layers can be used in theme definitions, and depend on various data source and style resources. This chapter assumes you've already configured a data source and a style for your layer (although a style is not strictly needed; some layer types can do without, and others can render in a default style when none is given).
+A (map) layer defines how to combine a data store and a style resource into a map. Each layer resource can be used to define one or more layers. The layers can be used in theme definitions, and depend on various data source and style resources. This chapter assumes you've already configured a data source and a style for your layer (although a style is not strictly needed; some layer types can do without, and others can render in a default style when none is given).
 
 .. figure:: images/workspace-overview-layer.png
    :figwidth: 80%

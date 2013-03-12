@@ -1,10 +1,10 @@
 .. _anchor-configuration-coveragestore:
 
-============================
-Coverage store configuration
-============================
+===============
+Coverage stores
+===============
 
-Coverage stores are data stores that provide access to raster data. The two most common use cases for coverage stores in a deegree workspace are:
+Coverage stores are resources that provide access to raster data. The two most common use cases for coverage stores in a deegree workspace are:
 
 * Accessing via WCS
 * Providing of data for raster layers

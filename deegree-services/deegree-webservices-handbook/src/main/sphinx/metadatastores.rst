@@ -1,8 +1,8 @@
 .. _anchor-configuration-metadatastore:
 
-============================
-Metadata store configuration
-============================
+===============
+Metadata stores
+===============
 
 Metadata stores are data stores that provide access to metadata records. The two common use cases for metadata stores are:
 
@@ -45,9 +45,10 @@ The SQL ISO metadata store implementation currently supports the following backe
 
 * PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
+* Microsoft SQL Server (2008, 2012)
 
 .. tip::
-  If you want to use the SQL ISO metadata store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
+  If you want to use the SQL ISO metadata store with Oracle or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
 
 The SQL metadata store configuration is defined by schema file http://schemas.deegree.org/datasource/metadata/iso19115/3.2.0/iso19115.xsd
 
