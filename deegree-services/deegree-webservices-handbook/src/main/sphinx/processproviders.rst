@@ -1,8 +1,8 @@
 .. _anchor-configuration-processproviders:
 
-==============================
-Process provider configuration
-==============================
+=================
+Process providers
+=================
 
 Process providers plug geospatial processes into the WPS.
 
