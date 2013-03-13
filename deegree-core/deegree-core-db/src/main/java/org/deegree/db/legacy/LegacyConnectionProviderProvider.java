@@ -41,15 +41,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.legacy;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.net.URL;
 
-import org.deegree.commons.jdbc.ConnectionPool;
-import org.deegree.db.DbConnection;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceException;
-import org.deegree.workspace.ResourceInitException;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -59,53 +57,24 @@ import org.deegree.workspace.ResourceMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LegacyDbConnection implements DbConnection {
+public class LegacyConnectionProviderProvider extends ConnectionProviderProvider {
 
-    private LegacyConnectionMetadata metadata;
+    static final URL SCHEMA_URL = LegacyConnectionProviderProvider.class.getResource( "/META-INF/schemas/jdbc/3.0.0/jdbc.xsd" );
 
-    private ConnectionPool pool;
-
-    public LegacyDbConnection( String url, String user, String password, boolean readOnly,
-                               LegacyConnectionMetadata metadata ) {
-        this.metadata = metadata;
-        // hardcoded as until 3.2
-        int poolMinSize = 5;
-        int poolMaxSize = 25;
-
-        pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
-                                   poolMaxSize );
+    @Override
+    public String getNamespace() {
+        return "http://www.deegree.org/jdbc";
     }
 
     @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
+    public ResourceMetadata<ConnectionProvider> createFromLocation( Workspace workspace,
+                                                              ResourceLocation<ConnectionProvider> location ) {
+        return new LegacyConnectionProviderMetadata( workspace, location, this );
     }
 
     @Override
-    public void init() {
-        try {
-            getConnection().close();
-        } catch ( SQLException e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
-
-    @Override
-    public Connection getConnection() {
-        try {
-            return pool.getConnection();
-        } catch ( SQLException e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
-    }
-
-    @Override
-    public void destroy() {
-        try {
-            pool.destroy();
-        } catch ( Exception e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
+    public URL getSchema() {
+        return SCHEMA_URL;
     }
 
 }

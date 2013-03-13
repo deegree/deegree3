@@ -80,25 +80,19 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         InputStream fis = null;
         XMLStreamReader in = null;
         try {
-            in = XMLInputFactory.newInstance().createXMLStreamReader( fis = new FileInputStream( file ) );
+            in = XMLInputFactory.newInstance().createXMLStreamReader( fis = getAsStream() );
             while ( !in.isStartElement() ) {
                 in.next();
             }
             return in.getNamespaceURI();
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
+        } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             if ( in != null ) {
                 try {
                     in.close();
-                } catch ( XMLStreamException e ) {
+                } catch ( Exception e ) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }

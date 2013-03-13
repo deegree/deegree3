@@ -84,20 +84,30 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     @Override
     public void init( Workspace workspace ) {
         nsToProvider = new HashMap<String, ResourceProvider<T>>();
+        metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
+
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Scanning for {}.", metadata.getName() );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
         // load providers
         Iterator<? extends ResourceProvider<T>> iter = ServiceLoader.load( metadata.getProviderClass(),
                                                                            workspace.getModuleClassLoader() ).iterator();
         while ( iter.hasNext() ) {
             ResourceProvider<T> prov = iter.next();
             nsToProvider.put( prov.getNamespace(), prov );
+            try {
+                for ( ResourceMetadata<T> md : prov.getAdditionalResources( workspace ) ) {
+                    metadataMap.put( md.getIdentifier(), md );
+                }
+            } catch ( Exception e ) {
+                LOG.error( "Unable to obtain additional resources from {}: {}", prov.getClass().getSimpleName(),
+                           e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
         }
 
         List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
-        metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>( list.size() );
-
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Scanning for {}.", metadata.getName() );
-        LOG.info( "--------------------------------------------------------------------------------" );
 
         read( list, workspace );
     }

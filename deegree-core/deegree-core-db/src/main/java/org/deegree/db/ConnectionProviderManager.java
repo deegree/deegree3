@@ -38,12 +38,11 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.db;
 
-import java.sql.Connection;
-
-import org.deegree.workspace.Resource;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * TODO add class documentation here
@@ -53,8 +52,11 @@ import org.deegree.workspace.Resource;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface DbConnection extends Resource {
+public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 
-    Connection getConnection();
-    
+    public ConnectionProviderManager() {
+        super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class, "database connections",
+                                                                 "jdbc" ) );
+    }
+
 }

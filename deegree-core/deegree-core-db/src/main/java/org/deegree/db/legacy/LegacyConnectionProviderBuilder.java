@@ -39,11 +39,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db;
+package org.deegree.db.legacy;
 
-import java.sql.Connection;
-
-import org.deegree.workspace.Resource;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.legacy.jaxb.JDBCConnection;
+import org.deegree.workspace.ResourceBuilder;
 
 /**
  * TODO add class documentation here
@@ -53,8 +53,21 @@ import org.deegree.workspace.Resource;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ConnectionProvider extends Resource {
+public class LegacyConnectionProviderBuilder implements ResourceBuilder<ConnectionProvider> {
 
-    Connection getConnection();
+    private JDBCConnection config;
+
+    private LegacyConnectionProviderMetadata metadata;
+
+    public LegacyConnectionProviderBuilder( JDBCConnection config, LegacyConnectionProviderMetadata metadata ) {
+        this.config = config;
+        this.metadata = metadata;
+    }
+
+    @Override
+    public ConnectionProvider build() {
+        return new LegacyConnectionProvider( config.getUrl(), config.getUser(), config.getPassword(),
+                                             config.isReadOnly() == null ? false : config.isReadOnly(), metadata );
+    }
 
 }

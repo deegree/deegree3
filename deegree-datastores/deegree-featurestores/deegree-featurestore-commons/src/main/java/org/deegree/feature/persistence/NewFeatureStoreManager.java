@@ -39,19 +39,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db.legacy;
+package org.deegree.feature.persistence;
 
-import static org.deegree.db.legacy.LegacyConnectionProvider.SCHEMA_URL;
+import java.io.File;
+import java.io.IOException;
 
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.db.ConnectionProvider;
-import org.deegree.db.DbConnection;
-import org.deegree.db.legacy.jaxb.JDBCConnection;
-import org.deegree.workspace.ResourceBuilder;
-import org.deegree.workspace.ResourceInitException;
-import org.deegree.workspace.ResourceLocation;
+import org.deegree.feature.persistence.cache.BBoxCache;
+import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.AbstractResourceMetadata;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import org.deegree.workspace.standard.DefaultWorkspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -61,22 +61,36 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LegacyConnectionMetadata extends AbstractResourceMetadata<DbConnection> {
+public class NewFeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 
-    public LegacyConnectionMetadata( Workspace workspace, ResourceLocation<DbConnection> location,
-                                     ConnectionProvider provider ) {
-        super( workspace, location, provider );
+    private static Logger LOG = LoggerFactory.getLogger( NewFeatureStoreManager.class );
+
+    private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
+
+    private BBoxPropertiesCache bboxCache;
+
+    public NewFeatureStoreManager() {
+        super( new DefaultResourceManagerMetadata<FeatureStore>( NewFeatureStoreProvider.class, "feature stores",
+                                                                 "datasources/feature" ) );
     }
 
     @Override
-    public ResourceBuilder<DbConnection> prepare() {
+    public void init( Workspace workspace ) {
         try {
-            JDBCConnection cfg = (JDBCConnection) JAXBUtils.unmarshall( "org.deegree.db.legacy.jaxb", SCHEMA_URL,
-                                                                        location.getAsStream(), workspace );
-            return new LegacyConnectionBuilder( cfg, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
+            if ( workspace instanceof DefaultWorkspace ) {
+                File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
+                bboxCache = new BBoxPropertiesCache( new File( dir, BBOX_CACHE_FILE ) );
+            }
+            // else?
+        } catch ( IOException e ) {
+            LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
         }
+
+        super.init( workspace );
+    }
+
+    public BBoxCache getBBoxCache() {
+        return bboxCache;
     }
 
 }

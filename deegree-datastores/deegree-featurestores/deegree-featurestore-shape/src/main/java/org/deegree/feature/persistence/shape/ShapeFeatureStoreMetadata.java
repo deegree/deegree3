@@ -39,17 +39,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db.legacy;
+package org.deegree.feature.persistence.shape;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.File;
 
-import org.deegree.commons.jdbc.ConnectionPool;
-import org.deegree.db.ConnectionProvider;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceException;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig;
+import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
-import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
+import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
@@ -59,53 +62,30 @@ import org.deegree.workspace.ResourceMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LegacyConnectionProvider implements ConnectionProvider {
+public class ShapeFeatureStoreMetadata extends AbstractResourceMetadata<FeatureStore> {
 
-    private LegacyConnectionProviderMetadata metadata;
-
-    private ConnectionPool pool;
-
-    public LegacyConnectionProvider( String url, String user, String password, boolean readOnly,
-                               LegacyConnectionProviderMetadata metadata ) {
-        this.metadata = metadata;
-        // hardcoded as until 3.2
-        int poolMinSize = 5;
-        int poolMaxSize = 25;
-
-        pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
-                                   poolMaxSize );
+    public ShapeFeatureStoreMetadata( Workspace workspace, ResourceLocation<FeatureStore> location,
+                                      AbstractResourceProvider<FeatureStore> provider ) {
+        super( workspace, location, provider );
     }
 
     @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    public void init() {
+    public ResourceBuilder<FeatureStore> prepare() {
         try {
-            getConnection().close();
-        } catch ( SQLException e ) {
+            ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) JAXBUtils.unmarshall( ShapeFeatureStoreProvider.CONFIG_JAXB_PACKAGE,
+                                                                                             provider.getSchema(),
+                                                                                             location.getAsStream(),
+                                                                                             workspace );
+            return new ShapeFeatureStoreBuilder( config, location, this );
+        } catch ( Exception e ) {
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
     }
 
-    @Override
-    public Connection getConnection() {
-        try {
-            return pool.getConnection();
-        } catch ( SQLException e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
+    public static void main( String[] args ) {
+        Workspace ws = new DefaultWorkspace(new File("/home/stranger/.deegree/deegree-workspace-utah-3.2-pre9-20120717.234406-9"));
+        ws.init();
+        ws.destroy();
     }
-
-    @Override
-    public void destroy() {
-        try {
-            pool.destroy();
-        } catch ( Exception e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
-    }
-
+    
 }

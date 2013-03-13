@@ -42,6 +42,8 @@
 package org.deegree.workspace.standard;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceLocation;
@@ -70,5 +72,10 @@ public abstract class AbstractResourceProvider<T extends Resource> implements Re
     public abstract ResourceMetadata<T> createFromLocation( Workspace workspace, ResourceLocation<T> location );
 
     public abstract URL getSchema();
+
+    @Override
+    public List<ResourceMetadata<T>> getAdditionalResources( Workspace workspace ) {
+        return new ArrayList<ResourceMetadata<T>>();
+    }
 
 }

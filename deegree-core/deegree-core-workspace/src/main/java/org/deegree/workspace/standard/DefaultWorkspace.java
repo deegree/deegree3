@@ -145,10 +145,13 @@ public class DefaultWorkspace implements Workspace {
                 }
                 LOG.info( "Initializing resource {}.", e.getKey().getIdentifier() );
                 res.init();
+                System.out.println(res);
+                System.out.println(":" + res.getMetadata());
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
+                ex.printStackTrace();
                 LOG.error( "Unable to build resource {}: {}.", e.getKey().getIdentifier(), ex.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
+                LOG.trace( "Stack trace:", ex );
             }
         }
     }
@@ -224,6 +227,9 @@ public class DefaultWorkspace implements Workspace {
     public <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata ) {
         List<ResourceLocation<T>> list = new ArrayList<ResourceLocation<T>>();
         File dir = new File( directory, metadata.getWorkspacePath() );
+        if ( !dir.isDirectory() ) {
+            return list;
+        }
         URI base = dir.getAbsoluteFile().toURI();
         for ( File f : FileUtils.listFiles( dir, new String[] { "xml" }, true ) ) {
             URI uri = f.getAbsoluteFile().toURI();
@@ -239,6 +245,10 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id ) {
         return (T) resources.get( new DefaultResourceIdentifier( providerClass, id ) );
+    }
+
+    public File getLocation() {
+        return directory;
     }
 
 }

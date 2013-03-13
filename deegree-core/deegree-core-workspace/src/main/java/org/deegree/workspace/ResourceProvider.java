@@ -41,6 +41,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.util.List;
+
 /**
  * TODO add class documentation here
  * 
@@ -52,7 +54,9 @@ package org.deegree.workspace;
 public interface ResourceProvider<T extends Resource> {
 
     String getNamespace();
-    
+
     ResourceMetadata<T> read( Workspace workspace, ResourceLocation<T> location );
+
+    List<ResourceMetadata<T>> getAdditionalResources( Workspace workspace );
 
 }

@@ -136,4 +136,5 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
     public BBoxCache getBBoxCache() {
         return bboxCache;
     }
+
 }

@@ -39,10 +39,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db;
+package org.deegree.workspace.standard;
 
-import org.deegree.workspace.standard.DefaultResourceManager;
-import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
 
 /**
  * TODO add class documentation here
@@ -52,11 +56,28 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionManager extends DefaultResourceManager<DbConnection> {
+public class IncorporealResourceLocation<T extends Resource> extends DefaultResourceLocation<T> {
 
-    public ConnectionManager() {
-        super( new DefaultResourceManagerMetadata<DbConnection>( ConnectionProvider.class, "database connections",
-                                                                 "jdbc" ) );
+    private byte[] bytes;
+
+    public IncorporealResourceLocation( byte[] bytes, ResourceIdentifier<T> id ) {
+        super( null, id );
+        this.bytes = bytes;
+    }
+
+    @Override
+    public InputStream getAsStream() {
+        return new ByteArrayInputStream( bytes );
+    }
+
+    @Override
+    public InputStream resolve( String path ) {
+        return null;
+    }
+
+    @Override
+    public File resolveToFile( String path ) {
+        return null;
     }
 
 }

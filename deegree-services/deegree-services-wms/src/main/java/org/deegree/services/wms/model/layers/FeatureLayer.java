@@ -158,7 +158,7 @@ public class FeatureLayer extends Layer {
     public FeatureLayer( MapService service, String name, String title, Layer parent, String file ) {
         super( service, name, title, parent );
         // TODO what about the charset here?
-        datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null, null );
+        datastore = new ShapeFeatureStore( file, null, null, null, null, null, true, null, null, null );
         try {
             datastore.init( null );
         } catch ( ResourceInitException e ) {

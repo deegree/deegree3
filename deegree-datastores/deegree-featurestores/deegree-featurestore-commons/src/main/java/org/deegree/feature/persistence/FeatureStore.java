@@ -64,7 +64,7 @@ import org.deegree.geometry.Geometry;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface FeatureStore extends Resource {
+public interface FeatureStore extends Resource, org.deegree.workspace.Resource {
 
     /**
      * Returns whether the store is currently able to perform operations.
@@ -211,4 +211,5 @@ public interface FeatureStore extends Resource {
      */
     LockManager getLockManager()
                             throws FeatureStoreException;
+
 }

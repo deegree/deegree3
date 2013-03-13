@@ -39,11 +39,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db.legacy;
+package org.deegree.db;
 
-import org.deegree.db.DbConnection;
-import org.deegree.db.legacy.jaxb.JDBCConnection;
-import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -53,21 +51,8 @@ import org.deegree.workspace.ResourceBuilder;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LegacyConnectionBuilder implements ResourceBuilder<DbConnection> {
+public abstract class ConnectionProviderProvider extends AbstractResourceProvider<ConnectionProvider> {
 
-    private JDBCConnection config;
-
-    private LegacyConnectionMetadata metadata;
-
-    public LegacyConnectionBuilder( JDBCConnection config, LegacyConnectionMetadata metadata ) {
-        this.config = config;
-        this.metadata = metadata;
-    }
-
-    @Override
-    public DbConnection build() {
-        return new LegacyDbConnection( config.getUrl(), config.getUser(), config.getPassword(), config.isReadOnly(),
-                                       metadata );
-    }
+    // marker class specializing provider
 
 }

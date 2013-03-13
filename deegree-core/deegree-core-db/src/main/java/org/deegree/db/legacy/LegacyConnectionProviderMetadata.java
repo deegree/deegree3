@@ -39,11 +39,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db;
+package org.deegree.db.legacy;
 
-import java.sql.Connection;
+import static org.deegree.db.legacy.LegacyConnectionProviderProvider.SCHEMA_URL;
 
-import org.deegree.workspace.Resource;
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.legacy.jaxb.JDBCConnection;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
 
 /**
  * TODO add class documentation here
@@ -53,8 +61,22 @@ import org.deegree.workspace.Resource;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ConnectionProvider extends Resource {
+public class LegacyConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
-    Connection getConnection();
+    public LegacyConnectionProviderMetadata( Workspace workspace, ResourceLocation<ConnectionProvider> location,
+                                     ConnectionProviderProvider provider ) {
+        super( workspace, location, provider );
+    }
+
+    @Override
+    public ResourceBuilder<ConnectionProvider> prepare() {
+        try {
+            JDBCConnection cfg = (JDBCConnection) JAXBUtils.unmarshall( "org.deegree.db.legacy.jaxb", SCHEMA_URL,
+                                                                        location.getAsStream(), workspace );
+            return new LegacyConnectionProviderBuilder( cfg, this );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
+    }
 
 }

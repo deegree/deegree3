@@ -39,11 +39,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db;
+package org.deegree.feature.persistence;
 
-import java.sql.Connection;
-
-import org.deegree.workspace.Resource;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * TODO add class documentation here
@@ -53,8 +51,8 @@ import org.deegree.workspace.Resource;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ConnectionProvider extends Resource {
+public abstract class NewFeatureStoreProvider extends AbstractResourceProvider<FeatureStore> {
 
-    Connection getConnection();
+    // marker class to specialize type parameter
 
 }

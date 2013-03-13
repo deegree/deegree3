@@ -53,10 +53,15 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig;
 import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mapping.GeometryProperty;
 import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mapping.SimpleProperty;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +73,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
+public class ShapeFeatureStoreProvider extends NewFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( ShapeFeatureStoreProvider.class );
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
+    static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
     private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/3.1.0/shape.xsd" );
 
@@ -162,7 +167,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getFeatureTypeNamespace(),
                                         config.getFeatureTypeName(), config.getFeatureTypePrefix(), genIdx == null
                                                                                                     || genIdx, null,
-                                        mappings );
+                                        mappings, null );
 
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
@@ -195,6 +200,22 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             this.propname = propname;
             this.index = index;
         }
+    }
+
+    @Override
+    public String getNamespace() {
+        return CONFIG_NS;
+    }
+
+    @Override
+    public ResourceMetadata<FeatureStore> createFromLocation( Workspace workspace,
+                                                              ResourceLocation<FeatureStore> location ) {
+        return new ShapeFeatureStoreMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
     }
 
 }

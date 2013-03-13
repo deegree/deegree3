@@ -106,6 +106,8 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -158,6 +160,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private final List<Mapping> mappings;
 
+    private ResourceMetadata<FeatureStore> metadata;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -181,11 +185,12 @@ public class ShapeFeatureStore implements FeatureStore {
      */
     public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace, String localFtName,
                               String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache,
-                              List<Mapping> mappings ) {
+                              List<Mapping> mappings, ResourceMetadata<FeatureStore> metadata ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
         this.mappings = mappings;
+        this.metadata = metadata;
 
         localFtName = localFtName == null ? new File( shpName ).getName() : localFtName;
         if ( localFtName.endsWith( ".shp" ) ) {
@@ -729,6 +734,20 @@ public class ShapeFeatureStore implements FeatureStore {
         @Override
         public void remove() {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        try {
+            init( null );
+        } catch ( ResourceInitException e ) {
+            throw new org.deegree.workspace.ResourceInitException( e.getLocalizedMessage(), e );
         }
     }
 }
