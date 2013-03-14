@@ -144,7 +144,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                 throw new ResourceInitException( msg, e );
             }
 
-            fs = new MemoryFeatureStore( schema, storageSRS );
+            fs = new MemoryFeatureStore( schema, storageSRS, null );
             for ( GMLFeatureCollection datasetFile : config.getGMLFeatureCollection() ) {
                 if ( datasetFile != null ) {
                     try {

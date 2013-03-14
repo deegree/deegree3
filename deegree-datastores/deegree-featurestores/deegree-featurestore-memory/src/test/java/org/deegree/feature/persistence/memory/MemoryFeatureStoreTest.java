@@ -108,7 +108,7 @@ public class MemoryFeatureStoreTest {
         AppSchema schema = adapter.extractAppSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        store = new MemoryFeatureStore( schema, null );
+        store = new MemoryFeatureStore( schema, null, null );
 
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         gmlStream.setApplicationSchema( schema );
