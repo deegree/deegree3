@@ -137,6 +137,8 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -1555,5 +1557,17 @@ public class SQLFeatureStore implements FeatureStore {
                                 throws SQLException {
             return builder.buildFeature( rs );
         }
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 }
