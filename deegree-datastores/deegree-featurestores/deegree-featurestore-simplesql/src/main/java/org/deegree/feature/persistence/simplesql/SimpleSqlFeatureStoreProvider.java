@@ -1,12 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
- and
- - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -36,33 +34,49 @@
  Occam Labs UG (haftungsbeschränkt)
  Godesberger Allee 139, 53175 Bonn
  Germany
+ http://www.occamlabs.de/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.workspace;
 
-import java.util.Set;
+package org.deegree.feature.persistence.simplesql;
+
+import java.net.URL;
+
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
- * TODO add class documentation here
+ * <code>SimpleSqlFeatureStoreProvider</code>
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public interface ResourceMetadata<T extends Resource> extends Comparable<ResourceMetadata<? extends Resource>> {
+public class SimpleSqlFeatureStoreProvider extends NewFeatureStoreProvider {
 
-    ResourceLocation<T> getLocation();
+    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/simplesql";
 
-    ResourceBuilder<T> prepare();
+    static final URL CONFIG_SCHEMA = SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/3.0.1/simplesql.xsd" );
 
-    ResourceIdentifier<T> getIdentifier();
+    @Override
+    public String getNamespace() {
+        return CONFIG_NS;
+    }
 
-    ResourceProvider<T> getProvider();
+    @Override
+    public ResourceMetadata<FeatureStore> createFromLocation( Workspace workspace,
+                                                              ResourceLocation<FeatureStore> location ) {
+        return new SimpleSqlFeatureStoreMetadata( workspace, location, this );
+    }
 
-    Set<ResourceIdentifier<? extends Resource>> getDependencies();
-
-    Set<ResourceIdentifier<? extends Resource>> getRelatedResources();
+    @Override
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
+    }
 
 }

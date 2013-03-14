@@ -240,7 +240,7 @@ public class PostGISUpdater extends LayerUpdater {
                     layers.remove( new StringPair( name, title ) );
                     ds = new SimpleSQLFeatureStore( connectionid, crs, sourcequery, name == null ? title : name,
                                                     namespace, "app", bbox,
-                                                    Collections.<Pair<Integer, String>> emptyList() );
+                                                    Collections.<Pair<Integer, String>> emptyList(), null );
                     try {
                         ds.init( workspace );
                     } catch ( ResourceInitException e ) {

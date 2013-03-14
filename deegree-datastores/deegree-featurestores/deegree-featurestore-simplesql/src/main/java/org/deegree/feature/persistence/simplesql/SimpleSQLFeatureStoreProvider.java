@@ -113,7 +113,7 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
             String bbox = config.getBBoxStatement();
             LinkedList<Pair<Integer, String>> lods = map( config.getLODStatement(), lodMapper );
 
-            fs = new SimpleSQLFeatureStore( connId, srs, stmt, name, ns, prefix, bbox, lods );
+            fs = new SimpleSQLFeatureStore( connId, srs, stmt, name, ns, prefix, bbox, lods, null );
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );

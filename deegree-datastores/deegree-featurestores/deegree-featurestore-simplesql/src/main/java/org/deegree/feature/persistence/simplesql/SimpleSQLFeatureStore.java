@@ -93,6 +93,8 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.io.ParseException;
@@ -139,6 +141,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     static int currentid = 0;
 
+    private ResourceMetadata<FeatureStore> metadata;
+
     /**
      * @param connId
      * @param crs
@@ -148,10 +152,13 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param ftPrefix
      * @param bbox
      * @param lods
+     * @param metadata
      */
     public SimpleSQLFeatureStore( String connId, String crs, String sql, String ftLocalName, String ftNamespace,
-                                  String ftPrefix, String bbox, List<Pair<Integer, String>> lods ) {
+                                  String ftPrefix, String bbox, List<Pair<Integer, String>> lods,
+                                  ResourceMetadata<FeatureStore> metadata ) {
         this.connId = connId;
+        this.metadata = metadata;
 
         sql = sql.trim();
         if ( sql.endsWith( ";" ) ) {
@@ -422,5 +429,15 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      */
     public ICRS getStorageCRS() {
         return crs;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        // nothing to do
     }
 }

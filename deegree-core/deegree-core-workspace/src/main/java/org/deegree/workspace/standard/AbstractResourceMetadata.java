@@ -41,9 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.deegree.workspace.Resource;
@@ -72,7 +70,7 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
 
     protected AbstractResourceProvider<T> provider;
 
-    protected Set<ResourceMetadata<? extends Resource>> dependencies = new HashSet<ResourceMetadata<? extends Resource>>();
+    protected Set<ResourceIdentifier<? extends Resource>> dependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
 
     public AbstractResourceMetadata( Workspace workspace, ResourceLocation<T> location,
                                      AbstractResourceProvider<T> provider ) {
@@ -97,16 +95,17 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     }
 
     @Override
-    public Set<ResourceMetadata<? extends Resource>> getDependencies() {
-        return new HashSet<ResourceMetadata<? extends Resource>>( dependencies );
+    public Set<ResourceIdentifier<? extends Resource>> getDependencies() {
+        return new HashSet<ResourceIdentifier<? extends Resource>>( dependencies );
     }
 
     @Override
-    public Set<ResourceMetadata<? extends Resource>> getRelatedResources() {
-        Set<ResourceMetadata<? extends Resource>> set = new HashSet<ResourceMetadata<? extends Resource>>();
-        Set<ResourceMetadata<? extends Resource>> deps = getDependencies();
+    public Set<ResourceIdentifier<? extends Resource>> getRelatedResources() {
+        Set<ResourceIdentifier<? extends Resource>> set = new HashSet<ResourceIdentifier<? extends Resource>>();
+        Set<ResourceIdentifier<? extends Resource>> deps = getDependencies();
         set.addAll( set );
-        for ( ResourceMetadata<? extends Resource> md : deps ) {
+        for ( ResourceIdentifier<? extends Resource> id : deps ) {
+            ResourceMetadata<? extends Resource> md = workspace.getResource( id.getProvider(), id.getId() ).getMetadata();
             set.addAll( md.getRelatedResources() );
         }
         return set;
@@ -130,8 +129,12 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     }
 
     private void collectDependencies( Set<ResourceMetadata<? extends Resource>> visited,
-                                      Set<ResourceMetadata<? extends Resource>> deps ) {
-        for ( ResourceMetadata<? extends Resource> md : deps ) {
+                                      Set<ResourceIdentifier<? extends Resource>> deps ) {
+        Set<ResourceMetadata<? extends Resource>> newDeps = new HashSet<ResourceMetadata<? extends Resource>>();
+        for ( ResourceIdentifier<? extends Resource> id : deps ) {
+            newDeps.add( workspace.getResource( id.getProvider(), id.getId() ).getMetadata() );
+        }
+        for ( ResourceMetadata<? extends Resource> md : newDeps ) {
             if ( visited.contains( md ) ) {
                 LOG.error( "Circular dependencies chain detected when loading resource {}!", getIdentifier() );
                 return;
