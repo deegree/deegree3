@@ -93,7 +93,7 @@ public class WorkspaceBean implements Serializable {
 
     public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
 
-    private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
+    // private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
     private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
 
@@ -164,9 +164,9 @@ public class WorkspaceBean implements Serializable {
         return WS_UPLOAD_VIEW;
     }
 
-    public static String getWsDownloadBaseUrl() {
-        return WS_DOWNLOAD_BASE_URL;
-    }
+    // public static String getWsDownloadBaseUrl() {
+    // return WS_DOWNLOAD_BASE_URL;
+    // }
 
     public static String[] getWsDownloadUrls() {
         return WS_DOWNLOAD_URLS;
@@ -375,16 +375,36 @@ public class WorkspaceBean implements Serializable {
 
     public List<String> getRemoteWorkspaces() {
         workspaceLocations.clear();
-        List<String> list = downloadWorkspaceList( getDownloadBaseUrl() );
+        String repo = getVersion().endsWith( "SNAPSHOT" ) ? "snapshots" : "releases";
+        String version = getVersion().endsWith( "SNAPSHOT" ) ? "LATEST" : getVersion();
+        workspaceLocations.put( "deegree CSW demo", "http://repo.deegree.org/service/local/artifact/maven/redirect?r="
+                                                    + repo + "&g=org.deegree&a=deegree-workspace-csw&v=" + version
+                                                    + "&e=deegree-workspace" );
+        workspaceLocations.put( "deegree inspireNode",
+                                "http://repo.deegree.org/service/local/artifact/maven/redirect?r=" + repo
+                                                        + "&g=org.deegree&a=deegree-workspace-inspire&v=" + version
+                                                        + "&e=deegree-workspace" );
+        workspaceLocations.put( "deegree utahDemo", "http://repo.deegree.org/service/local/artifact/maven/redirect?r="
+                                                    + repo + "&g=org.deegree&a=deegree-workspace-utah&v=" + version
+                                                    + "&e=deegree-workspace" );
+        workspaceLocations.put( "deegree WPS demo", "http://repo.deegree.org/service/local/artifact/maven/redirect?r="
+                                                    + repo + "&g=org.deegree&a=deegree-workspace-wps&v=" + version
+                                                    + "&e=deegree-workspace" );
+        // List<String> list = downloadWorkspaceList( getDownloadBaseUrl() );
+        List<String> list = new ArrayList<String>();
+        list.add( "deegree CSW demo" );
+        list.add( "deegree inspireNode" );
+        list.add( "deegree utahDemo" );
+        list.add( "deegree WPS demo" );
         for ( String url : WS_DOWNLOAD_URLS ) {
             list.addAll( downloadWorkspaceList( url ) );
         }
         return list;
     }
 
-    private String getDownloadBaseUrl() {
-        return WS_DOWNLOAD_BASE_URL + getVersion();
-    }
+    // private String getDownloadBaseUrl() {
+    // return WS_DOWNLOAD_BASE_URL + getVersion();
+    // }
 
     private String getVersion() {
         String version = null;
