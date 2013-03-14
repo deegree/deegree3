@@ -77,6 +77,8 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -315,5 +317,23 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     public LockManager getLockManager()
                             throws FeatureStoreException {
         throw new UnsupportedOperationException( "RemoteWFSFeatureStore doesn't implement #getLockManager() (yet)." );
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 }
