@@ -166,10 +166,10 @@ The general idea of the WPS specification is that a client connects to a WPS ser
 Input and output parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Besides the process logic, the most crucial topic of Processlet implementation is the handling of input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ . There are three different types of input and output parameters:
+Besides the process logic, the most crucial topic of Processlet implementation is the definition and handling of input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_:
 
 * LiteralInput / LiteralOutput: Simple parameters with literal values, that are given as a simple string e.g. "red", "42", "highway 101"
-* BoundingBoxInput / BoundingBoxOutput: A georeferenced bounding box given in a specified or a default CRS
+* BoundingBoxInput / BoundingBoxOutput: A geo-referenced bounding box given in a specified or a default CRS
 * ComplexInput / ComplexOutput: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as a GeoTIFF)
 
 In order to create your own process, first find out which input and output parameters you want it to have. During implementation, each parameter has to be considered twice:
@@ -236,7 +236,55 @@ The differences and special options of the individual parameter types (Literal, 
 Basics of accessing input and output parameters
 """""""""""""""""""""""""""""""""""""""""""""""
 
+The first two arguments that of ``Processlet#process(..)`` provide access to the input parameter values and output parameter sinks. The first argument is of type ``ProcessletInputs`` and encapsulates the process input parameters. Here's an example snippet that shows how to access the input parameter with identifier ``LiteralInput``:
 
+.. code-block:: java
+
+   public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
+                        throws ProcessletException {
+
+       ProcessletInput literalInput = in.getParameter( "LiteralInput" );
+       [...]
+   }
+
+The ``getParameter(...)`` method of ``ProcessletInputs`` takes the identifier of the process parameter as an argument and returns a ``ProcessletInput`` (without the **s**)  object that provides access to the actual value of the process parameter. Type ``ProcessletInput`` is the parent of three Java types that directly correspond to three input parameter types of the process provider configuration:
+
+.. figure:: images/java_processprovider_inputtypes.png
+   :target: _images/java_processprovider_inputtypes.png
+
+   ProcessletInput and sub types
+
+For example, if your input parameter definition "A" is a ``BoundingBoxInput``, then the Java type for this parameter will be ``BoundingBoxInput`` as well. In your Java code, use a type cast to narrow the return type: 
+
+.. code-block:: java
+
+   public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
+                        throws ProcessletException {
+
+       BoundingBoxInput inputA = (BoundingBoxInput) in.getParameter( "A" );
+       [...]
+   }
+
+.. tip::
+  If an input parameter can occur multiple times (``maxOccurs`` > 1 in the definition), use method ``getParameters(...)`` instead of ``getParameter(...)``.
+
+Output parameters are treated in a similar manner. The second parameter of ``Processlet#process(..)`` provides to output parameter sinks. It is of type ``ProcessletOutputs``. Here's a basic usage example:
+
+.. code-block:: java
+
+   public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
+                        throws ProcessletException {
+
+       ProcessletOutput literalOutput = out.getParameter( "LiteralOutput" );
+       [...]
+   }
+
+Again, there are three subtypes. Each subtype of ``ProcessletOutput`` corresponds to one output parameter type:
+
+.. figure:: images/java_processprovider_outputtypes.png
+   :target: _images/java_processprovider_outputtypes.png
+
+   ProcessletOutput and sub types
 
 """"""""""""""""""""""""
 Literal inputs / outputs
