@@ -48,7 +48,7 @@ This example defines a bogus process with the following properties:
 * No input parameters
 * Single output parameter with identifier ``Answer`` and title **The universal answer**
 
-In order to make this configuration work, a matching Processlet is required:
+In order to make this configuration work, a matching Processlet class is required:
 
 .. topic:: Java process provider: Minimal example (Java code)
 
@@ -65,6 +65,21 @@ A more complex configuration example looks like this:
 
    .. literalinclude:: xml/java_processprovider_complex.xml
       :language: xml
+
+This example defines a demonstration process with the following properties:
+
+* Identifier: ``AdditionProcess`` 
+* Bound to Java code from class ``AdditionProcesslet``
+* Title **Process for adding two integer values.** (returned in WPS responses)
+* Two integer input parameters ``SummandA`` and ``SummandB`` with title, abstract and unit of measure
+* Single integer output parameter with identifier ``Sum``, title and unit of measure
+
+In order to make this configuration work, a matching Processlet class is required:
+
+.. topic:: Java process provider: Minimal example (Java code)
+
+   .. literalinclude:: java/java_processprovider_complex.java
+      :language: java
 
 ^^^^^^^^^^^^^^^^^^^^^
 Configuration options
@@ -127,14 +142,14 @@ Option ``JavaClass`` specifies the fully qualified name of a Java class. This cl
    .. literalinclude:: java/Processlet.java
       :language: java
 
-As you can see, this interface defines three methods that every processlet must implement:
+As you can see, this interface defines three methods that every Processlet must implement:
 
 * ``init()``: Called once when the workspace initializes the Java process provider resource that references the class.
 * ``destroy()``: Called once when the workspace destroys the Java process provider resource that references the class.
-* ``process(...)``: Called every time an Execute request is sent to the WPS that targets this process. It usually reads the input parameters, performs the actual computation and writes the output parameters.
+* ``process(...)``: Called every time an Execute request is sent to the WPS that targets this Processlet. The method usually reads the input parameters, performs the actual computation and writes the output parameters.
 
 .. tip::
-  The Java process provider instantiates the referenced process class only once. Multiple simultaneous executions of a process can occur (e.g. when parallel Execute-requests are sent to a WPS), and therefore, the process class must be implemented in a thread-safe manner. This behaviour is identical to the well-known Java Servlet interface (hence the name Processlet).
+  The Java process provider instantiates the referenced class only once. However, multiple simultaneous executions of a Processlet are possible (in case parallel Execute-requests are sent to a WPS), and therefore, the Processlet code must be implemented in a thread-safe manner. This requirement (and the general life cycle of Processlets) is identical to the well-known Java Servlet interface (hence the name Processlet).
 
 """"""""""""""""""""""
 Processlet compilation
@@ -148,7 +163,7 @@ In order to succesfully compile a ``Processlet`` implementation, you will need t
       :language: xml
 
 .. tip::
-  You can use this POM to compile the example Processlets above to create a JAR file that you can put into the ``modules`` directory of the deegree workspace. Just create an empty directory somewhere and save the Example POM as ``pom.xml``. Place the Processlet Java files into subdirectory ``src/main/java/`` (as files ``Processlet42.java`` / ``AdditionProcesslet.java``). On the command line, change to the project directory and use ``mvn package`` (Apache Maven 3.0 and a compatible Java JDK have to be installed). Subdirectory ``target`` should now contain a JAR file that you can copy into the ``modules`` directory of the deegree workspace. 
+  You can use this POM to compile the example Processlets above to create a JAR file that you can put into the ``modules`` directory of the deegree workspace. Just create an empty directory somewhere and save the example POM as ``pom.xml``. Place the Processlet Java files into subdirectory ``src/main/java/`` (as files ``Processlet42.java`` / ``AdditionProcesslet.java``). On the command line, change to the project directory and use ``mvn package`` (Apache Maven 3.0 and a compatible Java JDK have to be installed). Subdirectory ``target`` should now contain a JAR file that you can copy into the ``modules`` directory of the deegree workspace. 
 
 """""""""""""""""""""""""""""""""""""""
 Invoking processlets using WPS requests
@@ -168,16 +183,16 @@ Input and output parameters
 
 Besides the process logic, the most crucial topic of Processlet implementation is the definition and handling of input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_:
 
-* LiteralInput / LiteralOutput: Simple parameters with literal values, that are given as a simple string e.g. "red", "42", "highway 101"
-* BoundingBoxInput / BoundingBoxOutput: A geo-referenced bounding box given in a specified or a default CRS
-* ComplexInput / ComplexOutput: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as a GeoTIFF)
+* ``LiteralInput`` / ``LiteralOutput``: Literal values, e.g. "red", "42" or "highway 66"
+* ``BoundingBoxInput`` / ``BoundingBoxOutput``: A geo-referenced bounding box given in a specified or a default CRS
+* ``ComplexInput`` / ``ComplexOutput``: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as GeoTIFF)
 
 In order to create your own process, first find out which input and output parameters you want it to have. During implementation, each parameter has to be considered twice:
 
 * It has to be defined in the resource configuration file
 * It has to be read or written in the Processlet
 
-The definition in the resource configuration is used to specify the metadata (identifier, title, abstract, datatype) of the parameter. The WPS will report it in response to ``DescribeProcess`` requests. When performing ``Execute`` requests, the deegree WPS will also perform a basic check of the validity of the input parameters (identifier, occurence, type) and issue an ``ExceptionReport`` if the constraints are not met.
+The definition in the resource configuration is mostly to specify metadata (identifier, title, abstract, datatype) of the parameter. The WPS will report it in response to ``DescribeProcess`` requests. When performing ``Execute`` requests, the deegree WPS will also perform a basic check of the validity of the input parameters (identifier, number of occurences, type) and respond with an ``ExceptionReport`` if the constraints are not met.
 
 """"""""""""""""""""""""""""""""""""""""""""""
 Basics of defining input and output parameters
@@ -202,7 +217,7 @@ Here's an ``OutputParameters`` example that defines four parameters:
    .. literalinclude:: xml/java_processprovider_outputs.xml
       :language: xml
 
-Each parameter definition element (LiteralInput/LiteralOutput, BoundingBoxInput/BoundingBoxOutput, ComplexInput/ComplexOutput) has the following common options:
+Each parameter definition element has the following common options:
 
 .. table:: Common options for defining input and output parameters
 
@@ -218,7 +233,7 @@ Each parameter definition element (LiteralInput/LiteralOutput, BoundingBoxInput/
 | Metadata         | 0..n        | String  | Additional metadata                                                          |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 
-Besides the identifier of the parameter, these parameters just define metadata that the WPS reports. Additionally, each input parameter definition element (LiteralInput, BoundingBoxInput, ComplexInput) supports the following two attributes:
+Besides the identifier of the parameter, these parameters just define metadata that the WPS reports. Additionally, each input parameter definition element supports the following two attributes:
 
 .. table:: Additional options for defining input parameters
 
@@ -310,7 +325,7 @@ Literal input and output parameter definitions have the following additional opt
 | ValidValueReference | 0..1        | Complex | References to externally defined value sets and ranges (only for inputs)     |
 +---------------------+-------------+---------+------------------------------------------------------------------------------+
 
-These options basically define the metadata that the WPS publishes to clients. For the sub-options of the ``AllowedValues`` and ``ValidValueReference`` options, please refer to the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ or the XML schema for the Java process provider configuration format (http://schemas.deegree.org/processes/java/3.0.0/java.xsd).
+These options basically define metadata that the WPS publishes to clients. For the sub-options of the ``AllowedValues`` and ``ValidValueReference`` options, please refer to the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ or the XML schema for the Java process provider configuration format (http://schemas.deegree.org/processes/java/3.0.0/java.xsd).
 
 In order to work with a ``LiteralInput`` parameter in the Processlet code, the corresponding Java type offers the following methods:
 
@@ -594,8 +609,44 @@ Similarly, the ``ComplexOutput`` type offers the following methods:
 Asynchronous execution and status information
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* ``storeSupported``: When the storeSupported attribute is set to "true", asynchronous process execution will be available. Note that this doesn't add any requirements to the actual process code, this is taken care of by deegree automatically. See the advanced topics section for more information.
-* ``statusSupported``: If statusSupported is set to true, the process class is declared to provide status information, i.e. execution percentage. See the advanced topics section for more information.
+The WPS protocol offers support for asynchronous execution of processes as well as providing status information for long running processes. The following two options of the Java process provider deal with this:
 
+* ``@storeSupported``: If the storeSupported attribute is set to true, asynchronous execution of the process will be possible. A WPS client can then choose between synchronous execution (default) and asynchronous execution. Note that this doesn't add any requirements to the implementation of the Processlet code, this is taken care of automatically by the deegree WPS.
+* ``@statusSupported``: If statusSupported is set to true, the WPS will announce that the process can provide status information, i.e. execution percentage. In order for this to work, the Processlet code has to provide status information.
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+Providing status information in the Processlet code
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+
+The third parameter that's passed to the ``execute(...)`` method is of type ``ProcessletExecutionInfo``. This type provides the following methods:
+
+.. code-block:: java
+
+    /**
+     * Allows the {@link Processlet} to indicate the percentage of the process that has been completed, where 0 means
+     * the process has just started, and 99 means the process is almost complete. This value is expected to be accurate
+     * to within ten percent.
+     *
+     * @param percentCompleted
+     *            the percentage value to be set, a number between 0 and 99
+     */
+    public void setPercentCompleted( int percentCompleted );
+
+    /**
+     * Allows the {@link Processlet} to provide a custom started message for the client.
+     *
+     * @param message
+     */
+    public void setStartedMessage( String message );
+
+    /**
+     * Allows the {@link Processlet} to provide a custom finished message for the client.
+     *
+     * @param message
+     */
+    public void setSucceededMessage( String message );
+
+.. tip::
+  Depending on the type of computation that a Processlet performs, it may or may not be trivial to provide correct progress information via ``setPercentCompleted(...)``.
 
 
