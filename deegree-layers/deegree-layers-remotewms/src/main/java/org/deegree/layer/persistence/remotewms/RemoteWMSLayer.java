@@ -1,7 +1,7 @@
 package org.deegree.layer.persistence.remotewms;
 
 import static java.util.Collections.singletonList;
-import static org.deegree.protocol.wms.Utils.replaceParameters;
+import static org.deegree.commons.utils.RequestUtils.replaceParameters;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
