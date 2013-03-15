@@ -1,5 +1,3 @@
-package de.occamlabs.wps;
-
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
