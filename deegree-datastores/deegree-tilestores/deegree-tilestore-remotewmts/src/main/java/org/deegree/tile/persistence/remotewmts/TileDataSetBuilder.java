@@ -55,7 +55,6 @@ import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
-import org.deegree.tile.persistence.remotewmts.jaxb.ParameterScopeType;
 import org.deegree.tile.persistence.remotewmts.jaxb.ParameterUseType;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB.TileDataSet.RequestParams;

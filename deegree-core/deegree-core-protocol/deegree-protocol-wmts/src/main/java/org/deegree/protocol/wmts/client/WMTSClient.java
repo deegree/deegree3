@@ -43,6 +43,7 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -181,6 +182,14 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
     public GetTileResponse getTile( GetTile request )
                             throws IOException, OWSExceptionReport, XMLStreamException {
         Map<String, String> kvp = buildGetTileKvpMap( request );
+        if ( request.getOverriddenParameters() != null ) {
+            for ( Entry<String, String> e : request.getOverriddenParameters().entrySet() ) {
+                if ( kvp.containsKey( e.getKey().toLowerCase() ) ) {
+                    kvp.put( e.getKey().toLowerCase(), e.getValue() );
+                } else
+                    kvp.put( e.getKey(), e.getValue() );
+            }
+        }
         URL endPoint = getGetUrl( WMTSConstants.WMTSRequestType.GetTile.name() );
         OwsHttpResponse response = httpClient.doGet( endPoint, kvp, null );
         response.assertHttpStatus200();
@@ -196,10 +205,10 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         kvp.put( "layer", request.getLayer() );
         kvp.put( "style", request.getStyle() );
         kvp.put( "format", request.getFormat() );
-        kvp.put( "tileMatrixSet", request.getTileMatrixSet() );
-        kvp.put( "tileMatrix", request.getTileMatrix() );
-        kvp.put( "tileRow", "" + request.getTileRow() );
-        kvp.put( "tileCol", "" + request.getTileCol() );
+        kvp.put( "tilematrixset", request.getTileMatrixSet() );
+        kvp.put( "tilematrix", request.getTileMatrix() );
+        kvp.put( "tilerow", "" + request.getTileRow() );
+        kvp.put( "tilecol", "" + request.getTileCol() );
         return kvp;
     }
 
