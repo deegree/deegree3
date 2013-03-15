@@ -4,9 +4,9 @@
 Process providers
 =================
 
-Process providers plug geospatial processes into the WPS.
+Process providers plug geospatial processes into the :ref:`anchor-configuration-wps`.
 
-The remainder of this chapter describes some relevant terms and the process provider configuration files in detail. You can access this configuration level by clicking on the **processes** link in the administration console. The configuration files are located in the **processes/** subdirectory of the active deegree workspace directory.
+The remainder of this chapter describes some relevant terms and the process provider configuration files in detail. You can access this configuration level by clicking on the **processes** link in the administration console. The corresponding configuration files are located in the **processes/** subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-process.png
    :figwidth: 80%
@@ -77,7 +77,7 @@ The configuration format for the Java process provider is defined by schema file
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | Option           | Cardinality | Value   | Description                                                                  |
 +==================+=============+=========+==============================================================================+
-| @processVersion  | 1           | String  | Process version (metadata)                                                   |
+| @processVersion  | 1           | String  | Release version of this process (metadata)                                   |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | @storeSupported  | 0..1        | Boolean | If set to true, asynchronous execution will become available                 |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
@@ -93,16 +93,16 @@ The configuration format for the Java process provider is defined by schema file
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | Metadata         | 0..n        | String  | Additional metadata                                                          |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| Profile          | 0..n        | String  | TBD                                                                          |
+| Profile          | 0..n        | String  | Profile to which the WPS process complies (metadata)                         |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| WSDL             | 0..1        | String  | TBD                                                                          |
+| WSDL             | 0..1        | String  | URL of a WSDL document which describes this process (metadata)               |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | InputParameters  | 0..1        | Complex | Definition and metadata of the input parameters                              |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | OutputParameters | 1           | Complex | Definition and metadata of the output parameters                             |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 
-The remainder of this section describes these options and their sub-options in detail.
+The following sections describe these options and their sub-options in detail.
 
 ^^^^^^^^^^^^^^^
 General options
@@ -113,8 +113,8 @@ General options
 * ``Title``: Short and meaningful title. Reported by the WPS to clients.
 * ``Abstract``: Short, human readable description. Reported by the WPS to clients.
 * ``Metadata``: Additional metadata
-* ``Profile``: 
-* ``WSDL``: 
+* ``Profile``: Profile to which the WPS process complies. Reported by the WPS to clients.
+* ``WSDL``: URL of a WSDL document which describes this process. Reported by the WPS to clients.
 
 ^^^^^^^^^^^^^^^^^^^^^^
 The Java process class
@@ -136,21 +136,44 @@ As you can see, the interface defines three methods that every process class mus
 .. tip::
   The Java process provider instantiates the referenced process class only once. Multiple simultaneous executions of a process can occur (e.g. when parallel Execute-requests are sent to a WPS), and therefore, the process class must be implemented in a thread-safe manner. This behaviour is identical to the well-known Java Servlet interface.
 
+""""""""""""""""""""""
+Processlet compilation
+""""""""""""""""""""""
+
+In order to succesfully compile a ``Processlet`` implementation, you will need to provide the required dependencies (e.g. with the definition of deegree's ``Processlet`` interface). There are several possible approaches to this, but it's essential that deegree module ``deegree-services-wps`` (and it's dependencies) are on the build path of your Java compiler (or development environment). We suggest to use Apache Maven for this. Here's an example POM for your convenience:
+ m
+.. topic:: Java process provider: Example for Maven POM for writing processes
+
+   .. literalinclude:: xml/java_processprovider_pom.xml
+      :language: xml
+
+.. tip::
+  You can use this POM to compile the example Processlets above to create a JAR file for the ``modules`` directory. Create an empty directory and save the Maven POM example as ``pom.xml``. Place the Processlet Java files into subdirectory ``src/main/java``. Switch to the command line, change to the project directory and use ``mvn package`` (Apache Maven 3.0 needs to be installed). Subdirectory ``target`` should now contain a JAR file that can be used together with the resource configuration examples. 
+
+"""""""""""""""""""""""""""""""""""""""
+Invoking processlets using WPS requests
+"""""""""""""""""""""""""""""""""""""""
+  
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Input and output parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Besides the process logic, the most complex topic of process implementation is dealing with input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the WPS 1.0.0 specification. The specification permits three different types of input and output parameters:
+Besides the process logic, the most crucial topic of process implementation is dealing with input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ . There are three different types of input and output parameters:
 
-* LiteralInput / LiteralOutput
-* BoundingBoxInput / BoundingBoxOutput
-* ComplexInput / ComplexOutput
-
-LiteralInput is used for simple input parameters with literal values, that are given as a simple string e.g. "red", "42", "highway 101" (no nested XML fragments or similarly complex inputs). A BoundingBoxInput specifies a certain bounding box given in a specified or a default CRS. The content of a ComplexInput can be a complex XML structure as well as binary data (must be base64-encoded when given as an inline value).
+* LiteralInput / LiteralOutput: Simple parameters with literal values, that are given as a simple string e.g. "red", "42", "highway 101"
+* BoundingBoxInput / BoundingBoxOutput: A georeferenced bounding box given in a specified or a default CRS
+* ComplexInput / ComplexOutput: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as a GeoTIFF)
 
 """"""""""""""""""""""""""""""""""""
 Defining input and output parameters
 """"""""""""""""""""""""""""""""""""
+
+In order to create your own process, first find out which input and output parameters you want it to have. During implementation, each parameter has to be considered twice:
+
+* In the resource configuration file (section ``InputParameters`` or ``OutputParameters``)
+* In the ``process(..)`` method of your Processlet
+
+The definition in the resource configuration is used to specify the metadata (identifier, title, abstract, datatype) of the parameter. The WPS will report it in response to ``DescribeProcess`` requests. When performing ``Execute`` requests, the deegree WPS will also perform a basic check of the validity of the input parameters (identifier, occurence, type) and issue an ``ExceptionReport`` if the constraints are not met.
 
 """""""""""""""""""""""""""""""""""""
 Accessing input and output parameters
