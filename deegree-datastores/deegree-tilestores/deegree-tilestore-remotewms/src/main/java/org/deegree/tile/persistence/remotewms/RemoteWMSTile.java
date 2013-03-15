@@ -63,7 +63,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.LayerRef;
-import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
@@ -196,7 +195,7 @@ class RemoteWMSTile implements Tile {
             ICRS crs = gm.getCoordinateSystem();
             GetFeatureInfo request = new GetFeatureInfo( layers, width, height, i, j, bbox, crs, limit );
             Map<String, String> overriddenParameters = new HashMap<String, String>();
-            Utils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+            RequestUtils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
                                      defaultGetFeatureInfo, hardGetFeatureInfo );
             fc = client.doGetFeatureInfo( request, null );
         } catch ( SocketTimeoutException e ) {
