@@ -22,9 +22,9 @@ Java process provider
 A Java process provider injects processes written in the Java programming language. In order to set up a working Java process provider resource, two things are required:
 
 * A Java process provider configuration file
-* A Java class with the actual process code (a so-called ``Processlet``)
+* A *Processlet*: The Java class with the actual process code
 
-The first is an XML resource configuration file like any other deegree resource configuration. The second is special to this kind of resource. It provides the byte code with the process logic and has to be accessible by deegree's classloader. There are several options to make custom Java code available to deegree webservices (see :ref:`anchor-adding-jars` for details), but the most common options are:
+The first item is an XML resource configuration file like any other deegree resource configuration. The second is special to this kind of resource. It provides the byte code with the process logic and has to be accessible by deegree's classloader. There are several options to make custom Java code available to deegree webservices (see :ref:`anchor-adding-jars` for details), but the most common options are:
 
 * Putting class files into the ``classes/`` directory of the workspace
 * Putting JAR files into the ``modules/`` directory of the workspace
@@ -140,7 +140,7 @@ As you can see, this interface defines three methods that every processlet must 
 Processlet compilation
 """"""""""""""""""""""
 
-In order to succesfully compile a ``Processlet`` implementation, you will need to make the required dependencies available to the compile (such as deegree's ``Processlet`` interface). Generally, this means that the Java module ``deegree-services-wps`` (and it's dependencies) are on the build path of your Java compiler (or development environment). We suggest to use Apache Maven for this. Here's an example POM for your convenience:
+In order to succesfully compile a ``Processlet`` implementation, you will need to make the required dependencies available to the compiler (such as deegree's ``Processlet`` interface). Generally, this means that the Java module ``deegree-services-wps`` (and it's dependencies) have to be on the build path. We suggest to use Apache Maven for this. Here's an example POM for your convenience:
 
 .. topic:: Java process provider: Example for Maven POM for writing processlets
 
@@ -186,7 +186,7 @@ Basics of defining input and output parameters
 In order to define a parameter of a process, create a new child element in your process provider configuration:
 
 * Input: Add a ``LiteralInput``, ``BoundingBoxInput`` or ``ComplexInput`` element to section ``InputParameters``
-* Output: Sdd a ``LiteralOutput``, ``BoundingBoxOutput`` or ``ComplexOutput`` element to section ``OutputParameters``
+* Output: Add a ``LiteralOutput``, ``BoundingBoxOutput`` or ``ComplexOutput`` element to section ``OutputParameters``
 
 Here's an ``InputParameters`` example that defines four parameters:
 
@@ -252,7 +252,7 @@ The ``getParameter(...)`` method of ``ProcessletInputs`` takes the identifier of
 .. figure:: images/java_processprovider_inputtypes.png
    :target: _images/java_processprovider_inputtypes.png
 
-   ProcessletInput and sub types
+   ProcessletInput interface and sub types for each parameter type
 
 For example, if your input parameter definition "A" is a ``BoundingBoxInput``, then the Java type for this parameter will be ``BoundingBoxInput`` as well. In your Java code, use a type cast to narrow the return type: 
 
@@ -284,19 +284,311 @@ Again, there are three subtypes. Each subtype of ``ProcessletOutput`` correspond
 .. figure:: images/java_processprovider_outputtypes.png
    :target: _images/java_processprovider_outputtypes.png
 
-   ProcessletOutput and sub types
+   ProcessletOutput interface and sub types for each parameter type
 
-""""""""""""""""""""""""
-Literal inputs / outputs
-""""""""""""""""""""""""
+""""""""""""""""""
+Literal parameters
+""""""""""""""""""
 
-""""""""""""""""""""""""""""
-BoundingBox inputs / outputs
-""""""""""""""""""""""""""""
+Literal input and output parameter definitions have the following additional options:
 
-""""""""""""""""""""""""
-Complex inputs / outputs
-""""""""""""""""""""""""
+.. table:: Additional options of ``LiteralOutput`` parameters
+
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                                                  |
++=====================+=============+=========+==============================================================================+
+| DataType            | 0..1        | String  | Data Type of this input (or output), default: unspecified (string)           |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| DefaultUOM          | 0..1        | String  | Default unit of measure, default: unspecified                                |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| OtherUOM            | 0..n        | String  | Alternative unit of measure                                                  |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| DefaultValue        | 0..1        | String  | Default value of this input (only for inputs)                                |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| AllowedValues       | 0..1        | Complex | Constraints based on value sets and ranges (only for inputs)                 |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| ValidValueReference | 0..1        | Complex | References to externally defined value sets and ranges (only for inputs)     |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+
+These options basically define the metadata that the WPS publishes to clients. For the sub-options of the ``AllowedValues`` and ``ValidValueReference`` options, please refer to the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ or the XML schema for the Java process provider configuration format (http://schemas.deegree.org/processes/java/3.0.0/java.xsd).
+
+In order to work with a ``LiteralInput`` parameter in the Processlet code, the corresponding Java type offers the following methods:
+
+.. code-block:: java
+
+    /**
+     * Returns the literal value.
+     *
+     * @see #getUOM()
+     * @return the literal value (has to be in the correct UOM)
+     */
+    public String getValue();
+
+    /**
+     * Returns the UOM (unit-of-measure) for the literal value, it is guaranteed that the returned UOM is supported for
+     * this parameter (according to the process description).
+     *
+     * @return the requested UOM (unit-of-measure) for the literal value, may be null if no UOM is specified in the
+     *         process description
+     */
+    public String getUOM();
+
+    /**
+     * Returns the (human-readable) literal data type from the process definition, e.g. <code>integer</code>,
+     * <code>real</code>, etc).
+     *
+     * @return the data type, or null if not specified in the process definition
+     */
+    public String getDataType();
+
+Similarly, the ``LiteralOutput`` type offers the following methods:
+
+.. code-block:: java
+
+    /**
+     * Sets the value for this output parameter of the {@link Processlet} execution.
+     *
+     * @see #getRequestedUOM()
+     * @param value
+     *            value to be set (in the requested UOM)
+     */
+    public void setValue( String value );
+
+    /**
+     * Returns the requested UOM (unit-of-measure) for the literal value, it is guaranteed that this UOM is supported
+     * for this parameter (according to the process description).
+     *
+     * @return the requested UOM (unit-of-measure) for the literal value, may be null
+     */
+    public String getRequestedUOM();
+
+    /**
+     * Returns the announced literal data type from the process definition (e.g. integer, real, etc) as an URI, such as
+     * <code>http://www.w3.org/TR/xmlschema-2/#integer</code>.
+     *
+     * @return the data type, or null if not specified in the process definition
+     */
+    public String getDataType();
+
+""""""""""""""""""""""
+BoundingBox parameters
+""""""""""""""""""""""
+
+BoundingBox input and output parameter definitions have the following additional options:
+
+.. table:: Additional options for ``BoundingBoxInput`` and ``BoundingBoxOutput`` parameters
+
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                                                  |
++=====================+=============+=========+==============================================================================+
+| DefaultCRS          | 1           | String  | Identifier of the default coordinate reference system                        |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| OtherCRS            | 0..n        | String  | Additionally supported coordinate reference system                           |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+
+In order to work with a ``BoundingBoxInput`` parameter in the Processlet code, the corresponding Java type offers the following methods:
+
+.. code-block:: java
+
+    /**
+     * Returns the lower corner point of the bounding box.
+     *
+     * @return the lower corner point
+     */
+    public double[] getLower();
+
+    /**
+     * Returns the upper corner point of the bounding box.
+     *
+     * @return the upper corner point
+     */
+    public double[] getUpper();
+
+    /**
+     * Returns the CRS (coordinate reference system) name of the bounding box.
+     *
+     * @return the CRS (coordinate reference system) name or null if unspecified
+     */
+    public String getCRSName();
+
+    /**
+     * Returns the bounding box value, it is guaranteed that the CRS (coordinate reference system) of the returned
+     * {@link Envelope} is supported for this parameter (according to the process description).
+     *
+     * @return the value
+     */
+    public Envelope getValue();
+
+Similarly, the ``BoundingBoxOutput`` type offers the following methods:
+
+.. code-block:: java
+
+    /**
+     * Sets the value for this output parameter of the {@link Processlet} execution.
+     *
+     * @param lowerX
+     * @param lowerY
+     * @param upperX
+     * @param upperY
+     * @param crsName
+     */
+    public void setValue( double lowerX, double lowerY, double upperX, double upperY, String crsName );
+
+    /**
+     * Sets the value for this output parameter of the {@link Processlet} execution.
+     *
+     * @param lower
+     * @param upper
+     * @param crsName
+     */
+    public void setValue( double[] lower, double[] upper, String crsName );
+
+    /**
+     * Sets the value for this output parameter of the {@link Processlet} execution.
+     *
+     * @param value
+     *            value to be set
+     */
+    public void setValue( Envelope value );
+
+
+""""""""""""""""""
+Complex parameters
+""""""""""""""""""
+
+Complex input and output parameter definitions have the following additional options:
+
+.. table:: Additional options for ``ComplexInput`` and ``ComplexOutput`` parameters
+
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                                                  |
++=====================+=============+=========+==============================================================================+
+| @maximumMegabytes   | 0..n        | Integer | Maximum file size, in megabytes (only for inputs)                            |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| DefaultFormat       | 1           | Complex | Definition of the default XML or binary format                               |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| OtherFormats        | 0..n        | Complex | Definition of an alternative XML or binary format                            |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+
+A complex format (``DefaultFormat``/``OtherFormat``) is defined via three attributes (compare with the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_):
+
+.. table:: Attributes for format definitions
+
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                                                  |
++=====================+=============+=========+==============================================================================+
+| @mimeType           | 0..1        | String  | Mime type of the content, default: unspecified                               |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| @encoding           | 0..1        | String  | Encoding of the content, default: unspecified                                |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+| @schema             | 0..1        | String  | XML schema of the content, default: unspecified                              |
++---------------------+-------------+---------+------------------------------------------------------------------------------+
+
+In order to work with a ``ComplexInput`` parameter in the Processlet code, the corresponding Java type offers the following methods:
+
+.. code-block:: java
+
+    /**
+     * Returns the mime type of the input.
+     * 
+     * @return the mime type of the input, may be <code>null</code>
+     */
+    public String getMimeType();
+
+    /**
+     * Returns the encoding information supplied with the input.
+     * 
+     * @return the encoding information supplied with the input, may be <code>null</code>
+     */
+    public String getEncoding();
+
+    /**
+     * Returns the schema URL supplied with the input.
+     * 
+     * @return the schema URL supplied with the input, may be <code>null</code>
+     */
+    public String getSchema();
+
+    /**
+     * Returns an {@link InputStream} for accessing the complex value as a raw stream of bytes (usually for binary
+     * input).
+     * <p>
+     * NOTE: Never use this method if the input parameter is encoded in XML -- use {@link #getValueAsXMLStream()}
+     * instead. Otherwise erroneous behaviour has to be expected (if the input value is given embedded in the execute
+     * request document).
+     * </p>
+     * 
+     * @see #getValueAsXMLStream()
+     * @return the input value as a raw stream of bytes
+     * @throws IOException
+     *             if accessing the value fails
+     */
+    public InputStream getValueAsBinaryStream()
+                            throws IOException;
+
+    /**
+     * Returns an {@link XMLStreamReader} for accessing the complex value as an XML event stream.
+     * <p>
+     * NOTE: Never use this method if the input parameter is a binary value -- use {@link #getValueAsBinaryStream()}
+     * instead.
+     * </p>
+     * The returned stream will point at the first START_ELEMENT event of the data.
+     * 
+     * @return the input value as an XML event stream, current event is START_ELEMENT (the root element of the data
+     *         object)
+     * @throws IOException
+     *             if accessing the value fails
+     * @throws XMLStreamException
+     */
+    public XMLStreamReader getValueAsXMLStream()
+                            throws IOException, XMLStreamException;
+
+Similarly, the ``ComplexOutput`` type offers the following methods:
+
+.. code-block:: java
+
+    /**
+     * Returns a stream for writing binary output.
+     * 
+     * @return stream for writing binary output, never <code>null</code>
+     */
+    public OutputStream getBinaryOutputStream();
+
+    /**
+     * Returns a stream for for writing XML output. The stream is already initialized with a
+     * {@link XMLStreamWriter#writeStartDocument()}.
+     * 
+     * @return a stream for writing XML output, never <code>null</code>
+     * @throws XMLStreamException
+     */
+    public XMLStreamWriter getXMLStreamWriter()
+                            throws XMLStreamException;
+
+    /**
+     * Returns the requested mime type for the complex value, it is guaranteed that the mime type is supported for this
+     * parameter (according to the process description).
+     * 
+     * @return the requested mime type, never <code>null</code> (as each complex output format has a default mime type)
+     */
+    public String getRequestedMimeType();
+
+    /**
+     * Returns the requested XML format for the complex value (specified by a schema URL), it is guaranteed that the
+     * format is supported for this parameter (according to the process description).
+     * 
+     * @return the requested schema (XML format), may be <code>null</code> (as a complex output format may omit schema
+     *         information)
+     */
+    public String getRequestedSchema();
+
+    /**
+     * Returns the requested encoding for the complex value, it is guaranteed that the encoding is supported for this
+     * parameter (according to the process description).
+     * 
+     * @return the requested encoding, may be <code>null</code> (as a complex output format may omit encoding
+     *         information)
+     */
+    public String getRequestedEncoding();
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Asynchronous execution and status information

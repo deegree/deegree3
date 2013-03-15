@@ -5,7 +5,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.output.LiteralOutput;
 
-public class Process42 implements Processlet {
+public class Processlet42 implements Processlet {
 
     @Override
     public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
