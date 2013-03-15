@@ -910,6 +910,16 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         }
         map.put( "format", getMap.getFormat() );
 
+        if ( getMap.getOverriddenParameters() != null ) {
+            for ( Entry<String, String> e : getMap.getOverriddenParameters().entrySet() ) {
+                if ( map.containsKey( e.getKey().toLowerCase() ) ) {
+                    LOG.debug( "Overriding preset parameter {}.", e.getKey() );
+                    map.put( e.getKey().toLowerCase(), e.getValue() );
+                } else
+                    map.put( e.getKey(), e.getValue() );
+            }
+        }
+
         String url = getAddress( GetMap, true );
         if ( url == null ) {
             LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capaDoc );
