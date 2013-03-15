@@ -207,6 +207,8 @@ Let's have a look at an example:
  * The format parameter specifies the image format to request from the WMS
  * The CRS parameter specifies which CRS to use when requesting
 
+Additionally you can specify default and override values for request parameters within the request params block. Just add ``Parameter`` tags as described in the :ref:`anchor-configuration-layer-request-options` layer chapter. The replacing/defaulting currently only works when you configure a WMTS on top of this tile store. ``GetTile`` parameters are then mapped to ``GetMap`` requests to the backend, and ``GetFeatureInfo`` WMTS parameters to ``GetFeatureInfo`` WMS parameters on the backend.
+
 ----------------------
 Remote WMTS tile store
 ----------------------
