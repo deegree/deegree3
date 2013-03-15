@@ -49,16 +49,20 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.utils.RequestUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.LayerRef;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
@@ -81,6 +85,10 @@ class RemoteWMSTile implements Tile {
 
     private final String outputFormat;
 
+    private Map<String, String> defaultGetFeatureInfo;
+
+    private Map<String, String> hardGetFeatureInfo;
+
     /**
      * Creates a new {@link RemoteWMSTile} instance.
      * 
@@ -90,11 +98,18 @@ class RemoteWMSTile implements Tile {
      *            request for retrieving the tile image, never <code>null</code>
      * @param outputFormat
      *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
+     * @param defaultGetFeatureInfo
+     *            default parameters for remote GFI requests
+     * @param hardGetFeatureInfo
+     *            replace parameters for remote GFI requests
      */
-    RemoteWMSTile( WMSClient client, GetMap gm, String outputFormat ) {
+    RemoteWMSTile( WMSClient client, GetMap gm, String outputFormat, Map<String, String> defaultGetFeatureInfo,
+                   Map<String, String> hardGetFeatureInfo ) {
         this.client = client;
         this.gm = gm;
         this.outputFormat = outputFormat;
+        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+        this.hardGetFeatureInfo = hardGetFeatureInfo;
     }
 
     @Override
@@ -159,6 +174,9 @@ class RemoteWMSTile implements Tile {
             Envelope bbox = gm.getBoundingBox();
             ICRS crs = gm.getCoordinateSystem();
             GetFeatureInfo request = new GetFeatureInfo( layers, width, height, i, j, bbox, crs, limit );
+            Map<String, String> overriddenParameters = new HashMap<String, String>();
+            Utils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+                                     defaultGetFeatureInfo, hardGetFeatureInfo );
             fc = client.doGetFeatureInfo( request, null );
         } catch ( SocketTimeoutException e ) {
             String msg = "Error performing GetFeatureInfo request, read timed out (timeout configured is "
