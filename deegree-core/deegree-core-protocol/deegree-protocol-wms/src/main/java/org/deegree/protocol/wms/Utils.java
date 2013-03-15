@@ -40,8 +40,6 @@ import static java.lang.Math.min;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -199,30 +197,6 @@ public class Utils {
         }
 
         return null;
-    }
-
-    /**
-     * Utility method that uppercases the original parameters, adds the default parameters in the map if missing, and
-     * replaces the parameters contained in the hards map.
-     */
-    public static void replaceParameters( Map<String, String> map, Map<String, String> originals,
-                                          Map<String, String> defaults, Map<String, String> hards ) {
-        // handle default params
-        for ( String def : defaults.keySet() ) {
-            String key = def.toUpperCase();
-            if ( originals.containsKey( key ) ) {
-                map.put( key, originals.get( key ) );
-            } else {
-                map.put( def, defaults.get( def ) );
-            }
-        }
-        // handle preset params
-        for ( Entry<String, String> e : hards.entrySet() ) {
-            if ( map.containsKey( e.getKey().toLowerCase() ) ) {
-                map.put( e.getKey().toLowerCase(), e.getValue() );
-            } else
-                map.put( e.getKey(), e.getValue() );
-        }
     }
 
 }
