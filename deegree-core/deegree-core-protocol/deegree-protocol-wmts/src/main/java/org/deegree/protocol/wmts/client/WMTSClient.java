@@ -249,4 +249,5 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         capaAdapter.setRootElement( root );
         return capaAdapter;
     }
+
 }

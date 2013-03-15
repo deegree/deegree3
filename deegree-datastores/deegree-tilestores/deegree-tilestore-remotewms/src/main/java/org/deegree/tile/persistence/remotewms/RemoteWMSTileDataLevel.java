@@ -151,8 +151,8 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
             crs = envelope.getCoordinateSystem();
         }
         Map<String, String> overriddenParameters = new HashMap<String, String>();
-        Utils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
-                                 defaultGetMap, hardGetMap );
+        RequestUtils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+                                        defaultGetMap, hardGetMap );
         GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope, crs, format, true,
                                 overriddenParameters );
         return new RemoteWMSTile( client, gm, recodedOutputFormat, defaultGetFeatureInfo, hardGetFeatureInfo );
