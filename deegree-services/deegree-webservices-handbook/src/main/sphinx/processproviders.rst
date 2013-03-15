@@ -172,20 +172,71 @@ Besides the process logic, the most crucial topic of Processlet implementation i
 * BoundingBoxInput / BoundingBoxOutput: A georeferenced bounding box given in a specified or a default CRS
 * ComplexInput / ComplexOutput: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as a GeoTIFF)
 
-""""""""""""""""""""""""""""""""""""
-Defining input and output parameters
-""""""""""""""""""""""""""""""""""""
-
 In order to create your own process, first find out which input and output parameters you want it to have. During implementation, each parameter has to be considered twice:
 
-* In the resource configuration file (section ``InputParameters`` or ``OutputParameters``)
-* In the ``process(..)`` method of your Processlet
+* It has to be defined in the resource configuration file
+* It has to be read or written in the Processlet
 
 The definition in the resource configuration is used to specify the metadata (identifier, title, abstract, datatype) of the parameter. The WPS will report it in response to ``DescribeProcess`` requests. When performing ``Execute`` requests, the deegree WPS will also perform a basic check of the validity of the input parameters (identifier, occurence, type) and issue an ``ExceptionReport`` if the constraints are not met.
 
-"""""""""""""""""""""""""""""""""""""
-Accessing input and output parameters
-"""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""
+Basics of defining input and output parameters
+""""""""""""""""""""""""""""""""""""""""""""""
+
+In order to define a parameter of a process, create a new child element in your process provider configuration:
+
+* Input: Add a ``LiteralInput``, ``BoundingBoxInput`` or ``ComplexInput`` element to section ``InputParameters``
+* Output: Sdd a ``LiteralOutput``, ``BoundingBoxOutput`` or ``ComplexOutput`` element to section ``OutputParameters``
+
+Here's an ``InputParameters`` example that defines four parameters:
+
+.. topic:: Java process provider: Example for ``InputParameters`` section
+
+   .. literalinclude:: xml/java_processprovider_inputs.xml
+      :language: xml
+
+Here's an ``OutputParameters`` example that defines four parameters:
+
+.. topic:: Java process provider: Example for ``OutputParameters`` section
+
+   .. literalinclude:: xml/java_processprovider_outputs.xml
+      :language: xml
+
+Each parameter definition element (LiteralInput/LiteralOutput, BoundingBoxInput/BoundingBoxOutput, ComplexInput/ComplexOutput) has the following common options:
+
+.. table:: Common options for defining input and output parameters
+
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option           | Cardinality | Value   | Description                                                                  |
++==================+=============+=========+==============================================================================+
+| Identifier       | 1           | Complex | Identifier of the parameter                                                  |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| Title            | 1           | Complex | Short and meaningful title (metadata)                                        |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| Abstract         | 0..1        | Complex | Short, human readable description (metadata)                                 |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| Metadata         | 0..n        | String  | Additional metadata                                                          |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+
+Besides the identifier of the parameter, these parameters just define metadata that the WPS reports. Additionally, each input parameter definition element (LiteralInput, BoundingBoxInput, ComplexInput) supports the following two attributes:
+
+.. table:: Additional options for defining input parameters
+
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option           | Cardinality | Value   | Description                                                                  |
++==================+=============+=========+==============================================================================+
+| @minOccurs       | 0..n        | Integer | Minimum number of times the input has to be present in a request, default: 1 |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| @maxOccurs       | 0..n        | String  | Maximum number of times the input has to be present in a request, default: 1 |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+
+The differences and special options of the individual parameter types (Literal, Bounding Box, Complex) are described in the following sections.
+
+"""""""""""""""""""""""""""""""""""""""""""""""
+Basics of accessing input and output parameters
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+
 
 """"""""""""""""""""""""
 Literal inputs / outputs
