@@ -251,3 +251,4 @@ Let's have a look at an example:
 
 Please note that you need a locally configured tile matrix set that corresponds exactly to the tile matrix set of the remote WMTS. They need not have the same identifier(s) (just configure the TileMatrixSetId option if they differ), but the structure (coordinate system, tile size, number of tiles per matrix etc.) needs to be identical.
 
+Additionally you can specify default and override values for request parameters within the request params block. Just add ``Parameter`` tags as described in the :ref:`anchor-configuration-layer-request-options` layer chapter. The replacing/defaulting currently only works when you configure a WMTS on top of this tile store. Please note that the ``scope`` attribute cannot be configured here, since remote WMTS currently only handles ``GetTile`` requests anyway.
