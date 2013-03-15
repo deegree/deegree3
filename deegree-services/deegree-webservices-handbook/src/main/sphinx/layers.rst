@@ -380,6 +380,8 @@ The remote WMS layer configuration is always based on a single ``RemoteWMS`` res
 
 In many cases that's already sufficient, but if you wish to control the way the requests are being sent, you can specify the ``RequestOptions``. If you want to limit/restrict the layers, you can specify any amount of ``Layer`` elements.
 
+.. _anchor-configuration-layer-request-options:
+
 ~~~~~~~~~~~~~~~
 Request options
 ~~~~~~~~~~~~~~~
