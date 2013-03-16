@@ -4,9 +4,9 @@
 Process providers
 =================
 
-Process providers plug geospatial processes into the :ref:`anchor-configuration-wps`.
+Process provider resources define geospatial processes that can be accessed via the :ref:`anchor-configuration-wps`.
 
-The remainder of this chapter describes some relevant terms and the process provider configuration files in detail. You can access this configuration level by clicking on the **processes** link in the administration console. The corresponding configuration files are located in the **processes/** subdirectory of the active deegree workspace directory.
+The remainder of this chapter describes some relevant terms and the process provider configuration files in detail. You can access this configuration level by clicking on the **processes** link in the administration console. The corresponding resource files are located in the **processes/** subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-process.png
    :figwidth: 80%
@@ -19,10 +19,10 @@ The remainder of this chapter describes some relevant terms and the process prov
 Java process provider
 ---------------------
 
-A Java process provider injects processes written in the Java programming language. In order to set up a working Java process provider resource, two things are required:
+The Java process provider is a well-defined container for processes written in the Java programming language. In order to set up a working Java process provider resource, two things are required:
 
 * A Java process provider configuration file
-* A *Processlet*: The Java class with the actual process code
+* A *Processlet*: Java class with the actual process code
 
 The first item is an XML resource configuration file like any other deegree resource configuration. The second is special to this kind of resource. It provides the byte code with the process logic and has to be accessible by deegree's classloader. There are several options to make custom Java code available to deegree webservices (see :ref:`anchor-adding-jars` for details), but the most common options are:
 
@@ -98,13 +98,13 @@ The configuration format for the Java process provider is defined by schema file
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | @statusSupported | 0..1        | Boolean | If set to true, process code provides status information                     |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| Identifier       | 1           | Complex | Identifier of the process                                                    |
+| Identifier       | 1           | String  | Identifier of the process                                                    |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| JavaClass        | 1           | String  | Fully qualified name of the Java class that implements the process logic     |
+| JavaClass        | 1           | String  | Fully qualified name of a Processlet that implements the process logic       |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| Title            | 1           | Complex | Short and meaningful title (metadata)                                        |
+| Title            | 1           | String  | Short and meaningful title (metadata)                                        |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| Abstract         | 0..1        | Complex | Short, human readable description (metadata)                                 |
+| Abstract         | 0..1        | String  | Short, human readable description (metadata)                                 |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | Metadata         | 0..n        | String  | Additional metadata                                                          |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
@@ -117,53 +117,69 @@ The configuration format for the Java process provider is defined by schema file
 | OutputParameters | 1           | Complex | Definition and metadata of the output parameters                             |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 
-The following sections describe these options and their sub-options in detail.
+The following sections describe these options and their sub-options in detail, as well as the Processlet API.
 
 ^^^^^^^^^^^^^^^
 General options
 ^^^^^^^^^^^^^^^
 
-* ``processVersion``: The processVersion attribute has to be managed by the process developer and describes the version of the process implementation. This parameter is usually increased when changes to the implementation of a process apply. Reported by the WPS to clients.
-* ``Identifier``: The Identifier element must contain an appropriate unambiguous identifier. Reported by the WPS to clients.
-* ``Title``: Short and meaningful title. Reported by the WPS to clients.
-* ``Abstract``: Short, human readable description. Reported by the WPS to clients.
+All general options just provide metadata that the WPS reports to client. They don't affect the behaviour of the configured process.
+
+* ``processVersion``: The processVersion attribute has to be managed by the process developer and describes the version of the process implementation. This parameter is usually increased when changes to the implementation of a process apply.
+* ``Identifier``: An unambiguous identifier
+* ``Title``: Short and meaningful title
+* ``Abstract``: Short, human readable description
 * ``Metadata``: Additional metadata
-* ``Profile``: Profile to which the WPS process complies. Reported by the WPS to clients.
-* ``WSDL``: URL of a WSDL document which describes this process. Reported by the WPS to clients.
+* ``Profile``: Profile to which the WPS process complies
+* ``WSDL``: URL of a WSDL document which describes this process
 
-^^^^^^^^^^^^^^^^^^^^
-The processlet class
-^^^^^^^^^^^^^^^^^^^^
+.. hint::
+  These options directly relate to metadata defined in the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_.
 
-Option ``JavaClass`` specifies the fully qualified name of a Java class. This class has to implement deegree's ``Processlet`` Java interface (qualified name: ``org.deegree.services.wps.Processlet``):
+^^^^^^^^^^^^^^^^^^
+The Processlet API
+^^^^^^^^^^^^^^^^^^
+
+Option ``JavaClass`` specifies the fully qualified name of a Java class that implement deegree's ``Processlet`` Java interface. This interface is part of an API that hides the complexity of the WPS protocol while providing efficient and scalable handling of input and output parameters. By using this API, the process developer can focus on implementing the process logic without having to care of the details of the protocol:
+
+* Request encoding (KVP, XML, SOAP)
+* Input parameter passing variants (inline, by reference)
+* Output parameter representation (inline, by reference)
+* Storing of response documents
+* Synchronous/asynchronous execution
+
+The interface looks like this:
 
 .. topic:: Java process provider: Processlet interface
 
    .. literalinclude:: java/Processlet.java
       :language: java
 
-As you can see, this interface defines three methods that every Processlet must implement:
+As you can see, the interface defines three methods:
 
 * ``init()``: Called once when the workspace initializes the Java process provider resource that references the class.
 * ``destroy()``: Called once when the workspace destroys the Java process provider resource that references the class.
 * ``process(...)``: Called every time an Execute request is sent to the WPS that targets this Processlet. The method usually reads the input parameters, performs the actual computation and writes the output parameters.
 
-.. tip::
-  The Java process provider instantiates the referenced class only once. However, multiple simultaneous executions of a Processlet are possible (in case parallel Execute-requests are sent to a WPS), and therefore, the Processlet code must be implemented in a thread-safe manner. This requirement (and the general life cycle of Processlets) is identical to the well-known Java Servlet interface (hence the name Processlet).
+.. hint::
+  The Processlet interface mimics the well-known Java Servlet interface (hence the name). A Servlet developer does not need to care of the details of HTTP. Similarly, a Processlet developer does not need to care of the details of the WPS protocol.
+
+.. hint::
+  The Java process provider instantiates the Processlet class only once. However, multiple simultaneous executions of a Processlet are possible (in case parallel Execute-requests are sent to a WPS), and therefore, the Processlet code must be implemented in a thread-safe manner (just like Servlets).
 
 """"""""""""""""""""""
 Processlet compilation
 """"""""""""""""""""""
 
-In order to succesfully compile a ``Processlet`` implementation, you will need to make the required dependencies available to the compiler (such as deegree's ``Processlet`` interface). Generally, this means that the Java module ``deegree-services-wps`` (and it's dependencies) have to be on the build path. We suggest to use Apache Maven for this. Here's an example POM for your convenience:
+In order to succesfully compile a ``Processlet`` implementation, you will need to make the Processlet API available to the compiler. Generally, this means that the Java module ``deegree-services-wps`` (and it's dependencies) have to be on the build path. We suggest to use Apache Maven for this. Here's an example POM for your convenience:
 
-.. topic:: Java process provider: Example for Maven POM for writing processlets
+.. topic:: Java process provider: Example Maven POM for compiling processlets
 
    .. literalinclude:: xml/java_processprovider_pom.xml
       :language: xml
 
 .. tip::
-  You can use this POM to compile the example Processlets above to create a JAR file that you can put into the ``modules`` directory of the deegree workspace. Just create an empty directory somewhere and save the example POM as ``pom.xml``. Place the Processlet Java files into subdirectory ``src/main/java/`` (as files ``Processlet42.java`` / ``AdditionProcesslet.java``). On the command line, change to the project directory and use ``mvn package`` (Apache Maven 3.0 and a compatible Java JDK have to be installed). Subdirectory ``target`` should now contain a JAR file that you can copy into the ``modules`` directory of the deegree workspace. 
+  You can use this POM to compile the example Processlets above. Just create an empty directory somewhere and save the example POM as ``pom.xml``. Place the Processlet Java files into subdirectory ``src/main/java/`` (as files ``Processlet42.java`` / ``AdditionProcesslet.java``). On the command line, change to the project directory and use ``mvn package`` (Apache Maven 3.0 and a compatible Java JDK have to be installed). Subdirectory ``target`` should now contain a JAR file that you can copy into the ``modules/`` directory of the deegree workspace. 
 
 """""""""""""""""""""""""""""""""""""""
 Invoking processlets using WPS requests
@@ -648,5 +664,4 @@ The third parameter that's passed to the ``execute(...)`` method is of type ``Pr
 
 .. tip::
   Depending on the type of computation that a Processlet performs, it may or may not be trivial to provide correct progress information via ``setPercentCompleted(...)``.
-
 
