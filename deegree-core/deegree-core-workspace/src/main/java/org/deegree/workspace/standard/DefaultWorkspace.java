@@ -90,6 +90,8 @@ public class DefaultWorkspace implements Workspace {
 
     private Map<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>> resourceManagers;
 
+    private Map<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>> resourceMetadata;
+
     private Map<ResourceIdentifier<? extends Resource>, Resource> resources;
 
     public DefaultWorkspace( File directory ) {
@@ -99,13 +101,14 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public void init() {
         resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
+        resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
         resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
         initClassloader();
 
         TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder = new TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>>();
 
         LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Scanning and preparing resources." );
+        LOG.info( "Scanning resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
         // setup managers
@@ -115,20 +118,28 @@ public class DefaultWorkspace implements Workspace {
             mgr.init( this );
             Collection<? extends ResourceMetadata<? extends Resource>> mds = mgr.getResourceMetadata();
             for ( ResourceMetadata<? extends Resource> md : mds ) {
-                LOG.info( "Preparing resource {}.", md.getIdentifier() );
-                try {
-                    ResourceBuilder<? extends Resource> builder = md.prepare();
-                    if ( builder == null ) {
-                        LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
-                        continue;
-                    }
-                    metadataToBuilder.put( md, builder );
-                } catch ( Exception e ) {
-                    LOG.error( "Error preparing resource {}: {}", md.getIdentifier(), e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
+                resourceMetadata.put( md.getIdentifier(), md );
             }
             resourceManagers.put( (Class) mgr.getClass(), mgr );
+        }
+
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Preparing resources." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+        for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
+            LOG.info( "Preparing resource {}.", md.getIdentifier() );
+            try {
+                ResourceBuilder<? extends Resource> builder = md.prepare();
+                if ( builder == null ) {
+                    LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
+                    continue;
+                }
+                metadataToBuilder.put( md, builder );
+            } catch ( Exception e ) {
+                // e.printStackTrace();
+                LOG.error( "Error preparing resource {}: {}", md.getIdentifier(), e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
         }
 
         LOG.info( "--------------------------------------------------------------------------------" );
@@ -145,11 +156,9 @@ public class DefaultWorkspace implements Workspace {
                 }
                 LOG.info( "Initializing resource {}.", e.getKey().getIdentifier() );
                 res.init();
-                System.out.println(res);
-                System.out.println(":" + res.getMetadata());
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
-                ex.printStackTrace();
+                // ex.printStackTrace();
                 LOG.error( "Unable to build resource {}: {}.", e.getKey().getIdentifier(), ex.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", ex );
             }
@@ -168,6 +177,7 @@ public class DefaultWorkspace implements Workspace {
             }
         }
         moduleClassLoader = null;
+        resourceMetadata = null;
         resources = null;
         resourceManagers = null;
     }
@@ -240,6 +250,12 @@ public class DefaultWorkspace implements Workspace {
                                                                                            p ) ) );
         }
         return list;
+    }
+
+    @Override
+    public <T extends Resource> ResourceMetadata<T> getResourceMetadata( Class<? extends ResourceProvider<T>> providerClass,
+                                                                         String id ) {
+        return (ResourceMetadata<T>) resourceMetadata.get( new DefaultResourceIdentifier<T>( providerClass, id ) );
     }
 
     @Override

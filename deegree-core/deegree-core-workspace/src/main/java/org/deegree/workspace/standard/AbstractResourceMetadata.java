@@ -46,6 +46,7 @@ import java.util.Set;
 
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -132,7 +133,12 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
                                       Set<ResourceIdentifier<? extends Resource>> deps ) {
         Set<ResourceMetadata<? extends Resource>> newDeps = new HashSet<ResourceMetadata<? extends Resource>>();
         for ( ResourceIdentifier<? extends Resource> id : deps ) {
-            newDeps.add( workspace.getResource( id.getProvider(), id.getId() ).getMetadata() );
+            ResourceMetadata<? extends Resource> md = workspace.getResourceMetadata( id.getProvider(), id.getId() );
+            if ( md == null ) {
+                throw new ResourceInitException( "The dependency " + id + " was missing for resource "
+                                                 + getIdentifier() );
+            }
+            newDeps.add( md );
         }
         for ( ResourceMetadata<? extends Resource> md : newDeps ) {
             if ( visited.contains( md ) ) {

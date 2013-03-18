@@ -61,6 +61,9 @@ public interface Workspace {
 
     <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
 
+    <T extends Resource> ResourceMetadata<T> getResourceMetadata( Class<? extends ResourceProvider<T>> providerClass,
+                                                                  String id );
+
     <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
 
 }
