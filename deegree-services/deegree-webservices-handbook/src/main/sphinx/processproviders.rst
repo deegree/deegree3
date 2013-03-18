@@ -208,11 +208,11 @@ Some simple KVP ``Execute`` request examples for invoking processes:
 Input and output parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Besides the process logic, the most crucial topic of Processlet implementation is the definition and handling of input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_:
+Besides the process logic, the most crucial topic of WPS process implementation is the standard-compliant definition and handling of input and output parameters. The deegree WPS and the Java process provider support all parameter types that are defined by the `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_:
 
-* ``LiteralInput`` / ``LiteralOutput``: Literal values, e.g. "red", "42" or "highway 66"
-* ``BoundingBoxInput`` / ``BoundingBoxOutput``: A geo-referenced bounding box given in a specified or a default CRS
-* ``ComplexInput`` / ``ComplexOutput``: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as GeoTIFF)
+* ``LiteralInput``/``LiteralOutput``: Literal values, e.g. "red", "42" or "highway 66"
+* ``BoundingBoxInput``/``BoundingBoxOutput``: A geo-referenced bounding box
+* ``ComplexInput``/``ComplexOutput``: Either an XML structure (e.g. GML encoded features) or binary data (e.g. coverage data as GeoTIFF)
 
 In order to create your own process, first find out which input and output parameters you want it to have. During implementation, each parameter has to be considered twice:
 
@@ -251,11 +251,11 @@ Each parameter definition element has the following common options:
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | Option           | Cardinality | Value   | Description                                                                  |
 +==================+=============+=========+==============================================================================+
-| Identifier       | 1           | Complex | Identifier of the parameter                                                  |
+| Identifier       | 1           | String  | Identifier of the parameter                                                  |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| Title            | 1           | Complex | Short and meaningful title (metadata)                                        |
+| Title            | 1           | String  | Short and meaningful title (metadata)                                        |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
-| Abstract         | 0..1        | Complex | Short, human readable description (metadata)                                 |
+| Abstract         | 0..1        | String  | Short, human readable description (metadata)                                 |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | Metadata         | 0..n        | String  | Additional metadata                                                          |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
@@ -278,7 +278,7 @@ The differences and special options of the individual parameter types (Literal, 
 Basics of accessing input and output parameters
 """""""""""""""""""""""""""""""""""""""""""""""
 
-The first two arguments that of ``Processlet#process(..)`` provide access to the input parameter values and output parameter sinks. The first argument is of type ``ProcessletInputs`` and encapsulates the process input parameters. Here's an example snippet that shows how to access the input parameter with identifier ``LiteralInput``:
+The first two arguments of ``Processlet#process(..)`` provide access to the input parameter values and output parameter sinks. The first argument is of type ``ProcessletInputs`` and encapsulates the process input parameters. Here's an example snippet that shows how to access the input parameter with identifier ``LiteralInput``:
 
 .. code-block:: java
 
@@ -289,14 +289,43 @@ The first two arguments that of ``Processlet#process(..)`` provide access to the
        [...]
    }
 
-The ``getParameter(...)`` method of ``ProcessletInputs`` takes the identifier of the process parameter as an argument and returns a ``ProcessletInput`` (without the **s**)  object that provides access to the actual value of the process parameter. Type ``ProcessletInput`` is the parent of three Java types that directly correspond to three input parameter types of the process provider configuration:
+The ``getParameter(...)`` method of ``ProcessletInputs`` takes the identifier of the process parameter as an argument and returns a ``ProcessletInput`` (without the **s**)  object that provides access to the actual value of the process parameter. Here's the ``ProcessletInput`` interface:
+
+.. code-block:: java
+
+    public interface ProcessletInput {
+    
+        /**
+         * Returns the identifier or name of the input parameter as defined in the process description.
+         *
+         * @return the identifier of the input parameter
+         */
+        public CodeType getIdentifier();
+    
+        /**
+         * Returns the title that has been supplied with the input parameter, normally available for display to a human.
+         *
+         * @return the title provided with the input, may be null
+         */
+        public LanguageString getTitle();
+    
+        /**
+         * Returns the narrative description that has been supplied with the input parameter, normally available for display
+         * to a human.
+         *
+         * @return the abstract provided with the input, may be null
+         */
+        public LanguageString getAbstract();
+    }
+
+This interface does not provide access to the passed value, but ``ProcessletInput`` is the parent of three Java types that directly correspond to three input parameter types of the process provider configuration:
 
 .. figure:: images/java_processprovider_inputtypes.png
    :target: _images/java_processprovider_inputtypes.png
 
    ProcessletInput interface and sub types for each parameter type
 
-For example, if your input parameter definition "A" is a ``BoundingBoxInput``, then the Java type for this parameter will be ``BoundingBoxInput`` as well. In your Java code, use a type cast to narrow the return type: 
+For example, if your input parameter definition "A" is a ``BoundingBoxInput``, then the Java type for this parameter will be ``BoundingBoxInput`` as well. In your Java code, use a type cast to narrow the return type (and gain access to the passed value): 
 
 .. code-block:: java
 
@@ -308,7 +337,7 @@ For example, if your input parameter definition "A" is a ``BoundingBoxInput``, t
    }
 
 .. tip::
-  If an input parameter can occur multiple times (``maxOccurs`` > 1 in the definition), use method ``getParameters(...)`` instead of ``getParameter(...)``.
+  If an input parameter can occur multiple times (``maxOccurs`` > 1 in the definition), use method ``getParameters(...)`` instead of ``getParameter(...)``. The latter method returns a ``List`` of ``ProcessletInput`` objects.
 
 Output parameters are treated in a similar manner. The second parameter of ``Processlet#process(..)`` provides to output parameter sinks. It is of type ``ProcessletOutputs``. Here's a basic usage example:
 
@@ -320,6 +349,64 @@ Output parameters are treated in a similar manner. The second parameter of ``Pro
        ProcessletOutput literalOutput = out.getParameter( "LiteralOutput" );
        [...]
    }
+
+Here's the ``ProcessletOutput`` interface:
+
+.. code-block:: java
+
+    public interface ProcessletOutput {
+    
+        /**
+         * Returns the identifier or name of the output parameter as defined in the process description.
+         * 
+         * @return the identifier of the output parameter
+         */
+        public CodeType getIdentifier();
+    
+        /**
+         * Returns the title that has been supplied with the request of the output parameter, normally available for display
+         * to a human.
+         * 
+         * @return the title provided with the output, may be null
+         */
+        public LanguageString getSubmittedTitle();
+    
+        /**
+         * Returns the narrative description that has been supplied with the request of the output parameter, normally
+         * available for display to a human.
+         * 
+         * @return the abstract provided with the output, may be null
+         */
+        public LanguageString getSubmittedAbstract();
+    
+        /**
+         * Returns whether this output parameter has been requested by the client, i.e. if it will be present in the result.
+         * <p>
+         * NOTE: If the parameter is requested, the {@link Processlet} must set a value for this parameter, if not, it may
+         * or may not do so. However, for complex output parameters that are not requested, it is advised to omit them for
+         * more efficient execution of the {@link Processlet}.
+         * </p>
+         * 
+         * @return true, if the {@link Processlet} must set the value of this parameter (in this execution), false otherwise
+         */
+        public boolean isRequested();
+    
+        /**
+         * Sets the parameter title in the response sent to the client.
+         * 
+         * @param title
+         *            the parameter title in the response sent to the client
+         */
+        public void setTitle( LanguageString title );
+    
+        /**
+         * Sets the parameter abstract in the response sent to the client.
+         * 
+         * @param summary
+         *            the parameter abstract in the response sent to the client
+         */
+        public void setAbstract( LanguageString summary );
+    }
 
 Again, there are three subtypes. Each subtype of ``ProcessletOutput`` corresponds to one output parameter type:
 
