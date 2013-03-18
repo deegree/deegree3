@@ -806,6 +806,8 @@ This section controls aspects that are related to temporary storage (for input a
 | InputDiskSwitchLimit | 0..1        | Integer | Limit in bytes, before a ComplexInputInput is written to disk, default: 1 MiB |
 +----------------------+-------------+---------+-------------------------------------------------------------------------------+
 
+.. _anchor-configuration-service-metadata:
+
 --------
 Metadata
 --------
