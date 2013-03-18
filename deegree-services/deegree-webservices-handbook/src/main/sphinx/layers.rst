@@ -268,7 +268,7 @@ The basic structure of a manual configuration looks like this:
 
 As you can see, the first thing to do is to bind the configuration to a feature store. After that, you can define one or more feature layers.
 
-A feature layer configuration has two optional elements besides the common elements. The ``FeatureTypeName`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
+A feature layer configuration has three optional elements besides the common elements. The ``FeatureTypeName`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
 
 .. code-block:: xml
 
@@ -284,6 +284,24 @@ A feature layer configuration has two optional elements besides the common eleme
     </Filter>
     ...
   </FeatureLayer>
+
+The third extra option is the ``SortBy`` element, which can be used to influence the order in which features are drawn:
+
+.. code-block:: xml
+
+  <FeatureLayer>
+    ...
+    <SortBy reverseFeatureInfo="false">
+      <SortBy xmlns="http://www.opengis.net/ogc">
+        <SortProperty>
+          <PropertyName xmlns:app="http://www.deegree.org/app">app:level</PropertyName>
+        </SortProperty>
+      </SortBy>
+    </SortBy>
+    ...
+  </FeatureLayer>
+
+The attribute ``reverseFeatureInfo`` is false by default. If set to true, the feature that is drawn first will appear **last** in a ``GetFeatureInfo`` feature collection.
 
 After that the standard options follow, as outlined in the common_ section.
 
