@@ -181,17 +181,28 @@ In order to succesfully compile a ``Processlet`` implementation, you will need t
 .. tip::
   You can use this POM to compile the example Processlets above. Just create an empty directory somewhere and save the example POM as ``pom.xml``. Place the Processlet Java files into subdirectory ``src/main/java/`` (as files ``Processlet42.java`` / ``AdditionProcesslet.java``). On the command line, change to the project directory and use ``mvn package`` (Apache Maven 3.0 and a compatible Java JDK have to be installed). Subdirectory ``target`` should now contain a JAR file that you can copy into the ``modules/`` directory of the deegree workspace. 
 
-"""""""""""""""""""""""""""""""""""""""
-Invoking processlets using WPS requests
-"""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""
+Testing Processlets using raw WPS requests
+""""""""""""""""""""""""""""""""""""""""""
 
 .. hint::
-  In order to perform WPS request to access your processlet, you will need to have an active :ref:`anchor-configuration-wps` resource in your workspace (which handles the WPS protocol and forwards the request to the process provider and the processlet).
+  In order to perform WPS request to access your process provider/Processlet, you need to have an active :ref:`anchor-configuration-wps` resource in your workspace (which handles the WPS protocol and forwards the request to the process provider and the processlet).
 
-The general idea of the WPS specification is that a client connects to a WPS server and invokes processes offered by the server to perform a computation. However, in some cases, you may just want to send raw WPS requests to a server and check the response (e.g. for testing the behaviour of your processlet). The `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ defines KVP, XML and SOAP-encoded requests. All encodings are supported by the deegree WPS, so you can choose the most appropriate one for your use-case. For sending KVP-requests, you can simply use your web browser (or command line tools like wget or curl). XML or SOAP requests can be send using deegree's generic client.
+The general idea of the WPS specification is that a client connects to a WPS server and invokes processes offered by the server to perform a computation. However, in some cases, you may just want to send raw WPS requests to a server and check the response yourself (e.g. for testing the behaviour of your processlet). The `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ defines KVP, XML and SOAP-encoded requests. All encodings are supported by the deegree WPS, so you can choose the most appropriate one for your use-case. For sending KVP-requests, you can simply use your web browser (or a command line tools like wget or curl). XML or SOAP requests can be send using deegree's generic client.
+
+Some KVP ``GetCapabilities``/``DescribeProcess`` request examples for checking the metadata of processes:
+
+* ``http://127.0.0.1:8080/services/wps?service=WPS&request=GetCapabilities``
+* ``http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&identifier=Process42``
+* ``http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&identifier=AdditionProcess``
+
+Some simple KVP ``Execute`` request examples for invoking processes:
+
+* ``http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Process42``
+* ``http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Addition&datainputs=SummandA=21;SummandB=21``
 
 .. tip::
-  :ref:`anchor-workspace-wps` contains XML example requests which demonstrate many of the features of the WPS protocol, such as input parameter passing (inline or by reference), return parameters (inline or by reference), response variants and asynchronous execution.
+  The `WPS 1.0.0 specification <http://www.opengeospatial.org/standards/wps>`_ (and the deegree WPS) support many features with regard to process invocation, such as input parameter passing (inline or by reference), return parameters (inline or by reference), response variants and asynchronous execution. :ref:`anchor-workspace-wps` contains XML example requests which demonstrate most of these features.
   
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Input and output parameters
