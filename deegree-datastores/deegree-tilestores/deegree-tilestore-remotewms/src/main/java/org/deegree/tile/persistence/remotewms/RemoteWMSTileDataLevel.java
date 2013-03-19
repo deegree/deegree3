@@ -35,12 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewms;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.deegree.commons.utils.RequestUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.tile.Tile;
@@ -75,6 +79,14 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
 
     private ICRS crs;
 
+    private Map<String, String> defaultGetMap;
+
+    private Map<String, String> defaultGetFeatureInfo;
+
+    private Map<String, String> hardGetMap;
+
+    private Map<String, String> hardGetFeatureInfo;
+
     /**
      * Creates a new {@link RemoteWMSTileDataLevel} instance.
      * 
@@ -92,14 +104,24 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
      *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
      * @param crs
      *            the crs to request maps with, may be null
+     * @param hardGetFeatureInfo
+     * @param hardGetMap
+     * @param defaultGetFeatureInfo
+     * @param defaultGetMap
      */
     RemoteWMSTileDataLevel( TileMatrix tileMd, String format, List<String> layers, List<String> styles,
-                            WMSClient client, String recodedOutputFormat, String crs ) {
+                            WMSClient client, String recodedOutputFormat, String crs,
+                            Map<String, String> defaultGetMap, Map<String, String> defaultGetFeatureInfo,
+                            Map<String, String> hardGetMap, Map<String, String> hardGetFeatureInfo ) {
         this.metadata = tileMd;
         this.format = format;
         this.layers = layers;
         this.styles = styles;
         this.recodedOutputFormat = recodedOutputFormat;
+        this.defaultGetMap = defaultGetMap;
+        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+        this.hardGetMap = hardGetMap;
+        this.hardGetFeatureInfo = hardGetFeatureInfo;
         this.tileSizeX = tileMd.getTilePixelsX();
         this.tileSizeY = tileMd.getTilePixelsY();
         this.client = client;
@@ -128,7 +150,11 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
         if ( crs == null ) {
             crs = envelope.getCoordinateSystem();
         }
-        GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope, crs, format, true );
-        return new RemoteWMSTile( client, gm, recodedOutputFormat );
+        Map<String, String> overriddenParameters = new HashMap<String, String>();
+        RequestUtils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+                                        defaultGetMap, hardGetMap );
+        GetMap gm = new GetMap( layers, styles, (int) tileSizeX, (int) tileSizeY, envelope, crs, format, true,
+                                overriddenParameters );
+        return new RemoteWMSTile( client, gm, recodedOutputFormat, defaultGetFeatureInfo, hardGetFeatureInfo );
     }
 }

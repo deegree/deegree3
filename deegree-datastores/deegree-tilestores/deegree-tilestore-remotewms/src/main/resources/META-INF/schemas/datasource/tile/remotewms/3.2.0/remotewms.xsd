@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/datasource/tile/remotewms" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  xmlns:r="http://www.deegree.org/datasource/tile/remotewms" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
   <annotation>
     <appinfo>
@@ -69,6 +69,17 @@
                         <documentation>CRS to use for remote requests</documentation>
                       </annotation>
                     </element>
+                    <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+                      <complexType>
+                        <simpleContent>
+                          <extension base="string">
+                            <attribute name="name" type="string" use="required" />
+                            <attribute name="use" type="r:ParameterUseType" use="optional" default="allowOverride" />
+                            <attribute name="scope" type="r:ParameterScopeType" use="optional" default="All" />
+                          </extension>
+                        </simpleContent>
+                      </complexType>
+                    </element>
                   </sequence>
                 </complexType>
               </element>
@@ -79,5 +90,20 @@
       <attribute name="configVersion" use="required" fixed="3.2.0" />
     </complexType>
   </element>
+
+  <simpleType name="ParameterUseType">
+    <restriction base="string">
+      <enumeration value="allowOverride" />
+      <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
+    </restriction>
+  </simpleType>
 
 </schema>
