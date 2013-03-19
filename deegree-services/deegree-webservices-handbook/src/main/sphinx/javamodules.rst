@@ -109,7 +109,7 @@ In order to enable Microsoft SQL Server connectivity for these resources, you ne
 
 .. [#f1] The term classpath describes the set of files or directories which are used to find the available Java code (JARs and class files).
 .. [#f2] http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html (registration required)
-.. [#f3] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/3.2.0/deegree-sqldialect-oracle-3.2.0.jar
+.. [#f3] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar
 .. [#f4] http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx
-.. [#f5] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/3.2.0/deegree-sqldialect-mssql-3.2.0.jar
+.. [#f5] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/${project.version}/deegree-sqldialect-mssql-${project.version}.jar
 
