@@ -633,11 +633,13 @@ BLOB mapping
 
 An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping. It stores every feature instance in a single (BLOB) column, regardless of it's complexity. Read the next section to learn how to get it working.
 
+.. _anchor-mapping-wizard:
+
 """"""""""""""""""""""""""""""""""""""""""""""""""
 Auto-generating a mapping configuration and tables
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
-Although this is beta (expect bugs!), the services console can be used to automatically derive an SQL feature store configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can try this possibility to create a working set up very quickly. And even if you have an existing database you want to map, this functionality can be very helpful to generate a valid mapping configuration to start with.
+Although this functionality is still in beta stage, the services console can be used to automatically derive an SQL feature store configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can use this option to create a working database set up very quickly. And even if you have an existing database you need to map manually, this functionality can be prove very helpful to generate a valid mapping configuration to start with.
 
 .. hint::
    As every (optional) attribute and element will be considered in the mapping, you may easily end up with hundreds of tables or columns.
