@@ -4,12 +4,12 @@
 Feature stores
 ==============
 
-Feature stores are resources that provide access to stored features. The two most common use cases for feature stores are:
+Feature stores are workspace resources that provide access to stored features. The two most common use cases for feature stores are:
 
 * Accessing via WFS
 * Providing of data for feature layers
 
-The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking on the **feature stores** link in the administration console. The configuration files are located in the **datasources/feature/** subdirectory of the active deegree workspace directory.
+The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking the **feature stores** link in the administration console. The configuration files are located in subdirectory ``datasources/feature/`` of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-feature.png
    :figwidth: 80%
@@ -30,12 +30,12 @@ Feature types define classes of features. For example, a feature type ``River`` 
 Simple vs. rich features and feature types
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some feature types have a more complex structure than others. Traditionally, GIS software only copes with "simple" feature types:
+Some feature types have a more complex structure than others. Traditionally, GIS software copes with "simple" feature types:
 
 * Every property is either simple (string, number, date, etc.) or a geometry
 * Only a single property with one name is allowed
 
-Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, rich feature types additionally allow the following:
+Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, "rich" feature types additionally allow the following:
 
 * Multiple properties with the same name
 * Properties that contain other features
@@ -49,7 +49,7 @@ Basically, a simple feature type is everything that can be represented using a s
       :language: xml
 
 .. hint::
-   All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support complex feature types.
+   All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support rich feature types.
 
 ^^^^^^^^^^^^^^^^^^^
 Application schemas
@@ -63,7 +63,6 @@ An application schema defines a hierarchy of (usually complex) feature types for
    :target: _images/address_schema.png
 
 These kinds of application schemas can be served using the SQL feature store or the memory feature store.
-
 
 -------------------
 Shape feature store
@@ -638,78 +637,216 @@ An alternative approach to schema-driven relational mapping is schema-driven BLO
 Auto-generating a mapping configuration and tables
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
-Although it may not always result in usable configurations, the services console can be used to automatically derive a mapping configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can try this possibility to create a working set up a very quickly.
+Although this is beta (expect bugs!), the services console can be used to automatically derive an SQL feature store configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can try this possibility to create a working set up very quickly. And even if you have an existing database you want to map, this functionality can be very helpful to generate a valid mapping configuration to start with.
 
 .. hint::
    As every (optional) attribute and element will be considered in the mapping, you may easily end up with hundreds of tables or columns.
 
-Here's a walkthrough based on the INSPIRE workspace, but you should be able to use these instructions with other GML application schemas as well. Make sure that the INSPIRE workspace has been downloaded and activated as described in :ref:`anchor-workspace-inspire`. As a prerequisite, you will have to create an empty, spatially-enabled PostGIS or Oracle database that you can connect to from your deegree installation.
+This walkthrough is based on the INSPIRE Annex I schemas, but you should be able to use these instructions with other GML application schemas as well. Make sure that the INSPIRE workspace has been downloaded and activated as described in :ref:`anchor-workspace-inspire`. As another prerequisite, you will have to create an empty, spatially-enabled PostGIS database that you can connect to from your deegree installation.
 
-As a first step, create a JDBC connection to your database:
+.. tip::
+  Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft SQL Server database. In order to enable support for these databases, see :ref:`anchor-db-libraries`.
 
-.. figure:: images/browser.png
+As a first step, create a JDBC connection to your database. Click **server connections -> jdbc** and enter **inspire** (or an other identifier) as connection id:
+
+.. figure:: images/console_featurestore_mapping1.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping1.jpg
 
    Creating a JDBC connection
 
-Click on "server connections -> jdbc", enter "inspire" (or an other identifier) as the connection id and click on "Create new":
+Afterwards, click **Create new** and enter the connection details to your database:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping2.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping2.jpg
 
    Creating a JDBC connection
 
-Ensure that deegree can connect to the database:
+By clicking **Test connection**, you can ensure that deegree can connect to your database:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping3.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping3.jpg
 
    Testing the JDBC connection
 
-Now, change to "data stores -> feature". We will have to delete the existing (memory-based) feature store. Click on "Delete".
+If everything works, click **Create** to finish the creation of your JDBC resource:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping4.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping4.jpg
+
+   Testing the JDBC connection
+
+Now, change to **data stores -> feature**. We will have to delete the existing (memory-based) feature store first. Click **Delete**:
+
+.. figure:: images/console_featurestore_mapping5.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping5.jpg
 
    Deleting the memory-based feature store
 
-Enter "inspire" as name for the new feature store, select SQL and click on "Create new":
+Enter "inspire" as name for the new feature store, select "SQL" from the drop-down box and click **Create new**:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping6.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping6.jpg
 
-   Creating a new SQL feature store configuration
+   Creating a new SQL feature store resource
 
-Select "Create tables from GML application schema" and click "Next":
+Select "Create tables from GML application schema" and click **Next**:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping7.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping7.jpg
 
    Mapping a new SQL feature store configuration
 
-You can now select the GML application schema files to be used. For this walkthrough, just tick the Addresses.xsd file, which contains the Addresses Data Theme (if you select all files, hundreds of feature types from INPIRE Annex I will be mapped). Scroll down and click "Next".
+You can now select the GML application schema files to be used. For this walkthrough, tick  ``Addresses.xsd``, ``AdministrativeUnits.xsd`` and ``CadastralParcels.xsd``  (if you select all schema files, hundreds of feature types from INPIRE Annex I will be mapped):
+
+.. figure:: images/console_featurestore_mapping8.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping8.jpg
+
+   Selecting the GML schema files to be considered
 
 .. hint::
-   This view presents any .xsd files that are located below the **appschemas** directory of your deegree workspace. If you want to map any other GML application schema (such as GeoSciML or CityGML), place a copy of the application schema files into the **appschemas** directory (using your favorite method, e.g. a file browser) and click on "Rescan". You should now have the option to select the files of this application schema in the services console view.
+   This view presents any .xsd files that are located below the **appschemas/** directory of your deegree workspace. If you want to map any other GML application schema (such as GeoSciML or CityGML), place a copy of the application schema files into the **appschemas/** directory (using your favorite method, e.g. a file browser) and click **Rescan**. You should now have the option to select the files of this application schema in the services console view.
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping9.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping9.jpg
 
-   Mapping a new SQL feature store configuration
+   Selecting the GML schema files to be considered
 
-You will be presented with a rough analysis of the feature types contained in the selected GML application schema files.
+Scroll down and click **Next**.
+
+.. figure:: images/console_featurestore_mapping10.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping10.jpg
+
+   Selecting mapping type and storage CRS
+
+You will be presented with a rough analysis of the feature types contained in the selected GML application schema files. Select "Relational" (you may also select BLOB if your prefer this kind of storage) and enter "EPSG:4258" as storage CRS (this is the code for ETRS89, the recommmended CRS for harmonized INSPIRE datasets). After clicking **Next**, an SQL feature store configuration will be automatically derived from the application schema:
+
+.. figure:: images/console_featurestore_mapping11.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping11.jpg
+
+   The auto-generated SQL feature store configuration
+
+Click **Save** to store this configuration:
+
+.. figure:: images/console_featurestore_mapping12.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping12.jpg
+
+   Auto-generated SQL statements for creating tables
+
+Now, click **Create DB tables**. You will be presented with an auto-generated SQL script for creating the required tables in the database:
+
+.. figure:: images/console_featurestore_mapping13.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping13.jpg
+
+   Auto-generated SQL statements for creating tables
+
+Click **Execute**. The SQL statements will now be executed against your database and the tables will be created:
+
+.. figure:: images/console_featurestore_mapping15.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping15.jpg
+
+   Mapping finished
+
+Click **Start feature store**:
+
+.. figure:: images/console_featurestore_mapping17.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping17.jpg
+
+   Finished
+
+Click **Reload** to force a reinitialization of the other workspace resources. We're finished. Features access of the WFS and WMS uses your database now. However, as your database is empty, the WMS will not render anything and the WFS will not return any features when queried. In order to insert some harmonized INSPIRE features, click **send requests** and select one of the insert requests:
+
+Use the third drop-down menu to select an example request. Entries "Insert_200.xml" or "Insert_110.xml" can be used to insert a small number of INSPIRE Address features using WFS-T insert requests:
+
+.. figure:: images/console_workspace_inspire3.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_workspace_inspire3.jpg
+
+   WFS-T example requests
+
+Click **Send** to execute the request. After successful insertion, the database contains a few addresses, and you may want to move back to the layer overview (**see layers**). If you activate the AD.Address layer, the newly inserted features will be rendered by the deegree WMS (look for them in the area of Enkhuizen):
+
+.. figure:: images/console_workspace_inspire4.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_workspace_inspire4.jpg
+
+   Ad.Address layer after insertion of example Address features
+
+Of course, you can also perform WFS queries against the database backend, such as requesting of INSPIRE Addresses by street name:
+
+.. figure:: images/console_workspace_inspire5.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_workspace_inspire5.jpg
+
+   More WFS examples
+
+Besides WFS-T requests, there's another handy option for inserting GML-encoded features. Click **data stores -> feature** to access the feature store view again:
+
+.. figure:: images/console_featurestore_mapping18.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping18.jpg
+
+   Accessing the feature store loader
+
+After clicking **Loader**, you will be presented with a simple view where you can insert a URL of a valid GML dataset:
+
+.. figure:: images/console_featurestore_mapping19.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping19.jpg
+
+   The feature store loader
+
+Basically, you can use this view to insert any valid, GML-encoded dataset, as long as it conforms to the application schema. The INSPIRE workspace contains some suitable example datasets, so you may use a file-URL like:
+
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/au-provincies.gml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/au-gemeenten.gml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/au-land.gml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/cadastralparcels-limburg.xml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/cadastralparcels-northholland.xml
+
+.. tip::
+  The above URLs are for a UNIX system with a user named "kelvin". You will need to adapt the URLs to match the location of your workspace directory.
+
+After entering the URL, click **Import**:
+
+.. figure:: images/console_featurestore_mapping20.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping20.jpg
+
+   Imported INSPIRE datasets via the Loader
 
