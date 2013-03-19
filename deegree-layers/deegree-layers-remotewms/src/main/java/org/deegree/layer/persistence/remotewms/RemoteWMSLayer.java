@@ -1,6 +1,7 @@
 package org.deegree.layer.persistence.remotewms;
 
 import static java.util.Collections.singletonList;
+import static org.deegree.commons.utils.RequestUtils.replaceParameters;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -9,7 +10,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -130,31 +130,11 @@ class RemoteWMSLayer extends AbstractLayer {
         }
     }
 
-    private static void handleParameters( Map<String, String> map, Map<String, String> originals,
-                                          Map<String, String> defaults, Map<String, String> hards ) {
-        // handle default params
-        for ( String def : defaults.keySet() ) {
-            String key = def.toUpperCase();
-            if ( originals.containsKey( key ) ) {
-                map.put( key, originals.get( key ) );
-            } else {
-                map.put( def, defaults.get( def ) );
-            }
-        }
-        // handle preset params
-        for ( Entry<String, String> e : hards.entrySet() ) {
-            if ( map.containsKey( e.getKey().toLowerCase() ) ) {
-                map.put( e.getKey().toLowerCase(), e.getValue() );
-            } else
-                map.put( e.getKey(), e.getValue() );
-        }
-    }
-
     @Override
     public RemoteWMSLayerData mapQuery( LayerQuery query, List<String> headers ) {
         try {
             Map<String, String> extraParams = new HashMap<String, String>();
-            handleParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
+            replaceParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
             ICRS crs = this.crs;
             if ( !alwaysUseDefaultCrs ) {
                 ICRS envCrs = query.getEnvelope().getCoordinateSystem();
@@ -176,8 +156,8 @@ class RemoteWMSLayer extends AbstractLayer {
     @Override
     public RemoteWMSLayerData infoQuery( LayerQuery query, List<String> headers ) {
         Map<String, String> extraParams = new HashMap<String, String>();
-        handleParameters( extraParams, query.getParameters(), defaultParametersGetFeatureInfo,
-                          hardParametersGetFeatureInfo );
+        replaceParameters( extraParams, query.getParameters(), defaultParametersGetFeatureInfo,
+                           hardParametersGetFeatureInfo );
 
         GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( originalName ), query.getWidth(),
                                                  query.getHeight(), query.getX(), query.getY(), query.getEnvelope(),
