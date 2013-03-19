@@ -22,7 +22,7 @@ The service console is a web-based administration interface for configuring your
    deegree webservices administration console
 
 .. tip::
-  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-3.2. The port number and webapp name depend on your installation/deployment details.
+  If you're not running the ZIP version, but deployed the WAR version into a web container, you most probably will have to use a different URL for accessing the console, e.g. http://localhost:8080/deegree-webservices-${project.version}. The port number and webapp name depend on your installation/deployment details.
 
 .. tip::
   You can access the service console from other machines on your network by exchanging *localhost* with the name or IP address of the machine that runs deegree webservices.
