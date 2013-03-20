@@ -1,15 +1,15 @@
 .. _anchor-configuration-featurestore:
 
-===========================
-Feature store configuration
-===========================
+==============
+Feature stores
+==============
 
-Feature stores are data stores that provide access to stored features. The two most common use cases for feature stores are:
+Feature stores are workspace resources that provide access to stored features. The two most common use cases for feature stores are:
 
 * Accessing via WFS
 * Providing of data for feature layers
 
-The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking on the **feature stores** link in the administration console. The configuration files are located in the **datasources/feature/** subdirectory of the active deegree workspace directory.
+The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking the **feature stores** link in the administration console. The configuration files are located in subdirectory ``datasources/feature/`` of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-feature.png
    :figwidth: 80%
@@ -30,12 +30,12 @@ Feature types define classes of features. For example, a feature type ``River`` 
 Simple vs. rich features and feature types
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some feature types have a more complex structure than others. Traditionally, GIS software only copes with "simple" feature types:
+Some feature types have a more complex structure than others. Traditionally, GIS software copes with "simple" feature types:
 
 * Every property is either simple (string, number, date, etc.) or a geometry
 * Only a single property with one name is allowed
 
-Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, rich feature types additionally allow the following:
+Basically, a simple feature type is everything that can be represented using a single database table or a single shape file. In contrast, "rich" feature types additionally allow the following:
 
 * Multiple properties with the same name
 * Properties that contain other features
@@ -49,7 +49,7 @@ Basically, a simple feature type is everything that can be represented using a s
       :language: xml
 
 .. hint::
-   All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support complex feature types.
+   All deegree feature stores support simple feature types, but only the SQL feature store and the memory feature store support rich feature types.
 
 ^^^^^^^^^^^^^^^^^^^
 Application schemas
@@ -63,7 +63,6 @@ An application schema defines a hierarchy of (usually complex) feature types for
    :target: _images/address_schema.png
 
 These kinds of application schemas can be served using the SQL feature store or the memory feature store.
-
 
 -------------------
 Shape feature store
@@ -202,10 +201,10 @@ The configuration format for the deegree memory feature store is defined by sche
 Simple SQL feature store
 ------------------------
 
-The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead.
+The simple SQL feature store serves simple feature types that are stored in a spatially-enabled database, such as PostGIS. However, it's not suited for mapping rich GML application schemas and does not support transactions. If you need these capabilities, use the SQL feature store instead.
 
 .. tip::
-  If you want to use the simple SQL feature store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
+  If you want to use the simple SQL feature store with Oracle or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -261,13 +260,14 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 SQL feature store
 -----------------
 
-The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following backends:
+The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following databases:
 
 * PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
+* Microsoft SQL Server (2008, 2012)
 
 .. tip::
-  If you want to use the SQL feature store with Oracle, you will need to add Oracle's JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
+  If you want to use the SQL feature store with Oracle Spatial or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -280,7 +280,7 @@ A very minimal valid configuration example looks like this:
    .. literalinclude:: xml/sqlfeaturestore_tabledriven1.xml
       :language: xml
 
-This configuration maps a single table as a feature type. See blabla for more details of the behaviour.
+This configuration maps a single table as a feature type.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 More complex configuration example
@@ -290,10 +290,10 @@ A more complex example:
 
 .. topic:: SQL feature store: More complex configuration
 
-   .. literalinclude:: xml/sqlfeaturestore_tabledriven4.xml
+   .. literalinclude:: xml/sqlfeaturestore_complex.xml
       :language: xml
 
-This configuration maps two feature types from an GML application schema to a relational model with joined tables. See blabla for more details of the behaviour.
+This configuration snippet maps a feature type from an GML application schema to a relational model with joined tables.
 
 ^^^^^^^^^^^^^^^^^^^^^
 Configuration options
@@ -301,20 +301,20 @@ Configuration options
 
 The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected.
 
-.. table:: Options for ``SQL feature store`` configuration files
+.. table:: Options for ``SQL feature store`` resource configuration files
 
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | Option                      | Cardinality | Value   | Description                                                                  |
 +=============================+=============+=========+==============================================================================+
 | JDBCConnId                  | 1..1        | String  | Identifier of the database connection                                        |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| DisablePostFiltering        | 0..1        | Empty   | TBD                                                                          |
+| DisablePostFiltering        | 0..1        | Empty   | If present, queries that require in-memory filtering are rejected            |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| JoinTableDeletePropagation  | 0..1        | String  | TBD                                                                          |
+| JoinTableDeletePropagation  | 0..1        | String  | Controls whether database automatically deletes dependent rows               |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| VoidEscalationPolicy        | 0..1        | String  | TBD                                                                          |
+| VoidEscalationPolicy        | 0..1        | String  | Controls whether void values are escalated to parent particles               |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| CustomReferenceResolver     | 0..n        | String  | TBD                                                                          |
+| CustomReferenceResolver     | 0..n        | String  | Class name of a custom resolver for resolving xlinks                         |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | StorageCRS                  | 0..1        | Complex | CRS of stored geometries                                                     |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
@@ -324,32 +324,32 @@ The SQL feature store configuration format is defined by schema file http://sche
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 | FeatureTypeMapping          | 0..n        | Complex | Mapping between a feature type and a database table                          |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| Inspectors                  | 0..n        | Complex | TBD                                                                          |
+| Inspectors                  | 0..n        | Complex | List of classes that can modify features before insertion                    |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| FeatureCache                | 0..n        | Complex | TBD                                                                          |
+| FeatureCache                | 0..1        | Empty   | If present, feature caching will be enabled                                  |
 +-----------------------------+-------------+---------+------------------------------------------------------------------------------+
 
-These options are explained in the remaining sections of this chapter.
+These options and their sub-options are explained in the remaining sections of this chapter.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Mapping tables to feature types
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section describes how to define the mapping of database tables to feature types. Each *FeatureTypeMapping* element defines the mapping between one table and one feature type:
+This section describes how to define the mapping of database tables to feature types. Each ``FeatureTypeMapping`` element defines the mapping between one table and one feature type:
 
 .. topic:: SQL feature store: Mapping a single table
 
    .. literalinclude:: xml/sqlfeaturestore_tabledriven1.xml
       :language: xml
 
-This example assumes that the database contains a table named ``country``, which is located within the default database schema (for PostgreSQL ``public``). Alternatively you can fully qualify the table name such as ``public.country``. The feature store will try to automatically determine the columns of the table and derive a suitable feature type model:
+This example assumes that the database contains a table named ``country``, which is located within the default database schema (for PostgreSQL ``public``). Alternatively, you can fully qualify the table name such as ``public.country``. The feature store will try to automatically determine the columns of the table and derive a suitable data model (feature type):
 
 * Feature type name: ``app:country`` (app=http://www.deegree.org/app)
 * Feature id (``gml:id``) based on primary key column of table ``country``
 * Every primitive column (number, string, date) is used as a primitive property
 * Every geometry column is used as a geometry property
 
-A single config file may map more than one table. The following example defines two feature types, based on tables ``country`` and ``cities``.
+A single configuration file may map more than one table. The following example defines two feature types, based on tables ``country`` and ``cities``.
 
 .. topic:: SQL feature store: Mapping two tables
 
@@ -374,7 +374,7 @@ Use standard XML namespace binding mechanisms to control the namespace and prefi
 Mapping the feature id
 ^^^^^^^^^^^^^^^^^^^^^^
 
-In order to customize the mapping of the feature id (gml:id attribute) to a key column of the feature type table, use the *FIDMapping* element. It is the first child option of every *FeatureTypeMapping* element:
+In order to customize the mapping of the feature id (gml:id attribute) to a key column of the feature type table, use the ``FIDMapping`` element. It is the first child element of a ``FeatureTypeMapping`` element:
 
 .. topic:: SQL feature store (schema-driven mode): FeatureTypeMapping elements
 
@@ -382,21 +382,21 @@ In order to customize the mapping of the feature id (gml:id attribute) to a key 
       :language: xml
 
 .. hint::
-   After providing a correct FIDMapping, a feature type is already queryable, e.g. you can perform a ``GetFeature`` requests against a WFS that uses this feature store. When creating a configuration manually for an existing database, it is a good idea to do this as a first step. This way you test if everything works so far (although no properties will be returned).
+   If you are mapping a GML application schema and provide a correct ``FIDMapping``, the feature type is already queryable, e.g. you can perform a ``GetFeature`` requests against a WFS that uses this feature store. When creating a configuration manually for an existing database, it is a good idea to do this as a first step. This way you test if everything works so far (although no properties will be returned).
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Mapping columns to properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In order to customize the mapping between table columns and the properties of a feature type, the following mapping elements are available:
+In order to customize the mapping between table columns and a feature type, the following mapping elements are available:
 
-* **Primitive**: Maps a primitive property, a text node or an attribute node.
-* **Geometry**: Maps a geometry property.
-* **Feature**: Maps a referenced or inlined subfeature property.
-* **Complex**: Maps a complex element that is neither a geometry nor a feature. It is a generic container for mapping nested element structures.
+* ``Primitive``: Maps a primitive property, a text node or an attribute node.
+* ``Geometry``: Maps a geometry property.
+* ``Feature``: Maps a referenced or inlined subfeature property.
+* ``Complex``: Maps a complex element that is neither a geometry nor a feature. It is a generic container for mapping nested element structures.
 
 .. hint::
-   The *Feature* and *Complex* mappings are only usable if you specify a GML application schema using the *GMLSchema* option. Their usage is described later in section
+   The ``Feature`` and ``Complex`` mappings are only usable if you specify a GML application schema using the ``GMLSchema`` option.
 
 ^^^^^^^^^^^^
 Transactions
@@ -404,14 +404,14 @@ Transactions
 
 When new features are inserted into a SQL feature store (for example via a WFS transaction), the user can choose between different id generation modes. These modes control whether feature ids (the values in the gml:id attribute) have to be re-generated by the feature store. There are three id generation modes available, which stem from the WFS 1.1.0 specification:
 
-* **UseExisting**: The feature store will store the original gml:id values that have been provided in the input. This may lead to errors if the provided ids are already in use or if the format of the id does not match the configuration.
-* **GenerateNew**: The feature store will discard the original gml:id values and use the configured generator to produce new and unique identifiers. References in the input (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is ensured.
-* **ReplaceDuplicate**: The feature store will try to use the original gml:id values that have been provided in the input. If a certain identifier already exists in the database, the configured generator is used to produce a new and unique identifier. NOTE: Support for this mode is not implemented yet.
+* ``UseExisting``: The feature store will store the original gml:id values that have been provided in the input. This may lead to errors if the provided ids are already in use or if the format of the id does not match the configuration.
+* ``GenerateNew``: The feature store will discard the original gml:id values and use the configured generator to produce new and unique identifiers. References in the input (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is ensured.
+* ``ReplaceDuplicate``: The feature store will try to use the original gml:id values that have been provided in the input. If a certain identifier already exists in the database, the configured generator is used to produce a new and unique identifier. NOTE: Support for this mode is not implemented yet.
 
 .. hint::
-   In a WFS 1.1.0 insert, the id generation mode is controlled by attribute *idGenMode*. WFS 1.0.0 and WFS 2.0.0 don't support to specify it on a request basis. However, in the deegree WFS configuration you can control it in the option *EnableTransactions*.
+   In a WFS 1.1.0 insert request, the id generation mode is controlled by attribute ``idGenMode``. WFS 1.0.0 and WFS 2.0.0 don't support to specify it on a request basis. However, in the deegree WFS configuration you can control it in the option ``EnableTransactions``.
 
-In order to generate the required ids for the *GenerateNew*, you can choose between different generators. These can be configured in the *FIDMapping* child element of *FeatureTypeMapping*.
+In order to generate the required ids for ``GenerateNew``, you can choose between different generators. These are configured in the ``FIDMapping`` child element of ``FeatureTypeMapping``.
 
 """""""""""""""""
 Auto id generator
@@ -470,37 +470,37 @@ Mapping a GML application schema
 
 The former sections assumed a mapping configuration that didn't specify a GML application schema. If a GML application schema is specified in the SQL feature store configuration, the mapping possibilities are extended further. Although configuration with a GML application schema is similar, there are some differences as described in the following table:
 
-.. table:: Blabla
+.. table:: SQL feature store mapping modes (with and without GML application schema)
 
-+------------------------------+----------------------------+---------------------------------+
-|                              | Without GML app schema     | With GML app schema             |
-+==============================+============================+=================================+
-| GML application schema       | Derived from tables        | Must be provided                |
-+------------------------------+----------------------------+---------------------------------+
-| Feature type definitions     | Derived from tables        | Derived from GML app schema     |
-+------------------------------+----------------------------+---------------------------------+
-| GML version                  | Any (GML 2, 3.0, 3.1, 3.2) | Fixed to version of app schema  |
-+------------------------------+----------------------------+---------------------------------+
-| Mapping principle            | Property to table column   | XPath-based or BLOB-based       |
-+------------------------------+----------------------------+---------------------------------+
-| Supported mapping complexity | Low                        | Very high                       |
-+------------------------------+----------------------------+---------------------------------+
++------------------------------+------------------------------+---------------------------------+
+|                              | Table-driven (no GML schema) | Schema-driven (with GML schema) |
++==============================+==============================+=================================+
+| GML application schema       | Derived from tables          | Must be provided                |
++------------------------------+------------------------------+---------------------------------+
+| Data model (feature types)   | Derived from tables          | Derived from GML app schema     |
++------------------------------+------------------------------+---------------------------------+
+| GML version                  | Any (GML 2, 3.0, 3.1, 3.2)   | Fixed to version of app schema  |
++------------------------------+------------------------------+---------------------------------+
+| Mapping principle            | Property to table column     | XPath-based or BLOB-based       |
++------------------------------+------------------------------+---------------------------------+
+| Supported mapping complexity | Low                          | Very high                       |
++------------------------------+------------------------------+---------------------------------+
 
 .. hint::
-  If you want to create a configuration for an existing GML application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML, XPlanung, AAA) always provide this schema in the configuration. Otherwise, try if table-driven meets your mapping requirements. If your table structures turn out to be too complex to be usable with table-driven mode, you will need to create a matching GML application schema manually and use schema-driven mode.
+  If you want to create a relational mapping for an existing GML application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML, XPlanung, AAA) always copy the schema files into the ``appschemas/`` directory of your workspace and reference the schema in your configuration. Otherwise, try if table-driven meets your mapping requirements. If your table structures turn out to be too complex to be usable with table-driven mode, you will need to create a matching GML application schema manually and use schema-driven mode.
 
-In schema-driven mode, the SQL feature store always retrieves feature type definitions and property declarations from a GML application schema (e.g. INSPIRE Addresses, GeoSciML, CityGML, XPlanung, AAA) specified in the configuration. A basic configuration for schema-driven mode defines the JDBC connection id, the CRS of the stored geometries and one or more GML schema files that make up the application schema:
+In schema-driven mode, the SQL feature store always retrieves feature type definitions and property declarations from the GML application schema files specified in the configuration. A basic configuration for schema-driven mode defines the JDBC connection id, the CRS of the stored geometries and one or more GML schema files that make up the application schema:
 
-.. topic:: SQL FeatureStore (Schema-driven mode): Skeleton config
+.. topic:: SQL FeatureStore (schema-driven mode): Skeleton config
 
    .. literalinclude:: xml/sqlfeaturestore_schemadriven1.xml
       :language: xml
 
 As in table-driven mode, the mapping of a feature type is defined using a ``FeatureTypeMapping`` element:
 
-.. topic:: SQL FeatureStore (Schema-driven mode): Relational skeleton config
+.. topic:: SQL FeatureStore (schema-driven mode): Feature type mapping
 
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven2.xml
+   .. literalinclude:: xml/sqlfeaturestore_featuretypemapping1.xml
       :language: xml
 
 The ``FeatureTypeMapping`` element has the following attributes:
@@ -509,7 +509,7 @@ The ``FeatureTypeMapping`` element has the following attributes:
 * ``table``: Name of the base table that stores the feature type. Properties may be mapped to related tables, but the base table must at least contain the columns that constitute the unique feature id (gml:id).
 
 .. hint::
-   In schema-driven mode, every mapped feature type must be defined in the referenced GML schema file. It is however not necessary to map all feature types defined in the schema. Unmapped feature types will be known to the feature store (e.g. a WFS will list them in a GetCapabilities response), but not queryable.
+   In schema-driven mode, every mapped feature type must be defined in the referenced GML schema file. It is however not necessary to map all feature types defined in the schema.
 
 """"""""""""""""""""
 Recommended workflow
@@ -519,13 +519,13 @@ Manually tailoring an SQL feature store configuration for a rich GML application
 
 * Map one feature type at a time. Only when you're satisfied with the mapping, move on to the next feature type.
 * When changing the configuration file, make sure that the status of the feature store stays green. If an exclamation mark occurs, you have an error in your configuration.
-* Use the "Reload" link of the services console to activate your changes.
+* Use the **Reload** link of the services console to activate your changes.
 
-Start with a single **FeatureTypeMapping**. Provide the table name and the mapping for the feature identifier. If there's no error, you can already query the feature type! Here's a minimal configuration example:
+Start with a single ``FeatureTypeMapping``. Provide the table name and the mapping for the feature identifier. If there's no error, you can already query the feature type! Here's a minimal configuration example:
 
 .. topic:: SQL FeatureStore (schema-driven mode): Start configuration
 
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven1.xml
+   .. literalinclude:: xml/sqlfeaturestore_featuretypemapping1.xml
       :language: xml
 
 It's very useful to have an active WFS configuration, so you can use WFS GetFeature-requests to check whether your feature mapping works as expected. You can use your web browser for that. After each configuration change, perform a GetFeature-request to see the effect. Suitable WFS requests depend on the WFS version, the GML version and the name of the feature type.
@@ -534,10 +534,10 @@ It's very useful to have an active WFS configuration, so you can use WFS GetFeat
 * WFS 1.1.0 (GML 3.1): http://localhost:8080/services?service=WFS&version=1.1.0&request=GetFeature&typeName=ad:Address&maxFeatures=5
 * WFS 2.0.0 (GML 3.2): http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=5
 
-In order to successfully create a mapping of a feature type from a GML application schema, you have to understand the structure and the data types of the feature type. For example, if you want to map the **ad:Address** feature type from INSPIRE Annex I, you have to know that it has a required property called **ad:inspireId** that has a child element with name **base:Identifier**. Ultimately, this structure is given by the corresponding GML application schema files, so you can analyze these files to find that out. Internally, deegree does the same to find out about feature types. Here's a full list of possible options to help with this task:
+In order to successfully create a mapping of a feature type from a GML application schema, you have to understand the structure and the data types of the feature type. For example, if you want to map the **ad:Address** feature type from INSPIRE Annex I, you have to know that it has a required property called **ad:inspireId** that has a child element with name **base:Identifier**. Ultimately, this structure is given by the corresponding GML application schema files, so you can analyze these files to find that out. Internally, deegree does the same to find out about feature types. Here's a list of possible options to help with this task:
 
-* Manually (or with the help of a generic XML tool such as XMLSpy) analyze the the structure of the feature type you want to map
-* Use the services console to auto-generate a mapping configuration. It should reflect the structure and datatypes correctly and will be a good starting point to. Adapt it to your own database tables and columns. Auto-generate the mapping, create a copy of the file and again start with a minimal version (feature type by feature type).
+* Manually (or with the help of a generic XML tool such as XMLSpy) analyze the GML application schema to understand the structure of the feature type you want to map
+* Use the services console to auto-generate a mapping configuration (see below). It should reflect the structure and datatypes correctly and will be a good starting point to. Adapt it to your own database tables and columns. Auto-generate the mapping, create a copy of the file and again start with a minimal version (``FeatureTypeMapping`` by ``FeatureTypeMapping``).
 * Use the deegree support options (mailing lists, commercial support) to get help.
 
 .. hint::
@@ -576,7 +576,7 @@ Note that all mapped columns stem from table **ad_address**. This is fine, as ea
    .. literalinclude:: xml/sqlfeaturestore_join1.xml
       :language: xml
 
-In this example, property **gml:identifier** is mapped as before (the data values stem from table **ad_address**). In contrast to that, the property **ad:position** can occur any number of times for a single **ad_address** feature instance. In order to reflect that in the relational model, the values for this property have to be taken from/stored in a separate table. The feature type table (ad_address) must have a 1:n relation to this table.
+In this example, property **gml:identifier** is mapped as before (the data values stem from table **ad_address**). In contrast to that, property **ad:position** can occur any number of times for a single **ad_address** feature instance. In order to reflect that in the relational model, the values for this property have to be taken from/stored in a separate table. The feature type table (ad_address) must have a 1:n relation to this table.
 
 The **Join** element is used to define such a change in the table context (in other words: a relation/join between two tables). A **Join** element may only occur as the first child element of any of the mapping elements (Primitive, Geometry, Feature or Complex). It changes from the current table context to another one. In the example, the table context in the mapping of property **ad:position** is changed from **ad_address** to **ad_address_ad_position**. All mapping instructions that follow the **Join** element refer to the new table context. For example, the geometry value is taken from **ad_address_ad_position.ad_geographicposition_ad_geometry_value**.
 
@@ -631,84 +631,222 @@ Inside a **AutoKeyColumn** element, you may use the same key generators that are
 BLOB mapping
 """"""""""""
 
-An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping.
+An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping. It stores every feature instance in a single (BLOB) column, regardless of it's complexity. Read the next section to learn how to get it working.
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 Auto-generating a mapping configuration and tables
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
-Although it may not always result in usable configurations, the services console can be used to automatically derive a mapping configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can try this possibility to create a working set up a very quickly.
+Although this is beta (expect bugs!), the services console can be used to automatically derive an SQL feature store configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can try this possibility to create a working set up very quickly. And even if you have an existing database you want to map, this functionality can be very helpful to generate a valid mapping configuration to start with.
 
 .. hint::
    As every (optional) attribute and element will be considered in the mapping, you may easily end up with hundreds of tables or columns.
 
-Here's a walkthrough based on the INSPIRE workspace, but you should be able to use these instructions with other GML application schemas as well. Make sure that the INSPIRE workspace has been downloaded and activated as described in :ref:`anchor-workspace-inspire`. As a prerequisite, you will have to create an empty, spatially-enabled PostGIS or Oracle database that you can connect to from your deegree installation.
+This walkthrough is based on the INSPIRE Annex I schemas, but you should be able to use these instructions with other GML application schemas as well. Make sure that the INSPIRE workspace has been downloaded and activated as described in :ref:`anchor-workspace-inspire`. As another prerequisite, you will have to create an empty, spatially-enabled PostGIS database that you can connect to from your deegree installation.
 
-As a first step, create a JDBC connection to your database:
+.. tip::
+  Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft SQL Server database. In order to enable support for these databases, see :ref:`anchor-db-libraries`.
 
-.. figure:: images/browser.png
+As a first step, create a JDBC connection to your database. Click **server connections -> jdbc** and enter **inspire** (or an other identifier) as connection id:
+
+.. figure:: images/console_featurestore_mapping1.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping1.jpg
 
    Creating a JDBC connection
 
-Click on "server connections -> jdbc", enter "inspire" (or an other identifier) as the connection id and click on "Create new":
+Afterwards, click **Create new** and enter the connection details to your database:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping2.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping2.jpg
 
    Creating a JDBC connection
 
-Ensure that deegree can connect to the database:
+By clicking **Test connection**, you can ensure that deegree can connect to your database:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping3.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping3.jpg
 
    Testing the JDBC connection
 
-Now, change to "data stores -> feature". We will have to delete the existing (memory-based) feature store. Click on "Delete".
+If everything works, click **Create** to finish the creation of your JDBC resource:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping4.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping4.jpg
+
+   Testing the JDBC connection
+
+Now, change to **data stores -> feature**. We will have to delete the existing (memory-based) feature store first. Click **Delete**:
+
+.. figure:: images/console_featurestore_mapping5.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping5.jpg
 
    Deleting the memory-based feature store
 
-Enter "inspire" as name for the new feature store, select SQL and click on "Create new":
+Enter "inspire" as name for the new feature store, select "SQL" from the drop-down box and click **Create new**:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping6.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping6.jpg
 
-   Creating a new SQL feature store configuration
+   Creating a new SQL feature store resource
 
-Select "Create tables from GML application schema" and click "Next":
+Select "Create tables from GML application schema" and click **Next**:
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping7.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping7.jpg
 
    Mapping a new SQL feature store configuration
 
-You can now select the GML application schema files to be used. For this walkthrough, just tick the Addresses.xsd file, which contains the Addresses Data Theme (if you select all files, hundreds of feature types from INPIRE Annex I will be mapped). Scroll down and click "Next".
+You can now select the GML application schema files to be used. For this walkthrough, tick  ``Addresses.xsd``, ``AdministrativeUnits.xsd`` and ``CadastralParcels.xsd``  (if you select all schema files, hundreds of feature types from INPIRE Annex I will be mapped):
+
+.. figure:: images/console_featurestore_mapping8.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping8.jpg
+
+   Selecting the GML schema files to be considered
 
 .. hint::
-   This view presents any .xsd files that are located below the **appschemas** directory of your deegree workspace. If you want to map any other GML application schema (such as GeoSciML or CityGML), place a copy of the application schema files into the **appschemas** directory (using your favorite method, e.g. a file browser) and click on "Rescan". You should now have the option to select the files of this application schema in the services console view.
+   This view presents any .xsd files that are located below the **appschemas/** directory of your deegree workspace. If you want to map any other GML application schema (such as GeoSciML or CityGML), place a copy of the application schema files into the **appschemas/** directory (using your favorite method, e.g. a file browser) and click **Rescan**. You should now have the option to select the files of this application schema in the services console view.
 
-.. figure:: images/browser.png
+.. figure:: images/console_featurestore_mapping9.jpg
    :figwidth: 60%
    :width: 50%
-   :target: _images/browser.png
+   :target: _images/console_featurestore_mapping9.jpg
 
-   Mapping a new SQL feature store configuration
+   Selecting the GML schema files to be considered
 
-You will be presented with a rough analysis of the feature types contained in the selected GML application schema files.
+Scroll down and click **Next**.
+
+.. figure:: images/console_featurestore_mapping10.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping10.jpg
+
+   Selecting mapping type and storage CRS
+
+You will be presented with a rough analysis of the feature types contained in the selected GML application schema files. Select "Relational" (you may also select BLOB if your prefer this kind of storage) and enter "EPSG:4258" as storage CRS (this is the code for ETRS89, the recommmended CRS for harmonized INSPIRE datasets). After clicking **Next**, an SQL feature store configuration will be automatically derived from the application schema:
+
+.. figure:: images/console_featurestore_mapping11.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping11.jpg
+
+   The auto-generated SQL feature store configuration
+
+Click **Save** to store this configuration:
+
+.. figure:: images/console_featurestore_mapping12.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping12.jpg
+
+   Auto-generated SQL statements for creating tables
+
+Now, click **Create DB tables**. You will be presented with an auto-generated SQL script for creating the required tables in the database:
+
+.. figure:: images/console_featurestore_mapping13.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping13.jpg
+
+   Auto-generated SQL statements for creating tables
+
+Click **Execute**. The SQL statements will now be executed against your database and the tables will be created:
+
+.. figure:: images/console_featurestore_mapping15.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping15.jpg
+
+   Mapping finished
+
+Click **Start feature store**:
+
+.. figure:: images/console_featurestore_mapping17.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping17.jpg
+
+   Finished
+
+Click **Reload** to force a reinitialization of the other workspace resources. We're finished. Features access of the WFS and WMS uses your database now. However, as your database is empty, the WMS will not render anything and the WFS will not return any features when queried. In order to insert some harmonized INSPIRE features, click **send requests** and select one of the insert requests:
+
+Use the third drop-down menu to select an example request. Entries "Insert_200.xml" or "Insert_110.xml" can be used to insert a small number of INSPIRE Address features using WFS-T insert requests:
+
+.. figure:: images/console_workspace_inspire3.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_workspace_inspire3.jpg
+
+   WFS-T example requests
+
+Click **Send** to execute the request. After successful insertion, the database contains a few addresses, and you may want to move back to the layer overview (**see layers**). If you activate the AD.Address layer, the newly inserted features will be rendered by the deegree WMS (look for them in the area of Enkhuizen):
+
+.. figure:: images/console_workspace_inspire4.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_workspace_inspire4.jpg
+
+   Ad.Address layer after insertion of example Address features
+
+Of course, you can also perform WFS queries against the database backend, such as requesting of INSPIRE Addresses by street name:
+
+.. figure:: images/console_workspace_inspire5.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_workspace_inspire5.jpg
+
+   More WFS examples
+
+Besides WFS-T requests, there's another handy option for inserting GML-encoded features. Click **data stores -> feature** to access the feature store view again:
+
+.. figure:: images/console_featurestore_mapping18.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping18.jpg
+
+   Accessing the feature store loader
+
+After clicking **Loader**, you will be presented with a simple view where you can insert a URL of a valid GML dataset:
+
+.. figure:: images/console_featurestore_mapping19.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping19.jpg
+
+   The feature store loader
+
+Basically, you can use this view to insert any valid, GML-encoded dataset, as long as it conforms to the application schema. The INSPIRE workspace contains some suitable example datasets, so you may use a file-URL like:
+
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/au-provincies.gml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/au-gemeenten.gml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/au-land.gml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/cadastralparcels-limburg.xml
+* file:/home/kelvin/.deegree/deegree-workspace-inspire/data/cadastralparcels-northholland.xml
+
+.. tip::
+  The above URLs are for a UNIX system with a user named "kelvin". You will need to adapt the URLs to match the location of your workspace directory.
+
+After entering the URL, click **Import**:
+
+.. figure:: images/console_featurestore_mapping20.jpg
+   :figwidth: 60%
+   :width: 50%
+   :target: _images/console_featurestore_mapping20.jpg
+
+   Imported INSPIRE datasets via the Loader
 

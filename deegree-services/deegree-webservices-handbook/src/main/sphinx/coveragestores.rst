@@ -109,3 +109,4 @@ The following example shows, how to configure a coverage pyramid:
 
 * A Pyramid contains a PyramidFile parameter with the path to the pyramid as its value.
 * A Pyramid contains a CRS parameter describing the source CRS of the pyramid as EPSG code.
+=======

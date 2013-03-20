@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>deegree-sqldialect-mssql</artifactId>
+  <packaging>jar</packaging>  
+  <description>SQL dialect for Microsoft SQL Server</description>
+
+  <properties>
+    <deegree.module.status>rework</deegree.module.status>
+  </properties>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-core-sqldialect</artifactId>
+    <version>3.2-rc3-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://repo.deegree.org/content/groups/public</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <profiles>
+    <profile>
+      <id>mssql</id>
+      <repositories>
+        <repository>
+          <id>deegree-restricted</id>
+          <name>deegree-restricted</name>
+          <url>http://repo.deegree.org/content/repositories/private3rdparty</url>
+        </repository>
+      </repositories>
+      <dependencies>
+        <dependency>
+          <groupId>com.microsoft</groupId>
+          <artifactId>sqljdbc4</artifactId>
+          <version>3.0</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>
+

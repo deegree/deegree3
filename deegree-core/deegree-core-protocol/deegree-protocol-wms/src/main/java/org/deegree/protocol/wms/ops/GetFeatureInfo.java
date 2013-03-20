@@ -251,7 +251,7 @@ public class GetFeatureInfo extends RequestBase {
             this.styles = GetMap.handleKVPStyles( ss, layers.size() );
         } else {
             // TODO think about whether STYLES has to be handled here as well
-            handleSLD( sld, sldBody, layers );
+            handleSLD( sld, sldBody );
         }
 
         ListIterator<LayerRef> lays = this.layers.listIterator();

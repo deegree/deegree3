@@ -130,6 +130,8 @@ public class GetMap extends RequestBase {
 
     private Map<String, String> parameterMap = new HashMap<String, String>();
 
+    private Map<String, String> overriddenParameters;
+
     /**
      * @param map
      * @param version
@@ -201,8 +203,9 @@ public class GetMap extends RequestBase {
     }
 
     public GetMap( List<String> layers, List<String> styles, int width, int height, Envelope envelope, ICRS crs,
-                   String format, boolean transparent ) {
+                   String format, boolean transparent, Map<String, String> overriddenParameters ) {
         this( layers, width, height, envelope, crs, format, transparent );
+        this.overriddenParameters = overriddenParameters;
         this.styles = map( styles, StyleRef.FROM_NAMES );
     }
 
@@ -330,7 +333,7 @@ public class GetMap extends RequestBase {
             this.styles = handleKVPStyles( ss, layers.size() );
         } else {
             // TODO think about whether STYLES has to be handled here as well
-            handleSLD( sld, sldBody, layers );
+            handleSLD( sld, sldBody );
         }
 
         String psize = map.get( "PIXELSIZE" );
@@ -737,6 +740,13 @@ public class GetMap extends RequestBase {
                                                          factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
         }
         return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], CRSManager.getCRSRef( crs ) );
+    }
+
+    /**
+     * @return null, or a map with parameters that should be overridden when used as client parameter object.
+     */
+    public Map<String, String> getOverriddenParameters() {
+        return overriddenParameters;
     }
 
 }

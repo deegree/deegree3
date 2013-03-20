@@ -78,11 +78,6 @@
         <d:Title>Orthophoto of Saltlake City</d:Title>
         <Layer>orthophoto</Layer>
       </Theme>
-      <Theme>
-        <Identifier>orthophototile</Identifier>
-        <d:Title>Orthophoto of Saltlake City tile</d:Title>
-        <Layer>utah_ortho</Layer>
-      </Theme>
     </Theme>
     <Theme>
     <d:Title>Transportation</d:Title>

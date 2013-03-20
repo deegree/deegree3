@@ -54,7 +54,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Timer;
 
 import org.deegree.commons.annotations.LoggingNotes;
@@ -180,6 +179,7 @@ public class MapService {
                     LOG.warn( "Theme with id {} was not available.", id );
                 } else {
                     themes.add( thm );
+                    themeMap.put( thm.getMetadata().getName(), thm );
 
                     for ( org.deegree.layer.Layer l : Themes.getAllLayers( thm ) ) {
                         newLayers.put( l.getMetadata().getName(), l );
@@ -314,7 +314,7 @@ public class MapService {
 
     public void getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers, RenderContext ctx )
                             throws OWSException {
-        Iterator<StyleRef> iter = gm.getStyles().iterator();
+        Iterator<StyleRef> styleItr = gm.getStyles().iterator();
         MapOptionsMaps options = gm.getRenderingOptions();
         List<MapOptions> mapOptions = new ArrayList<MapOptions>();
         List<LayerData> list = new ArrayList<LayerData>();
@@ -323,16 +323,15 @@ public class MapService {
 
         List<LayerQuery> queries = new ArrayList<LayerQuery>();
 
-        ListIterator<Pair<String, OperatorFilter>> filterIter = gm.getSldFilters().listIterator();
+        Iterator<LayerRef> layerItr = gm.getLayers().iterator();
+        List<OperatorFilter> filters = gm.getFilters();
+        Iterator<OperatorFilter> filterItr = filters == null ? null : filters.iterator();
+        while ( layerItr.hasNext() ) {
+            LayerRef lr = layerItr.next();
+            StyleRef sr = styleItr.next();
+            OperatorFilter f = filterItr == null ? null : filterItr.next();
 
-        Pair<String, OperatorFilter> curFilter = null;
-
-        if ( filterIter.hasNext() ) {
-            curFilter = filterIter.next();
-        }
-
-        for ( LayerRef lr : gm.getLayers() ) {
-            LayerQuery query = buildQuery( iter, lr, options, mapOptions, curFilter, filterIter, gm );
+            LayerQuery query = buildQuery( sr, lr, options, mapOptions, f, gm );
             queries.add( query );
         }
 
@@ -359,29 +358,15 @@ public class MapService {
         ScaleFunction.getCurrentScaleValue().remove();
     }
 
-    private LayerQuery buildQuery( Iterator<StyleRef> iter, LayerRef lr, MapOptionsMaps options,
-                                   List<MapOptions> mapOptions, Pair<String, OperatorFilter> curFilter,
-                                   ListIterator<Pair<String, OperatorFilter>> filterIter,
-                                   org.deegree.protocol.wms.ops.GetMap gm ) {
-        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
-        StyleRef style = iter.next();
+    private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
+                                   OperatorFilter f, org.deegree.protocol.wms.ops.GetMap gm ) {
+
         for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
             insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
                                   defaultLayerOptions );
             mapOptions.add( options.get( l.getMetadata().getName() ) );
-            StyleRef ref;
-            if ( style.getStyle() != null ) {
-                ref = new StyleRef( style.getStyle() );
-            } else {
-                ref = new StyleRef( style.getName() );
-            }
-            styles.put( l.getMetadata().getName(), ref );
         }
-        OperatorFilter f = null;
-        if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
-            f = curFilter.second;
-            curFilter = filterIter.hasNext() ? filterIter.next() : null;
-        }
+
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
                                            gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
                                            gm.getQueryBox() );
@@ -427,24 +412,19 @@ public class MapService {
     }
 
     private List<LayerQuery> prepareGetFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi ) {
-        Map<String, StyleRef> styles = new HashMap<String, StyleRef>();
-        Iterator<StyleRef> iter = gfi.getStyles().iterator();
         List<LayerQuery> queries = new ArrayList<LayerQuery>();
-        ListIterator<Pair<String, OperatorFilter>> filterIter = gfi.getSldFilters().listIterator();
-        Pair<String, OperatorFilter> curFilter = filterIter.hasNext() ? filterIter.next() : null;
 
-        for ( LayerRef lr : gfi.getQueryLayers() ) {
-            StyleRef style = iter.next();
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                styles.put( l.getMetadata().getName(), style );
-            }
-            OperatorFilter f = null;
-            if ( curFilter != null && curFilter.first.equals( lr.getName() ) ) {
-                f = curFilter.second;
-                curFilter = filterIter.hasNext() ? filterIter.next() : null;
-            }
+        Iterator<LayerRef> layerItr = gfi.getQueryLayers().iterator();
+        Iterator<StyleRef> styleItr = gfi.getStyles().iterator();
+        List<OperatorFilter> filters = gfi.getFilters();
+        Iterator<OperatorFilter> filterItr = filters == null ? null : filters.iterator();
+        while ( layerItr.hasNext() ) {
+            LayerRef lr = layerItr.next();
+            StyleRef sr = styleItr.next();
+            OperatorFilter f = filterItr == null ? null : filterItr.next();
+
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
-                                               gfi.getY(), gfi.getFeatureCount(), f, style, gfi.getParameterMap(),
+                                               gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
                                                gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
             queries.add( query );
         }

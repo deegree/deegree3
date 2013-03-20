@@ -1,10 +1,10 @@
 .. _anchor-configuration-service:
 
-========================
-Webservice configuration
-========================
+============
+Web services
+============
 
-This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
+This chapter describes the configuration of web service resources. You can access this configuration level by clicking the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-services.png
    :figwidth: 80%
@@ -14,7 +14,7 @@ This chapter describes the deegree webservices configuration files. You can acce
    Web services are the top-level resources of the deegree workspace
 
 .. tip::
-  The identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service instance that you want to connect to explicitly.
+  The identifier of a web service resource has a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple service resources of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the resource identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service resource that you want to connect to explicitly.
 
 .. _anchor-configuration-wfs:
 
@@ -22,7 +22,7 @@ This chapter describes the deegree webservices configuration files. You can acce
 Web Feature Service (WFS)
 -------------------------
 
-A deegree WFS configuration consists of a WFS configuration file and any number of feature store configuration files. Feature stores provide access to the actual feature data (which may be stored in any of the supported backends, e.g. in shapefiles or spatial databases such as PostGIS or Oracle Spatial). In transactional mode (WFS-T), feature stores are also used for modification of stored features:
+A deegree WFS setup consists of a WFS configuration file and any number of feature store configuration files. Feature stores provide access to the actual data (which may be stored in any of the supported backends, e.g. in shapefiles or spatial databases such as PostGIS or Oracle Spatial). In transactional mode (WFS-T), feature stores are also used for modification of stored features:
 
 .. figure:: images/workspace-wfs.png
    :figwidth: 80%
@@ -31,8 +31,9 @@ A deegree WFS configuration consists of a WFS configuration file and any number 
 
    A WFS resource is connected to any number of feature store resources
 
-.. tip::
-  In order to fully master deegree WFS configuration, you will have to understand :ref:`anchor-configuration-featurestore` as well.
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
 
 The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuration example looks like this:
 
@@ -41,12 +42,22 @@ The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuratio
    .. literalinclude:: xml/wfs_basic.xml
       :language: xml
 
-This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries. A more complex configuration example looks like this:
+This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries.
+
+^^^^^^^^^^^^^^^^^^^^
+More complex example 
+^^^^^^^^^^^^^^^^^^^^
+
+A more complex configuration example looks like this:
 
 .. topic:: WFS config example 2: More complex configuration
 
    .. literalinclude:: xml/wfs_complex.xml
       :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
 
 The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
@@ -76,7 +87,7 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 | CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 
-The remainder of this section describes these options and their sub-options in detail.
+The remainining sections describe these options and their sub-options in detail.
 
 ^^^^^^^^^^^^^^^
 General options
@@ -504,9 +515,7 @@ This section shows all available special constructs. The selectors are explained
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 | <?even:*name*>                | property          | calls the *name* template if the index of the current property is even                          |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link>                       | property          | evaluates to a HTML <a href> link with the value of the property as target and text             |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link:*prefix*>              | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
+| <?link:*prefix*:>             | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 | <?link:*prefix*:*text*>       | property          | the text of the link will be *text* instead of the link address                                 |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
@@ -571,21 +580,37 @@ In deegree terminology, a deegree WMTS provides access to tiles stored in tile s
 .. tip::
   In order to fully understand deegree WMTS configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-tilestore` describes the configuration of tile data access. Chapter :ref:`anchor-configuration-layers` describes the configuration of layers (only tile layers are usable for the WMTS). Chapter :ref:`anchor-configuration-themes` describes how to create a theme from layers.
 
-The deegree WMTS config file format is defined by schema file http://schemas.deegree.org/services/wmts/3.2.0/wmts.xsd. The root element is ``deegreeWMTS`` and the config attribute must be ``3.2.0``. The only mandatory section is ``ServiceConfiguration`` (which can be empty), therefore, a minimal WMTS configuration example looks like this:
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
+
+The only mandatory section is ``ServiceConfiguration`` (which can be empty), therefore a minimal WMTS configuration example looks like this:
 
 .. topic:: WMTS config example 1: Minimal configuration
 
    .. literalinclude:: xml/wmts_basic.xml
       :language: xml
 
-This will setup a deegree WMTS with all configured themes in the workspace. A more complex configuration that restricts the offered themes looks like this:
+This will create a deegree WMTS resource that connects to all configured themes of the workspace.
+
+^^^^^^^^^^^^^^^^^^^^
+More complex example 
+^^^^^^^^^^^^^^^^^^^^
+
+A more complex configuration that restricts the offered themes looks like this:
 
 .. topic:: WMTS config example 2: More complex configuration
 
    .. literalinclude:: xml/wmts_complex.xml
       :language: xml
 
-The following table lists all available configuration options. When specifiying them, their order must be respected.
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
+
+The deegree WMTS config file format is defined by schema file http://schemas.deegree.org/services/wmts/3.2.0/wmts.xsd. The root element is ``deegreeWMTS`` and the config attribute must be ``3.2.0``.
+
+The following table lists all available configuration options. When specifying them, their order must be respected.
 
 .. table:: Options for ``deegreeWMTS``
 
@@ -606,7 +631,7 @@ Below the ``ServiceConfiguration`` section you can specify custom featureinfo fo
   ...
   </FeatureInfoFormats>
 
-Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured.
+Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured. Take note that the GetFeatureInfo operation is currently only supported for remote WMS tile store backends.
 
 .. _anchor-configuration-csw:
 
@@ -626,12 +651,22 @@ In deegree terminology, a deegree CSW provides access to metadata records stored
 .. tip::
   In order to fully understand deegree CSW configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-metadatastore` describes the configuration of metadatastores.
 
-The deegree CSW config file format is defined by schema file http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The root element is ``deegreeCSW`` and the config attribute must be ``3.2.0``. There is no mandatory element, therefore a minimal CSW configuration example looks like this:
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
+
+There is no mandatory element, therefore a minimal CSW configuration example looks like this:
 
 .. topic:: CSW config example 1: Minimal configuration
 
    .. literalinclude:: xml/csw_basic.xml
       :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
+
+The deegree CSW config file format is defined by schema file http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The root element is ``deegreeCSW`` and the config attribute must be ``3.2.0``.
 
 The following table lists all available configuration options. When specifiying them, their order must be respected.
 
@@ -670,7 +705,7 @@ Extended Functionality
 Web Processing Service (WPS)
 ----------------------------
 
-In deegree terminology, a deegree WPS allows the execution of geospatial processes from process providers.
+A deegree WPS allows the invocation of geospatial processes. The offered processes are determined by the attached process provider resources.
 
 .. figure:: images/workspace-wps.png
    :figwidth: 90%
@@ -682,20 +717,36 @@ In deegree terminology, a deegree WPS allows the execution of geospatial process
 .. tip::
   In order to fully master deegree WPS configuration, you will have to understand :ref:`anchor-configuration-processproviders` as well.
 
-There are no mandatory options, therefore, a minimal valid WPS configuration example looks like this:
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
+
+A minimal valid WPS configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.2.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.2.0/wps_configuration.xsd">  
+  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">  
   </deegreeWPS>
+
+This will create a WPS resource with the following properties:
+
+* All WPS protocol versions are enabled. Currently, this is only 1.0.0.
+* The WPS resource will attach to all process provider resources in the workspace.
+* Temporary files (e.g. for process results) are stored in the standard Java temp directory of the deegree webapp.
+* The last 100 process executions are tracked.
+* Memory buffers (e.g. for inline XML inputs) are limited to 1 MB each. If this limit is exceeded, buffering is switched to use a file in the storage directory.
+
+^^^^^^^^^^^^^^^
+Complex example
+^^^^^^^^^^^^^^^
 
 A more complex configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.2.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.2.0/wps_configuration.xsd">
+  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
   
     <SupportedVersions>
       <Version>1.0.0</Version>
@@ -708,6 +759,18 @@ A more complex configuration example looks like this:
     </DefaultExecutionManager>
   
   </deegreeWPS>
+
+This will create a WPS resource with the following properties:
+
+* Enabled WPS protocol versions: 1.0.0
+* The WPS resource will attach to all process provider resources in the workspace.
+* Storage directory for temporary files (e.g. for process results) is ``/var/wps`` inside the workspace.
+* The last 1000 process executions will be tracked.
+* Memory buffers (e.g. for inline XML inputs) are limited to 1 MB each. If this limit is exceeded, buffering is switched to use a file in the storage directory.
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
 
 The deegree WPS config file format is defined by schema file http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd. The root element is ``deegreeWPS`` and the config attribute must be ``3.1.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
@@ -725,13 +788,11 @@ The remainder of this section describes these options and their sub-options in d
 
 * ``SupportedVersions``: By default, all implemented WMS protocol versions are activated. Currently, this is just 1.0.0 anyway. Alternatively you can control offered WPS protocol versions using the element ``SupportedVersions``. This element allows the child element ``<Version>1.0.0</Version>`` for now.
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-Execution manager settings
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+DefaultExecutionManager section
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO explain execution manager
-
-The ``DefaultExecutionManager`` option has the following sub-options:
+This section controls aspects that are related to temporary storage (for input and output parameter values) during the execution of processes. The ``DefaultExecutionManager`` option has the following sub-options:
 
 .. table:: Options for ``DefaultExecutionManager``
 
@@ -745,11 +806,11 @@ The ``DefaultExecutionManager`` option has the following sub-options:
 | InputDiskSwitchLimit | 0..1        | Integer | Limit in bytes, before a ComplexInputInput is written to disk, default: 1 MiB |
 +----------------------+-------------+---------+-------------------------------------------------------------------------------+
 
-TODO explain parameters in detail
+.. _anchor-configuration-service-metadata:
 
-----------------------
-Metadata configuration
-----------------------
+--------
+Metadata
+--------
 
 This section describes the configuration for the different types of metadata that a service reports in the ``GetCapabilities`` response. These options don't affect the data that the service offers or the behaviour of the service. It merely changes the descriptive metadata that the service reports.
 
@@ -897,9 +958,9 @@ Extended capabilities
 
 Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. They are not defined by the OGC service specifications, but by additional guidance documents, such as the INSPIRE Network Service TGs. deegree treats this section as a generic XML element and includes it in the output. If your service supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and 2.0.0), you may include multiple ``ExtendedCapabilities`` elements in the metadata configuration and use attribute ``protocolVersions`` to indicate the version that you want to define the extended capabilities for.
 
-------------------------
-Controller configuration
-------------------------
+------------------
+Service controller
+------------------
 
 The controller configuration is used to configure various global aspects that affect all services.
 
