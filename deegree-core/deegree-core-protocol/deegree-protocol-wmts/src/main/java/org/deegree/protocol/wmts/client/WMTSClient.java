@@ -54,6 +54,7 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClient;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wmts.WMTSConstants;
+import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.tile.TileMatrixSet;
 
@@ -209,6 +210,41 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         kvp.put( "tilematrix", request.getTileMatrix() );
         kvp.put( "tilerow", "" + request.getTileRow() );
         kvp.put( "tilecol", "" + request.getTileCol() );
+        return kvp;
+    }
+
+    public GetFeatureInfoResponse getFeatureInfo( GetFeatureInfo request )
+                            throws OWSExceptionReport, XMLStreamException, IOException {
+        Map<String, String> kvp = buildGetFeatureInfoKvpMap( request );
+        if ( request.getOverriddenParameters() != null ) {
+            for ( Entry<String, String> e : request.getOverriddenParameters().entrySet() ) {
+                if ( kvp.containsKey( e.getKey().toLowerCase() ) ) {
+                    kvp.put( e.getKey().toLowerCase(), e.getValue() );
+                } else
+                    kvp.put( e.getKey(), e.getValue() );
+            }
+        }
+        URL endPoint = getGetUrl( WMTSConstants.WMTSRequestType.GetTile.name() );
+        OwsHttpResponse response = httpClient.doGet( endPoint, kvp, null );
+        response.assertHttpStatus200();
+        response.assertNoXmlContentTypeAndExceptionReport();
+        return new GetFeatureInfoResponse( response );
+    }
+
+    private Map<String, String> buildGetFeatureInfoKvpMap( GetFeatureInfo request ) {
+        Map<String, String> kvp = new LinkedHashMap<String, String>();
+        kvp.put( "service", "WMTS" );
+        kvp.put( "request", "GetFeatureInfo" );
+        kvp.put( "version", VERSION_100.toString() );
+        kvp.put( "layer", request.getLayer() );
+        kvp.put( "style", request.getStyle() );
+        kvp.put( "info_format", request.getInfoFormat() );
+        kvp.put( "tilematrixset", request.getTileMatrixSet() );
+        kvp.put( "tilematrix", request.getTileMatrix() );
+        kvp.put( "tilerow", Long.toString( request.getTileRow() ) );
+        kvp.put( "tilecol", Long.toString( request.getTileCol() ) );
+        kvp.put( "i", Integer.toString( request.getI() ) );
+        kvp.put( "j", Integer.toString( request.getJ() ) );
         return kvp;
     }
 
