@@ -260,7 +260,7 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 SQL feature store
 -----------------
 
-The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational decomposition setups, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following databases:
+The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational mapping, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following databases:
 
 * PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
@@ -280,7 +280,16 @@ A very minimal valid configuration example looks like this:
    .. literalinclude:: xml/sqlfeaturestore_tabledriven1.xml
       :language: xml
 
-This configuration maps a single table as a feature type.
+This configuration defines a SQL feature store resource with the following properties:
+
+* JDBC connection resource with identifier ``postgis`` is used to connect to the database
+* A single table (``country``) is mapped
+* Feature type is named ``app:country`` (app=http://www.deegree.org/app)
+* Properties of the feature type are automatically derived from table columns
+* Every primitive column (number, string, date) is used as a primitive property
+* Every geometry column is used as a geometry property (storage CRS is determined automatically, inserted geometries are transformed by deegree, if necessary)
+* Feature id (``gml:id``) is based on primary key column, prefixed by ``COUNTRY_``
+* For insert transactions, it is expected that the database generates new primary keys value automatically (primary key column must have a trigger or a suitable type such as SERIAL in PostgreSQL)
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 More complex configuration example
@@ -293,7 +302,16 @@ A more complex example:
    .. literalinclude:: xml/sqlfeaturestore_complex.xml
       :language: xml
 
-This configuration snippet maps a feature type from an GML application schema to a relational model with joined tables.
+This configuration snippet defines a SQL feature store resource with the following properties:
+
+* JDBC connection resource with identifier ``inspire`` is used to connect to the database
+* Storage CRS is ``EPSG:4258``, database srid is ``-1`` (inserted geometries are transformed by deegree to the storage CRS, if necessary)
+* Feature types are read from three GML schema files
+* The snippet contains the mapping of a single (but rich) feature type ``ad:Address`` (ad=urn:x-inspire:specification:gmlas:Addresses:3.0)
+* The root table of the mapping is ``ad_address``
+* Feature type is mapped to fifteen tables in total
+* Feature id (``gml:id``) is based on column ``attr_gml_id``, prefixed by ``AD_ADDRESS__``
+* For insert transactions, new values for column ``attr_gml_id`` in the root table are created using the UUID generator. For the joined tables, the database has to create new primary keys value automatically (primary key columns must have a trigger or a suitable type such as SERIAL in PostgreSQL)
 
 ^^^^^^^^^^^^^^^^^^^^^
 Configuration options
