@@ -1,4 +1,7 @@
-<SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0" xmlns:net="urn:x-inspire:specification:gmlas:Network:3.2" xmlns:stat="urn:x-inspire:specification:gmlas:StatisticalUnits:0.0" xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0" xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:bui="urn:x-inspire:specification:gmlas:Buildings:0.0" xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.1.0/sql.xsd">
+<SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd">
   <JDBCConnId>inspire</JDBCConnId>
   <StorageCRS srid="-1" dim="2D">EPSG:4258</StorageCRS>
   <GMLSchema>../../appschemas/inspire/annex1/Addresses.xsd</GMLSchema>
@@ -7,232 +10,79 @@
 
   <FeatureTypeMapping name="ad:Address" table="ad_address">
     <FIDMapping prefix="AD_ADDRESS_">
-      <Column name="attr_gml_id" type="string"/>
-      <UUIDGenerator/>
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
     </FIDMapping>
-    <Complex path="gml:identifier">
-      <Primitive path="text()" mapping="gml_identifier"/>
-      <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace"/>
-    </Complex>
     <Complex path="ad:inspireId">
       <Complex path="base:Identifier">
-        <Primitive path="base:localId" mapping="ad_inspireid_base_identifier_base_localid"/>
-        <Primitive path="base:namespace" mapping="ad_inspireid_base_identifier_base_namespace"/>
-        <Complex path="base:versionId">
-          <Primitive path="text()" mapping="ad_inspireid_base_identifier_base_versionid"/>
-          <Primitive path="@nilReason" mapping="ad_inspireid_base_identifier_base_versionid_attr_nilreason"/>
-          <Primitive path="@xsi:nil" mapping="ad_inspireid_base_identifier_base_versionid_attr_xsi_nil"/>
-        </Complex>
+        <Primitive path="base:localId" mapping="localid" />
+        <Primitive path="base:namespace" mapping="'NL.KAD.BAG'" />
       </Complex>
-    </Complex>
-    <Complex path="ad:alternativeIdentifier">
-      <Primitive path="text()" mapping="ad_alternativeidentifier"/>
-      <Primitive path="@nilReason" mapping="ad_alternativeidentifier_attr_nilreason"/>
-      <Primitive path="@xsi:nil" mapping="ad_alternativeidentifier_attr_xsi_nil"/>
     </Complex>
     <Complex path="ad:position">
-      <Join table="ad_address_ad_position" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num" numbered="true"/>
+      <Join table="ad_address_ad_position" fromColumns="fid" toColumns="fk" />
       <Complex path="ad:GeographicPosition">
         <Complex path="ad:geometry">
-          <Primitive path="@nilReason" mapping="ad_geographicposition_ad_geometry_attr_nilreason"/>
-          <Primitive path="@gml:remoteSchema" mapping="ad_geographicposition_ad_geometry_attr_gml_remoteschema"/>
-          <Primitive path="@owns" mapping="ad_geographicposition_ad_geometry_attr_owns"/>
-          <Geometry path="." mapping="ad_geographicposition_ad_geometry_value"/>
+          <Geometry path="." mapping="value" />
         </Complex>
         <Complex path="ad:specification">
-          <Primitive path="text()" mapping="ad_geographicposition_ad_specification"/>
-          <Primitive path="@nilReason" mapping="ad_geographicposition_ad_specification_attr_nilreason"/>
-          <Primitive path="@codeSpace" mapping="ad_geographicposition_ad_specification_attr_codespace"/>
-          <Primitive path="@xsi:nil" mapping="ad_geographicposition_ad_specification_attr_xsi_nil"/>
+          <Primitive path="text()" mapping="'entrance'" />
         </Complex>
         <Complex path="ad:method">
-          <Primitive path="text()" mapping="ad_geographicposition_ad_method"/>
-          <Primitive path="@nilReason" mapping="ad_geographicposition_ad_method_attr_nilreason"/>
-          <Primitive path="@codeSpace" mapping="ad_geographicposition_ad_method_attr_codespace"/>
-          <Primitive path="@xsi:nil" mapping="ad_geographicposition_ad_method_attr_xsi_nil"/>
+          <Primitive path="text()" mapping="'byOtherParty'" />
         </Complex>
-        <Primitive path="ad:default" mapping="ad_geographicposition_ad_default"/>
+        <Primitive path="ad:default" mapping="'true'" />
       </Complex>
     </Complex>
-    <Complex path="ad:status">
-      <Primitive path="text()" mapping="ad_status"/>
-      <Primitive path="@nilReason" mapping="ad_status_attr_nilreason"/>
-      <Primitive path="@codeSpace" mapping="ad_status_attr_codespace"/>
-      <Primitive path="@xsi:nil" mapping="ad_status_attr_xsi_nil"/>
-    </Complex>
     <Complex path="ad:locator">
-      <Join table="ad_address_ad_locator" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num" numbered="true"/>
+      <Join table="ad_address_ad_locator" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num"
+        numbered="true" />
       <Complex path="ad:AddressLocator">
         <Complex path="ad:designator">
-          <Join table="ad_address_ad_locator_ad_addresslocator_ad_designator" fromColumns="id" toColumns="parentfk" orderColumns="num" numbered="true"/>
+          <Join table="ad_address_ad_locator_ad_addresslocator_ad_designator" fromColumns="id" toColumns="parentfk"
+            orderColumns="num" numbered="true" />
           <Complex path="ad:LocatorDesignator">
-            <Primitive path="ad:designator" mapping="ad_addresslocator_ad_locatordesignator_ad_designator"/>
+            <Primitive path="ad:designator" mapping="ad_addresslocator_ad_locatordesignator_ad_designator" />
             <Complex path="ad:type">
-              <Primitive path="text()" mapping="ad_addresslocator_ad_locatordesignator_ad_type"/>
-              <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatordesignator_ad_type_attr_codespace"/>
-            </Complex>
-          </Complex>
-        </Complex>
-        <Complex path="ad:name">
-          <Join table="ad_address_ad_locator_ad_addresslocator_ad_name" fromColumns="id" toColumns="parentfk" orderColumns="num" numbered="true"/>
-          <Complex path="ad:LocatorName">
-            <Complex path="ad:name">
-              <Join table="ad_address_ad_locator_ad_addresslocator_ad_name_ad_addres_567" fromColumns="id" toColumns="parentfk" orderColumns="num" numbered="true"/>
-              <Complex path="gn:GeographicalName">
-                <Complex path="gn:language">
-                  <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_l_568"/>
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_l_569"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_l_570"/>
-                </Complex>
-                <Complex path="gn:nativeness">
-                  <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_571"/>
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_572"/>
-                  <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_573"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_574"/>
-                </Complex>
-                <Complex path="gn:nameStatus">
-                  <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_575"/>
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_576"/>
-                  <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_577"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_n_578"/>
-                </Complex>
-                <Complex path="gn:sourceOfName">
-                  <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_579"/>
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_580"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_581"/>
-                </Complex>
-                <Complex path="gn:pronunciation">
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_583"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_584"/>
-                  <Complex path="gn:PronunciationOfName">
-                    <Complex path="gn:pronunciationSoundLink">
-                      <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_586"/>
-                      <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_587"/>
-                      <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_588"/>
-                    </Complex>
-                    <Complex path="gn:pronunciationIPA">
-                      <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_589"/>
-                      <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_590"/>
-                      <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_p_591"/>
-                    </Complex>
-                  </Complex>
-                </Complex>
-                <Complex path="gn:spelling">
-                  <Join table="ad_address_ad_locator_ad_addresslocator_ad_name_ad_addres_592" fromColumns="id" toColumns="parentfk" orderColumns="num" numbered="true"/>
-                  <Complex path="gn:SpellingOfName">
-                    <Primitive path="gn:text" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_594"/>
-                    <Complex path="gn:script">
-                      <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_595"/>
-                      <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_596"/>
-                      <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_597"/>
-                    </Complex>
-                    <Complex path="gn:transliterationScheme">
-                      <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_598"/>
-                      <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_599"/>
-                      <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_s_600"/>
-                    </Complex>
-                  </Complex>
-                </Complex>
-                <Complex path="gn:grammaticalGender">
-                  <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_601"/>
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_602"/>
-                  <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_603"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_604"/>
-                </Complex>
-                <Complex path="gn:grammaticalNumber">
-                  <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_605"/>
-                  <Primitive path="@nilReason" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_606"/>
-                  <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_607"/>
-                  <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_locatorname_gn_geographicalname_gn_g_608"/>
-                </Complex>
-              </Complex>
-            </Complex>
-            <Complex path="ad:type">
-              <Primitive path="text()" mapping="ad_addresslocator_ad_locatorname_ad_type"/>
-              <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatorname_ad_type_attr_codespace"/>
+              <Primitive path="text()" mapping="ad_addresslocator_ad_locatordesignator_ad_type" />
+              <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatordesignator_ad_type_attr_codespace" />
             </Complex>
           </Complex>
         </Complex>
         <Complex path="ad:level">
-          <Primitive path="text()" mapping="ad_addresslocator_ad_level"/>
-          <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_level_attr_codespace"/>
-        </Complex>
-        <Complex path="ad:withinScopeOf">
-          <Primitive path="@owns" mapping="ad_addresslocator_ad_withinscopeof_attr_owns"/>
-          <Primitive path="@nilReason" mapping="ad_addresslocator_ad_withinscopeof_attr_nilreason"/>
-          <Primitive path="@gml:remoteSchema" mapping="ad_addresslocator_ad_withinscopeof_attr_gml_remoteschema"/>
-          <Primitive path="@xsi:nil" mapping="ad_addresslocator_ad_withinscopeof_attr_xsi_nil"/>
-          <Feature path=".">
-            <Join table="?" fromColumns="ad_addresslocator_ad_withinscopeof_fk" toColumns="attr_gml_id"/>
-            <Href mapping="ad_addresslocator_ad_withinscopeof_href"/>
-          </Feature>
+          <Primitive path="text()" mapping="ad_addresslocator_ad_level" />
+          <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_level_attr_codespace" />
         </Complex>
       </Complex>
     </Complex>
     <Complex path="ad:validFrom">
-      <Primitive path="text()" mapping="ad_validfrom"/>
-      <Primitive path="@nilReason" mapping="ad_validfrom_attr_nilreason"/>
-      <Primitive path="@xsi:nil" mapping="ad_validfrom_attr_xsi_nil"/>
+      <Primitive path="text()" mapping="ad_validfrom" />
+      <Primitive path="@nilReason" mapping="ad_validfrom_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_validfrom_attr_xsi_nil" />
     </Complex>
     <Complex path="ad:validTo">
-      <Primitive path="text()" mapping="ad_validto"/>
-      <Primitive path="@nilReason" mapping="ad_validto_attr_nilreason"/>
-      <Primitive path="@xsi:nil" mapping="ad_validto_attr_xsi_nil"/>
+      <Primitive path="text()" mapping="ad_validto" />
+      <Primitive path="@nilReason" mapping="ad_validto_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_validto_attr_xsi_nil" />
     </Complex>
     <Complex path="ad:beginLifespanVersion">
-      <Primitive path="text()" mapping="ad_beginlifespanversion"/>
-      <Primitive path="@nilReason" mapping="ad_beginlifespanversion_attr_nilreason"/>
-      <Primitive path="@xsi:nil" mapping="ad_beginlifespanversion_attr_xsi_nil"/>
+      <Primitive path="text()" mapping="ad_beginlifespanversion" />
+      <Primitive path="@nilReason" mapping="ad_beginlifespanversion_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_beginlifespanversion_attr_xsi_nil" />
     </Complex>
     <Complex path="ad:endLifespanVersion">
-      <Primitive path="text()" mapping="ad_endlifespanversion"/>
-      <Primitive path="@nilReason" mapping="ad_endlifespanversion_attr_nilreason"/>
-      <Primitive path="@xsi:nil" mapping="ad_endlifespanversion_attr_xsi_nil"/>
-    </Complex>
-    <Complex path="ad:parcel">
-      <Join table="ad_address_ad_parcel" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num" numbered="true"/>
-      <Primitive path="@owns" mapping="attr_owns"/>
-      <Primitive path="@nilReason" mapping="attr_nilreason"/>
-      <Primitive path="@gml:remoteSchema" mapping="attr_gml_remoteschema"/>
-      <Primitive path="@xsi:nil" mapping="attr_xsi_nil"/>
-      <Feature path=".">
-        <Join table="?" fromColumns="fk" toColumns="attr_gml_id"/>
-        <Href mapping="href"/>
-      </Feature>
-    </Complex>
-    <Complex path="ad:parentAddress">
-      <Primitive path="@owns" mapping="ad_parentaddress_attr_owns"/>
-      <Primitive path="@nilReason" mapping="ad_parentaddress_attr_nilreason"/>
-      <Primitive path="@gml:remoteSchema" mapping="ad_parentaddress_attr_gml_remoteschema"/>
-      <Primitive path="@xsi:nil" mapping="ad_parentaddress_attr_xsi_nil"/>
-      <Feature path=".">
-        <Join table="?" fromColumns="ad_parentaddress_fk" toColumns="attr_gml_id"/>
-        <Href mapping="ad_parentaddress_href"/>
-      </Feature>
-    </Complex>
-    <Complex path="ad:building">
-      <Join table="ad_address_ad_building" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num" numbered="true"/>
-      <Primitive path="@owns" mapping="attr_owns"/>
-      <Primitive path="@nilReason" mapping="attr_nilreason"/>
-      <Primitive path="@gml:remoteSchema" mapping="attr_gml_remoteschema"/>
-      <Primitive path="@xsi:nil" mapping="attr_xsi_nil"/>
-      <Feature path=".">
-        <Join table="?" fromColumns="fk" toColumns="attr_gml_id"/>
-        <Href mapping="href"/>
-      </Feature>
+      <Primitive path="text()" mapping="ad_endlifespanversion" />
+      <Primitive path="@nilReason" mapping="ad_endlifespanversion_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_endlifespanversion_attr_xsi_nil" />
     </Complex>
     <Complex path="ad:component">
-      <Join table="ad_address_ad_component" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num" numbered="true"/>
-      <Primitive path="@nilReason" mapping="attr_nilreason"/>
-      <Primitive path="@gml:remoteSchema" mapping="attr_gml_remoteschema"/>
-      <Primitive path="@owns" mapping="attr_owns"/>
+      <Join table="ad_address_ad_component" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num"
+        numbered="true" />
       <Feature path=".">
-        <Join table="?" fromColumns="fk" toColumns="attr_gml_id"/>
-        <Href mapping="href"/>
+        <Href mapping="href" />
       </Feature>
     </Complex>
   </FeatureTypeMapping>
   
-  [...]
-  
 </SQLFeatureStore>
+
