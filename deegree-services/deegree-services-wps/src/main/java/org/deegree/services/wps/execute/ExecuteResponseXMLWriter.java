@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessDefinition;
@@ -685,7 +685,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
         }
 
         byte[] binary = os.toByteArray();
-        String base64 = Base64.encode( binary );
+        String base64 = Base64.encodeBase64String( binary );
         writer.writeCharacters( base64 );
 
         writer.writeEndElement();

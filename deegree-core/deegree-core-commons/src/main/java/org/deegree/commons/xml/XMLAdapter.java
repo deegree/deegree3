@@ -37,7 +37,6 @@
 package org.deegree.commons.xml;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -1395,7 +1394,7 @@ public class XMLAdapter {
             case START_ELEMENT: {
                 String prefix = inStream.getPrefix();
                 String namespaceURI = inStream.getNamespaceURI();
-                if ( NULL_NS_URI.equals( namespaceURI ) && ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix ) ) ) {
+                if ( "".equals( namespaceURI ) && ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix ) ) ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
                     if ( prefix == null || DEFAULT_NS_PREFIX.equals( prefix ) ) {
@@ -1450,7 +1449,7 @@ public class XMLAdapter {
     private static void ensureBinding( XMLStreamWriter writer, String prefix, String namespaceURI )
                             throws XMLStreamException {
         String boundPrefix = writer.getPrefix( namespaceURI );
-        if ( prefix == null && !NULL_NS_URI.equals( boundPrefix ) ) {
+        if ( prefix == null && !"".equals( boundPrefix ) ) {
             writer.writeDefaultNamespace( namespaceURI );
         } else if ( prefix != null && !prefix.equals( writer.getPrefix( namespaceURI ) ) ) {
             writer.writeNamespace( prefix, namespaceURI );

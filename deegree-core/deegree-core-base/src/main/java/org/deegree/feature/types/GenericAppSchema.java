@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -193,7 +191,7 @@ public class GenericAppSchema implements AppSchema {
         // add namespaces of feature types
         for ( FeatureType ft : getFeatureTypes() ) {
             String ns = ft.getName().getNamespaceURI();
-            if ( !( NULL_NS_URI.equals( ns ) ) ) {
+            if ( !( "".equals( ns ) ) ) {
                 if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
                     String prefix = nsToPrefix.get( ns );
                     if ( prefix == null ) {
@@ -212,7 +210,7 @@ public class GenericAppSchema implements AppSchema {
             XSNamespaceItemList nsItems = xsModel.getNamespaces();
             for ( int i = 0; i < nsItems.getLength(); i++ ) {
                 String ns = nsItems.item( i ).getSchemaNamespace();
-                if ( !NULL_NS_URI.equals( ns ) && !( CommonNamespaces.isCoreNamespace( ns ) ) ) {
+                if ( !"".equals( ns ) && !( CommonNamespaces.isCoreNamespace( ns ) ) ) {
                     if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
                         String prefix = nsToPrefix.get( ns );
                         if ( prefix == null ) {

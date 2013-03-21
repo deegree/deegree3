@@ -56,7 +56,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -504,7 +503,7 @@ public class QueryAnalyzer {
     private boolean isPrefixedAndBound( ValueReference propName ) {
         QName name = propName.getAsQName();
         return !name.getPrefix().equals( DEFAULT_NS_PREFIX )
-               && !name.getNamespaceURI().equals( XMLConstants.NULL_NS_URI );
+               && !name.getNamespaceURI().equals( "" );
     }
 
     /**
@@ -570,7 +569,7 @@ public class QueryAnalyzer {
 
                     nsUri = service.getPrefixToNs().get( prefix );
                     if ( nsUri == null ) {
-                        nsUri = XMLConstants.NULL_NS_URI;
+                        nsUri = "";
                     }
                 }
                 name = new QName( nsUri, localName, prefix );

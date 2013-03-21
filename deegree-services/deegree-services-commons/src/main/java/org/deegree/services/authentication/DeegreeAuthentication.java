@@ -40,7 +40,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.XMLConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -82,9 +81,9 @@ public class DeegreeAuthentication implements CredentialsProvider {
                             throws SecurityException {
 
         // extract (deegree specific) security information and bind to current thread
-        String user = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "user" );
-        String password = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "password" );
-        String tokenId = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "sessionId" );
+        String user = xmlStream.getAttributeValue( "", "user" );
+        String password = xmlStream.getAttributeValue( "", "password" );
+        String tokenId = xmlStream.getAttributeValue( "", "sessionId" );
 
         return new Credentials( user, password, tokenId );
     }

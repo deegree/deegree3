@@ -36,7 +36,6 @@
 package org.deegree.services.wfs.format.gml;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.COMMENT;
@@ -175,7 +174,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                     String nsPrefix = inStream.getAttributePrefix( i );
                     String value = inStream.getAttributeValue( i );
                     String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null || nsURI.equals( NULL_NS_URI ) ) {
+                    if ( nsURI == null || nsURI.equals( "" ) ) {
                         sink.writeAttribute( attrLocalName, value );
                     } else {
                         if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {

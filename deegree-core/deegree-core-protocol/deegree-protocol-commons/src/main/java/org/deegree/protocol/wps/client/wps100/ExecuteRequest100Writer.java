@@ -38,15 +38,18 @@ package org.deegree.protocol.wps.client.wps100;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.util.Base64;
+import org.apache.axiom.util.base64.Base64EncodingOutputStream;
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wps.client.input.BBoxInput;
@@ -250,13 +253,19 @@ public class ExecuteRequest100Writer {
                             byte[] buffer = new byte[1024];
                             int read = -1;
                             InputStream is = binaryInput.getAsBinaryStream();
+                            ByteArrayOutputStream os = new ByteArrayOutputStream();
+                            Base64EncodingOutputStream baseout = new Base64EncodingOutputStream( os );
                             while ( ( read = is.read( buffer ) ) != -1 ) {
                                 if ( !"base64".equals( binaryInput.getFormat().getEncoding() ) ) {
-                                    String encoded = Base64.encode( buffer, 0, read );
-                                    writer.writeCharacters( encoded );
+                                    baseout.write( buffer, 0, read );
                                 } else {
                                     writer.writeCharacters( new String( buffer, "UTF-8" ) );
                                 }
+                            }
+                            if ( !"base64".equals( binaryInput.getFormat().getEncoding() ) ) {
+                                baseout.complete();
+                                baseout.close();
+                                writer.writeCharacters( new String( os.toByteArray(), "UTF-8" ) );
                             }
                             writer.writeEndElement();
                         } catch ( IOException e ) {
