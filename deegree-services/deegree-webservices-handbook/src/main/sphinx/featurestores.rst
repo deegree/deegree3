@@ -24,7 +24,7 @@ Features, feature types and application schemas
 
 Features are abstractions of real-world objects, such as rivers, buildings, streets or state boundaries. They are the geo objects of a particular application domain.
 
-A feature types defines the data model for a class of features. For example, a feature type ``River`` could define a class of river features that all have the same properties
+A feature types defines the data model for a class of features. For example, a feature type ``River`` could define a class of river features that all have the same properties.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Simple vs. rich features and feature types
