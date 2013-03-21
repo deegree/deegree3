@@ -42,7 +42,6 @@ import java.io.StringWriter;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAttribute;
@@ -62,7 +61,7 @@ import org.junit.Test;
  * 
  * @version $Revision:$, $Date:$
  */
-public class XMLAdapterTest extends XMLAdapter {
+public class XMLAdapterTest {
 
     private static String WFS_NS = "http://www.opengis.net/wfs";
 
@@ -70,13 +69,15 @@ public class XMLAdapterTest extends XMLAdapter {
 
     private NamespaceBindings nsContext;
 
+    private XMLAdapter adapter;
+
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp()
                             throws Exception {
-        load( XMLAdapterTest.class.getResourceAsStream( "testdocument.xml" ) );
+        adapter = new XMLAdapter( XMLAdapterTest.class.getResourceAsStream( "testdocument.xml" ) );
         nsContext = new NamespaceBindings();
         nsContext.addNamespace( "ogc", "http://www.opengis.net/ogc" );
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
@@ -87,14 +88,14 @@ public class XMLAdapterTest extends XMLAdapter {
     @Test
     public void testRootElement()
                             throws XMLStreamException {
-        assertEquals( new QName( WFS_NS, "GetFeature" ), getRootElement().getQName() );
+        assertEquals( new QName( WFS_NS, "GetFeature" ), adapter.getRootElement().getQName() );
     }
 
     @Test
     public void testTypeNameAttribute()
                             throws JaxenException {
 
-        OMElement root = getRootElement();
+        OMElement root = adapter.getRootElement();
         AXIOMXPath xpath = new AXIOMXPath( "wfs:Query" );
         xpath.addNamespace( "wfs", WFS_NS );
         OMElement queryElement = (OMElement) xpath.selectSingleNode( root );
@@ -106,58 +107,62 @@ public class XMLAdapterTest extends XMLAdapter {
     @Test
     public void testGetNode() {
 
-        OMElement root = getRootElement();
+        OMElement root = adapter.getRootElement();
 
         // select text node
-        Object textNode = getNode( root, new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()", nsContext ) );
+        Object textNode = adapter.getNode( root, new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
+                                                            nsContext ) );
         assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", ( (OMText) textNode ).getText() );
 
         // select attribute node
-        Object attributeNode = getNode( root, new XPath( "wfs:Query/@typeName", nsContext ) );
+        Object attributeNode = adapter.getNode( root, new XPath( "wfs:Query/@typeName", nsContext ) );
         assertEquals( "app:Philosopher", ( (OMAttribute) attributeNode ).getAttributeValue() );
     }
 
     @Test
     public void testGetNodeAsString() {
 
-        OMElement root = getRootElement();
+        OMElement root = adapter.getRootElement();
 
         // select text node
-        String textNode = getNodeAsString( root, new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
-                                                            nsContext ), null );
+        String textNode = adapter.getNodeAsString( root,
+                                                   new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
+                                                              nsContext ), null );
         assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", textNode );
 
         // select attribute node
-        QName attributeNode = getNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ), null );
+        QName attributeNode = adapter.getNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ), null );
         assertEquals( QName.valueOf( "{http://www.deegree.org/app}Philosopher" ), attributeNode );
 
         // select element node
-        String elementNode = getNodeAsString( root,
-                                              new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/gml:Envelope/gml:coord/gml:X",
-                                                         nsContext ), null );
+        String elementNode = adapter.getNodeAsString( root,
+                                                      new XPath(
+                                                                 "wfs:Query/ogc:Filter/ogc:BBOX/gml:Envelope/gml:coord/gml:X",
+                                                                 nsContext ), null );
         assertEquals( "-1", elementNode );
     }
 
     @Test(expected = XMLProcessingException.class)
     public void testGetRequiredNodeAsString() {
 
-        OMElement root = getRootElement();
-        String value = getRequiredNodeAsString( root,
-                                                new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
-                                                           nsContext ) );
+        OMElement root = adapter.getRootElement();
+        String value = adapter.getRequiredNodeAsString( root,
+                                                        new XPath(
+                                                                   "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
+                                                                   nsContext ) );
         assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", value );
 
-        getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
+        adapter.getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
     }
 
     @Test(expected = XMLProcessingException.class)
     public void testGetRequiredNodeAsQName() {
 
-        OMElement root = getRootElement();
-        QName value = getRequiredNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ) );
+        OMElement root = adapter.getRootElement();
+        QName value = adapter.getRequiredNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ) );
         assertEquals( new QName( APP_NS, "Philosopher" ), value );
 
-        getRequiredNodeAsQName( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
+        adapter.getRequiredNodeAsQName( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
     }
 
     @Test
@@ -168,10 +173,6 @@ public class XMLAdapterTest extends XMLAdapter {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         XMLStreamWriter writer = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
-
-        XMLStreamReader inputReader = getRootElement().getXMLStreamReaderWithoutCaching();
-        inputReader.nextTag();
-
-        getRootElement().serializeAndConsume( writer );
+        adapter.getRootElement().serializeAndConsume( writer );
     }
 }

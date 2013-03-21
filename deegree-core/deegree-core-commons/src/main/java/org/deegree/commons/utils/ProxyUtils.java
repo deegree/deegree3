@@ -45,7 +45,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
-import org.apache.axiom.om.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
@@ -307,12 +307,12 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
         URLConnection conn = url.openConnection();
         if ( proxyUser != null ) {
             // TODO evaluate java.net.Authenticator
-            String userAndPass = Base64.encode( ( proxyUser + ":" + proxyPass ).getBytes() );
+            String userAndPass = Base64.encodeBase64String( ( proxyUser + ":" + proxyPass ).getBytes() );
             conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
         }
         if ( httpUser != null ) {
             // TODO evaluate java.net.Authenticator
-            String userAndPass = Base64.encode( ( httpUser + ":" + httpPass ).getBytes() );
+            String userAndPass = Base64.encodeBase64String( ( httpUser + ":" + httpPass ).getBytes() );
             conn.setRequestProperty( "Authorization", "Basic " + userAndPass );
         }
         // TODO should this be a method parameter?
@@ -335,7 +335,7 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
         URLConnection conn = url.openConnection();
         if ( user != null ) {
             // TODO evaluate java.net.Authenticator
-            String userAndPass = Base64.encode( ( user + ":" + pass ).getBytes() );
+            String userAndPass = Base64.encodeBase64String( ( user + ":" + pass ).getBytes() );
             conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
         }
         // TODO should this be a method parameter?

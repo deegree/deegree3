@@ -36,7 +36,6 @@
 package org.deegree.services.wfs;
 
 import static java.util.Collections.singletonList;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.commons.xml.CommonNamespaces.FES_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -77,7 +76,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -238,7 +236,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             DatasetMetadata ftMd = mdProvider.getDatasetMetadata( ftName );
 
             String prefix = null;
-            if ( ftName.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+            if ( ftName.getNamespaceURI() != "" ) {
                 prefix = ftName.getPrefix();
                 if ( ftName.getPrefix() == null || ftName.getPrefix().equals( "" ) ) {
                     LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
@@ -598,7 +596,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
                     prefix = "app";
                 }
-                if ( !NULL_NS_URI.equals( ftName.getNamespaceURI() ) ) {
+                if ( !"".equals( ftName.getNamespaceURI() ) ) {
                     // TODO what about the namespace prefix?
                     writer.writeNamespace( prefix, ftName.getNamespaceURI() );
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
@@ -904,7 +902,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
                     prefix = "app";
                 }
-                if ( !NULL_NS_URI.equals( ftName.getNamespaceURI() ) ) {
+                if ( !"".equals( ftName.getNamespaceURI() ) ) {
                     // TODO what about the namespace prefix?
                     writer.writeNamespace( prefix, ftName.getNamespaceURI() );
                     writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );

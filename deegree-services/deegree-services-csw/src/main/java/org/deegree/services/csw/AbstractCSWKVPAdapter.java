@@ -100,7 +100,7 @@ public abstract class AbstractCSWKVPAdapter {
             prefix = name.substring( 0, idx );
             String localName = name.substring( idx + 1 );
             if ( nsBindings == null ) {
-                typeName = new QName( XMLConstants.NULL_NS_URI, localName, prefix );
+                typeName = new QName( "", localName, prefix );
             } else {
                 String nsURI = nsBindings.get( prefix );
                 typeName = new QName( nsURI, localName, prefix );

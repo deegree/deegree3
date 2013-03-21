@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
@@ -291,7 +290,7 @@ public class SQLFeatureStoreConfigWriter {
     }
 
     private String getName( QName name ) {
-        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
+        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( "" ) ) {
             String prefix = schema.getGMLSchema().getNamespacePrefixes().get( name.getNamespaceURI() );
             return prefix + ":" + name.getLocalPart();
         }

@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.InputStream;
 import java.net.URL;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -67,7 +66,7 @@ public class JAXBUtils {
 
     private static final Logger LOG = getLogger( JAXBUtils.class );
 
-    private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+    private final static SchemaFactory sf = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
 
     /**
      * Call this once you're done in the thread that uses jaxb (un-)marshalling.
