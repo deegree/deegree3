@@ -39,7 +39,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -65,33 +64,33 @@ public class JAXBUtils {
 
     private static final Logger LOG = getLogger( JAXBUtils.class );
 
-    private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.XML_NS_URI );
+    private final static SchemaFactory sf = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
 
     /**
      * Call this once you're done in the thread that uses jaxb (un-)marshalling.
      */
     public static void fixThreadLocalLeaks() {
-          LOG.warn ("Not fixing JAXB classloader leaks. Code needs updating.");
-//        try {
-//            Field f = ClassFactory.class.getDeclaredField( "tls" );
-//            f.setAccessible( true );
-//            ( (ThreadLocal<?>) f.get( null ) ).set( null );
-//            f = Coordinator.class.getDeclaredField( "activeTable" );
-//            f.setAccessible( true );
-//            ( (ThreadLocal<?>) f.get( null ) ).set( null );
-//        } catch ( java.lang.SecurityException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        } catch ( NoSuchFieldException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        } catch ( IllegalArgumentException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        } catch ( IllegalAccessException e ) {
-//            LOG.error( "Failed to plug thread local leaks of jaxb." );
-//            LOG.trace( "Stack trace:", e );
-//        }
+        LOG.warn( "Not fixing JAXB classloader leaks. Code needs updating." );
+        // try {
+        // Field f = ClassFactory.class.getDeclaredField( "tls" );
+        // f.setAccessible( true );
+        // ( (ThreadLocal<?>) f.get( null ) ).set( null );
+        // f = Coordinator.class.getDeclaredField( "activeTable" );
+        // f.setAccessible( true );
+        // ( (ThreadLocal<?>) f.get( null ) ).set( null );
+        // } catch ( java.lang.SecurityException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // } catch ( NoSuchFieldException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // } catch ( IllegalArgumentException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // } catch ( IllegalAccessException e ) {
+        // LOG.error( "Failed to plug thread local leaks of jaxb." );
+        // LOG.trace( "Stack trace:", e );
+        // }
     }
 
     public static Object unmarshall( String jaxbPackage, URL schemaLocation, URL url, DeegreeWorkspace workspace )
