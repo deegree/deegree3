@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.2-rc3-SNAPSHOT</version>
+    <version>3.2.0</version>
   </parent>
 
   <repositories>
