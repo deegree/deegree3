@@ -24,7 +24,7 @@ Features, feature types and application schemas
 
 Features are abstractions of real-world objects, such as rivers, buildings, streets or state boundaries. They are the geo objects of a particular application domain.
 
-Feature types define classes of features. For example, a feature type ``River`` could define a class of river features that all have the same properties
+A feature types defines the data model for a class of features. For example, a feature type ``River`` could define a class of river features that all have the same properties
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Simple vs. rich features and feature types
@@ -55,14 +55,23 @@ Basically, a simple feature type is everything that can be represented using a s
 Application schemas
 ^^^^^^^^^^^^^^^^^^^
 
-An application schema defines a hierarchy of (usually complex) feature types for a particular domain. When referring to an application schema, one usually means a GML application schema that defines a hierarchy of complex feature types. The following diagram shows a part of the INSPIRE Annex I application schema:
+An application schema defines a number of feature types for a particular application domain. When referring to an application schema, one usually means a GML application schema that defines a hierarchy of rich feature types. Examples for GML application schemas are:
+
+* INSPIRE Data Themes (Annex I, II and III)
+* GeoSciML
+* CityGML
+* XPlanung
+* AAA
+
+The following diagram shows a part of the INSPIRE Annex I application schema in UML form:
 
 .. figure:: images/address_schema.png
    :figwidth: 60%
    :width: 50%
    :target: _images/address_schema.png
 
-These kinds of application schemas can be served using the SQL feature store or the memory feature store.
+.. hint::
+   The SQL feature store or the memory feature store can be used with GML application schemas.
 
 -------------------
 Shape feature store
