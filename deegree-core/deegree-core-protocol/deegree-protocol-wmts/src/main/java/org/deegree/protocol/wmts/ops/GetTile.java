@@ -72,6 +72,8 @@ public class GetTile {
 
     private final long tileCol;
 
+    private Map<String, String> overriddenParameters;
+
     /**
      * Creates a new {@link GetTile} instance.
      * 
@@ -90,7 +92,8 @@ public class GetTile {
      * @param y
      *            index of the tile column
      */
-    public GetTile( String layer, String style, String format, String tileMatrixSet, String tileMatrix, long x, long y ) {
+    public GetTile( String layer, String style, String format, String tileMatrixSet, String tileMatrix, long x, long y,
+                    Map<String, String> overriddenParameters ) {
         this.layer = layer;
         this.style = style;
         this.format = format;
@@ -98,6 +101,7 @@ public class GetTile {
         this.tileMatrix = tileMatrix;
         this.tileCol = x;
         this.tileRow = y;
+        this.overriddenParameters = overriddenParameters;
     }
 
     /**
@@ -183,4 +187,12 @@ public class GetTile {
     public long getTileCol() {
         return tileCol;
     }
+
+    /**
+     * @return null, or parameters to be overridden when used in client requests.
+     */
+    public Map<String, String> getOverriddenParameters() {
+        return overriddenParameters;
+    }
+
 }

@@ -29,7 +29,7 @@ deegree WFS is an implementation of the `OGC Web Feature Service specification <
 * Backends support flexible mapping of GML application schemas to relational models
 * ISO 19107-compliant geometry model: Complex geometries (e.g. non-linear curves)
 * Advanced filter expression support based on XPath 1.0
-* Supports numerous backends, such as PostGIS, Oracle Spatial, Shapefiles or GML instance documents
+* Supports numerous backends, such as PostGIS, Oracle Spatial, MS SQL Server, Shapefiles or GML instance documents
 
 .. tip::
   In order to learn about configuring a deegree-based WFS, it is recommended to read chapters :ref:`anchor-installation` and :ref:`anchor-lightly` first. Check out :ref:`anchor-workspace-utah` and :ref:`anchor-workspace-inspire` for example deegree WFS configurations. Continue with :ref:`anchor-configuration-basics` and :ref:`anchor-configuration-wfs`.
@@ -81,7 +81,7 @@ deegree CSW is an implementation of the `OGC Catalogue Service specification <ht
 * Fully transactional
 * Supports KVP, XML and SOAP requests
 * High performance and excellent scalability
-* ISO Metadata Application Profile 1.0.0/PostGIS
+* ISO Metadata Application Profile 1.0.0
 * Pluggable and modular dataaccess layer allows to add support for new APs and backends
 * Modular inspector architecture allows to validate records to be inserted against various criteria
 * Standard inspectors: schema validity, identifier integrity, INSPIRE requirements

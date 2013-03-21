@@ -1,10 +1,10 @@
 .. _anchor-configuration-tilestore:
 
-========================
-Tile store configuration
-========================
+===========
+Tile stores
+===========
 
-Tile stores are data stores that provide access to pre-rendered map tiles. The common use case for tile stores is to provide data for tile layers.
+Tile stores are resources that provide access to pre-rendered map tiles. The common use case for tile stores is to provide data for tile layers.
 
 The remainder of this chapter describes some relevant terms and the tile store configuration files in detail. You can access this configuration level by clicking on the **tile stores** link in the administration console. The configuration files are located in the **datasources/tile/** directory of the deegree workspace.
 
@@ -209,6 +209,8 @@ Let's have a look at an example:
  * The format parameter specifies the image format to request from the WMS
  * The CRS parameter specifies which CRS to use when requesting
 
+Additionally you can specify default and override values for request parameters within the request params block. Just add ``Parameter`` tags as described in the :ref:`anchor-configuration-layer-request-options` layer chapter. The replacing/defaulting currently only works when you configure a WMTS on top of this tile store. ``GetTile`` parameters are then mapped to ``GetMap`` requests to the backend, and ``GetFeatureInfo`` WMTS parameters to ``GetFeatureInfo`` WMS parameters on the backend.
+
 ----------------------
 Remote WMTS tile store
 ----------------------
@@ -251,3 +253,4 @@ Let's have a look at an example:
 
 Please note that you need a locally configured tile matrix set that corresponds exactly to the tile matrix set of the remote WMTS. They need not have the same identifier(s) (just configure the TileMatrixSetId option if they differ), but the structure (coordinate system, tile size, number of tiles per matrix etc.) needs to be identical.
 
+Additionally you can specify default and override values for request parameters within the request params block. Just add ``Parameter`` tags as described in the :ref:`anchor-configuration-layer-request-options` layer chapter. The replacing/defaulting currently only works when you configure a WMTS on top of this tile store. Please note that the ``scope`` attribute cannot be configured here, since remote WMTS currently only handles ``GetTile`` requests anyway.

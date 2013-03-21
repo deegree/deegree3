@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.2-pre16-SNAPSHOT</version>
+    <version>3.2-rc3-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -24,10 +24,8 @@
     </repository>
   </repositories>
 
-
   <build>
     <plugins>
-
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
@@ -41,11 +39,17 @@
               <outputDirectory>${basedir}/target/generated-sources</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/sphinx-filtered</directory>
+                  <directory>src/main/sphinx</directory>
+                  <excludes>
+                    <exclude>images/*.*</exclude>
+                  </excludes>
                   <filtering>true</filtering>
                 </resource>
                 <resource>
                   <directory>src/main/sphinx</directory>
+                  <includes>
+                    <include>images/*.*</include>
+                  </includes>
                   <filtering>false</filtering>
                 </resource>
               </resources>

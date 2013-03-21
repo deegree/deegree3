@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
-    <version>3.2-pre16-SNAPSHOT</version>
+    <version>3.2-rc3-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -81,8 +81,8 @@
       </repositories>
       <dependencies>
         <dependency>
-          <artifactId>latlon-sqldialect-mssql</artifactId>
-          <groupId>de.latlon</groupId>
+          <artifactId>deegree-sqldialect-mssql</artifactId>
+          <groupId>org.deegree</groupId>
           <version>${project.version}</version>
           <scope>test</scope>
         </dependency>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/datasource/tile/remotewmts" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  xmlns:r="http://www.deegree.org/datasource/tile/remotewmts" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
   <annotation>
     <appinfo>
@@ -75,6 +75,16 @@
                         <documentation>Identifier of the remote tile matrix set</documentation>
                       </annotation>
                     </element>
+                    <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+                      <complexType>
+                        <simpleContent>
+                          <extension base="string">
+                            <attribute name="name" type="string" use="required" />
+                            <attribute name="use" type="r:ParameterUseType" use="optional" default="allowOverride" />
+                          </extension>
+                        </simpleContent>
+                      </complexType>
+                    </element>
                   </sequence>
                 </complexType>
               </element>
@@ -85,5 +95,12 @@
       <attribute name="configVersion" use="required" fixed="3.2.0" />
     </complexType>
   </element>
+
+  <simpleType name="ParameterUseType">
+    <restriction base="string">
+      <enumeration value="allowOverride" />
+      <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
 
 </schema>

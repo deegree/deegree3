@@ -179,6 +179,7 @@ public class MapService {
                     LOG.warn( "Theme with id {} was not available.", id );
                 } else {
                     themes.add( thm );
+                    themeMap.put( thm.getMetadata().getName(), thm );
 
                     for ( org.deegree.layer.Layer l : Themes.getAllLayers( thm ) ) {
                         newLayers.put( l.getMetadata().getName(), l );
@@ -320,8 +321,8 @@ public class MapService {
 
         double scale = gm.getScale();
 
-        List<LayerQuery> queries = new ArrayList<LayerQuery>();        
-        
+        List<LayerQuery> queries = new ArrayList<LayerQuery>();
+
         Iterator<LayerRef> layerItr = gm.getLayers().iterator();
         List<OperatorFilter> filters = gm.getFilters();
         Iterator<OperatorFilter> filterItr = filters == null ? null : filters.iterator();
@@ -329,7 +330,7 @@ public class MapService {
             LayerRef lr = layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-            
+
             LayerQuery query = buildQuery( sr, lr, options, mapOptions, f, gm );
             queries.add( query );
         }
@@ -357,16 +358,15 @@ public class MapService {
         ScaleFunction.getCurrentScaleValue().remove();
     }
 
-    private LayerQuery buildQuery(  StyleRef style, LayerRef lr, MapOptionsMaps options,
-                                   List<MapOptions> mapOptions, OperatorFilter f,                                   
-                                   org.deegree.protocol.wms.ops.GetMap gm ) {
-                
+    private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
+                                   OperatorFilter f, org.deegree.protocol.wms.ops.GetMap gm ) {
+
         for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
             insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
                                   defaultLayerOptions );
             mapOptions.add( options.get( l.getMetadata().getName() ) );
         }
-        
+
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
                                            gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
                                            gm.getQueryBox() );
@@ -411,18 +411,18 @@ public class MapService {
         return col;
     }
 
-    private List<LayerQuery> prepareGetFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi ) {        
+    private List<LayerQuery> prepareGetFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi ) {
         List<LayerQuery> queries = new ArrayList<LayerQuery>();
-        
+
         Iterator<LayerRef> layerItr = gfi.getQueryLayers().iterator();
         Iterator<StyleRef> styleItr = gfi.getStyles().iterator();
         List<OperatorFilter> filters = gfi.getFilters();
         Iterator<OperatorFilter> filterItr = filters == null ? null : filters.iterator();
         while ( layerItr.hasNext() ) {
             LayerRef lr = layerItr.next();
-            StyleRef sr = styleItr.next();            
+            StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-            
+
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
                                                gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
