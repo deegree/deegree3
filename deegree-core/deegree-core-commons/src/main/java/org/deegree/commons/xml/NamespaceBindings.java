@@ -147,7 +147,7 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
     public String getNamespaceURI( String prefix ) {
         String ns = prefixToNs.get( prefix );
         if ( ns == null ) {
-            return XMLConstants.NULL_NS_URI;
+            return XMLConstants.DEFAULT_NS_PREFIX;
         }
         return ns;
     }

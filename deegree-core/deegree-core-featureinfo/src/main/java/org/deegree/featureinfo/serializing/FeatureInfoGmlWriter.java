@@ -36,7 +36,6 @@
 
 package org.deegree.featureinfo.serializing;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
@@ -88,7 +87,7 @@ public class FeatureInfoGmlWriter {
             fidAttr = new QName( gmlNs, "id" );
             gmlNull = "Null";
         } else {
-            fidAttr = new QName( NULL_NS_URI, "fid" );
+            fidAttr = new QName( "", "fid" );
             gmlNull = "null";
         }
     }
@@ -107,7 +106,7 @@ public class FeatureInfoGmlWriter {
      * @throws TransformationException
      */
     public void export( FeatureCollection fc, GMLStreamWriter gmlWriter, String noNamespaceSchemaLocation,
-                 Map<String, String> bindings )
+                        Map<String, String> bindings )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         XMLStreamWriter writer = gmlWriter.getXMLStream();
@@ -119,7 +118,7 @@ public class FeatureInfoGmlWriter {
         writer.writeNamespace( GML_PREFIX, gmlNs );
 
         if ( fc.getId() != null ) {
-            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+            if ( fidAttr.getNamespaceURI() == "" ) {
                 writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
             } else {
                 writer.writeAttribute( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );

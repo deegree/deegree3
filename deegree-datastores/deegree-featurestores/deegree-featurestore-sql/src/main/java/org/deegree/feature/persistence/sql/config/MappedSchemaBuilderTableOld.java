@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.tom.primitive.BaseType.valueOf;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
@@ -421,7 +420,7 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
             prefix = defaultPrefix;
             namespace = defaultNamespace;
         }
-        if ( NULL_NS_URI.equals( namespace ) ) {
+        if ( "".equals( namespace ) ) {
             namespace = defaultNamespace;
         }
         return new QName( namespace, localPart, prefix );

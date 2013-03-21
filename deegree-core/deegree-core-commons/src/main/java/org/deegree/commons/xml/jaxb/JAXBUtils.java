@@ -65,7 +65,7 @@ public class JAXBUtils {
 
     private static final Logger LOG = getLogger( JAXBUtils.class );
 
-    private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+    private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.XML_NS_URI );
 
     /**
      * Call this once you're done in the thread that uses jaxb (un-)marshalling.

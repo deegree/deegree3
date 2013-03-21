@@ -141,7 +141,7 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
     private QName mangleTypeName( String s ) {
         String localPart = s;
         String prefix = XMLConstants.DEFAULT_NS_PREFIX;
-        String namespace = XMLConstants.NULL_NS_URI;
+        String namespace = "";
 
         int colonIdx = s.indexOf( ':' );
         if ( colonIdx >= 0 ) {

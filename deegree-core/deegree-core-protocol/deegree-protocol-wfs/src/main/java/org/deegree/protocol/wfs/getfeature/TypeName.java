@@ -136,7 +136,7 @@ public class TypeName {
                 // AXIOM appears to return null for context.resolveQName( name ) for unbound prefices!?
                 String prefix = name.substring( 0, colonIdx );
                 String localPart = name.substring( colonIdx + 1 );
-                qName = new QName( XMLConstants.NULL_NS_URI, localPart, prefix );
+                qName = new QName( "", localPart, prefix );
             }
         } else {
             qName = new QName( name );

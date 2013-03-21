@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
-
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -113,7 +111,7 @@ class MappingContextManager {
 
     private String toString( QName qName ) {
         String name = toSQL( qName.getLocalPart() );
-        if ( qName.getNamespaceURI() != null && !qName.getNamespaceURI().equals( NULL_NS_URI ) ) {
+        if ( qName.getNamespaceURI() != null && !qName.getNamespaceURI().equals( "" ) ) {
             String nsPrefix = nsToPrefix.get( qName.getNamespaceURI() );
             if ( nsPrefix == null ) {
                 LOG.warn( "No prefix for namespace {}!?", qName.getNamespaceURI() );
