@@ -21,7 +21,7 @@ Supported Java versions are `OpenJDK <http://openjdk.java.net>`_ version 7 (curr
 Downloading
 -----------
 
-deegree webservices 3.2 downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice of two flavors:
+deegree webservices downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice of two flavors:
 
 * *ZIP*: Multi-operating system package bundled with Apache Tomcat
 * *WAR*: Plain Java Web Archive for deployment in an existing servlet container [#f2]_
@@ -39,7 +39,7 @@ In order to run the ZIP version, extract it into a directory of your choice. Aft
 * Linux/Solaris: ``start-deegree-linux.sh`` (when starting via a Desktop Environment such as Gnome, choose "Run in terminal")
 * Mac OS X: ``start-deegree-osx.cmd``
 
-You should now have a terminal window on your screen with a lot of log messages: 
+You should now see a terminal window on your screen with a lot of log messages: 
 
 .. figure:: images/terminal.png
    :figwidth: 60%

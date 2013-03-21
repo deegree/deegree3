@@ -1,7 +1,7 @@
-[...]
-<FeatureTypeMapping name="ad:Address" table="ad_address">
-  <FIDMapping>
-    <Column name="attr_gml_id" />
+...
+<FeatureTypeMapping table="country">
+  <FIDMapping prefix="C_">
+    <Column name="fid" />
   </FIDMapping>
 </FeatureTypeMapping>
-[...]
+...

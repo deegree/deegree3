@@ -1,7 +1,0 @@
-<WMSDataSource xmlns="http://www.deegree.org/datasource/coverage/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/wms http://schemas.deegree.org/datasource/coverage/wms/3.0.0/wms.xsd"
-  configVersion="3.0.0">
-  <CapabilitiesDocumentLocation
-    location="http://demo.deegree.org/deegree-wms/services?request=capabilities&amp;version=1.1.1&amp;service=WMS" />
-  <RequestedLayers>cite:BasicPolygons</RequestedLayers>
-</WMSDataSource>

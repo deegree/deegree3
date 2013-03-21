@@ -3,10 +3,8 @@
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd">
   <StorageCRS>EPSG:900913</StorageCRS>
   <GMLSchema version="GML_32">../../appschemas/inspire/annex1</GMLSchema>
-  <GMLFeatureCollection version="GML_32">../../data/addresses.xml</GMLFeatureCollection>
   <GMLFeatureCollection version="GML_32">../../data/au-gemeenten.gml</GMLFeatureCollection>
   <GMLFeatureCollection version="GML_32">../../data/au-land.gml</GMLFeatureCollection>
   <GMLFeatureCollection version="GML_32">../../data/au-provincies.gml</GMLFeatureCollection>
   <GMLFeatureCollection version="GML_32">../../data/cp-parcels.gml</GMLFeatureCollection>
-  <GMLFeatureCollection version="GML_32">../../data/cp-parcels-de.gml</GMLFeatureCollection>
 </MemoryFeatureStore>

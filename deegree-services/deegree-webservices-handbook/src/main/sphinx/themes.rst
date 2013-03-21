@@ -1,8 +1,8 @@
 .. _anchor-configuration-themes:
 
-====================================
-Theme configuration
-====================================
+==========
+Map themes
+==========
 
 A theme defines a tree like hierarchy, which at each node can contain a number of layers. For people familiar with WMS, a theme is basically a layer tree without the actual layer definition.
 

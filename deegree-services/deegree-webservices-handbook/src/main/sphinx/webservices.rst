@@ -1,10 +1,10 @@
 .. _anchor-configuration-service:
 
-========================
-Webservice configuration
-========================
+============
+Web services
+============
 
-This chapter describes the deegree webservices configuration files. You can access this configuration level by clicking on the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
+This chapter describes the configuration of web service resources. You can access this configuration level by clicking the **web services** link in the administration console. The corresponding configuration files are located in the ``services/`` subdirectory of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-services.png
    :figwidth: 80%
@@ -14,7 +14,7 @@ This chapter describes the deegree webservices configuration files. You can acce
    Web services are the top-level resources of the deegree workspace
 
 .. tip::
-  The identifier of a webservice resource (config file name without suffix) serves a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple services of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the webservice identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service instance that you want to connect to explicitly.
+  The identifier of a web service resource has a special purpose. If your deegree instance can be reached at ``http://localhost:8080/deegree-webservices``, the common endpoint for connecting to your services is ``http://localhost:8080/deegree-webservices/services``. However, if you define multiple service resources of the same type in your workspace (e.g. two WMS instances with identifiers ``wms1`` and ``wms2``), you cannot use the common URL, as deegree cannot determine the targeted WMS instance from the request. In this case, simply append the resource identifier to the common endpoint URL (e.g. ``http://localhost:8080/deegree-webservices/services/wms2``) to choose the service resource that you want to connect to explicitly.
 
 .. _anchor-configuration-wfs:
 
@@ -22,7 +22,7 @@ This chapter describes the deegree webservices configuration files. You can acce
 Web Feature Service (WFS)
 -------------------------
 
-A deegree WFS configuration consists of a WFS configuration file and any number of feature store configuration files. Feature stores provide access to the actual feature data (which may be stored in any of the supported backends, e.g. in shapefiles or spatial databases such as PostGIS or Oracle Spatial). In transactional mode (WFS-T), feature stores are also used for modification of stored features:
+A deegree WFS setup consists of a WFS configuration file and any number of feature store configuration files. Feature stores provide access to the actual data (which may be stored in any of the supported backends, e.g. in shapefiles or spatial databases such as PostGIS or Oracle Spatial). In transactional mode (WFS-T), feature stores are also used for modification of stored features:
 
 .. figure:: images/workspace-wfs.png
    :figwidth: 80%
@@ -31,8 +31,9 @@ A deegree WFS configuration consists of a WFS configuration file and any number 
 
    A WFS resource is connected to any number of feature store resources
 
-.. tip::
-  In order to fully master deegree WFS configuration, you will have to understand :ref:`anchor-configuration-featurestore` as well.
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
 
 The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuration example looks like this:
 
@@ -41,12 +42,22 @@ The only mandatory option is ``QueryCRS``, therefore, a minimal WFS configuratio
    .. literalinclude:: xml/wfs_basic.xml
       :language: xml
 
-This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries. A more complex configuration example looks like this:
+This will create a deegree WFS with the feature types from all configured feature stores in the workspace and ``urn:ogc:def:crs:EPSG::4258`` as coordinate system for returned GML geometries.
+
+^^^^^^^^^^^^^^^^^^^^
+More complex example 
+^^^^^^^^^^^^^^^^^^^^
+
+A more complex configuration example looks like this:
 
 .. topic:: WFS config example 2: More complex configuration
 
    .. literalinclude:: xml/wfs_complex.xml
       :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
 
 The deegree WFS config file format is defined by schema file http://schemas.deegree.org/services/wfs/3.2.0/wfs_configuration.xsd. The root element is ``deegreeWFS`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
@@ -75,14 +86,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
-| MetadataURLTemplate     | 0..1        | String  | Template for generating URLs to feature type metadata records    |
-+-------------------------+-------------+---------+------------------------------------------------------------------+
-| FeatureTypeMetadata     | 0..n        | Complex | Metadata for feature types reported in GetCapabilities response  |
-+-------------------------+-------------+---------+------------------------------------------------------------------+
-| ExtendedCapabilities    | 0..n        | Complex | Extended Metadata reported in GetCapabilities response           |
-+-------------------------+-------------+---------+------------------------------------------------------------------+
 
-The remainder of this section describes these options and their sub-options in detail.
+The remainining sections describe these options and their sub-options in detail.
 
 ^^^^^^^^^^^^^^^
 General options
@@ -99,13 +104,24 @@ General options
 Transactions
 ^^^^^^^^^^^^
 
-By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support in the WFS.
+By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support. This option has the optional attribute ``idGenMode`` which controls how ids of inserted features (the values in the gml:id attribute) are treated. There are three id generation modes available:
 
-.. tip::
+* **UseExisting**: The original gml:id values from the input are stored. This may lead to errors if the provided ids are already in use.
+* **GenerateNew** (default): New and unique ids are generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
+* **ReplaceDuplicate**: The WFS will try to use the original gml:id values that have been provided in the input. In case a certain identifier already exists in the backend, a new and unique identifier will be generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
+
+.. hint::
+  Currently, transactions can only be enabled if your WFS is attached to a single feature store.
+
+.. hint::
   Not every feature store implementation supports transactions, so you may encounter that transactions are rejected, even though you activated them in the WFS configuration.
 
-.. tip::
-  Currently, transactions can only be enabled if your WFS is attached to a single feature store.
+.. hint::
+  The details of the id generation depend on the feature store implementation/configuration.
+
+.. hint::
+   In a WFS 1.1.0 insert, the id generation mode can be overridden by attribute *idGenMode* of the ``Insert`` element. WFS 1.0.0 and WFS 2.0.0 don't support to specify the id generation mode on a request basis.
+
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
@@ -154,13 +170,13 @@ Option ``GetFeatureResponse`` has the following sub-options:
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
 | Option                   | Cardinality  | Value     | Description                                                                  |
 +==========================+==============+===========+==============================================================================+
-| ContainerElement         | 0..1         | QName     | Qualified root element name                                                  |
+| ContainerElement         | 0..1         | QName     | Qualified root element name, default: wfs:FeatureCollection                  |
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
-| FeatureMemberElement     | 0..1         | QName     | Qualified feature member element name                                        |
+| FeatureMemberElement     | 0..1         | QName     | Qualified feature member element name, default: gml:featureMember            |
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
-| AdditionalSchemaLocation | 0..1         | String    | Value to add to xsi:schemaLocation attribute                                 |
+| AdditionalSchemaLocation | 0..1         | String    | Added to xsi:schemaLocation attribute of wfs:FeatureCollection               |
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
-| DisableDynamicSchema     | 0..1         | Complex   |                                                                              |
+| DisableDynamicSchema     | 0..1         | Complex   | Controls DescribeFeatureType strategy, default: regenerate schema            |
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
 | DisableStreaming         | 0..1         | Boolean   | Disables output streaming, include numberOfFeature information/gml:boundedBy |
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
@@ -168,7 +184,7 @@ Option ``GetFeatureResponse`` has the following sub-options:
 * ``ContainerElement``: By default, the container element of a GetFeature response is ``wfs:FeatureCollection``. Using this option, you can specify an alternative element name. In order to bind the namespace prefix, use standard XML namespace mechanisms (xmlns attribute). This option is ignored for WFS 2.0.0.
 * ``FeatureMemberElement``: By default, the member features are included in ``gml:featureMember`` (WFS 1.0.0/1.1.0) or ``wfs:member`` elements (WFS 2.0.0). Using this option, you can specify an alternative element name. In order to bind the namespace prefix, use standard XML namespace mechanisms (xmlns attribute). This option is ignored for WFS 2.0.0.
 * ``AdditionalSchemaLocation``: By default, the ``xsi:schemaLocation`` attribute in a GetFeature response is auto-generated and refers to all schemas necessary for validation of the response. Using this option, you can add additional namespace/URL pairs for adding additional schemas. This may be required when you override the returned container or feature member elements in order to achieve schema-valid output.
-* ``DisableDynamicSchema``: By default, the GML application schema referenced in the ``xsi:schemaLocation`` (and returned in DescribeFeature reponses) will be generated dynamically from the internal feature type representation. This allows generation of application schemas for the different GML versions and is fine for most simple feature models (e.g. feature types served from shapefiles or flat database tables). However, valid re-encoding of complex GML application schema (such as INSPIRE Data Themes) is technically not possible. In these cases, you will have to set this option to ``false``, so the WFS will return the original schema files used for configuring the feature store. If you want to make the xsi:schemaLocation refer to an external copy of your GML application schema files (instead of pointing back to the deegree WFS), use the optional attribute ``baseURL`` that this element provides.
+* ``DisableDynamicSchema``: By default, the GML application schema returned in DescribeFeatureType reponses (and referenced in the ``xsi:schemaLocation`` of query responses) will be generated dynamically from the internal feature type representation. This allows generation of application schemas for different GML versions and is fine for simple feature models (e.g. feature types served from shapefiles or flat database tables). However, valid re-encoding of complex GML application schema (such as INSPIRE Data Themes) is technically not feasible. In these cases, you will have to set this option to ``false``, so the WFS will produce a response that refers to the original schema files used for configuring the feature store. If you want the references to point to an external copy of your GML application schema files (instead of pointing back to the deegree WFS), use the optional attribute ``baseURL`` that this element provides.
 * ``DisableStreaming``: By default, returned features are not collected in memory, but directly streamed from the backend (e.g. an SQL database) and individually encoded as GML. This enables the querying of huge numbers of features with only minimal memory footprint. However, by using this strategy, the number of features and their bounding box is not known when the WFS starts to write out the response. Therefore, this information is omitted from the response (which is perfectly valid according to WFS 1.0.0 and 1.1.0, and a change request for WFS 2.0.0 has been accepted). If you find that your WFS client has problems with the response, you may set this option to ``false``. Features will be collected in memory first and the generated response will include numberOfFeature information and gml:boundedBy for the collection. However, for huge response and heavy server load, this is not recommended as it introduces significant overhead and may result in out-of-memory errors.
 
 """""""""""""""""""""
@@ -200,27 +216,11 @@ Using option element ``CustomFormat``, it possible to plug-in your own Java clas
 * ``JavaClass``: Therefore, an implementation of interface ``org.deegree.services.wfs.format.CustomFormat`` must be present on the classpath.
 * ``Config``:
 
-^^^^^^^^^^^^^^^^^^^^
-Controlling Metadata
-^^^^^^^^^^^^^^^^^^^^
-
-These settings affect the metadata returned in the GetCapabilities response.
-
-* ``MetadataURLTemplate``:
-* ``FeatureTypeMetadata``:
-
-* ``ExtendedCapabilities``: By default, the GetCapabilites response does not contain any extended capabilities elements in the OperationsMetadata section. The child elements of this option will be included in the OperationMetadata section to provide these extended capabilities, e.g. an ``inspire_ds:ExtendedCapabilities`` element. The attribute ``wfsVersions`` is as white-space separated list of WFS versions (1.0.0, 1.1.0 or 2.0.0) for which the extended capabilities shall be returned.
-
-.. topic:: Example for ``ExtendedCapabilities`` option
-
-   .. literalinclude:: xml/wfs_extendedcapabilities.xml
-      :language: xml
-
 ^^^^^^^^^^^^^^
 Stored queries
 ^^^^^^^^^^^^^^
 
-Besides standard (or ad hoc) queries, WFS 2.0.0 introduces so-called stored queries. When WFS 2.0.0 support is activated, your WFS will automatically support the well-known stored query ``urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById`` (defined in the WFS 2.0.0 specification). It can be used to query a feature instance by specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0). In order to define custom stored queries, use the ``StoredQuery`` element to specify the file name of a StoredQueryDefinition file. The given file name (can be relative) must point to a valid WFS 2.0.0 StoredQueryDefinition file. Here's an example:
+Besides standard ('ad hoc') queries, WFS 2.0.0 introduces so-called stored queries. When WFS 2.0.0 support is activated, your WFS will automatically support the well-known stored query ``urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById`` (defined in the WFS 2.0.0 specification). It can be used to query a feature instance by specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0). In order to define custom stored queries, use the ``StoredQuery`` element to specify the file name of a StoredQueryDefinition file. The given file name (can be relative) must point to a valid WFS 2.0.0 StoredQueryDefinition file. Here's an example:
 
 .. topic:: Example for a WFS 2.0.0 StoredQueryDefinition file
 
@@ -297,7 +297,7 @@ Basic options
 * ``MetadataStoreId``: If set to a valid metadata store, the store is queried upon startup with all configured layer metadata set ids. If a metadata set does not exist in the metadata store, it will not be exported as metadata URL in the capabilties. This is a useful option if you want to automatically check for configuration errors/typos. By default, no checking is done.
 * ``MetadataURLTemplate``: By default, no metadata URLs are generated for layers in the capabilities. You can set this option either to a unique URL, which will be exported as is, or to a template with a placeholder. In any case, a metadata URL will only be exported if the layer has a metadata set id set. A template looks like this: http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full. Please note that you'll need to escape the & symbols with &amp; as shown in the example. The ${metadataSetId} will be replaced with the metadata set id from each layer.
 
-Here is a snippet for quick copy & paste::
+Here is a snippet for quick copy & paste:
 
 .. code-block:: xml
 
@@ -515,9 +515,7 @@ This section shows all available special constructs. The selectors are explained
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 | <?even:*name*>                | property          | calls the *name* template if the index of the current property is even                          |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link>                       | property          | evaluates to a HTML <a href> link with the value of the property as target and text             |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link:*prefix*>              | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
+| <?link:*prefix*:>             | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 | <?link:*prefix*:*text*>       | property          | the text of the link will be *text* instead of the link address                                 |
 +-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
@@ -582,21 +580,37 @@ In deegree terminology, a deegree WMTS provides access to tiles stored in tile s
 .. tip::
   In order to fully understand deegree WMTS configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-tilestore` describes the configuration of tile data access. Chapter :ref:`anchor-configuration-layers` describes the configuration of layers (only tile layers are usable for the WMTS). Chapter :ref:`anchor-configuration-themes` describes how to create a theme from layers.
 
-The deegree WMTS config file format is defined by schema file http://schemas.deegree.org/services/wmts/3.2.0/wmts.xsd. The root element is ``deegreeWMTS`` and the config attribute must be ``3.2.0``. The only mandatory section is ``ServiceConfiguration`` (which can be empty), therefore, a minimal WMTS configuration example looks like this:
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
+
+The only mandatory section is ``ServiceConfiguration`` (which can be empty), therefore a minimal WMTS configuration example looks like this:
 
 .. topic:: WMTS config example 1: Minimal configuration
 
    .. literalinclude:: xml/wmts_basic.xml
       :language: xml
 
-This will setup a deegree WMTS with all configured themes in the workspace. A more complex configuration that restricts the offered themes looks like this:
+This will create a deegree WMTS resource that connects to all configured themes of the workspace.
+
+^^^^^^^^^^^^^^^^^^^^
+More complex example 
+^^^^^^^^^^^^^^^^^^^^
+
+A more complex configuration that restricts the offered themes looks like this:
 
 .. topic:: WMTS config example 2: More complex configuration
 
    .. literalinclude:: xml/wmts_complex.xml
       :language: xml
 
-The following table lists all available configuration options. When specifiying them, their order must be respected.
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
+
+The deegree WMTS config file format is defined by schema file http://schemas.deegree.org/services/wmts/3.2.0/wmts.xsd. The root element is ``deegreeWMTS`` and the config attribute must be ``3.2.0``.
+
+The following table lists all available configuration options. When specifying them, their order must be respected.
 
 .. table:: Options for ``deegreeWMTS``
 
@@ -617,7 +631,7 @@ Below the ``ServiceConfiguration`` section you can specify custom featureinfo fo
   ...
   </FeatureInfoFormats>
 
-Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured.
+Have a look at section :ref:`anchor-featureinfo-configuration` (in the WMS chapter) to see how custom featureinfo formats are configured. Take note that the GetFeatureInfo operation is currently only supported for remote WMS tile store backends.
 
 .. _anchor-configuration-csw:
 
@@ -637,12 +651,22 @@ In deegree terminology, a deegree CSW provides access to metadata records stored
 .. tip::
   In order to fully understand deegree CSW configuration, you will have to learn configuration of other workspace aspects as well. Chapter :ref:`anchor-configuration-metadatastore` describes the configuration of metadatastores.
 
-The deegree CSW config file format is defined by schema file http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The root element is ``deegreeCSW`` and the config attribute must be ``3.2.0``. There is no mandatory element, therefore a minimal CSW configuration example looks like this:
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
+
+There is no mandatory element, therefore a minimal CSW configuration example looks like this:
 
 .. topic:: CSW config example 1: Minimal configuration
 
    .. literalinclude:: xml/csw_basic.xml
       :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
+
+The deegree CSW config file format is defined by schema file http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The root element is ``deegreeCSW`` and the config attribute must be ``3.2.0``.
 
 The following table lists all available configuration options. When specifiying them, their order must be respected.
 
@@ -681,7 +705,7 @@ Extended Functionality
 Web Processing Service (WPS)
 ----------------------------
 
-In deegree terminology, a deegree WPS allows the execution of geospatial processes from process providers.
+A deegree WPS allows the invocation of geospatial processes. The offered processes are determined by the attached process provider resources.
 
 .. figure:: images/workspace-wps.png
    :figwidth: 90%
@@ -693,20 +717,36 @@ In deegree terminology, a deegree WPS allows the execution of geospatial process
 .. tip::
   In order to fully master deegree WPS configuration, you will have to understand :ref:`anchor-configuration-processproviders` as well.
 
-There are no mandatory options, therefore, a minimal valid WPS configuration example looks like this:
+^^^^^^^^^^^^^^^
+Minimal example
+^^^^^^^^^^^^^^^
+
+A minimal valid WPS configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.2.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.2.0/wps_configuration.xsd">  
+  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">  
   </deegreeWPS>
+
+This will create a WPS resource with the following properties:
+
+* All WPS protocol versions are enabled. Currently, this is only 1.0.0.
+* The WPS resource will attach to all process provider resources in the workspace.
+* Temporary files (e.g. for process results) are stored in the standard Java temp directory of the deegree webapp.
+* The last 100 process executions are tracked.
+* Memory buffers (e.g. for inline XML inputs) are limited to 1 MB each. If this limit is exceeded, buffering is switched to use a file in the storage directory.
+
+^^^^^^^^^^^^^^^
+Complex example
+^^^^^^^^^^^^^^^
 
 A more complex configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.2.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.2.0/wps_configuration.xsd">
+  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
   
     <SupportedVersions>
       <Version>1.0.0</Version>
@@ -719,6 +759,18 @@ A more complex configuration example looks like this:
     </DefaultExecutionManager>
   
   </deegreeWPS>
+
+This will create a WPS resource with the following properties:
+
+* Enabled WPS protocol versions: 1.0.0
+* The WPS resource will attach to all process provider resources in the workspace.
+* Storage directory for temporary files (e.g. for process results) is ``/var/wps`` inside the workspace.
+* The last 1000 process executions will be tracked.
+* Memory buffers (e.g. for inline XML inputs) are limited to 1 MB each. If this limit is exceeded, buffering is switched to use a file in the storage directory.
+
+^^^^^^^^^^^^^^^^^^^^^^
+Configuration overview
+^^^^^^^^^^^^^^^^^^^^^^
 
 The deegree WPS config file format is defined by schema file http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd. The root element is ``deegreeWPS`` and the config attribute must be ``3.1.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
 
@@ -736,13 +788,11 @@ The remainder of this section describes these options and their sub-options in d
 
 * ``SupportedVersions``: By default, all implemented WMS protocol versions are activated. Currently, this is just 1.0.0 anyway. Alternatively you can control offered WPS protocol versions using the element ``SupportedVersions``. This element allows the child element ``<Version>1.0.0</Version>`` for now.
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-Execution manager settings
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+DefaultExecutionManager section
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO explain execution manager
-
-The ``DefaultExecutionManager`` option has the following sub-options:
+This section controls aspects that are related to temporary storage (for input and output parameter values) during the execution of processes. The ``DefaultExecutionManager`` option has the following sub-options:
 
 .. table:: Options for ``DefaultExecutionManager``
 
@@ -756,45 +806,161 @@ The ``DefaultExecutionManager`` option has the following sub-options:
 | InputDiskSwitchLimit | 0..1        | Integer | Limit in bytes, before a ComplexInputInput is written to disk, default: 1 MiB |
 +----------------------+-------------+---------+-------------------------------------------------------------------------------+
 
-TODO explain parameters in detail
+.. _anchor-configuration-service-metadata:
 
-----------------------
-Metadata configuration
-----------------------
+--------
+Metadata
+--------
 
 This section describes the configuration for the different types of metadata that a service reports in the ``GetCapabilities`` response. These options don't affect the data that the service offers or the behaviour of the service. It merely changes the descriptive metadata that the service reports.
 
-^^^^^^^^^^^^^^^^
-Service metadata
-^^^^^^^^^^^^^^^^
+In order to configure the metadata for a web service instance ``xyz``, create a corresponding ``xyz_metadata.xml`` file in the ``services`` directory of the workspace. The actual service type does not matter, the configuration works for all types of service alike.
 
-In order to configure the service identification and service provider information that web services return in ``GetCapabilities`` responses, you have two options:
-
-* Create a global ``metadata.xml`` file in the ``services`` directory of the workspace (options apply for all configured web services)
-* Create an instance specific ``xyz_metadata.xml`` file (options apply only for web service with configuration file name ``xyz.xml``)
-
-If both files are present, the instance specific file takes precedence. The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.0.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.0.0``.
-
-.. topic:: Example for ``metadata.xml``
+.. topic:: Example for ``deegreeServicesMetadata``
 
    .. literalinclude:: xml/service_metadata.xml
       :language: xml
+
+The metadata config file format is defined by schema file http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The root element is ``deegreeServicesMetadata`` and the config attribute must be ``3.2.0``. The following table lists all available configuration options (complex ones contain nested options themselves). When specifiying them, their order must be respected.
+
+.. table:: Options for ``deegreeServicesMetadata``
+
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| Option                  | Cardinality | Value   | Description                                                      |
++=========================+=============+=========+==================================================================+
+| ServiceIdentification   | 1..1        | Complex | Metadata that describes the service                              |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ServiceProvider         | 1..1        | Complex | Metadata that describes the provider of the service              |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| DatasetMetadata         | 0..1        | Complex | Metadata on the datasets provided by the service                 |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ExtendedCapabilities    | 0..n        | Complex | Extended Metadata reported in OperationsMetadata section         |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+
+The remainder of this section describes these options and their sub-options in detail.
+
+^^^^^^^^^^^^^^^^^^^^^^
+Service identification
+^^^^^^^^^^^^^^^^^^^^^^
+
+The ``ServiceIdentification`` option has the following sub-options:
+
+.. table:: Options for ``ServiceIdentification``
+
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Option               | Cardinality | Value   | Description                                                                   |
++======================+=============+=========+===============================================================================+
+| Title                | 0..n        | String  | Title of the service                                                          |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Abstract             | 0..n        | String  | Abstract                                                                      |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Keywords             | 0..n        | Complex | Keywords that describe the service                                            |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| Fees                 | 0..1        | String  | Fees that apply for using this service                                        |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+| AccessConstraints    | 0..n        | String  | Access constraints for this service                                           |
++----------------------+-------------+---------+-------------------------------------------------------------------------------+
+
+^^^^^^^^^^^^^^^^
+Service provider
+^^^^^^^^^^^^^^^^
+
+The ``ServiceProvider`` option has the following sub-options:
+
+.. table:: Options for ``ServiceProvider``
+
++----------------+-------------+---------+-------------------------------------+
+| Option         | Cardinality | Value   | Description                         |
++================+=============+=========+=====================================+
+| ProviderName   | 0..1        | String  | Name of the service provider        |
++----------------+-------------+---------+-------------------------------------+
+| ProviderSite   | 0..1        | String  | Website of the service provider     |
++----------------+-------------+---------+-------------------------------------+
+| ServiceContact | 0..1        | Complex | Contact information                 |
++----------------+-------------+---------+-------------------------------------+
 
 ^^^^^^^^^^^^^^^^
 Dataset metadata
 ^^^^^^^^^^^^^^^^
 
-This type of metadata is attached to the datasets that a service offers (e.g. layers for the WMS or feature types for the WFS). Please have a look at the service specific section for configuring this type of metadata.
+This type of metadata is attached to the datasets that a service offers (e.g. layers for the WMS or feature types for the WFS). The services themselves may have specific mechanisms to override this metadata, so make sure to have a look at the appropriate service sections. However, some metadata configuration can be done right here.
+
+To start with, you'll need to add a ``DatasetMetadata`` container element:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+  ...
+  </DatasetMetadata>
+
+Apart from the descriptive metadata (title, abstract etc.) for each dataset, you can also configure ``MetadataURL``s, external metadata links and metadata as well as external metadata IDs.
+
+For general ``MetadataURL`` configuration, you can configure the element ``MetadataUrlTemplate``. Its content can be any URL, which may contain the pattern ``${metadataSetId}``. For each dataset (layer, feature type) the service will output a ``MetadataURL`` based on that pattern, if a ``MetadataSetId`` has been configured for that dataset (see below). The template is optional, if omitted, no ``MetadataURL`` will be produced.
+
+Configuration for the template looks like this:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+    <MetadataUrlTemplate>http://some.url.de/csw?request=GetRecordById&amp;service=CSW&amp;version=2.0.2&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=${metadataSetId}</MetadataUrlTemplate>
+  ...
+  </DatasetMetadata>
+
+You can also configure ``ExternalMetadataAuthority`` elements, which are currently only used by the WMS. You can define multiple authorities, with the authority URL as text content and a unique ``name`` attribute. For each dataset you can define an ID for an authority by refering to that name. This will generate an ``AuthorityURL`` and ``Identifier`` pair in WMS capabilities documents (version 1.3.0 only).
+
+Configuration for an external authority looks like this:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+    <ExternalMetadataAuthority name="myorg">http://www.myauthority.org/metadataregistry/</ExternalMetadataAuthority>
+  ...
+  </DatasetMetadata>
+
+Now follows the list of the actual dataset metadata. You can add as many as you need:
+
+.. code-block:: xml
+
+  <DatasetMetadata>
+    <MetadataUrlTemplate>...</MetadataUrlTemplate>
+    ...
+    <Dataset>
+    ...
+    </Dataset>
+    <Dataset>
+    ...
+    </Dataset>
+    ...
+  </DatasetMetadata>
+
+For each dataset, you can configure the metadata as outlined in the following table:
+
+.. table:: Metadata options for ``Dataset``
+
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| Option                  | Cardinality  | Value         | Description                                                                                  |
++=========================+==============+===============+==============================================================================================+
+| Name                    | 1            | String/QName  | the layer/feature type name you refer to                                                     |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| Title                   | 0..n         | String        | can be multilingual by using the ``lang`` attribute                                          |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| Abstract                | 0..n         | String        | can be multilingual by using the ``lang`` attribute                                          |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| MetadataSetId           | 0..1         | String        | is used to generate ``MetadataURL`` s, see above                                             |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
+| ExternalMetadataSetId   | 0..n         | String        | is used to generate ``AuthorityURL`` s and ``Identifier`` s for WMS, see above. Refer to an  |
+|                         |              |               | authority using the ``authority`` attribute.                                                 |
++-------------------------+--------------+---------------+----------------------------------------------------------------------------------------------+
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
-Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. It is not defined by the OGC specifications, but by extensions, such as the INSPIRE service specifications. deegree treats this section as a generic XML element and does not validate it. Please have a look at the service specific section for configuring this type of metadata.
+Extended capabilities are generic metadata sections below the ``OperationsMetadata`` element in the ``GetCapabilities`` response. They are not defined by the OGC service specifications, but by additional guidance documents, such as the INSPIRE Network Service TGs. deegree treats this section as a generic XML element and includes it in the output. If your service supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and 2.0.0), you may include multiple ``ExtendedCapabilities`` elements in the metadata configuration and use attribute ``protocolVersions`` to indicate the version that you want to define the extended capabilities for.
 
-------------------------
-Controller configuration
-------------------------
+------------------
+Service controller
+------------------
 
 The controller configuration is used to configure various global aspects that affect all services.
 
@@ -830,7 +996,7 @@ The following sections describe the available options in detail.
 Reported URLs
 ^^^^^^^^^^^^^
 
-Web service responses sometimes contain URLs that refer back to the service, for example in capabilities documents (responses to GetCapabilities requests). By default, deegree derives these URLs from the incoming request, so you don't have to think about this, even when your server has multiple network interfaces or hostnames. However, sometimes it is required to override these URLs, for example when using deegree behind a proxy or load balancer.
+Some web service responses contain URLs that refer back to the service, for example in capabilities documents (responses to GetCapabilities requests). By default, deegree derives these URLs from the incoming request, so you don't have to think about this, even when your server has multiple network interfaces or hostnames. However, sometimes it is required to override these URLs, for example when using deegree behind a proxy or load balancer.
 
 .. tip::
   If you don't have a proxy setup that requires it, don't configure the reported URLs. In standard setups, the default behaviour works best.

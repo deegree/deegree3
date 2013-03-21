@@ -59,21 +59,11 @@ import org.deegree.console.WorkspaceBean;
 @SessionScoped
 public class WebServiceConfigManager {
 
-    private static final URL METADATA_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
-
-    private static final URL METADATA_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
-
     private static final URL MAIN_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
 
     private static final URL MAIN_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
 
-    private final Config metadataConfig;
-
     private final Config mainConfig;
-
-    public Config getMetadataConfig() {
-        return metadataConfig;
-    }
 
     public Config getMainConfig() {
         return mainConfig;
@@ -83,10 +73,6 @@ public class WebServiceConfigManager {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         File wsRootDir = ws.getLocation();
-
-        File metadataLocation = new File( wsRootDir, "services/metadata.xml" );
-        metadataConfig = new Config( metadataLocation, METADATA_SCHEMA_URL, METADATA_EXAMPLE_URL,
-                                     "/console/webservices/webservices" );
 
         File mainLocation = new File( wsRootDir, "services/main.xml" );
         mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/webservices" );

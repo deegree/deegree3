@@ -93,12 +93,15 @@ public class WorkspaceBean implements Serializable {
 
     public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
 
-    private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
+    // private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
 
     private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
 
     // only used when no build (Maven) module version information is available
-    private static final String DEFAULT_VERSION = "3.2-pre11-SNAPSHOT";
+    private static final String DEFAULT_VERSION = "3.2-rc2";
+
+    private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
+                                             "deegree-workspace-utah", "deegree-workspace-wps" };
 
     private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
@@ -164,9 +167,9 @@ public class WorkspaceBean implements Serializable {
         return WS_UPLOAD_VIEW;
     }
 
-    public static String getWsDownloadBaseUrl() {
-        return WS_DOWNLOAD_BASE_URL;
-    }
+    // public static String getWsDownloadBaseUrl() {
+    // return WS_DOWNLOAD_BASE_URL;
+    // }
 
     public static String[] getWsDownloadUrls() {
         return WS_DOWNLOAD_URLS;
@@ -375,15 +378,20 @@ public class WorkspaceBean implements Serializable {
 
     public List<String> getRemoteWorkspaces() {
         workspaceLocations.clear();
-        List<String> list = downloadWorkspaceList( getDownloadBaseUrl() );
-        for ( String url : WS_DOWNLOAD_URLS ) {
-            list.addAll( downloadWorkspaceList( url ) );
+        List<String> list = new ArrayList<String>();
+        for ( String wsArtifactName : WS_LIST ) {
+            addWorkspaceLocation( wsArtifactName, list );
         }
         return list;
     }
 
-    private String getDownloadBaseUrl() {
-        return WS_DOWNLOAD_BASE_URL + getVersion();
+    private void addWorkspaceLocation( String wsArtifactName, List<String> list ) {
+        String repo = getVersion().endsWith( "SNAPSHOT" ) ? "snapshots" : "releases";
+        String version = getVersion().endsWith( "SNAPSHOT" ) ? "LATEST" : getVersion();
+        String url = "http://repo.deegree.org/service/local/artifact/maven/redirect?r=" + repo + "&g=org.deegree&a="
+                     + wsArtifactName + "&v=" + version + "&e=deegree-workspace";
+        workspaceLocations.put( wsArtifactName, url );
+        list.add( wsArtifactName );
     }
 
     private String getVersion() {

@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.2-pre13-SNAPSHOT</version>
+    <version>3.2-rc3-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -28,7 +28,6 @@
   <modules>
     <module>deegree-featurestores</module>
     <module>deegree-mdstores</module>
-    <module>deegree-coveragestores</module>
     <module>deegree-tilestores</module>
   </modules>
 
