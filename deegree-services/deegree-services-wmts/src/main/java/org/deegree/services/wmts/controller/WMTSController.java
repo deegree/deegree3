@@ -59,6 +59,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.RequestUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
 import org.deegree.services.controller.AbstractOWS;
@@ -110,28 +111,35 @@ public class WMTSController extends AbstractOWS {
     public void doKVP( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
-        String v = map.get( "VERSION" );
-        Version version = v == null ? serviceInfo.getSupportedConfigVersions().iterator().next() : parseVersion( v );
-
-        WMTSRequestType req;
+        RequestUtils.getCurrentThreadRequestParameters().set( map );
         try {
-            req = (WMTSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( map.get( "REQUEST" ) );
-        } catch ( IllegalArgumentException e ) {
-            sendException( new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS operation.",
-                                             OPERATION_NOT_SUPPORTED ), response );
-            return;
-        } catch ( NullPointerException e ) {
-            sendException( new OWSException( "The REQUEST parameter is missing.", OPERATION_NOT_SUPPORTED ), response );
-            return;
-        }
 
-        try {
-            dispatcher.handleRequest( req, response, map, version );
-        } catch ( OWSException e ) {
-            LOG.debug( "The response is an exception with the message '{}'", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace of OWSException being sent", e );
+            String v = map.get( "VERSION" );
+            Version version = v == null ? serviceInfo.getSupportedConfigVersions().iterator().next() : parseVersion( v );
 
-            sendException( e, response );
+            WMTSRequestType req;
+            try {
+                req = (WMTSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( map.get( "REQUEST" ) );
+            } catch ( IllegalArgumentException e ) {
+                sendException( new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS operation.",
+                                                 OPERATION_NOT_SUPPORTED ), response );
+                return;
+            } catch ( NullPointerException e ) {
+                sendException( new OWSException( "The REQUEST parameter is missing.", OPERATION_NOT_SUPPORTED ),
+                               response );
+                return;
+            }
+
+            try {
+                dispatcher.handleRequest( req, response, map, version );
+            } catch ( OWSException e ) {
+                LOG.debug( "The response is an exception with the message '{}'", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace of OWSException being sent", e );
+
+                sendException( e, response );
+            }
+        } finally {
+            RequestUtils.getCurrentThreadRequestParameters().remove();
         }
     }
 
@@ -160,4 +168,5 @@ public class WMTSController extends AbstractOWS {
     public String getMetadataUrlTemplate() {
         return metadataUrlTemplate;
     }
+
 }
