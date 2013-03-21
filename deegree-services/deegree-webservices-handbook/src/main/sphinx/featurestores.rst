@@ -307,47 +307,47 @@ This configuration snippet defines a SQL feature store resource with the followi
 * JDBC connection resource with identifier ``inspire`` is used to connect to the database
 * Storage CRS is ``EPSG:4258``, database srid is ``-1`` (inserted geometries are transformed by deegree to the storage CRS, if necessary)
 * Feature types are read from three GML schema files
-* The snippet contains the mapping of a single (but rich) feature type ``ad:Address`` (ad=urn:x-inspire:specification:gmlas:Addresses:3.0)
+* A single feature type ``ad:Address`` (ad=urn:x-inspire:specification:gmlas:Addresses:3.0) is mapped
 * The root table of the mapping is ``ad_address``
-* Feature type is mapped to fifteen tables in total
+* Feature type is mapped to several tables
 * Feature id (``gml:id``) is based on column ``attr_gml_id``, prefixed by ``AD_ADDRESS__``
 * For insert transactions, new values for column ``attr_gml_id`` in the root table are created using the UUID generator. For the joined tables, the database has to create new primary keys value automatically (primary key columns must have a trigger or a suitable type such as SERIAL in PostgreSQL)
 
-^^^^^^^^^^^^^^^^^^^^^
-Configuration options
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Overview of configuration options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected.
 
 .. table:: Options for ``SQL feature store`` resource configuration files
 
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| Option                      | Cardinality | Value   | Description                                                                  |
-+=============================+=============+=========+==============================================================================+
-| JDBCConnId                  | 1..1        | String  | Identifier of the database connection                                        |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| DisablePostFiltering        | 0..1        | Empty   | If present, queries that require in-memory filtering are rejected            |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| JoinTableDeletePropagation  | 0..1        | String  | Controls whether database is responsible for deleting dependent rows         |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| VoidEscalationPolicy        | 0..1        | String  | Controls whether void values are escalated to parent particles               |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| CustomReferenceResolver     | 0..n        | String  | Java class name of a custom resolver for xlink resolving                     |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| StorageCRS                  | 0..1        | Complex | CRS of stored geometries                                                     |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| GMLSchema                   | 0..n        | String  | Path/URL to GML application schema files/dirs to read feature types from     |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| BLOBMapping                 | 0..1        | Complex | Controls special mapping mode that uses BLOBs for storing features           |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| FeatureTypeMapping          | 0..n        | Complex | Mapping between a feature type and a database table                          |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| Inspectors                  | 0..n        | Complex | List of classes that can modify features before insertion                    |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
-| FeatureCache                | 0..1        | Empty   | If present, feature caching will be enabled                                  |
-+-----------------------------+-------------+---------+------------------------------------------------------------------------------+
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                           | Cardinality | Value   | Description                                                                  |
++==================================+=============+=========+==============================================================================+
+| ``<JDBCConnId>``                 | 1           | String  | Identifier of the database connection                                        |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<DisablePostFiltering>``       | 0..1        | Empty   | If present, queries that require in-memory filtering are rejected            |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<JoinTableDeletePropagation>`` | 0..1        | String  | Controls whether database is responsible for deleting dependent rows         |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<VoidEscalationPolicy>``       | 0..1        | String  | Controls whether void values are escalated to parent particles               |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<CustomReferenceResolver>``    | 0..n        | String  | Java class name of a custom resolver for xlink resolving                     |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<StorageCRS>``                 | 0..1        | Complex | CRS of stored geometries                                                     |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<GMLSchema>``                  | 0..n        | String  | Path/URL to GML application schema files/dirs to read feature types from     |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<BLOBMapping>``                | 0..1        | Complex | Controls special mapping mode that uses BLOBs for storing features           |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<FeatureTypeMapping>``         | 0..n        | Complex | Mapping between a feature type and a database table                          |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Inspectors>``                 | 0..n        | Complex | List of classes that can modify features before insertion                    |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<FeatureCache>``               | 0..1        | Empty   | If present, feature caching will be enabled                                  |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 
-These options and their sub-options are explained in the remaining sections.
+The usage of these options and their sub-options is explained in the remaining sections.
 
 .. _anchor-configuration-tabledriven:
 
@@ -393,6 +393,9 @@ There are several options for ``<FeatureTypeMapping>`` that give you more contro
 +------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<Geometry>``   | 0..n        | Complex | Defines the mapping of a geometry-valued column                              |
 +------------------+-------------+---------+------------------------------------------------------------------------------+
+
+.. hint::
+  The order of child elements ``<Primitive>`` and ``<Geometry>`` is not restricted. They may appear in any order.
 
 These options and their sub-options are explained in the following subsections.
 
@@ -503,6 +506,260 @@ The following table lists all available configuration options for ``<Primitive>`
 | ``<StorageCRS>``      | 0..1        | Complex | CRS of stored geometries and database srid (only for ``<Geometry>``)         |
 +-----------------------+-------------+---------+------------------------------------------------------------------------------+
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Mapping GML application schemas
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The former section assumed a mapping configuration that didn't use a given GML application schema. If a GML application schema is available and specified using ``<GMLSchema>``, the mapping possibilities and available options are extended. We refer to these two modes as **table-driven mode** (without GML schema) and **schema-driven mode** (with GML schema).
+
+Here's a comparison of table-driven and schema-driven mode:
+
+.. table:: SQL feature store mapping modes (with and without GML application schema)
+
++------------------------------+------------------------------+---------------------------------+
+|                              | Table-driven mode            | Schema-driven mode              |
++==============================+==============================+=================================+
+| GML application schema       | Derived from tables          | Must be provided                |
++------------------------------+------------------------------+---------------------------------+
+| Data model (feature types)   | Derived from tables          | Derived from GML app schema     |
++------------------------------+------------------------------+---------------------------------+
+| GML version                  | Any (GML 2, 3.0, 3.1, 3.2)   | Fixed to version of app schema  |
++------------------------------+------------------------------+---------------------------------+
+| Mapping principle            | Property to table column     | XPath-based or BLOB-based       |
++------------------------------+------------------------------+---------------------------------+
+| Supported mapping complexity | Low                          | Very high                       |
++------------------------------+------------------------------+---------------------------------+
+
+.. hint::
+  If you want to create a relational mapping for an existing GML application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML, XPlanung, AAA), always copy the schema files into the ``appschemas/`` directory of your workspace and reference the schema in your configuration.
+
+In schema-driven mode, the SQL feature store extracts detailed feature type definitions and property declarations from GML application schema files. A basic configuration for schema-driven mode defines the JDBC connection id, the general CRS of the stored geometries and one or more GML application schema files:
+
+.. topic:: SQL FeatureStore (schema-driven mode): Skeleton config
+
+   .. literalinclude:: xml/sqlfeaturestore_schemadriven1.xml
+      :language: xml
+
+""""""""""""""""""""
+Recommended workflow
+""""""""""""""""""""
+
+.. hint::
+  This section assumes that you already have an existing database that you want to map to a GML application schema. If you want to derive a database model from a GML application schema, see :ref:`anchor-mapping-wizard`.
+
+Manually creating a mapping for a rich GML application schema may appear to be a dauting task at first sight. Especially when you are still trying to figure out how the configuration concepts work, you will be using a lot of trial-and-error. Here are some general practices to make this as painless as possible.
+
+* Map one property of a feature type at a time.
+* Use the **Reload** link in the services console to activate changes. 
+* After changing the configuration file, make sure that the status of the feature store stays green (in the console). If an exclamation mark occurs, you have an error in your configuration. Check the error message and fix it.
+* Check the results of your change (see below)
+* Once you're satisfied, move on the next property (or feature type)
+
+Set up a WFS configuration, so you can use WFS GetFeature-requests to check whether your feature mapping works as expected. You can use your web browser for that. After each configuration change, perform a GetFeature-request to see the effect. Suitable WFS requests depend on the WFS version, the GML version and the name of the feature type. Here are some examples:
+
+* WFS 1.0.0 (GML 2): http://localhost:8080/services?service=WFS&version=1.0.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
+* WFS 1.1.0 (GML 3.1): http://localhost:8080/services?service=WFS&version=1.1.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
+* WFS 2.0.0 (GML 3.2): http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
+
+In order to successfully create a mapping for a feature type from a GML application schema, you have to know the structure and the data types of the feature type. For example, if you want to map feature type ``ad:Address`` from INSPIRE Annex I, you have to know that it has a required property called ``ad:inspireId`` that has a child element with name ``base:Identifier``. Here's a list of possible options to learn the data model of an application schema:
+
+* Manually (or with the help of a generic XML tool such as XMLSpy) analyze the GML application schema to determine the feature types and understand their data model
+* Use the services console to auto-generate a mapping configuration (see :ref:`anchor-mapping-wizard`). It should reflect the structure and datatypes correctly. Auto-generate the mapping, create a copy of the file and start with a minimal version (``FeatureTypeMapping`` by ``FeatureTypeMapping``, property by property). Adapt it to your own database tables and columns and remove optional elements and attributes that you don't want to map.
+* Use the deegree support options (mailing lists, commercial support) to get help.
+
+.. hint::
+   The deegree project aims for a user-interface to help with all steps of creating mapping configurations. If you are interested in working on this (or funding it), don't hesitate to contact the project bodies.
+
+""""""""""""""""""""""""""
+Mapping rich feature types
+""""""""""""""""""""""""""
+
+In schema-driven mode, the ``<FeatureTypeMapping>`` element basically works as in table-driven mode (see :ref:`anchor-configuration-tabledriven`). It defines a mapping between a table in the database and a feature type. However, there are additional possibilities and it's usually more suitable to focus on feature types and XML nodes instead of tables and table columns. Here's an overview of the ``<FeatureTypeMapping>`` options and their meaning in schema-driven mode:
+
+.. table:: Options for ``<FeatureTypeMapping>`` (schema-driven mode)
+
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option           | Cardinality | Value   | Description                                                                  |
++==================+=============+=========+==============================================================================+
+| ``table``        | 1           | String  | Name of the table to be mapped (can be qualified with database schema)       |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``name``         | 0..1        | QName   | Name of the feature type                                                     |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<FIDMapping>`` | 1           | Complex | Defines the mapping of the feature id                                        |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Primitive>``  | 0..n        | Complex | Defines the mapping of a primitive-valued node                               |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Geometry>``   | 0..n        | Complex | Defines the mapping of a geometry-valued node                                |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Complex>``    | 0..n        | Complex | Defines the mapping of a complex-valued node                                 |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Feature>``    | 0..n        | Complex | Defines the mapping of a feature-valued node                                 |
++------------------+-------------+---------+------------------------------------------------------------------------------+
+
+.. hint::
+  The order of child elements ``<Primitive>``, ``<Geometry>``, ``<Complex>`` and ``<Feature>`` is not restricted. They may appear in any order.
+
+We're going to explore the additional options by describing the necessary steps for mapping  feature type ``ad:Address`` (from INSPIRE Annex I) to an example database. Start with a single ``<FeatureTypeMapping>``. Provide the table name and the mapping for the feature identifier. The example uses a table named ``ad_address`` and a key column named ``fid``:
+
+.. topic:: SQL feature store (schema-driven mode): Start configuration
+
+   .. literalinclude:: xml/sqlfeaturestore_schemadriven2.xml
+      :language: xml
+
+.. tip::
+  In schema-driven mode, there is no automatic detection of columns, column types or primary keys. You always have to specify ``<FIDMapping>``.
+
+.. tip::
+  If this configuration matches your database and you have a working WFS resource, you should be able to query the feature type (although no properties will be returned): http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
+
+Mapping rich feature types works by associating XML nodes of a feature instance with rows and columns in the database. The table context (the current row) is changed when necessary. In the beginning of a ``<FeatureTypeMapping>``, the current context node is an ``ad:Address`` element and the current table context is a row of table ``ad_address``. The first (required) property that we're going to map is ``ad:inspireId``. The schema defines that ``ad:inspireId`` has as child element named ``base:Identifier`` which in turn has two child elements named ``base:localId`` and ``base:namespace``. Lets's assume that we have a column ``localid`` in our table, that we want to map to ``base:localId``, but for ``base:namespace``, we don't have a corresponding column. We want this element to have the fixed value ``NL.KAD.BAG`` for all instances of ``ad:Address``. Here's how to do it:
+
+.. topic:: SQL feature store (schema-driven mode): Complex elements and constant mappings
+
+   .. literalinclude:: xml/sqlfeaturestore_schemadriven3.xml
+      :language: xml
+
+There are several things to observe here. The ``Complex`` element occurs twice. In the ``path`` attribute of the first occurrence, we specified the qualified name of the (complex) property we want to map (``ad:inspireId``). The nested ``Complex`` targets child element ``base:Identifier`` of ``ad:inspireId``. And finally, the ``Primitive`` elements specify that child element ``base:localId`` is mapped to column ``localid`` and element ``base:namespace`` is mapped to constant ``NL.KAD.BAG`` (note the single quotes around ``NL.KAD.BAG``).
+
+To summarize:
+
+* ``Complex`` is used to select a (complex) child element to be mapped. It is a container for child mapping elements (``Primitive``, ``Geometry``, ``Complex`` or ``Feature``)
+* In the ``mapping`` attribute of ``Primitive``, you can also use constants, not only column names
+
+The next property we want to map is ``ad:position``. It contains the geometry of the address, but the actual GML geometry is nested on a deeper level and the property can occur multiple times. In our database, we have a table named ``ad_address_ad_position`` with columns ``fk`` (foreign key to ad_address) and ``value`` (geometry). Here's the extended mapping:
+
+.. topic:: SQL FeatureStore (schema-driven mode): Join elements and XPath expressions
+
+   .. literalinclude:: xml/sqlfeaturestore_schemadriven4.xml
+      :language: xml
+
+Again, the ``Complex`` element is used to drill into the XML structure of the property and several elements are mapped to constant values. But there are also new things to observe:
+
+* The first child element of a ``<Complex>`` (or ``<Primitive>``, ``<Geometry>`` or ``<Feature>``) can be ``<Join>``. ``<Join>`` performs a table change: table rows corresponding to ``ad:position`` are not stored in the root feature type table (``ad_address``), but in a joined table. All siblings of ``<Join>`` (or their children) refer to this joined table (``ad_address_ad_position``). The join condition that determines the related rows in the joined table is ``ad_address.fid=ad_address_ad_position.fk``. ``<Join>`` is described in detail in the next section.
+* Valid expressions for ``path`` can also be ``.`` (current node) and ``text()`` (primitive value of the current node).
+
+Let's move on to the mapping of property ``ad:component``. This property can occur multiple times and contains (a reference to) another feature.
+
+.. topic:: SQL FeatureStore (schema-driven mode): Feature elements
+
+   .. literalinclude:: xml/sqlfeaturestore_schemadriven5.xml
+      :language: xml
+
+As in the mapping of ``ad:position``, a ``<Join>`` is used to change the table context. The table that stores the information for ``ad:component`` properties is ``ad_address_ad_component``. The ``<Feature>`` declares that we want to map a feature-valued node and it's ``<Href>`` sub-element defines that column ``href`` stores the value for the ``xlink:href``.
+
+Here is an overview on all options for ``<Complex>`` elements:
+
+.. table:: Options for ``<Complex>``
+
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                | Cardinality | Value   | Description                                                                  |
++=======================+=============+=========+==============================================================================+
+| ``path``              | 1           | QName   | Name/XPath-expression that determines the element to be mapped               |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Join>``            | 0..1        | Complex | Defines a change in the table context                                        |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<CustomConverter>`` | 0..1        | Complex | Plugs-in a specialized DB-to-ObjectModel converter implementation            |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Primitive>``       | 0..n        | Complex | Defines the mapping of a primitive-valued node                               |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Geometry>``        | 0..n        | Complex | Defines the mapping of a geometry-valued node                                |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Complex>``         | 0..n        | Complex | Defines the mapping of a complex-valued node                                 |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Feature>``         | 0..n        | Complex | Defines the mapping of a feature-valued node                                 |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+
+.. hint::
+  The order of child elements ``<Primitive>``, ``<Geometry>``, ``<Complex>`` and ``<Feature>`` is not restricted. They may appear in any order.
+
+Here is an overview on all options for ``<Feature>`` elements:
+
+.. table:: Options for ``<Feature>``
+
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                | Cardinality | Value   | Description                                                                  |
++=======================+=============+=========+==============================================================================+
+| ``path``              | 1           | QName   | Name/XPath-expression that determines the element to be mapped               |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<CustomConverter>`` | 0..1        | Complex | Plugs-in a specialized DB-to-ObjectModel converter implementation            |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Href>``            | 0..1        | Complex | Defines the column that stores the value for ``xlink:href``                  |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+
+""""""""""""""""""""""""""
+Changing the table context
+""""""""""""""""""""""""""
+
+At the beginning of a ``<FeatureTypeMapping>``, the current table context is the one specified by the ``table`` attribute. In the following example snippet, this would be table ``ad_address``.
+
+.. topic:: SQL FeatureStore: Initial table context
+
+   .. literalinclude:: xml/sqlfeaturestore_tablecontext.xml
+      :language: xml
+
+Note that all mapped columns stem from table ``ad_address``. This is fine, as each feature can only have a single ``gml:identifier`` property. However, when mapping a property that may occur any number of times, we will have to access the values for this property in a separate table.
+
+.. topic:: SQL FeatureStore: Changing the table context
+
+   .. literalinclude:: xml/sqlfeaturestore_join1.xml
+      :language: xml
+
+In this example, property ``gml:identifier`` is mapped as before (the data values stem from table ``ad_address``). In contrast to that, property ``ad:position`` can occur any number of times for a single ``ad_address`` feature instance. In order to reflect that in the relational model, the values for this property have to be taken from/stored in a separate table. The feature type table (``ad_address``) must have a 1:n relation to this table.
+
+The ``<Join>`` element is used to define such a change in the table context (in other words: a relation/join between two tables). A ``<Join>`` element may only occur as first child element of any of the mapping elements (``<Primitive>``, ``<Geometry>``, ``<Feature>`` or ``<Complex>``). It changes from the current table context to another one. In the example, the table context in the mapping of property ``ad:position`` is changed from ``ad_address`` to ``ad_address_ad_position``. All mapping instructions that follow the ``<Join>`` element refer to the new table context. For example, the geometry value is taken from ``ad_address_ad_position.ad_geographicposition_ad_geometry_value``.
+
+The following table lists all available options for ``<Join>`` elements:
+
+.. table:: Options for ``<Join>`` elements
+
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                                                                       |
++=====================+=============+=========+===================================================================================================+
+| ``table``           | 1..1        | String  | Name of the target table to change to.                                                            |
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| ``fromColumns``     | 1..1        | String  | One or more columns that define the join key in the source table.                                 |
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| ``toColumns``       | 1..1        | String  | One or more columns that define the join key in the target table.                                 |
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| ``orderColumns``    | 0..1        | String  | One or more columns hat define the order of the joined rows.                                      |
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| ``numbered``        | 0..1        | Boolean | Set to true, if orderColumns refers to a single column that contains natural numbers [1,2,3,...]. |
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+| ``<AutoKeyColumn>`` | 0..n        | Complex | Columns in the target table that store autogenerated keys (only required for transactions).       |
++---------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
+
+Attributes ``fromColumns``, ``toColumns`` and ``orderColumns`` may each contain one or more columns. When specifying multiple columns, they must be given as a whitespace-separated list. ``orderColumns`` is used to force a specific ordering on the joined table rows. If this attribute is omitted, the order of joined rows is not defined and reconstructed feature instances may vary each time they are fetched from the database. In the above example, this would mean that the multiple ``ad:position`` properties of an ``ad:Address`` feature may change their order.
+
+In case that the order column stores the child index of the XML element, the ``numbered`` attribute should be set to ``true``. In this special case, filtering on property names with child indexes will be correctly mapped to SQL WHERE clauses as in the following WFS example request.
+
+.. topic:: SQL FeatureStore: WFS query with child index
+
+   .. literalinclude:: xml/sqlfeaturestore_indexquery.xml
+      :language: xml
+
+In the above example, only those ``ad:Address`` features will be returned where the geometry in the third ``ad:position`` property has an intersection with the specified bounding box. If only other ``ad:position`` properties (e.g. the first one) matches this constraint, they will not be included in the output.
+
+The ``<AutoKeyColumn>`` configuration option is only required when you want to use transactions on your feature store and your relational model is non-canonical. Ideally, the mapping will only change the table context in case the feature type model allows for multiple child elements at that point. In other words: if the XML schema has ``maxOccurs`` set to ``unbounded`` for an element, the relational model should have a corresponding 1:n relation. For a 1:n relation, the target table of the context change should have a foreign key column that points to the primary key column of the source table of the context change. This is important, as the SQL feature store has to propagate keys from the source table to the target table and store them there as well.
+
+If the joined table is the origin of other joins, than it is important that the SQL feature store can generate primary keys for the join table. If not configured otherwise, it is assumed that column ``id`` stores the primary key and that the database will auto-generate values on insert using database mechanisms such as sequences or triggers.
+
+If this is not the case, use the ``AutoKeyColumn`` options to define the columns that make up the primary key in the join table and how the values for these columns should be generated on insert. Here's an example:
+
+.. topic:: SQL FeatureStore: Key propagation for transactions
+
+   .. literalinclude:: xml/sqlfeaturestore_join2.xml
+      :language: xml
+
+In this example snippet, the primary key for table ``B`` is stored in column ``pk1`` and values for this column are generated using the UUID generator. There's another change in the table context from B to C. Rows in table C have a key stored in column ``parentfk`` that corresponds to the ``B.pk1``. On insert, values generated for ``B.pk1`` will be propagated and stored for new rows in this table as well. The following table lists the options for ``<AutoKeyColumn>`` elements.
+
+Inside a ``<AutoKeyColumn>``, you may use the same key generators that are available for feature id generation (see above).
+
+""""""""""""
+BLOB mapping
+""""""""""""
+
+An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping. It stores every feature instance in a single (BLOB) column, regardless of it's complexity. Read the next section to learn how to get it working.
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Transactions and feature id generation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -512,7 +769,7 @@ The mapping defined by a ``<FeatureTypeMapping>`` element generally works in bot
 * **Table-to-feature-type (query)**: Feature instances are created from table rows
 * **Feature-type-to-table (insert)**: New table rows are created for inserted feature instances
 
-However, there's a caveat for inserts: The SQL feature store has to know how new and unique feature ids can be obtained.
+However, there's a caveat for inserts: The SQL feature store has to know how to obtain new and unique feature ids.
 
 When features are inserted into a SQL feature store (for example via a WFS transaction), the client can choose between different id generation modes. These modes control whether feature ids (the values in the gml:id attribute) have to be re-generated. There are three id generation modes available, which directly relate to the WFS 1.1.0 specification:
 
@@ -576,222 +833,11 @@ This snippet defines the feature id mapping and the id generation behaviour for 
 * On insert (mode=UseExisting), provided gml:id values must have the format ``AD_ADDRESS_$``. The prefix ``AD_ADDRESS_`` is removed and the remaining part of the identifier is stored in column ``attr_gml_id``.
 * On insert (mode=GenerateNew), the database sequence ``SEQ_FID`` is queried for new values to be stored in column ``attr_gml_id``.
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Mapping GML application schemas
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The former sections assumed a mapping configuration that didn't use a given GML application schema. If a GML application schema is available and specified in the SQL feature store configuration, the mapping possibilities and available options are extended. We refer to these two modes as **table-driven mode** (no GML schema) and **schema-driven mode (GML schema)**.
-
-Here's a comparison of table-driven and schema-driven mode.
-
-.. table:: SQL feature store mapping modes (with and without GML application schema)
-
-+------------------------------+------------------------------+---------------------------------+
-|                              | Table-driven mode            | Schema-driven mode              |
-+==============================+==============================+=================================+
-| GML application schema       | Derived from tables          | Must be provided                |
-+------------------------------+------------------------------+---------------------------------+
-| Data model (feature types)   | Derived from tables          | Derived from GML app schema     |
-+------------------------------+------------------------------+---------------------------------+
-| GML version                  | Any (GML 2, 3.0, 3.1, 3.2)   | Fixed to version of app schema  |
-+------------------------------+------------------------------+---------------------------------+
-| Mapping principle            | Property to table column     | XPath-based or BLOB-based       |
-+------------------------------+------------------------------+---------------------------------+
-| Supported mapping complexity | Low                          | Very high                       |
-+------------------------------+------------------------------+---------------------------------+
-
-.. hint::
-  If you want to create a relational mapping for an existing GML application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML, XPlanung, AAA) always copy the schema files into the ``appschemas/`` directory of your workspace and reference the schema in your configuration.
-
-In schema-driven mode, the SQL feature store extracts detailed feature type definitions and property declarations from GML application schema files. A basic configuration for schema-driven mode defines the JDBC connection id, the general CRS of the stored geometries and one or more GML application schema files:
-
-.. topic:: SQL FeatureStore (schema-driven mode): Skeleton config
-
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven1.xml
-      :language: xml
-
-""""""""""""""""""""
-Recommended workflow
-""""""""""""""""""""
-
-.. hint::
-  This section assumes that you already have an existing database that you want to map to a GML application schema. If you want to derive a database model from a GML application schema, see :ref:`anchor-mapping-wizard`.
-
-Manually creating a mapping for a rich GML application schema may appear to be a dauting task at first sight. Especially when you are still trying to figure out how the configuration concepts work, you will be using a lot of trial-and-error. Here are some general practices to make this as painless as possible.
-
-* Map one property of a feature type at a time.
-* Use the **Reload** link in the services console to activate changes. 
-* After changing the configuration file, make sure that the status of the feature store stays green (in the console). If an exclamation mark occurs, you have an error in your configuration. Check the error message and fix it.
-* Check the results of your change (see below)
-* If your satisfied, move on the next property (or feature type)
-
-It's absolutely necessary to have an active WFS configuration, so you can use WFS GetFeature-requests to check whether your feature mapping works as expected. You can use your web browser for that. After each configuration change, perform a GetFeature-request to see the effect. Suitable WFS requests depend on the WFS version, the GML version and the name of the feature type. Here are some examples:
-
-* WFS 1.0.0 (GML 2): http://localhost:8080/services?service=WFS&version=1.0.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
-* WFS 1.1.0 (GML 3.1): http://localhost:8080/services?service=WFS&version=1.1.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
-* WFS 2.0.0 (GML 3.2): http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
-
-In order to successfully create a mapping of a feature type from a GML application schema, you have to know the structure and the data types of the feature type. For example, if you want to map the **ad:Address** feature type from INSPIRE Annex I, you have to know that it has a required property called **ad:inspireId** that has a child element with name **base:Identifier**. Here's a list of possible options to learn the data model of your application schema:
-
-* Manually (or with the help of a generic XML tool such as XMLSpy) analyze the GML application schema to determine the feature types and understand their data model
-* Use the services console to auto-generate a mapping configuration (see :ref:`anchor-mapping-wizard`). It should reflect the structure and datatypes correctly. Adapt it to your own database tables and columns. Auto-generate the mapping, create a copy of the file and start with a minimal version (``FeatureTypeMapping`` by ``FeatureTypeMapping``, property by property).
-* Use the deegree support options (mailing lists, commercial support) to get help.
-
-.. hint::
-   The deegree project aims for a user-interface to help with all steps of creating mapping configurations. If you are interested in working on this (or funding it), don't hesitate to contact the project bodies.
-
-""""""""""""""""""""""""""
-Mapping rich feature types
-""""""""""""""""""""""""""
-
-In schema-driven mode, the ``<FeatureTypeMapping>`` element basically works as in table-driven mode (see :ref:`anchor-configuration-tabledriven`). It defines a mapping between a table in the database and a feature type. However, there are additional possibilities and it's usually more suitable to focus on feature types and XML nodes instead of tables and table columns. Here's an overview of the ``<FeatureTypeMapping>`` options and their meaning in schema-driven mode:
-
-.. table:: Options for ``<FeatureTypeMapping>`` (schema-driven mode)
-
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| Option           | Cardinality | Value   | Description                                                                  |
-+==================+=============+=========+==============================================================================+
-| ``table``        | 1           | String  | Name of the table to be mapped (can be qualified with database schema)       |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``name``         | 0..1        | QName   | Name of the feature type                                                     |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<FIDMapping>`` | 1           | Complex | Defines the mapping of the feature id                                        |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<Primitive>``  | 0..n        | Complex | Defines the mapping of a primitive-valued node                               |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<Geometry>``   | 0..n        | Complex | Defines the mapping of a geometry-valued node                                |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<Complex>``    | 0..n        | Complex | Defines the mapping of a complex-valued node                                 |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<Feature>``    | 0..n        | Complex | Defines the mapping of a feature-valued node                                 |
-+------------------+-------------+---------+------------------------------------------------------------------------------+
-
-We're going to explore the additional options by describing the necessary steps for mapping  feature type ``ad:Address`` (from INSPIRE Annex I) to an example database. Start with a single ``<FeatureTypeMapping>``. Provide the table name and the mapping for the feature identifier. The example uses a table named ``ad_address`` and a key column named ``attr_gml_id``:
-
-.. topic:: SQL FeatureStore (schema-driven mode): Start configuration
-
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven2.xml
-      :language: xml
-
-.. tip::
-  In schema-driven mode, there is no automatic detection of columns, column types or primary keys. You always have to specify ``<FIDMapping>``.
-
-.. tip::
-  If this configuration matches your database and you have a working WFS resource, you should be able to query the feature type (although no properties will be returned): http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
-
-Mapping rich feature types works by associating XML nodes of a feature instance with rows and columns in the database. The table context (the current row) is changed when necessary. In the beginning of a ``<FeatureTypeMapping>``, the current context node is an ``ad:Address`` element and the current table context is a row of table ``ad_address``. The first (required) property that we're going to map is ``ad:inspireId``. The schema defines that ``ad:inspireId`` has as child element named ``base:Identifier`` which in turn has two child elements named ``base:localId`` and ``base:namespace``. Lets's assume that we have a column ``localid`` in our table, that we want to map to ``base:localId``, but for ``base:namespace``, we don't have a corresponding column. We want this property to have the fixed value ``NL.KAD.BAG`` for instances of ``ad:Address``. Here's how to do it:
-
-.. topic:: SQL FeatureStore (schema-driven mode): ``Complex`` elements and constant mappings
-
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven3.xml
-      :language: xml
-
-There are several things to observe here. The ``Complex`` element occurs twice. In the ``path`` attribute of the first occurrence, we specified the qualified name of the (complex) property we want to map (``ad:inspireId``). The nested ``Complex`` targets child element ``base:Identifier`` of ``ad:inspireId``. And finally, the ``Primitive`` elements specify that child element ``base:localId`` is mapped to column ``localid`` and element ``base:namespace`` is mapped to constant ``NL.KAD.BAG`` (note the single quotes around ``NL.KAD.BAG``).
-
-To summarize:
-
-* ``Complex`` is used to select a (complex) child element that you want to map. It is a container for child mapping elements (``Primitive``, ``Geometry``, ``Complex`` or ``Feature``)
-* In the ``mapping`` attribute of ``Primitive``, you can also use constants, not only use column names
-
-The next property we want to map is ``ad:position``. It contains the geometry of the address, but the actual GML geometry is nested on a deeper level and the property can occur multiple times. In our database, we have a table named ``ad_address_ad_position`` with columns ``fk`` (foreign key to ad_address) and ``value`` (geometry). Here's the extended mapping:
-
-.. topic:: SQL FeatureStore (schema-driven mode): ``Join`` elements and XPath expressions
-
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven4.xml
-      :language: xml
-
-Again, the ``Complex`` element is used to drill into the XML structure of the property and several elements are mapped to constant values. But there are also new things to observe:
-
-* The first child element of a ``<Complex>`` (or ``<Primitive>``, ``<Geometry>`` or ``<Feature>``) can be ``<Join>``. ``<Join>`` performs a table change: table rows corresponding to ``ad:position`` are not stored in the root feature type table (``ad_address``), but in a joined table. All siblings of ``<Join>`` (or their children) refer to this joined table (``ad_address_ad_position``). The join condition  that determines the related rows in the joined table is ``ad_address.fid=ad_address_ad_position.fk``. ``<Join>`` is described in detail in the next section.
-* Valid expressions for ``path`` are also ``.`` (current node) and ``text()`` (primitive value of the current node).
-
-Let's move on:
-
-.. topic:: SQL FeatureStore (schema-driven mode): ``Feature`` elements
-
-   .. literalinclude:: xml/sqlfeaturestore_schemadriven5.xml
-      :language: xml
-
-
-""""""""""""""""""""""""""
-Changing the table context
-""""""""""""""""""""""""""
-
-At the beginning of a **FeatureTypeMapping**, the current table context is the one specified by the **table** attribute. In the following example snippet, this would be table **ad_address**.
-
-.. topic:: SQL FeatureStore: Initial table context
-
-   .. literalinclude:: xml/sqlfeaturestore_tablecontext.xml
-      :language: xml
-
-Note that all mapped columns stem from table **ad_address**. This is fine, as each feature can only have a single **gml:identifier** property. However, when mapping a property that may occur any number of times, we will have to access the values for this property in a separate table. 
-
-.. topic:: SQL FeatureStore: Changing the table context
-
-   .. literalinclude:: xml/sqlfeaturestore_join1.xml
-      :language: xml
-
-In this example, property **gml:identifier** is mapped as before (the data values stem from table **ad_address**). In contrast to that, property **ad:position** can occur any number of times for a single **ad_address** feature instance. In order to reflect that in the relational model, the values for this property have to be taken from/stored in a separate table. The feature type table (ad_address) must have a 1:n relation to this table.
-
-The **Join** element is used to define such a change in the table context (in other words: a relation/join between two tables). A **Join** element may only occur as the first child element of any of the mapping elements (Primitive, Geometry, Feature or Complex). It changes from the current table context to another one. In the example, the table context in the mapping of property **ad:position** is changed from **ad_address** to **ad_address_ad_position**. All mapping instructions that follow the **Join** element refer to the new table context. For example, the geometry value is taken from **ad_address_ad_position.ad_geographicposition_ad_geometry_value**.
-
-The following table lists all available options for **Join** elements.
-
-.. table:: Options for **Join** elements
-
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-| Option                      | Cardinality | Value   | Description                                                                                       |
-+=============================+=============+=========+===================================================================================================+
-| @table                      | 1..1        | String  | Name of the target table to change to.                                                            |
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-| @fromColumns                | 1..1        | String  | One or more columns that define the join key in the source table.                                 |
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-| @toColumns                  | 1..1        | String  | One or more columns that define the join key in the target table.                                 |
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-| @orderColumns               | 0..1        | String  | One or more columns hat define the order of the joined rows.                                      |
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-| @numbered                   | 0..1        | Boolean | Set to true, if orderColumns refers to a single column that contains natural numbers [1,2,3,...]. |
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-| AutoKeyColumn               | 0..n        | Complex | Columns in the target table that store autogenerated keys (only required for transactions).       |
-+-----------------------------+-------------+---------+---------------------------------------------------------------------------------------------------+
-
-Attributes **fromColumns**, **toColumns** and **orderColumns** may each contain one or more columns. When specifying multiple columns, they must be given as a whitespace-separated list. **orderColumns** is used to force a specific ordering on the joined table rows. If this attribute is omitted, the order of joined rows is not defined and reconstructed feature instances may vary each time they are fetched from the database. In the above example, this would mean that the multiple **ad:position** properties of an **ad:Address** feature may change their order.
-
-In case that the order column stores the child index of the XML element, the **numbered** attribute should be set to **true**. In this special case, filtering on property names with child indexes will be correctly mapped to SQL WHERE clauses as in the following WFS example request.
-
-.. topic:: SQL FeatureStore: WFS query with child index
-
-   .. literalinclude:: xml/sqlfeaturestore_indexquery.xml
-      :language: xml
-
-In the above example, only those **ad:Address** features will be returned where the geometry in the third **ad:position** property has an intersection with the specified bounding box. If only other **ad:position** properties (e.g. the first one) matches this constraint, they will not be included in the output.
-
-The **AutoKeyColumn** configuration option is only required when you want to use transactions on your feature store and your relational model is non-canonical. Ideally, the mapping will only change the table context in case the feature type model allows for multiple child elements at that point. In other words: if the XML schema has **maxOccurs** set to **unbounded** for an element, the relational model should have a corresponding 1:n relation. For a 1:n relation, the target table of the context change should have a foreign key column that points to the primary key column of the source table of the context change. This is important, as the SQL feature store has to propagate keys from the source table to the target table and store them there as well.
-
-If the joined table is the origin of other joins, than it is important that the SQL feature store can generate primary keys for the join table. If not configured otherwise, it is assumed that column **id** stores the primary key and that the database will auto-generate values on insert using database mechanisms such as sequences or triggers.
-
-If this is not the case, use the **AutoKeyColumn** options to define the columns that make up the primary key in the join table and how the values for these columns should be generated on insert. Here's an example:
-
-.. topic:: SQL FeatureStore: Key propagation for transactions
-
-   .. literalinclude:: xml/sqlfeaturestore_join2.xml
-      :language: xml
-
-In this example snippet, the primary key for table **B** is stored in column **pk1** and values for this column are generated using the UUID generator. There's another change in the table context from B to C. Rows in table C have a key stored in column **parentfk** that corresponds to the **B.pk1**. On insert, values generated for **B.pk1** will be propagated and stored for new rows in this table as well. The following table lists the options for **AutoKeyColumn** elements.
-
-Inside a **AutoKeyColumn** element, you may use the same key generators that are available for feature id generation (see above).
-
-""""""""""""
-BLOB mapping
-""""""""""""
-
-An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping. It stores every feature instance in a single (BLOB) column, regardless of it's complexity. Read the next section to learn how to get it working.
-
 .. _anchor-mapping-wizard:
 
-""""""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Auto-generating a mapping configuration and tables
-""""""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Although this functionality is still in beta stage, the services console can be used to automatically derive an SQL feature store configuration and set up tables from an existing GML application schema. If you don't have an existing database structure that you want to use, you can use this option to create a working database set up very quickly. And even if you have an existing database you need to map manually, this functionality can be prove very helpful to generate a valid mapping configuration to start with.
 
@@ -1005,4 +1051,3 @@ After entering the URL, click **Import**:
    :target: _images/console_featurestore_mapping20.jpg
 
    Imported INSPIRE datasets via the Loader
-
