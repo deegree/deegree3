@@ -6,10 +6,10 @@ Feature stores
 
 Feature stores are workspace resources that provide access to stored features. The two most common use cases for feature stores are:
 
-* Accessing via WFS
-* Providing of data for feature layers
+* Accessing via :ref:`anchor-configuration-wfs`
+* Providing of data for :ref:`anchor-configuration-feature-layers`
 
-The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking the **feature stores** link in the administration console. The configuration files are located in subdirectory ``datasources/feature/`` of the active deegree workspace directory.
+The remainder of this chapter describes some relevant terms and the feature store configuration files in detail. You can access this configuration level by clicking **feature stores** in the service console. The corresponding resource configuration files are located in subdirectory ``datasources/feature/`` of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-feature.png
    :figwidth: 80%
@@ -260,7 +260,7 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 SQL feature store
 -----------------
 
-The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational mapping, it additionally offers the so-called BLOB-mode which can store features of arbitrary complexity in a single table with almost zero configuration. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and very well suited for mapping rich GML application schemas. It currently supports the following databases:
+The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational mapping, it additionally offers so-called BLOB mapping which stores any kind of rich feature using a fixed and very simple database schema. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and ideally suited for mapping rich GML application schemas. It currently supports the following databases:
 
 * PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
 * Oracle Spatial (10g, 11g)
@@ -317,7 +317,7 @@ This configuration snippet defines a SQL feature store resource with the followi
 Overview of configuration options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected.
+The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected:
 
 .. table:: Options for ``SQL feature store`` resource configuration files
 
@@ -328,23 +328,13 @@ The SQL feature store configuration format is defined by schema file http://sche
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<DisablePostFiltering>``       | 0..1        | Empty   | If present, queries that require in-memory filtering are rejected            |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<JoinTableDeletePropagation>`` | 0..1        | String  | Controls whether database is responsible for deleting dependent rows         |
-+----------------------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<VoidEscalationPolicy>``       | 0..1        | String  | Controls whether void values are escalated to parent particles               |
-+----------------------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<CustomReferenceResolver>``    | 0..n        | String  | Java class name of a custom resolver for xlink resolving                     |
-+----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<StorageCRS>``                 | 0..1        | Complex | CRS of stored geometries                                                     |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<GMLSchema>``                  | 0..n        | String  | Path/URL to GML application schema files/dirs to read feature types from     |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<BLOBMapping>``                | 0..1        | Complex | Controls special mapping mode that uses BLOBs for storing features           |
+| ``<BLOBMapping>``                | 0..1        | Complex | Activates a special mapping mode that uses BLOBs for storing features        |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<FeatureTypeMapping>``         | 0..n        | Complex | Mapping between a feature type and a database table                          |
-+----------------------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<Inspectors>``                 | 0..n        | Complex | List of classes that can modify features before insertion                    |
-+----------------------------------+-------------+---------+------------------------------------------------------------------------------+
-| ``<FeatureCache>``               | 0..1        | Empty   | If present, feature caching will be enabled                                  |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 
 The usage of these options and their sub-options is explained in the remaining sections.
@@ -628,7 +618,7 @@ To summarize:
 
 The next property we want to map is ``ad:position``. It contains the geometry of the address, but the actual GML geometry is nested on a deeper level and the property can occur multiple times. In our database, we have a table named ``ad_address_ad_position`` with columns ``fk`` (foreign key to ad_address) and ``value`` (geometry). Here's the extended mapping:
 
-.. topic:: SQL FeatureStore (schema-driven mode): Join elements and XPath expressions
+.. topic:: SQL feature store (schema-driven mode): Join elements and XPath expressions
 
    .. literalinclude:: xml/sqlfeaturestore_schemadriven4.xml
       :language: xml
@@ -640,7 +630,7 @@ Again, the ``Complex`` element is used to drill into the XML structure of the pr
 
 Let's move on to the mapping of property ``ad:component``. This property can occur multiple times and contains (a reference to) another feature.
 
-.. topic:: SQL FeatureStore (schema-driven mode): Feature elements
+.. topic:: SQL feature store (schema-driven mode): Feature elements
 
    .. literalinclude:: xml/sqlfeaturestore_schemadriven5.xml
       :language: xml
@@ -692,14 +682,14 @@ Changing the table context
 
 At the beginning of a ``<FeatureTypeMapping>``, the current table context is the one specified by the ``table`` attribute. In the following example snippet, this would be table ``ad_address``.
 
-.. topic:: SQL FeatureStore: Initial table context
+.. topic:: SQL feature store: Initial table context
 
    .. literalinclude:: xml/sqlfeaturestore_tablecontext.xml
       :language: xml
 
 Note that all mapped columns stem from table ``ad_address``. This is fine, as each feature can only have a single ``gml:identifier`` property. However, when mapping a property that may occur any number of times, we will have to access the values for this property in a separate table.
 
-.. topic:: SQL FeatureStore: Changing the table context
+.. topic:: SQL feature store: Changing the table context
 
    .. literalinclude:: xml/sqlfeaturestore_join1.xml
       :language: xml
@@ -732,7 +722,7 @@ Attributes ``fromColumns``, ``toColumns`` and ``orderColumns`` may each contain 
 
 In case that the order column stores the child index of the XML element, the ``numbered`` attribute should be set to ``true``. In this special case, filtering on property names with child indexes will be correctly mapped to SQL WHERE clauses as in the following WFS example request.
 
-.. topic:: SQL FeatureStore: WFS query with child index
+.. topic:: SQL feature store: WFS query with child index
 
    .. literalinclude:: xml/sqlfeaturestore_indexquery.xml
       :language: xml
@@ -745,7 +735,7 @@ If the joined table is the origin of other joins, than it is important that the 
 
 If this is not the case, use the ``AutoKeyColumn`` options to define the columns that make up the primary key in the join table and how the values for these columns should be generated on insert. Here's an example:
 
-.. topic:: SQL FeatureStore: Key propagation for transactions
+.. topic:: SQL feature store: Key propagation for transactions
 
    .. literalinclude:: xml/sqlfeaturestore_join2.xml
       :language: xml
@@ -754,11 +744,66 @@ In this example snippet, the primary key for table ``B`` is stored in column ``p
 
 Inside a ``<AutoKeyColumn>``, you may use the same key generators that are available for feature id generation (see above).
 
+.. _anchor-blob-mode:
+
 """"""""""""
 BLOB mapping
 """"""""""""
 
-An alternative approach to schema-driven relational mapping is schema-driven BLOB mapping. It stores every feature instance in a single (BLOB) column, regardless of it's complexity. Read the next section to learn how to get it working.
+An alternative approach to mapping each feature type from an application schema using ``<FeatureTypeMapping>`` is to specify a single ``<BLOBMapping>`` element. This activates a different storage strategy based on a fixed database schema. Central to this schema is a table that stores every feature instance (and all of it's properties) as a BLOB (binary large object).
+
+Here is an overview on all options for ``<BLOBMapping>`` elements:
+
+.. table:: Options for ``<BLOBMapping>``
+
++------------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                 | Cardinality | Value   | Description                                                                  |
++========================+=============+=========+==============================================================================+
+| ``<BlobTable>``        | 0..1        | String  | Database table that stores features, default: ``gml_objects``                |
++------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<FeatureTypeTable>`` | 0..1        | String  | Database table that stores feature types, default: ``feature_types``         |
++------------------------+-------------+---------+------------------------------------------------------------------------------+
+
+The central table (controlled by ``<BlobTable>``) uses the following columns:
+
+.. table:: Columns in blob table
+
++--------------------+----------------+-------------------------------------------------------------------------+
+| Column             | PostGIS type   | Used for                                                                |
++====================+================+=========================================================================+
+| ``id``             | serial         | Primary key                                                             |
++--------------------+----------------+-------------------------------------------------------------------------+
+| ``gml_id``         | text           | Feature identifier (used for id queries and resolving xlink references) |
++--------------------+----------------+-------------------------------------------------------------------------+
+| ``gml_bounded_by`` | geometry       | Bounding box (used for spatial queries)                                 |
++--------------------+----------------+-------------------------------------------------------------------------+
+| ``ft_type``        | smallint       | Feature type identifier (used to narrow the result set)                 |
++--------------------+----------------+-------------------------------------------------------------------------+
+| ``binary_object``  | bytea          | Encoded feature instance                                                |
++--------------------+----------------+-------------------------------------------------------------------------+
+
+The other table (controlled by ``<FeatureTypeTable>``) stores a mapping of feature type names to feature type identifiers:
+
+.. table:: Columns in feature type table
+
++-----------+----------------+-------------------------------------------------------------------------+
+| Column    | PostGIS type   | Used for                                                                |
++===========+================+=========================================================================+
+| ``id``    | smallint       | Primary key                                                             |
++-----------+----------------+-------------------------------------------------------------------------+
+| ``qname`` | text           | Name of the feature type                                                |
++-----------+----------------+-------------------------------------------------------------------------+
+| ``bbox``  | geometry       | Aggregated bounding box for all features of this type                   |
++-----------+----------------+-------------------------------------------------------------------------+
+
+.. hint::
+  In order for ``<BLOBMapping>`` to work, you need to have the correct tables in your database and initialize the feature type table with the names of all feature types you want to use. We recommend not to do this manually, see :ref:`anchor-mapping-wizard`. The wizard will also create suitable indexes to speed up queries.
+
+.. hint::
+  You may wonder how to get data into the database in BLOB mode. As for standard mapping, you can do this by executing WFS-T requests or by using the feature store loader. Its usage is described in the last steps of :ref:`anchor-mapping-wizard`.
+
+.. hint::
+  In BLOB mode, only spatial and feature id queries can be mapped to SQL WHERE-constraints. All other kinds of filter conditions are performed in memory. See :ref:`anchor-filtering` for more information.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Transactions and feature id generation
@@ -832,6 +877,18 @@ This snippet defines the feature id mapping and the id generation behaviour for 
 * When querying, the prefix ``AD_ADDRESS_`` is prepended to column ``attr_gml_id`` to create the exported feature id. If ``attr_gml_id`` contains the value ``42`` in the database, the feature instance that is created from this row will have the value ``AD_ADDRESS_42``.
 * On insert (mode=UseExisting), provided gml:id values must have the format ``AD_ADDRESS_$``. The prefix ``AD_ADDRESS_`` is removed and the remaining part of the identifier is stored in column ``attr_gml_id``.
 * On insert (mode=GenerateNew), the database sequence ``SEQ_FID`` is queried for new values to be stored in column ``attr_gml_id``.
+
+.. _anchor-filtering:
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Evaluation of query filters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The SQL feature store always tries to map filter conditions (e.g. from WFS ``GetFeature`` requests or when accessed by the WMS) to SQL-WHERE conditions. However, this is not always possible. Sometimes a filter uses an expression that just can not be mapped to an equivalent SQL-WHERE clause. For example when using :ref:`anchor-blob-mode` and the filter is not based on a feature id or a spatial constraint.
+
+In such cases, the SQL feature store falls back to in-memory filtering. It will reconstruct feature by feature from the database and evaluate the filter in memory. If the filter matches, it will be included in the result feature stream. If not, it is skipped.
+
+The downside of this strategy is that it can put a serious load on your server. If you want to turn off in-memory filtering completely, use ``<DisablePostFiltering>``. If this option is specified and a filter requires in-memory filtering, the query will be rejected.
 
 .. _anchor-mapping-wizard:
 

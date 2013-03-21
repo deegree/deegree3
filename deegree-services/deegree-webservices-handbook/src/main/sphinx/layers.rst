@@ -211,6 +211,7 @@ Here is an example snippet:
     <l:AntiAliasing>TEXT</l:AntiAliasing>
   </l:LayerOptions>
 
+.. _anchor-configuration-feature-layers:
 
 --------------
 Feature layers
