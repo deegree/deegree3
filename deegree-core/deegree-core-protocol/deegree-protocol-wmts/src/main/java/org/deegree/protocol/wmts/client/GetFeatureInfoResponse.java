@@ -43,8 +43,14 @@ package org.deegree.protocol.wmts.client;
 
 import java.io.IOException;
 
+import javax.xml.stream.XMLStreamException;
+
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.featureinfo.parsing.FeatureInfoParser;
+import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
+import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 
 /**
  * The server response to a GetFeatureInfo request.
@@ -58,12 +64,21 @@ public class GetFeatureInfoResponse {
 
     private final OwsHttpResponse rawResponse;
 
-    GetFeatureInfoResponse( OwsHttpResponse rawResponse ) {
+    private GetFeatureInfo request;
+
+    GetFeatureInfoResponse( OwsHttpResponse rawResponse, GetFeatureInfo request ) {
         this.rawResponse = rawResponse;
+        this.request = request;
     }
 
-    public FeatureCollection getFeatures() {
-        return null;
+    public FeatureCollection getFeatures()
+                            throws OWSException, OWSExceptionReport {
+        try {
+            return FeatureInfoParser.parseAsFeatureCollection( rawResponse.getAsXMLStream(), request.getLayer() );
+        } catch ( XMLStreamException e ) {
+            throw new OWSException( "Remote WMTS response was not recognized as feature collection: "
+                                    + e.getLocalizedMessage(), e, OWSException.NO_APPLICABLE_CODE );
+        }
     }
 
     /**

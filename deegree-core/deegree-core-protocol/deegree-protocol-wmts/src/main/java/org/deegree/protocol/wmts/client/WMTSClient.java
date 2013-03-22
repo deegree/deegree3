@@ -228,7 +228,7 @@ public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
         OwsHttpResponse response = httpClient.doGet( endPoint, kvp, null );
         response.assertHttpStatus200();
         response.assertNoXmlContentTypeAndExceptionReport();
-        return new GetFeatureInfoResponse( response );
+        return new GetFeatureInfoResponse( response, request );
     }
 
     private Map<String, String> buildGetFeatureInfoKvpMap( GetFeatureInfo request ) {
