@@ -74,7 +74,8 @@ public class FeatureInfoParserTest {
     }
 
     @Test
-    public void testEmptyEsriCollection() throws XMLStreamException{
+    public void testEmptyEsriCollection()
+                            throws XMLStreamException {
         InputStream in = FeatureInfoParserTest.class.getResourceAsStream( "esri2.xml" );
         XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader xin = fac.createXMLStreamReader( in );
@@ -82,5 +83,16 @@ public class FeatureInfoParserTest {
         FeatureCollection fc = FeatureInfoParser.parseAsFeatureCollection( xin, "test" );
         Assert.assertEquals( 0, fc.size() );
     }
-    
+
+    @Test
+    public void testNamespacedEsriCollection()
+                            throws XMLStreamException {
+        InputStream in = FeatureInfoParserTest.class.getResourceAsStream( "esriwithnamespace.xml" );
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        XMLStreamReader xin = fac.createXMLStreamReader( in );
+        xin.next();
+        FeatureCollection fc = FeatureInfoParser.parseAsFeatureCollection( xin, "test" );
+        Assert.assertEquals( 8, fc.size() );
+    }
+
 }

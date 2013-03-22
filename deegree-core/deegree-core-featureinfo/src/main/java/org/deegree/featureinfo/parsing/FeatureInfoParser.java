@@ -96,7 +96,8 @@ public class FeatureInfoParser {
     public static FeatureCollection parseAsFeatureCollection( XMLStreamReader xmlReader, String csvLayerNames )
                             throws XMLStreamException {
         try {
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
+            // yes, some versions use a namespace, some do not
+            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() || xmlReader.getNamespaceURI().equals( "http://www.esri.com/wms" ) )
                  && xmlReader.getLocalName().equals( "FeatureInfoResponse" ) ) {
                 return readESRICollection( xmlReader, csvLayerNames );
             }
