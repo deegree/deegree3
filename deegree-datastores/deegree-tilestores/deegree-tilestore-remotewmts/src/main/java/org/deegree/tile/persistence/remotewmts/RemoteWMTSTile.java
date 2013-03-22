@@ -41,6 +41,7 @@
 package org.deegree.tile.persistence.remotewmts;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
@@ -184,7 +185,7 @@ class RemoteWMTSTile implements Tile {
             Operation op = client.getOperations().getOperation( "GetFeatureInfo" );
             if ( op == null ) {
                 throw new OWSException( "The remote WMTS claims not to support GetFeatureInfo.",
-                                        OWSException.OPERATION_NOT_SUPPORTED );
+                                        OPERATION_NOT_SUPPORTED );
             }
             Layer l = client.getLayer( this.request.getLayer() );
             String infoformat = null;
@@ -198,6 +199,10 @@ class RemoteWMTSTile implements Tile {
                     infoformat = fmt;
                     // continue, perhaps a proper gml format is found later on
                 }
+            }
+            if ( infoformat == null ) {
+                throw new OWSException( "The remote WMTS does not offer a GML or XML format for this layer.",
+                                        OPERATION_NOT_SUPPORTED );
             }
             LOG.debug( "Selected {} as info format for GFI request." );
             GetFeatureInfo request = new GetFeatureInfo( this.request.getLayer(), this.request.getStyle(), infoformat,
