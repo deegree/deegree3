@@ -373,7 +373,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             params.put( "x", Integer.toString( gfi.getX() ) );
             params.put( "y", Integer.toString( gfi.getY() ) );
             params.put( "srs", gfi.getCoordinateSystem().getAlias() );
-            params.put( "info_format", "application/vnd.ogc.gml" );
+            String fmt = "text/xml";
+            LinkedList<String> fmts = getFormats(WMSRequestType.GetFeatureInfo);
+            if( fmts.contains( "application/vnd.ogc.gml" ) ){
+            	fmt = "application/vnd.ogc.gml";
+            }
+            params.put( "info_format", fmt );
             Envelope bbox = gfi.getEnvelope();
             params.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
                                 + bbox.getMax().get1() );
@@ -381,7 +386,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             params.put( "i", Integer.toString( gfi.getX() ) );
             params.put( "j", Integer.toString( gfi.getY() ) );
             params.put( "crs", gfi.getCoordinateSystem().getAlias() );
-            params.put( "info_format", "text/xml" );
+            String fmt = "text/xml";
+            LinkedList<String> fmts = getFormats(WMSRequestType.GetFeatureInfo);
+            if( fmts.contains( "application/vnd.ogc.gml" ) ){
+            	fmt = "application/vnd.ogc.gml";
+            }
+            params.put( "info_format", fmt );
             Envelope bbox = gfi.getEnvelope();
             if ( axisFlipped( bbox.getCoordinateSystem() ) ) {
                 params.put( "bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0()
