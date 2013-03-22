@@ -81,6 +81,7 @@
                           <extension base="string">
                             <attribute name="name" type="string" use="required" />
                             <attribute name="use" type="r:ParameterUseType" use="optional" default="allowOverride" />
+                            <attribute name="scope" type="r:ParameterScopeType" use="optional" default="All" />
                           </extension>
                         </simpleContent>
                       </complexType>
@@ -100,6 +101,14 @@
     <restriction base="string">
       <enumeration value="allowOverride" />
       <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetTile" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
     </restriction>
   </simpleType>
 
