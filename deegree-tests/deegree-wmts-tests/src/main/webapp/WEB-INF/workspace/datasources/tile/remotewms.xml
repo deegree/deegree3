@@ -11,7 +11,7 @@
     <TileMatrixSetId>utah</TileMatrixSetId>
     <OutputFormat>image/png</OutputFormat>
     <RequestParams>
-      <Layers>SatelliteProvo,DominantVegetation</Layers>
+      <Layers>orthophoto,dominantvegetation</Layers>
       <Styles>default,default</Styles>
       <Format>image/png</Format>
       <CRS>EPSG:26912</CRS>
@@ -23,7 +23,7 @@
     <TileMatrixSetId>utah</TileMatrixSetId>
     <OutputFormat>image/png</OutputFormat>
     <RequestParams>
-      <Layers>DominantVegetation</Layers>
+      <Layers>dominantvegetation</Layers>
       <Styles>default</Styles>
       <Format>image/png</Format>
       <CRS>EPSG:26912</CRS>
