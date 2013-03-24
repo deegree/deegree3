@@ -125,7 +125,6 @@ public class WmtsIT {
         schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
         schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
         List<String> errors = SchemaValidator.validate( response, schemaUrls );
-        System.out.println(errors);
         Assert.assertEquals( 0, errors.size() );
     }
 
