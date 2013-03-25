@@ -44,10 +44,10 @@ package org.deegree.feature.persistence.sql;
 import java.net.URL;
 
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * <code>SqlFeatureStoreProvider</code>
@@ -57,7 +57,7 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class SqlFeatureStoreProvider extends AbstractResourceProvider<FeatureStore> {
+public class SqlFeatureStoreProvider extends NewFeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 
