@@ -4,12 +4,7 @@
 Coverage stores
 ===============
 
-Coverage stores are resources that provide access to raster data. The two most common use cases for coverage stores in a deegree workspace are:
-
-* Accessing via WCS
-* Providing of data for raster layers
-
-You can access this configuration level by clicking on the **coverage stores** link in the administration console. The configuration files are located in the **datasources/coverage/** subdirectory of the active deegree workspace directory.
+Coverage stores are resources that provide access to raster data. The most common use case for coverage stores is to provide data for coverage layers. You can access this configuration level by clicking the **coverage stores** link in the service console. The corresponding resource configuration files are located in subdirectory **datasources/coverage/** of the active deegree workspace directory.
 
 .. figure:: images/workspace-overview-coverage.png
    :figwidth: 80%
@@ -27,7 +22,6 @@ Raster
 The most common method to provide coverages with deegree, is to use Raster.
 With the Raster configuration it is possible to provide single RasterFiles or a complete RasterDirectory directly.
 
-
 Here are two examples showing RasterFile and RasterDirectory configuration:
 
 .. code-block:: xml
@@ -44,10 +38,11 @@ Here are two examples showing RasterFile and RasterDirectory configuration:
     <RasterDirectory>../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
   </Raster>
 
-* A Raster can have several attributes:
- * The originLocation attribute can have the values center or outer to declare the pixel origin of the coverage.
- * The nodata attribute can be optionally used to declare a nodata value.
- * The readWorldFiles parameter can have the values true or false to indicate if worlfiles will be read. Default value is true.
+A Raster can have several attributes:
+
+* The originLocation attribute can have the values center or outer to declare the pixel origin of the coverage.
+* The nodata attribute can be optionally used to declare a nodata value.
+* The readWorldFiles parameter can have the values true or false to indicate if worlfiles will be read. Default value is true.
 * The StorageCRS paramter is optional but recommended. It contains the EPSG code of the coverage sources.
 * The RasterFile and RasterDirectory parameters contain the path to your coverage sources. The RasterDirectory paramter can additionally have the recursive attribute with true and false as value to declare subdirectories to be included.
 
