@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-layers</artifactId>
-    <version>3.2-pre13-jrcportal7-SNAPSHOT</version>
+    <version>3.2.0-jrcportal1-SNAPSHOT</version>
   </parent>
 
   <repositories>
