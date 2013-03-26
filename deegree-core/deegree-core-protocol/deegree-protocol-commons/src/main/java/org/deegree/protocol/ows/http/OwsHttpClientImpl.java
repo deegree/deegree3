@@ -42,16 +42,29 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.slf4j.Logger;
@@ -141,6 +154,11 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 
             query = new URI( sb.toString() );
             HttpGet httpGet = new HttpGet( query );
+            if ( headers != null ) {
+                for ( Entry<String, String> header : headers.entrySet() ) {
+                    httpGet.addHeader( header.getKey(), header.getValue() );
+                }
+            }
             DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
             LOG.debug( "Performing GET request: " + query );
             HttpResponse httpResponse = httpClient.execute( httpGet );
@@ -160,6 +178,11 @@ public class OwsHttpClientImpl implements OwsHttpClient {
         OwsHttpResponse response = null;
         try {
             HttpPost httpPost = new HttpPost( endPoint.toURI() );
+            if ( headers != null ) {
+                for ( Entry<String, String> header : headers.entrySet() ) {
+                    httpPost.addHeader( header.getKey(), header.getValue() );
+                }
+            }
             DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
             LOG.debug( "Performing POST request on " + endPoint );
             LOG.debug( "post size: " + body.size() );
@@ -176,11 +199,59 @@ public class OwsHttpClientImpl implements OwsHttpClient {
     }
 
     private DefaultHttpClient getInitializedHttpClient( URL url ) {
-        DefaultHttpClient client = new DefaultHttpClient();
+        DefaultHttpClient client = getHttpClientForUrl( url );
         setTimeouts( client );
         setProxies( url, client );
         setCredentials( url, client );
         return client;
+    }
+
+    private DefaultHttpClient getHttpClientForUrl( URL url ) {
+        DefaultHttpClient client = null;
+        if ( "https".equals( url.getProtocol() ) ) {
+            client = initializeHttpClientWithSslContext();
+        }
+        if ( client == null )
+            client = new DefaultHttpClient();
+        return client;
+    }
+
+    private DefaultHttpClient initializeHttpClientWithSslContext() {
+        try {
+            SSLContext sslContext = SSLContext.getInstance( "SSL" );
+            // set up a TrustManager that trusts everything
+            sslContext.init( null, new TrustManager[] { new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    LOG.debug( "getAcceptedIssuers" );
+                    return null;
+                }
+
+                public void checkClientTrusted( X509Certificate[] certs, String authType ) {
+                    LOG.debug( "checkClientTrusted" );
+                }
+
+                public void checkServerTrusted( X509Certificate[] certs, String authType ) {
+                    LOG.debug( "checkServerTrusted" );
+                }
+            } }, new SecureRandom() );
+
+            SSLSocketFactory sf = new SSLSocketFactory( sslContext );
+            Scheme httpsScheme = new Scheme( "https", 443, sf );
+            SchemeRegistry schemeRegistry = new SchemeRegistry();
+            schemeRegistry.register( httpsScheme );
+
+            // apache HttpClient version >4.2 should use BasicClientConnectionManager
+            ClientConnectionManager cm = new SingleClientConnManager( schemeRegistry );
+            return new DefaultHttpClient( cm );
+        } catch ( NoSuchAlgorithmException e ) {
+            LOG.info( "SSL-enabled Http Client could not be initialized" );
+            LOG.trace( e.getMessage() );
+            return null;
+        } catch ( KeyManagementException e ) {
+            LOG.info( "SSL-enabled Http Client could not be initialized" );
+            LOG.trace( e.getMessage() );
+            return null;
+        }
     }
 
     private void setProxies( URL url, DefaultHttpClient client ) {
@@ -196,7 +267,7 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 
     private void setCredentials( URL url, DefaultHttpClient client ) {
         if ( user != null ) {
-            client.getCredentialsProvider().setCredentials( new AuthScope( url.getHost(), url.getPort() ),
+            client.getCredentialsProvider().setCredentials( new AuthScope( null, url.getPort() ),
                                                             new UsernamePasswordCredentials( user, pass ) );
         }
     }

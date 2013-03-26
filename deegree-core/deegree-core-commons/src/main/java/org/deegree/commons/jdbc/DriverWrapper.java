@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  */
 public class DriverWrapper implements Driver {
 
-    private Driver d;
+    private final Driver d;
 
     public DriverWrapper( Driver d ) {
         this.d = d;

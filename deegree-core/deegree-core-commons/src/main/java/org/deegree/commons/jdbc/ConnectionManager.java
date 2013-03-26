@@ -107,7 +107,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      * @param jdbcDir
      */
     @SuppressWarnings("unchecked")
-    public void init( File jdbcDir, DeegreeWorkspace workspace ) {
+    private void init( DeegreeWorkspace workspace ) {
 
         JDBCParamsManager paramsMgr = workspace.getSubsystemManager( JDBCParamsManager.class );
         if ( paramsMgr.getStates().length == 0 ) {
@@ -221,7 +221,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
      */
     public void addPool( String connId, JDBCParams params, DeegreeWorkspace workspace ) {
 
-        synchronized ( ConnectionManager.class ) {
             String url = params.getUrl();
             checkType( url, connId );
 
@@ -229,9 +228,8 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             String password = params.getPassword();
             boolean readOnly = params.isReadOnly();
 
-            // TODO move this params
-            int poolMinSize = 5;
-            int poolMaxSize = 25;
+            int poolMinSize = 5; // TODO move this params
+            int poolMaxSize = 50; // TODO move this params
 
             LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
                                             poolMaxSize ) );
@@ -241,7 +239,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
             ConnectionPool pool = new ConnectionPool( connId, url, user, password, readOnly, poolMinSize, poolMaxSize );
             idToPools.put( connId, pool );
-        }
     }
 
     private static void checkType( String url, String connId ) {
@@ -319,7 +316,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     public void startup( DeegreeWorkspace workspace ) {
         this.workspace = workspace;
         dir = new File( workspace.getLocation(), "jdbc" );
-        init( dir, workspace );
+        init( workspace );
     }
 
     @Override

@@ -701,6 +701,7 @@ public class OGCFrontController extends HttpServlet {
 
         CredentialsProvider credentialsProvider = securityConfiguration == null ? null
                                                                                : securityConfiguration.getCredentialsProvider();
+        LOG.debug( "credentials provider: " + ( credentialsProvider != null ? credentialsProvider.getClass() : null ) );
 
         // extract (deegree specific) security information and bind to current thread
         try {
@@ -1122,6 +1123,7 @@ public class OGCFrontController extends HttpServlet {
         workspace = getActiveWorkspace();
         workspace.initAll();
         serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        securityConfiguration = workspace.getSubsystemManager( SecurityConfiguration.class );
         mainConfig = serviceConfiguration.getMainConfiguration();
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
@@ -1165,7 +1167,7 @@ public class OGCFrontController extends HttpServlet {
      * @throws IOException
      * @throws ServletException
      */
-    public void reload()
+    public synchronized void reload()
                             throws IOException, URISyntaxException, ServletException {
         destroyWorkspace();
         try {

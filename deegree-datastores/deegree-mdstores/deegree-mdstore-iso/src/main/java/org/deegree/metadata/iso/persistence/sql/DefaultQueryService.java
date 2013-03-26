@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
@@ -51,6 +51,8 @@ import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.ISOMetadataResultSet;
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
@@ -69,18 +71,19 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
-class QueryHelper extends SqlHelper {
+public class DefaultQueryService extends AbstractSqlHelper implements QueryService {
 
-    private static final Logger LOG = getLogger( QueryHelper.class );
+    private static final Logger LOG = getLogger( DefaultQueryService.class );
 
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
-    public static final int DEFAULT_FETCH_SIZE = 100;
+    private static final int DEFAULT_FETCH_SIZE = 100;
 
-    QueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
+    public DefaultQueryService( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
 
-    ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
+    @Override
+    public ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
                             throws MetadataStoreException {
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
@@ -210,7 +213,8 @@ class QueryHelper extends SqlHelper {
         }
     }
 
-    int executeCounting( MetadataQuery query, Connection conn )
+    @Override
+    public int executeCounting( MetadataQuery query, Connection conn )
                             throws MetadataStoreException, FilterEvaluationException, UnmappableException {
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
@@ -250,7 +254,8 @@ class QueryHelper extends SqlHelper {
         }
     }
 
-    ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
+    @Override
+    public ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
                             throws MetadataStoreException {
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -295,7 +300,7 @@ class QueryHelper extends SqlHelper {
         return new ISOMetadataResultSet( rs, conn, stmt );
     }
 
-    private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
+    protected AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
                                         (OperatorFilter) query.getFilter(), query.getSorting(), false );

@@ -33,6 +33,7 @@
       <xs:element name="HttpDigestCredentialsProvider" type="sec:empty" minOccurs="0" />
       <xs:element name="SOAPCredentialsProvider" type="sec:empty" minOccurs="0" />
       <xs:element name="DeegreeCredentialsProvider" type="sec:empty" minOccurs="0" />
+      <xs:element name="EcasHttpBasicCredentialsProvider" type="sec:empty" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 
