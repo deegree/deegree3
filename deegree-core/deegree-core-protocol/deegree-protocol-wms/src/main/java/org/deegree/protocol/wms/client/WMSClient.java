@@ -39,20 +39,15 @@ package org.deegree.protocol.wms.client;
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.abs;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.XML;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
-import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
-import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.protocol.i18n.Messages.get;
 import static org.deegree.protocol.oldwms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.oldwms.WMSConstants.VERSION_130;
@@ -69,7 +64,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,7 +72,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -91,12 +84,9 @@ import org.apache.http.HttpResponse;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.struct.Tree;
-import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -105,19 +95,12 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeature;
-import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.property.SimpleProperty;
-import org.deegree.feature.types.DynamicAppSchema;
-import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.featureinfo.parsing.FeatureInfoParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.gml.GMLStreamReader;
 import org.deegree.layer.LayerRef;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
@@ -368,7 +351,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             response.assertHttpStatus200();
             XMLStreamReader reader = response.getAsXMLStream();
             String csvLayerNames = join( ",", request.getQueryLayers() );
-            return parseAsFeatureInfoResponse( reader, csvLayerNames );
+            return FeatureInfoParser.parseAsFeatureCollection( reader, csvLayerNames );
         } finally {
             closeQuietly( response );
         }
@@ -433,144 +416,6 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                     params.put( e.getKey(), e.getValue() );
             }
         }
-    }
-
-    private FeatureCollection parseAsFeatureInfoResponse( XMLStreamReader xmlReader, String csvLayerNames )
-                            throws XMLStreamException {
-        try {
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
-                 && xmlReader.getLocalName().equals( "FeatureInfoResponse" ) ) {
-                return readESRICollection( xmlReader, csvLayerNames );
-            }
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
-                 && xmlReader.getLocalName().equals( "featureInfo" ) ) {
-                return readMyWMSCollection( xmlReader );
-            }
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
-                 && xmlReader.getLocalName().equals( "msGMLOutput" ) ) {
-                return readUMNCollection( xmlReader );
-            }
-            return readGml2FeatureCollection( xmlReader );
-        } catch ( Exception e ) {
-            String msg = "Unable to parse WMS GetFeatureInfo response as feature collection: " + e.getMessage();
-            throw new XMLStreamException( msg );
-        }
-    }
-
-    private FeatureCollection readGml2FeatureCollection( XMLStreamReader xmlReader )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
-        reader.setApplicationSchema( new DynamicAppSchema() );
-        return reader.readFeatureCollection();
-    }
-
-    private FeatureCollection readESRICollection( XMLStreamReader reader, String idPrefix )
-                            throws XMLStreamException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-
-        int count = 0;
-        nextElement( reader );
-        while ( reader.isStartElement() && reader.getLocalName().equals( "FIELDS" ) ) {
-            List<PropertyType> props = new ArrayList<PropertyType>( reader.getAttributeCount() );
-            List<Property> propValues = new ArrayList<Property>( reader.getAttributeCount() );
-            for ( int i = 0; i < reader.getAttributeCount(); ++i ) {
-                String name = reader.getAttributeLocalName( i );
-                name = name.substring( name.lastIndexOf( "." ) + 1 );
-                String value = reader.getAttributeValue( i );
-                SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                propValues.add( new SimpleProperty( tp, value ) );
-                props.add( tp );
-            }
-            GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
-            col.add( new GenericFeature( ft, idPrefix + "_esri_" + ++count, propValues, null ) );
-            skipElement( reader );
-            nextElement( reader );
-        }
-        LOG.debug( "Found {} features.", col.size() );
-        return col;
-    }
-
-    private FeatureCollection readMyWMSCollection( XMLStreamReader reader )
-                            throws XMLStreamException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-
-        nextElement( reader );
-        while ( reader.isStartElement() && reader.getLocalName().equals( "query_layer" ) ) {
-
-            String ftName = reader.getAttributeValue( null, "name" );
-            int count = 0;
-
-            nextElement( reader );
-            while ( reader.isStartElement() && reader.getLocalName().equals( "object" ) ) {
-
-                List<PropertyType> props = new ArrayList<PropertyType>();
-                List<Property> propValues = new ArrayList<Property>();
-
-                nextElement( reader );
-                while ( !( reader.isEndElement() && reader.getLocalName().equals( "object" ) ) ) {
-                    String name = reader.getLocalName();
-                    String value = reader.getElementText();
-                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                    propValues.add( new SimpleProperty( tp, value ) );
-                    props.add( tp );
-                    nextElement( reader );
-                }
-
-                GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
-                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, null ) );
-                nextElement( reader );
-            }
-            nextElement( reader );
-        }
-        return col;
-    }
-
-    private FeatureCollection readUMNCollection( XMLStreamReader reader )
-                            throws XMLStreamException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-        nextElement( reader );
-
-        String ftName = reader.getLocalName();
-        String singleFeatureTagName = ftName.split( "_" )[0] + "_feature";
-
-        while ( reader.isStartElement() && reader.getLocalName().equals( ftName ) ) {
-
-            int count = 0;
-            nextElement( reader );
-
-            // gml:name seems to be an optional element
-            if ( reader.getLocalName().equals( "name" ) ) {
-                skipElement( reader );
-                reader.nextTag();
-            }
-
-            while ( reader.isStartElement() && reader.getLocalName().equals( singleFeatureTagName ) ) {
-                List<PropertyType> props = new ArrayList<PropertyType>();
-                List<Property> propValues = new ArrayList<Property>();
-
-                nextElement( reader );
-                while ( !( reader.isEndElement() && reader.getLocalName().equals( singleFeatureTagName ) ) ) {
-
-                    // Skip boundedBy
-                    if ( reader.isStartElement() && reader.getLocalName().equals( "boundedBy" ) ) {
-                        XMLStreamUtils.skipElement( reader );
-                        nextElement( reader );
-                    }
-
-                    String name = reader.getLocalName();
-                    String value = reader.getElementText();
-                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                    propValues.add( new SimpleProperty( tp, value ) );
-                    props.add( tp );
-                    nextElement( reader );
-                }
-                GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
-                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, null ) );
-                nextElement( reader );
-            }
-            nextElement( reader );
-        }
-        return col;
     }
 
     // -----------------------------------------------------------------------

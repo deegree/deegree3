@@ -41,22 +41,31 @@
 package org.deegree.tile.persistence.remotewmts;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.apache.axiom.om.util.Base64;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.ows.metadata.operation.Operation;
+import org.deegree.commons.utils.RequestUtils;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.http.CloseRequiredInputStream;
 import org.deegree.protocol.wmts.client.GetTileResponse;
+import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;
+import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.EcasCredentials;
@@ -64,6 +73,7 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.RequestContext;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
+import org.slf4j.Logger;
 
 /**
  * {@link Tile} implementation for {@link RemoteWMTSTileDataLevel}.
@@ -75,6 +85,8 @@ import org.deegree.tile.TileIOException;
  */
 class RemoteWMTSTile implements Tile {
 
+    private static final Logger LOG = getLogger( RemoteWMTSTile.class );
+
     private final WMTSClient client;
 
     private final GetTile request;
@@ -82,6 +94,10 @@ class RemoteWMTSTile implements Tile {
     private final String recodedOutputFormat;
 
     private final Envelope envelope;
+
+    private Map<String, String> defaultGetFeatureInfo;
+
+    private Map<String, String> hardGetFeatureInfo;
 
     /**
      * Creates a new {@link RemoteWMTSTile} instance.
@@ -94,12 +110,19 @@ class RemoteWMTSTile implements Tile {
      *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
      *            formats, eg. 'png')
      * @param envelope
+     * @param defaultGetFeatureInfo
+     *            default parameters to be filled in for GFI
+     * @param hardGetFeatureInfo
+     *            parameters to be overridden for GFI
      */
-    RemoteWMTSTile( WMTSClient client, GetTile request, String recodedOutputFormat, Envelope envelope ) {
+    RemoteWMTSTile( WMTSClient client, GetTile request, String recodedOutputFormat, Envelope envelope,
+                    Map<String, String> defaultGetFeatureInfo, Map<String, String> hardGetFeatureInfo ) {
         this.client = client;
         this.request = request;
         this.recodedOutputFormat = recodedOutputFormat;
         this.envelope = envelope;
+        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+        this.hardGetFeatureInfo = hardGetFeatureInfo;
     }
 
     @Override
@@ -177,8 +200,51 @@ class RemoteWMTSTile implements Tile {
     }
 
     @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException( "Feature retrieval is not implemented for the RemoteWMTSTileStore." );
+    public FeatureCollection getFeatures( int i, int j, int limit ) {
+        FeatureCollection fc = null;
+        try {
+            Map<String, String> overriddenParameters = new HashMap<String, String>();
+            RequestUtils.replaceParameters( overriddenParameters,
+                                            RequestUtils.getCurrentThreadRequestParameters().get(),
+                                            defaultGetFeatureInfo, hardGetFeatureInfo );
+            Operation op = client.getOperations().getOperation( "GetFeatureInfo" );
+            if ( op == null ) {
+                throw new OWSException( "The remote WMTS claims not to support GetFeatureInfo.",
+                                        OPERATION_NOT_SUPPORTED );
+            }
+            Layer l = client.getLayer( this.request.getLayer() );
+            String infoformat = null;
+            for ( String fmt : l.getInfoFormats() ) {
+                if ( fmt.startsWith( "application/gml+xml" ) ) {
+                    // use first gml format found
+                    infoformat = fmt;
+                    break;
+                }
+                if ( fmt.startsWith( "text/xml" ) ) {
+                    infoformat = fmt;
+                    // continue, perhaps a proper gml format is found later on
+                }
+            }
+            if ( infoformat == null ) {
+                throw new OWSException( "The remote WMTS does not offer a GML or XML format for this layer.",
+                                        OPERATION_NOT_SUPPORTED );
+            }
+            LOG.debug( "Selected {} as info format for GFI request." );
+            GetFeatureInfo request = new GetFeatureInfo( this.request.getLayer(), this.request.getStyle(), infoformat,
+                                                         this.request.getTileMatrixSet(), this.request.getTileMatrix(),
+                                                         this.request.getTileRow(), this.request.getTileCol(), i, j,
+                                                         overriddenParameters );
+            fc = client.getFeatureInfo( request ).getFeatures();
+        } catch ( SocketTimeoutException e ) {
+            String msg = "Error performing GetFeatureInfo request, read timed out.";
+            throw new TileIOException( msg );
+        } catch ( UnknownHostException e ) {
+            throw new TileIOException( "Error performing GetFeatureInfo request, host could not be resolved: "
+                                       + e.getMessage() );
+        } catch ( Exception e ) {
+            String msg = "Error executing GetFeatureInfo request on remote server: " + e.getMessage();
+            throw new RuntimeException( msg, e );
+        }
+        return fc;
     }
 }

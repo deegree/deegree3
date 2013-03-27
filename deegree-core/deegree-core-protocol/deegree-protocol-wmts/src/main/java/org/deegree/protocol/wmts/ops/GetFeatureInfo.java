@@ -74,6 +74,8 @@ public class GetFeatureInfo {
 
     private int i, j;
 
+    private Map<String, String> overriddenParameters;
+
     /**
      * The parameter values correspond to what's described in the spec.
      * 
@@ -88,7 +90,7 @@ public class GetFeatureInfo {
      * @param j
      */
     public GetFeatureInfo( String layer, String style, String infoFormat, String tileMatrixSet, String tileMatrix,
-                           long tileRow, long tileCol, int i, int j ) {
+                           long tileRow, long tileCol, int i, int j, Map<String, String> overriddenParameters ) {
         this.layer = layer;
         this.style = style;
         this.infoFormat = infoFormat;
@@ -98,6 +100,7 @@ public class GetFeatureInfo {
         this.tileCol = tileCol;
         this.i = i;
         this.j = j;
+        this.overriddenParameters = overriddenParameters;
     }
 
     public GetFeatureInfo( Map<String, String> map ) throws OWSException {
@@ -224,6 +227,13 @@ public class GetFeatureInfo {
      */
     public int getJ() {
         return j;
+    }
+
+    /**
+     * @return null, or parameters to override when used in client requests
+     */
+    public Map<String, String> getOverriddenParameters() {
+        return overriddenParameters;
     }
 
 }
