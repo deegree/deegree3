@@ -793,6 +793,11 @@
       </dependency>
       <dependency>
         <groupId>batik</groupId>
+        <artifactId>batik-anim</artifactId>
+        <version>1.7</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
         <artifactId>batik-dom</artifactId>
         <version>1.7</version>
       </dependency>
