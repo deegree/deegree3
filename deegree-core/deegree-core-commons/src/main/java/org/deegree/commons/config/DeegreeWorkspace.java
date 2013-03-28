@@ -61,6 +61,8 @@ import java.util.TreeSet;
 import javax.imageio.ImageIO;
 
 import org.deegree.commons.modules.ModuleInfo;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -107,6 +109,8 @@ public class DeegreeWorkspace {
     private ClassLoader moduleClassLoader;
 
     private Collection<ModuleInfo> wsModules = new TreeSet<ModuleInfo>();
+
+    private DefaultWorkspace workspace;
 
     /**
      * @return a list of the currently loaded resource managers, never null
@@ -279,6 +283,7 @@ public class DeegreeWorkspace {
 
         wsRootDirToWs.put( this.dir, this );
         nameToWs.put( name, this );
+        this.workspace = new DefaultWorkspace( dir );
     }
 
     /**
@@ -402,6 +407,7 @@ public class DeegreeWorkspace {
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }
+        workspace.init();
     }
 
     /**
@@ -413,6 +419,7 @@ public class DeegreeWorkspace {
         }
         managers.clear();
         managerMap.clear();
+        workspace.destroy();
     }
 
     public ClassLoader getModuleClassLoader() {
@@ -464,4 +471,9 @@ public class DeegreeWorkspace {
             }
         }
     }
+
+    public Workspace getNewWorkspace() {
+        return workspace;
+    }
+
 }
