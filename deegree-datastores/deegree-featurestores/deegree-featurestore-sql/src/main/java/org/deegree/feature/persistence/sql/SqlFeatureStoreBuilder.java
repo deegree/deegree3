@@ -43,9 +43,15 @@ package org.deegree.feature.persistence.sql;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -64,14 +70,27 @@ public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
     private SQLFeatureStoreJAXB config;
 
-    public SqlFeatureStoreBuilder( SqlFeatureStoreMetadata metadata, SQLFeatureStoreJAXB config ) {
+    private Workspace workspace;
+
+    public SqlFeatureStoreBuilder( SqlFeatureStoreMetadata metadata, SQLFeatureStoreJAXB config, Workspace workspace ) {
         this.metadata = metadata;
         this.config = config;
+        this.workspace = workspace;
     }
 
     @Override
     public FeatureStore build() {
-        return null;
+        ConnectionProvider conn = workspace.getResource( ConnectionProviderProvider.class,
+                                                         config.getJDBCConnId().getValue() );
+        File file = metadata.getLocation().resolveToFile( metadata.getIdentifier().getId() + ".xml" );
+        SQLFeatureStore fs = null;
+        try {
+            // TODO rewrite needed to properly resolve files using resource location
+            fs = new SQLFeatureStore( config, file.toURI().toURL(), conn.getDialect(), metadata );
+        } catch ( MalformedURLException e ) {
+            LOG.trace( "Stack trace:", e );
+        }
+        return fs;
     }
 
 }

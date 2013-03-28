@@ -106,7 +106,7 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
                  throw new ResourceInitException( "SQLDialectManager not found in workspace / classpath." );
             }
             SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId().getValue() );
-            return new SQLFeatureStore( cfg, configURL, dialect );
+            return new SQLFeatureStore( cfg, configURL, dialect, null );
         } catch ( JAXBException e ) {
             LOG.info( "Stack trace: ", e );
             throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );

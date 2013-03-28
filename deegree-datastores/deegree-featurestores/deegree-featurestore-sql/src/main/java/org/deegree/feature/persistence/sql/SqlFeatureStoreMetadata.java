@@ -81,7 +81,7 @@ public class SqlFeatureStoreMetadata extends AbstractResourceMetadata<FeatureSto
             String connid = cfg.getJDBCConnId().getValue();
             dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
                                                                                  connid ) );
-            return new SqlFeatureStoreBuilder( this, cfg );
+            return new SqlFeatureStoreBuilder( this, cfg, workspace );
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }

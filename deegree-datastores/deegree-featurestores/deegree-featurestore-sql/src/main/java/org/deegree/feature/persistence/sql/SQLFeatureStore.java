@@ -196,6 +196,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private VoidEscalationPolicyType escalationPolicy;
 
+    private SqlFeatureStoreMetadata metadata;
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
      * 
@@ -204,10 +206,12 @@ public class SQLFeatureStore implements FeatureStore {
      * @param configURL
      *            configuration systemid
      */
-    public SQLFeatureStore( SQLFeatureStoreJAXB config, URL configURL, SQLDialect dialect ) {
+    public SQLFeatureStore( SQLFeatureStoreJAXB config, URL configURL, SQLDialect dialect,
+                            SqlFeatureStoreMetadata metadata ) {
         this.config = config;
         this.configURL = configURL;
         this.dialect = dialect;
+        this.metadata = metadata;
         this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
         fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
@@ -1561,13 +1565,15 @@ public class SQLFeatureStore implements FeatureStore {
 
     @Override
     public ResourceMetadata<? extends Resource> getMetadata() {
-        // TODO Auto-generated method stub
-        return null;
+        return metadata;
     }
 
     @Override
     public void init() {
-        // TODO Auto-generated method stub
-        
+        try {
+            init( null );
+        } catch ( ResourceInitException e ) {
+            throw new org.deegree.workspace.ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 }
