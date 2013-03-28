@@ -1,10 +1,16 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+package org.deegree.services;
+
+import org.deegree.workspace.standard.AbstractResourceProvider;
+
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,26 +37,23 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services;
-
-import org.deegree.commons.config.ExtendedResourceProvider;
-import org.deegree.services.controller.ImplementationMetadata;
 
 /**
- * Implementations provide {@link OWS} instances.
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWSProvider extends ExtendedResourceProvider<OWS> {
+public abstract class OwsProvider extends AbstractResourceProvider<OWS> {
 
-    /**
-     * @return information about handled requests, namespaces and so on
-     */
-    ImplementationMetadata<?> getImplementationMetadata();
+    // marker class to use for SPI
 
 }

@@ -66,7 +66,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWS extends Resource {
+public interface OWS extends Resource, org.deegree.workspace.Resource {
 
     /**
      * Called by the {@link OGCFrontController} to allow this {@link OWS} to handle an OGC-KVP request.

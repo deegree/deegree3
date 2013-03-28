@@ -167,6 +167,8 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.query.StoredQueryHandler;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -1011,5 +1013,23 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 }

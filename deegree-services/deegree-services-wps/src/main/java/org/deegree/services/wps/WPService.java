@@ -100,6 +100,8 @@ import org.deegree.services.wps.storage.OutputStorage;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageManager;
 import org.deegree.services.wps.wsdl.WSDL;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -547,5 +549,23 @@ public class WPService extends AbstractOWS {
     private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
         sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), ex, response );
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 }

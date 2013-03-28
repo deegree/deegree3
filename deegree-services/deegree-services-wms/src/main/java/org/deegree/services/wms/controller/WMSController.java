@@ -139,6 +139,8 @@ import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -923,6 +925,24 @@ public class WMSController extends AbstractOWS {
          */
         void throwSRSException( String name )
                                 throws OWSException;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -103,6 +103,8 @@ import org.deegree.services.wcs.getcoverage.GetCoverage100KVPAdapter;
 import org.deegree.services.wcs.getcoverage.GetCoverage100XMLAdapter;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -544,5 +546,23 @@ public class WCSController extends AbstractOWS {
     @Override
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new WCS100ServiceExceptionReportSerializer();
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 }
