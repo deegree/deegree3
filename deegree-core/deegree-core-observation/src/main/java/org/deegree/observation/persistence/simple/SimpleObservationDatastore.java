@@ -110,6 +110,8 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
      */
     protected final String timeColumn;
 
+    protected DeegreeWorkspace workspace;
+
     /**
      * @param jdbcId
      * @param tableName
@@ -156,7 +158,8 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
 
             Calendar template = Calendar.getInstance( this.timezone );
 
-            conn = ConnectionManager.getConnection( jdbcId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( jdbcId );
             List<String> columns = new LinkedList<String>();
             for ( Property property : properties ) {
                 columns.add( property.getColumnName() );
@@ -231,7 +234,8 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( jdbcId );
             conn.setAutoCommit( true );
             String timestampCol;
             timestampCol = columnMap.get( "timestamp" );
@@ -398,11 +402,11 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
-        // TODO Auto-generated method stub        
+        this.workspace = workspace;
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub        
+        // TODO Auto-generated method stub
     }
 }

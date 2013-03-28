@@ -47,7 +47,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.style.se.parser.PostgreSQLWriter;
 import org.deegree.style.se.parser.SymbologyParser;
@@ -126,11 +129,17 @@ public class PostgreSQLImporter {
 
             XMLInputFactory fac = XMLInputFactory.newInstance();
             Style style = new SymbologyParser( true ).parse( fac.createXMLStreamReader( new FileInputStream( inputFile ) ) );
-            ConnectionManager.addConnection( "style", url, user, pass, 5, 20 );
+
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            JDBCParams params = new DefaultJDBCParams( url, user, pass, false );
+            mgr.addPool( "style", params, workspace );
+
             if ( style.isSimple() ) {
-                new PostgreSQLWriter( "style", schema ).write( style, null );
+                new PostgreSQLWriter( "style", schema, workspace ).write( style, null );
             } else {
-                new PostgreSQLWriter( "style", schema ).write( new FileInputStream( inputFile ), style.getName() );
+                new PostgreSQLWriter( "style", schema, workspace ).write( new FileInputStream( inputFile ),
+                                                                          style.getName() );
             }
 
         } catch ( ParseException exp ) {

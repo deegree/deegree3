@@ -66,6 +66,8 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.JDBCUtils;
@@ -97,12 +99,14 @@ public class DBUtils {
      * @param sql
      * @return null, if an SQL error occurred
      */
-    public static GenericFeatureType determineFeatureType( QName ftName, String connId, String sql ) {
+    public static GenericFeatureType determineFeatureType( QName ftName, String connId, String sql,
+                                                           DeegreeWorkspace workspace ) {
         Connection conn = null;
         ResultSet set = null;
         PreparedStatement stmt = null;
         try {
-            conn = getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
             boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
             stmt = conn.prepareStatement( sql + ( isOracle ? "" : " limit 0" ) );
             stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
@@ -166,13 +170,14 @@ public class DBUtils {
      * @param connId
      * @return a list of all schemas with geometry tables
      */
-    public static LinkedList<String> fetchGeometrySchemas( String connId ) {
+    public static LinkedList<String> fetchGeometrySchemas( String connId, DeegreeWorkspace workspace ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;
         LinkedList<String> result = new LinkedList<String>();
         try {
-            conn = getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
             try {
                 // make this configurable via argument?
                 stmt = conn.prepareStatement( "select probe_geometry_columns()" );
@@ -208,13 +213,14 @@ public class DBUtils {
      * @param schema
      * @return all tables (currently only PostGIS)
      */
-    public static LinkedList<String> fetchGeometryTables( String connId, String schema ) {
+    public static LinkedList<String> fetchGeometryTables( String connId, String schema, DeegreeWorkspace workspace ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;
         LinkedList<String> result = new LinkedList<String>();
         try {
-            conn = getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
             try {
                 // make this configurable via argument?
                 stmt = conn.prepareStatement( "select probe_geometry_columns()" );
@@ -263,12 +269,13 @@ public class DBUtils {
      * @return -2, if an error occurred (can be -1 if srid is -1 in the db, or if not found in geometry_columns
      *         metadata)
      */
-    public static int findSrid( String connid, String tableName, String tableSchema ) {
+    public static int findSrid( String connid, String tableName, String tableSchema, DeegreeWorkspace workspace ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = getConnection( connid );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             stmt = conn.prepareStatement( "select srid from geometry_columns where f_table_name = ? and f_table_schema = ?" );
             stmt.setString( 1, tableName );
             stmt.setString( 2, tableSchema );

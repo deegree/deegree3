@@ -64,7 +64,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
@@ -76,12 +79,12 @@ import org.deegree.cs.components.IGeodeticDatum;
 import org.deegree.cs.components.IPrimeMeridian;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.components.Unit;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
 import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.azimuthal.ILambertAzimuthalEqualArea;
 import org.deegree.cs.projections.azimuthal.IStereographicAlternative;
@@ -111,6 +114,8 @@ public class CRSExporter extends CRSExporterBase {
 
     private final String db_id;
 
+    private DeegreeWorkspace workspace;
+
     public CRSExporter() {
         db_id = null;
     }
@@ -119,6 +124,8 @@ public class CRSExporter extends CRSExporterBase {
      * @param properties
      */
     public CRSExporter( Properties properties ) {
+        workspace = DeegreeWorkspace.getInstance();
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         String user = null;
         if ( properties != null ) {
             user = properties.getProperty( "DB_USER" );
@@ -126,7 +133,8 @@ public class CRSExporter extends CRSExporterBase {
                 String pass = properties.getProperty( "DB_PASSWORD" );
                 String con = properties.getProperty( "DB_CONNECTION" );
                 db_id = "epsg_db_id";
-                ConnectionManager.addConnection( db_id, con, user, pass, 1, 10 );
+                JDBCParams params = new DefaultJDBCParams( con, user, pass, false );
+                mgr.addPool( db_id, params, workspace );
             } else {
                 db_id = null;
             }
@@ -282,7 +290,8 @@ public class CRSExporter extends CRSExporterBase {
                 if ( crsCode != -1 ) {
                     Connection connection = null;
                     try {
-                        connection = ConnectionManager.getConnection( db_id );
+                        ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                        connection = mgr.get( db_id );
                         PreparedStatement ps = connection.prepareStatement( "SELECT a.datum_code,b.datum_name,b.remarks,b.revision_date,b.ellipsoid_code,c.ellipsoid_name,c.remarks,c.revision_date,c.semi_major_axis,c.inv_flattening,c.semi_minor_axis,c.uom_code from epsg_coordinatereferencesystem as a JOIN epsg_datum as b ON a.datum_code=b.datum_code JOIN epsg_ellipsoid as c ON b.ellipsoid_code=c.ellipsoid_code where coord_ref_sys_code=?" );
                         ps.setInt( 1, crsCode );
                         ResultSet rs = ps.executeQuery();
@@ -426,7 +435,8 @@ public class CRSExporter extends CRSExporterBase {
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    connection = ConnectionManager.getConnection( db_id );
+                    ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                    connection = mgr.get( db_id );
                     PreparedStatement ps = connection.prepareStatement( "SELECT prime_meridian_name,greenwich_longitude from epsg_primemeridian where prime_meridian_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();
@@ -501,7 +511,8 @@ public class CRSExporter extends CRSExporterBase {
                 if ( epsgCode != -1 ) {
                     Connection connection = null;
                     try {
-                        connection = ConnectionManager.getConnection( db_id );
+                        ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                        connection = mgr.get( db_id );
                         PreparedStatement ps = connection.prepareStatement( "SELECT b.area_of_use, b.area_west_bound_lon, b.area_south_bound_lat,b.area_east_bound_lon,b.area_north_bound_lat from epsg_coordinatereferencesystem as a JOIN epsg_area as b on a.area_of_use_code=b.area_code where a.coord_ref_sys_code=?" );
                         ps.setInt( 1, epsgCode );
                         ResultSet rs = ps.executeQuery();
@@ -551,7 +562,8 @@ public class CRSExporter extends CRSExporterBase {
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    connection = ConnectionManager.getConnection( db_id );
+                    ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
+                    connection = mgr.get( db_id );
                     PreparedStatement ps = connection.prepareStatement( "select projection_conv_code from epsg_coordinatereferencesystem where coord_ref_sys_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();

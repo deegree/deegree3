@@ -40,7 +40,6 @@ import static org.deegree.commons.utils.JDBCUtils.close;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -79,11 +78,12 @@ public class PostGISDialectProvider implements SQLDialectProvider, SqlDialectPro
         ResultSet rs = null;
         boolean useLegacyPredicates = false;
         try {
-            conn = ConnectionManager.getConnection( connId );
+            ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
+            if ( conn == null ) {
+                throw new ResourceInitException( "JDBC connection " + connId + " is not available." );
+            }
             useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new ResourceInitException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
         }

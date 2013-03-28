@@ -38,7 +38,6 @@ package org.deegree.style.se.parser;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.util.Arrays.asList;
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.style.se.parser.SymbologyParser.getUOM;
@@ -66,6 +65,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -147,15 +148,18 @@ public class PostgreSQLReader {
 
     private final String schema;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * @param connid
      * @param baseSystemId
      *            to resolve relative references in sld files
      */
-    public PostgreSQLReader( String connid, String schema, String baseSystemId ) {
+    public PostgreSQLReader( String connid, String schema, String baseSystemId, DeegreeWorkspace workspace ) {
         this.connid = connid;
         this.schema = schema;
         this.baseSystemId = baseSystemId;
+        this.workspace = workspace;
     }
 
     private Pair<Graphic, Continuation<Styling<?>>> getGraphic( int id, Connection conn, Continuation<Styling<?>> contn )
@@ -839,7 +843,8 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         Connection conn = null;
         try {
-            conn = getConnection( connid );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld, name from " + schema
                                           + ".styles where id = ?" );
             stmt.setInt( 1, id );

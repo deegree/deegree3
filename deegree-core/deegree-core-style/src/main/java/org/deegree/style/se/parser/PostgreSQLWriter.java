@@ -40,7 +40,6 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static java.sql.Types.DOUBLE;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.VARCHAR;
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -61,7 +60,10 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.style.se.unevaluated.Style;
@@ -95,12 +97,15 @@ public class PostgreSQLWriter {
 
     private final String schema;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * @param connId
      */
-    public PostgreSQLWriter( String connId, String schema ) {
+    public PostgreSQLWriter( String connId, String schema, DeegreeWorkspace workspace ) {
         this.connId = connId;
         this.schema = schema;
+        this.workspace = workspace;
     }
 
     private int write( Connection conn, Graphic graphic )
@@ -594,7 +599,8 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
-            conn = getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
             conn.setAutoCommit( false );
             stmt = conn.prepareStatement( "insert into " + schema
                                           + ".styles (type, fk, minscale, maxscale, name) values (?, ?, ?, ?, ?)" );
@@ -682,7 +688,8 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
-            conn = getConnection( connId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
             conn.setAutoCommit( false );
             stmt = conn.prepareStatement( "insert into styles (sld, name) values (?, ?)" );
 
@@ -737,11 +744,18 @@ public class PostgreSQLWriter {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(
                                                                                                                                    args[0] ) ) );
-        ConnectionManager.addConnection( "configtool", "jdbc:postgresql://localhost/configtool", "postgres", "", 5, 20 );
+
+        DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        JDBCParams params = new DefaultJDBCParams( "jdbc:postgresql://localhost/configtool", "postgres", "postgres",
+                                                   false );
+        mgr.addPool( "configtool", params, workspace );
+
         if ( style.isSimple() ) {
-            new PostgreSQLWriter( "configtool", "schematest" ).write( style, null );
+            new PostgreSQLWriter( "configtool", "schematest", workspace ).write( style, null );
         } else {
-            new PostgreSQLWriter( "configtool", "schematest" ).write( new FileInputStream( args[0] ), style.getName() );
+            new PostgreSQLWriter( "configtool", "schematest", workspace ).write( new FileInputStream( args[0] ),
+                                                                                 style.getName() );
         }
     }
 

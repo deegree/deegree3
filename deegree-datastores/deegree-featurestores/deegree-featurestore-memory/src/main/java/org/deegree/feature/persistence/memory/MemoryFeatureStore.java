@@ -104,7 +104,7 @@ public class MemoryFeatureStore implements FeatureStore {
         this.metadata = metadata;
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
         // TODO
-        lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        lockManager = new DefaultLockManager( this, "LOCK_DB", null );
     }
 
     @Override

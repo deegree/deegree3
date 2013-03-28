@@ -43,11 +43,12 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -98,14 +99,17 @@ public abstract class AbstractISOTest {
         jdbcUser = TestProperties.getProperty( "iso_store_user" );
         jdbcPass = TestProperties.getProperty( "iso_store_pass" );
 
+        DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+        workspace.initManagers();
+
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            Set<String> connIds = ConnectionManager.getConnectionIds();
-            LOG.info( "publish the connectionIDs: " + connIds + " " );
-            if ( connIds.contains( "iso_pg_set_up_tables" ) ) {
+            if ( mgr.getState( "iso_pg_set_up_tables" ) != null ) {
                 // skip new creation of the connection
                 // Connection connDeleteTables = null;
                 try {
-                    conn = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
+                    conn = mgr.get( "iso_pg_set_up_tables" );
 
                     deleteFromTables( conn );
                 } finally {
@@ -113,11 +117,12 @@ public abstract class AbstractISOTest {
                 }
 
             } else {
-                ConnectionManager.addConnection( "iso_pg_set_up_tables", jdbcURL, jdbcUser, jdbcPass, 5, 20 );
+                JDBCParams params = new DefaultJDBCParams( jdbcURL, jdbcUser, jdbcPass, false );
+                mgr.addPool( "iso_pg_set_up_tables", params, workspace );
                 // Connection connSetUpTables = null;
 
                 try {
-                    conn = ConnectionManager.getConnection( "iso_pg_set_up_tables" );
+                    conn = mgr.get( "iso_pg_set_up_tables" );
 
                     setUpTables( conn );
 
@@ -127,7 +132,7 @@ public abstract class AbstractISOTest {
                 }
             }
         }
-        DeegreeWorkspace.getInstance().initAll();
+        workspace.initAll();
     }
 
     private void setUpTables( Connection conn )

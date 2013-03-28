@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import static org.deegree.commons.jdbc.ConnectionManager.addConnection;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -48,6 +47,8 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.TempFileManager;
 import org.deegree.cs.persistence.CRSManager;
@@ -92,7 +93,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         // lockdb stuff
-        if ( !mgr.getConnectionIds().contains( "LOCK_DB" ) ) {
+        if ( mgr.getState( "LOCK_DB" ) == null ) {
 
             String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
             LOG.info( "Using '" + lockDb + "' for h2 lock database." );
@@ -103,8 +104,8 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
                 LOG.error( "Unable to load h2 driver class." );
             }
 
-            // TODO: mgr.
-            addConnection( "LOCK_DB", "jdbc:h2:" + lockDb, "SA", "", 0, 10 );
+            JDBCParams params = new DefaultJDBCParams( "jdbc:h2:" + lockDb, "SA", "", false );
+            mgr.addPool( "LOCK_DB", params, workspace );
         }
 
         // stores startup

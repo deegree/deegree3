@@ -136,7 +136,8 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
             Observation measurements = new Observation( properties );
             MeasurementBase measurementBase = new MeasurementBase( "", properties ); // TODO
 
-            conn = ConnectionManager.getConnection( jdbcId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( jdbcId );
             List<String> columns = new LinkedList<String>();
             for ( Property property : properties ) {
                 columns.add( property.getColumnName() );
@@ -188,7 +189,8 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( jdbcId );
             stmt = conn.prepareStatement( "select count(*) as n from " + tableName );
             resultSet = stmt.executeQuery();
             if ( resultSet.next() ) {

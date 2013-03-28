@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
@@ -264,14 +265,17 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 
     private Type dataType;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * @param connectionID
      *            to be used to get a connection from the {@link ConnectionManager}
      * @param type
      */
-    DBBackend( String connectionID, Type type ) {
+    DBBackend( String connectionID, Type type, DeegreeWorkspace workspace ) {
         this.connectionID = connectionID;
         this.dataType = type;
+        this.workspace = workspace;
     }
 
     @Override
@@ -323,8 +327,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
                     }
                 }
             } catch ( SQLException e ) {
-                LOG.error(
-                           "Error while getting the renderable objects from the result set: " + e.getLocalizedMessage(),
+                LOG.error( "Error while getting the renderable objects from the result set: " + e.getLocalizedMessage(),
                            e );
             }
         }
@@ -951,8 +954,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
                     }
                 }
             } catch ( SQLException e ) {
-                LOG.error(
-                           "Error while getting the renderable objects from the result set: " + e.getLocalizedMessage(),
+                LOG.error( "Error while getting the renderable objects from the result set: " + e.getLocalizedMessage(),
                            e );
             }
             rs.close();
@@ -967,7 +969,8 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
      */
     public Connection getConnection()
                             throws SQLException {
-        Connection connection = ConnectionManager.getConnection( connectionID );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        Connection connection = mgr.get( connectionID );
         connection.setAutoCommit( true );
         return connection;
     }

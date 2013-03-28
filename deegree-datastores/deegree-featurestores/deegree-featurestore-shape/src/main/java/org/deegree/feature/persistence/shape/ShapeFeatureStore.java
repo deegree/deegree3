@@ -291,7 +291,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
             if ( generateAlphanumericIndexes ) {
                 // set up index
-                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
+                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings, null );
             }
 
             ft = dbf.getFeatureType();
@@ -400,7 +400,7 @@ public class ShapeFeatureStore implements FeatureStore {
                                          mappings );
                     if ( generateAlphanumericIndexes ) {
                         // set up index
-                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
+                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings, null );
                     }
                     ft = dbf.getFeatureType();
                     schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
