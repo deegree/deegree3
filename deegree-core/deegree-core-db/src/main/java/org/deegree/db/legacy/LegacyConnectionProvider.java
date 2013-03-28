@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import org.deegree.commons.jdbc.ConnectionPool;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceInitException;
