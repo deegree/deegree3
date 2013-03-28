@@ -43,6 +43,10 @@
     </site>
   </distributionManagement>
 
+  <prerequisites>
+    <maven>3.0.3</maven>
+  </prerequisites>
+
   <pluginRepositories>
     <pluginRepository>
       <id>deegree-plugin-repo</id>
@@ -70,18 +74,6 @@
     </resources>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>de.jflex</groupId>
-          <artifactId>maven-jflex-plugin</artifactId>
-          <version>1.4.3</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>generate</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
@@ -357,7 +349,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.2.2</version>
+        <version>1.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -456,17 +448,17 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.2</version>
+        <version>1.7.5</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.4</version>
+        <version>1.7.5</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.4</version>
+        <version>1.7.5</version>
       </dependency>
       <!-- 3d -->
       <dependency>
@@ -503,7 +495,7 @@
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>woodstox-core-lgpl</artifactId>
-        <version>4.1.5</version>
+        <version>4.2.0</version>
         <exclusions>
           <exclusion>
             <groupId>javax.xml.stream</groupId>
@@ -633,7 +625,7 @@
       <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.0-801.jdbc4</version>
+        <version>9.1-901-1.jdbc4</version>
       </dependency>
       <!-- Oracle -->
       <dependency>
@@ -835,7 +827,7 @@
       <dependency>
         <groupId>net.sf.jasperreports</groupId>
         <artifactId>jasperreports</artifactId>
-        <version>5.0.1</version>
+        <version>5.0.4</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
