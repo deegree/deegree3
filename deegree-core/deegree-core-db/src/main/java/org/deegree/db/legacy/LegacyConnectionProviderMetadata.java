@@ -64,7 +64,7 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
 public class LegacyConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
     public LegacyConnectionProviderMetadata( Workspace workspace, ResourceLocation<ConnectionProvider> location,
-                                     ConnectionProviderProvider provider ) {
+                                             ConnectionProviderProvider provider ) {
         super( workspace, location, provider );
     }
 
@@ -73,7 +73,7 @@ public class LegacyConnectionProviderMetadata extends AbstractResourceMetadata<C
         try {
             JDBCConnection cfg = (JDBCConnection) JAXBUtils.unmarshall( "org.deegree.db.legacy.jaxb", SCHEMA_URL,
                                                                         location.getAsStream(), workspace );
-            return new LegacyConnectionProviderBuilder( cfg, this );
+            return new LegacyConnectionProviderBuilder( cfg, this, workspace );
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }

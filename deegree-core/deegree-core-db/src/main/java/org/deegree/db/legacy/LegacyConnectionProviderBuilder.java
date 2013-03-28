@@ -41,9 +41,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.legacy;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.sql.Connection;
+import java.util.Iterator;
+import java.util.ServiceLoader;
+
 import org.deegree.db.ConnectionProvider;
+import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.db.legacy.jaxb.JDBCConnection;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.Workspace;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -55,19 +65,45 @@ import org.deegree.workspace.ResourceBuilder;
  */
 public class LegacyConnectionProviderBuilder implements ResourceBuilder<ConnectionProvider> {
 
+    private static final Logger LOG = getLogger( LegacyConnectionProviderBuilder.class );
+
     private JDBCConnection config;
 
     private LegacyConnectionProviderMetadata metadata;
 
-    public LegacyConnectionProviderBuilder( JDBCConnection config, LegacyConnectionProviderMetadata metadata ) {
+    private Workspace workspace;
+
+    public LegacyConnectionProviderBuilder( JDBCConnection config, LegacyConnectionProviderMetadata metadata,
+                                            Workspace workspace ) {
         this.config = config;
         this.metadata = metadata;
+        this.workspace = workspace;
     }
 
     @Override
     public ConnectionProvider build() {
-        return new LegacyConnectionProvider( config.getUrl(), config.getUser(), config.getPassword(),
-                                             config.isReadOnly() == null ? false : config.isReadOnly(), metadata );
+        String url = config.getUrl();
+        LegacyConnectionProvider cprov;
+        cprov = new LegacyConnectionProvider( url, config.getUser(), config.getPassword(),
+                                              config.isReadOnly() == null ? false : config.isReadOnly(), metadata );
+
+        ServiceLoader<SqlDialectProvider> dialectLoader = ServiceLoader.load( SqlDialectProvider.class,
+                                                                              workspace.getModuleClassLoader() );
+        Iterator<SqlDialectProvider> iter = dialectLoader.iterator();
+        SQLDialect dialect = null;
+        while ( iter.hasNext() ) {
+            SqlDialectProvider prov = iter.next();
+            Connection conn = cprov.getConnection();
+            if ( prov.supportsConnection( conn ) ) {
+                dialect = prov.createDialect( conn );
+                break;
+            }
+        }
+        cprov.setDialect( dialect );
+        if ( dialect == null ) {
+            LOG.warn( "No SQL dialect for {} found, trying to continue.", url );
+        }
+        return cprov;
     }
 
 }

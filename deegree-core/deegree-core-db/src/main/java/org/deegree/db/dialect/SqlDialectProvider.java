@@ -39,12 +39,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.db;
+package org.deegree.db.dialect;
 
 import java.sql.Connection;
 
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.Resource;
 
 /**
  * TODO add class documentation here
@@ -54,10 +53,10 @@ import org.deegree.workspace.Resource;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ConnectionProvider extends Resource {
+public interface SqlDialectProvider {
 
-    Connection getConnection();
+    boolean supportsConnection( Connection connection );
 
-    SQLDialect getDialect();
-    
+    SQLDialect createDialect( Connection connection );
+
 }

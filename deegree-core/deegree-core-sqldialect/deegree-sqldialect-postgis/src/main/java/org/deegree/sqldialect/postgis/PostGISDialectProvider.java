@@ -44,12 +44,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectProvider;
+import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 31034 $, $Date: 2011-06-09 16:47:31 +0200 (Do, 09. Jun 2011) $
  */
-public class PostGISDialectProvider implements SQLDialectProvider {
+public class PostGISDialectProvider implements SQLDialectProvider, SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
 
@@ -82,6 +83,36 @@ public class PostGISDialectProvider implements SQLDialectProvider {
             useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage(), e );
+        } finally {
+            close( rs, stmt, conn, LOG );
+        }
+        return new PostGISDialect( useLegacyPredicates );
+    }
+
+    @Override
+    public boolean supportsConnection( Connection connection ) {
+        String url = null;
+        try {
+            url = connection.getMetaData().getURL();
+        } catch ( Exception e ) {
+            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return false;
+        }
+        return url.startsWith( "jdbc:postgresql:" );
+    }
+
+    @Override
+    public SQLDialect createDialect( Connection connection ) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        boolean useLegacyPredicates = false;
+        try {
+            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( connection, LOG );
+        } catch ( Exception e ) {
+            LOG.trace( e.getMessage(), e );
             throw new ResourceInitException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );

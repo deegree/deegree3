@@ -46,6 +46,8 @@ import java.sql.SQLException;
 
 import org.deegree.commons.jdbc.ConnectionPool;
 import org.deegree.db.ConnectionProvider;
+import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceInitException;
@@ -65,8 +67,10 @@ public class LegacyConnectionProvider implements ConnectionProvider {
 
     private ConnectionPool pool;
 
+    private SQLDialect dialect;
+
     public LegacyConnectionProvider( String url, String user, String password, boolean readOnly,
-                               LegacyConnectionProviderMetadata metadata ) {
+                                     LegacyConnectionProviderMetadata metadata ) {
         this.metadata = metadata;
         // hardcoded as until 3.2
         int poolMinSize = 5;
@@ -74,6 +78,10 @@ public class LegacyConnectionProvider implements ConnectionProvider {
 
         pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
                                    poolMaxSize );
+    }
+
+    public void setDialect( SQLDialect dialect ) {
+        this.dialect = dialect;
     }
 
     @Override
@@ -106,6 +114,11 @@ public class LegacyConnectionProvider implements ConnectionProvider {
         } catch ( Exception e ) {
             throw new ResourceException( e.getLocalizedMessage(), e );
         }
+    }
+
+    @Override
+    public SQLDialect getDialect() {
+        return dialect;
     }
 
 }

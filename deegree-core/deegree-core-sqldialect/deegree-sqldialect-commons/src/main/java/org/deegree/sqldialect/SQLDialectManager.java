@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect;
 
+import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -145,4 +150,5 @@ public class SQLDialectManager extends AbstractBasicResourceManager {
     protected void remove( String id ) {
         // TODO Auto-generated method stub
     }
+
 }
