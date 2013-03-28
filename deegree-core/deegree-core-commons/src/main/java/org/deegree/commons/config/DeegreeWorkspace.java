@@ -57,6 +57,8 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -474,6 +476,19 @@ public class DeegreeWorkspace {
 
     public Workspace getNewWorkspace() {
         return workspace;
+    }
+
+    /**
+     * @param url
+     * @param pattern
+     *            some regex part like datasources.feature
+     * @return the resource id
+     */
+    public String determineId( URL url, String pattern ) {
+        Pattern p = Pattern.compile( ".*" + pattern + ".(.*)[.]xml" );
+        Matcher m = p.matcher( url.toString() );
+        m.find();
+        return m.group( 1 );
     }
 
 }

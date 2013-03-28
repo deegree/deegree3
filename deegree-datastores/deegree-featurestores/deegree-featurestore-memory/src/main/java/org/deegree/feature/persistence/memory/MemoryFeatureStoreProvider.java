@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
-import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -76,17 +74,8 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public FeatureStore create( URL configURL )
                             throws ResourceInitException {
-
-        String id = null;
-        try {
-            id = new File( configURL.toURI() ).toString().substring( "datasources/feature/".length() );
-            id = id.substring( 0, id.length() - 4 );
-            return workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
-        } catch ( URISyntaxException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+        String id = workspace.determineId( configURL, "datasources.feature" );
+        return workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
     }
 
     public void init( DeegreeWorkspace workspace ) {

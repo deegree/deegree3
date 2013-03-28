@@ -162,7 +162,7 @@ public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> 
                 }
             }
         }
-        return null;
+        return fs;
     }
 
     private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {
