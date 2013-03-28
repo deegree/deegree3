@@ -158,7 +158,7 @@ public class DefaultWorkspace implements Workspace {
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
-                // ex.printStackTrace();
+                 ex.printStackTrace();
                 LOG.error( "Unable to build resource {}: {}.", e.getKey().getIdentifier(), ex.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", ex );
             }

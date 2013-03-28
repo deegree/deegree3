@@ -35,35 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
-import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig;
-import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mapping.GeometryProperty;
-import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mapping.SimpleProperty;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreProvider} for the {@link ShapeFeatureStore}.
@@ -74,8 +56,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class ShapeFeatureStoreProvider extends NewFeatureStoreProvider implements FeatureStoreProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( ShapeFeatureStoreProvider.class );
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
 
@@ -96,85 +76,10 @@ public class ShapeFeatureStoreProvider extends NewFeatureStoreProvider implement
     }
 
     @Override
-    public ShapeFeatureStore create( URL configURL )
+    public FeatureStore create( URL configURL )
                             throws ResourceInitException {
-
-        ShapeFeatureStore fs = null;
-        try {
-            ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                             CONFIG_SCHEMA, configURL,
-                                                                                             workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
-
-            String srs = config.getStorageCRS();
-            ICRS crs = null;
-            if ( srs != null ) {
-                // rb: if it is null, the shape feature store will try to read
-                // the prj files.
-                // srs = "EPSG:4326";
-                // } else {
-                srs = srs.trim();
-                crs = CRSManager.getCRSRef( srs );
-            }
-
-            String shapeFileName = null;
-            try {
-                shapeFileName = new File( resolver.resolve( config.getFile().trim() ).toURI() ).toString();
-            } catch ( MalformedURLException e ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                LOG.error( msg, e );
-                throw new ResourceInitException( msg, e );
-            } catch ( URISyntaxException e ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                LOG.error( msg );
-                LOG.trace( "Stack trace:", e );
-                throw new ResourceInitException( msg, e );
-            }
-
-            Charset cs = null;
-            String encoding = config.getEncoding();
-            if ( encoding != null ) {
-                try {
-                    cs = Charset.forName( encoding );
-                } catch ( Exception e ) {
-                    String msg = "Unsupported encoding '" + encoding + "'. Continuing with encoding guessing mode.";
-                    LOG.error( msg );
-                }
-            }
-
-            List<Mapping> mappings = null;
-            if ( config.getMapping() != null ) {
-                mappings = new ArrayList<Mapping>();
-                for ( Object o : config.getMapping().getSimplePropertyOrGeometryProperty() ) {
-                    if ( o instanceof GeometryProperty ) {
-                        GeometryProperty g = (GeometryProperty) o;
-                        mappings.add( new Mapping( null, g.getName(), false ) );
-                    }
-                    if ( o instanceof SimpleProperty ) {
-                        SimpleProperty f = (SimpleProperty) o;
-                        String name = f.getName();
-                        if ( name == null ) {
-                            name = f.getMapping();
-                        }
-                        mappings.add( new Mapping( f.getMapping(), name, f.isGenerateIndex() ) );
-                    }
-                }
-            }
-
-            Boolean genIdx = config.isGenerateAlphanumericIndexes();
-            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getFeatureTypeNamespace(),
-                                        config.getFeatureTypeName(), config.getFeatureTypePrefix(), genIdx == null
-                                                                                                    || genIdx, null,
-                                        mappings, null );
-
-        } catch ( JAXBException e ) {
-            String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new ResourceInitException( msg, e );
-        }
-        return fs;
+        String id = workspace.determineId( configURL, "datasources.feature" );
+        return workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
     }
 
     @Override
