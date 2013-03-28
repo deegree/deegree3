@@ -57,6 +57,8 @@ import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
 import org.deegree.protocol.wms.client.WMSClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds remote wms layers from jaxb beans.
@@ -67,6 +69,8 @@ import org.deegree.protocol.wms.client.WMSClient;
  * @version $Revision: $, $Date: $
  */
 class RemoteWmsLayerBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger( RemoteWmsLayerBuilder.class );
 
     private WMSClient client;
 
@@ -84,6 +88,10 @@ class RemoteWmsLayerBuilder {
         Map<String, LayerMetadata> configured = new HashMap<String, LayerMetadata>();
         if ( cfg.getLayer() != null ) {
             for ( LayerType l : cfg.getLayer() ) {
+                if ( !client.hasLayer( l.getOriginalName() ) ) {
+                    LOG.warn( "Layer {} is not offered by the remote WMS.", l.getOriginalName() );
+                    continue;
+                }
                 String name = l.getName();
                 SpatialMetadata smd = SpatialMetadataConverter.fromJaxb( l.getEnvelope(), l.getCRS() );
                 Description desc = null;
