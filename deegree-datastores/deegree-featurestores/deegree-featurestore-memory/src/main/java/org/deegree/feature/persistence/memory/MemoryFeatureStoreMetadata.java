@@ -79,7 +79,7 @@ public class MemoryFeatureStoreMetadata extends AbstractResourceMetadata<Feature
                                                                                      location.getAsStream(), workspace );
             dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
                                                                                  "LOCK_DB" ) );
-            return new MemoryFeatureStoreBuilder( this, config );
+            return new MemoryFeatureStoreBuilder( this, config, workspace );
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }

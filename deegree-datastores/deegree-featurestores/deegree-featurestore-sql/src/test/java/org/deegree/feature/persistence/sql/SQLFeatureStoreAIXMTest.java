@@ -54,7 +54,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;

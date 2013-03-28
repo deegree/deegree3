@@ -77,6 +77,8 @@ import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
 import org.deegree.feature.persistence.FeatureInspector;
@@ -278,7 +280,9 @@ public class SQLFeatureStore implements FeatureStore {
         initConverters();
         try {
             // however TODO it properly on the DB
-            lockManager = new DefaultLockManager( this, "LOCK_DB", workspace );
+            ConnectionProvider conn = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                               "LOCK_DB" );
+            lockManager = new DefaultLockManager( this, conn );
         } catch ( Throwable e ) {
             LOG.warn( "Lock manager initialization failed, locking will not be available." );
             LOG.trace( "Stack trace:", e );

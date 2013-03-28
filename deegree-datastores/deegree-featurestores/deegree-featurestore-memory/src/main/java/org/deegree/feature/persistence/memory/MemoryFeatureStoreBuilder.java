@@ -51,6 +51,8 @@ import java.util.Map;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -68,6 +70,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +90,13 @@ public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> 
 
     private MemoryFeatureStoreConfig config;
 
-    public MemoryFeatureStoreBuilder( MemoryFeatureStoreMetadata metadata, MemoryFeatureStoreConfig config ) {
+    private Workspace workspace;
+
+    public MemoryFeatureStoreBuilder( MemoryFeatureStoreMetadata metadata, MemoryFeatureStoreConfig config,
+                                      Workspace workspace ) {
         this.metadata = metadata;
         this.config = config;
+        this.workspace = workspace;
     }
 
     @Override
@@ -127,7 +134,8 @@ public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> 
         }
 
         try {
-            fs = new MemoryFeatureStore( schema, storageCRS, metadata );
+            ConnectionProvider lockProvider = workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
+            fs = new MemoryFeatureStore( schema, storageCRS, metadata, lockProvider );
         } catch ( FeatureStoreException ex ) {
             throw new ResourceInitException( ex.getLocalizedMessage(), ex );
         }

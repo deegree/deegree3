@@ -43,6 +43,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -97,14 +98,14 @@ public class MemoryFeatureStore implements FeatureStore {
      * @param metadata
      * @throws FeatureStoreException
      */
-    MemoryFeatureStore( AppSchema schema, ICRS storageCRS, MemoryFeatureStoreMetadata metadata )
-                            throws FeatureStoreException {
+    MemoryFeatureStore( AppSchema schema, ICRS storageCRS, MemoryFeatureStoreMetadata metadata,
+                        ConnectionProvider lockConnection ) throws FeatureStoreException {
         this.schema = schema;
         this.storageCRS = storageCRS;
         this.metadata = metadata;
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
         // TODO
-        lockManager = new DefaultLockManager( this, "LOCK_DB", null );
+        lockManager = new DefaultLockManager( this, lockConnection );
     }
 
     @Override

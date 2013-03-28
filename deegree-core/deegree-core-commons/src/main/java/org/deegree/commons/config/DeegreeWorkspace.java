@@ -402,12 +402,12 @@ public class DeegreeWorkspace {
      */
     public synchronized void initAll()
                             throws ResourceInitException {
+        workspace.init();
         ImageIO.scanForPlugins();
         initManagers();
         for ( ResourceManager m : managers ) {
             m.startup( this );
         }
-        workspace.init();
     }
 
     /**
