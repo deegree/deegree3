@@ -59,6 +59,8 @@ public interface Workspace {
 
     ClassLoader getModuleClassLoader();
 
+    <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass );
+
     <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
 
     <T extends Resource> ResourceMetadata<T> getResourceMetadata( Class<? extends ResourceProvider<T>> providerClass,

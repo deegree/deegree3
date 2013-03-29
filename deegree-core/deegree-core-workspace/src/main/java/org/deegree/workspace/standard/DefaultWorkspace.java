@@ -158,7 +158,7 @@ public class DefaultWorkspace implements Workspace {
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
-                 ex.printStackTrace();
+                ex.printStackTrace();
                 LOG.error( "Unable to build resource {}: {}.", e.getKey().getIdentifier(), ex.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", ex );
             }
@@ -265,6 +265,11 @@ public class DefaultWorkspace implements Workspace {
 
     public File getLocation() {
         return directory;
+    }
+
+    @Override
+    public <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass ) {
+        return (T) resourceManagers.get( managerClass );
     }
 
 }
