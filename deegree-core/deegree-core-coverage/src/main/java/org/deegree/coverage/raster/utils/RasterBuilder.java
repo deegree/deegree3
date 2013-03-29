@@ -38,12 +38,8 @@
 
 package org.deegree.coverage.raster.utils;
 
-import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,11 +49,10 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
@@ -69,14 +64,7 @@ import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.coverage.raster.io.jaxb.AbstractRasterType;
-import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterDirectory;
-import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterFile;
-import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
-import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
-import org.deegree.coverage.raster.io.jaxb.RasterConfig;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,8 +81,6 @@ import org.slf4j.LoggerFactory;
 public class RasterBuilder implements CoverageBuilder {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/coverage/raster";
-
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
 
     private static final URL CONFIG_SCHEMA = RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd" );
 
@@ -172,118 +158,6 @@ public class RasterBuilder implements CoverageBuilder {
     @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
-    }
-
-    /**
-     * @param mrrConfig
-     * @param adapter
-     * @return a corresponding raster
-     */
-    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter, ICRS parentCrs ) {
-        if ( mrrConfig != null ) {
-            String defCRS = mrrConfig.getStorageCRS();
-            ICRS crs = null;
-            if ( defCRS != null ) {
-                crs = CRSManager.getCRSRef( defCRS );
-            }
-            if ( crs == null ) {
-                LOG.debug( "Using parent crs." );
-                crs = parentCrs;
-            }
-            RasterIOOptions options = getOptions( mrrConfig, parentCrs );
-            MultiResolutionRaster mrr = new MultiResolutionRaster( null );
-            mrr.setCoordinateSystem( crs );
-            for ( Resolution resolution : mrrConfig.getResolution() ) {
-                if ( resolution != null ) {
-                    AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options, crs );
-                    mrr.addRaster( rasterLevel );
-                }
-            }
-            return mrr;
-        }
-        throw new NullPointerException( "The configured multi resolution raster may not be null." );
-    }
-
-    private RasterIOOptions getOptions( MultiResolutionRasterConfig config, ICRS parentCrs ) {
-        RasterIOOptions opts = new RasterIOOptions();
-        if ( config.getStorageCRS() != null ) {
-            opts.add( "CRS", config.getStorageCRS() );
-        } else {
-            opts.add( "CRS", parentCrs.getAlias() );
-        }
-        return opts;
-    }
-
-    /**
-     * @param config
-     * @param adapter
-     * @return a corresponding raster, null if files could not be fund
-     */
-    private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options,
-                                     ICRS parentCrs ) {
-        if ( config != null ) {
-            String defCRS = config.getStorageCRS();
-            ICRS crs = null;
-            if ( defCRS != null ) {
-                crs = CRSManager.getCRSRef( defCRS );
-            }
-            if ( crs == null ) {
-                LOG.debug( "Using parent CRS, since no crs was defined." );
-                crs = parentCrs;
-            }
-            RasterDirectory directory = config.getRasterDirectory();
-            RasterFile rasterFile = config.getRasterFile();
-            String file = rasterFile == null ? null : rasterFile.getValue();
-            Integer imageIndex = null;
-            if ( rasterFile != null )
-                imageIndex = rasterFile.getImageIndex();
-            try {
-                RasterIOOptions rOptions = new RasterIOOptions();
-                rOptions.copyOf( options );
-                if ( config.getOriginLocation() != null ) {
-                    rOptions.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
-                                  config.getOriginLocation().toString().toUpperCase() );
-                }
-                if ( imageIndex != null ) {
-                    rOptions.add( RasterIOOptions.IMAGE_INDEX, imageIndex.toString() );
-                }
-                if ( directory != null ) {
-                    File rasterFiles = new File( adapter.resolve( directory.getValue().trim() ).toURI() );
-                    boolean recursive = directory.isRecursive();
-                    if ( crs != null ) {
-                        rOptions.add( RasterIOOptions.CRS, crs.getAlias() );
-                    }
-                    return buildTiledRaster( rasterFiles, recursive, rOptions );
-                }
-                if ( file != null ) {
-                    file = file.trim();
-                    final File loc = new File( adapter.resolve( file ).toURI() );
-                    if ( !loc.exists() ) {
-                        LOG.warn( "Given raster file location does not exist: " + loc.getAbsolutePath() );
-                        return null;
-                    }
-                    rOptions.add( RasterIOOptions.OPT_FORMAT, file.substring( file.lastIndexOf( '.' ) + 1 ) );
-                    AbstractRaster raster = loadRasterFromFile( loc, rOptions );
-                    if ( raster != null ) {
-                        raster.setCoordinateSystem( crs );
-                    }
-                    return raster;
-                }
-            } catch ( MalformedURLException e ) {
-                if ( directory != null ) {
-                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
-                              directory.getValue() );
-                } else {
-                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.", file );
-                }
-            } catch ( IOException e ) {
-                LOG.warn( "Could not load the file {}, corresponding data will not be available: {}", file,
-                          e.getLocalizedMessage() );
-            } catch ( URISyntaxException e ) {
-                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file );
-            }
-        }
-        throw new NullPointerException( "The configured raster datasource may not be null." );
     }
 
     /**
@@ -539,23 +413,8 @@ public class RasterBuilder implements CoverageBuilder {
     @Override
     public Coverage create( URL configUrl )
                             throws ResourceInitException {
-        try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configUrl.toString() );
-
-            if ( config instanceof MultiResolutionRasterConfig ) {
-                return fromJAXB( (MultiResolutionRasterConfig) config, resolver, null );
-            }
-            if ( config instanceof RasterConfig ) {
-                return fromJAXB( (RasterConfig) config, resolver, null, null );
-            }
-            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
-            return null;
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "IO-Error while creating coverage store.", e );
-        }
+        String id = workspace.determineId( configUrl, "datasources.coverage" );
+        return workspace.getNewWorkspace().getResource( CoverageProvider.class, id );
     }
 
     @SuppressWarnings("unchecked")
