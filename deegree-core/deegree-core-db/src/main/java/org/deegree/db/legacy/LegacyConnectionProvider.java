@@ -75,8 +75,12 @@ public class LegacyConnectionProvider implements ConnectionProvider {
         int poolMinSize = 5;
         int poolMaxSize = 25;
 
-        pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
-                                   poolMaxSize );
+        if ( metadata != null ) {
+            pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
+                                       poolMaxSize );
+        } else {
+            pool = new ConnectionPool( "<unspecified>", url, user, password, readOnly, poolMinSize, poolMaxSize );
+        }
     }
 
     public void setDialect( SQLDialect dialect ) {
