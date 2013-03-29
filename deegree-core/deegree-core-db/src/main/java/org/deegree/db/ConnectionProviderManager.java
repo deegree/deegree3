@@ -41,8 +41,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db;
 
+import static java.sql.DriverManager.deregisterDriver;
+import static java.sql.DriverManager.getDrivers;
+import static java.sql.DriverManager.registerDriver;
+
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.ServiceLoader;
+
+import org.deegree.commons.jdbc.DriverWrapper;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -54,9 +67,39 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
  */
 public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 
+    private static final Logger LOG = LoggerFactory.getLogger( ConnectionProviderManager.class );
+
     public ConnectionProviderManager() {
-        super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class, "database connections",
-                                                                 "jdbc" ) );
+        super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class,
+                                                                       "database connections", "jdbc" ) );
+    }
+
+    @Override
+    public void init( Workspace workspace ) {
+        try {
+            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
+                registerDriver( new DriverWrapper( d ) );
+                LOG.info( "Found and loaded {}", d.getClass().getName() );
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
+        }
+        super.init( workspace );
+    }
+
+    @Override
+    public void destroy() {
+        Enumeration<Driver> enumer = getDrivers();
+        while ( enumer.hasMoreElements() ) {
+            Driver d = enumer.nextElement();
+            if ( d instanceof DriverWrapper ) {
+                try {
+                    deregisterDriver( d );
+                } catch ( SQLException e ) {
+                    LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
+                }
+            }
+        }
     }
 
 }
