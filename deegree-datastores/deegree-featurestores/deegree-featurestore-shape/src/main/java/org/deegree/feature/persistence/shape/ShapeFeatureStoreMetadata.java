@@ -84,7 +84,7 @@ public class ShapeFeatureStoreMetadata extends AbstractResourceMetadata<FeatureS
 
     public static void main( String[] args ) {
         Workspace ws = new DefaultWorkspace(new File("/home/stranger/.deegree/deegree-workspace-utah-3.2-pre9-20120717.234406-9"));
-        ws.init();
+        ws.initAll();
         ws.destroy();
     }
     

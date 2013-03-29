@@ -37,21 +37,15 @@ package org.deegree.feature.persistence.sql;
 
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
-import org.deegree.sqldialect.SQLDialect;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.sqldialect.SQLDialectProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreProvider} for {@link SQLFeatureStore} implementations.
@@ -66,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class SQLFeatureStoreProvider implements FeatureStoreProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreProvider.class );
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 
@@ -88,29 +80,10 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
-    public SQLFeatureStore create( URL configURL )
+    public FeatureStore create( URL configURL )
                             throws ResourceInitException {
-
-        try {
-            SQLFeatureStoreJAXB cfg = (SQLFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                                  configURL, workspace );
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            Type connType = mgr.getType( cfg.getJDBCConnId().getValue() );
-            if ( connType == null ) {
-                throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId().getValue() + "' defined." );
-            }
-            LOG.debug( "Connection type is {}.", connType );
-
-            SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
-            if ( dialectMgr == null ) {
-                 throw new ResourceInitException( "SQLDialectManager not found in workspace / classpath." );
-            }
-            SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId().getValue() );
-            return new SQLFeatureStore( cfg, configURL, dialect, null );
-        } catch ( JAXBException e ) {
-            LOG.info( "Stack trace: ", e );
-            throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
-        }
+        String id = workspace.determineId( configURL, "datasources.feature" );
+        return workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
     }
 
     /**

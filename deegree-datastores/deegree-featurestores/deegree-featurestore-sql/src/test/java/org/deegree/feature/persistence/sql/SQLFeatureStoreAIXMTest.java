@@ -35,15 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static junit.framework.Assert.assertEquals;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,16 +53,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.junit.Assert;
-
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -69,11 +66,15 @@ import org.deegree.commons.utils.test.TestDBProperties;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
@@ -84,7 +85,6 @@ import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -93,9 +93,15 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectManager;
-import org.deegree.sqldialect.filter.function.SQLFunctionManager;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -125,11 +131,13 @@ public class SQLFeatureStoreAIXMTest {
 
     private final TestDBProperties settings;
 
-    private DeegreeWorkspace ws;
+    private Workspace ws;
 
+    private TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> builderMap;
+    
     private SQLDialect dialect;
 
-    private SQLFeatureStore fs;
+    private FeatureStore fs;
 
     public SQLFeatureStoreAIXMTest( TestDBProperties settings ) {
         this.settings = settings;
@@ -142,10 +150,10 @@ public class SQLFeatureStoreAIXMTest {
     public void setUp()
                             throws Throwable {
 
-        initWorkspaceExceptFeatureStore();
-        createDB();
+        initWorkspace();
+        initDbPlusFeatureStore();
         createTables();
-        initFeatureStore();
+//        initFeatureStore();
         populateStore();
     }
 
@@ -170,59 +178,74 @@ public class SQLFeatureStoreAIXMTest {
         }
     }
 
-    private void initWorkspaceExceptFeatureStore()
-                            throws ResourceInitException {
-        // TODO
-        ws = DeegreeWorkspace.getInstance( "deegree-featurestore-sql-tests" );
-        ws.initManagers();
-        ws.getSubsystemManager( ConnectionManager.class ).startup( ws );
-        ws.getSubsystemManager( SQLDialectManager.class ).startup( ws );
-        ws.getSubsystemManager( FeatureStoreManager.class ).startup( ws );
-        ws.getSubsystemManager( FunctionManager.class ).startup( ws );
-        ws.getSubsystemManager( SQLFunctionManager.class ).startup( ws );
+    private void initWorkspace()
+                            throws ResourceInitException, URISyntaxException {
+        URL url = SQLFeatureStoreAIXMTest.class.getResource("/org/deegree/feature/persistence/sql/aixm");
+        File dir = new File(url.toURI());
+        ws = new DefaultWorkspace(dir);
+        ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( "deegree-test", settings.getUrl(), settings.getUser(), settings.getPass() );
+        ws.addExtraResource(loc );
+        loc = ConnectionProviderUtils.getSyntheticProvider("admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
+        ws.addExtraResource(loc );
+        ws.startup();
+        ws.scan();
+        builderMap = ws.prepare();
+//        // TODO
+//        ws = DeegreeWorkspace.getInstance( "deegree-featurestore-sql-tests" );
+//        ws.initManagers();
+//        ws.getSubsystemManager( ConnectionManager.class ).startup( ws );
+//        ws.getSubsystemManager( SQLDialectManager.class ).startup( ws );
+//        ws.getSubsystemManager( FeatureStoreManager.class ).startup( ws );
+//        ws.getSubsystemManager( FunctionManager.class ).startup( ws );
+//        ws.getSubsystemManager( SQLFunctionManager.class ).startup( ws );
 
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-        JDBCParams params = new DefaultJDBCParams( settings.getAdminUrl(), settings.getAdminUser(),
-                                                   settings.getAdminPass(), false );
-        mgr.addPool( "admin", params, ws );
-        params = new DefaultJDBCParams( settings.getUrl(), settings.getUser(), settings.getPass(), false );
-        mgr.addPool( "deegree-test", params, ws );
+//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+//        JDBCParams params = new DefaultJDBCParams( settings.getAdminUrl(), settings.getAdminUser(),
+//                                                   settings.getAdminPass(), false );
+//        mgr.addPool( "admin", params, ws );
+//        params = new DefaultJDBCParams( settings.getUrl(), settings.getUser(), settings.getPass(), false );
+//        mgr.addPool( "deegree-test", params, ws );
 
-        dialect = ws.getSubsystemManager( SQLDialectManager.class ).create( "admin" );
+//        dialect = ws.getSubsystemManager( SQLDialectManager.class ).create( "admin" );
     }
 
-    private void initFeatureStore()
-                            throws ResourceInitException {
-        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
-        provider.init( ws );
-        fs = provider.create( SQLFeatureStoreAIXMTest.class.getResource( "aixm/datasources/feature/aixm.xml" ) );
-        fs.init( ws );
-    }
+//    private void initFeatureStore()
+//                            throws ResourceInitException {
+//        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
+//        provider.init( ws );
+//        fs = provider.create( SQLFeatureStoreAIXMTest.class.getResource( "aixm/datasources/feature/aixm.xml" ) );
+//        fs.init( ws );
+//    }
 
-    private void createDB()
+    private void initDbPlusFeatureStore()
                             throws SQLException {
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-        Connection adminConn = mgr.get( "admin" );
+        ws.init(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, "admin" ), builderMap);
+        ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin" );
+//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        Connection adminConn = prov.getConnection();
         try {
-            dialect.createDB( adminConn, settings.getDbName() );
+            prov.getDialect().createDB( adminConn, settings.getDbName() );
         } finally {
             adminConn.close();
         }
+        fs = ws.init(new DefaultResourceIdentifier<FeatureStore>(NewFeatureStoreProvider.class, "aixm" ), builderMap );
     }
 
     private void createTables()
                             throws Exception {
 
-        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
-        provider.init( ws );
-        SQLFeatureStore fs = provider.create( SQLFeatureStoreAIXMTest.class.getResource( "aixm/datasources/feature/aixm.xml" ) );
-        fs.init( ws );
+//        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
+//        provider.init( ws );
+//        SQLFeatureStore fs = provider.create( SQLFeatureStoreAIXMTest.class.getResource( "aixm/datasources/feature/aixm.xml" ) );
+//        fs.init( ws );
 
         // create tables
-        String[] ddl = DDLCreator.newInstance( fs.getSchema(), dialect ).getDDL();
+        FeatureStore fs = ws.getResource(NewFeatureStoreProvider.class, "aixm");
+        String[] ddl = DDLCreator.newInstance( (MappedAppSchema)fs.getSchema(), dialect ).getDDL();
 
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-        Connection conn = mgr.get( "deegree-test" );
+        ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "deegree-test");
+//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        Connection conn = prov.getConnection();
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
@@ -239,16 +262,19 @@ public class SQLFeatureStoreAIXMTest {
     @After
     public void tearDown()
                             throws Exception {
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-        Connection adminConn = mgr.get( "admin" );
-        mgr.deactivate( "deegree-test" );
+        ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin");
+        dialect = prov.getDialect();
+//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        Connection adminConn = prov.getConnection();
+//        mgr.deactivate( "deegree-test" );
         try {
             dialect.dropDB( adminConn, settings.getDbName() );
         } finally {
             adminConn.close();
         }
-        ws.destroyAll();
-        fs.destroy();
+//        ws.destroyAll();
+//        fs.destroy();
+        ws.destroy();
     }
 
     @Test

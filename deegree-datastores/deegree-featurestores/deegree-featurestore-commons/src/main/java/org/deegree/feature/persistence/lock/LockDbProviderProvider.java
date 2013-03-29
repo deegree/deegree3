@@ -41,29 +41,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.lock;
 
-import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.deegree.commons.utils.TempFileManager;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.legacy.LegacyConnectionProviderMetadata;
-import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.deegree.workspace.standard.IncorporealResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -98,32 +90,12 @@ public class LockDbProviderProvider extends ConnectionProviderProvider {
     public List<ResourceMetadata<ConnectionProvider>> getAdditionalResources( Workspace workspace ) {
         List<ResourceMetadata<ConnectionProvider>> list = new ArrayList<ResourceMetadata<ConnectionProvider>>();
 
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
-            writer.writeStartDocument();
-            String ns = "http://www.deegree.org/jdbc";
-            writer.setDefaultNamespace( ns );
-            writer.writeStartElement( ns, "JDBCConnection" );
-            writer.writeDefaultNamespace( ns );
-            writer.writeAttribute( "configVersion", "3.0.0" );
-            String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
-            LOG.info( "Using '" + lockDb + "' for h2 lock database." );
-            writeElement( writer, ns, "Url", "jdbc:h2:" + lockDb );
-            writeElement( writer, ns, "User", "SA" );
-            writeElement( writer, ns, "Password", "" );
-            writer.writeEndElement();
-            writer.close();
-            bos.close();
-            ResourceIdentifier<ConnectionProvider> id;
-            id = new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "LOCK_DB" );
-            ResourceLocation<ConnectionProvider> location;
-            location = new IncorporealResourceLocation<ConnectionProvider>( bos.toByteArray(), id );
-            list.add( new LegacyConnectionProviderMetadata( workspace, location, this ) );
-        } catch ( Exception e ) {
-            LOG.trace( "Stack trace:", e );
-            throw new ResourceInitException( "Unable to create H2 lock database: " + e.getLocalizedMessage(), e );
-        }
+        String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
+        LOG.info( "Using '" + lockDb + "' for h2 lock database." );
+        String url = "jdbc:h2:" + lockDb;
+
+        ResourceLocation<ConnectionProvider> location = getSyntheticProvider( "LOCK_DB", url, "SA", "" );
+        list.add( new LegacyConnectionProviderMetadata( workspace, location, this ) );
 
         return list;
     }

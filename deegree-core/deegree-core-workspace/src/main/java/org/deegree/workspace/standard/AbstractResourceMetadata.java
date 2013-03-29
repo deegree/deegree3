@@ -104,9 +104,10 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     public Set<ResourceIdentifier<? extends Resource>> getRelatedResources() {
         Set<ResourceIdentifier<? extends Resource>> set = new HashSet<ResourceIdentifier<? extends Resource>>();
         Set<ResourceIdentifier<? extends Resource>> deps = getDependencies();
-        set.addAll( set );
+
+        set.addAll( deps );
         for ( ResourceIdentifier<? extends Resource> id : deps ) {
-            ResourceMetadata<? extends Resource> md = workspace.getResource( id.getProvider(), id.getId() ).getMetadata();
+            ResourceMetadata<? extends Resource> md = workspace.getResourceMetadata( id.getProvider(), id.getId() );
             set.addAll( md.getRelatedResources() );
         }
         return set;

@@ -70,7 +70,7 @@ public class SimpleSqlFeatureStoreTest {
                             throws URISyntaxException {
         File dir = new File( SimpleSqlFeatureStoreTest.class.getResource( "/workspace/" ).toURI() );
         this.workspace = new DefaultWorkspace( dir );
-        workspace.init();
+        workspace.initAll();
     }
 
     @Test

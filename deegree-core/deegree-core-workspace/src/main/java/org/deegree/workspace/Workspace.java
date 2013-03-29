@@ -42,6 +42,7 @@
 package org.deegree.workspace;
 
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * TODO add class documentation here
@@ -53,11 +54,21 @@ import java.util.List;
  */
 public interface Workspace {
 
-    void init();
+    void startup();
+
+    void scan();
+
+    TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> prepare();
+
+    void initAll();
+
+    <T extends Resource> T init( ResourceIdentifier<T> id, TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder );
 
     void destroy();
 
     ClassLoader getModuleClassLoader();
+
+    void addExtraResource( ResourceLocation<? extends Resource> location );
 
     <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass );
 
