@@ -62,8 +62,6 @@ public class SimpleRaster extends AbstractRaster {
 
     private RasterData data;
 
-    private ResourceMetadata<Coverage> metadata;
-
     /**
      * Create a SimpleRaster with no raster data but with an envelope and raster envelope.
      * 
@@ -307,11 +305,6 @@ public class SimpleRaster extends AbstractRaster {
             }
         }
 
-    }
-
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
     }
 
     @Override

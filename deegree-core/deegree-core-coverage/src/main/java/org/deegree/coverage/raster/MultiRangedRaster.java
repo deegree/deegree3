@@ -43,8 +43,6 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class represents an AbstractRaster with multiple ranges.
@@ -235,7 +233,9 @@ public class MultiRangedRaster extends AbstractRaster {
         int i = 0;
         SimpleRaster raster = multiRange.get( i ).getAsSimpleRaster();
 
-        SimpleRaster result = raster.createCompatibleSimpleRaster( BandType.fromBufferedImageType( 0, multiRange.size(), null ) );
+        SimpleRaster result = raster.createCompatibleSimpleRaster( BandType.fromBufferedImageType( 0,
+                                                                                                   multiRange.size(),
+                                                                                                   null ) );
 
         result.setSubRaster( getEnvelope(), i, raster );
         for ( i = 1; i < multiRange.size(); i++ ) {
@@ -264,13 +264,8 @@ public class MultiRangedRaster extends AbstractRaster {
     }
 
     @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return null;
-    }
-
-    @Override
     public void init() {
-        
+
     }
 
 }

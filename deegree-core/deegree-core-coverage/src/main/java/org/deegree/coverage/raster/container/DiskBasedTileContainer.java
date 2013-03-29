@@ -200,7 +200,7 @@ public class DiskBasedTileContainer implements TileContainer {
                 result.add( raster );
             } else {
                 try {
-                    result.add( raster = loadRasterFromFile( f, options ) );
+                    result.add( raster = loadRasterFromFile( f, options, null ) );
                     cache.put( f, new SoftReference<AbstractRaster>( raster ) );
                 } catch ( IOException e ) {
                     LOG.debug( "Raster file '{}' could not be loaded: '{}'.", f, e.getLocalizedMessage() );

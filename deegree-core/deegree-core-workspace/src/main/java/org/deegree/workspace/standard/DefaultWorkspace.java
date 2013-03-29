@@ -100,6 +100,7 @@ public class DefaultWorkspace implements Workspace {
 
     @Override
     public void init() {
+        wsModules = new ArrayList<ModuleInfo>();
         resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
         resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
         resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
@@ -180,6 +181,7 @@ public class DefaultWorkspace implements Workspace {
         resourceMetadata = null;
         resources = null;
         resourceManagers = null;
+        wsModules = null;
     }
 
     private void initClassloader() {
@@ -215,6 +217,7 @@ public class DefaultWorkspace implements Workspace {
                                 LOG.info( " - " + fs[i] + " (non-deegree)" );
                             }
                         } catch ( Throwable e ) {
+                            e.printStackTrace();
                             LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
                         }
                     }

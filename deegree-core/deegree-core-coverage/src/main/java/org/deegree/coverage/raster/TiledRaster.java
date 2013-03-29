@@ -55,7 +55,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
@@ -76,8 +75,6 @@ public class TiledRaster extends AbstractRaster {
 
     private TileContainer tileContainer;
 
-    private ResourceMetadata<Coverage> metadata;
-
     /**
      * Creates a new TiledRaster with tiles from the given TileContainer
      * 
@@ -86,8 +83,8 @@ public class TiledRaster extends AbstractRaster {
      */
     public TiledRaster( TileContainer tileContainer, ResourceMetadata<Coverage> metadata ) {
         super();
+        setMetadata( metadata );
         this.tileContainer = tileContainer;
-        this.metadata = metadata;
     }
 
     /**
@@ -303,11 +300,6 @@ public class TiledRaster extends AbstractRaster {
     @Override
     public RasterDataInfo getRasterDataInfo() {
         return this.tileContainer.getRasterDataInfo();
-    }
-
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
     }
 
     @Override

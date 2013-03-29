@@ -270,7 +270,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                         return null;
                     }
                     rOptions.add( RasterIOOptions.OPT_FORMAT, file.substring( file.lastIndexOf( '.' ) + 1 ) );
-                    AbstractRaster raster = loadRasterFromFile( loc, rOptions );
+                    AbstractRaster raster = loadRasterFromFile( loc, rOptions, metadata );
                     if ( raster != null ) {
                         raster.setCoordinateSystem( crs );
                     }
@@ -314,7 +314,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
             throw new IOException( "Raster location (" + rasterLocation + ") does not exist." );
         }
         if ( rasterLocation.isFile() ) {
-            return RasterFactory.loadRasterFromFile( rasterLocation, options );
+            return RasterFactory.loadRasterFromFile( rasterLocation, options, metadata );
         }
         List<File> resolutions = findResolutionDirs( rasterLocation );
         if ( resolutions.isEmpty() ) {
@@ -465,7 +465,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                 LOG.info( "Creating raster from file: {}", filename );
                 RasterIOOptions newOpts = RasterIOOptions.forFile( filename );
                 newOpts.copyOf( options );
-                AbstractRaster raster = RasterFactory.loadRasterFromFile( filename, newOpts );
+                AbstractRaster raster = RasterFactory.loadRasterFromFile( filename, newOpts, null );
                 ICRS rasterCRS = raster.getCoordinateSystem();
                 if ( defaultCRS == null ) {
                     defaultCRS = rasterCRS;
