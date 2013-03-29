@@ -42,7 +42,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -56,7 +55,6 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,10 +106,6 @@ public class DeegreeWorkspace {
 
     private Map<Class<? extends ResourceManager>, ResourceManager> managerMap;
 
-    private ClassLoader moduleClassLoader;
-
-    private Collection<ModuleInfo> wsModules = new TreeSet<ModuleInfo>();
-
     private DefaultWorkspace workspace;
 
     /**
@@ -129,63 +123,14 @@ public class DeegreeWorkspace {
      */
     public Collection<ModuleInfo> getModulesInfo()
                             throws IOException {
-        if ( !( moduleClassLoader instanceof URLClassLoader ) ) {
+        if ( !( workspace.getModuleClassLoader() instanceof URLClassLoader ) ) {
             return null;
         }
         Set<URL> urls = new HashSet<URL>();
-        for ( URL url : ( (URLClassLoader) moduleClassLoader ).getURLs() ) {
+        for ( URL url : ( (URLClassLoader) workspace.getModuleClassLoader() ).getURLs() ) {
             urls.add( url );
         }
         return ModuleInfo.extractModulesInfo( urls );
-    }
-
-    /**
-     * Call this if modules directory content has changed.
-     */
-    private void initClassloader() {
-        // setup classloader
-        File modules = new File( dir, "modules" );
-        File classes = new File( modules, "classes/" );
-        moduleClassLoader = Thread.currentThread().getContextClassLoader();
-        if ( modules.exists() ) {
-            File[] fs = modules.listFiles();
-            if ( fs != null && fs.length > 0 ) {
-                LOG.info( "--------------------------------------------------------------------------------" );
-                LOG.info( "deegree modules (additional)" );
-                LOG.info( "--------------------------------------------------------------------------------" );
-                List<URL> urls = new ArrayList<URL>( fs.length );
-                if ( classes.isDirectory() ) {
-                    LOG.info( "Added modules/classes/." );
-                    try {
-                        urls.add( classes.toURI().toURL() );
-                    } catch ( MalformedURLException e ) {
-                        LOG.warn( "Could not add modules/classes/ to classpath." );
-                    }
-                }
-                for ( int i = 0; i < fs.length; ++i ) {
-                    if ( fs[i].isFile() ) {
-                        try {
-                            URL url = fs[i].toURI().toURL();
-                            urls.add( url );
-                            ModuleInfo moduleInfo = ModuleInfo.extractModuleInfo( url );
-                            if ( moduleInfo != null ) {
-                                LOG.info( " - " + moduleInfo );
-                                wsModules.add( moduleInfo );
-                            } else {
-                                LOG.info( " - " + fs[i] + " (non-deegree)" );
-                            }
-                        } catch ( Throwable e ) {
-                            LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
-                        }
-                    }
-                }
-                moduleClassLoader = new URLClassLoader( urls.toArray( new URL[urls.size()] ), moduleClassLoader );
-            } else {
-                LOG.info( "Not loading additional modules." );
-            }
-        } else {
-            LOG.info( "Not loading additional modules." );
-        }
     }
 
     /**
@@ -194,8 +139,6 @@ public class DeegreeWorkspace {
      * @throws ResourceInitException
      */
     public void initManagers() {
-        initClassloader();
-
         // setup managers
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, getModuleClassLoader() ).iterator();
 
@@ -425,7 +368,7 @@ public class DeegreeWorkspace {
     }
 
     public ClassLoader getModuleClassLoader() {
-        return moduleClassLoader;
+        return workspace.getModuleClassLoader();
     }
 
     /**
