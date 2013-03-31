@@ -21,7 +21,7 @@ Supported Java versions are `OpenJDK <http://openjdk.java.net>`_ version 7 (curr
 Downloading
 -----------
 
-deegree webservices ${project.version} downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice of two flavors:
+deegree webservices downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice of two flavors:
 
 * *ZIP*: Multi-operating system package bundled with Apache Tomcat
 * *WAR*: Plain Java Web Archive for deployment in an existing servlet container [#f2]_
