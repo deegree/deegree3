@@ -159,9 +159,17 @@ class RemoteWMSLayer extends AbstractLayer {
         replaceParameters( extraParams, query.getParameters(), defaultParametersGetFeatureInfo,
                            hardParametersGetFeatureInfo );
 
+        ICRS crs = this.crs;
+        if ( !alwaysUseDefaultCrs ) {
+            ICRS envCrs = query.getEnvelope().getCoordinateSystem();
+            if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
+                crs = envCrs;
+            }
+        }
+
         GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( originalName ), query.getWidth(),
                                                  query.getHeight(), query.getX(), query.getY(), query.getEnvelope(),
-                                                 query.getEnvelope().getCoordinateSystem(), query.getFeatureCount() );
+                                                 crs, query.getFeatureCount() );
         return new RemoteWMSLayerData( client, gfi, extraParams );
     }
 
