@@ -57,8 +57,6 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -68,6 +66,8 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
@@ -97,6 +97,7 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,11 +143,11 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
      * @throws FeatureStoreException
      */
     public MappedSchemaBuilderTableOld( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialect dialect,
-                                        boolean deleteCascadingByDB, DeegreeWorkspace workspace ) throws SQLException,
+                                        boolean deleteCascadingByDB, Workspace workspace ) throws SQLException,
                             FeatureStoreException {
         this.dialect = dialect;
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        conn = mgr.get( jdbcConnId );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, jdbcConnId );
+        conn = prov.getConnection();
         try {
             for ( FeatureTypeJAXB ftDecl : ftDecls ) {
                 process( ftDecl );

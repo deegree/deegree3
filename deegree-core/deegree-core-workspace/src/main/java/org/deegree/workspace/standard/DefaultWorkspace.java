@@ -133,7 +133,14 @@ public class DefaultWorkspace implements Workspace {
 
     @Override
     public void destroy() {
+        List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
         for ( Resource res : resources.values() ) {
+            list.add( res.getMetadata() );
+        }
+        Collections.sort( list );
+        Collections.reverse( list );
+        for ( ResourceMetadata<? extends Resource> md : list ) {
+            Resource res = resources.get( md.getIdentifier() );
             try {
                 res.destroy();
             } catch ( Exception e ) {
@@ -278,6 +285,10 @@ public class DefaultWorkspace implements Workspace {
         Collections.sort( mdList );
 
         for ( ResourceMetadata<? extends Resource> metadata : mdList ) {
+            if ( resources.get( metadata.getIdentifier() ) != null ) {
+                LOG.info( "Resource {} already available.", metadata.getIdentifier() );
+                continue;
+            }
             ResourceBuilder<? extends Resource> builder = metadataToBuilder.get( metadata );
             LOG.info( "Building resource {}.", id );
             try {

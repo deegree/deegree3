@@ -61,7 +61,6 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -270,7 +269,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         MappedAppSchema schema;
         try {
-            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect, workspace );
+            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect, this.workspace );
         } catch ( Throwable t ) {
             LOG.error( t.getMessage(), t );
             throw new ResourceInitException( t.getMessage(), t );
@@ -286,7 +285,6 @@ public class SQLFeatureStore implements FeatureStore {
             ConnectionProvider conn = this.workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
             lockManager = new DefaultLockManager( this, conn );
         } catch ( Throwable e ) {
-            e.printStackTrace();
             LOG.warn( "Lock manager initialization failed, locking will not be available." );
             LOG.trace( "Stack trace:", e );
         }
