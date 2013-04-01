@@ -116,11 +116,7 @@ public class ConnectionPool {
      */
     public void destroy()
                             throws Exception {
-        LOG.info( "For connection id '{}': active connections: {}, idle connections: {}",
-                   new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
         pool.close();
-        LOG.info( "For connection id '{}': active connections: {}, idle connections: {}",
-                   new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
     }
 
     public void invalidate( DelegatingConnection conn )

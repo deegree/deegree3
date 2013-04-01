@@ -77,6 +77,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
+import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -235,6 +236,7 @@ public class SQLFeatureStoreAIXMTest {
         ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
         dialect = prov.getDialect();
         Connection adminConn = prov.getConnection();
+        fs.destroy();
         ConnectionProvider testProv = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );
         testProv.destroy();
         try {
@@ -362,7 +364,9 @@ public class SQLFeatureStoreAIXMTest {
         PropertyIsLessThanOrEqualTo oper = new PropertyIsLessThanOrEqualTo( propName, literal, false, null );
         Filter filter = new OperatorFilter( oper );
         Query query = new Query( HELIPORT_NAME, filter, -1, -1, -1 );
-        FeatureCollection fc = fs.query( query ).toCollection();
+        FeatureInputStream frs = fs.query( query );
+        FeatureCollection fc = frs.toCollection();
+        frs.close();
         Assert.assertEquals( 1, fc.size() );
     }
 

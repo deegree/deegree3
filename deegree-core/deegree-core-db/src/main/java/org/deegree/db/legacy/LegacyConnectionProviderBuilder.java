@@ -47,6 +47,7 @@ import java.sql.Connection;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.db.legacy.jaxb.JDBCConnection;
@@ -93,10 +94,15 @@ public class LegacyConnectionProviderBuilder implements ResourceBuilder<Connecti
         SQLDialect dialect = null;
         while ( iter.hasNext() ) {
             SqlDialectProvider prov = iter.next();
-            Connection conn = cprov.getConnection();
-            if ( prov.supportsConnection( conn ) ) {
-                dialect = prov.createDialect( conn );
-                break;
+            Connection conn = null;
+            try {
+                conn = cprov.getConnection();
+                if ( prov.supportsConnection( conn ) ) {
+                    dialect = prov.createDialect( conn );
+                    break;
+                }
+            } finally {
+                JDBCUtils.close( conn );
             }
         }
         cprov.setDialect( dialect );

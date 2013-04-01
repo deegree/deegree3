@@ -247,6 +247,7 @@ public class SQLFeatureStoreTOPPStatesTest {
                             throws Exception {
         ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
         ConnectionProvider dtest = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );
+        fs.destroy();
         dtest.destroy();
         Connection adminConn = prov.getConnection();
         try {

@@ -142,6 +142,7 @@ public class DefaultWorkspace implements Workspace {
         for ( ResourceMetadata<? extends Resource> md : list ) {
             Resource res = resources.get( md.getIdentifier() );
             try {
+                LOG.info( "Shutting down {}.", md.getIdentifier() );
                 res.destroy();
             } catch ( Exception e ) {
                 LOG.warn( "Unable to destroy resource {}: {}", res.getMetadata().getIdentifier(),
