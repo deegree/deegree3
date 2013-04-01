@@ -86,7 +86,7 @@ public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
         SQLFeatureStore fs = null;
         try {
             // TODO rewrite needed to properly resolve files using resource location
-            fs = new SQLFeatureStore( config, file.toURI().toURL(), conn.getDialect(), metadata );
+            fs = new SQLFeatureStore( config, file.toURI().toURL(), conn.getDialect(), metadata, workspace );
         } catch ( MalformedURLException e ) {
             LOG.trace( "Stack trace:", e );
         }

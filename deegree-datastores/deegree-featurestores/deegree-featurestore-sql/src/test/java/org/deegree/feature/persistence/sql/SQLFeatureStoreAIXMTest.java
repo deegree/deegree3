@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.cs.persistence.CRSManager.lookup;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.junit.Assert.assertEquals;
@@ -68,7 +69,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
-import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
@@ -134,7 +134,7 @@ public class SQLFeatureStoreAIXMTest {
     private Workspace ws;
 
     private TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> builderMap;
-    
+
     private SQLDialect dialect;
 
     private FeatureStore fs;
@@ -153,7 +153,7 @@ public class SQLFeatureStoreAIXMTest {
         initWorkspace();
         initDbPlusFeatureStore();
         createTables();
-//        initFeatureStore();
+        // initFeatureStore();
         populateStore();
     }
 
@@ -180,71 +180,41 @@ public class SQLFeatureStoreAIXMTest {
 
     private void initWorkspace()
                             throws ResourceInitException, URISyntaxException {
-        URL url = SQLFeatureStoreAIXMTest.class.getResource("/org/deegree/feature/persistence/sql/aixm");
-        File dir = new File(url.toURI());
-        ws = new DefaultWorkspace(dir);
-        ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( "deegree-test", settings.getUrl(), settings.getUser(), settings.getPass() );
-        ws.addExtraResource(loc );
-        loc = ConnectionProviderUtils.getSyntheticProvider("admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
-        ws.addExtraResource(loc );
+        URL url = SQLFeatureStoreAIXMTest.class.getResource( "/org/deegree/feature/persistence/sql/aixm" );
+        File dir = new File( url.toURI() );
+        ws = new DefaultWorkspace( dir );
+        ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( "deegree-test", settings.getUrl(),
+                                                                         settings.getUser(), settings.getPass() );
+        ws.addExtraResource( loc );
+        loc = getSyntheticProvider( "admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
+        ws.addExtraResource( loc );
         ws.startup();
         ws.scan();
         builderMap = ws.prepare();
-//        // TODO
-//        ws = DeegreeWorkspace.getInstance( "deegree-featurestore-sql-tests" );
-//        ws.initManagers();
-//        ws.getSubsystemManager( ConnectionManager.class ).startup( ws );
-//        ws.getSubsystemManager( SQLDialectManager.class ).startup( ws );
-//        ws.getSubsystemManager( FeatureStoreManager.class ).startup( ws );
-//        ws.getSubsystemManager( FunctionManager.class ).startup( ws );
-//        ws.getSubsystemManager( SQLFunctionManager.class ).startup( ws );
-
-//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-//        JDBCParams params = new DefaultJDBCParams( settings.getAdminUrl(), settings.getAdminUser(),
-//                                                   settings.getAdminPass(), false );
-//        mgr.addPool( "admin", params, ws );
-//        params = new DefaultJDBCParams( settings.getUrl(), settings.getUser(), settings.getPass(), false );
-//        mgr.addPool( "deegree-test", params, ws );
-
-//        dialect = ws.getSubsystemManager( SQLDialectManager.class ).create( "admin" );
     }
-
-//    private void initFeatureStore()
-//                            throws ResourceInitException {
-//        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
-//        provider.init( ws );
-//        fs = provider.create( SQLFeatureStoreAIXMTest.class.getResource( "aixm/datasources/feature/aixm.xml" ) );
-//        fs.init( ws );
-//    }
 
     private void initDbPlusFeatureStore()
                             throws SQLException {
-        ws.init(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, "admin" ), builderMap);
-        ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin" );
-//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "admin" ),
+                 builderMap );
+        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
         Connection adminConn = prov.getConnection();
         try {
-            prov.getDialect().createDB( adminConn, settings.getDbName() );
+            dialect = prov.getDialect();
+            dialect.createDB( adminConn, settings.getDbName() );
         } finally {
             adminConn.close();
         }
-        fs = ws.init(new DefaultResourceIdentifier<FeatureStore>(NewFeatureStoreProvider.class, "aixm" ), builderMap );
+        fs = ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, "aixm" ), builderMap );
     }
 
     private void createTables()
                             throws Exception {
-
-//        SQLFeatureStoreProvider provider = new SQLFeatureStoreProvider();
-//        provider.init( ws );
-//        SQLFeatureStore fs = provider.create( SQLFeatureStoreAIXMTest.class.getResource( "aixm/datasources/feature/aixm.xml" ) );
-//        fs.init( ws );
-
         // create tables
-        FeatureStore fs = ws.getResource(NewFeatureStoreProvider.class, "aixm");
-        String[] ddl = DDLCreator.newInstance( (MappedAppSchema)fs.getSchema(), dialect ).getDDL();
+        FeatureStore fs = ws.getResource( NewFeatureStoreProvider.class, "aixm" );
+        String[] ddl = DDLCreator.newInstance( (MappedAppSchema) fs.getSchema(), dialect ).getDDL();
 
-        ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "deegree-test");
-//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );
         Connection conn = prov.getConnection();
         Statement stmt = null;
         try {
@@ -262,18 +232,16 @@ public class SQLFeatureStoreAIXMTest {
     @After
     public void tearDown()
                             throws Exception {
-        ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin");
+        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
         dialect = prov.getDialect();
-//        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
         Connection adminConn = prov.getConnection();
-//        mgr.deactivate( "deegree-test" );
+        ConnectionProvider testProv = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );
+        testProv.destroy();
         try {
             dialect.dropDB( adminConn, settings.getDbName() );
         } finally {
             adminConn.close();
         }
-//        ws.destroyAll();
-//        fs.destroy();
         ws.destroy();
     }
 

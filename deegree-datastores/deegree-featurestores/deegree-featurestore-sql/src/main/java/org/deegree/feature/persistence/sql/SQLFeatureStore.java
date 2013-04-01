@@ -85,8 +85,8 @@ import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.NewFeatureStoreManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
@@ -141,6 +141,7 @@ import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -188,8 +189,6 @@ public class SQLFeatureStore implements FeatureStore {
 
     private DefaultLockManager lockManager;
 
-    private DeegreeWorkspace workspace;
-
     private int fetchSize;
 
     private Boolean readAutoCommit;
@@ -200,6 +199,10 @@ public class SQLFeatureStore implements FeatureStore {
 
     private SqlFeatureStoreMetadata metadata;
 
+    private Workspace workspace;
+
+    private ConnectionProvider connProvider;
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
      * 
@@ -209,11 +212,12 @@ public class SQLFeatureStore implements FeatureStore {
      *            configuration systemid
      */
     public SQLFeatureStore( SQLFeatureStoreJAXB config, URL configURL, SQLDialect dialect,
-                            SqlFeatureStoreMetadata metadata ) {
+                            SqlFeatureStoreMetadata metadata, Workspace workspace ) {
         this.config = config;
         this.configURL = configURL;
         this.dialect = dialect;
         this.metadata = metadata;
+        this.workspace = workspace;
         this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
         fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
@@ -274,22 +278,21 @@ public class SQLFeatureStore implements FeatureStore {
 
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
-        this.workspace = workspace;
         this.schema = schema;
         this.blobMapping = schema.getBlobMapping();
         initConverters();
         try {
             // however TODO it properly on the DB
-            ConnectionProvider conn = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
-                                                                               "LOCK_DB" );
+            ConnectionProvider conn = this.workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
             lockManager = new DefaultLockManager( this, conn );
         } catch ( Throwable e ) {
+            e.printStackTrace();
             LOG.warn( "Lock manager initialization failed, locking will not be available." );
             LOG.trace( "Stack trace:", e );
         }
 
         // TODO make this configurable
-        FeatureStoreManager fsMgr = workspace.getSubsystemManager( FeatureStoreManager.class );
+        NewFeatureStoreManager fsMgr = this.workspace.getResourceManager( NewFeatureStoreManager.class );
         if ( fsMgr != null ) {
             this.bboxCache = fsMgr.getBBoxCache();
         } else {
@@ -455,8 +458,7 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( getConnId() );
+            conn = connProvider.getConnection();
             env = calcEnvelope( ftName, conn );
         } finally {
             JDBCUtils.close( conn );
@@ -596,8 +598,7 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( blobMapping.getGMLIdColumn() );
             sql.append( "=?" );
 
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( getConnId() );
+            conn = connProvider.getConnection();
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
@@ -1182,8 +1183,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        Connection conn = mgr.get( getConnId() );
+        Connection conn = connProvider.getConnection();
         conn.setAutoCommit( readAutoCommit );
         return conn;
     }
@@ -1575,6 +1575,7 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public void init() {
         try {
+            connProvider = workspace.getResource( ConnectionProviderProvider.class, getConnId() );
             init( null );
         } catch ( ResourceInitException e ) {
             throw new org.deegree.workspace.ResourceInitException( e.getLocalizedMessage(), e );
