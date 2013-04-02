@@ -403,4 +403,5 @@ public class Config implements Comparable<Config> {
     public void setState( ResourceState<?> state ) {
         this.state = state;
     }
+
 }
