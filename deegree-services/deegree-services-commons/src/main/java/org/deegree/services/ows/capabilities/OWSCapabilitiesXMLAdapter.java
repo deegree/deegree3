@@ -175,8 +175,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
             LOG.warn( "Service name may not be null, wrong call to exportServiceIdentification110, setting to unknown" );
             srvn = "unknown";
         }
-        writeElement( writer, OWS110_NS, "ServiceType", srvn );
-        writer.writeAttribute( "codeSpace", "http://www.opengeospatial.org/" );
+        writeElement( writer, OWS110_NS, "ServiceType", srvn, null, null, "codeSpace", "http://www.opengeospatial.org/" );
         List<Version> versions = serviceVersions;
         if ( serviceVersions == null || serviceVersions.isEmpty() ) {
             LOG.warn( "Service versions name may not be null, wrong call to exportServiceIdentification110, setting to unknown" );
