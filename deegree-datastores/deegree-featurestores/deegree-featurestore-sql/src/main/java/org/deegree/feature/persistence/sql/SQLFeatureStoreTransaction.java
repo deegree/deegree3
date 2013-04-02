@@ -284,7 +284,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private int performDeleteBlob( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
@@ -293,6 +292,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             for ( ResourceId id : filter.getSelectedIds() ) {
                 stmt.setString( 1, id.getRid() );
                 stmt.addBatch();
+                if ( fs.getCache() != null ) {
+                    fs.getCache().remove( id.getRid() );
+                }
             }
             int[] deletes = stmt.executeBatch();
             for ( int noDeleted : deletes ) {
