@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FeatureInfoResponse xmlns:esri_wms="http://www.esri.com/wms" xmlns="http://www.esri.com/wms">
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800016" Nimi="Kurpanneva" SuojeluPeruste="SCI" Paallekkaiset="" Lisatieto="" DigPohja="perusCD" MuutosPvm="31.8.2006" OBJECTID="953" Shape_Length="10155,890904" Shape_Area="3948835,84938" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800032" Nimi="Levaneva" SuojeluPeruste="SPA/SCI" Paallekkaiset="" Lisatieto="" DigPohja="nkrk" MuutosPvm="31.8.2006" OBJECTID="967" Shape_Length="37419,377992" Shape_Area="33434756,43552" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800034" Nimi="Iso Koihnanneva" SuojeluPeruste="SPA/SCI" Paallekkaiset="" Lisatieto="" DigPohja="perusCD" MuutosPvm="31.8.2006" OBJECTID="969" Shape_Length="22622,243584" Shape_Area="13902892,006479" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800050" Nimi="Ylimysjärvi" SuojeluPeruste="SPA/SCI" Paallekkaiset="" Lisatieto="" DigPohja="perusCD" MuutosPvm="31.8.2006" OBJECTID="981" Shape_Length="5089,352173" Shape_Area="1246124,401231" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800070" Nimi="Pässilänvuori" SuojeluPeruste="SCI" Paallekkaiset="" Lisatieto="" DigPohja="nkrk" MuutosPvm="31.8.2006" OBJECTID="995" Shape_Length="18329,551058" Shape_Area="2391265,418295" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800079" Nimi="Pitkämönluoma" SuojeluPeruste="SCI" Paallekkaiset="" Lisatieto="" DigPohja="perusCD" MuutosPvm="31.8.2006" OBJECTID="998" Shape_Length="5176,091605" Shape_Area="241789,011432" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800101" Nimi="Pässinrämäkkä" SuojeluPeruste="SCI" Paallekkaiset="" Lisatieto="" DigPohja="perusCD" MuutosPvm="31.8.2006" OBJECTID="1014" Shape_Length="5784,905027" Shape_Area="596471,25737" Yht_Organisaatio="EPO"></FIELDS>
+<FIELDS Shape="Polygon" NaturaTunnus="FI0800145" Nimi="Isokorpi" SuojeluPeruste="SCI" Paallekkaiset="" Lisatieto="" DigPohja="nkrk99,ykj99" MuutosPvm="31.8.2006" OBJECTID="1034" Shape_Length="1521,704504" Shape_Area="136373,996977" Yht_Organisaatio="EPO"></FIELDS>
+</FeatureInfoResponse>
