@@ -105,8 +105,16 @@ class TileDataSetBuilder {
     }
 
     private DefaultTileDataSet buildTileDataSet( RequestParams requestParams, TileMatrixSet tms, WMSClient client,
-                                                 String outputFormat ) {
+                                                 String outputFormat )
+                            throws ResourceInitException {
         List<String> layers = splitNullSafe( requestParams.getLayers() );
+
+        for ( String l : layers ) {
+            if ( !client.hasLayer( l ) ) {
+                throw new ResourceInitException( "The layer named " + l + " is not available from the remote WMS." );
+            }
+        }
+
         List<String> styles = splitNullSafe( requestParams.getStyles() );
         String format = requestParams.getFormat();
         String crs = requestParams.getCRS();
@@ -123,7 +131,9 @@ class TileDataSetBuilder {
 
         List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
         for ( TileMatrix tm : tms.getTileMatrices() ) {
-            TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs, defaultGetMap, defaultGetFeatureInfo, hardGetMap, hardGetFeatureInfo );
+            TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs,
+                                                          defaultGetMap, defaultGetFeatureInfo, hardGetMap,
+                                                          hardGetFeatureInfo );
             dataLevels.add( 0, m );
         }
         return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
