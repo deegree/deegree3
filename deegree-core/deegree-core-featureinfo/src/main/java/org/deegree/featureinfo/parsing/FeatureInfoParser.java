@@ -112,7 +112,7 @@ public class FeatureInfoParser {
             return readGml2FeatureCollection( xmlReader );
         } catch ( Exception e ) {
             String msg = "Unable to parse WMS GetFeatureInfo response as feature collection: " + e.getMessage();
-            throw new XMLStreamException( msg );
+            throw new XMLStreamException( msg, e );
         }
     }
 
@@ -212,6 +212,12 @@ public class FeatureInfoParser {
 
                     // Skip boundedBy
                     if ( reader.isStartElement() && reader.getLocalName().equals( "boundedBy" ) ) {
+                        XMLStreamUtils.skipElement( reader );
+                        nextElement( reader );
+                    }
+
+                    // skip geometry
+                    if ( reader.isStartElement() && reader.getLocalName().equals( "geometry" ) ) {
                         XMLStreamUtils.skipElement( reader );
                         nextElement( reader );
                     }
