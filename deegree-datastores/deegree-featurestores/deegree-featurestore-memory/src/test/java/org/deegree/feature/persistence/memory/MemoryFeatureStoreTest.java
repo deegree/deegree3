@@ -102,13 +102,14 @@ public class MemoryFeatureStoreTest {
                             ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
                             ResourceInitException {
 
-        DeegreeWorkspace.getInstance().initAll();
+        DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+        workspace.initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        store = new MemoryFeatureStore( schema, null );
+        store = new MemoryFeatureStore( schema, null, workspace );
 
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         gmlStream.setApplicationSchema( schema );

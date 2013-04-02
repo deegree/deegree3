@@ -39,8 +39,12 @@ import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.console.WorkspaceBean;
 
 /**
  * TODO add class documentation here
@@ -60,6 +64,12 @@ public class Connection implements Serializable {
 
     private String status = "OK";
 
+    private DeegreeWorkspace getWorkspace() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+        return ws;
+    }
+
     public String getId() {
         return id;
     }
@@ -71,7 +81,8 @@ public class Connection implements Serializable {
     Connection( String id ) {
         try {
             this.id = id;
-            ConnectionManager.getConnection( id ).close();
+            ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
+            mgr.get( id ).close();
         } catch ( Exception e ) {
             status = "ERROR: " + e.getMessage();
         }

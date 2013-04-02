@@ -69,8 +69,8 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
      *            pointing to the configured database connection.
      * @param type
      */
-    public PostgisBackend( String connectionID, Type type ) {
-        super( connectionID, type );
+    public PostgisBackend( String connectionID, Type type, DeegreeWorkspace workspace ) {
+        super( connectionID, type, workspace );
     }
 
     @Override
