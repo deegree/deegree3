@@ -45,13 +45,16 @@ import static org.deegree.commons.utils.CollectionUtils.map;
 
 import java.util.LinkedList;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.Pair;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.simplesql.jaxb.SimpleSQLFeatureStoreConfig;
 import org.deegree.feature.persistence.simplesql.jaxb.SimpleSQLFeatureStoreConfig.LODStatement;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * <code>SimpleSqlFeatureStoreBuilder</code>
@@ -67,15 +70,19 @@ public class SimpleSqlFeatureStoreBuilder implements ResourceBuilder<FeatureStor
 
     private SimpleSQLFeatureStoreConfig config;
 
+    private Workspace workspace;
+
     private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
         public Pair<Integer, String> apply( LODStatement u ) {
             return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
         }
     };
 
-    public SimpleSqlFeatureStoreBuilder( ResourceMetadata<FeatureStore> metadata, SimpleSQLFeatureStoreConfig config ) {
+    public SimpleSqlFeatureStoreBuilder( ResourceMetadata<FeatureStore> metadata, SimpleSQLFeatureStoreConfig config,
+                                         Workspace workspace ) {
         this.metadata = metadata;
         this.config = config;
+        this.workspace = workspace;
     }
 
     @Override
@@ -92,7 +99,9 @@ public class SimpleSqlFeatureStoreBuilder implements ResourceBuilder<FeatureStor
         String bbox = config.getBBoxStatement();
         LinkedList<Pair<Integer, String>> lods = map( config.getLODStatement(), lodMapper );
 
-        return new SimpleSQLFeatureStore( connId, srs, stmt, name, ns, prefix, bbox, lods, metadata );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
+
+        return new SimpleSQLFeatureStore( prov, srs, stmt, name, ns, prefix, bbox, lods, metadata );
     }
 
 }

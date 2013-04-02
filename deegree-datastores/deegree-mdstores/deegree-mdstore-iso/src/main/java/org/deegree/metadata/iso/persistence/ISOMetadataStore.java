@@ -52,6 +52,8 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
@@ -311,8 +313,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connectionId );
+            ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                               connectionId );
+            conn = prov.getConnection();
             conn.setAutoCommit( false );
         } catch ( Throwable e ) {
             throw new MetadataStoreException( e.getMessage() );

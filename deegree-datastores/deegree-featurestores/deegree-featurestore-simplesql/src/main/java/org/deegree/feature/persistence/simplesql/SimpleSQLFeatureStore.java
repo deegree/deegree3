@@ -65,6 +65,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.persistence.FeatureStore;
@@ -119,8 +120,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private boolean available = false;
 
-    private String connId;
-
     ICRS crs;
 
     private AppSchema schema;
@@ -143,6 +142,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private ResourceMetadata<FeatureStore> metadata;
 
+    private ConnectionProvider connProvider;
+
     /**
      * @param connId
      * @param crs
@@ -154,10 +155,10 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param lods
      * @param metadata
      */
-    public SimpleSQLFeatureStore( String connId, String crs, String sql, String ftLocalName, String ftNamespace,
-                                  String ftPrefix, String bbox, List<Pair<Integer, String>> lods,
+    public SimpleSQLFeatureStore( ConnectionProvider connProvider, String crs, String sql, String ftLocalName,
+                                  String ftNamespace, String ftPrefix, String bbox, List<Pair<Integer, String>> lods,
                                   ResourceMetadata<FeatureStore> metadata ) {
-        this.connId = connId;
+        this.connProvider = connProvider;
         this.metadata = metadata;
 
         sql = sql.trim();
@@ -215,7 +216,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
             PreparedStatement stmt = null;
             Connection conn = null;
             try {
-                conn = workspace.getSubsystemManager( ConnectionManager.class ).get( connId );
+                conn = connProvider.getConnection();
                 stmt = conn.prepareStatement( bbox );
                 LOG.debug( "Getting bbox with query '{}'.", stmt );
                 stmt.execute();
@@ -277,7 +278,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         this.workspace = workspace;
-        featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next(), workspace );
+        featureType = DBUtils.determineFeatureType( ftName, connProvider.getMetadata().getIdentifier().getId(),
+                                                    lods.values().iterator().next(), workspace );
         if ( featureType == null ) {
             available = false;
         } else {
@@ -326,8 +328,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                 }
 
                 ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( connId );
-                Type connType = mgr.getType( connId );
+                conn = connProvider.getConnection();
+                Type connType = mgr.getType( connProvider.getMetadata().getIdentifier().getId() );
 
                 if ( q.getMaxFeatures() > 0 && connType == Type.PostgreSQL ) {
                     sql += " limit " + q.getMaxFeatures();

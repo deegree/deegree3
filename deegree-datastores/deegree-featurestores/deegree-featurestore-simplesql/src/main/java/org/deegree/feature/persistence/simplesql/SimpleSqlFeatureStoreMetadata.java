@@ -89,7 +89,7 @@ public class SimpleSqlFeatureStoreMetadata extends AbstractResourceMetadata<Feat
             }
             dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
                                                                                  connId ) );
-            return new SimpleSqlFeatureStoreBuilder( this, config );
+            return new SimpleSqlFeatureStoreBuilder( this, config, workspace );
         } catch ( Exception e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( e.getLocalizedMessage(), e );

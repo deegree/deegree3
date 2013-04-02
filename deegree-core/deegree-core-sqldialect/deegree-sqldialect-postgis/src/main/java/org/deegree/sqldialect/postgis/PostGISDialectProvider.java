@@ -43,9 +43,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectProvider;
@@ -78,8 +79,8 @@ public class PostGISDialectProvider implements SQLDialectProvider, SqlDialectPro
         ResultSet rs = null;
         boolean useLegacyPredicates = false;
         try {
-            ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+            conn = prov.getConnection();
             if ( conn == null ) {
                 throw new ResourceInitException( "JDBC connection " + connId + " is not available." );
             }

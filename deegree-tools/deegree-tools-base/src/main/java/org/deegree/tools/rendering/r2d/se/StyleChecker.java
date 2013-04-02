@@ -37,6 +37,7 @@ package org.deegree.tools.rendering.r2d.se;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,14 +54,15 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.style.se.parser.PostgreSQLReader;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.tools.i18n.Messages;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -77,7 +79,7 @@ public class StyleChecker {
 
     private static HashSet<Integer> faultyStyles = new HashSet<Integer>();
 
-    private static ConnectionManager mgr;
+    private static ConnectionProvider connProvider;
 
     private static Options initOptions() {
         Options opts = new Options();
@@ -109,15 +111,15 @@ public class StyleChecker {
 
     }
 
-    private static void check( String schema, DeegreeWorkspace workspace ) {
-        PostgreSQLReader reader = new PostgreSQLReader( "style", schema, null, workspace );
+    private static void check( String schema ) {
+        PostgreSQLReader reader = new PostgreSQLReader( connProvider, schema, null );
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         boolean bad = false;
         try {
-            conn = mgr.get( "style" );
+            conn = connProvider.getConnection();
             stmt = conn.prepareStatement( "select id from " + schema + ".styles" );
             rs = stmt.executeQuery();
             while ( rs.next() ) {
@@ -176,7 +178,7 @@ public class StyleChecker {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
-            conn = mgr.get( "style" );
+            conn = connProvider.getConnection();
             StringBuilder sql = new StringBuilder( "delete from " + schema + ".styles where id in (" );
             for ( int i = 0; i < faultyStyles.size() - 1; ++i ) {
                 sql.append( "?, " );
@@ -244,16 +246,21 @@ public class StyleChecker {
                 schema = "public";
             }
 
-            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-            mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            File file = File.createTempFile( "deegree", "workspace" );
+            file.delete();
+            file.mkdir();
+            Workspace workspace = new DefaultWorkspace( file );
+            workspace.addExtraResource( ConnectionProviderUtils.getSyntheticProvider( "style", url, user, pass ) );
+            workspace.initAll();
+            connProvider = workspace.getResource( ConnectionProviderProvider.class, "style" );
 
-            JDBCParams params = new DefaultJDBCParams( url, user, pass, false );
-            mgr.addPool( "style", params, workspace );
-
-            check( schema, workspace );
+            check( schema );
             if ( line.hasOption( "clean" ) ) {
                 clean( schema );
             }
+
+            file.delete();
+            workspace.destroy();
         } catch ( ParseException exp ) {
             System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
             CommandUtils.printHelp( options, StyleChecker.class.getSimpleName(), null, null );

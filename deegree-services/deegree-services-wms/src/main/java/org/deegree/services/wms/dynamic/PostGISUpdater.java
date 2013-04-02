@@ -53,10 +53,11 @@ import java.util.List;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.DynamicSQLLayer;
@@ -77,8 +78,6 @@ public class PostGISUpdater extends LayerUpdater {
 
     private static final Logger LOG = getLogger( PostGISUpdater.class );
 
-    private String connId;
-
     private final Layer parent;
 
     private final MapService service;
@@ -93,6 +92,8 @@ public class PostGISUpdater extends LayerUpdater {
 
     private final DeegreeWorkspace workspace;
 
+    private ConnectionProvider connProvider;
+
     /**
      * @param connId
      * @param parent
@@ -102,7 +103,7 @@ public class PostGISUpdater extends LayerUpdater {
      */
     public PostGISUpdater( String connId, String schema, Layer parent, MapService service, String baseSystemId,
                            DeegreeWorkspace workspace ) {
-        this.connId = connId;
+        this.connProvider = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
         this.workspace = workspace;
         this.schema = schema == null ? "public" : schema;
         this.parent = parent;
@@ -110,20 +111,13 @@ public class PostGISUpdater extends LayerUpdater {
         this.styles = new PostgreSQLReader( connId, schema, baseSystemId, workspace );
     }
 
-    /**
-     * @return the connection id
-     */
-    public String getConnectionID() {
-        return connId;
-    }
-
     private StringPair generateSQL( String connid, String sourcetable )
                             throws SQLException {
         Connection conn = null;
         ResultSet rs = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connid );
+            ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connid );
+            conn = prov.getConnection();
             String tableName = sourcetable;
 
             String schema = this.schema;
@@ -187,9 +181,7 @@ public class PostGISUpdater extends LayerUpdater {
         }
         parent.getChildren().removeAll( toRemove );
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
-
+            conn = connProvider.getConnection();
             stmt = conn.prepareStatement( "select name, title, connectionid, sourcetable, sourcequery, symbolcodes, symbolfield, crs, namespace, bboxquery from "
                                           + schema + ".layers" );
             rs = stmt.executeQuery();
@@ -208,8 +200,12 @@ public class PostGISUpdater extends LayerUpdater {
                 }
 
                 String connectionid = rs.getString( "connectionid" );
+                ConnectionProvider connProvider = null;
                 if ( connectionid == null ) {
-                    connectionid = connId;
+                    connProvider = this.connProvider;
+                } else {
+                    connProvider = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                            connectionid );
                 }
 
                 String sourcetable = rs.getString( "sourcetable" );
@@ -240,7 +236,7 @@ public class PostGISUpdater extends LayerUpdater {
                 if ( ds == null ) {
                     changed = true;
                     layers.remove( new StringPair( name, title ) );
-                    ds = new SimpleSQLFeatureStore( connectionid, crs, sourcequery, name == null ? title : name,
+                    ds = new SimpleSQLFeatureStore( connProvider, crs, sourcequery, name == null ? title : name,
                                                     namespace, "app", bbox,
                                                     Collections.<Pair<Integer, String>> emptyList(), null );
                     try {
@@ -273,7 +269,8 @@ public class PostGISUpdater extends LayerUpdater {
             fillInheritedInformation( parent, parent.getSrs() );
             changed |= cleanup( parent, service );
         } catch ( SQLException e ) {
-            LOG.warn( "Database with connection id '{}' is not available at the moment.", connId );
+            LOG.warn( "Database with connection id '{}' is not available at the moment.",
+                      connProvider.getMetadata().getIdentifier() );
             LOG.trace( "Stack trace:", e );
         } finally {
             JDBCUtils.close( rs, stmt, conn, LOG );

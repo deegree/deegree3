@@ -66,6 +66,8 @@ import org.deegree.commons.jdbc.param.DefaultJDBCParams;
 import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
@@ -93,19 +95,16 @@ public class PostgreSQLWriter {
 
     private static final Logger LOG = getLogger( PostgreSQLWriter.class );
 
-    private final String connId;
-
     private final String schema;
 
-    private DeegreeWorkspace workspace;
+    private ConnectionProvider connProvider;
 
     /**
      * @param connId
      */
     public PostgreSQLWriter( String connId, String schema, DeegreeWorkspace workspace ) {
-        this.connId = connId;
+        connProvider = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
         this.schema = schema;
-        this.workspace = workspace;
     }
 
     private int write( Connection conn, Graphic graphic )
@@ -599,8 +598,7 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = connProvider.getConnection();
             conn.setAutoCommit( false );
             stmt = conn.prepareStatement( "insert into " + schema
                                           + ".styles (type, fk, minscale, maxscale, name) values (?, ?, ?, ?, ?)" );
@@ -688,8 +686,7 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = connProvider.getConnection();
             conn.setAutoCommit( false );
             stmt = conn.prepareStatement( "insert into styles (sld, name) values (?, ?)" );
 
