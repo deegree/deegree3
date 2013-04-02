@@ -106,7 +106,7 @@ class WmsCapabilities111ThemeWriter {
         }
         md.merge( lmd );
 
-        if ( md.isQueryable() ) {
+        if ( md.isQueryable() && md.getName() != null ) {
             writer.writeAttribute( "queryable", "1" );
         }
         if ( md.getCascaded() != 0 ) {
