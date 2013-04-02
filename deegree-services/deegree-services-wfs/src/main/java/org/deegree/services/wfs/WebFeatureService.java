@@ -251,6 +251,8 @@ public class WebFeatureService extends AbstractOWS {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
         } else if ( jaxbConfig.isDisableResponseBuffering() != null ) {
             disableBuffering = jaxbConfig.isDisableResponseBuffering();
+        } else {
+            disableBuffering = true;
         }
 
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
