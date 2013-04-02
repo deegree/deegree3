@@ -45,11 +45,12 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.console.WorkspaceBean;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 
 /**
- * JSF Bean for testing the availability of connections offered by {@link ConnectionManager}.
+ * JSF Bean for testing the availability of connections offered by {@link ConnectionProvider}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -70,8 +71,9 @@ public class ConnectionTester {
     public void test() {
         String id = (String) getParam1();
         try {
-            ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
-            mgr.get( id ).close();
+            ConnectionProvider prov = getWorkspace().getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                                    id );
+            prov.getConnection().close();
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         } catch ( Throwable t ) {
@@ -84,8 +86,9 @@ public class ConnectionTester {
     public String testAndSave() {
         String id = (String) getParam1();
         try {
-            ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
-            mgr.get( id ).close();
+            ConnectionProvider prov = getWorkspace().getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                                    id );
+            prov.getConnection().close();
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         } catch ( Throwable t ) {

@@ -43,8 +43,9 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.console.WorkspaceBean;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 
 /**
  * TODO add class documentation here
@@ -81,8 +82,9 @@ public class Connection implements Serializable {
     Connection( String id ) {
         try {
             this.id = id;
-            ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
-            mgr.get( id ).close();
+            ConnectionProvider prov = getWorkspace().getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                                    id );
+            prov.getConnection().close();
         } catch ( Exception e ) {
             status = "ERROR: " + e.getMessage();
         }

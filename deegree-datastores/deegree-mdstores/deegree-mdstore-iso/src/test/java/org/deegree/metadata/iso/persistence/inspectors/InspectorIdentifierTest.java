@@ -86,13 +86,17 @@ public class InspectorIdentifierTest extends AbstractISOTest {
         MetadataStoreTransaction ta = null;
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
 
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_TRUE );
+            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
+            prov.init( workspace );
+            store = (ISOMetadataStore) prov.create( TstConstants.configURL_REJECT_FI_TRUE );
 
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
             throw new MetadataInspectorException( "skipping test (needs configuration)" );
         }
+
+        store.init( workspace );
 
         TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_3 );
 
@@ -114,12 +118,15 @@ public class InspectorIdentifierTest extends AbstractISOTest {
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the configuration generates the identifier automaticaly. (Reject FALSE)" );
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_FALSE );
+            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
+            prov.init( workspace );
+            store = (ISOMetadataStore) prov.create( TstConstants.configURL_REJECT_FI_FALSE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
+        store.init( workspace );
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
 
         resultSet = store.getRecordById( ids, null );
@@ -149,12 +156,15 @@ public class InspectorIdentifierTest extends AbstractISOTest {
         LOG.info( "START Test: test if the configuration rejects the insert of the missing identifier. (Reject TRUE)" );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_REJECT_FI_TRUE );
+            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
+            prov.init( workspace );
+            store = (ISOMetadataStore) prov.create( TstConstants.configURL_REJECT_FI_TRUE );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
+        store.init( workspace );
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_1, TstConstants.tst_2 );
 
         resultSet = store.getRecordById( ids, null );

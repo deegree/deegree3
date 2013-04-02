@@ -318,6 +318,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
             conn = prov.getConnection();
             conn.setAutoCommit( false );
         } catch ( Throwable e ) {
+            e.printStackTrace();
             throw new MetadataStoreException( e.getMessage() );
         }
         return conn;

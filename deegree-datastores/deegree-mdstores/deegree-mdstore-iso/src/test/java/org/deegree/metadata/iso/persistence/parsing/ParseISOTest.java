@@ -78,12 +78,15 @@ public class ParseISOTest extends AbstractISOTest {
         LOG.info( "START Test: test various elements for one metadataRecord " );
 
         if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
+            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
+            prov.init( workspace );
+            store = (ISOMetadataStore) prov.create( TstConstants.configURL );
         }
         if ( store == null ) {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
+        store.init( workspace );
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query

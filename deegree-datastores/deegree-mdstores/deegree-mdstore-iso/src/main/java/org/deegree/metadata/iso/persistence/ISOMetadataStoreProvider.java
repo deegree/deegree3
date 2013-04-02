@@ -55,6 +55,8 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.filter.function.FunctionManager;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
@@ -169,19 +171,10 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
                 ISOMetadataStoreConfig cfg = (ISOMetadataStoreConfig) u.unmarshal( configURL );
 
-                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-                Type connType = mgr.getType( cfg.getJDBCConnId() );
-                if ( connType == null ) {
-                    throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId()
-                                                     + "' defined." );
-                }
-                LOG.debug( "Connection type is {}.", connType );
+                ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                                   cfg.getJDBCConnId() );
 
-                SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
-                if ( dialectMgr == null ) {
-                    throw new ResourceInitException( "SQLDialectManager not found in workspace / classpath." );
-                }
-                SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId() );
+                SQLDialect dialect = prov.getDialect();
                 return new ISOMetadataStore( cfg, dialect );
             } catch ( JAXBException e ) {
                 String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", configURL, e.getMessage() );
