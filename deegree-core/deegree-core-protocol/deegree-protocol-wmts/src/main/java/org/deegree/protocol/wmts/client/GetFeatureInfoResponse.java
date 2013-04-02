@@ -5,6 +5,8 @@
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,61 +33,52 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wmts.client;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.utils.net.HttpUtils;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.featureinfo.parsing.FeatureInfoParser;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
+import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 
 /**
- * The server response to a WMTS <code>GetTile</code> request.
- * <p>
- * NOTE: The receiver <b>must</b> either call {@link #getAsImage()} or {@link #close()} eventually, otherwise the HTTP
- * connection will stay open.
- * </p>
+ * The server response to a GetFeatureInfo request.
  * 
- * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
  * 
- * @version $Revision$
+ * @version $Revision: $, $Date: $
  */
-public class GetTileResponse {
+public class GetFeatureInfoResponse {
 
     private final OwsHttpResponse rawResponse;
 
-    GetTileResponse( OwsHttpResponse rawResponse ) {
+    private GetFeatureInfo request;
+
+    GetFeatureInfoResponse( OwsHttpResponse rawResponse, GetFeatureInfo request ) {
         this.rawResponse = rawResponse;
+        this.request = request;
     }
 
-    /**
-     * Returns the tile as an image.
-     * 
-     * @return image, never <code>null</code>
-     * @throws IOException
-     * @throws XMLStreamException
-     * @throws OWSExceptionReport
-     */
-    public BufferedImage getAsImage()
-                            throws IOException, OWSExceptionReport, XMLStreamException {
-
-        rawResponse.assertNoXmlContentTypeAndExceptionReport();
-
-        BufferedImage image = null;
+    public FeatureCollection getFeatures()
+                            throws OWSException, OWSExceptionReport {
         try {
-            InputStream is = rawResponse.getAsBinaryStream();
-            image = HttpUtils.IMAGE.work( is );
-        } finally {
-            rawResponse.close();
+            return FeatureInfoParser.parseAsFeatureCollection( rawResponse.getAsXMLStream(), request.getLayer() );
+        } catch ( XMLStreamException e ) {
+            throw new OWSException( "Remote WMTS response was not recognized as feature collection: "
+                                    + e.getLocalizedMessage(), e, OWSException.NO_APPLICABLE_CODE );
         }
-        return image;
     }
 
     /**
