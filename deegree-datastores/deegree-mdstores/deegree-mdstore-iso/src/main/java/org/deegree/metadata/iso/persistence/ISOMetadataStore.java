@@ -111,6 +111,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private final List<Queryable> queryables = new ArrayList<Queryable>();
 
+    private DeegreeWorkspace workspace;
+
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
      * 
@@ -147,7 +149,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                 inspectorChain.add( new MetadataSchemaValidationInspector<ISORecord>() );
             }
             if ( nn != null ) {
-                inspectorChain.add( new NamespaceNormalizationInspector(nn) );
+                inspectorChain.add( new NamespaceNormalizationInspector( nn ) );
             }
         }
         // hard coded because there is no configuration planned
@@ -224,6 +226,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
+        this.workspace = workspace;
         LOG.debug( "init" );
         ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
         connectionType = mgr.getType( connectionId );
@@ -308,7 +311,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         Connection conn = null;
         try {
-            conn = ConnectionManager.getConnection( connectionId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connectionId );
             conn.setAutoCommit( false );
         } catch ( Throwable e ) {
             throw new MetadataStoreException( e.getMessage() );

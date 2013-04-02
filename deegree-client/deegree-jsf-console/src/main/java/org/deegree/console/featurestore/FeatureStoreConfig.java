@@ -83,9 +83,14 @@ public class FeatureStoreConfig implements Serializable {
     private String id;
 
     private FeatureStoreManager getFeatureStoreManager() {
+        DeegreeWorkspace ws = getWorkspace();
+        return ws.getSubsystemManager( FeatureStoreManager.class );
+    }
+
+    private DeegreeWorkspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        return ws.getSubsystemManager( FeatureStoreManager.class );
+        return ws;
     }
 
     public boolean getSql() {
@@ -104,7 +109,7 @@ public class FeatureStoreConfig implements Serializable {
         SQLFeatureStore fs = (SQLFeatureStore) getFeatureStoreManager().get( getId() );
         String connId = fs.getConnId();
         String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
-        SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons" );
+        SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons", getWorkspace() );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";

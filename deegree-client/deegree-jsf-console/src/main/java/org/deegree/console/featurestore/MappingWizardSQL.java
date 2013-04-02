@@ -60,6 +60,7 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.FileUtils;
@@ -133,10 +134,24 @@ public class MappingWizardSQL {
         return mgr.getNewConfigId();
     }
 
+    private DeegreeWorkspace getWorkspace() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+        return ws;
+    }
+
     public SortedSet<String> getAvailableJdbcConns() {
-        SortedSet<String> conns = new TreeSet<String>( ConnectionManager.getConnectionIds() );
-        // TODO remove this hack
-        conns.remove( "LOCK_DB" );
+        ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
+        SortedSet<String> conns = new TreeSet<String>();
+        for ( ResourceState<?> rs : mgr.getStates() ) {
+            // TODO remove this hack
+            if ( rs.getId().equals( "LOCK_DB" ) ) {
+                continue;
+            }
+            if ( rs.getType().equals( StateType.init_ok ) ) {
+                conns.add( rs.getId() );
+            }
+        }
         return conns;
     }
 
@@ -335,7 +350,7 @@ public class MappingWizardSQL {
         SQLFeatureStore store = (SQLFeatureStore) resourceState.getResource();
         String[] createStmts = DDLCreator.newInstance( store.getSchema(), store.getDialect() ).getDDL();
         resourceState = fsMgr.deactivate( resourceState.getId() );
-        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5" );
+        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5", ws );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
     }

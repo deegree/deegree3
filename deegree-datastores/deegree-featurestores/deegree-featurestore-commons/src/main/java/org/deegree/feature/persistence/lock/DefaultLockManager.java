@@ -51,6 +51,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.ows.exception.OWSException;
@@ -87,6 +88,8 @@ public class DefaultLockManager implements LockManager {
 
     private String jdbcConnId;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * Creates a new {@link DefaultLockManager} for the given {@link FeatureStore}.
      * 
@@ -95,9 +98,11 @@ public class DefaultLockManager implements LockManager {
      * @throws FeatureStoreException
      *             if the initialization of the locking backend fails
      */
-    public DefaultLockManager( FeatureStore store, String jdbcConnId ) throws FeatureStoreException {
+    public DefaultLockManager( FeatureStore store, String jdbcConnId, DeegreeWorkspace workspace )
+                            throws FeatureStoreException {
         this.store = store;
         this.jdbcConnId = jdbcConnId;
+        this.workspace = workspace;
         initDatabase();
     }
 
@@ -118,7 +123,8 @@ public class DefaultLockManager implements LockManager {
         ResultSet rs = null;
         Statement stmt = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( jdbcConnId );
             DatabaseMetaData dbMetaData = conn.getMetaData();
             rs = dbMetaData.getTables( null, null, "LOCKS", new String[] { "TABLE" } );
             if ( !rs.next() ) {
@@ -192,7 +198,8 @@ public class DefaultLockManager implements LockManager {
             ResultSet rs = null;
 
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 conn.setAutoCommit( false );
 
                 // create entry in LOCKS table
@@ -325,7 +332,8 @@ public class DefaultLockManager implements LockManager {
             final DefaultLockManager manager = this;
             final String jdbcConnId = this.jdbcConnId;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 LOG.debug( "Using connection: " + conn );
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery( "SELECT ID,ACQUIRED,EXPIRES FROM LOCKS" );
@@ -377,7 +385,8 @@ public class DefaultLockManager implements LockManager {
             Statement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery( "SELECT ACQUIRED,EXPIRES FROM LOCKS WHERE ID=" + lockIdInt + "" );
                 if ( !rs.next() ) {
@@ -415,7 +424,8 @@ public class DefaultLockManager implements LockManager {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=?" );
                 stmt.setString( 1, fid );
                 rs = stmt.executeQuery();
@@ -455,7 +465,8 @@ public class DefaultLockManager implements LockManager {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID<>?" );
                 stmt.setString( 1, fid );
                 stmt.setInt( 2, lockIdInt );
@@ -485,7 +496,8 @@ public class DefaultLockManager implements LockManager {
             Connection conn = null;
             PreparedStatement stmt = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
 
                 stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID IN (SELECT ID FROM LOCKS WHERE EXPIRES <=?)" );
                 stmt.setTimestamp( 1, now );
@@ -512,4 +524,9 @@ public class DefaultLockManager implements LockManager {
             }
         }
     }
+
+    DeegreeWorkspace getWorkspace() {
+        return workspace;
+    }
+
 }

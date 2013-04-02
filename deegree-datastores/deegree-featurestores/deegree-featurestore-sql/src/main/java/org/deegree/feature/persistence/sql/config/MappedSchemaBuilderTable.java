@@ -58,6 +58,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -138,9 +139,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
      * @throws FeatureStoreException
      */
     public MappedSchemaBuilderTable( String jdbcConnId, List<FeatureTypeMappingJAXB> ftDecls, SQLDialect dialect,
-                                     boolean deleteCascadingByDB ) throws SQLException, FeatureStoreException {
+                                     boolean deleteCascadingByDB, DeegreeWorkspace workspace ) throws SQLException,
+                            FeatureStoreException {
         this.dialect = dialect;
-        conn = ConnectionManager.getConnection( jdbcConnId );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        conn = mgr.get( jdbcConnId );
         try {
             for ( FeatureTypeMappingJAXB ftDecl : ftDecls ) {
                 process( ftDecl );

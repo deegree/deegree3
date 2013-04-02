@@ -136,8 +136,9 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
-                conn.setAutoCommit( false );                
+                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
+                conn.setAutoCommit( false );
                 stmt = conn.prepareStatement( "UPDATE LOCKS SET EXPIRES=? WHERE ID=?" );
                 stmt.setTimestamp( 1, new Timestamp( expiryDate ) );
                 stmt.setString( 2, id );
@@ -179,7 +180,8 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.prepareStatement( "SELECT FID FROM LOCKED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 rs = stmt.executeQuery();
@@ -211,7 +213,8 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.prepareStatement( "SELECT FID FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 rs = stmt.executeQuery();
@@ -243,7 +246,8 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?" );
                 stmt.setString( 1, fid );
                 stmt.setString( 2, id );
@@ -270,7 +274,8 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             try {
                 // delete entries from LOCKED_FIDS table
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 stmt.execute();
@@ -306,7 +311,8 @@ class DefaultLock implements Lock {
                 PreparedStatement stmt = null;
                 ResultSet rs = null;
                 try {
-                    conn = ConnectionManager.getConnection( jdbcConnId );
+                    ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                    conn = mgr.get( jdbcConnId );
                     stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE FID=?" );
                     stmt.setString( 1, fid );
                     stmt.executeUpdate();
@@ -338,7 +344,8 @@ class DefaultLock implements Lock {
                 // TODO don't actually fetch the feature collection, but only the fids of the features
                 FeatureCollection fc = manager.getStore().query( query ).toCollection();
 
-                conn = ConnectionManager.getConnection( jdbcConnId );
+                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
+                conn = mgr.get( jdbcConnId );
                 conn.setAutoCommit( false );
 
                 // delete entries in LOCKED_FIDS table

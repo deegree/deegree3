@@ -90,7 +90,8 @@ public class OracleDialectProvider implements SQLDialectProvider {
         int minor = 0;
 
         try {
-            conn = ConnectionManager.getConnection( connId );
+            ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connId );
             stmt = conn.createStatement();
 
             // this function / parameters exists since oracle version 8
