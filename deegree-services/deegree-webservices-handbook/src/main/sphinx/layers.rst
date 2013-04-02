@@ -269,12 +269,12 @@ The basic structure of a manual configuration looks like this:
 
 As you can see, the first thing to do is to bind the configuration to a feature store. After that, you can define one or more feature layers.
 
-A feature layer configuration has three optional elements besides the common elements. The ``FeatureTypeName`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
+A feature layer configuration has three optional elements besides the common elements. The ``FeatureType`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
 
 .. code-block:: xml
 
   <FeatureLayer>
-    <FeatureTypeName xmlns:app='http://www.deegree.org/app'>app:Roads</FeatureTypeName>
+    <FeatureType xmlns:app='http://www.deegree.org/app'>app:Roads</FeatureType>
     <Filter>
       <Filter xmlns='http://www.opengis.net/ogc'>
         <PropertyIsEqualTo>
