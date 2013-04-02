@@ -98,6 +98,10 @@ class WmsCapabilities130ThemeWriter {
 
     void writeTheme( XMLStreamWriter writer, Theme theme )
                             throws XMLStreamException {
+        if ( theme.getThemes().isEmpty() && theme.getLayers().isEmpty() ) {
+            return;
+        }
+
         LayerMetadata md = theme.getMetadata();
         // TODO think about a push approach instead of a pull approach
         LayerMetadata lmd = null;
