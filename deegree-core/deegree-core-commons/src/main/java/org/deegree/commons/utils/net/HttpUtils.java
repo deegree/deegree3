@@ -74,6 +74,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -413,7 +414,7 @@ public class HttpUtils {
         if ( user != null && pass != null ) {
             authenticate( client, user, pass, u );
         }
-        post.setEntity( new FileEntity( postBody, null ) );
+        post.setEntity( new FileEntity( postBody, (ContentType) null ) );
         if ( headers != null ) {
             for ( String key : headers.keySet() ) {
                 post.addHeader( key, headers.get( key ) );

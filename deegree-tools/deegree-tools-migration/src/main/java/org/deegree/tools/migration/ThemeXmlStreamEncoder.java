@@ -42,7 +42,6 @@
 package org.deegree.tools.migration;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -52,7 +51,6 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import javax.xml.XMLConstants;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -139,16 +137,16 @@ class ThemeXmlStreamEncoder {
                             throws XMLStreamException {
         String prefix = inStream.getPrefix();
         String namespaceURI = inStream.getNamespaceURI();
-        if ( namespaceURI == NULL_NS_URI && ( prefix == DEFAULT_NS_PREFIX || prefix == null ) ) {
+        if ( namespaceURI == "" && ( prefix == DEFAULT_NS_PREFIX || prefix == null ) ) {
             writer.writeStartElement( inStream.getLocalName() );
         } else {
-            if ( prefix != null && writer.getNamespaceContext().getPrefix( prefix ) == XMLConstants.NULL_NS_URI ) {
+            if ( prefix != null && writer.getNamespaceContext().getPrefix( prefix ) == "" ) {
                 // TODO handle special cases for prefix binding, see
                 // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
                 writer.setPrefix( prefix, namespaceURI );
             }
             if ( prefix == null ) {
-                writer.writeStartElement( XMLConstants.NULL_NS_URI, inStream.getLocalName(), namespaceURI );
+                writer.writeStartElement( "", inStream.getLocalName(), namespaceURI );
             } else {
                 writer.writeStartElement( prefix, inStream.getLocalName(), namespaceURI );
             }

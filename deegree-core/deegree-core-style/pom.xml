@@ -40,6 +40,10 @@
     </dependency>
     <dependency>
       <groupId>batik</groupId>
+      <artifactId>batik-anim</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
       <artifactId>batik-dom</artifactId>
     </dependency>
     <dependency>
@@ -81,6 +85,10 @@
     <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis-ext</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -620,7 +619,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     local = theRest.split( ":" )[1];
                 }
 
-                QName qName = prefix == null ? new QName( local ) : new QName( XMLConstants.NULL_NS_URI, local, prefix );
+                QName qName = prefix == null ? new QName( local ) : new QName( "", local, prefix );
                 result[i] = new TypeName( qName, alias );
             }
         }
