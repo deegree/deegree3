@@ -42,8 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.util.Base64;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.slf4j.Logger;
@@ -132,7 +132,7 @@ public class HttpBasicAuthentication implements CredentialsProvider {
                 // 6: length of "Basic "
                 String encodedCreds = authorizationHeader.substring( 6 ).trim();
                 LOG.debug( "encodedCreds: " + encodedCreds );
-                String creds = new String( Base64.decode( encodedCreds ) );
+                String creds = new String( Base64.decodeBase64( encodedCreds ) );
                 LOG.debug( "creds: " + creds );
                 int delimPos = creds.indexOf( ':' );
                 if ( delimPos != -1 ) {

@@ -36,11 +36,9 @@
 package org.deegree.metadata.ebrim;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -216,7 +214,7 @@ public class RegistryObject implements MetadataRecord {
     }
 
     @Override
-    public boolean eval( Filter filter ) 
+    public boolean eval( Filter filter )
                             throws FilterEvaluationException {
         // TODO Auto-generated method stub
         return false;
@@ -259,12 +257,11 @@ public class RegistryObject implements MetadataRecord {
             throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
         }
 
-        if ( inStream.getNamespaceURI() == NULL_NS_URI
+        if ( inStream.getNamespaceURI() == ""
              && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
             writer.writeStartElement( inStream.getLocalName() );
         } else {
-            if ( inStream.getPrefix() != null
-                 && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+            if ( inStream.getPrefix() != null && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == "" ) {
                 // TODO handle special cases for prefix binding, see
                 // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
                 writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
@@ -323,12 +320,11 @@ public class RegistryObject implements MetadataRecord {
             throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
         }
 
-        if ( inStream.getNamespaceURI() == NULL_NS_URI
+        if ( inStream.getNamespaceURI() == ""
              && ( inStream.getPrefix() == DEFAULT_NS_PREFIX || inStream.getPrefix() == null ) ) {
             writer.writeStartElement( inStream.getLocalName() );
         } else {
-            if ( inStream.getPrefix() != null
-                 && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+            if ( inStream.getPrefix() != null && writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == "" ) {
                 // TODO handle special cases for prefix binding, see
                 // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
                 writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );

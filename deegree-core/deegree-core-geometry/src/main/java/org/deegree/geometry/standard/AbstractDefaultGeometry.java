@@ -345,6 +345,9 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom, ICRS crs ) {
 
         AbstractDefaultGeometry geom = null;
+        if ( jtsGeom.isEmpty() ) {
+            return null;
+        }
         if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
             com.vividsolutions.jts.geom.Point jtsPoint = (com.vividsolutions.jts.geom.Point) jtsGeom;
             if ( Double.isNaN( jtsPoint.getCoordinate().z ) ) {

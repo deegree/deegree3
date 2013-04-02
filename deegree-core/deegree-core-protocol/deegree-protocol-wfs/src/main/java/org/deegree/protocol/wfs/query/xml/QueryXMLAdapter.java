@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.query.xml;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
@@ -453,7 +452,7 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 // AXIOM appears to return null for context.resolveQName( name ) for unbound prefices!?
                 String prefix = name.substring( 0, colonIdx );
                 String localPart = name.substring( colonIdx + 1 );
-                qName = new QName( NULL_NS_URI, localPart, prefix );
+                qName = new QName( "", localPart, prefix );
             }
         } else {
             qName = new QName( name );

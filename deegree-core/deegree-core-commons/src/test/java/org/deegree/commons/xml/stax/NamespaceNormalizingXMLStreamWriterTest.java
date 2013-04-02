@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.stax;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
@@ -91,7 +90,7 @@ public class NamespaceNormalizingXMLStreamWriterTest {
         StringWriter output = new StringWriter();
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( output );
         NamespaceBindings nsBindings = new NamespaceBindings();
-        nsBindings.addNamespace( NULL_NS_URI, "http://www.deegree.org/app" );
+        nsBindings.addNamespace( "", "http://www.deegree.org/app" );
         writer = new NamespaceNormalizingXMLStreamWriter( writer, nsBindings );
 
         XMLAdapter.writeElement( writer, reader );
