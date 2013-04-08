@@ -13,7 +13,7 @@
     <OutputFormat>image/png</OutputFormat>
     <RequestParams>
       <!-- [1] Comma-separated list of layer names -->
-      <Layers>CountyBoundaries,CountyNames</Layers>
+      <Layers>countyboundaries,countynames</Layers>
       <!-- [0..1] Comma-separated list of styles -->
       <Styles>default,default</Styles>
       <!-- [1] Image format -->

@@ -76,6 +76,8 @@ public abstract class AbstractGMLObjectWriter {
 
     protected final GmlXlinkStrategy referenceExportStrategy;
 
+    private int prefixIndex;
+
     /**
      * Creates a new {@link AbstractGMLObjectWriter} instance.
      * 
@@ -109,9 +111,10 @@ public abstract class AbstractGMLObjectWriter {
                     writer.writeStartElement( prefix, localname, namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                 } else {
-                    LOG.warn( "No prefix for namespace '{}' configured. Depending on XMLStream auto-repairing.",
-                              namespaceURI );
-                    writer.writeStartElement( namespaceURI, localname );
+                    nsToPrefix.put( "ns" + ++prefixIndex, namespaceURI );
+                    LOG.warn( "No prefix for namespace '{}' configured. Using {}.", namespaceURI, "ns" + prefixIndex );
+                    writer.writeStartElement( prefix, localname, namespaceURI );
+                    writer.writeNamespace( prefix, namespaceURI );
                 }
             } else {
                 writer.writeStartElement( namespaceURI, localname );
