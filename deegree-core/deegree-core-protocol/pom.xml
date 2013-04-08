@@ -27,7 +27,6 @@
   <modules>
     <module>deegree-protocol-commons</module>
     <module>deegree-protocol-csw</module>
-    <module>deegree-protocol-sos</module>
     <module>deegree-protocol-wfs</module>
     <module>deegree-protocol-wms</module>
     <module>deegree-protocol-wmts</module>
