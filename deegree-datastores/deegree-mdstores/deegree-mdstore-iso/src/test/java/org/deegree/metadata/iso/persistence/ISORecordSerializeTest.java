@@ -116,10 +116,10 @@ public class ISORecordSerializeTest extends AbstractISOTest {
         }
         StringBuilder streamExpected = new StringBuilder();
         streamExpected.append( "=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
         streamExpected.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
         streamExpected.append( "gml=http://www.opengis.net/gml" ).append( ' ' );
+        streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
         streamExpected.append( "gts=http://www.isotc211.org/2005/gts" ).append( ' ' );
         streamExpected.append( "xsi=http://www.w3.org/2001/XMLSchema-instance" ).append( ' ' );
 

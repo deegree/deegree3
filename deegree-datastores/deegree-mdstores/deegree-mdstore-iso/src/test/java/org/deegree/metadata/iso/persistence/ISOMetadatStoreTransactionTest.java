@@ -83,6 +83,7 @@ import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.jaxen.JaxenException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -116,6 +117,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         store.init( workspace );
 
         String test_folder = TestProperties.getProperty( "test_folder" );
+
+        Assume.assumeTrue( test_folder != null );
 
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
