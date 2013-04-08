@@ -108,7 +108,7 @@ public class PostGISUpdater extends LayerUpdater {
         this.schema = schema == null ? "public" : schema;
         this.parent = parent;
         this.service = service;
-        this.styles = new PostgreSQLReader( connId, schema, baseSystemId, workspace );
+        this.styles = new PostgreSQLReader( connProvider, schema, baseSystemId );
     }
 
     private StringPair generateSQL( String connid, String sourcetable )
