@@ -46,8 +46,12 @@ import org.deegree.commons.config.Resource;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
- * @author stranger
+ * Describes what a style store resource can do.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
+ * 
+ * @version $Revision: $, $Date: $
  */
 public interface StyleStore extends Resource {
 

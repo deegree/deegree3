@@ -37,6 +37,8 @@ package org.deegree.layer.config;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +101,8 @@ public class ConfigUtils {
                 }
                 continue;
             }
-            Pair<Style, Style> p = useSelectedStyles( store, srt, id, styleMap, legendStyleMap, defaultStyle,
-                                                      defaultLegendStyle );
+            Pair<Style, Style> p = useSelectedStyles( workspace, store, srt, id, styleMap, legendStyleMap,
+                                                      defaultStyle, defaultLegendStyle );
             defaultStyle = p.first;
             defaultLegendStyle = p.second;
         }
@@ -108,11 +110,12 @@ public class ConfigUtils {
         return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
     }
 
-    private static Pair<Style, Style> useSelectedStyles( StyleStore store, StyleRefType srt, String id,
-                                                         Map<String, Style> styleMap,
+    private static Pair<Style, Style> useSelectedStyles( DeegreeWorkspace workspace, StyleStore store,
+                                                         StyleRefType srt, String id, Map<String, Style> styleMap,
                                                          Map<String, Style> legendStyleMap, Style defaultStyle,
                                                          Style defaultLegendStyle ) {
         for ( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s : srt.getStyle() ) {
+            boolean isDefault = false;
             String name = s.getStyleName();
             String nameRef = s.getStyleNameRef();
             String layerRef = s.getLayerNameRef();
@@ -123,15 +126,41 @@ public class ConfigUtils {
                 continue;
             }
             if ( defaultStyle == null ) {
+                isDefault = true;
                 defaultStyle = st;
             }
             st = st.copy();
             st.setName( name );
             styleMap.put( name, st );
+            if ( isDefault && !styleMap.containsKey( "default" ) ) {
+                styleMap.put( "default", st );
+            }
             if ( s.getLegendGraphic() != null ) {
                 LegendGraphic g = s.getLegendGraphic();
-                // TODO properly handle this
-                // st.setLegendFile( null )
+
+                URL url = null;
+                try {
+                    url = new URL( g.getValue() );
+                    if ( url.toURI().isAbsolute() ) {
+                        st.setLegendURL( url );
+                    }
+                    st.setPrefersGetLegendGraphicUrl( g.isOutputGetLegendGraphicUrl() );
+                } catch ( Exception e ) {
+                    LOG.debug( "LegendGraphic was not an absolute URL." );
+                    LOG.trace( "Stack trace:", e );
+                }
+
+                if ( url == null ) {
+                    File file = workspace.getLocation();
+                    file = new File( file, "styles" );
+                    file = new File( file, id + ".xml" );
+                    file = new File( file.toURI().resolve( g.getValue() ) );
+                    if ( file.exists() ) {
+                        st.setLegendFile( file );
+                    } else {
+                        LOG.warn( "LegendGraphic {} could not be resolved to a legend.", g.getValue() );
+                    }
+                }
             } else {
                 LegendStyle ls = s.getLegendStyle();
                 if ( ls != null ) {
@@ -152,10 +181,17 @@ public class ConfigUtils {
                                            Map<String, Style> legendStyleMap ) {
         if ( defaultStyle != null && !styleMap.containsKey( "default" ) ) {
             styleMap.put( "default", defaultStyle );
+        }
+        if ( defaultLegendStyle != null && !legendStyleMap.containsKey( "default" ) ) {
             legendStyleMap.put( "default", defaultLegendStyle );
+        }
+        if ( defaultStyle != null && !legendStyleMap.containsKey( "default" ) ) {
+            legendStyleMap.put( "default", defaultStyle );
         }
         if ( !styleMap.containsKey( "default" ) ) {
             styleMap.put( "default", new Style() );
+        }
+        if ( !legendStyleMap.containsKey( "default" ) ) {
             legendStyleMap.put( "default", new Style() );
         }
     }
