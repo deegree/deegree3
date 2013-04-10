@@ -55,7 +55,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
@@ -139,18 +138,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         LOG.info( "" );
     }
 
-    public static void destroy( String connid ) {
-        try {
-            if ( connid == null )
-                return;
-            ConnectionPool pool = idToPools.remove( connid );
-            if ( pool != null )
-                pool.destroy();
-        } catch ( Exception e ) {
-            LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
-        }
-    }
-
     /**
      * @param id
      * @return the type of the connection, null if the connection is unknown or the connection type could not be
@@ -180,25 +167,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
             LOG.warn( "JDBC connection {} is not available.", id );
             throw new RuntimeException( e.getLocalizedMessage(), e );
         }
-    }
-
-    /**
-     * Returns a connection from the connection pool with the given id.
-     * 
-     * @param id
-     *            id of the connection pool
-     * @return connection from the corresponding connection pool
-     * @throws SQLException
-     *             if the connection pool is unknown or a SQLException occurs creating the connection
-     */
-    public static Connection getConnection( String id )
-                            throws SQLException {
-        ConnectionPool pool = idToPools.get( id );
-        if ( pool == null ) {
-            throw new SQLException( Messages.getMessage( "JDBC_UNKNOWN_CONNECTION", id ) );
-        }
-        Connection conn = pool.getConnection();
-        return conn;
     }
 
     /**
@@ -265,39 +233,6 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         if ( url.startsWith( "jdbc:sqlserver:" ) ) {
             idToType.put( connId, MSSQL );
         }
-    }
-
-    /**
-     * Adds a connection pool as specified in the parameters.
-     * 
-     * @param connId
-     * @param url
-     * @param user
-     * @param password
-     * @param poolMinSize
-     * @param poolMaxSize
-     */
-    public static void addConnection( String connId, String url, String user, String password, int poolMinSize,
-                                      int poolMaxSize ) {
-
-        synchronized ( ConnectionManager.class ) {
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
-                                            poolMaxSize ) );
-            if ( idToPools.containsKey( connId ) ) {
-                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
-            }
-            // TODO check callers for read only flag
-            ConnectionPool pool = new ConnectionPool( connId, url, user, password, false, poolMinSize, poolMaxSize );
-            checkType( url, connId );
-            idToPools.put( connId, pool );
-        }
-    }
-
-    /**
-     * @return all currently available connection ids
-     */
-    public static Set<String> getConnectionIds() {
-        return idToPools.keySet();
     }
 
     @Override

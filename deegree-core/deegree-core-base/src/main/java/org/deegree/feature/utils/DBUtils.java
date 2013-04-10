@@ -47,7 +47,6 @@ import static java.sql.Types.NUMERIC;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.SMALLINT;
 import static java.sql.Types.VARCHAR;
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;

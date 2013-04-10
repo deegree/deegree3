@@ -48,8 +48,9 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,8 +107,8 @@ public class SQLExecution implements Serializable {
         Connection conn = null;
         Statement stmt = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+            conn = prov.getConnection();
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
             for ( String sql : sqlStatements ) {

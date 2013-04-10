@@ -47,9 +47,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableSQLStoreConfig;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
@@ -92,8 +93,8 @@ public class RenderableSQLStoreProvider implements RenderableStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
             String connId = config.getJDBCConnId();
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            Connection connection = mgr.get( connId );
+            ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+            Connection connection = prov.getConnection();
             connection.close();
 
             rs = new PostgisBackend( connId, ( config.isIsBillboard() ? ModelBackend.Type.TREE

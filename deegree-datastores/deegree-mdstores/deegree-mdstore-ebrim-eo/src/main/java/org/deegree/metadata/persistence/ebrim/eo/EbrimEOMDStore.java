@@ -49,7 +49,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -78,6 +77,8 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
@@ -643,9 +644,9 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
      */
     private Connection getConnection( boolean autoCommit )
                             throws MetadataStoreException {
-        ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
+        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
         try {
-            Connection conn = connManager.get( connId );
+            Connection conn = prov.getConnection();
             conn.setAutoCommit( autoCommit );
             return conn;
         } catch ( SQLException e ) {

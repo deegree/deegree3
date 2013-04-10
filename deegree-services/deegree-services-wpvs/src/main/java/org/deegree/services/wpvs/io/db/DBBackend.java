@@ -54,6 +54,8 @@ import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
@@ -969,8 +971,9 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
      */
     public Connection getConnection()
                             throws SQLException {
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        Connection connection = mgr.get( connectionID );
+        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                           connectionID );
+        Connection connection = prov.getConnection();
         connection.setAutoCommit( true );
         return connection;
     }

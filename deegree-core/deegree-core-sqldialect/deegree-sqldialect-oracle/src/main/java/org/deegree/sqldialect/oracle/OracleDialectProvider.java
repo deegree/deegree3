@@ -50,9 +50,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectProvider;
@@ -81,14 +82,9 @@ public class OracleDialectProvider implements SQLDialectProvider, SqlDialectProv
     @Override
     public SQLDialect create( String connId, DeegreeWorkspace ws )
                             throws ResourceInitException {
-        try {
-            Connection conn = ConnectionManager.getConnection( connId );
-            return createDialect( conn );
-        } catch ( SQLException se ) {
-            LOG.warn( "Failed loading default schema/database verion for connection {}", connId );
-            LOG.debug( se.getMessage(), se );
-            throw new ResourceInitException( se.getMessage(), se );
-        }
+        ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+        Connection conn = prov.getConnection();
+        return createDialect( conn );
     }
 
     @Override
