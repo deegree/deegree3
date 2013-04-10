@@ -59,6 +59,8 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -206,6 +208,16 @@ public class ConfigManager implements Serializable {
         for ( ResourceState state : currentResourceManager.getManager().getStates() ) {
             configs.add( new Config( state, this, currentResourceManager.getManager(),
                                      currentResourceManager.getStartView(), true ) );
+        }
+        Collections.sort( configs );
+        return configs;
+    }
+
+    public List<Config> getServices() {
+        List<Config> configs = new ArrayList<Config>();
+        ResourceManager mgr = OGCFrontController.getServiceWorkspace().getSubsystemManager( WebServicesConfiguration.class );
+        for ( ResourceState<?> state : mgr.getStates() ) {
+            configs.add( new Config( state, this, mgr, null, true ) );
         }
         Collections.sort( configs );
         return configs;

@@ -1,48 +1,43 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:dg="http://deegree.org/jsf"
-	xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
+  xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
 
 <ui:composition>
 
-	<h:panelGroup layout="block">
-		<h:outputText styleClass="menutopic" value="general" />
-	</h:panelGroup>
-	<h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
-		<dgc:menuitem displayname="workspaces"
-			target="/console/workspace/workspace.xhtml" />
-		<dgc:menuitem displayname="proxy" target="/console/jsf/proxy.xhtml" />
-		<dgc:menuitem displayname="password"
-			target="/console/security/password.xhtml" />
-		<dgc:menuitem displayname="module info"
-			target="/console/jsf/modules.xhtml" />
-	</h:panelGroup>
-	<h:panelGroup layout="block" style="margin-bottom:20px;">
-		<dgc:menuitem displayname="#{labels.link_genericClient}"
-			target="/console/client/client.xhtml" />
-		<h:outputLink styleClass="navi menuitem"
-			value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
-			<h:outputText value="#{labels.link_wmsClient}" />
-		</h:outputLink>
-	</h:panelGroup>
+  <h:panelGroup layout="block">
+    <h:outputText styleClass="menutopic" value="general" />
+  </h:panelGroup>
+  <h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
+    <dgc:menuitem displayname="workspaces" target="/console/workspace/workspace.xhtml" />
+    <dgc:menuitem displayname="proxy" target="/console/jsf/proxy.xhtml" />
+    <dgc:menuitem displayname="password" target="/console/security/password.xhtml" />
+    <dgc:menuitem displayname="module info" target="/console/jsf/modules.xhtml" />
+  </h:panelGroup>
+  <h:panelGroup layout="block" style="margin-bottom:20px;">
+    <dgc:menuitem displayname="#{labels.link_genericClient}" target="/console/client/client.xhtml" />
+    <h:outputLink styleClass="navi menuitem"
+      value="#{facesContext.externalContext.requestContextPath}/console/wms/wms.html">
+      <h:outputText value="#{labels.link_wmsClient}" />
+    </h:outputLink>
+  </h:panelGroup>
 
-	<h:panelGroup rendered="#{logBean.loggedIn}">
-		<dgc:submenu items="#{configManager.webserviceManagers}"
-			displayname="web services" />
-		<dgc:submenu items="#{configManager.datastoreManagers}"
-			displayname="data stores" />
-		<dgc:submenu items="#{configManager.mapManagers}"
-			displayname="map layers" />
-		<dgc:submenu items="#{configManager.connectionManagers}"
-			displayname="server connections" />
-		<dgc:submenu items="#{configManager.processManagers}"
-			displayname="processes" />
-	</h:panelGroup>
+  <h:panelGroup rendered="#{logBean.loggedIn}">
+    <h:panelGroup layout="block">
+      <h:outputText styleClass="menutopic" value="webservices" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <dgc:menuitem displayname="services" target="/console/webservices/services.xhtml" />
+    </h:panelGroup>
+  </h:panelGroup>
+
+  <h:panelGroup rendered="#{logBean.loggedIn}">
+    <dgc:submenu items="#{configManager.datastoreManagers}" displayname="data stores" />
+    <dgc:submenu items="#{configManager.mapManagers}" displayname="map layers" />
+    <dgc:submenu items="#{configManager.connectionManagers}" displayname="server connections" />
+    <dgc:submenu items="#{configManager.processManagers}" displayname="processes" />
+  </h:panelGroup>
 
 </ui:composition>
 </html>
