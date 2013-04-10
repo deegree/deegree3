@@ -37,6 +37,7 @@ package org.deegree.metadata.iso.persistence;
 
 import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
+import static org.junit.Assume.assumeNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -107,6 +108,8 @@ public abstract class AbstractISOTest {
         workspace.initAll();
         ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
                                                                            "iso_pg_set_up_tables" );
+
+        assumeNotNull( prov );
 
         conn = prov.getConnection();
         try {
