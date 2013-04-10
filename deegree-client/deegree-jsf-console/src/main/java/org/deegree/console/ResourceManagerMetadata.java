@@ -61,9 +61,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetadata2> {
+public class ResourceManagerMetadata implements Comparable<ResourceManagerMetadata> {
 
-    private static Logger LOG = LoggerFactory.getLogger( ResourceManagerMetadata2.class );
+    private static Logger LOG = LoggerFactory.getLogger( ResourceManagerMetadata.class );
 
     private String name, category;
 
@@ -77,7 +77,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
 
     private List<String> providerNames = new ArrayList<String>();
 
-    private ResourceManagerMetadata2( ResourceManager mgr ) {
+    private ResourceManagerMetadata( ResourceManager mgr ) {
         if ( mgr.getMetadata() != null ) {
             for ( Object o : mgr.getMetadata().getResourceProviders() ) {
                 ResourceProvider provider = (ResourceProvider) o;
@@ -91,7 +91,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
         }
 
         String className = mgr.getClass().getName();
-        URL url = ResourceManagerMetadata2.class.getResource( "/META-INF/console/resourcemanager/" + className );
+        URL url = ResourceManagerMetadata.class.getResource( "/META-INF/console/resourcemanager/" + className );
         if ( url != null ) {
             LOG.debug( "Loading resource manager metadata from '" + url + "'" );
             Properties props = new Properties();
@@ -116,8 +116,8 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
         this.mgr = mgr;
     }
 
-    public static synchronized ResourceManagerMetadata2 getMetadata( ResourceManager rm ) {
-        ResourceManagerMetadata2 md = new ResourceManagerMetadata2( rm );
+    public static synchronized ResourceManagerMetadata getMetadata( ResourceManager rm ) {
+        ResourceManagerMetadata md = new ResourceManagerMetadata( rm );
         if ( md.name == null ) {
             return null;
         }
@@ -170,7 +170,7 @@ public class ResourceManagerMetadata2 implements Comparable<ResourceManagerMetad
     }
 
     @Override
-    public int compareTo( ResourceManagerMetadata2 o ) {
+    public int compareTo( ResourceManagerMetadata o ) {
         return this.name.compareTo( o.name );
     }
 }

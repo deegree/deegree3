@@ -79,7 +79,7 @@ public class ConfigManager implements Serializable {
 
     private static final Logger LOG = getLogger( ConfigManager.class );
 
-    private ResourceManagerMetadata2 currentResourceManager;
+    private ResourceManagerMetadata currentResourceManager;
 
     private String newConfigType;
 
@@ -91,11 +91,11 @@ public class ConfigManager implements Serializable {
 
     private Config proxyConfig;
 
-    public ResourceManagerMetadata2 getCurrentResourceManager() {
+    public ResourceManagerMetadata getCurrentResourceManager() {
         return currentResourceManager;
     }
 
-    public void setCurrentResourceManager( ResourceManagerMetadata2 currentResourceManager ) {
+    public void setCurrentResourceManager( ResourceManagerMetadata currentResourceManager ) {
         this.currentResourceManager = currentResourceManager;
     }
 
@@ -142,33 +142,43 @@ public class ConfigManager implements Serializable {
         proxyConfig = new Config( proxyLocation, schema, example, "/console/jsf/proxy" );
     }
 
-    public List<ResourceManagerMetadata2> getWebserviceManagers() {
+    public List<ResourceManagerMetadata> getWebserviceManagers() {
         return getResourceManagers( "service" );
     }
 
-    public List<ResourceManagerMetadata2> getDatastoreManagers() {
+    public List<Config> getServices() {
+        List<Config> configs = new ArrayList<Config>();
+        ResourceManager mgr = OGCFrontController.getServiceWorkspace().getSubsystemManager( WebServicesConfiguration.class );
+        for ( ResourceState<?> state : mgr.getStates() ) {
+            configs.add( new Config( state, this, mgr, null, true ) );
+        }
+        Collections.sort( configs );
+        return configs;
+    }
+
+    public List<ResourceManagerMetadata> getDatastoreManagers() {
         return getResourceManagers( "datastore" );
     }
 
-    public List<ResourceManagerMetadata2> getMapManagers() {
+    public List<ResourceManagerMetadata> getMapManagers() {
         return getResourceManagers( "map" );
     }
 
-    public List<ResourceManagerMetadata2> getProcessManagers() {
+    public List<ResourceManagerMetadata> getProcessManagers() {
         return getResourceManagers( "process" );
     }
 
-    public List<ResourceManagerMetadata2> getConnectionManagers() {
+    public List<ResourceManagerMetadata> getConnectionManagers() {
         return getResourceManagers( "connection" );
     }
 
-    public List<ResourceManagerMetadata2> getResourceManagers( String category ) {
-        List<ResourceManagerMetadata2> rmMetadata = new ArrayList<ResourceManagerMetadata2>();
+    public List<ResourceManagerMetadata> getResourceManagers( String category ) {
+        List<ResourceManagerMetadata> rmMetadata = new ArrayList<ResourceManagerMetadata>();
         if ( getServiceWorkspace() == null ) {
             return rmMetadata;
         }
         for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
-            ResourceManagerMetadata2 md = ResourceManagerMetadata2.getMetadata( mgr );
+            ResourceManagerMetadata md = ResourceManagerMetadata.getMetadata( mgr );
             if ( md != null && category.equals( md.getCategory() ) ) {
                 rmMetadata.add( md );
             }
@@ -180,7 +190,7 @@ public class ConfigManager implements Serializable {
     public void refresh() {
         if ( currentResourceManager != null ) {
             for ( ResourceManager mgr : getServiceWorkspace().getResourceManagers() ) {
-                ResourceManagerMetadata2 md = ResourceManagerMetadata2.getMetadata( mgr );
+                ResourceManagerMetadata md = ResourceManagerMetadata.getMetadata( mgr );
                 if ( md != null && md.getName().equals( currentResourceManager.getName() ) ) {
                     currentResourceManager = md;
                 }
@@ -193,7 +203,7 @@ public class ConfigManager implements Serializable {
     }
 
     public String getStartView() {
-        ResourceManagerMetadata2 param1 = (ResourceManagerMetadata2) getParam1();
+        ResourceManagerMetadata param1 = (ResourceManagerMetadata) getParam1();
         this.currentResourceManager = param1;
         setNewConfigType( param1.getProviderNames().iterator().next() );
         return param1.getStartView();
@@ -208,16 +218,6 @@ public class ConfigManager implements Serializable {
         for ( ResourceState state : currentResourceManager.getManager().getStates() ) {
             configs.add( new Config( state, this, currentResourceManager.getManager(),
                                      currentResourceManager.getStartView(), true ) );
-        }
-        Collections.sort( configs );
-        return configs;
-    }
-
-    public List<Config> getServices() {
-        List<Config> configs = new ArrayList<Config>();
-        ResourceManager mgr = OGCFrontController.getServiceWorkspace().getSubsystemManager( WebServicesConfiguration.class );
-        for ( ResourceState<?> state : mgr.getStates() ) {
-            configs.add( new Config( state, this, mgr, null, true ) );
         }
         Collections.sort( configs );
         return configs;
