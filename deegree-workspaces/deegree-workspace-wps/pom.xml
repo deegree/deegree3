@@ -51,10 +51,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>libMath</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jfree</groupId>
       <artifactId>jcommon</artifactId>
     </dependency>
