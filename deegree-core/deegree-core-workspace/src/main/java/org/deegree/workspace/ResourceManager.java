@@ -44,7 +44,7 @@ package org.deegree.workspace;
 import java.util.Collection;
 
 /**
- * TODO add class documentation here
+ * The resource managers are responsible for finding resources of a specific type.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -53,12 +53,22 @@ import java.util.Collection;
  */
 public interface ResourceManager<T extends Resource> {
 
-    void init( Workspace workspace );
+    /**
+     * Called during initialization to make the manager find its resources.
+     * 
+     * @param workspace
+     *            never <code>null</code>
+     */
+    void find( Workspace workspace );
 
-    void destroy();
-
+    /**
+     * @return the manager's metadata, never <code>null</code>
+     */
     ResourceManagerMetadata<T> getMetadata();
 
+    /**
+     * @return the resource metadata objects, never <code>null</code> after #find has been called
+     */
     Collection<ResourceMetadata<T>> getResourceMetadata();
-    
+
 }

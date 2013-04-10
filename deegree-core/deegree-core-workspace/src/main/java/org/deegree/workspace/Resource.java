@@ -42,7 +42,8 @@
 package org.deegree.workspace;
 
 /**
- * TODO add class documentation here
+ * Base interface of all resources. A workspace resource must make sure it knows its metadata, which can be used to
+ * restart/rebuild the resource and its dependencies.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -51,10 +52,19 @@ package org.deegree.workspace;
  */
 public interface Resource {
 
+    /**
+     * @return the resource metadata object which has been used to create the resource, never <code>null</code>
+     */
     ResourceMetadata<? extends Resource> getMetadata();
 
+    /**
+     * Can be used to prepare the resource for operation before use.
+     */
     void init();
 
+    /**
+     * Can be used to clean up before this object is put out of use.
+     */
     void destroy();
-    
+
 }

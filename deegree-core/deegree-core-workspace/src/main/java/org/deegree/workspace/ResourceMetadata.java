@@ -44,7 +44,8 @@ package org.deegree.workspace;
 import java.util.Set;
 
 /**
- * TODO add class documentation here
+ * The resource metadata objects are the central objects, as they can be used to determine dependency chains and are the
+ * originating object for creating resources.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -53,13 +54,23 @@ import java.util.Set;
  */
 public interface ResourceMetadata<T extends Resource> extends Comparable<ResourceMetadata<? extends Resource>> {
 
+    /**
+     * @return the location, never <code>null</code>
+     */
     ResourceLocation<T> getLocation();
 
+    /**
+     * Must be used to determine dependencies needed to build this resource. Must return a builder object that can be
+     * used to actually build a resource.
+     * 
+     * @return the builder, never <code>null</code>
+     */
     ResourceBuilder<T> prepare();
 
+    /**
+     * @return the identifier, never <code>null</code>
+     */
     ResourceIdentifier<T> getIdentifier();
-
-    ResourceProvider<T> getProvider();
 
     Set<ResourceIdentifier<? extends Resource>> getDependencies();
 

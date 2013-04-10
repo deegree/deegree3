@@ -44,7 +44,8 @@ package org.deegree.workspace;
 import java.util.List;
 
 /**
- * TODO add class documentation here
+ * Base interface for all resource providers. This is the base interface whose implementations/subinterfaces are used
+ * for SPI.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -53,10 +54,30 @@ import java.util.List;
  */
 public interface ResourceProvider<T extends Resource> {
 
+    /**
+     * @return the namespace of the provider implementation, never <code>null</code>
+     */
     String getNamespace();
 
+    /**
+     * The initial step of resource initialization. It is responsible for creating metadata objects, but not for
+     * preparing them.
+     * 
+     * @param workspace
+     *            never <code>null</code>
+     * @param location
+     *            never <code>null</code>
+     * @return the metadata object, never <code>null</code>
+     */
     ResourceMetadata<T> read( Workspace workspace, ResourceLocation<T> location );
 
+    /**
+     * Can be used to provide additional, 'synthetic' resources which are not found by the workspace.
+     * 
+     * @param workspace
+     *            never <code>null</code>
+     * @return a list of additional resource metadata, never <code>null</code>
+     */
     List<ResourceMetadata<T>> getAdditionalResources( Workspace workspace );
 
 }

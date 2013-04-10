@@ -42,7 +42,7 @@
 package org.deegree.workspace;
 
 /**
- * TODO add class documentation here
+ * Metadata about a resource manager.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -51,10 +51,24 @@ package org.deegree.workspace;
  */
 public interface ResourceManagerMetadata<T extends Resource> {
 
+    /**
+     * Each resource type must have a base provider class, which is returned here.
+     * 
+     * @return the class, never <code>null</code>
+     */
     Class<? extends ResourceProvider<T>> getProviderClass();
-    
+
+    /**
+     * Each resource type corresponds to an 'abstract' workspace path, such as 'datasources/feature'. Use forward
+     * slashes.
+     * 
+     * @return the path, never <code>null</code>
+     */
     String getWorkspacePath();
-    
+
+    /**
+     * @return a human readable name for the resource type, never <code>null</code>
+     */
     String getName();
 
 }

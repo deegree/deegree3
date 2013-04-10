@@ -42,7 +42,7 @@
 package org.deegree.workspace;
 
 /**
- * TODO add class documentation here
+ * An exception class thrown during normal workspace operation.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $

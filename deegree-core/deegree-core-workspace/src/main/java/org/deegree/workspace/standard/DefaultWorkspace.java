@@ -346,7 +346,7 @@ public class DefaultWorkspace implements Workspace {
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
         while ( iter.hasNext() ) {
             ResourceManager<?> mgr = iter.next();
-            mgr.init( this );
+            mgr.find( this );
             Collection<? extends ResourceMetadata<? extends Resource>> mds = mgr.getResourceMetadata();
             for ( ResourceMetadata<? extends Resource> md : mds ) {
                 resourceMetadata.put( md.getIdentifier(), md );

@@ -45,7 +45,7 @@ import java.io.File;
 import java.io.InputStream;
 
 /**
- * TODO add class documentation here
+ * A resource location is responsible for being able to fetch the configuration content.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -54,14 +54,44 @@ import java.io.InputStream;
  */
 public interface ResourceLocation<T extends Resource> {
 
+    /**
+     * Determines the namespace of the configuration.
+     * 
+     * @return the namespace, never <code>null</code>
+     */
     String getNamespace();
 
+    /**
+     * Returns the identifier of the resource.
+     * 
+     * @return the identifier, never <code>null</code>
+     */
     ResourceIdentifier<T> getIdentifier();
 
+    /**
+     * Returns the configuration content as stream.
+     * 
+     * @return the stream, never <code>null</code>
+     */
     InputStream getAsStream();
 
+    /**
+     * Resolves a path relative to this location to an input stream.
+     * 
+     * @param path
+     *            never <code>null</code>
+     * @return the stream, never <code>null</code>
+     */
     InputStream resolve( String path );
 
+    /**
+     * Resolves a path relative to this location to a file. May not be available in all implementations! Implementations
+     * that do not implement this method must throw an exception.
+     * 
+     * @param path
+     *            never <code>null</code>
+     * @return the file, never <code>null</code>
+     */
     File resolveToFile( String path );
 
 }

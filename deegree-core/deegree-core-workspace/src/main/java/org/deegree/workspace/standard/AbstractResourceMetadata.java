@@ -91,11 +91,6 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     }
 
     @Override
-    public AbstractResourceProvider<T> getProvider() {
-        return provider;
-    }
-
-    @Override
     public Set<ResourceIdentifier<? extends Resource>> getDependencies() {
         return new HashSet<ResourceIdentifier<? extends Resource>>( dependencies );
     }

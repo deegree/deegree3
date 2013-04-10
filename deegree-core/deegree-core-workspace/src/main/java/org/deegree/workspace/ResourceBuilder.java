@@ -38,11 +38,12 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
 /**
- * TODO add class documentation here
+ * Responsible for building resources. Typically involves parsing jaxb beans and constructing a new object. If the
+ * resource cannot be constructed, a ResourceInitException should be thrown.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -51,6 +52,9 @@ package org.deegree.workspace;
  */
 public interface ResourceBuilder<T extends Resource> {
 
+    /**
+     * @return the new resource, may be <code>null</code> if resource building failed
+     */
     T build();
 
 }

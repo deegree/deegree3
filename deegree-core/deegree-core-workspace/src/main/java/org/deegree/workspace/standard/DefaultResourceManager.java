@@ -82,7 +82,7 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     }
 
     @Override
-    public void init( Workspace workspace ) {
+    public void find( Workspace workspace ) {
         nsToProvider = new HashMap<String, ResourceProvider<T>>();
         metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
 
@@ -128,10 +128,6 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
                 LOG.trace( "Stack trace:", e );
             }
         }
-    }
-
-    @Override
-    public void destroy() {
     }
 
     @Override

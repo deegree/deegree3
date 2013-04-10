@@ -42,7 +42,7 @@
 package org.deegree.workspace;
 
 /**
- * TODO add class documentation here
+ * Uniquely identifies a resource in the workspace. Needs to be comparable to other identifiers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -51,8 +51,16 @@ package org.deegree.workspace;
  */
 public interface ResourceIdentifier<T extends Resource> extends Comparable<ResourceIdentifier<T>> {
 
+    /**
+     * @return the 'local' part of the id, typically the base name of the configuration file. Never <code>null</code>
+     */
     String getId();
 
+    /**
+     * This must be the base provider class for the type of resource, not the actual implementation.
+     * 
+     * @return the provider class qualifying the resource, never <code>null</code>
+     */
     Class<? extends ResourceProvider<T>> getProvider();
 
 }
