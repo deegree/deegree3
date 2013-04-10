@@ -88,7 +88,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
     }
 
     @Override
-    public void destroy() {
+    public void shutdown() {
         Enumeration<Driver> enumer = getDrivers();
         while ( enumer.hasMoreElements() ) {
             Driver d = enumer.nextElement();

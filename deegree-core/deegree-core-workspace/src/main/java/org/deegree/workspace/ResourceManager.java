@@ -71,4 +71,9 @@ public interface ResourceManager<T extends Resource> {
      */
     Collection<ResourceMetadata<T>> getResourceMetadata();
 
+    /**
+     * Called when workspace is going down. Can be used to do preparatory work needed for all resources of this type.
+     */
+    void shutdown();
+
 }

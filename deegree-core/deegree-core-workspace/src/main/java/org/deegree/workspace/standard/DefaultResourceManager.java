@@ -140,4 +140,9 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         return metadataMap.values();
     }
 
+    @Override
+    public void shutdown() {
+        // nothing to do
+    }
+
 }
