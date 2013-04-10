@@ -36,7 +36,6 @@
 package org.deegree.services.wms.dynamic;
 
 import static org.deegree.commons.utils.ArrayUtils.splitAsIntList;
-import static org.deegree.feature.utils.DBUtils.findSrid;
 import static org.deegree.services.wms.MapService.fillInheritedInformation;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -58,6 +57,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.feature.persistence.simplesql.DbFeatureUtils;
 import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.DynamicSQLLayer;
@@ -129,7 +129,7 @@ public class PostGISUpdater extends LayerUpdater {
                 tableName = tableName.substring( tableName.indexOf( "." ) + 1 );
             }
 
-            int srid = findSrid( connid, tableName, schema, workspace );
+            int srid = DbFeatureUtils.findSrid( prov, tableName, schema );
 
             rs = conn.getMetaData().getColumns( null, schema, tableName, null );
             StringBuilder sb = new StringBuilder( "select " );

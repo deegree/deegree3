@@ -1,10 +1,12 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,9 +33,13 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.utils;
+package org.deegree.feature.persistence.simplesql;
 
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -64,12 +70,11 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -78,34 +83,31 @@ import org.deegree.geometry.io.WKTWriter;
 import org.slf4j.Logger;
 
 /**
- * <code>Util</code>
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-@LoggingNotes(info = "logs SQL connection errors", trace = "logs stack traces")
-public class DBUtils {
+public class DbFeatureUtils {
 
-    private static final Logger LOG = getLogger( DBUtils.class );
+    private static final Logger LOG = getLogger( DbFeatureUtils.class );
 
     private static final GeometryFactory fac = new GeometryFactory();
 
     /**
      * @param ftName
-     * @param connId
+     * @param prov
      * @param sql
      * @return null, if an SQL error occurred
      */
-    public static GenericFeatureType determineFeatureType( QName ftName, String connId, String sql,
-                                                           DeegreeWorkspace workspace ) {
+    public static GenericFeatureType determineFeatureType( QName ftName, ConnectionProvider prov, String sql ) {
         Connection conn = null;
         ResultSet set = null;
         PreparedStatement stmt = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = prov.getConnection();
             boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
             stmt = conn.prepareStatement( sql + ( isOracle ? "" : " limit 0" ) );
             stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
@@ -166,17 +168,16 @@ public class DBUtils {
     }
 
     /**
-     * @param connId
+     * @param prov
      * @return a list of all schemas with geometry tables
      */
-    public static LinkedList<String> fetchGeometrySchemas( String connId, DeegreeWorkspace workspace ) {
+    public static LinkedList<String> fetchGeometrySchemas( ConnectionProvider prov, DeegreeWorkspace workspace ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;
         LinkedList<String> result = new LinkedList<String>();
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = prov.getConnection();
             try {
                 // make this configurable via argument?
                 stmt = conn.prepareStatement( "select probe_geometry_columns()" );
@@ -208,18 +209,17 @@ public class DBUtils {
     }
 
     /**
-     * @param connId
+     * @param prov
      * @param schema
      * @return all tables (currently only PostGIS)
      */
-    public static LinkedList<String> fetchGeometryTables( String connId, String schema, DeegreeWorkspace workspace ) {
+    public static LinkedList<String> fetchGeometryTables( ConnectionProvider prov, String schema ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;
         LinkedList<String> result = new LinkedList<String>();
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = prov.getConnection();
             try {
                 // make this configurable via argument?
                 stmt = conn.prepareStatement( "select probe_geometry_columns()" );
@@ -262,19 +262,18 @@ public class DBUtils {
     }
 
     /**
-     * @param connid
+     * @param prov
      * @param tableName
      * @param tableSchema
      * @return -2, if an error occurred (can be -1 if srid is -1 in the db, or if not found in geometry_columns
      *         metadata)
      */
-    public static int findSrid( String connid, String tableName, String tableSchema, DeegreeWorkspace workspace ) {
+    public static int findSrid( ConnectionProvider prov, String tableName, String tableSchema ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connid );
+            conn = prov.getConnection();
             stmt = conn.prepareStatement( "select srid from geometry_columns where f_table_name = ? and f_table_schema = ?" );
             stmt.setString( 1, tableName );
             stmt.setString( 2, tableSchema );

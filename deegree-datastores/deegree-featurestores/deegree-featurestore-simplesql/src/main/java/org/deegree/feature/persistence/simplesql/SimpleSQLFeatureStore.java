@@ -85,7 +85,6 @@ import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.utils.DBUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -278,8 +277,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         this.workspace = workspace;
-        featureType = DBUtils.determineFeatureType( ftName, connProvider.getMetadata().getIdentifier().getId(),
-                                                    lods.values().iterator().next(), workspace );
+        featureType = DbFeatureUtils.determineFeatureType( ftName, connProvider, lods.values().iterator().next() );
         if ( featureType == null ) {
             available = false;
         } else {
