@@ -53,7 +53,7 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * TODO add class documentation here
+ * Metadata for pyramid coverages.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -63,7 +63,7 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 public class PyramidCoverageMetadata extends AbstractResourceMetadata<Coverage> {
 
     public PyramidCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                         AbstractResourceProvider<Coverage> provider ) {
+                                    AbstractResourceProvider<Coverage> provider ) {
         super( workspace, location, provider );
     }
 
@@ -72,7 +72,7 @@ public class PyramidCoverageMetadata extends AbstractResourceMetadata<Coverage> 
         Pyramid config;
         try {
             config = (Pyramid) unmarshall( "org.deegree.coverage.persistence.pyramid.jaxb", provider.getSchema(),
-                                                   location.getAsStream(), workspace );
+                                           location.getAsStream(), workspace );
             return new PyramidCoverageBuilder( this, config );
         } catch ( JAXBException e ) {
             // TODO Auto-generated catch block
