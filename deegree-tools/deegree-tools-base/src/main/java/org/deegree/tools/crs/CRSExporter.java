@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.cs.io.deegree;
+package org.deegree.tools.crs;
 
 import static java.lang.Math.toDegrees;
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
@@ -47,6 +47,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -64,10 +65,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
@@ -96,6 +93,12 @@ import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
 import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.ConnectionProviderUtils;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -114,7 +117,7 @@ public class CRSExporter extends CRSExporterBase {
 
     private final String db_id;
 
-    private DeegreeWorkspace workspace;
+    private ConnectionProvider connProvider;
 
     public CRSExporter() {
         db_id = null;
@@ -124,8 +127,15 @@ public class CRSExporter extends CRSExporterBase {
      * @param properties
      */
     public CRSExporter( Properties properties ) {
-        workspace = DeegreeWorkspace.getInstance();
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        File dir = null;
+        try {
+            dir = File.createTempFile( "deegree", "tmp" );
+        } catch ( IOException e ) {
+            // no temp file?
+        }
+        dir.delete();
+        dir.mkdir();
+        Workspace workspace = new DefaultWorkspace( dir );
         String user = null;
         if ( properties != null ) {
             user = properties.getProperty( "DB_USER" );
@@ -133,8 +143,11 @@ public class CRSExporter extends CRSExporterBase {
                 String pass = properties.getProperty( "DB_PASSWORD" );
                 String con = properties.getProperty( "DB_CONNECTION" );
                 db_id = "epsg_db_id";
-                JDBCParams params = new DefaultJDBCParams( con, user, pass, false );
-                mgr.addPool( db_id, params, workspace );
+                ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( db_id, con,
+                                                                                                         user, pass );
+                workspace.addExtraResource( loc );
+                workspace.initAll();
+                connProvider = workspace.getResource( ConnectionProviderProvider.class, db_id );
             } else {
                 db_id = null;
             }
@@ -290,8 +303,7 @@ public class CRSExporter extends CRSExporterBase {
                 if ( crsCode != -1 ) {
                     Connection connection = null;
                     try {
-                        ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
-                        connection = mgr.get( db_id );
+                        connection = connProvider.getConnection();
                         PreparedStatement ps = connection.prepareStatement( "SELECT a.datum_code,b.datum_name,b.remarks,b.revision_date,b.ellipsoid_code,c.ellipsoid_name,c.remarks,c.revision_date,c.semi_major_axis,c.inv_flattening,c.semi_minor_axis,c.uom_code from epsg_coordinatereferencesystem as a JOIN epsg_datum as b ON a.datum_code=b.datum_code JOIN epsg_ellipsoid as c ON b.ellipsoid_code=c.ellipsoid_code where coord_ref_sys_code=?" );
                         ps.setInt( 1, crsCode );
                         ResultSet rs = ps.executeQuery();
@@ -435,8 +447,7 @@ public class CRSExporter extends CRSExporterBase {
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
-                    connection = mgr.get( db_id );
+                    connection = connProvider.getConnection();
                     PreparedStatement ps = connection.prepareStatement( "SELECT prime_meridian_name,greenwich_longitude from epsg_primemeridian where prime_meridian_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();
@@ -511,8 +522,7 @@ public class CRSExporter extends CRSExporterBase {
                 if ( epsgCode != -1 ) {
                     Connection connection = null;
                     try {
-                        ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
-                        connection = mgr.get( db_id );
+                        connection = connProvider.getConnection();
                         PreparedStatement ps = connection.prepareStatement( "SELECT b.area_of_use, b.area_west_bound_lon, b.area_south_bound_lat,b.area_east_bound_lon,b.area_north_bound_lat from epsg_coordinatereferencesystem as a JOIN epsg_area as b on a.area_of_use_code=b.area_code where a.coord_ref_sys_code=?" );
                         ps.setInt( 1, epsgCode );
                         ResultSet rs = ps.executeQuery();
@@ -562,8 +572,7 @@ public class CRSExporter extends CRSExporterBase {
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    ConnectionManager mgr = workspace.getSubsystemManager(ConnectionManager.class );
-                    connection = mgr.get( db_id );
+                    connection = connProvider.getConnection();
                     PreparedStatement ps = connection.prepareStatement( "select projection_conv_code from epsg_coordinatereferencesystem where coord_ref_sys_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();

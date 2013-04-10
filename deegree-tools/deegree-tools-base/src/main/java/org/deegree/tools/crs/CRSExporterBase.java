@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.cs.io.deegree;
+package org.deegree.tools.crs;
 
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
