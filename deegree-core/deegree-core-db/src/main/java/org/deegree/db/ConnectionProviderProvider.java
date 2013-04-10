@@ -44,7 +44,7 @@ package org.deegree.db;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * TODO add class documentation here
+ * Resource provider class for database connection providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $

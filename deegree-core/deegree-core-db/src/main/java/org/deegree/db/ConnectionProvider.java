@@ -47,7 +47,7 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.Resource;
 
 /**
- * TODO add class documentation here
+ * Resource to provide SQL connections and SQL dialects.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -56,8 +56,14 @@ import org.deegree.workspace.Resource;
  */
 public interface ConnectionProvider extends Resource {
 
+    /**
+     * @return a new SQL connection, never <code>null</code>
+     */
     Connection getConnection();
 
+    /**
+     * @return an SQL dialect if the connection type has one, or <code>null</code> if it hasn't
+     */
     SQLDialect getDialect();
-    
+
 }

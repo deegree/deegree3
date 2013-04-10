@@ -50,7 +50,7 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * TODO add class documentation here
+ * Provider for legacy connection providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -68,7 +68,7 @@ public class LegacyConnectionProviderProvider extends ConnectionProviderProvider
 
     @Override
     public ResourceMetadata<ConnectionProvider> createFromLocation( Workspace workspace,
-                                                              ResourceLocation<ConnectionProvider> location ) {
+                                                                    ResourceLocation<ConnectionProvider> location ) {
         return new LegacyConnectionProviderMetadata( workspace, location, this );
     }
 

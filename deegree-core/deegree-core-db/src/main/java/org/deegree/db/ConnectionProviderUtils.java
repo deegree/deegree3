@@ -55,7 +55,7 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 /**
- * TODO add class documentation here
+ * Utilities for handling connection providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -64,6 +64,19 @@ import org.deegree.workspace.standard.IncorporealResourceLocation;
  */
 public class ConnectionProviderUtils {
 
+    /**
+     * Use this to obtain a synthetic connection provider resource for use in a workspace without an actual config file.
+     * 
+     * @param id
+     *            the id you wish the connection provider to have, never <code>null</code>
+     * @param url
+     *            never <code>null</code>
+     * @param user
+     *            never <code>null</code>
+     * @param pass
+     *            never <code>null</code>
+     * @return never <code>null</code>
+     */
     public static ResourceLocation<ConnectionProvider> getSyntheticProvider( String id, String url, String user,
                                                                              String pass ) {
         try {
