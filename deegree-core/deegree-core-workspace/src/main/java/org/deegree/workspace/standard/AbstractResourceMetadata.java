@@ -54,7 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Abstract resource metadata implementation that can be used as a base for all metadata implementations. Just make sure
+ * to add your dependencies to the <code>dependencies</code> field upon #prepare.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $

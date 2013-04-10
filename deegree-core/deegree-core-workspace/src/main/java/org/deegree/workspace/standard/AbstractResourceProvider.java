@@ -52,7 +52,7 @@ import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 
 /**
- * TODO add class documentation here
+ * Abstract resource provider implementation for schema based providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $

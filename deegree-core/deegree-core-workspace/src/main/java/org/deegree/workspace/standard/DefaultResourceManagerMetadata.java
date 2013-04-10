@@ -46,7 +46,7 @@ import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceProvider;
 
 /**
- * TODO add class documentation here
+ * Default resource manager metadata.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $

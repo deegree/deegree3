@@ -73,7 +73,7 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Directory based workspace implementation.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -245,6 +245,9 @@ public class DefaultWorkspace implements Workspace {
         return (T) resources.get( new DefaultResourceIdentifier( providerClass, id ) );
     }
 
+    /**
+     * @return the directory this workspace is based on, never <code>null</code>
+     */
     public File getLocation() {
         return directory;
     }

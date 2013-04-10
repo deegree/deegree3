@@ -49,7 +49,7 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
 
 /**
- * TODO add class documentation here
+ * Memory based resource location.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -60,6 +60,12 @@ public class IncorporealResourceLocation<T extends Resource> extends DefaultReso
 
     private byte[] bytes;
 
+    /**
+     * @param bytes
+     *            never <code>null</code>
+     * @param id
+     *            never <code>null</code>
+     */
     public IncorporealResourceLocation( byte[] bytes, ResourceIdentifier<T> id ) {
         super( null, id );
         this.bytes = bytes;

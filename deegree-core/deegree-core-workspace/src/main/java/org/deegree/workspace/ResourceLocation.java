@@ -76,21 +76,20 @@ public interface ResourceLocation<T extends Resource> {
     InputStream getAsStream();
 
     /**
-     * Resolves a path relative to this location to an input stream.
+     * Resolves a path relative to this location to an input stream. May not be available in all implementations!
      * 
      * @param path
      *            never <code>null</code>
-     * @return the stream, never <code>null</code>
+     * @return the stream, or <code>null</code>, if resolving is not supported
      */
     InputStream resolve( String path );
 
     /**
-     * Resolves a path relative to this location to a file. May not be available in all implementations! Implementations
-     * that do not implement this method must throw an exception.
+     * Resolves a path relative to this location to a file. May not be available in all implementations!
      * 
      * @param path
      *            never <code>null</code>
-     * @return the file, never <code>null</code>
+     * @return the file, or <code>null</code>, if resolving is not supported
      */
     File resolveToFile( String path );
 

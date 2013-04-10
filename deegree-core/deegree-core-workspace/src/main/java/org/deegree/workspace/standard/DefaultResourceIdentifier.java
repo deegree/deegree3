@@ -46,7 +46,7 @@ import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceProvider;
 
 /**
- * TODO add class documentation here
+ * Default implementations for resource identifiers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $

@@ -46,9 +46,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
@@ -57,7 +55,7 @@ import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 
 /**
- * TODO add class documentation here
+ * File based resource location.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
