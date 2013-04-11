@@ -41,9 +41,12 @@ import static org.deegree.client.core.utils.ActionParams.getParam1;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.console.workspace.WorkspaceBean;
 
 /**
  * JSF Bean for testing the availability of connections offered by {@link ConnectionManager}.
@@ -58,10 +61,17 @@ import org.deegree.commons.jdbc.ConnectionManager;
 @SessionScoped
 public class ConnectionTester {
 
+    private DeegreeWorkspace getWorkspace() {
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+        return ws;
+    }
+
     public void test() {
         String id = (String) getParam1();
         try {
-            ConnectionManager.getConnection( id ).close();
+            ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
+            mgr.get( id ).close();
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         } catch ( Throwable t ) {
@@ -70,11 +80,12 @@ public class ConnectionTester {
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
     }
-    
+
     public String testAndSave() {
         String id = (String) getParam1();
         try {
-            ConnectionManager.getConnection( id ).close();
+            ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
+            mgr.get( id ).close();
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         } catch ( Throwable t ) {

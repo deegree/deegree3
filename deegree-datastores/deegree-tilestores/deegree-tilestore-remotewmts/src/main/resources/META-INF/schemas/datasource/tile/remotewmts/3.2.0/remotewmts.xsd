@@ -13,7 +13,8 @@
 
   <element name="RemoteWMTSTileStore">
     <annotation>
-      <documentation>TileStore that is backed by a remote WMTS instance.</documentation>
+      <documentation>TileStore that is backed by a remote WMTS instance.
+      </documentation>
       <appinfo>
         <jaxb:class name="RemoteWMTSTileStoreJAXB" />
       </appinfo>
@@ -30,21 +31,24 @@
             <sequence>
               <element name="Identifier" type="string" minOccurs="0">
                 <annotation>
-                  <documentation>Identifier for the tile data set, defaults to the value of the Layer request parameter
+                  <documentation>Identifier for the tile data set, defaults to
+                    the value of the Layer request parameter
                     below
                   </documentation>
                 </annotation>
               </element>
               <element name="OutputFormat" type="string" minOccurs="0">
                 <annotation>
-                  <documentation>Mime type of the desired output format, defaults to the value of the Format request
+                  <documentation>Mime type of the desired output format, defaults
+                    to the value of the Format request
                     parameter below
                   </documentation>
                 </annotation>
               </element>
               <element name="TileMatrixSetId" type="string" minOccurs="0">
                 <annotation>
-                  <documentation>Identifier of the local tile matrix set, defaults to the value of the TileMatrixSet
+                  <documentation>Identifier of the local tile matrix set,
+                    defaults to the value of the TileMatrixSet
                     request parameter below
                   </documentation>
                 </annotation>
@@ -72,7 +76,8 @@
                     </element>
                     <element name="TileMatrixSet" type="string">
                       <annotation>
-                        <documentation>Identifier of the remote tile matrix set</documentation>
+                        <documentation>Identifier of the remote tile matrix set
+                        </documentation>
                       </annotation>
                     </element>
                     <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
@@ -81,6 +86,7 @@
                           <extension base="string">
                             <attribute name="name" type="string" use="required" />
                             <attribute name="use" type="r:ParameterUseType" use="optional" default="allowOverride" />
+                            <attribute name="scope" type="r:ParameterScopeType" use="optional" default="All" />
                           </extension>
                         </simpleContent>
                       </complexType>
@@ -92,14 +98,29 @@
           </complexType>
         </element>
       </sequence>
-      <attribute name="configVersion" use="required" fixed="3.2.0" />
+      <attribute name="configVersion" use="required" type="r:ConfigVersionType" />
     </complexType>
   </element>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.2.0" />
+      <enumeration value="3.3.0" />
+    </restriction>
+  </simpleType>
 
   <simpleType name="ParameterUseType">
     <restriction base="string">
       <enumeration value="allowOverride" />
       <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetTile" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
     </restriction>
   </simpleType>
 

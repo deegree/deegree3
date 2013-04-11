@@ -50,7 +50,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
@@ -84,11 +87,11 @@ public class ModelGeneralizor {
 
     private static final String SOURCE_QL = "source_quality_level";
 
-    private static final String HELP = "help";
-
     private static final String WPVS_TRANSLATION_TO = "wpvs_translation";
 
     private static final String SQL_WHERE = "sqlWhere";
+
+    private static DeegreeWorkspace workspace;
 
     /**
      * Creates the commandline parser and adds the options.
@@ -106,6 +109,8 @@ public class ModelGeneralizor {
         if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
             printHelp( options );
         }
+
+        workspace = DeegreeWorkspace.getInstance();
 
         try {
             CommandLine line = parser.parse( options, args );
@@ -197,9 +202,12 @@ public class ModelGeneralizor {
     private static ModelBackend<?> getModelBackend( CommandLine line )
                             throws UnsupportedOperationException, DatasourceException {
         String id = "1";
-        if ( !ConnectionManager.getConnectionIds().contains( id ) ) {
-            ConnectionManager.addConnection( id, line.getOptionValue( DB_HOST ), line.getOptionValue( OPT_DB_USER ),
-                                             line.getOptionValue( OPT_DB_PASS ), 1, 5 );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        if ( mgr.getState( id ) == null ) {
+            JDBCParams params = new DefaultJDBCParams( line.getOptionValue( DB_HOST ),
+                                                       line.getOptionValue( OPT_DB_USER ),
+                                                       line.getOptionValue( OPT_DB_PASS ), false );
+            mgr.addPool( id, params, workspace );
         }
 
         return ModelBackend.getInstance( id, null );
@@ -228,7 +236,6 @@ public class ModelGeneralizor {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private static Options initOptions() {
         Options options = new Options();
 

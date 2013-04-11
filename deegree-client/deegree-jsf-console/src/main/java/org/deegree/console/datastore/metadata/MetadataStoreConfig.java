@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.metadatastore;
+package org.deegree.console.datastore.metadata;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -52,7 +52,7 @@ import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
@@ -75,9 +75,13 @@ public class MetadataStoreConfig implements Serializable {
     private String id;
 
     private MetadataStoreManager getMetadataStoreManager() {
+        return getWorkspace().getSubsystemManager( MetadataStoreManager.class );
+    }
+
+    private DeegreeWorkspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        return ws.getSubsystemManager( MetadataStoreManager.class );
+        return ws;
     }
 
     public String getId() {
@@ -109,13 +113,12 @@ public class MetadataStoreConfig implements Serializable {
             String[] sql;
             try {
                 String connId = ms.getConnId();
-                ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-                DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+                DeegreeWorkspace ws = getWorkspace();
                 ConnectionManager connManager = ws.getSubsystemManager( ConnectionManager.class );
 
                 sql = provider.getCreateStatements( connManager.getType( connId ) );
 
-                SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons" );
+                SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons", ws );
 
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
             } catch ( UnsupportedEncodingException e ) {

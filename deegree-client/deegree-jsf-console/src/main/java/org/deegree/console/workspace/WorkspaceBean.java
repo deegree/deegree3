@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console;
+package org.deegree.console.workspace;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_INFO;
@@ -68,6 +68,7 @@ import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;
+import org.deegree.console.ConfigManager;
 import org.deegree.console.util.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;

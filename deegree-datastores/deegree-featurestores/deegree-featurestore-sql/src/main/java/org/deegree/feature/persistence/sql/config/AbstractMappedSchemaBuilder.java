@@ -56,6 +56,7 @@ import javax.xml.bind.JAXBElement;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -94,7 +95,8 @@ public abstract class AbstractMappedSchemaBuilder {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
 
-    public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect )
+    public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect,
+                                         DeegreeWorkspace workspace )
                             throws SQLException, FeatureStoreException {
         boolean deleteCascadingByDB = true;
         if ( config.getJoinTableDeletePropagation() != null ) {
@@ -105,10 +107,11 @@ public abstract class AbstractMappedSchemaBuilder {
             LOG.debug( "Table-driven mode configuration" );
             if ( config.getFeatureType() != null && !config.getFeatureType().isEmpty() ) {
                 builder = new MappedSchemaBuilderTableOld( config.getJDBCConnId().getValue(), config.getFeatureType(),
-                                                           dialect, deleteCascadingByDB );
+                                                           dialect, deleteCascadingByDB, workspace );
             } else {
                 builder = new MappedSchemaBuilderTable( config.getJDBCConnId().getValue(),
-                                                        config.getFeatureTypeMapping(), dialect, deleteCascadingByDB );
+                                                        config.getFeatureTypeMapping(), dialect, deleteCascadingByDB,
+                                                        workspace );
             }
         } else {
             LOG.debug( "Schema-driven mode configuration" );

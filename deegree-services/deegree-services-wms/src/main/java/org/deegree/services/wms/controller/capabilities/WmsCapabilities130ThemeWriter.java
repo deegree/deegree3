@@ -112,7 +112,7 @@ class WmsCapabilities130ThemeWriter {
 
         writer.writeStartElement( WMSNS, "Layer" );
 
-        if ( md.isQueryable() ) {
+        if ( md.isQueryable() && md.getName() != null ) {
             writer.writeAttribute( "queryable", "1" );
         }
         if ( md.getCascaded() != 0 ) {

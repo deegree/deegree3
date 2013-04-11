@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.featurestore;
+package org.deegree.console.datastore.feature;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -56,7 +56,7 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.Query;
@@ -83,9 +83,14 @@ public class FeatureStoreConfig implements Serializable {
     private String id;
 
     private FeatureStoreManager getFeatureStoreManager() {
+        DeegreeWorkspace ws = getWorkspace();
+        return ws.getSubsystemManager( FeatureStoreManager.class );
+    }
+
+    private DeegreeWorkspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        return ws.getSubsystemManager( FeatureStoreManager.class );
+        return ws;
     }
 
     public boolean getSql() {
@@ -104,7 +109,7 @@ public class FeatureStoreConfig implements Serializable {
         SQLFeatureStore fs = (SQLFeatureStore) getFeatureStoreManager().get( getId() );
         String connId = fs.getConnId();
         String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
-        SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons" );
+        SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons", getWorkspace() );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";

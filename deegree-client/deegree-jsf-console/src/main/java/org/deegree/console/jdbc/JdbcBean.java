@@ -23,8 +23,8 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.Config;
 import org.deegree.console.ConfigManager;
-import org.deegree.console.ResourceManagerMetadata2;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.ResourceManagerMetadata;
+import org.deegree.console.workspace.WorkspaceBean;
 
 @ManagedBean
 @SessionScoped
@@ -228,7 +228,7 @@ public class JdbcBean {
             String newId = (String) sMap.get( "newConfigId" );
             rs = mgr.createResource( newId, is );
             rs = mgr.activate( rs.getId() );
-            ResourceManagerMetadata2 rsMetadata = (ResourceManagerMetadata2) sMap.get( "resourceManagerMetadata" );
+            ResourceManagerMetadata rsMetadata = (ResourceManagerMetadata) sMap.get( "resourceManagerMetadata" );
             this.config = new Config( rs, (ConfigManager) sMap.get( "configManager" ), mgr, rsMetadata.getStartView(),
                                       true );
             ConnectionManager poolMgr = ws.getSubsystemManager( ConnectionManager.class );

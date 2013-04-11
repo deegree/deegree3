@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.wps;
+package org.deegree.console.webservices.wps;
 
 import static org.deegree.protocol.wps.WPSConstants.ExecutionState.SUCCEEDED;
 

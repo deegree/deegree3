@@ -73,6 +73,8 @@ import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
@@ -869,19 +871,11 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
             String configFile = line.getOptionValue( OPT_WPVS_CONFIG_FILE );
 
-            String dbURL = line.getOptionValue( OPT_WPVS_DB_CONNECTION );
-            if ( dbURL != null && !"".equals( dbURL ) ) {
-                String user = line.getOptionValue( OPT_WPVS_DB_USER );
-                String pass = line.getOptionValue( OPT_WPVS_DB_PASS );
-                String id = line.getOptionValue( OPT_WPVS_DB_ID );
-                ConnectionManager.addConnection( id, dbURL, user, pass, 5, 10 );
-            }
-
             LOG.info( "Checking for JOGL." );
             JOGLChecker.check();
             LOG.info( "JOGL check ok." );
 
-            InteractiveWPVS app = createWPVSInstance( configFile, request );
+            InteractiveWPVS app = createWPVSInstance( configFile, request, line );
 
             JFrame frame = new JFrame( "deegree interactive WPVS" );
             frame.getContentPane().add( app, BorderLayout.CENTER );
@@ -897,7 +891,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         // System.exit( 0 );
     }
 
-    private static InteractiveWPVS createWPVSInstance( String configFile, String getUrl )
+    private static InteractiveWPVS createWPVSInstance( String configFile, String getUrl, CommandLine line )
                             throws UnsupportedOperationException, IOException, OWSException, ServiceInitException {
         File baseDir = new File( configFile );
         if ( !baseDir.exists() ) {
@@ -934,6 +928,16 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
         // TODO adapt to workspace concept
         workspace = DeegreeWorkspace.getInstance( null, baseDir );
+
+        String dbURL = line.getOptionValue( OPT_WPVS_DB_CONNECTION );
+        if ( dbURL != null && !"".equals( dbURL ) ) {
+            String user = line.getOptionValue( OPT_WPVS_DB_USER );
+            String pass = line.getOptionValue( OPT_WPVS_DB_PASS );
+            String id = line.getOptionValue( OPT_WPVS_DB_ID );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            JDBCParams params = new DefaultJDBCParams( dbURL, user, pass, false );
+            mgr.addPool( id, params, workspace );
+        }
 
         File dsDir = new File( baseDir, "/datasources/" );
         if ( !dsDir.exists() ) {
