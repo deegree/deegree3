@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console;
+package org.deegree.console.metadata;
 
 import static org.deegree.commons.config.ResourceState.StateType.init_error;
 

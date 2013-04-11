@@ -222,7 +222,7 @@ public class Config implements Comparable<Config> {
                             throws IOException {
         File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
         Config metadataConfig = new Config( metadataLocation, METADATA_SCHEMA_URL, METADATA_EXAMPLE_URL,
-                                            "/console/webservices/webservices" );
+                                            "/console/webservices/services" );
         return metadataConfig.edit();
     }
 

@@ -10,11 +10,11 @@
       <h:panelGroup rendered="#{logBean.loggedIn}">
         <fieldset class="fieldset">
           <legend>
-            <h:outputText styleClass="titel" value="Web services" />
+            <h:outputText styleClass="titel" value="Feature stores" />
           </legend>
           <h:form>
             <table style="font-size: small; margin-bottom: 20px">
-              <ui:repeat value="#{servicesBean.configs}" var="config">
+              <ui:repeat value="#{featureStoreManagerBean.configs}" var="config">
                 <tr align="left">
                   <td><h:outputLabel styleClass="buttonActivate" rendered="#{config.state=='init_ok'}"
                       value="#{labels.featureStores_deactivate}" /> <h:outputLabel styleClass="buttonDeactivate"
@@ -31,12 +31,12 @@
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
                   <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='init_error'}"
                       value="Show errors" action="#{config.showErrors}" /></td>
-                  <td><h:commandButton styleClass="buttonInfo" value="Edit metadata"
-                      action="#{config.editMetadata}" /></td>
-                  <td><h:panelGroup rendered="#{config.state=='init_ok'}">
-                      <dg:externalLink styleClass="buttonInfo" target="_blank" href="#{config.capabilitiesURL}"
-                        title="#{labels.webservices_cap}" />
-                    </h:panelGroup></td>
+                  <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}"
+                      value="#{labels.featureStores_info}" action="#{config.showInfo}" alt="#{config.id}" /></td>
+                  <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='init_ok'}"
+                      value="#{labels.featureStores_loader}" action="#{config.openLoader}" alt="#{config.id}" /></td>
+                  <td><h:commandButton styleClass="buttonInfo" rendered="#{config.sql}"
+                      value="#{labels.featureStores_setup}" action="#{config.createTables}" alt="#{config.id}" /></td>
                 </tr>
               </ui:repeat>
             </table>
@@ -44,18 +44,14 @@
           <h:form>
             <h:panelGroup>
               <h:outputLabel styleClass="label" for="newFSBt" value="#{labels.featureStores_name}" />
-              <h:inputText styleClass="liste" id="newFSBt" value="#{servicesBean.newConfigId}" size="16"
+              <h:inputText styleClass="liste" id="newFSBt" value="#{featureStoreManagerBean.newConfigId}" size="16"
                 required="true" requiredMessage="#{labels.resource_name_req}" />
-              <h:selectOneMenu styleClass="liste" value="#{servicesBean.newConfigType}">
-                <f:selectItems value="#{servicesBean.metadata.providerNames}" />
+              <h:selectOneMenu styleClass="liste" value="#{featureStoreManagerBean.newConfigType}">
+                <f:selectItems value="#{featureStoreManagerBean.metadata.providerNames}" />
               </h:selectOneMenu>
               <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-                action="#{servicesBean.startWizard}" />
+                action="#{featureStoreManagerBean.startWizard}" />
             </h:panelGroup>
-          </h:form>
-          <h:form>
-            <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_global}"
-              action="#{servicesBean.mainConfig.edit}" />
           </h:form>
         </fieldset>
       </h:panelGroup>

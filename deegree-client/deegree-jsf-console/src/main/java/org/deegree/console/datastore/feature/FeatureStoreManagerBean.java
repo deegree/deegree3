@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,20 +33,36 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console;
+package org.deegree.console.datastore.feature;
 
-/**
- * TODO add class documentation here
- * 
- * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
- */
-public class Navigation {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    public static final String CONSOLE = "/console";
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 
-    public static final String CHANGE_PASSWORD = "/console/security/password";
+import org.deegree.commons.config.ResourceState;
+import org.deegree.console.AbstractResourceManagerBean;
+import org.deegree.console.Config;
+import org.deegree.feature.persistence.FeatureStoreManager;
 
+@ManagedBean
+@ViewScoped
+public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements Serializable {
+
+    public FeatureStoreManagerBean() {
+        super( FeatureStoreManager.class );
+    }
+
+    @Override
+    public List<Config> getConfigs() {
+        List<Config> configs = new ArrayList<Config>();
+        for ( ResourceState<?> state : resourceManager.getStates() ) {
+            configs.add( new FeatureStoreConfig( state, resourceManager ) );
+        }
+        Collections.sort( configs );
+        return configs;
+    }
 }

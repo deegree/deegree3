@@ -36,8 +36,6 @@ package org.deegree.console.security;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_WARN;
-import static org.deegree.console.Navigation.CHANGE_PASSWORD;
-import static org.deegree.console.Navigation.CONSOLE;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,9 +65,13 @@ public class LogBean implements Serializable {
 
     private static final Logger LOG = LoggerFactory.getLogger( LogBean.class );
 
-    private static final String PASSWORD_FILE = "console.pw";
-
     private static final long serialVersionUID = -4865071415988778817L;
+
+    private static final String PASSWORD_FILE = "console.pw";
+    
+    public static final String CONSOLE = "/console";
+
+    public static final String CHANGE_PASSWORD = "/console/security/password";
 
     private final PasswordFile passwordFile;
 

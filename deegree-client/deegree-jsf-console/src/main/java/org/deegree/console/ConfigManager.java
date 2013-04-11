@@ -59,6 +59,8 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.console.metadata.ResourceManagerMetadata;
+import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;

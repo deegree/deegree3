@@ -33,50 +33,23 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.webservices;
+package org.deegree.console.datastore.coverage;
 
-import java.io.File;
 import java.io.Serializable;
-import java.net.URL;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.AbstractResourceManagerBean;
-import org.deegree.console.Config;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
 
-/**
- * TODO add class documentation here
- * 
- * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
- */
 @ManagedBean
 @ViewScoped
-public class ServicesBean extends AbstractResourceManagerBean<WebServicesConfiguration> implements Serializable {
+public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageBuilderManager> implements Serializable {
 
-    private static final long serialVersionUID = -8669333203479413121L;
+    private static final long serialVersionUID = 8213393417005100905L;
 
-    private static final URL MAIN_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
-
-    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
-
-    private final Config mainConfig;
-
-    public ServicesBean() {
-        super( WebServicesConfiguration.class );
-        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-        File wsRootDir = ws.getLocation();
-        File mainLocation = new File( wsRootDir, "services/main.xml" );
-        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/webservices" );
-    }
-
-    public Config getMainConfig() {
-        return mainConfig;
+    public CoverageManagerBean() {
+        super( CoverageBuilderManager.class );
     }
 }

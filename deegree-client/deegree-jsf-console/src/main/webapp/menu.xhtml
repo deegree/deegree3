@@ -30,13 +30,36 @@
     <h:panelGroup layout="block">
       <dgc:menuitem displayname="services" target="/console/webservices/services.xhtml" />
     </h:panelGroup>
-  </h:panelGroup>
-
-  <h:panelGroup rendered="#{logBean.loggedIn}">
-    <dgc:submenu items="#{configManager.datastoreManagers}" displayname="data stores" />
-    <dgc:submenu items="#{configManager.mapManagers}" displayname="map layers" />
-    <dgc:submenu items="#{configManager.connectionManagers}" displayname="server connections" />
-    <dgc:submenu items="#{configManager.processManagers}" displayname="processes" />
+    <h:panelGroup layout="block">
+      <h:outputText styleClass="menutopic" value="data stores" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <dgc:menuitem displayname="coverage" target="/console/datastore/coverage/index.xhtml" />
+      <dgc:menuitem displayname="feature" target="/console/datastore/feature/index.xhtml" />
+      <dgc:menuitem displayname="metadata" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="tile" target="/console/webservices/services.xhtml" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <h:outputText styleClass="menutopic" value="map layers" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <dgc:menuitem displayname="layers" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="styles" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="themes" target="/console/webservices/services.xhtml" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <h:outputText styleClass="menutopic" value="connections" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <dgc:menuitem displayname="databases" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="remote services" target="/console/webservices/services.xhtml" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <h:outputText styleClass="menutopic" value="processes" />
+    </h:panelGroup>
+    <h:panelGroup layout="block">
+      <dgc:menuitem displayname="provider" target="/console/webservices/services.xhtml" />
+    </h:panelGroup>
   </h:panelGroup>
 
 </ui:composition>

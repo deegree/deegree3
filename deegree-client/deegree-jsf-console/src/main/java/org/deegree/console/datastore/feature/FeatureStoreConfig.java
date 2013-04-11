@@ -1,6 +1,7 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -37,7 +38,6 @@ package org.deegree.console.datastore.feature;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,15 +47,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
+import org.deegree.commons.config.ResourceState;
+import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -66,21 +65,11 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 
-/**
- * TODO add class documentation here
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-@ManagedBean
-@SessionScoped
-public class FeatureStoreConfig implements Serializable {
+public class FeatureStoreConfig extends Config {
 
-    private static final long serialVersionUID = 6752472497206455251L;
-
-    private String id;
+    public FeatureStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
+        super( state, null, resourceManager, "/console/datastore/feature/index", true );
+    }
 
     private FeatureStoreManager getFeatureStoreManager() {
         DeegreeWorkspace ws = getWorkspace();
@@ -115,17 +104,9 @@ public class FeatureStoreConfig implements Serializable {
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void updateId( ActionEvent evt ) {
-        id = ( (HtmlCommandButton) evt.getComponent() ).getAlt();
-    }
-
     public String showInfo() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "/console/featurestore/index";
+        return "/console/datastore/feature/info";
     }
 
     public String openLoader()

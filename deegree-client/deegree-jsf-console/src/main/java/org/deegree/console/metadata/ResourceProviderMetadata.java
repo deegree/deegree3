@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console;
+package org.deegree.console.metadata;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.deegree.commons.config.ResourceProvider;
+import org.deegree.console.ConfigExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
