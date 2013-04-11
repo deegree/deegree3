@@ -54,8 +54,30 @@ import java.util.TreeMap;
  */
 public interface Workspace {
 
+    /**
+     * Call this method (or #initAll) before anything else. Prepares the workspace so it can start initializing
+     * resources.
+     */
     void startup();
 
+    /**
+     * Completely initializes the workspace AND all of its resources.
+     */
+    void initAll();
+
+    /**
+     * Completely destroys the workspace AND all of its resources.
+     */
+    void destroy();
+
+    /**
+     * Used to obtain the class loader coupled with this workspace.
+     * 
+     * @return the module class loader, never <code>null</code>
+     */
+    ClassLoader getModuleClassLoader();
+
+    // TODO think about how to clean up this mess
     void scan();
 
     <T extends Resource> void scan( ResourceLocation<T> location );
@@ -64,16 +86,10 @@ public interface Workspace {
 
     <T extends Resource> ResourceBuilder<T> prepare( ResourceIdentifier<T> id );
 
-    void initAll();
-
     <T extends Resource> T init( ResourceIdentifier<T> id,
                                  TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder );
 
     <T extends Resource> T init( ResourceBuilder<T> builder );
-
-    void destroy();
-
-    ClassLoader getModuleClassLoader();
 
     void addExtraResource( ResourceLocation<? extends Resource> location );
 
