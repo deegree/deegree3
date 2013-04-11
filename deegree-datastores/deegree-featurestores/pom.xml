@@ -26,7 +26,6 @@
 
   <modules>
     <module>deegree-featurestore-commons</module>
-    <module>deegree-featurestore-couchbase</module>
     <module>deegree-featurestore-memory</module>
     <module>deegree-featurestore-remotewfs</module>
     <module>deegree-featurestore-shape</module>

@@ -1,14 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-processproviders</artifactId>
-  <packaging>pom</packaging>
-  <name>deegree-processproviders</name>
-  <description>Abstraction layer for process providers and implementations</description>
+  <artifactId>deegree-api-examples</artifactId>
+  <packaging>jar</packaging>
+  <name>deegree-api-examples</name>
+  <description>Example code snippets for working with the deegree API</description>
+
+  <properties>
+    <deegree.module.status>unmaintained</deegree.module.status>
+  </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree</artifactId>
-    <version>3.3-pre2-SNAPSHOT</version>
+    <artifactId>deegree-misc</artifactId>
+    <version>3.2.0</version>
+    <relativePath />
   </parent>
 
   <repositories>
@@ -24,10 +29,12 @@
     </repository>
   </repositories>
 
-  <modules>
-    <module>deegree-processprovider-example</module>
-    <module>deegree-processprovider-jrxml</module>
-    <module>deegree-processprovider-style</module>
-  </modules>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
+
