@@ -39,30 +39,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectProvider;
 import org.slf4j.Logger;
 
 /**
- * {@link SQLDialectProvider} for Microsoft SQL databases.
+ * {@link SqlDialectProvider} for Microsoft SQL databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: 295 $, $Date: 2011-06-09 16:48:47 +0200 (Do, 09 Jun 2011) $
  */
-public class MSSQLDialectProvider implements SQLDialectProvider, SqlDialectProvider {
+public class MSSQLDialectProvider implements SqlDialectProvider {
 
     private static final Logger LOG = getLogger( MSSQLDialectProvider.class );
-
-    @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
-        return new MSSQLDialect();
-    }
 
     @Override
     public boolean supportsConnection( Connection connection ) {

@@ -40,16 +40,16 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
-import org.deegree.sqldialect.SQLDialectProvider;
 
 /**
  * {@link FeatureStoreProvider} for {@link SQLFeatureStore} implementations.
  * <p>
- * This {@link FeatureStoreProvider} needs registered {@link SQLDialectProvider} implementations in order to actually
- * create {@link SQLFeatureStore} instances.
+ * This {@link FeatureStoreProvider} needs {@link ConnectionProvider} implementations with sql dialects in order to
+ * actually create {@link SQLFeatureStore} instances.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

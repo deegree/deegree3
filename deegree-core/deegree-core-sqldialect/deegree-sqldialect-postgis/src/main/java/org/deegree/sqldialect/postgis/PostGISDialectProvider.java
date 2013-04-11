@@ -41,48 +41,24 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.db.ConnectionProvider;
-import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectProvider;
 import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for PostGIS-enabled PostgreSQL databases.
+ * {@link SqlDialectProvider} for PostGIS-enabled PostgreSQL databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31034 $, $Date: 2011-06-09 16:47:31 +0200 (Do, 09. Jun 2011) $
  */
-public class PostGISDialectProvider implements SQLDialectProvider, SqlDialectProvider {
+public class PostGISDialectProvider implements SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
-
-    @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        boolean useLegacyPredicates = false;
-        try {
-            ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
-            conn = prov.getConnection();
-            if ( conn == null ) {
-                throw new ResourceInitException( "JDBC connection " + connId + " is not available." );
-            }
-            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
-        } finally {
-            close( rs, stmt, conn, LOG );
-        }
-        return new PostGISDialect( useLegacyPredicates );
-    }
 
     @Override
     public boolean supportsConnection( Connection connection ) {

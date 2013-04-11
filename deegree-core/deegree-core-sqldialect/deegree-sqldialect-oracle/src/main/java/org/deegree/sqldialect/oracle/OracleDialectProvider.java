@@ -49,19 +49,15 @@ import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.db.ConnectionProvider;
-import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectProvider;
 import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for Oracle spatial databases.
+ * {@link SqlDialectProvider} for Oracle spatial databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
@@ -69,17 +65,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleDialectProvider implements SQLDialectProvider, SqlDialectProvider {
+public class OracleDialectProvider implements SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( OracleDialectProvider.class );
-
-    @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
-        ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
-        Connection conn = prov.getConnection();
-        return createDialect( conn );
-    }
 
     @Override
     public boolean supportsConnection( Connection connection ) {
