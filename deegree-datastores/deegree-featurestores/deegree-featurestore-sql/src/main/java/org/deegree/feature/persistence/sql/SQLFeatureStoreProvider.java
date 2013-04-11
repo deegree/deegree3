@@ -43,7 +43,6 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
-import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.sqldialect.SQLDialectProvider;
 
 /**
@@ -100,6 +99,6 @@ public class SQLFeatureStoreProvider implements FeatureStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { SQLDialectManager.class };
+        return new Class[] {};
     }
 }

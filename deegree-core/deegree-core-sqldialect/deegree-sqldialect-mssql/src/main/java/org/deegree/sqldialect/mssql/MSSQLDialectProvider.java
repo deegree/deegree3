@@ -35,14 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.mssql;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectProvider;
@@ -59,10 +57,6 @@ import org.slf4j.Logger;
 public class MSSQLDialectProvider implements SQLDialectProvider, SqlDialectProvider {
 
     private static final Logger LOG = getLogger( MSSQLDialectProvider.class );
-
-    public Type getSupportedType() {
-        return MSSQL;
-    }
 
     @Override
     public SQLDialect create( String connId, DeegreeWorkspace ws )

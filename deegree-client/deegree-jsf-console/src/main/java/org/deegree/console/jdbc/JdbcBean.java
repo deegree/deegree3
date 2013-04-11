@@ -19,7 +19,6 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.Config;
 import org.deegree.console.ResourceManagerMetadata2;
 import org.deegree.console.WorkspaceBean;
@@ -186,10 +185,10 @@ public class JdbcBean {
     public void cancel() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
+        // JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
         Map<String, Object> sMap = ctx.getSessionMap();
         String newId = (String) sMap.get( "newConfigId" );
-        mgr.deleteResource( newId );
+        // mgr.deleteResource( newId );
         clearFields();
     }
 

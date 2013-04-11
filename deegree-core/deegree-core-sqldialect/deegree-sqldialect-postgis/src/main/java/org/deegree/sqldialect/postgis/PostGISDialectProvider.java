@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.postgis;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
 
 import java.sql.Connection;
@@ -43,7 +42,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -65,11 +63,6 @@ import org.slf4j.LoggerFactory;
 public class PostGISDialectProvider implements SQLDialectProvider, SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
-
-    @Override
-    public Type getSupportedType() {
-        return PostgreSQL;
-    }
 
     @Override
     public SQLDialect create( String connId, DeegreeWorkspace ws )

@@ -51,7 +51,6 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.filter.function.FunctionManager;
-import org.deegree.sqldialect.SQLDialectManager;
 import org.slf4j.Logger;
 
 /**
@@ -93,7 +92,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, FunctionManager.class, SQLDialectManager.class, CRSManager.class };
+        return new Class[] { ProxyUtils.class, FunctionManager.class, CRSManager.class };
     }
 
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {

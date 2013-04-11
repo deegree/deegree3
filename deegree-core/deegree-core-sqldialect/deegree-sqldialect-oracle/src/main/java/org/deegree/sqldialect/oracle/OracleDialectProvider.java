@@ -50,7 +50,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -73,11 +72,6 @@ import org.slf4j.LoggerFactory;
 public class OracleDialectProvider implements SQLDialectProvider, SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( OracleDialectProvider.class );
-
-    @Override
-    public Type getSupportedType() {
-        return Type.Oracle;
-    }
 
     @Override
     public SQLDialect create( String connId, DeegreeWorkspace ws )

@@ -36,11 +36,9 @@
 package org.deegree.sqldialect.filter.function;
 
 import java.util.List;
-import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.filter.expression.Function;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
@@ -77,13 +75,6 @@ public interface SQLFunctionProvider {
      * @return name of the provided function, never <code>null</code>
      */
     public String getName();
-
-    /**
-     * Returns the supported SQL dialects.
-     * 
-     * @return supported SQL dialects, never <code>null</code>
-     */
-    public Set<Type> getDialects();
 
     /**
      * Translates the given arguments into an an SQL function call.

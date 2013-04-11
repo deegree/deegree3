@@ -37,7 +37,6 @@ package org.deegree.sqldialect;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 
 /**
  * Implementations provide {@link SQLDialect} implementations.
@@ -51,15 +50,12 @@ import org.deegree.commons.jdbc.ConnectionManager.Type;
 public interface SQLDialectProvider {
 
     /**
-     * @return the db type which is supported by this feature store provider
-     */
-    Type getSupportedType();
-
-    /**
      * @param connId
      * @param ws
      * @return new SQL dialect instance configured for the given JDBC connection id
-     * @throws ResourceInitException 
+     * @throws ResourceInitException
      */
-    SQLDialect create( String connId, DeegreeWorkspace ws ) throws ResourceInitException;
+    SQLDialect create( String connId, DeegreeWorkspace ws )
+                            throws ResourceInitException;
+
 }

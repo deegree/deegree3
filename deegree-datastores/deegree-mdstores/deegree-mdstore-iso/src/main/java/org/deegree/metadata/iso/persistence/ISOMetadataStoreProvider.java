@@ -60,7 +60,6 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
 
@@ -186,7 +185,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, FunctionManager.class, SQLDialectManager.class };
+        return new Class[] { ProxyUtils.class, FunctionManager.class };
     }
 
     public void init( DeegreeWorkspace workspace ) {
