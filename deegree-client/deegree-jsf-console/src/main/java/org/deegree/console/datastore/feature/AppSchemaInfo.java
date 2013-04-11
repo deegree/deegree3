@@ -1,4 +1,4 @@
-package org.deegree.console.featurestore;
+package org.deegree.console.datastore.feature;
 
 import java.io.IOException;
 import java.util.ArrayList;

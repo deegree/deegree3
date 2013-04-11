@@ -24,7 +24,7 @@ import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.Config;
 import org.deegree.console.ConfigManager;
 import org.deegree.console.ResourceManagerMetadata;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 
 @ManagedBean
 @SessionScoped

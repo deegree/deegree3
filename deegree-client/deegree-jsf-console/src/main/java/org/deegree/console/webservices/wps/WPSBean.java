@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/wps/WPSBean.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,48 +33,50 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.webservices;
+package org.deegree.console.webservices.wps;
 
-import java.io.File;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import javax.faces.bean.RequestScoped;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.console.Config;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.WPService;
 
 /**
- * TODO add class documentation here
+ * JSF-Bean for the WPS main info page.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
-@SessionScoped
-public class WebServiceConfigManager {
+@RequestScoped
+public class WPSBean {
 
-    private static final URL MAIN_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
+    private final String version;
 
-    private static final URL MAIN_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
+    private final List<String> processIds = new ArrayList<String>();
 
-    private final Config mainConfig;
-
-    public Config getMainConfig() {
-        return mainConfig;
+    public String getVersion() {
+        return version;
     }
 
-    public WebServiceConfigManager() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        File wsRootDir = ws.getLocation();
+    public List<String> getProcessIds() {
+        return processIds;
+    }
 
-        File mainLocation = new File( wsRootDir, "services/main.xml" );
-        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/webservices" );
+    /**
+     * Creates a new {@link WPSBean} instance (only used by JSF).
+     */
+    public WPSBean() {
+        WPService service = (WPService) ( OGCFrontController.getServiceConfiguration().getByOWSClass( WPService.class ).get( 0 ) );
+        this.version = service.getOfferedVersionsString();
+        for ( WPSProcess process : service.getProcessManager().getProcesses().values() ) {
+            processIds.add( process.getDescription().getIdentifier().getValue().toString() );
+        }
     }
 }

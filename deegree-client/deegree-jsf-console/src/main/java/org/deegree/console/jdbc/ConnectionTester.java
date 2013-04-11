@@ -46,7 +46,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 
 /**
  * JSF Bean for testing the availability of connections offered by {@link ConnectionManager}.

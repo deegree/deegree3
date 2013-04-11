@@ -59,7 +59,7 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.console.webservices.WebServiceConfigManager;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.services.OWS;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;
@@ -77,9 +77,9 @@ public class Config implements Comparable<Config> {
 
     private static final Logger LOG = getLogger( Config.class );
 
-    private static final URL METADATA_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
+    private static final URL METADATA_EXAMPLE_URL = Config.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
 
-    private static final URL METADATA_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
+    private static final URL METADATA_SCHEMA_URL = Config.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
 
     private File location;
 
@@ -403,5 +403,4 @@ public class Config implements Comparable<Config> {
     public void setState( ResourceState<?> state ) {
         this.state = state;
     }
-
 }

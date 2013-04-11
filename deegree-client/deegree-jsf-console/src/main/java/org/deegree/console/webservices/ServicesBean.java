@@ -39,6 +39,7 @@ import static org.deegree.commons.config.DeegreeWorkspace.getWorkspaceRoot;
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
@@ -68,14 +70,20 @@ import org.deegree.services.controller.WebServicesConfiguration;
  */
 @ManagedBean
 @ViewScoped
-public class ServicesBean {
+public class ServicesBean implements Serializable {
 
     private static final long serialVersionUID = -8669333203479413121L;
+
+    private static final URL MAIN_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
+
+    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
+
+    private final Config mainConfig;
 
     private final ResourceManager resourceManager;
 
     private final ResourceManagerMetadata metadata;
-    
+
     private String newConfigType;
 
     private List<String> newConfigTypeTemplates;
@@ -91,10 +99,18 @@ public class ServicesBean {
         URL example = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
         URL schema = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
         proxyConfig = new Config( proxyLocation, schema, example, "/console/jsf/proxy" );
-        resourceManager = OGCFrontController.getServiceWorkspace().getSubsystemManager( WebServicesConfiguration.class );
-        metadata = ResourceManagerMetadata.getMetadata( resourceManager );
+        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
+        resourceManager = ws.getSubsystemManager( WebServicesConfiguration.class );
+        metadata = ResourceManagerMetadata.getMetadata( resourceManager );        
+        File wsRootDir = ws.getLocation();
+        File mainLocation = new File( wsRootDir, "services/main.xml" );
+        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/webservices" );
     }
 
+    public Config getMainConfig() {
+        return mainConfig;
+    }
+    
     public List<String> getNewConfigTypeTemplates() {
         return newConfigTypeTemplates;
     }
@@ -131,14 +147,14 @@ public class ServicesBean {
         return newConfigType;
     }
 
-    public ResourceManagerMetadata getMetadata () {
+    public ResourceManagerMetadata getMetadata() {
         return metadata;
     }
-    
+
     public List<ResourceManagerMetadata> getWebserviceManagers() {
         return getResourceManagers( "service" );
     }
-    
+
     public List<Config> getServices() {
         List<Config> configs = new ArrayList<Config>();
         for ( ResourceState<?> state : resourceManager.getStates() ) {

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.featurestore;
+package org.deegree.console.datastore.feature;
 
 /**
  * TODO add class documentation here

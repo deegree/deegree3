@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/wps/WPSBean.java $
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/wps/ProcessExecutionsBean.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.wps;
+package org.deegree.console.webservices.wps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +42,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.WPService;
 
 /**
- * JSF-Bean for the WPS main info page.
+ * JSF-Bean for the processes execution info page.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -55,28 +54,28 @@ import org.deegree.services.wps.WPService;
  */
 @ManagedBean
 @RequestScoped
-public class WPSBean {
+public class ProcessExecutionsBean {
 
-    private final String version;
+    private final List<ProcessExecution> executions = new ArrayList<ProcessExecution>();
 
-    private final List<String> processIds = new ArrayList<String>();
+    private final boolean hasExecutions;
 
-    public String getVersion() {
-        return version;
+    public List<ProcessExecution> getExecutions() {
+        return executions;
     }
 
-    public List<String> getProcessIds() {
-        return processIds;
+    public boolean isHasExecutions() {
+        return hasExecutions;
     }
 
     /**
-     * Creates a new {@link WPSBean} instance (only used by JSF).
+     * Creates a new {@link ProcessExecutionsBean} instance (only used by JSF).
      */
-    public WPSBean() {
+    public ProcessExecutionsBean() {
         WPService service = (WPService) ( OGCFrontController.getServiceConfiguration().getByOWSClass( WPService.class ).get( 0 ) );
-        this.version = service.getOfferedVersionsString();
-        for ( WPSProcess process : service.getProcessManager().getProcesses().values() ) {
-            processIds.add( process.getDescription().getIdentifier().getValue().toString() );
+        for ( org.deegree.services.wps.ProcessExecution p : service.getExecutionManager().getAllProcesses() ) {
+            executions.add( new ProcessExecution( p ) );
         }
+        hasExecutions = !executions.isEmpty();
     }
 }

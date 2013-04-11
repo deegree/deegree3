@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.featurestore;
+package org.deegree.console.datastore.feature;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -67,7 +67,7 @@ import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.console.Config;
 import org.deegree.console.ConfigManager;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.persistence.FeatureStoreManager;

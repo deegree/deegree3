@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.featurestore;
+package org.deegree.console.datastore.feature;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -56,7 +56,7 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.Query;

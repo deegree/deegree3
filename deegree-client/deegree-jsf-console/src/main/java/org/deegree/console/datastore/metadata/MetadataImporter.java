@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.metadatastore;
+package org.deegree.console.datastore.metadata;
 
 import static java.util.Collections.singletonList;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.metadatastore;
+package org.deegree.console.datastore.metadata;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -52,7 +52,7 @@ import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;

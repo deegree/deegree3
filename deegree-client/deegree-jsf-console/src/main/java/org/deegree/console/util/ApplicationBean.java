@@ -51,7 +51,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
-import org.deegree.console.WorkspaceBean;
+import org.deegree.console.workspace.WorkspaceBean;
 import org.slf4j.Logger;
 
 /**
