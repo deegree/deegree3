@@ -44,6 +44,7 @@ package org.deegree.db.legacy;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.commons.jdbc.ConnectionPool;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.sqldialect.SQLDialect;
@@ -122,6 +123,15 @@ public class LegacyConnectionProvider implements ConnectionProvider {
     @Override
     public SQLDialect getDialect() {
         return dialect;
+    }
+
+    @Override
+    public void invalidate( Connection conn ) {
+        try {
+            pool.invalidate( (DelegatingConnection) conn );
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
     }
 
 }

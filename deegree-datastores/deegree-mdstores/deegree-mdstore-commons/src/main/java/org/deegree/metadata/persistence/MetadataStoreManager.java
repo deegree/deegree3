@@ -40,7 +40,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 
 /**
@@ -57,7 +56,7 @@ public class MetadataStoreManager extends AbstractResourceManager<MetadataStore>
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+        return new Class[] { ProxyUtils.class };
     }
 
     @Override

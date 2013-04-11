@@ -37,7 +37,7 @@
 package org.deegree.metadata.persistence.ebrim.eo;
 
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
-import static org.deegree.commons.utils.JDBCUtils.executeQuery;
+import static org.deegree.db.ConnectionProviderUtils.executeQuery;
 import static org.deegree.metadata.ebrim.RIMType.AdhocQuery;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -65,7 +65,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -340,7 +339,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
+        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
         Connection conn = getConnection( true );
         try {
             EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames(), useLegacyPredicates );
@@ -424,7 +423,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             }
 
             LOG.debug( "Execute: " + stmt.toString() );
-            rs = executeQuery( stmt, connManager, connId, queryTimeout );
+            rs = executeQuery( stmt, prov, queryTimeout );
             return new EbrimEOMDResultSet( rs, conn, stmt );
         } catch ( Throwable t ) {
 
@@ -440,7 +439,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
+        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
         Connection conn = getConnection( true );
         try {
             EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames(), useLegacyPredicates );
@@ -500,7 +499,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             }
 
             LOG.debug( "Execute: " + stmt.toString() );
-            rs = executeQuery( stmt, connManager, connId, queryTimeout );
+            rs = executeQuery( stmt, prov, queryTimeout );
             rs.next();
             return rs.getInt( 1 );
         } catch ( Throwable t ) {
@@ -542,7 +541,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ConnectionManager connManager = workspace.getSubsystemManager( ConnectionManager.class );
+        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
         Connection conn = getConnection( true );
 
         try {
@@ -567,7 +566,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             }
 
             LOG.debug( "Execute: " + stmt.toString() );
-            rs = executeQuery( stmt, connManager, connId, queryTimeout );
+            rs = executeQuery( stmt, prov, queryTimeout );
             return new EbrimEOMDResultSet( rs, conn, stmt );
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, stmt, conn, LOG );

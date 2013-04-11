@@ -51,7 +51,6 @@ import java.util.List;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.index.PositionableModel;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.db.ConnectionProvider;
@@ -271,7 +270,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 
     /**
      * @param connectionID
-     *            to be used to get a connection from the {@link ConnectionManager}
+     *            to be used to get a connection from the {@link ConnectionProvider}
      * @param type
      */
     DBBackend( String connectionID, Type type, DeegreeWorkspace workspace ) {

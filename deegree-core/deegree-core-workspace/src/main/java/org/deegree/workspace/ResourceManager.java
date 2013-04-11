@@ -76,4 +76,15 @@ public interface ResourceManager<T extends Resource> {
      */
     void shutdown();
 
+    /**
+     * Adds a single new resource.
+     * 
+     * @param location
+     *            never <code>null</code>
+     * @param workspace
+     *            never <code>null</code>
+     * @return metadata for the new resource, never <code>null</code>
+     */
+    ResourceMetadata<T> add( ResourceLocation<T> location, Workspace workspace );
+
 }

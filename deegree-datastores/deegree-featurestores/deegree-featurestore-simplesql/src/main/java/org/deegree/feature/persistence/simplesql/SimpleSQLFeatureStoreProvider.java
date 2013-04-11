@@ -40,7 +40,6 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
@@ -85,7 +84,7 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class };
+        return new Class[] { ProxyUtils.class };
     }
 
 }

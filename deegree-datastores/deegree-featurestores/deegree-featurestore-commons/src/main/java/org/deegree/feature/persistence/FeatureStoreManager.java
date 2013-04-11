@@ -46,11 +46,7 @@ import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.utils.TempFileManager;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
@@ -91,31 +87,13 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
             LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
         }
 
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        // lockdb stuff
-        if ( mgr.getState( "LOCK_DB" ) == null ) {
-
-            String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
-            LOG.info( "Using '" + lockDb + "' for h2 lock database." );
-
-            try {
-                Class.forName( "org.h2.Driver" );
-            } catch ( ClassNotFoundException e ) {
-                LOG.error( "Unable to load h2 driver class." );
-            }
-
-            JDBCParams params = new DefaultJDBCParams( "jdbc:h2:" + lockDb, "SA", "", false );
-            mgr.addPool( "LOCK_DB", params, workspace );
-        }
-
         // stores startup
         super.startup( workspace );
     }
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class,
-                            CRSManager.class };
+        return new Class[] { ProxyUtils.class, FunctionManager.class, SQLDialectManager.class, CRSManager.class };
     }
 
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {

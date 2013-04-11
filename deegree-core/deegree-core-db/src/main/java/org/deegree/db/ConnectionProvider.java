@@ -66,4 +66,12 @@ public interface ConnectionProvider extends Resource {
      */
     SQLDialect getDialect();
 
+    /**
+     * Invalidates a connection.
+     * 
+     * @param conn
+     *            never <code>null</code>
+     */
+    void invalidate( Connection conn );
+
 }

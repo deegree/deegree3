@@ -51,8 +51,9 @@ import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.console.WorkspaceBean;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
@@ -114,9 +115,9 @@ public class MetadataStoreConfig implements Serializable {
             try {
                 String connId = ms.getConnId();
                 DeegreeWorkspace ws = getWorkspace();
-                ConnectionManager connManager = ws.getSubsystemManager( ConnectionManager.class );
+                ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
 
-                sql = provider.getCreateStatements( connManager.getType( connId ) );
+                sql = provider.getCreateStatements( prov.getDialect() );
 
                 SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons", ws );
 

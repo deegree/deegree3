@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
-import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
@@ -47,8 +45,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
@@ -101,8 +97,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     private final String connectionId;
 
     private ISOMetadataStoreConfig config;
-
-    private Type connectionType;
 
     private final List<RecordInspector<ISORecord>> inspectorChain = new ArrayList<RecordInspector<ISORecord>>();
 
@@ -192,18 +186,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         }
     }
 
-    /**
-     * @return the db type, null, if unknown
-     */
-    public Type getDBType() {
-        if ( connectionType == null ) {
-            DeegreeWorkspace dw = DeegreeWorkspace.getInstance();
-            ConnectionManager mgr = dw.getSubsystemManager( ConnectionManager.class );
-            this.connectionType = mgr.getType( connectionId );
-        }
-        return connectionType;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -229,20 +211,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         this.workspace = workspace;
-        LOG.debug( "init" );
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        connectionType = mgr.getType( connectionId );
-        if ( connectionType == PostgreSQL ) {
-            Connection conn = null;
-            try {
-                conn = getConnection();
-            } catch ( Throwable e ) {
-                LOG.debug( e.getMessage(), e );
-                throw new ResourceInitException( e.getMessage(), e );
-            } finally {
-                close( conn );
-            }
-        }
     }
 
     @Override

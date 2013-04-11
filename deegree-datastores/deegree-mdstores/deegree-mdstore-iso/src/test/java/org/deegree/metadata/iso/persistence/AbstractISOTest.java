@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -128,11 +127,14 @@ public abstract class AbstractISOTest {
     private void setUpTables( Connection conn )
                             throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
 
+        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
+                                                                           "iso_pg_set_up_tables" );
+
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
 
-            for ( String sql : new ISOMetadataStoreProvider().getDropStatements( Type.PostgreSQL ) ) {
+            for ( String sql : new ISOMetadataStoreProvider().getDropStatements( prov.getDialect() ) ) {
                 try {
                     stmt.executeUpdate( sql );
                 } catch ( Exception e ) {
@@ -141,7 +143,7 @@ public abstract class AbstractISOTest {
                 }
             }
 
-            for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( Type.PostgreSQL ) ) {
+            for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( prov.getDialect() ) ) {
 
                 stmt.execute( sql );
             }

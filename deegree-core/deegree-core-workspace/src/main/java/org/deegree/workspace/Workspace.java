@@ -58,11 +58,18 @@ public interface Workspace {
 
     void scan();
 
+    <T extends Resource> void scan( ResourceLocation<T> location );
+
     TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> prepare();
+
+    <T extends Resource> ResourceBuilder<T> prepare( ResourceIdentifier<T> id );
 
     void initAll();
 
-    <T extends Resource> T init( ResourceIdentifier<T> id, TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder );
+    <T extends Resource> T init( ResourceIdentifier<T> id,
+                                 TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder );
+
+    <T extends Resource> T init( ResourceBuilder<T> builder );
 
     void destroy();
 
@@ -78,5 +85,7 @@ public interface Workspace {
                                                                   String id );
 
     <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
+
+    <T extends Resource> List<ResourceIdentifier<T>> getResourcesOfType( Class<? extends ResourceProvider<T>> providerClass );
 
 }

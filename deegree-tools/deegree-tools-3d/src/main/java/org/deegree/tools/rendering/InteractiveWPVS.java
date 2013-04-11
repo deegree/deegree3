@@ -72,14 +72,13 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
@@ -107,6 +106,7 @@ import org.deegree.services.wpvs.controller.WPVSController;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
+import org.deegree.workspace.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -934,9 +934,9 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             String user = line.getOptionValue( OPT_WPVS_DB_USER );
             String pass = line.getOptionValue( OPT_WPVS_DB_PASS );
             String id = line.getOptionValue( OPT_WPVS_DB_ID );
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            JDBCParams params = new DefaultJDBCParams( dbURL, user, pass, false );
-            mgr.addPool( id, params, workspace );
+            ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( id, dbURL, user,
+                                                                                                     pass );
+            workspace.getNewWorkspace().addExtraResource( loc );
         }
 
         File dsDir = new File( baseDir, "/datasources/" );

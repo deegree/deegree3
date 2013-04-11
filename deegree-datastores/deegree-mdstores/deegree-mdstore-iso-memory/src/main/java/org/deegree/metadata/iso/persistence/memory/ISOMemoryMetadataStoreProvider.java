@@ -46,13 +46,13 @@ import java.util.List;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.memory.jaxb.ISOMemoryMetadataStoreConfig;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
+import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
@@ -96,7 +96,7 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
             } else {
                 insertDirectory = recordDirectories.get( 0 );
             }
-            
+
             return new ISOMemoryMetadataStore( recordDirectories, insertDirectory );
         } catch ( Exception e ) {
             String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
@@ -128,13 +128,13 @@ public class ISOMemoryMetadataStoreProvider implements MetadataStoreProvider {
     }
 
     @Override
-    public String[] getCreateStatements( Type dbType )
+    public String[] getCreateStatements( SQLDialect dbType )
                             throws IOException {
         return new String[0];
     }
 
     @Override
-    public String[] getDropStatements( Type dbType )
+    public String[] getDropStatements( SQLDialect dbType )
                             throws IOException {
         return new String[0];
     }

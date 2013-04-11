@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.deegree.commons.config.ExtendedResourceProvider;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
+import org.deegree.sqldialect.SQLDialect;
 
 /**
  * Implementations plug-in {@link MetadataStore}s.
@@ -60,7 +60,7 @@ public interface MetadataStoreProvider extends ExtendedResourceProvider<Metadata
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    String[] getCreateStatements( Type dbType )
+    String[] getCreateStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException;
 
     /**
@@ -72,6 +72,7 @@ public interface MetadataStoreProvider extends ExtendedResourceProvider<Metadata
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    String[] getDropStatements( Type dbType )
+    String[] getDropStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException;
+
 }

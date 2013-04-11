@@ -57,8 +57,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.metadata.ebrim.RegistryObject;
@@ -67,8 +65,9 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.ebrim.eo.jaxb.EbrimEOMDStoreConfig;
+import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
-
 
 /**
  * {@link MetadataStoreProvider} for {@link EbrimEOMDStore}s
@@ -168,7 +167,7 @@ public class EbrimEOMDStoreProvider implements MetadataStoreProvider {
     @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ConnectionManager.class };
+        return new Class[] {};
     }
 
     @Override
@@ -202,10 +201,10 @@ public class EbrimEOMDStoreProvider implements MetadataStoreProvider {
     }
 
     @Override
-    public String[] getCreateStatements( Type dbType )
+    public String[] getCreateStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
-        if ( dbType == Type.PostgreSQL ) {
+        if ( dbType instanceof PostGISDialect ) {
             URL script = EbrimEOMDStoreProvider.class.getResource( "postgis/create.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
         }
@@ -213,13 +212,14 @@ public class EbrimEOMDStoreProvider implements MetadataStoreProvider {
     }
 
     @Override
-    public String[] getDropStatements( Type dbType )
+    public String[] getDropStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
-        if ( dbType == Type.PostgreSQL ) {
+        if ( dbType instanceof PostGISDialect ) {
             URL script = EbrimEOMDStoreProvider.class.getResource( "postgis/drop.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
         }
         return creates.toArray( new String[creates.size()] );
     }
+
 }

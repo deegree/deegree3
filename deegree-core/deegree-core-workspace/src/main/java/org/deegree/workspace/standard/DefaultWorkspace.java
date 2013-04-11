@@ -358,4 +358,38 @@ public class DefaultWorkspace implements Workspace {
         }
     }
 
+    @Override
+    public <T extends Resource> void scan( ResourceLocation<T> location ) {
+        LOG.info( "Scanning {}", location.getIdentifier() );
+        ResourceManager<T> mgr = (ResourceManager) resourceManagers.get( location.getIdentifier().getProvider() );
+        ResourceMetadata<T> md = mgr.add( location, this );
+        resourceMetadata.put( md.getIdentifier(), md );
+    }
+
+    @Override
+    public <T extends Resource> ResourceBuilder<T> prepare( ResourceIdentifier<T> id ) {
+        LOG.info( "Preparing {}", id );
+        ResourceMetadata<T> md = (ResourceMetadata) resourceMetadata.get( id );
+        ResourceBuilder<T> builder = md.prepare();
+        return builder;
+    }
+
+    @Override
+    public <T extends Resource> T init( ResourceBuilder<T> builder ) {
+        T res = builder.build();
+        resources.put( res.getMetadata().getIdentifier(), res );
+        return res;
+    }
+
+    @Override
+    public <T extends Resource> List<ResourceIdentifier<T>> getResourcesOfType( Class<? extends ResourceProvider<T>> providerClass ) {
+        List<ResourceIdentifier<T>> list = new ArrayList<ResourceIdentifier<T>>();
+        for ( ResourceIdentifier<?> id : resources.keySet() ) {
+            if ( id.getProvider().equals( providerClass ) ) {
+                list.add( (ResourceIdentifier) id );
+            }
+        }
+        return list;
+    }
+
 }

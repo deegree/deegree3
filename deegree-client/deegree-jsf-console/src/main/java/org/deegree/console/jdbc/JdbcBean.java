@@ -2,8 +2,8 @@ package org.deegree.console.jdbc;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -19,12 +19,13 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.Config;
-import org.deegree.console.ConfigManager;
 import org.deegree.console.ResourceManagerMetadata2;
 import org.deegree.console.WorkspaceBean;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceLocation;
 
 @ManagedBean
 @SessionScoped
@@ -211,29 +212,38 @@ public class JdbcBean {
     private void create() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
-        StringBuffer sb = new StringBuffer();
-        sb.append( "<?xml version='1.0' encoding='UTF-8'?>\n" );
-        sb.append( "<JDBCConnection configVersion='3.0.0'  xmlns='http://www.deegree.org/jdbc' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd'>\n" );
-        sb.append( "  <Url>" + dbConn + "</Url>\n" );
-        sb.append( "  <User>" + dbUser + "</User>\n" );
-        sb.append( "  <Password>" + dbPwd + "</Password>\n" );
-        sb.append( "  <ReadOnly>false</ReadOnly>\n" );
-        sb.append( "</JDBCConnection>\n" );
+        // JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
+        // StringBuffer sb = new StringBuffer();
+        // sb.append( "<?xml version='1.0' encoding='UTF-8'?>\n" );
+        // sb.append(
+        // "<JDBCConnection configVersion='3.0.0'  xmlns='http://www.deegree.org/jdbc' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd'>\n"
+        // );
+        // sb.append( "  <Url>" + dbConn + "</Url>\n" );
+        // sb.append( "  <User>" + dbUser + "</User>\n" );
+        // sb.append( "  <Password>" + dbPwd + "</Password>\n" );
+        // sb.append( "  <ReadOnly>false</ReadOnly>\n" );
+        // sb.append( "</JDBCConnection>\n" );
         ResourceState rs = null;
         InputStream is = null;
         try {
-            is = new ByteArrayInputStream( sb.toString().getBytes( "UTF-8" ) );
+            // is = new ByteArrayInputStream( sb.toString().getBytes( "UTF-8" ) );
             Map<String, Object> sMap = ctx.getSessionMap();
             String newId = (String) sMap.get( "newConfigId" );
-            rs = mgr.createResource( newId, is );
-            rs = mgr.activate( rs.getId() );
+
+            ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( newId, dbConn, dbUser, dbPwd );
+            ws.getNewWorkspace().scan( loc );
+            ResourceBuilder<ConnectionProvider> builder = ws.getNewWorkspace().prepare( loc.getIdentifier() );
+            ws.getNewWorkspace().init( builder );
+
+            // rs = mgr.createResource( newId, is );
+            // rs = mgr.activate( rs.getId() );
             ResourceManagerMetadata2 rsMetadata = (ResourceManagerMetadata2) sMap.get( "resourceManagerMetadata" );
-            this.config = new Config( rs, (ConfigManager) sMap.get( "configManager" ), mgr, rsMetadata.getStartView(),
-                                      true );
-            ConnectionManager poolMgr = ws.getSubsystemManager( ConnectionManager.class );
-            poolMgr.shutdown();
-            poolMgr.startup( ws );
+            // this.config = new Config( rs, (ConfigManager) sMap.get( "configManager" ), mgr,
+            // rsMetadata.getStartView(),
+            // true );
+            // ConnectionManager poolMgr = ws.getSubsystemManager( ConnectionManager.class );
+            // poolMgr.shutdown();
+            // poolMgr.startup( ws );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );

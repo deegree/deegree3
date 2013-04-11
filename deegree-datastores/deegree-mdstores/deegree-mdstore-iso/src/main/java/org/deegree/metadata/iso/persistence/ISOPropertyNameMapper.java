@@ -55,7 +55,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -305,7 +304,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
                 if ( tableColumn.third == null ) {
                     String srid = dialect.getUndefinedSrid();
                     // TODO: srid
-                    if ( dialect.getDBType() == Type.Oracle ) {
+                    if ( dialect.getClass().getSimpleName().equals( "OracleDialect" ) ) {
                         srid = "4326";
                     }
                     converter = dialect.getGeometryConverter( tableColumn.first.second, EPSG_4326, srid, true );

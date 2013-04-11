@@ -44,10 +44,17 @@ package org.deegree.db;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.concurrent.Executor;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
@@ -100,6 +107,63 @@ public class ConnectionProviderUtils {
         } catch ( Exception e ) {
             throw new ResourceInitException( "Unable to create synthetic connection provider: "
                                              + e.getLocalizedMessage(), e );
+        }
+    }
+
+    /**
+     * Executes the SQL query in the given {@link PreparedStatement} object and returns the ResultSet object generated
+     * by the query.
+     * 
+     * @param stmt
+     *            statement to be executed, must not be <code>null</code>
+     * @param connManager
+     *            {@link ConnectionProvider} that has been used to retrieve the connection (needed for invalidating
+     *            cancelled queries), must not be <code>null</code>
+     * @param connId
+     *            id of the connection pool that the connection belongs to (needed for invalidating cancelled queries),
+     *            must not be <code>null</code>
+     * @param executionTimeout
+     *            timeout in milliseconds, if 0 or negative, timeout is disabled
+     * @return a <code>ResultSet</code> object that contains the data produced by the query, never <code>null</code>
+     * @throws SQLException
+     *             if an execution timeout or a database access error occurs; this method is called on a closed
+     *             <code>PreparedStatement</code> or the SQL statement does not return a <code>ResultSet</code> object
+     */
+    public static ResultSet executeQuery( final PreparedStatement stmt, ConnectionProvider connProvider,
+                                          long executionTimeout )
+                            throws SQLException {
+        if ( executionTimeout <= 0 ) {
+            return stmt.executeQuery();
+        }
+        try {
+            return Executor.getInstance().performSynchronously( new Callable<ResultSet>() {
+                @Override
+                public ResultSet call()
+                                        throws Exception {
+                    return stmt.executeQuery();
+                }
+            }, executionTimeout );
+        } catch ( CancellationException e ) {
+            stmt.cancel();
+            Connection conn = stmt.getConnection();
+            String msg = "Database query has been cancelled, because query execution timeout (" + executionTimeout
+                         + "[ms]) has been exceeded.";
+            try {
+                // This is necessary, because cancelled connections appear not to be reusable, so errors occur if a
+                // cancelled connection is returned to the pool and re-used (at least on PostgreSQL)
+                connProvider.invalidate( conn );
+            } catch ( Throwable t ) {
+                msg += "Invalidation of connection failed: " + t.getMessage();
+            }
+            throw new SQLException( msg );
+        } catch ( InterruptedException e ) {
+            String msg = "Interruption during database query: " + e.getMessage();
+            throw new SQLException( msg, e );
+        } catch ( SQLException e ) {
+            throw e;
+        } catch ( Throwable e ) {
+            String msg = "Error executing query: " + e.getMessage();
+            throw new SQLException( msg, e );
         }
     }
 

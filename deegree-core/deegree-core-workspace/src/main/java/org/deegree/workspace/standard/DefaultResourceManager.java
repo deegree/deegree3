@@ -42,6 +42,7 @@
 package org.deegree.workspace.standard;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -144,6 +145,12 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     @Override
     public void shutdown() {
         // nothing to do
+    }
+
+    @Override
+    public ResourceMetadata<T> add( ResourceLocation<T> location, Workspace workspace ) {
+        read( Collections.singletonList( location ), workspace );
+        return metadataMap.get( location.getIdentifier() );
     }
 
 }

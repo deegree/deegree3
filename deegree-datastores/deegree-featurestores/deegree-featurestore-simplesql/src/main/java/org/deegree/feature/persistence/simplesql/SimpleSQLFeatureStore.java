@@ -52,8 +52,6 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -93,6 +91,7 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
+import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
@@ -325,11 +324,9 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     }
                 }
 
-                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
                 conn = connProvider.getConnection();
-                Type connType = mgr.getType( connProvider.getMetadata().getIdentifier().getId() );
 
-                if ( q.getMaxFeatures() > 0 && connType == Type.PostgreSQL ) {
+                if ( q.getMaxFeatures() > 0 && connProvider.getDialect() instanceof PostGISDialect ) {
                     sql += " limit " + q.getMaxFeatures();
                 }
 
@@ -351,7 +348,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     return null;
                 }
                 stmt.setString( 1, WKTWriter.write( bbox ) );
-                LOG.debug( "Statement to fetch features was '{}'.", connType == Type.Oracle ? sql : stmt );
+                LOG.debug( "Statement to fetch features was '{}'.",
+                           connProvider.getClass().getSimpleName().equals( "OracleDialect" ) ? sql : stmt );
                 stmt.execute();
 
                 set = new IteratorFeatureInputStream(

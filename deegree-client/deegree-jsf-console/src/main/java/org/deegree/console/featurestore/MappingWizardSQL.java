@@ -60,9 +60,6 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.console.Config;
@@ -70,6 +67,8 @@ import org.deegree.console.ConfigManager;
 import org.deegree.console.WorkspaceBean;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
@@ -81,7 +80,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectManager;
+import org.deegree.workspace.ResourceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,8 +121,6 @@ public class MappingWizardSQL {
 
     private Integer tableNameLength = 16;
 
-    private Type connectionType;
-
     private ResourceState resourceState;
 
     public String getFeatureStoreId()
@@ -141,18 +138,15 @@ public class MappingWizardSQL {
     }
 
     public SortedSet<String> getAvailableJdbcConns() {
-        ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
-        SortedSet<String> conns = new TreeSet<String>();
-        for ( ResourceState<?> rs : mgr.getStates() ) {
-            // TODO remove this hack
-            if ( rs.getId().equals( "LOCK_DB" ) ) {
+        List<ResourceIdentifier<ConnectionProvider>> list = getWorkspace().getNewWorkspace().getResourcesOfType( ConnectionProviderProvider.class );
+        TreeSet<String> set = new TreeSet<String>();
+        for ( ResourceIdentifier<ConnectionProvider> id : list ) {
+            if ( id.getId().equals( "LOCK_DB" ) ) {
                 continue;
             }
-            if ( rs.getType().equals( StateType.init_ok ) ) {
-                conns.add( rs.getId() );
-            }
+            set.add( id.getId() );
         }
-        return conns;
+        return set;
     }
 
     public String getSelectedJdbcConn() {
@@ -163,18 +157,14 @@ public class MappingWizardSQL {
         this.jdbcId = jdbcId;
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-        this.connectionType = mgr.getType( jdbcId );
-        SQLDialectManager dialectMgr = ws.getSubsystemManager( SQLDialectManager.class );
-        if ( dialectMgr != null ) {
-            try {
-                SQLDialect dialect = dialectMgr.create( jdbcId );
-                columnNameLength = dialect.getMaxColumnNameLength();
-                tableNameLength = dialect.getMaxTableNameLength();
-            } catch ( Throwable t ) {
-                FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "SQLDialect error: " + t.getMessage(), null );
-                FacesContext.getCurrentInstance().addMessage( null, fm );
-            }
+        ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, jdbcId );
+        try {
+            SQLDialect dialect = prov.getDialect();
+            columnNameLength = dialect.getMaxColumnNameLength();
+            tableNameLength = dialect.getMaxTableNameLength();
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "SQLDialect error: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
         }
     }
 
@@ -388,4 +378,5 @@ public class MappingWizardSQL {
         }
         return "/console/featurestore/buttons";
     }
+
 }
