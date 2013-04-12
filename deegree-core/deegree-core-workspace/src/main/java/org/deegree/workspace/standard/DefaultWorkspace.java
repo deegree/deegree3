@@ -308,20 +308,21 @@ public class DefaultWorkspace implements Workspace {
                 continue;
             }
             ResourceBuilder<? extends Resource> builder = prepared.getBuilder( metadata.getIdentifier() );
-            LOG.info( "Building resource {}.", id );
+            LOG.info( "Building resource {}.", metadata.getIdentifier() );
             try {
                 Resource res = builder.build();
                 if ( res == null ) {
-                    LOG.error( "Unable to build resource {}.", id );
-                    throw new ResourceInitException( "Unable to build resource " + id + "." );
+                    LOG.error( "Unable to build resource {}.", metadata.getIdentifier() );
+                    throw new ResourceInitException( "Unable to build resource " + metadata.getIdentifier() + "." );
                 }
-                LOG.info( "Initializing resource {}.", id );
+                LOG.info( "Initializing resource {}.", metadata.getIdentifier() );
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
-                LOG.error( "Unable to build resource {}: {}.", id, ex.getLocalizedMessage() );
+                LOG.error( "Unable to build resource {}: {}.", metadata.getIdentifier(), ex.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", ex );
-                throw new ResourceInitException( "Unable to build resource " + id + ": " + ex.getLocalizedMessage(), ex );
+                throw new ResourceInitException( "Unable to build resource " + metadata.getIdentifier() + ": "
+                                                 + ex.getLocalizedMessage(), ex );
             }
         }
         return getResource( id.getProvider(), id.getId() );
@@ -408,9 +409,9 @@ public class DefaultWorkspace implements Workspace {
             destroy( n.getMetadata().getIdentifier() );
         }
         T res = (T) resources.get( node.getMetadata().getIdentifier() );
+        LOG.info( "Shutting down {}.", node.getMetadata().getIdentifier() );
         res.destroy();
         resources.remove( node.getMetadata().getIdentifier() );
-        resourceMetadata.remove( node.getMetadata() );
     }
 
 }

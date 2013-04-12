@@ -41,8 +41,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.deegree.workspace.graph.ResourceNode;
+
 /**
- * TODO add class documentation here
+ * Utility methods to work with workspaces and its resources.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -51,7 +57,33 @@ package org.deegree.workspace;
  */
 public class WorkspaceUtils {
 
-    public static void restartChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
+    public static void reinitializeChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
+        ResourceNode<? extends Resource> node = workspace.getDependencyGraph().getNode( id );
+        List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
+        list.add( workspace.getResourceMetadata( id.getProvider(), id.getId() ) );
+        collectDependencies( list, node );
+        collectDependents( list, node );
+        Collections.sort( list );
+        workspace.destroy( list.get( 0 ).getIdentifier() );
+        for ( ResourceMetadata<? extends Resource> md : list ) {
+            workspace.init( md.getIdentifier(), null );
+        }
+    }
+
+    public static void collectDependencies( List<ResourceMetadata<? extends Resource>> list,
+                                            ResourceNode<? extends Resource> node ) {
+        for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
+            list.add( n.getMetadata() );
+            collectDependencies( list, n );
+        }
+    }
+
+    public static void collectDependents( List<ResourceMetadata<? extends Resource>> list,
+                                          ResourceNode<? extends Resource> node ) {
+        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
+            list.add( n.getMetadata() );
+            collectDependents( list, n );
+        }
     }
 
 }

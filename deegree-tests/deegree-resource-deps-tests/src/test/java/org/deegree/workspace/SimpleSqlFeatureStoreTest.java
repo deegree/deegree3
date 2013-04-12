@@ -149,4 +149,32 @@ public class SimpleSqlFeatureStoreTest {
         Assert.assertNull( "Connection provider is expected to be destroyed.", prov );
     }
 
+    @Test
+    public void testDestroyInitializeSingle() {
+        FeatureStore fs = workspace.getResource( NewFeatureStoreProvider.class, "simplesql-ok" );
+        Assert.assertNotNull( "Feature store is expected to be created.", fs );
+        workspace.destroy( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
+                                                                              "simplesqlh2" ) );
+        workspace.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, "simplesql-ok" ),
+                        null );
+        fs = workspace.getResource( NewFeatureStoreProvider.class, "simplesql-ok" );
+        Assert.assertNotNull( "Feature store is expected to be re-initialized.", fs );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "simplesqlh2" );
+        Assert.assertNotNull( "Connection provider is expected to be re-initialized.", prov );
+    }
+
+    @Test
+    public void testReinitializeChain() {
+        FeatureStore fs = workspace.getResource( NewFeatureStoreProvider.class, "simplesql-ok" );
+        Assert.assertNotNull( "Feature store is expected to be created.", fs );
+        WorkspaceUtils.reinitializeChain( workspace,
+                                          new DefaultResourceIdentifier<ConnectionProvider>(
+                                                                                             ConnectionProviderProvider.class,
+                                                                                             "simplesqlh2" ) );
+        fs = workspace.getResource( NewFeatureStoreProvider.class, "simplesql-ok" );
+        Assert.assertNotNull( "Feature store is expected to be re-initialized.", fs );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "simplesqlh2" );
+        Assert.assertNotNull( "Connection provider is expected to be re-initialized.", prov );
+    }
+
 }
