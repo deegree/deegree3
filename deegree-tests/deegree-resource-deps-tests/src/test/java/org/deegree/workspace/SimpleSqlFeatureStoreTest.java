@@ -46,9 +46,14 @@ import java.net.URISyntaxException;
 import java.util.Set;
 
 import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.workspace.graph.ResourceGraph;
+import org.deegree.workspace.graph.ResourceNode;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultWorkspace;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +76,11 @@ public class SimpleSqlFeatureStoreTest {
         File dir = new File( SimpleSqlFeatureStoreTest.class.getResource( "/workspace/" ).toURI() );
         this.workspace = new DefaultWorkspace( dir );
         workspace.initAll();
+    }
+
+    @After
+    public void shutdown() {
+        workspace.destroy();
     }
 
     @Test
@@ -109,6 +119,22 @@ public class SimpleSqlFeatureStoreTest {
         Resource r = workspace.getResource( id.getProvider(), id.getId() );
         Assert.assertNotNull( "Expected dependency to be available.", r );
         Assert.assertTrue( "Expected dependency to be of type ConnectionProvider.", r instanceof ConnectionProvider );
+    }
+
+    @Test
+    public void testResourceGraph() {
+        ResourceGraph graph = new ResourceGraph( workspace.getResourceMetadata() );
+        ResourceNode<FeatureStore> node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>(
+                                                                                                      NewFeatureStoreProvider.class,
+                                                                                                      "simplesql-ok" ) );
+        Assert.assertEquals( 1, node.getDependencies().size() );
+        ResourceNode<ConnectionProvider> node2 = graph.getNode( new DefaultResourceIdentifier<ConnectionProvider>(
+                                                                                                                   ConnectionProviderProvider.class,
+                                                                                                                   "simplesqlh2" ) );
+        Assert.assertEquals( 1, node2.getDependents().size() );
+        node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class,
+                                                                           "simplesql-fail-missing-dep" ) );
+        Assert.assertFalse( node.areDependenciesAvailable() );
     }
 
 }

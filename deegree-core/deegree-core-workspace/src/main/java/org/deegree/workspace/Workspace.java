@@ -104,4 +104,6 @@ public interface Workspace {
 
     <T extends Resource> List<ResourceIdentifier<T>> getResourcesOfType( Class<? extends ResourceProvider<T>> providerClass );
 
+    List<ResourceMetadata<? extends Resource>> getResourceMetadata();
+
 }

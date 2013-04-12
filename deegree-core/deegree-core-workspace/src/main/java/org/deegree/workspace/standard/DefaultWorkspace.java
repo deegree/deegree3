@@ -392,4 +392,9 @@ public class DefaultWorkspace implements Workspace {
         return list;
     }
 
+    @Override
+    public List<ResourceMetadata<? extends Resource>> getResourceMetadata() {
+        return new ArrayList<ResourceMetadata<? extends Resource>>( resourceMetadata.values() );
+    }
+
 }
