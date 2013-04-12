@@ -72,6 +72,14 @@ public interface Workspace {
     void destroy();
 
     /**
+     * Destroys the resource with the given id and all resources that depend on it.
+     * 
+     * @param id
+     *            never <code>null</code>
+     */
+    <T extends Resource> void destroy( ResourceIdentifier<T> id );
+
+    /**
      * Used to obtain the class loader coupled with this workspace.
      * 
      * @return the module class loader, never <code>null</code>

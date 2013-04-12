@@ -127,14 +127,26 @@ public class SimpleSqlFeatureStoreTest {
         ResourceNode<FeatureStore> node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>(
                                                                                                       NewFeatureStoreProvider.class,
                                                                                                       "simplesql-ok" ) );
-        Assert.assertEquals( 1, node.getDependencies().size() );
+        Assert.assertEquals( "Expected one dependency.", 1, node.getDependencies().size() );
         ResourceNode<ConnectionProvider> node2 = graph.getNode( new DefaultResourceIdentifier<ConnectionProvider>(
                                                                                                                    ConnectionProviderProvider.class,
                                                                                                                    "simplesqlh2" ) );
-        Assert.assertEquals( 1, node2.getDependents().size() );
+        Assert.assertEquals( "Expected one dependent.", 1, node2.getDependents().size() );
         node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class,
                                                                            "simplesql-fail-missing-dep" ) );
-        Assert.assertFalse( node.areDependenciesAvailable() );
+        Assert.assertFalse( "Expected broken dependencies.", node.areDependenciesAvailable() );
+    }
+
+    @Test
+    public void testDestroySingle() {
+        FeatureStore fs = workspace.getResource( NewFeatureStoreProvider.class, "simplesql-ok" );
+        Assert.assertNotNull( "Feature store is expected to be created.", fs );
+        workspace.destroy( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
+                                                                              "simplesqlh2" ) );
+        fs = workspace.getResource( NewFeatureStoreProvider.class, "simplesql-ok" );
+        Assert.assertNull( "Feature store is expected to be destroyed.", fs );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "simplesqlh2" );
+        Assert.assertNull( "Connection provider is expected to be destroyed.", prov );
     }
 
 }

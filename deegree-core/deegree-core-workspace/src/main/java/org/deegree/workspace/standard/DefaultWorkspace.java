@@ -70,6 +70,7 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.graph.ResourceGraph;
+import org.deegree.workspace.graph.ResourceNode;
 import org.slf4j.Logger;
 
 /**
@@ -398,6 +399,18 @@ public class DefaultWorkspace implements Workspace {
         ResourceMetadata<T> md = mgr.add( location, this );
         resourceMetadata.put( md.getIdentifier(), md );
 
+    }
+
+    @Override
+    public <T extends Resource> void destroy( ResourceIdentifier<T> id ) {
+        ResourceNode<T> node = graph.getNode( id );
+        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
+            destroy( n.getMetadata().getIdentifier() );
+        }
+        T res = (T) resources.get( node.getMetadata().getIdentifier() );
+        res.destroy();
+        resources.remove( node.getMetadata().getIdentifier() );
+        resourceMetadata.remove( node.getMetadata() );
     }
 
 }
