@@ -54,7 +54,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
@@ -94,10 +93,8 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.PreparedResources;
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultWorkspace;
@@ -134,7 +131,7 @@ public class SQLFeatureStoreAIXMTest {
 
     private Workspace ws;
 
-    private TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> builderMap;
+    private PreparedResources prepared;
 
     private SQLDialect dialect;
 
@@ -190,14 +187,13 @@ public class SQLFeatureStoreAIXMTest {
         loc = getSyntheticProvider( "admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
         ws.addExtraResource( loc );
         ws.startup();
-        ws.scan();
-        builderMap = ws.prepare();
+        prepared = ws.prepare();
     }
 
     private void initDbPlusFeatureStore()
                             throws SQLException {
         ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "admin" ),
-                 builderMap );
+                 prepared );
         ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
         Connection adminConn = prov.getConnection();
         try {
@@ -206,7 +202,7 @@ public class SQLFeatureStoreAIXMTest {
         } finally {
             adminConn.close();
         }
-        fs = ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, "aixm" ), builderMap );
+        fs = ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, "aixm" ), prepared );
     }
 
     private void createTables()

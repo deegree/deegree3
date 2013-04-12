@@ -123,7 +123,7 @@ public class SimpleSqlFeatureStoreTest {
 
     @Test
     public void testResourceGraph() {
-        ResourceGraph graph = new ResourceGraph( workspace.getResourceMetadata() );
+        ResourceGraph graph = workspace.getDependencyGraph();
         ResourceNode<FeatureStore> node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>(
                                                                                                       NewFeatureStoreProvider.class,
                                                                                                       "simplesql-ok" ) );

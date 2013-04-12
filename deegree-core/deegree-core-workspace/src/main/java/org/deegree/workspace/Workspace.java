@@ -42,7 +42,8 @@
 package org.deegree.workspace;
 
 import java.util.List;
-import java.util.TreeMap;
+
+import org.deegree.workspace.graph.ResourceGraph;
 
 /**
  * TODO add class documentation here
@@ -77,33 +78,102 @@ public interface Workspace {
      */
     ClassLoader getModuleClassLoader();
 
-    // TODO think about how to clean up this mess
-    void scan();
+    /**
+     * @return the dependency graph, never <code>null</code> after started up
+     */
+    ResourceGraph getDependencyGraph();
 
-    <T extends Resource> void scan( ResourceLocation<T> location );
+    /**
+     * Scans and prepares all resources.
+     * 
+     * @return all prepared resources, never <code>null</code>
+     */
+    PreparedResources prepare();
 
-    TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> prepare();
-
-    <T extends Resource> ResourceBuilder<T> prepare( ResourceIdentifier<T> id );
-
-    <T extends Resource> T init( ResourceIdentifier<T> id,
-                                 TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder );
-
-    <T extends Resource> T init( ResourceBuilder<T> builder );
-
+    /**
+     * Adds a single extra resource. Can be used after startup to include the new resource in the initialization
+     * process.
+     * 
+     * @param location
+     *            never <code>null</code>
+     */
     void addExtraResource( ResourceLocation<? extends Resource> location );
 
-    <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass );
-
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
+    /**
+     * Retrieves a single resource metadata.
+     * 
+     * @param providerClass
+     *            never <code>null</code>
+     * @param id
+     *            never <code>null</code>
+     * @return the metadata or <code>null</code>, if no such metadata exists
+     */
     <T extends Resource> ResourceMetadata<T> getResourceMetadata( Class<? extends ResourceProvider<T>> providerClass,
                                                                   String id );
 
+    /**
+     * Retrieves a single resource.
+     * 
+     * @param providerClass
+     *            never <code>null</code>
+     * @param id
+     *            never <code>null</code>
+     * @return the resource or <code>null</code>, if no such resource exists
+     */
     <T extends Resource> T getResource( Class<? extends ResourceProvider<T>> providerClass, String id );
 
-    <T extends Resource> List<ResourceIdentifier<T>> getResourcesOfType( Class<? extends ResourceProvider<T>> providerClass );
+    /**
+     * Adds a single resource. Does no preparation.
+     * 
+     * @param location
+     *            never <code>null</code>
+     */
+    <T extends Resource> void add( ResourceLocation<T> location );
 
-    List<ResourceMetadata<? extends Resource>> getResourceMetadata();
+    /**
+     * Prepares a single resource.
+     * 
+     * @param id
+     *            never <code>null</code>
+     * @return the new resource builder, or <code>null</code>, if preparation failed
+     */
+    <T extends Resource> ResourceBuilder<T> prepare( ResourceIdentifier<T> id );
+
+    /**
+     * Builds and initializes a single resource.
+     * 
+     * @param id
+     *            never <code>null</code>
+     * @param prepared
+     *            can be <code>null</code>
+     * @return the new resource, or <code>null</code>, if building or initializing failed
+     */
+    <T extends Resource> T init( ResourceIdentifier<T> id, PreparedResources prepared );
+
+    /**
+     * Can be used to obtain an instance of a resource manager.
+     * 
+     * @param managerClass
+     *            never <code>null</code>
+     * @return the manager instance, or <code>null</code>, if there's no such manager
+     */
+    <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass );
+
+    /**
+     * Can be used to obtain a list of natural resource locations for a specific resource manager.
+     * 
+     * @param metadata
+     *            never <code>null</code>
+     * @return the locations, never <code>null</code>
+     */
+    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+
+    /**
+     * Can be used to obtain a list of resource ids for a specific resource type.
+     * 
+     * @param providerClass
+     * @return
+     */
+    <T extends Resource> List<ResourceIdentifier<T>> getResourcesOfType( Class<? extends ResourceProvider<T>> providerClass );
 
 }

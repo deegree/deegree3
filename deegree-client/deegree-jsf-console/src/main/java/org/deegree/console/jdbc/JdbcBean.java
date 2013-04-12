@@ -23,7 +23,6 @@ import org.deegree.console.Config;
 import org.deegree.console.ResourceManagerMetadata2;
 import org.deegree.console.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
-import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceLocation;
 
 @ManagedBean
@@ -230,9 +229,8 @@ public class JdbcBean {
             String newId = (String) sMap.get( "newConfigId" );
 
             ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( newId, dbConn, dbUser, dbPwd );
-            ws.getNewWorkspace().scan( loc );
-            ResourceBuilder<ConnectionProvider> builder = ws.getNewWorkspace().prepare( loc.getIdentifier() );
-            ws.getNewWorkspace().init( builder );
+            ws.getNewWorkspace().add( loc );
+            ws.getNewWorkspace().init( loc.getIdentifier(), null );
 
             // rs = mgr.createResource( newId, is );
             // rs = mgr.activate( rs.getId() );

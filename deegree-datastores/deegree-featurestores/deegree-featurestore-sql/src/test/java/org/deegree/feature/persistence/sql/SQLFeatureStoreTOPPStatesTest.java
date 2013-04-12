@@ -55,7 +55,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
@@ -72,7 +71,6 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.NewFeatureStoreManager;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
@@ -91,10 +89,8 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.PreparedResources;
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultWorkspace;
@@ -137,7 +133,7 @@ public class SQLFeatureStoreTOPPStatesTest {
 
     private SQLFeatureStore fs;
 
-    private TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> builderMap;
+    private PreparedResources prepared;
 
     public SQLFeatureStoreTOPPStatesTest( TestDBProperties settings ) {
         this.settings = settings;
@@ -149,16 +145,16 @@ public class SQLFeatureStoreTOPPStatesTest {
 
         initWorkspace();
         ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "admin" ),
-                 builderMap );
+                 prepared );
         ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
         dialect = prov.getDialect();
 
         createDB();
         ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "deegree-test" ),
-                 builderMap );
+                 prepared );
         createTables();
-        fs = (SQLFeatureStore) ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, "topp_states" ),
-                 builderMap );
+        fs = (SQLFeatureStore) ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class,
+                                                                                     "topp_states" ), prepared );
 
         populateStore();
     }
@@ -195,8 +191,7 @@ public class SQLFeatureStoreTOPPStatesTest {
         loc = getSyntheticProvider( "admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
         ws.addExtraResource( loc );
         ws.startup();
-        ws.scan();
-        builderMap = ws.prepare();
+        prepared = ws.prepare();
     }
 
     private void createDB()

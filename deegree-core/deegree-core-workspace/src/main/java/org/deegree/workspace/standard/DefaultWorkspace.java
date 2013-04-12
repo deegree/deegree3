@@ -55,11 +55,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ServiceLoader;
-import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
+import org.deegree.workspace.PreparedResources;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceIdentifier;
@@ -70,6 +69,7 @@ import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
+import org.deegree.workspace.graph.ResourceGraph;
 import org.slf4j.Logger;
 
 /**
@@ -98,6 +98,8 @@ public class DefaultWorkspace implements Workspace {
 
     private Map<Class<? extends ResourceProvider<? extends Resource>>, List<ResourceLocation<? extends Resource>>> extraResources = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, List<ResourceLocation<? extends Resource>>>();
 
+    private ResourceGraph graph;
+
     public DefaultWorkspace( File directory ) {
         this.directory = directory;
     }
@@ -106,29 +108,30 @@ public class DefaultWorkspace implements Workspace {
     public void initAll() {
         startup();
         scan();
-        TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder = prepare();
+        PreparedResources prepared = prepare();
 
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Building and initializing resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
-        for ( Entry<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> e : metadataToBuilder.entrySet() ) {
-            LOG.info( "Building resource {}.", e.getKey().getIdentifier() );
+        for ( ResourceMetadata<? extends Resource> md : prepared.getMetadata() ) {
+            LOG.info( "Building resource {}.", md.getIdentifier() );
             try {
-                Resource res = e.getValue().build();
+                Resource res = prepared.getBuilder( md.getIdentifier() ).build();
                 if ( res == null ) {
-                    LOG.error( "Unable to build resource {}.", e.getKey().getIdentifier() );
+                    LOG.error( "Unable to build resource {}.", md.getIdentifier() );
                     continue;
                 }
-                LOG.info( "Initializing resource {}.", e.getKey().getIdentifier() );
+                LOG.info( "Initializing resource {}.", md.getIdentifier() );
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
                 ex.printStackTrace();
-                LOG.error( "Unable to build resource {}: {}.", e.getKey().getIdentifier(), ex.getLocalizedMessage() );
+                LOG.error( "Unable to build resource {}: {}.", md.getIdentifier(), ex.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", ex );
             }
         }
+        graph = new ResourceGraph( new ArrayList<ResourceMetadata<? extends Resource>>( resourceMetadata.values() ) );
     }
 
     @Override
@@ -273,12 +276,22 @@ public class DefaultWorkspace implements Workspace {
         resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
         resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
         resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
+        graph = new ResourceGraph( Collections.<ResourceMetadata<? extends Resource>> emptyList() );
         initClassloader();
+
+        // setup managers
+        Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
+        while ( iter.hasNext() ) {
+            ResourceManager<?> mgr = iter.next();
+            resourceManagers.put( (Class) mgr.getClass(), mgr );
+        }
     }
 
     @Override
-    public <T extends Resource> T init( ResourceIdentifier<T> id,
-                                        TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder ) {
+    public <T extends Resource> T init( ResourceIdentifier<T> id, PreparedResources prepared ) {
+        if ( prepared == null ) {
+            prepared = new PreparedResources( this );
+        }
         LOG.info( "Collecting, building and initializing dependencies for {}.", id );
         List<ResourceMetadata<? extends Resource>> mdList = new ArrayList<ResourceMetadata<? extends Resource>>();
         ResourceMetadata<? extends Resource> md = resourceMetadata.get( id );
@@ -293,7 +306,7 @@ public class DefaultWorkspace implements Workspace {
                 LOG.info( "Resource {} already available.", metadata.getIdentifier() );
                 continue;
             }
-            ResourceBuilder<? extends Resource> builder = metadataToBuilder.get( metadata );
+            ResourceBuilder<? extends Resource> builder = prepared.getBuilder( metadata.getIdentifier() );
             LOG.info( "Building resource {}.", id );
             try {
                 Resource res = builder.build();
@@ -314,8 +327,9 @@ public class DefaultWorkspace implements Workspace {
     }
 
     @Override
-    public TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> prepare() {
-        TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> metadataToBuilder = new TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>>();
+    public PreparedResources prepare() {
+        scan();
+        PreparedResources prepared = new PreparedResources( this );
 
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Preparing resources." );
@@ -328,7 +342,7 @@ public class DefaultWorkspace implements Workspace {
                     LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
                     continue;
                 }
-                metadataToBuilder.put( md, builder );
+                prepared.addBuilder( (ResourceIdentifier) md.getIdentifier(), builder );
             } catch ( Exception e ) {
                 // e.printStackTrace();
                 LOG.error( "Error preparing resource {}: {}", md.getIdentifier(), e.getLocalizedMessage() );
@@ -336,34 +350,21 @@ public class DefaultWorkspace implements Workspace {
             }
         }
 
-        return metadataToBuilder;
+        return prepared;
     }
 
-    @Override
-    public void scan() {
+    private void scan() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Scanning resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
-        // setup managers
-        Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
-        while ( iter.hasNext() ) {
-            ResourceManager<?> mgr = iter.next();
+        for ( ResourceManager<? extends Resource> mgr : resourceManagers.values() ) {
             mgr.find( this );
             Collection<? extends ResourceMetadata<? extends Resource>> mds = mgr.getResourceMetadata();
             for ( ResourceMetadata<? extends Resource> md : mds ) {
                 resourceMetadata.put( md.getIdentifier(), md );
             }
-            resourceManagers.put( (Class) mgr.getClass(), mgr );
         }
-    }
-
-    @Override
-    public <T extends Resource> void scan( ResourceLocation<T> location ) {
-        LOG.info( "Scanning {}", location.getIdentifier() );
-        ResourceManager<T> mgr = (ResourceManager) resourceManagers.get( location.getIdentifier().getProvider() );
-        ResourceMetadata<T> md = mgr.add( location, this );
-        resourceMetadata.put( md.getIdentifier(), md );
     }
 
     @Override
@@ -372,13 +373,6 @@ public class DefaultWorkspace implements Workspace {
         ResourceMetadata<T> md = (ResourceMetadata) resourceMetadata.get( id );
         ResourceBuilder<T> builder = md.prepare();
         return builder;
-    }
-
-    @Override
-    public <T extends Resource> T init( ResourceBuilder<T> builder ) {
-        T res = builder.build();
-        resources.put( res.getMetadata().getIdentifier(), res );
-        return res;
     }
 
     @Override
@@ -393,8 +387,17 @@ public class DefaultWorkspace implements Workspace {
     }
 
     @Override
-    public List<ResourceMetadata<? extends Resource>> getResourceMetadata() {
-        return new ArrayList<ResourceMetadata<? extends Resource>>( resourceMetadata.values() );
+    public ResourceGraph getDependencyGraph() {
+        return graph;
+    }
+
+    @Override
+    public <T extends Resource> void add( ResourceLocation<T> location ) {
+        LOG.info( "Scanning {}", location.getIdentifier() );
+        ResourceManager<T> mgr = (ResourceManager) resourceManagers.get( location.getIdentifier().getProvider() );
+        ResourceMetadata<T> md = mgr.add( location, this );
+        resourceMetadata.put( md.getIdentifier(), md );
+
     }
 
 }
