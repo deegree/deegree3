@@ -93,9 +93,9 @@ public class ConfigManager implements Serializable {
 
     private Config proxyConfig;
 
-    public ResourceManagerMetadata getCurrentResourceManager() {
-        return currentResourceManager;
-    }
+//    public ResourceManagerMetadata getCurrentResourceManager() {
+//        return currentResourceManager;
+//    }
 
     public void setCurrentResourceManager( ResourceManagerMetadata currentResourceManager ) {
         this.currentResourceManager = currentResourceManager;

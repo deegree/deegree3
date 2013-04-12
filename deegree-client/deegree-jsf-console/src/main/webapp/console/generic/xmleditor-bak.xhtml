@@ -1,0 +1,56 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <script type="text/javascript" src="CodeMirror-0.94/js/codemirror.js"></script>
+    <script type="text/javascript">
+    var editor
+    function activateEditor(){
+        editor = CodeMirror.fromTextArea("xmlForm:inputXML", {
+          parserfile: "parsexml.js",
+          path: "CodeMirror-0.94/js/",
+          stylesheet: "CodeMirror-0.94/css/xmlcolors.css"
+        })
+        var p = document.getElementById("highlighting")
+        p.parentNode.removeChild(p)
+    }
+    function save(){
+        editor &amp;&amp; editor.toTextArea()
+    }
+  </script>
+    <h:panelGroup rendered="#{editConfig == null}">
+      <p class="welcomeText">Please navigate around using the links to your left.</p>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{editConfig != null}">
+      <br />
+      <div>
+        Editing: <br /> #{editConfig.location}
+        <h:panelGroup rendered="#{editConfig.schemaURL != null}">
+          <fieldset class="fieldset">
+            <legend>
+              <h:outputText styleClass="titel" value="#{editConfig.location.name}" />
+            </legend>
+            <h:form id="xmlForm">
+              <h:panelGroup>
+                <h:link styleClass="schema" value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank" />
+                <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
+                  action="${editConfig.save}" />
+                <h:outputLink styleClass="buttonCancel"
+                  value="../../#{configManager.currentResourceManager.startView}.jsf">
+                  <h:outputText value="#{labels.xmlEditor_cancel}" />
+                </h:outputLink>
+              </h:panelGroup>
+              <div style="border: 1px solid gray;">
+                <dg:inputConfigurationXML style="border: none;" id="inputXML" value="${editConfig.content}"
+                  schemaURLS="${editConfig.schemaURL}" cols="64" rows="20" />
+              </div>
+            </h:form>
+            <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on
+              highlighting</p>
+          </fieldset>
+        </h:panelGroup>
+      </div>
+    </h:panelGroup>
+  </ui:define>
+</ui:composition>

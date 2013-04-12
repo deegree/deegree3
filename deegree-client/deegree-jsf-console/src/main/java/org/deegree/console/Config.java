@@ -247,7 +247,7 @@ public class Config implements Comparable<Config> {
     }
 
     public void showErrors() {
-        ResourceState<?> state = manager.getCurrentResourceManager().getManager().getState( id );
+        ResourceState<?> state = resourceManager.getState( id );
 
         String msg = "Initialization of resource with id '" + id + "' failed";
 
