@@ -57,7 +57,6 @@ public class XmlEditorBean implements Serializable {
     }
 
     public void setFileName( String fileName ) {
-        System.out.println ("HUHU: " + fileName);
         this.fileName = fileName;
     }
 
@@ -75,5 +74,17 @@ public class XmlEditorBean implements Serializable {
 
     public void setNextView( String nextView ) {
         this.nextView = nextView;
+    }
+    
+    public String getContent () {
+        return "<a></a>";
+    }
+    
+    public void setContent (String content) {
+    }
+    
+    public String cancel () {
+        System.out.println ("HUHU: " + nextView);
+        return nextView;
     }
 }
