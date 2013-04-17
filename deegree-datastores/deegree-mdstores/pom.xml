@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.2.0.b12-jrcportal-SNAPSHOT</version>
+    <version>3.2.0.b13-jrcportal</version>
   </parent>
 
   <repositories>
