@@ -50,7 +50,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -59,7 +58,6 @@ import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.capabilities.OWSCommon110CapabilitiesAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;

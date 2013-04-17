@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import java.util.List;
+
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -79,7 +82,7 @@ public abstract class ComparisonOperator implements Operator {
     public MatchAction getMatchAction() {
         return matchAction;
     }
-    
+
     public abstract SubType getSubType();
 
     /**
@@ -101,45 +104,42 @@ public abstract class ComparisonOperator implements Operator {
     }
 
     /**
-     * Creates a pair of {@link PrimitiveValue} instances from the given {@link TypedObjectNode} while trying to
-     * preserve primitive type information.
+     * Creates a pair of {@link PrimitiveValue} instances from the given {@link TypedObjectNode}s.
      * 
-     * @param value1
-     * @param value2
+     * @param node1
+     *            first node, can be <code>null</code>
+     * @param node2
+     *            second node, can be <code>null</code>
+     * @return pair of primitive values, never <code>null</code> (and values not null)
      * @throws FilterEvaluationException
      */
-    protected Pair<PrimitiveValue, PrimitiveValue> getPrimitiveValues( TypedObjectNode value1, TypedObjectNode value2 )
+    protected Pair<PrimitiveValue, PrimitiveValue> getPrimitiveValues( TypedObjectNode node1, TypedObjectNode node2 )
                             throws FilterEvaluationException {
 
-        if ( value1 instanceof Property ) {
-            value1 = ( (Property) value1 ).getValue();
-        }
-        if ( value2 instanceof Property ) {
-            value2 = ( (Property) value2 ).getValue();
-        }
-
-        Pair<PrimitiveValue, PrimitiveValue> result = null;
-        if ( value1 instanceof PrimitiveValue ) {
-            result = getPrimitivePair( (PrimitiveValue) value1, value2 );
-        } else if ( value2 instanceof PrimitiveValue ) {
-            Pair<PrimitiveValue, PrimitiveValue> switched = getPrimitivePair( (PrimitiveValue) value2, value1 );
-            result = new Pair<PrimitiveValue, PrimitiveValue>( switched.second, switched.first );
-        } else {
-            PrimitiveValue primitive1 = new PrimitiveValue( value1.toString() );
-            PrimitiveValue primitive2 = new PrimitiveValue( value2.toString() );
-            result = new Pair<PrimitiveValue, PrimitiveValue>( primitive1, primitive2 );
-        }
-        return result;
+        PrimitiveValue primitive1 = getPrimitiveValue( node1 );
+        PrimitiveValue primitive2 = getPrimitiveValue( node2 );
+        return new Pair<PrimitiveValue, PrimitiveValue>( primitive1, primitive2 );
     }
 
-    private Pair<PrimitiveValue, PrimitiveValue> getPrimitivePair( PrimitiveValue value1, TypedObjectNode value2 ) {
-        PrimitiveValue pValue2 = null;
-        if ( value2 instanceof PrimitiveValue ) {
-            pValue2 = (PrimitiveValue) value2;
-        } else {
-            pValue2 = new PrimitiveValue( value2.toString() );
+    private PrimitiveValue getPrimitiveValue( TypedObjectNode node ) {
+        if ( node == null ) {
+            return new PrimitiveValue( "null" );
         }
-        return new Pair<PrimitiveValue, PrimitiveValue>( value1, pValue2 );
+        if ( node instanceof PrimitiveValue ) {
+            return (PrimitiveValue) node;
+        }
+        if ( node instanceof Property ) {
+            return getPrimitiveValue( ( (Property) node ).getValue() );
+        }
+        if ( node instanceof ElementNode ) {
+            ElementNode elNode = (ElementNode) node;
+            List<TypedObjectNode> children = elNode.getChildren();
+            if ( children == null || children.isEmpty() ) {
+                return null;
+            }
+            return getPrimitiveValue( children.get( 0 ) );
+        }
+        return new PrimitiveValue( node.toString() );
     }
 
     public abstract Expression[] getParams();

@@ -105,4 +105,5 @@ public class GetTileResponse {
                             throws IOException {
         rawResponse.close();
     }
+
 }

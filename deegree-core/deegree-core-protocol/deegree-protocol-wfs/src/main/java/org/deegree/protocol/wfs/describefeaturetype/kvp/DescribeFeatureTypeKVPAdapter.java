@@ -213,7 +213,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
             StringBuffer typeNameList = new StringBuffer();
             for ( QName name : ftNames ) {
                 String typeName = name.getLocalPart();
-                if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                if ( name.getNamespaceURI() != "" ) {
                     String prefix = nsBindings.get( name.getNamespaceURI() );
                     typeName = prefix + ":" + name.getLocalPart();
                 }
@@ -270,7 +270,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
      */
     private static void augmentNsBindings( Map<String, String> nsBindings, QName[] ftNames ) {
         for ( QName name : ftNames ) {
-            if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+            if ( name.getNamespaceURI() != "" ) {
                 if ( nsBindings.get( name.getNamespaceURI() ) == null ) {
                     String prefix = getUniquePrefix( nsBindings.keySet() );
                     nsBindings.put( name.getNamespaceURI(), prefix );
@@ -293,9 +293,9 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
     private static Map<String, String> collectNsBinding( QName[] ftNames ) {
         Map<String, String> nsBindings = new HashMap<String, String>();
         for ( QName name : ftNames ) {
-            if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+            if ( name.getNamespaceURI() != "" ) {
                 String currentPrefix = nsBindings.get( name.getNamespaceURI() );
-                if ( currentPrefix == null && !XMLConstants.NULL_NS_URI.equals( name.getPrefix() ) ) {
+                if ( currentPrefix == null && !"".equals( name.getPrefix() ) ) {
                     nsBindings.put( name.getNamespaceURI(), name.getPrefix() );
                 }
             }

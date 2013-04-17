@@ -141,7 +141,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      */
     public CSWClient( URL capaUrl, int connectionTimeout, int readTimeout ) throws OWSExceptionReport,
                             XMLStreamException, IOException {
-        super( capaUrl, new OwsHttpClientImpl( connectionTimeout, 0, null, null ) );
+        super( capaUrl, new OwsHttpClientImpl( connectionTimeout, readTimeout, null, null ) );
     }
 
     @Override

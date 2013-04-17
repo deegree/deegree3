@@ -59,7 +59,6 @@ import java.util.Map;
 
 import javax.media.jai.RenderedOp;
 
-import org.apache.batik.ext.awt.image.codec.MemoryCacheSeekableStream;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -67,6 +66,8 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.style.styling.components.Graphic;
 import org.slf4j.Logger;
+
+import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 
 /**
  * Renders svg images onto buffered images.

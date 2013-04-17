@@ -92,12 +92,12 @@ public class MemoryFeatureStore implements FeatureStore {
      *            crs used for stored geometries, may be <code>null</code> (no transformation on inserts)
      * @throws FeatureStoreException
      */
-    MemoryFeatureStore( AppSchema schema, ICRS storageCRS ) throws FeatureStoreException {
+    MemoryFeatureStore( AppSchema schema, ICRS storageCRS, DeegreeWorkspace workspace ) throws FeatureStoreException {
         this.schema = schema;
         this.storageCRS = storageCRS;
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
         // TODO
-        lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        lockManager = new DefaultLockManager( this, "LOCK_DB", workspace );
     }
 
     @Override

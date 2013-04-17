@@ -36,7 +36,6 @@
 
 package org.deegree.gml.feature;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.StAXExportingHelper.writeAttribute;
@@ -169,7 +168,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             fidAttr = new QName( gmlNs, "id" );
             gmlNull = "Null";
         } else {
-            fidAttr = new QName( NULL_NS_URI, "fid" );
+            fidAttr = new QName( "", "fid" );
             gmlNull = "null";
         }
 
@@ -492,7 +491,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             LOG.debug( "Exporting generic feature collection." );
             writeStartElementWithNS( gmlNs, "FeatureCollection" );
             if ( feature.getId() != null ) {
-                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                if ( fidAttr.getNamespaceURI() == "" ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
                 } else {
                     writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
@@ -518,7 +517,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writeStartElementWithNS( namespaceURI, localName );
 
             if ( feature.getId() != null ) {
-                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                if ( fidAttr.getNamespaceURI() == "" ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
                 } else {
                     writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );

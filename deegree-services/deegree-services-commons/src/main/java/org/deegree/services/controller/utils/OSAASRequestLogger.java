@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
-import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -46,8 +45,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.RequestLogger;
 import org.slf4j.Logger;
 import org.w3c.dom.Element;
@@ -92,7 +93,8 @@ public class OSAASRequestLogger implements RequestLogger {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
-            conn = getConnection( connid );
+            ConnectionManager mgr = OGCFrontController.getServiceWorkspace().getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             stmt = conn.prepareStatement( "insert into " + table + "(wfsidintern,wfsidextern,username,starttime"
                                           + ",endtime,requestformat,rawrequest) values (?,?,?,?,?,?,?)" );
             String[] ss = address.split( "\\?" );
@@ -133,7 +135,8 @@ public class OSAASRequestLogger implements RequestLogger {
         PreparedStatement stmt = null;
         FileInputStream is = null;
         try {
-            conn = getConnection( connid );
+            ConnectionManager mgr = OGCFrontController.getServiceWorkspace().getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             stmt = conn.prepareStatement( "insert into " + table + "(wfsidintern,wfsidextern,username,starttime"
                                           + ",endtime,requestformat,rawrequest) values (?,?,?,?,?,?,?)" );
             String[] ss = address.split( "\\?" );

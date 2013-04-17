@@ -116,8 +116,7 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
 
         int msPerRecord = this.samplingPeriodMS * this.numOfMeasurements;
         if ( msPerRecord != T_SECOND && msPerRecord != T_MINUTE && msPerRecord != T_HOUR && msPerRecord != T_DAY ) {
-            LOG.warn(
-                      "BinarySQLDatastore ({}:{}) is not aligned to seconds, minutes, hours, or days (ms_sampling_period * number_of_measurements = {}ms). Time filter may not work properly.",
+            LOG.warn( "BinarySQLDatastore ({}:{}) is not aligned to seconds, minutes, hours, or days (ms_sampling_period * number_of_measurements = {}ms). Time filter may not work properly.",
                       new Object[] { jdbcId, tableName, msPerRecord } );
         }
     }
@@ -156,7 +155,8 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
             MeasurementBase measurementBase = new MeasurementBase( "", // TODO
                                                                    properties );
 
-            conn = ConnectionManager.getConnection( jdbcId );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( jdbcId );
             List<String> columns = buildColumnList( properties );
 
             stmt = getStatement( filter, columns, conn, offering );

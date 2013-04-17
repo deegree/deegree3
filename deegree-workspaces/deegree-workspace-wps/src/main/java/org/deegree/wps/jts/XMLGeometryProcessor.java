@@ -36,7 +36,6 @@
 package org.deegree.wps.jts;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -44,7 +43,6 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.util.Map;
 
-import javax.xml.XMLConstants;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -132,10 +130,10 @@ public class XMLGeometryProcessor {
                     gmlWriter.write( processed );
 
                 } else {
-                    if ( xmlReader.getNamespaceURI() == NULL_NS_URI || xmlReader.getPrefix() == DEFAULT_NS_PREFIX ) {
+                    if ( xmlReader.getNamespaceURI() == "" || xmlReader.getPrefix() == DEFAULT_NS_PREFIX ) {
                         xmlWriter.writeStartElement( xmlReader.getLocalName() );
                     } else {
-                        if ( xmlWriter.getNamespaceContext().getPrefix( xmlReader.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                        if ( xmlWriter.getNamespaceContext().getPrefix( xmlReader.getPrefix() ) == "" ) {
                             // TODO handle special cases for prefix binding, see
                             // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
                             xmlWriter.setPrefix( xmlReader.getPrefix(), xmlReader.getNamespaceURI() );

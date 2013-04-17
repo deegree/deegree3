@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.tom.primitive.BaseType.valueOf;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
@@ -58,6 +57,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -142,9 +142,11 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
      * @throws FeatureStoreException
      */
     public MappedSchemaBuilderTableOld( String jdbcConnId, List<FeatureTypeJAXB> ftDecls, SQLDialect dialect,
-                                        boolean deleteCascadingByDB ) throws SQLException, FeatureStoreException {
+                                        boolean deleteCascadingByDB, DeegreeWorkspace workspace ) throws SQLException,
+                            FeatureStoreException {
         this.dialect = dialect;
-        conn = ConnectionManager.getConnection( jdbcConnId );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        conn = mgr.get( jdbcConnId );
         try {
             for ( FeatureTypeJAXB ftDecl : ftDecls ) {
                 process( ftDecl );
@@ -421,7 +423,7 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
             prefix = defaultPrefix;
             namespace = defaultNamespace;
         }
-        if ( NULL_NS_URI.equals( namespace ) ) {
+        if ( "".equals( namespace ) ) {
             namespace = defaultNamespace;
         }
         return new QName( namespace, localPart, prefix );

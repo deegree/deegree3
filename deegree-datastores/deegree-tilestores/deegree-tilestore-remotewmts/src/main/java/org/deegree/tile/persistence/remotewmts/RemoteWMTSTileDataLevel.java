@@ -74,9 +74,7 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
 
     private final String outputFormat;
 
-    private Map<String, String> defaultGetMap;
-
-    private Map<String, String> hardGetMap;
+    private Map<String, String> defaultGetMap, hardGetMap, defaultGetFeatureInfo, hardGetFeatureInfo;
 
     /**
      * Creates a new {@link RemoteWMTSTileDataLevel} instance.
@@ -103,7 +101,8 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
      */
     RemoteWMTSTileDataLevel( TileMatrix matrix, String remoteTileMatrixSetId, String remoteTileMatrixId,
                              String requestFormat, String layer, String style, WMTSClient client, String outputFormat,
-                             Map<String, String> defaultGetMap, Map<String, String> hardGetMap ) {
+                             Map<String, String> defaultGetMap, Map<String, String> hardGetMap,
+                             Map<String, String> defaultGetFeatureInfo, Map<String, String> hardGetFeatureInfo ) {
         this.matrix = matrix;
         this.remoteTileMatrixSetId = remoteTileMatrixSetId;
         this.remoteTileMatrixId = remoteTileMatrixId;
@@ -114,6 +113,8 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
         this.client = client;
         this.defaultGetMap = defaultGetMap;
         this.hardGetMap = hardGetMap;
+        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+        this.hardGetFeatureInfo = hardGetFeatureInfo;
     }
 
     @Override
@@ -132,6 +133,7 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
                                         defaultGetMap, hardGetMap );
         GetTile request = new GetTile( layer, style, requestFormat, remoteTileMatrixSetId, remoteTileMatrixId, x, y,
                                        overriddenParameters );
-        return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope );
+        return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope, defaultGetFeatureInfo,
+                                   hardGetFeatureInfo );
     }
 }

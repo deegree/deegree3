@@ -129,10 +129,44 @@ class CoverageDimensionHandler {
                                     "InvalidDimensionValue" );
         }
 
+        // extract min/max values from extent
+        Comparable extmin = null;
+        Comparable extmax = null;
+        for ( Object v : dim.getExtent() ) {
+            if ( v instanceof DimensionInterval<?, ?, ?> ) {
+                if ( extmin == null ) {
+                    extmin = (Comparable<?>) ( (DimensionInterval<?, ?, ?>) v ).min;
+                } else {
+                    if ( extmin.compareTo( (Comparable<?>) ( (DimensionInterval<?, ?, ?>) v ).min ) > 0 ) {
+                        extmin = (Comparable<?>) ( (DimensionInterval<?, ?, ?>) v ).min;
+                    }
+                }
+                if ( extmax == null ) {
+                    extmax = (Comparable<?>) ( (DimensionInterval<?, ?, ?>) v ).max;
+                } else {
+                    if ( extmax.compareTo( (Comparable<?>) ( (DimensionInterval<?, ?, ?>) v ).max ) < 0 ) {
+                        extmax = (Comparable<?>) ( (DimensionInterval<?, ?, ?>) v ).max;
+                    }
+                }
+            }
+        }
+
         if ( o instanceof DimensionInterval<?, ?, ?> ) {
             DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-            final String min = iv.min.toString();
-            final String max = iv.max.toString();
+            // repair min/max values to extent min/max values if applicable (raster API fails if boundary values are not
+            // correct)
+            final String min;
+            if ( extmin.compareTo( iv.min ) > 0 ) {
+                min = extmin.toString();
+            } else {
+                min = iv.min.toString();
+            }
+            final String max;
+            if ( extmax.compareTo( iv.max ) < 0 ) {
+                max = extmax.toString();
+            } else {
+                max = iv.max.toString();
+            }
             intervals.add( new Interval<String, String>( new SingleValue<String>( Void, min ),
                                                          new SingleValue<String>( Void, max ), open, null, false, null ) );
         } else {

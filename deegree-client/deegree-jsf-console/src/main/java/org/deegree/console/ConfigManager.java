@@ -207,6 +207,7 @@ public class ConfigManager implements Serializable {
             configs.add( new Config( state, this, currentResourceManager.getManager(),
                                      currentResourceManager.getStartView(), true ) );
         }
+        Collections.sort( configs );
         return configs;
     }
 

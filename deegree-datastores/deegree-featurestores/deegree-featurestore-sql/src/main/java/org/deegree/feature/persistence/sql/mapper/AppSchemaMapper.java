@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
@@ -842,7 +841,7 @@ public class AppSchemaMapper {
     }
 
     private String getName( QName name ) {
-        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
+        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( "" ) ) {
             String prefix = nsToPrefix.get( name.getNamespaceURI() );
             return prefix + ":" + name.getLocalPart();
         }
@@ -850,7 +849,7 @@ public class AppSchemaMapper {
     }
 
     private ValueReference getPropName( QName name ) {
-        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( NULL_NS_URI ) ) {
+        if ( name.getNamespaceURI() != null && !name.getNamespaceURI().equals( "" ) ) {
             String prefix = name.getPrefix();
             if ( prefix == null || prefix.isEmpty() ) {
                 prefix = nsToPrefix.get( name.getNamespaceURI() );
