@@ -176,7 +176,7 @@ class RemoteWMSTile implements Tile {
             Map<String, String> overriddenParameters = new HashMap<String, String>();
             RequestUtils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
                                      defaultGetFeatureInfo, hardGetFeatureInfo );
-            fc = client.doGetFeatureInfo( request, null );
+            fc = client.doGetFeatureInfo( request, overriddenParameters );
         } catch ( SocketTimeoutException e ) {
             String msg = "Error performing GetFeatureInfo request, read timed out (timeout configured is "
                          + client.getReadTimeout() + " seconds).";
