@@ -51,7 +51,6 @@
     <module>deegree-services-commons</module>
     <module>deegree-services-config</module>
     <module>deegree-services-csw</module>
-    <module>deegree-services-sos</module>
     <module>deegree-services-wcs</module>
     <module>deegree-services-wfs</module>
     <module>deegree-services-wms</module>
