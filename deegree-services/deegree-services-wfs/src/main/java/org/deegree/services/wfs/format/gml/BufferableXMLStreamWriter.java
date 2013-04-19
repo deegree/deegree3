@@ -44,6 +44,8 @@ import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElement;
 
 import java.io.IOException;
@@ -80,11 +82,11 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
     private static final int MEMORY_BUFFER_SIZE_IN_BYTES = 10 * 1024 * 1024;
 
-    private static final String ELEMENT_NAME_DUMMY_LEVEL = "DummyLevel";
+    private static final String ELEMENT_NAME_CONTAINER_ROOT = "Container";
 
-    private static final String ELEMENT_NAME_WRAPPER = "WrapperElement";
+    private static final String ELEMENT_NAME_OPEN_ELEMENT = "OpenElement";
 
-    private static final String ELEMENT_NAME_CONTENT = "Content";
+    private static final String ELEMENT_NAME_UNCLEAR_REFERENCE = "Reference";
 
     private final XMLStreamWriter sink;
 
@@ -117,7 +119,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
         XMLStreamReader inStream = getBufferedXML();
-        skipToRequiredElement( inStream, new QName( ELEMENT_NAME_CONTENT ) );
+        skipToRequiredElement( inStream, new QName( ELEMENT_NAME_UNCLEAR_REFERENCE ) );
         boolean onContentElement = true;
 
         int eventType = 0;
@@ -137,7 +139,11 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             }
             case END_ELEMENT: {
                 String localName = inStream.getLocalName();
-                if ( !localName.equals( ELEMENT_NAME_WRAPPER ) ) {
+                if ( localName.equals( ELEMENT_NAME_UNCLEAR_REFERENCE ) ) {
+                    // StaX workaround: signal "end" of empty element to get rid of locally bound namespace prefixes
+                    // otherwise sink.getPrefix () will lie right in our faces...
+                    sink.writeCharacters( "" );
+                } else if ( !localName.equals( ELEMENT_NAME_CONTAINER_ROOT ) ) {
                     sink.writeEndElement();
                 }
                 break;
@@ -151,8 +157,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                         sink.writeStartElement( localName );
                     } else {
                         if ( sink.getPrefix( nsUri ) == null ) {
-                            sink.setPrefix( prefix, nsUri );
-                            sink.writeStartElement( nsUri, localName );
+                            sink.writeStartElement( prefix, localName, nsUri );
                             sink.writeNamespace( prefix, nsUri );
                         } else {
                             sink.writeStartElement( nsUri, localName );
@@ -161,41 +166,8 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                 } else {
                     onContentElement = false;
                 }
-
-                // copy all namespace bindings
-                for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
-                    String nsPrefix = inStream.getNamespacePrefix( i );
-                    String nsURI = inStream.getNamespaceURI( i );
-                    sink.writeNamespace( nsPrefix, nsURI );
-                }
-
-                // copy all attributes
-                for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
-                    String attrLocalName = inStream.getAttributeLocalName( i );
-                    String nsPrefix = inStream.getAttributePrefix( i );
-                    String value = inStream.getAttributeValue( i );
-                    String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null || nsURI.equals( NULL_NS_URI ) ) {
-                        sink.writeAttribute( attrLocalName, value );
-                    } else {
-                        if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
-                            if ( value.startsWith( "{" ) || value.endsWith( "}" ) ) {
-                                String objectId = value.substring( 1, value.length() - 1 );
-                                if ( gmlWriter.getReferenceResolveStrategy().isObjectExported( objectId ) ) {
-                                    value = "#" + objectId;
-                                } else {
-                                    value = xLinkTemplate.replace( "{}", objectId );
-                                }
-                            }
-                        }
-
-                        if ( sink.getPrefix( nsURI ) == null ) {
-                            sink.writeNamespace( nsPrefix, nsURI );
-                        }
-
-                        sink.writeAttribute( nsURI, attrLocalName, value );
-                    }
-                }
+                copyNamespaceBindings( inStream );
+                copyAttributes( gmlWriter, inStream );
                 break;
             }
             default: {
@@ -203,6 +175,47 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             }
             }
             inStream.next();
+        }
+    }
+
+    private void copyAttributes( GMLStreamWriter gmlWriter, XMLStreamReader inStream )
+                            throws XMLStreamException {
+        for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+            String attrLocalName = inStream.getAttributeLocalName( i );
+            String nsPrefix = inStream.getAttributePrefix( i );
+            String value = inStream.getAttributeValue( i );
+            String nsURI = inStream.getAttributeNamespace( i );
+            if ( nsURI == null || nsURI.equals( NULL_NS_URI ) ) {
+                sink.writeAttribute( attrLocalName, value );
+            } else {
+                if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
+                    if ( value.startsWith( "{" ) || value.endsWith( "}" ) ) {
+                        String objectId = value.substring( 1, value.length() - 1 );
+                        if ( gmlWriter.getReferenceResolveStrategy().isObjectExported( objectId ) ) {
+                            value = "#" + objectId;
+                        } else {
+                            value = xLinkTemplate.replace( "{}", objectId );
+                        }
+                    }
+                }
+
+                if ( sink.getPrefix( nsURI ) == null ) {
+                    sink.writeNamespace( nsPrefix, nsURI );
+                }
+
+                sink.writeAttribute( nsURI, attrLocalName, value );
+            }
+        }
+    }
+
+    private void copyNamespaceBindings( XMLStreamReader inStream )
+                            throws XMLStreamException {
+        for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+            String nsPrefix = inStream.getNamespacePrefix( i );
+            String nsURI = inStream.getNamespaceURI( i );
+            if ( sink.getPrefix( nsURI ) == null ) {
+                sink.writeNamespace( nsPrefix, nsURI );
+            }
         }
     }
 
@@ -230,7 +243,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
     private void writeWrapperElementWithNamespacesAndDummyLevel()
                             throws XMLStreamException {
-        activeWriter.writeStartElement( ELEMENT_NAME_WRAPPER );
+        activeWriter.writeStartElement( ELEMENT_NAME_CONTAINER_ROOT );
         Iterator<String> namespaceIter = nsBindings.getNamespaceURIs();
         while ( namespaceIter.hasNext() ) {
             String ns = namespaceIter.next();
@@ -238,11 +251,14 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             activeWriter.writeNamespace( prefix, ns );
             LOG.debug( prefix + "->" + ns );
         }
-
-        for ( int i = 0; i < openElements - 1; i++ ) {
-            activeWriter.writeStartElement( ELEMENT_NAME_DUMMY_LEVEL );
+        if ( nsBindings.getPrefix( XSINS ) == null ) {
+            activeWriter.writeNamespace( XSI_PREFIX, XSINS );
         }
-        activeWriter.writeStartElement( ELEMENT_NAME_CONTENT );
+
+        for ( int i = 0; i < openElements; i++ ) {
+            activeWriter.writeStartElement( ELEMENT_NAME_OPEN_ELEMENT );
+        }
+        activeWriter.writeEmptyElement( ELEMENT_NAME_UNCLEAR_REFERENCE );
     }
 
     @Override
@@ -301,9 +317,6 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void close()
                             throws XMLStreamException {
-        if ( activeWriter != sink ) {
-            activeWriter.writeEndElement();
-        }
         activeWriter.close();
     }
 
