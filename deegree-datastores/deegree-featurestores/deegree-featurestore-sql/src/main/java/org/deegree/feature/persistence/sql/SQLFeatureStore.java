@@ -1149,8 +1149,9 @@ public class SQLFeatureStore implements FeatureStore {
 
             int i = 1;
             for ( IdAnalysis idKernel : idKernels ) {
+                int j = 0;
                 for ( Object o : idKernel.getIdKernels() ) {
-                    PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( i - 1 ).getSecond() );
+                    PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( j++ ).getSecond() );
                     PrimitiveValue value = new PrimitiveValue( o, pt );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( i++, sqlValue );
