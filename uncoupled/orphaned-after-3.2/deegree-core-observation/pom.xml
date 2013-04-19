@@ -1,18 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-workspace-wps</artifactId>
+  <artifactId>deegree-core-observation</artifactId>
+  <name>deegree-core-observation</name>
   <packaging>jar</packaging>
-  <name>deegree-workspace-wps</name>
-  <description>Example configuration for deploying processes using a deegree WPS</description>
+  <description>Data model for sensor data</description>
 
   <properties>
-    <deegree.module.status>ok</deegree.module.status>
+    <deegree.module.status>unmaintained</deegree.module.status>
   </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-workspaces</artifactId>
-    <version>3.3-pre2-SNAPSHOT</version>
+    <artifactId>deegree-core</artifactId>
+    <version>3.2.0</version>
+    <relativePath />
   </parent>
 
   <repositories>
@@ -31,13 +32,16 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <extensions>true</extensions>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr3-maven-plugin</artifactId>
         <executions>
           <execution>
             <goals>
-              <goal>attach-workspace</goal>
+              <goal>antlr</goal>
             </goals>
           </execution>
         </executions>
@@ -47,23 +51,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jcommon</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jfreechart</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services-wps</artifactId>
+      <artifactId>deegree-core-base</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-
 </project>
 
