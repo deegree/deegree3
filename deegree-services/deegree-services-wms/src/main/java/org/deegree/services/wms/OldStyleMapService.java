@@ -186,8 +186,7 @@ class OldStyleMapService {
             }
 
             if ( queries.isEmpty() ) {
-                LOG.debug( "No queries found when collecting, probably due to scale constraints in the layers/styles." );
-                return;
+                LOG.debug( "No queries found when collecting, trying without collected queries." );
             }
 
             LOG.debug( "Not using collected queries." );
