@@ -169,7 +169,7 @@ If a ``Style`` element is specified, you must first specify what style you want 
 
 The ``StyleName`` specifies the name under which the style will be known in the WMS. The ``LayerNameRef`` and ``StyleNameRef`` are used to extract the style from the style store.
 
-The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic (which is unfortunately not supported yet). Referencing a different legend style is straightforward:
+The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic. Referencing a different legend style is straightforward:
 
 .. code-block:: xml
 
@@ -179,6 +179,24 @@ The next part to configure within the ``Style`` element is the legend generation
       <l:LayerNameRef>highways</l:LayerNameRef>
       <l:StyleNameRef>highways_legend</l:StyleNameRef>
     </l:LegendStyle>
+  </l:Style>
+
+With specifying the external graphic, you have the option of referencing a local file, or referencing a remote URL. Specifying a file is straightforward, and will result in the contents of that file being used as legend:
+
+.. code-block:: xml
+
+  <l:Style>
+  ...
+    <l:LegendGraphic>legendimages/mylegend.png</l:LegendGraphic>
+  </l:Style>
+
+If you specify an HTTP URL instead of a relative path the behaviour is the same by default, the remote images' content is used as legend. If you set the optional attribute ``outputGetLegendGraphicUrl`` to ``false`` (it's true by default), the specified URL is written as ``LegendURL`` in the WMS capabilities (the behaviour for ``GetLegendGraphic`` requests is the same anyway):
+
+.. code-block:: xml
+
+  <l:Style>
+  ...
+    <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
   </l:Style>
 
 ^^^^^^^^^^^^^^^^^
@@ -269,12 +287,12 @@ The basic structure of a manual configuration looks like this:
 
 As you can see, the first thing to do is to bind the configuration to a feature store. After that, you can define one or more feature layers.
 
-A feature layer configuration has three optional elements besides the common elements. The ``FeatureTypeName`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
+A feature layer configuration has three optional elements besides the common elements. The ``FeatureType`` can be used to restrict a layer to a specific feature type (use a qualified name). The ``Filter`` element can be used to specify a filter that applies to the layer globally (use standard OGC filter encoding 1.1.0 ``ogc:Filter`` element within):
 
 .. code-block:: xml
 
   <FeatureLayer>
-    <FeatureTypeName xmlns:app='http://www.deegree.org/app'>app:Roads</FeatureTypeName>
+    <FeatureType xmlns:app='http://www.deegree.org/app'>app:Roads</FeatureType>
     <Filter>
       <Filter xmlns='http://www.opengis.net/ogc'>
         <PropertyIsEqualTo>

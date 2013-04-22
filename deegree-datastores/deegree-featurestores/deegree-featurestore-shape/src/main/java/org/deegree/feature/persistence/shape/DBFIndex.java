@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -70,6 +71,8 @@ public class DBFIndex {
 
     private String connid;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * @param dbf
      * @param file
@@ -77,8 +80,9 @@ public class DBFIndex {
      * @throws IOException
      */
     public DBFIndex( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
-                     List<Mapping> mappings ) throws IOException {
-        new DbfIndexImporter( connid = file.getName(), dbf, file, envelopes, mappings ).createIndex();
+                     List<Mapping> mappings, DeegreeWorkspace workspace ) throws IOException {
+        this.workspace = workspace;
+        new DbfIndexImporter( connid = file.getName(), dbf, file, envelopes, mappings, workspace ).createIndex();
     }
 
     /**
@@ -116,7 +120,8 @@ public class DBFIndex {
         PreparedStatement stmt = null;
         ResultSet set = null;
         try {
-            conn = ConnectionManager.getConnection( connid );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             if ( generated == null ) {
                 StringBuilder sb = new StringBuilder();
                 for ( ResourceId rid : ( (IdFilter) filter ).getSelectedIds() ) {
@@ -174,7 +179,8 @@ public class DBFIndex {
      * Destroys h2 db connection.
      */
     public void destroy() {
-        ConnectionManager.destroy( connid );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        mgr.deactivate( connid );
     }
 
 }

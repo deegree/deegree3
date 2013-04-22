@@ -49,7 +49,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.services.wpvs.exception.DatasourceException;
@@ -182,6 +185,8 @@ public class DataManager {
      */
     public static final String OPT_USE_OPENGIS = "use_opengis_ns";
 
+    private static DeegreeWorkspace workspace;
+
     /**
      * Creates the commandline parser and adds the options.
      * 
@@ -199,6 +204,8 @@ public class DataManager {
         if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
             printHelp( options );
         }
+
+        workspace = DeegreeWorkspace.getInstance();
 
         try {
             CommandLine line = parser.parse( options, args );
@@ -322,9 +329,11 @@ public class DataManager {
                 throw new RuntimeException( e.getMessage(), e );
             }
         } else {
-            if ( !ConnectionManager.getConnectionIds().contains( hostURL ) ) {
-                ConnectionManager.addConnection( hostURL, testFileBackend, line.getOptionValue( OPT_DB_USER ),
-                                                 line.getOptionValue( OPT_DB_PASS ), 1, 5 );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            if ( mgr.getState( hostURL ) == null ) {
+                JDBCParams params = new DefaultJDBCParams( testFileBackend, line.getOptionValue( OPT_DB_USER ),
+                                                           line.getOptionValue( OPT_DB_PASS ), false );
+                mgr.addPool( hostURL, params, workspace );
             }
         }
         ModelBackend<?> result = ModelBackend.getInstance( hostURL, fileBackendDir );

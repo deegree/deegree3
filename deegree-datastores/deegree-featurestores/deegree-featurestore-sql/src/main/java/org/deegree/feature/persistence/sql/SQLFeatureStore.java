@@ -258,7 +258,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         MappedAppSchema schema;
         try {
-            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect );
+            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect, workspace );
         } catch ( Throwable t ) {
             LOG.error( t.getMessage(), t );
             throw new ResourceInitException( t.getMessage(), t );
@@ -272,7 +272,7 @@ public class SQLFeatureStore implements FeatureStore {
         initConverters();
         try {
             // however TODO it properly on the DB
-            lockManager = new DefaultLockManager( this, "LOCK_DB" );
+            lockManager = new DefaultLockManager( this, "LOCK_DB", workspace );
         } catch ( Throwable e ) {
             LOG.warn( "Lock manager initialization failed, locking will not be available." );
             LOG.trace( "Stack trace:", e );
@@ -445,11 +445,9 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         Connection conn = null;
         try {
-            conn = ConnectionManager.getConnection( getConnId() );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( getConnId() );
             env = calcEnvelope( ftName, conn );
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new FeatureStoreException( e.getMessage(), e );
         } finally {
             JDBCUtils.close( conn );
         }
@@ -588,7 +586,8 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( blobMapping.getGMLIdColumn() );
             sql.append( "=?" );
 
-            conn = ConnectionManager.getConnection( getConnId() );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( getConnId() );
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
@@ -1150,8 +1149,9 @@ public class SQLFeatureStore implements FeatureStore {
 
             int i = 1;
             for ( IdAnalysis idKernel : idKernels ) {
+                int j = 0;
                 for ( Object o : idKernel.getIdKernels() ) {
-                    PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( i - 1 ).getSecond() );
+                    PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( j++ ).getSecond() );
                     PrimitiveValue value = new PrimitiveValue( o, pt );
                     Object sqlValue = SQLValueMangler.internalToSQL( value );
                     stmt.setObject( i++, sqlValue );
@@ -1173,7 +1173,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
-        Connection conn = ConnectionManager.getConnection( getConnId() );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        Connection conn = mgr.get( getConnId() );
         conn.setAutoCommit( readAutoCommit );
         return conn;
     }

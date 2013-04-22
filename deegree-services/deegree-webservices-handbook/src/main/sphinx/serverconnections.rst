@@ -116,5 +116,5 @@ Let's have a look at an example:
 * The request timeout defines (in seconds) how long to wait for data before throwing an error. Default is 60 seconds.
 * The http basic authentication options can be used to provide authentication credentials to use a HTTP basic protected service. Default is not to authenticate.
 
-Only GetTile operations are supported for remote WMTS resources.
+GetTile and GetFeatureInfo operations are supported for remote WMTS resources.
 

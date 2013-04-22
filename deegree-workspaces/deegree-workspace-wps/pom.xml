@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.3-pre1-SNAPSHOT</version>
+    <version>3.3-pre2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -47,97 +47,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-processprovider-sextante</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_vectorTools</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_gridAnalysis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_gridCalculus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_gridCategorical</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_gridStatistics</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_gridTools</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_hydrology</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_imageAnalysis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_lighting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_locate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_morphometry</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_pointAnalysis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_profiles</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_rasterize</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_statisticalMethods</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_tables</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_topology</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_vectorize</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>sextante_vegetationIndices</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>es.unex.sextante</groupId>
-      <artifactId>libMath</artifactId>
     </dependency>
     <dependency>
       <groupId>jfree</groupId>

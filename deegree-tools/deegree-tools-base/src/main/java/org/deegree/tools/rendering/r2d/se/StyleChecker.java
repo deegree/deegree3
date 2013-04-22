@@ -53,7 +53,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.style.se.parser.PostgreSQLReader;
 import org.deegree.style.se.unevaluated.Style;
@@ -73,6 +76,8 @@ public class StyleChecker {
     private static final Logger LOG = getLogger( StyleChecker.class );
 
     private static HashSet<Integer> faultyStyles = new HashSet<Integer>();
+
+    private static ConnectionManager mgr;
 
     private static Options initOptions() {
         Options opts = new Options();
@@ -104,15 +109,15 @@ public class StyleChecker {
 
     }
 
-    private static void check( String schema ) {
-        PostgreSQLReader reader = new PostgreSQLReader( "style", schema, null );
+    private static void check( String schema, DeegreeWorkspace workspace ) {
+        PostgreSQLReader reader = new PostgreSQLReader( "style", schema, null, workspace );
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         boolean bad = false;
         try {
-            conn = ConnectionManager.getConnection( "style" );
+            conn = mgr.get( "style" );
             stmt = conn.prepareStatement( "select id from " + schema + ".styles" );
             rs = stmt.executeQuery();
             while ( rs.next() ) {
@@ -171,7 +176,7 @@ public class StyleChecker {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
-            conn = ConnectionManager.getConnection( "style" );
+            conn = mgr.get( "style" );
             StringBuilder sql = new StringBuilder( "delete from " + schema + ".styles where id in (" );
             for ( int i = 0; i < faultyStyles.size() - 1; ++i ) {
                 sql.append( "?, " );
@@ -239,9 +244,13 @@ public class StyleChecker {
                 schema = "public";
             }
 
-            ConnectionManager.addConnection( "style", url, user, pass, 5, 20 );
+            DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
+            mgr = workspace.getSubsystemManager( ConnectionManager.class );
 
-            check( schema );
+            JDBCParams params = new DefaultJDBCParams( url, user, pass, false );
+            mgr.addPool( "style", params, workspace );
+
+            check( schema, workspace );
             if ( line.hasOption( "clean" ) ) {
                 clean( schema );
             }

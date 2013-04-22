@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.3-pre1-SNAPSHOT</version>
+    <version>3.3-pre2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -38,7 +38,6 @@
     <module>deegree-core-geometry</module>
     <module>deegree-core-layer</module>
     <module>deegree-core-metadata</module>
-    <module>deegree-core-observation</module>
     <module>deegree-core-remoteows</module>
     <module>deegree-core-rendering-2d</module>
     <module>deegree-core-sqldialect</module>

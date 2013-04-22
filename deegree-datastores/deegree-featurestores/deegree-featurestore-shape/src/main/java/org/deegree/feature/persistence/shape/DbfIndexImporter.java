@@ -57,7 +57,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.param.DefaultJDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -95,10 +98,13 @@ class DbfIndexImporter {
 
     private Map<String, Mapping> fieldMap;
 
+    private DeegreeWorkspace workspace;
+
     DbfIndexImporter( String connid, DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
-                      List<Mapping> mappings ) {
+                      List<Mapping> mappings, DeegreeWorkspace workspace ) {
         this.connid = connid;
         this.dbf = dbf;
+        this.workspace = workspace;
         this.file = file.getAbsoluteFile();
         this.envelopes = envelopes;
         this.mappings = mappings;
@@ -266,7 +272,8 @@ class DbfIndexImporter {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
-            conn = ConnectionManager.getConnection( connid );
+            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+            conn = mgr.get( connid );
             stmt = conn.prepareStatement( create.toString() );
             stmt.executeUpdate();
             stmt.close();
@@ -302,7 +309,10 @@ class DbfIndexImporter {
 
         File dbfile = new File( file.toString().substring( 0, file.toString().lastIndexOf( '.' ) ) );
 
-        ConnectionManager.addConnection( connid = file.getName(), "jdbc:h2:" + dbfile, "SA", "", 0, 5 );
+        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
+        JDBCParams params = new DefaultJDBCParams( "jdbc:h2:" + dbfile, "SA", "", false );
+
+        mgr.addPool( connid = file.getName(), params, workspace );
 
         if ( new File( dbfile.toString() + ".h2.db" ).exists() ) {
             // TODO proper check for database consistency

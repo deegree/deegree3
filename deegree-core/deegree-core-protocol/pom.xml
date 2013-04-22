@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.3-pre1-SNAPSHOT</version>
+    <version>3.3-pre2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -27,7 +27,6 @@
   <modules>
     <module>deegree-protocol-commons</module>
     <module>deegree-protocol-csw</module>
-    <module>deegree-protocol-sos</module>
     <module>deegree-protocol-wfs</module>
     <module>deegree-protocol-wms</module>
     <module>deegree-protocol-wmts</module>
