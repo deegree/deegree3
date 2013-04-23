@@ -41,11 +41,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.deegree.workspace.graph.ResourceNode;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceLocation;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 /**
  * Utility methods to work with workspaces and its resources.
@@ -108,6 +113,55 @@ public class WorkspaceUtils {
             list.add( n.getMetadata() );
             collectDependents( list, n );
         }
+    }
+
+    /**
+     * Adds and completely initializes a synthetic resource from string.
+     * 
+     * @param workspace
+     *            may not be <code>null</code>
+     * @param providerClass
+     *            may not be <code>null</code>
+     * @param id
+     *            may not be <code>null</code>
+     * @param content
+     *            configuration content, may not be <code>null</code>
+     * @return the initialized resource
+     */
+    public static <T extends Resource> T activateSynthetic( Workspace workspace,
+                                                            Class<? extends ResourceProvider<T>> providerClass,
+                                                            String id, String content ) {
+        IncorporealResourceLocation<? extends Resource> loc;
+        ResourceIdentifier<T> identifier = new DefaultResourceIdentifier<T>( providerClass, id );
+        Charset cs = Charset.forName( "UTF-8" );
+        loc = new IncorporealResourceLocation<T>( content.getBytes( cs ), identifier );
+        workspace.add( loc );
+        workspace.prepare( identifier );
+        return workspace.init( identifier, null );
+    }
+
+    /**
+     * Adds and completely initializes a synthetic resource from file.
+     * 
+     * @param workspace
+     *            may not be <code>null</code>
+     * @param providerClass
+     *            may not be <code>null</code>
+     * @param id
+     *            may not be <code>null</code>
+     * @param content
+     *            configuration content, may not be <code>null</code>
+     * @return the initialized resource
+     */
+    public static <T extends Resource> T activateFromFile( Workspace workspace,
+                                                           Class<? extends ResourceProvider<T>> providerClass,
+                                                           String id, File content ) {
+        DefaultResourceLocation<? extends Resource> loc;
+        ResourceIdentifier<T> identifier = new DefaultResourceIdentifier<T>( providerClass, id );
+        loc = new DefaultResourceLocation<T>( content, identifier );
+        workspace.add( loc );
+        workspace.prepare( identifier );
+        return workspace.init( identifier, null );
     }
 
 }

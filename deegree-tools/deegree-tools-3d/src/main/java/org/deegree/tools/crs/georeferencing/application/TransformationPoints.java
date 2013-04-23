@@ -131,7 +131,7 @@ public class TransformationPoints {
             loc = new IncorporealResourceLocation<FeatureStore>( cfg.getBytes( "UTF-8" ), id );
             state.workspace.getNewWorkspace().add( loc );
             state.workspace.getNewWorkspace().prepare( id );
-            state.workspace.getNewWorkspace().init( id, null );
+            featureStore = state.workspace.getNewWorkspace().init( id, null );
 
             featureType = featureStore.getSchema().getFeatureTypes()[0];
             pointGeometryType = featureType.getPropertyDeclarations().get( 0 );
