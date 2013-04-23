@@ -57,6 +57,14 @@ import org.deegree.workspace.graph.ResourceNode;
  */
 public class WorkspaceUtils {
 
+    /**
+     * Destroys and initializes all resources connected to the resource with the given id.
+     * 
+     * @param workspace
+     *            may not be <code>null</code>
+     * @param id
+     *            may not be <code>null</code>
+     */
     public static void reinitializeChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
         ResourceNode<? extends Resource> node = workspace.getDependencyGraph().getNode( id );
         List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
@@ -70,6 +78,14 @@ public class WorkspaceUtils {
         }
     }
 
+    /**
+     * Collects all transitive dependencies of the resource node given.
+     * 
+     * @param list
+     *            may not be <code>null</code>
+     * @param node
+     *            may not be <code>null</code>
+     */
     public static void collectDependencies( List<ResourceMetadata<? extends Resource>> list,
                                             ResourceNode<? extends Resource> node ) {
         for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
@@ -78,6 +94,14 @@ public class WorkspaceUtils {
         }
     }
 
+    /**
+     * Transitively collects all resources which depend on the resource connected to the node given.
+     * 
+     * @param list
+     *            may not be <code>null</code>
+     * @param node
+     *            may not be <code>null</code>
+     */
     public static void collectDependents( List<ResourceMetadata<? extends Resource>> list,
                                           ResourceNode<? extends Resource> node ) {
         for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
