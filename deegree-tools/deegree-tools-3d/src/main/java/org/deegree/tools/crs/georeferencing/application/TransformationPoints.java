@@ -83,9 +83,7 @@ import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
-import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.deegree.workspace.standard.IncorporealResourceLocation;
+import org.deegree.workspace.WorkspaceUtils;
 
 /**
  * 
@@ -124,14 +122,9 @@ public class TransformationPoints {
                          + "  <GMLSchema version=\"GML_31\">"
                          + schemaUrl.toExternalForm()
                          + "</GMLSchema></MemoryFeatureStore>";
-            IncorporealResourceLocation<FeatureStore> loc;
-            ResourceIdentifier<FeatureStore> id = new DefaultResourceIdentifier<FeatureStore>(
-                                                                                               NewFeatureStoreProvider.class,
-                                                                                               "pointsstore" );
-            loc = new IncorporealResourceLocation<FeatureStore>( cfg.getBytes( "UTF-8" ), id );
-            state.workspace.getNewWorkspace().add( loc );
-            state.workspace.getNewWorkspace().prepare( id );
-            featureStore = state.workspace.getNewWorkspace().init( id, null );
+
+            featureStore = WorkspaceUtils.activateSynthetic( state.workspace.getNewWorkspace(),
+                                                             NewFeatureStoreProvider.class, "pointsstore", cfg );
 
             featureType = featureStore.getSchema().getFeatureTypes()[0];
             pointGeometryType = featureType.getPropertyDeclarations().get( 0 );
