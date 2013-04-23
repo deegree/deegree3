@@ -46,7 +46,7 @@ import java.util.List;
 import org.deegree.workspace.graph.ResourceGraph;
 
 /**
- * TODO add class documentation here
+ * The central workspace interface.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -183,5 +183,12 @@ public interface Workspace {
      * @return
      */
     <T extends Resource> List<ResourceIdentifier<T>> getResourcesOfType( Class<? extends ResourceProvider<T>> providerClass );
+
+    /**
+     * Returns an error handler that contains information about errors when starting up resources.
+     * 
+     * @return never <code>null</code>
+     */
+    ErrorHandler getErrorHandler();
 
 }

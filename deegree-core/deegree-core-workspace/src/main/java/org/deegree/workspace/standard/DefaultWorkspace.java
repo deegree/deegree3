@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.commons.io.FileUtils;
+import org.deegree.workspace.ErrorHandler;
 import org.deegree.workspace.PreparedResources;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
@@ -101,6 +102,8 @@ public class DefaultWorkspace implements Workspace {
 
     private ResourceGraph graph;
 
+    private ErrorHandler errors = new ErrorHandler();
+
     public DefaultWorkspace( File directory ) {
         this.directory = directory;
     }
@@ -120,6 +123,7 @@ public class DefaultWorkspace implements Workspace {
             try {
                 Resource res = prepared.getBuilder( md.getIdentifier() ).build();
                 if ( res == null ) {
+                    errors.registerError( md.getIdentifier(), "Unable to prepare." );
                     LOG.error( "Unable to build resource {}.", md.getIdentifier() );
                     continue;
                 }
@@ -127,8 +131,9 @@ public class DefaultWorkspace implements Workspace {
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
-                ex.printStackTrace();
-                LOG.error( "Unable to build resource {}: {}.", md.getIdentifier(), ex.getLocalizedMessage() );
+                String msg = "Unable to build resource " + md.getIdentifier() + ": " + ex.getLocalizedMessage();
+                errors.registerError( md.getIdentifier(), msg );
+                LOG.error( msg );
                 LOG.trace( "Stack trace:", ex );
             }
         }
@@ -194,9 +199,9 @@ public class DefaultWorkspace implements Workspace {
                             } else {
                                 LOG.info( " - " + fs[i] + " (non-deegree)" );
                             }
-                        } catch ( Throwable e ) {
-                            e.printStackTrace();
+                        } catch ( Exception e ) {
                             LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
+                            LOG.trace( "Stack trace:", e );
                         }
                     }
                 }
@@ -312,6 +317,7 @@ public class DefaultWorkspace implements Workspace {
             try {
                 Resource res = builder.build();
                 if ( res == null ) {
+                    errors.registerError( metadata.getIdentifier(), "Unable to build resource." );
                     LOG.error( "Unable to build resource {}.", metadata.getIdentifier() );
                     throw new ResourceInitException( "Unable to build resource " + metadata.getIdentifier() + "." );
                 }
@@ -319,7 +325,9 @@ public class DefaultWorkspace implements Workspace {
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
-                LOG.error( "Unable to build resource {}: {}.", metadata.getIdentifier(), ex.getLocalizedMessage() );
+                String msg = "Unable to build resource " + metadata.getIdentifier() + ": " + ex.getLocalizedMessage();
+                errors.registerError( metadata.getIdentifier(), msg );
+                LOG.error( msg );
                 LOG.trace( "Stack trace:", ex );
                 throw new ResourceInitException( "Unable to build resource " + metadata.getIdentifier() + ": "
                                                  + ex.getLocalizedMessage(), ex );
@@ -346,8 +354,9 @@ public class DefaultWorkspace implements Workspace {
                 }
                 prepared.addBuilder( (ResourceIdentifier) md.getIdentifier(), builder );
             } catch ( Exception e ) {
-                // e.printStackTrace();
-                LOG.error( "Error preparing resource {}: {}", md.getIdentifier(), e.getLocalizedMessage() );
+                String msg = "Error preparing resource " + md.getIdentifier() + ": " + e.getLocalizedMessage();
+                errors.registerError( md.getIdentifier(), msg );
+                LOG.error( msg );
                 LOG.trace( "Stack trace:", e );
             }
         }
@@ -399,7 +408,6 @@ public class DefaultWorkspace implements Workspace {
         ResourceManager<T> mgr = (ResourceManager) resourceManagers.get( location.getIdentifier().getProvider() );
         ResourceMetadata<T> md = mgr.add( location, this );
         resourceMetadata.put( md.getIdentifier(), md );
-
     }
 
     @Override
@@ -412,6 +420,11 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "Shutting down {}.", node.getMetadata().getIdentifier() );
         res.destroy();
         resources.remove( node.getMetadata().getIdentifier() );
+    }
+
+    @Override
+    public ErrorHandler getErrorHandler() {
+        return errors;
     }
 
 }
