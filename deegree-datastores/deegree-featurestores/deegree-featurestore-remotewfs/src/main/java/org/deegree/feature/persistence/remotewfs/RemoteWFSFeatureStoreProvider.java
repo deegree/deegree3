@@ -45,20 +45,24 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.remotewfs.jaxb.RemoteWFSFeatureStoreConfig;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link FeatureStoreProvider} for the {@link RemoteWFSFeatureStore}.
+ * {@link NewFeatureStoreProvider} for the {@link RemoteWFSFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
+public class RemoteWFSFeatureStoreProvider extends NewFeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( RemoteWFSFeatureStoreProvider.class );
 
@@ -70,17 +74,17 @@ public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
 
     private DeegreeWorkspace workspace;
 
-    @Override
+    // @Override
     public String getConfigNamespace() {
         return CONFIG_NS;
     }
 
-    @Override
+    // @Override
     public URL getConfigSchema() {
         return CONFIG_SCHEMA;
     }
 
-    @Override
+    // @Override
     public RemoteWFSFeatureStore create( URL configURL )
                             throws ResourceInitException {
 
@@ -106,5 +110,40 @@ public class RemoteWFSFeatureStoreProvider implements FeatureStoreProvider {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] { ProxyUtils.class };
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.workspace.ResourceProvider#getNamespace()
+     */
+    @Override
+    public String getNamespace() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.workspace.standard.AbstractResourceProvider#createFromLocation(org.deegree.workspace.Workspace,
+     * org.deegree.workspace.ResourceLocation)
+     */
+    @Override
+    public ResourceMetadata<FeatureStore> createFromLocation( Workspace workspace,
+                                                              ResourceLocation<FeatureStore> location ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.workspace.standard.AbstractResourceProvider#getSchema()
+     */
+    @Override
+    public URL getSchema() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

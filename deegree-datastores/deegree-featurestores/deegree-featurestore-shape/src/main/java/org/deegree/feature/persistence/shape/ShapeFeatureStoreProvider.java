@@ -37,61 +37,27 @@ package org.deegree.feature.persistence.shape;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * {@link FeatureStoreProvider} for the {@link ShapeFeatureStore}.
+ * {@link NewFeatureStoreProvider} for the {@link ShapeFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ShapeFeatureStoreProvider extends NewFeatureStoreProvider implements FeatureStoreProvider {
+public class ShapeFeatureStoreProvider extends NewFeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
 
     static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
     private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/3.1.0/shape.xsd" );
-
-    private DeegreeWorkspace workspace;
-
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NS;
-    }
-
-    @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
-    }
-
-    @Override
-    public FeatureStore create( URL configURL )
-                            throws ResourceInitException {
-        String id = workspace.determineId( configURL, "datasources.feature" );
-        return workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
 
     static class Mapping {
         String fieldname;

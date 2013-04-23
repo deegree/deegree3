@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreProvider.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreBuilder.class );
 
     private MemoryFeatureStoreMetadata metadata;
 

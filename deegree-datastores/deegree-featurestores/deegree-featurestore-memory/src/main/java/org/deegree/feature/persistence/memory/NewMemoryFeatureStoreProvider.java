@@ -59,7 +59,7 @@ import org.deegree.workspace.Workspace;
  */
 public class NewMemoryFeatureStoreProvider extends NewFeatureStoreProvider {
 
-    static final URL CONFIG_SCHEMA = MemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd" );
+    static final URL CONFIG_SCHEMA = NewMemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd" );
 
     @Override
     public String getNamespace() {
