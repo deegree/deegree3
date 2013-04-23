@@ -49,7 +49,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayers;
@@ -90,9 +90,8 @@ public class FeatureLayerProvider implements LayerStoreProvider {
 
             LOG.debug( "Creating configured feature layers only." );
 
-            FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
             String id = lays.getFeatureStoreId();
-            FeatureStore store = mgr.get( id );
+            FeatureStore store = workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
             if ( store == null ) {
                 throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
                                                  + " is not available." );
@@ -108,7 +107,7 @@ public class FeatureLayerProvider implements LayerStoreProvider {
     @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { FeatureStoreManager.class, StyleStoreManager.class };
+        return new Class[] { StyleStoreManager.class };
     }
 
     @Override

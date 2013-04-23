@@ -53,14 +53,14 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.workspace.ResourceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,35 +93,31 @@ public class WfsFeatureStoreManager {
      * @param baseURL
      * @throws FeatureStoreException
      */
-    @SuppressWarnings("unchecked")
     public void init( DeegreeWFS sc, String baseURL, DeegreeWorkspace workspace )
                             throws ResourceInitException {
 
-        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
         List<String> ids = sc.getFeatureStoreId();
 
         if ( ids.isEmpty() ) {
             LOG.debug( "Feature store ids not configured. Adding all active feature stores." );
-            for ( ResourceState<FeatureStore> state : mgr.getStates() ) {
-                if ( state.getResource() != null ) {
-                    addStore( state.getResource() );
-                    addNotYetHintedNamespaces( state.getResource().getSchema().getNamespaceBindings().values() );
+            List<ResourceIdentifier<FeatureStore>> stores = workspace.getNewWorkspace().getResourcesOfType( NewFeatureStoreProvider.class );
+            for ( ResourceIdentifier<FeatureStore> id : stores ) {
+                FeatureStore store = workspace.getNewWorkspace().getResource( id.getProvider(), id.getId() );
+                if ( store != null ) {
+                    addStore( store );
+                    addNotYetHintedNamespaces( store.getSchema().getNamespaceBindings().values() );
                 }
             }
         } else {
             LOG.debug( "Adding configured feature stores." );
             for ( String id : ids ) {
-                ResourceState<FeatureStore> state = mgr.getState( id );
-                if ( state == null ) {
+                FeatureStore store = workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
+                if ( store == null ) {
                     String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
                     throw new ResourceInitException( msg );
                 }
-                if ( state.getResource() == null ) {
-                    String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
-                    throw new ResourceInitException( msg );
-                }
-                addStore( state.getResource() );
-                addNotYetHintedNamespaces( state.getResource().getSchema().getNamespaceBindings().values() );
+                addStore( store );
+                addNotYetHintedNamespaces( store.getSchema().getNamespaceBindings().values() );
             }
         }
 

@@ -57,8 +57,8 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -185,9 +185,8 @@ public class FeatureStoreLoader {
 
             DeegreeWorkspace ws = DeegreeWorkspace.getInstance( workspace, new File( workspace ) );
             ws.initAll();
-            FeatureStoreManager mgr = ws.getSubsystemManager( FeatureStoreManager.class );
 
-            FeatureStore fs = mgr.get( fsConfigId );
+            FeatureStore fs = ws.getNewWorkspace().getResource( NewFeatureStoreProvider.class, fsConfigId );
 
             switch ( action ) {
             case insert:

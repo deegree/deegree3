@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
 import java.util.HashSet;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -60,10 +59,12 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.tools.i18n.Messages;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -145,9 +146,15 @@ public class FeatureTypesToLayerTree {
             out = new IndentingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
             out.setDefaultNamespace( ns );
 
-            FeatureStoreManager mgr = new FeatureStoreManager();
-            mgr.startup( DeegreeWorkspace.getInstance() );
-            FeatureStore store = mgr.create( "unknown", new File( storeFile ).toURI().toURL() );
+            DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+            ws.initAll();
+            DefaultResourceIdentifier<FeatureStore> identifier = new DefaultResourceIdentifier<FeatureStore>(
+                                                                                                              NewFeatureStoreProvider.class,
+                                                                                                              "unknown" );
+            ws.getNewWorkspace().add( new DefaultResourceLocation<FeatureStore>( new File( storeFile ), identifier ) );
+            ws.getNewWorkspace().prepare( identifier );
+            FeatureStore store = ws.getNewWorkspace().init( identifier, null );
+
             AppSchema schema = store.getSchema();
 
             // prepare document
@@ -181,9 +188,6 @@ public class FeatureTypesToLayerTree {
         } catch ( ParseException exp ) {
             System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
             CommandUtils.printHelp( options, FeatureTypesToLayerTree.class.getSimpleName(), null, null );
-        } catch ( MalformedURLException e ) {
-            LOG.info( "A filename could not be parsed: '{}'", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
         } catch ( ResourceInitException e ) {
             LOG.info( "The feature store could not be loaded: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

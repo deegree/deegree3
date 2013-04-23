@@ -49,7 +49,7 @@ import java.util.Map;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -83,9 +83,8 @@ class AutoFeatureLayerBuilder {
         LOG.debug( "Creating feature layers for all feature types automatically." );
 
         Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
         String id = auto.getFeatureStoreId();
-        FeatureStore store = mgr.get( id );
+        FeatureStore store = workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
         if ( store == null ) {
             throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
                                              + " is not available." );

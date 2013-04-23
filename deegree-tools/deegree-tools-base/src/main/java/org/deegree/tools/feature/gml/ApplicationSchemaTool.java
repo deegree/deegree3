@@ -70,7 +70,8 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tools.CommandUtils;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
@@ -79,6 +80,9 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.tools.i18n.Messages;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceLocation;
 
 /**
  * Swiss Army knife for GML/deegree application schemas.
@@ -366,17 +370,20 @@ public class ApplicationSchemaTool {
             break;
         case deegree_postgis:
             try {
-                URL configURL = new File( inputFileName ).toURI().toURL();
-                FeatureStoreManager mgr = new FeatureStoreManager();
-                mgr.startup( DeegreeWorkspace.getInstance() );
-                SQLFeatureStore fs = (SQLFeatureStore) mgr.create( "deegree_postgis", configURL );
+                DefaultResourceLocation<FeatureStore> loc;
+                ResourceIdentifier<FeatureStore> id = new DefaultResourceIdentifier<FeatureStore>(
+                                                                                                   NewFeatureStoreProvider.class,
+                                                                                                   "deegree_postgis" );
+                loc = new DefaultResourceLocation<FeatureStore>( new File( inputFileName ), id );
+                DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+                ws.initAll();
+                ws.getNewWorkspace().add( loc );
+                ws.getNewWorkspace().prepare( id );
+                SQLFeatureStore fs = (SQLFeatureStore) ws.getNewWorkspace().init( id, null );
                 String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
                 for ( String string : sql ) {
                     System.out.println( string + ";" );
                 }
-            } catch ( MalformedURLException e1 ) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
             } catch ( ResourceInitException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -406,9 +413,9 @@ public class ApplicationSchemaTool {
                 }
 
                 GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader(
-                                                                                          GML_32,
-                                                                                          null,
-                                                                                          inputURLs.toArray( new String[inputURLs.size()] ) );
+                                                                        GML_32,
+                                                                        null,
+                                                                        inputURLs.toArray( new String[inputURLs.size()] ) );
                 AppSchema schema = xsdDecoder.extractAppSchema();
 
                 System.out.println( "- Total feature types: " + schema.getFeatureTypes().length );

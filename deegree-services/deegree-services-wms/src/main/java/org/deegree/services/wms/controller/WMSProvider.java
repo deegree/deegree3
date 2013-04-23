@@ -44,7 +44,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.remoteows.RemoteOWSStoreManager;
@@ -97,8 +96,8 @@ public class WMSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSStoreManager.class, FeatureStoreManager.class, CoverageBuilderManager.class,
-                            MetadataStoreManager.class, StyleStoreManager.class, ThemeManager.class };
+        return new Class[] { RemoteOWSStoreManager.class, CoverageBuilderManager.class, MetadataStoreManager.class,
+                            StyleStoreManager.class, ThemeManager.class };
     }
 
     @Override

@@ -37,13 +37,10 @@ package org.deegree.tools.crs.georeferencing.application;
 
 import static java.lang.Double.isNaN;
 import static java.util.Collections.singletonList;
-import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.deegree.services.wms.MapService.fillInheritedInformation;
 
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.Triple;
@@ -61,8 +57,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.IdFilter;
@@ -87,6 +83,9 @@ import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 /**
  * 
@@ -125,17 +124,15 @@ public class TransformationPoints {
                          + "  <GMLSchema version=\"GML_31\">"
                          + schemaUrl.toExternalForm()
                          + "</GMLSchema></MemoryFeatureStore>";
-            FeatureStoreManager mgr = state.workspace.getSubsystemManager( FeatureStoreManager.class );
+            IncorporealResourceLocation<FeatureStore> loc;
+            ResourceIdentifier<FeatureStore> id = new DefaultResourceIdentifier<FeatureStore>(
+                                                                                               NewFeatureStoreProvider.class,
+                                                                                               "pointsstore" );
+            loc = new IncorporealResourceLocation<FeatureStore>( cfg.getBytes( "UTF-8" ), id );
+            state.workspace.getNewWorkspace().add( loc );
+            state.workspace.getNewWorkspace().prepare( id );
+            state.workspace.getNewWorkspace().init( id, null );
 
-            ResourceState<FeatureStore> rstate = mgr.getState( "pointsstore" );
-            if ( rstate != null ) {
-                mgr.deactivate( "pointsstore" );
-                mgr.deleteResource( "pointsstore" );
-            }
-
-            InputStream in = new ByteArrayInputStream( cfg.getBytes( "UTF-8" ) );
-            mgr.createResource( "pointsstore", in );
-            featureStore = mgr.activate( "pointsstore" ).getResource();
             featureType = featureStore.getSchema().getFeatureTypes()[0];
             pointGeometryType = featureType.getPropertyDeclarations().get( 0 );
             buildingGeometryType = featureType.getPropertyDeclarations().get( 1 );

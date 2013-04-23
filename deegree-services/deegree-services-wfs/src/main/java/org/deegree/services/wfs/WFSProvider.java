@@ -46,7 +46,6 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -97,7 +96,7 @@ public class WFSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { FeatureStoreManager.class, OWSMetadataProviderManager.class };
+        return new Class[] { OWSMetadataProviderManager.class };
     }
 
     @Override

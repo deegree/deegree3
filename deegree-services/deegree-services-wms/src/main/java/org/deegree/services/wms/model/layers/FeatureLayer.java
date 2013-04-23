@@ -74,7 +74,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.stream.FeatureInputStream;
@@ -134,8 +134,7 @@ public class FeatureLayer extends Layer {
      */
     public FeatureLayer( MapService service, AbstractLayerType layer, Layer parent, DeegreeWorkspace workspace ) {
         super( service, layer, parent );
-        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        datastore = mgr.get( layer.getFeatureStoreId() );
+        datastore = workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, layer.getFeatureStoreId() );
     }
 
     /**
