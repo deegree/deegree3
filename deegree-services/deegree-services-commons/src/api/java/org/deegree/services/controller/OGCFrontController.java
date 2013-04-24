@@ -89,7 +89,6 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axiom.soap.impl.llom.soap11.SOAP11Factory;
 import org.apache.axiom.soap.impl.llom.soap12.SOAP12Factory;
-import org.apache.batik.util.CleanerThread;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -110,7 +109,6 @@ import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
@@ -1408,12 +1406,15 @@ public class OGCFrontController extends HttpServlet {
 
         // Batik
         try {
-            Field field = CleanerThread.class.getDeclaredField( "thread" );
-            field.setAccessible( true );
-            Object obj = field.get( null );
-            if ( obj != null ) {
-                // interrupt is ignored by the thread
-                ( (CleanerThread) obj ).stop();
+            Class cls = Class.forName( "org.apache.batik.util.CleanerThread" );
+            if ( cls != null ) {
+                Field field = cls.getDeclaredField( "thread" );
+                field.setAccessible( true );
+                Object obj = field.get( null );
+                if ( obj != null ) {
+                    // interrupt is ignored by the thread
+                    ( (Thread) obj ).stop();
+                }
             }
         } catch ( Exception ex ) {
             LOG.warn( "Problem when trying to fix batik class loader leak." );
