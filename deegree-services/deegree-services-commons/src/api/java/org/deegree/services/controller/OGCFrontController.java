@@ -55,6 +55,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -88,6 +89,7 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axiom.soap.impl.llom.soap11.SOAP11Factory;
 import org.apache.axiom.soap.impl.llom.soap12.SOAP12Factory;
+import org.apache.batik.util.CleanerThread;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -490,7 +492,7 @@ public class OGCFrontController extends HttpServlet {
                     String dummySystemId = "HTTP Post request from " + request.getRemoteAddr() + ":"
                                            + request.getRemotePort();
                     XMLStreamReader xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId,
-                                                                                                     requestInputStream );
+                                                                                                              requestInputStream );
                     // skip to start tag of root element
                     XMLStreamUtils.nextElement( xmlStream );
                     if ( isSOAPRequest( xmlStream ) ) {
@@ -1086,7 +1088,6 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( "Initialization failed!" );
             LOG.error( "An unexpected error was caught, stack trace:", e );
         } finally {
-            JAXBUtils.fixThreadLocalLeaks();
             CONTEXT.remove();
         }
     }
@@ -1388,6 +1389,7 @@ public class OGCFrontController extends HttpServlet {
         LogFactory.releaseAll();
         LogManager.shutdown();
 
+        // image io
         Iterator<Class<?>> i = IIORegistry.getDefaultInstance().getCategories();
         while ( i.hasNext() ) {
             Class<?> c = i.next();
@@ -1404,6 +1406,18 @@ public class OGCFrontController extends HttpServlet {
 
         Introspector.flushCaches();
 
+        // Batik
+        try {
+            Field field = CleanerThread.class.getDeclaredField( "thread" );
+            field.setAccessible( true );
+            Object obj = field.get( null );
+            if ( obj != null ) {
+                // interrupt is ignored by the thread
+                ( (CleanerThread) obj ).stop();
+            }
+        } catch ( Exception ex ) {
+            LOG.warn( "Problem when trying to fix batik class loader leak." );
+        }
     }
 
     /**
