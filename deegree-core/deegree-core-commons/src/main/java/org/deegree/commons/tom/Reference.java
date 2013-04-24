@@ -51,7 +51,7 @@ public class Reference<T extends Object> implements Object {
 
     private final ReferenceResolver resolver;
 
-    private final String uri;
+    private String uri;
 
     private final String baseURL;
 
@@ -85,6 +85,16 @@ public class Reference<T extends Object> implements Object {
      */
     public String getURI() {
         return uri;
+    }
+
+    /**
+     * Sets the URI of the object.
+     * 
+     * @param uri
+     *            URI of the object, must not be <code>null</code>
+     */
+    public void setURI( String uri ) {
+        this.uri = uri;
     }
 
     /**
