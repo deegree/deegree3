@@ -1350,10 +1350,10 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
+        destroyWorkspace();
         if ( mainConfig.isPreventClassloaderLeaks() == null || mainConfig.isPreventClassloaderLeaks() ) {
             plugClassLoaderLeaks();
         }
-        destroyWorkspace();
     }
 
     /**
@@ -1392,7 +1392,7 @@ public class OGCFrontController extends HttpServlet {
 
         // Batik
         try {
-            Class cls = Class.forName( "org.apache.batik.util.CleanerThread" );
+            Class<?> cls = Class.forName( "org.apache.batik.util.CleanerThread" );
             if ( cls != null ) {
                 Field field = cls.getDeclaredField( "thread" );
                 field.setAccessible( true );
