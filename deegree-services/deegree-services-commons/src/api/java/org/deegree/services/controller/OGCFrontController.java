@@ -55,7 +55,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -65,15 +64,12 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.imageio.spi.IIORegistry;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -1408,28 +1404,6 @@ public class OGCFrontController extends HttpServlet {
             }
         } catch ( Exception ex ) {
             LOG.warn( "Problem when trying to fix batik class loader leak." );
-        }
-
-        // Oracle
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try {
-            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            final Hashtable<String, String> keys = new Hashtable<String, String>();
-            keys.put( "type", "diagnosability" );
-            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
-            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
-        } catch ( Exception ex ) {
-            // perhaps no oracle, or other classloader
-        }
-        cl = workspace.getModuleClassLoader();
-        try {
-            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            final Hashtable<String, String> keys = new Hashtable<String, String>();
-            keys.put( "type", "diagnosability" );
-            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
-            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
-        } catch ( Exception ex ) {
-            // perhaps no oracle, or other classloader
         }
     }
 

@@ -37,6 +37,7 @@ package org.deegree.commons.jdbc.param;
 
 import static java.sql.DriverManager.registerDriver;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -44,9 +45,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ServiceLoader;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -162,6 +167,28 @@ public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
             }
         } catch ( Exception ex ) {
             // well...
+        }
+
+        // Oracle managed beans: Enterprise to the rescue
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
+        }
+        cl = workspace.getModuleClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
         }
     }
 
