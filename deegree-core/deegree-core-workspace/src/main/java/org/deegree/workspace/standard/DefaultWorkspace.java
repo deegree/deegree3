@@ -159,6 +159,11 @@ public class DefaultWorkspace implements Workspace {
                 LOG.trace( "Stack trace:", e );
             }
         }
+
+        for ( ResourceManager<? extends Resource> mgr : resourceManagers.values() ) {
+            mgr.shutdown();
+        }
+
         moduleClassLoader = null;
         resourceMetadata = null;
         resources = null;
