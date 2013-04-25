@@ -55,6 +55,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -62,17 +63,17 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.imageio.spi.IIORegistry;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -1353,10 +1354,10 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        destroyWorkspace();
         if ( mainConfig.isPreventClassloaderLeaks() == null || mainConfig.isPreventClassloaderLeaks() ) {
             plugClassLoaderLeaks();
         }
+        destroyWorkspace();
     }
 
     /**
@@ -1371,18 +1372,6 @@ public class OGCFrontController extends HttpServlet {
             // just eat it
         }
         Executor.getInstance().shutdown();
-
-        // deregister all JDBC drivers loaded by webapp classloader
-        Enumeration<Driver> e = DriverManager.getDrivers();
-        while ( e.hasMoreElements() ) {
-            Driver driver = e.nextElement();
-            try {
-                if ( driver.getClass().getClassLoader() == getClass().getClassLoader() )
-                    DriverManager.deregisterDriver( driver );
-            } catch ( SQLException e1 ) {
-                LOG.error( "Cannot unload driver: " + driver );
-            }
-        }
 
         LogFactory.releaseAll();
         LogManager.shutdown();
@@ -1402,6 +1391,7 @@ public class OGCFrontController extends HttpServlet {
             }
         }
 
+        // JSF
         Introspector.flushCaches();
 
         // Batik
@@ -1418,6 +1408,28 @@ public class OGCFrontController extends HttpServlet {
             }
         } catch ( Exception ex ) {
             LOG.warn( "Problem when trying to fix batik class loader leak." );
+        }
+
+        // Oracle
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
+        }
+        cl = workspace.getModuleClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
         }
     }
 
