@@ -753,31 +753,14 @@ public abstract class AbstractWhereBuilder {
 
         SQLExpression sql = null;
         List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
-        boolean isConstant = true;
-        for ( Expression param : function.getParameters() ) {
-            SQLExpression sqlParam = toProtoSQL( param );
-            if ( !( sqlParam instanceof SQLArgument ) ) {
-                isConstant = false;
-            }
-            params.add( sqlParam );
-        }
+        boolean isConstant = appendParamsFromFunction( function, params );
         SQLFunctionProvider sqlFunction = SQLFunctionManager.getFunctionProvider( function.getName() );
         if ( sqlFunction != null ) {
             // let the DB evaluate the function
             sql = sqlFunction.toProtoSQL( params, dialect );
         } else if ( isConstant ) {
             // evaluate function in memory
-            List<TypedObjectNode[]> args = new ArrayList<TypedObjectNode[]>();
-            for ( SQLExpression sqlExpr : params ) {
-                SQLArgument sqlArg = (SQLArgument) sqlExpr;
-                args.add( new TypedObjectNode[] { sqlArg.getValue() } );
-            }
-            TypedObjectNode[] outputs = function.evaluate( args );
-            TypedObjectNode value = null;
-            if ( outputs.length > 0 ) {
-                // TODO should we support multiple values here?
-                value = outputs[0];
-            }
+            TypedObjectNode value = evaluateFunction( function, params );
             if ( value instanceof Geometry ) {
                 return new SQLArgument( (Geometry) value, null );
             } else if ( value instanceof PrimitiveValue ) {
@@ -794,6 +777,35 @@ public abstract class AbstractWhereBuilder {
         }
 
         return sql;
+    }
+
+    protected TypedObjectNode evaluateFunction( Function function, List<SQLExpression> params )
+                            throws FilterEvaluationException {
+        List<TypedObjectNode[]> args = new ArrayList<TypedObjectNode[]>();
+        for ( SQLExpression sqlExpr : params ) {
+            SQLArgument sqlArg = (SQLArgument) sqlExpr;
+            args.add( new TypedObjectNode[] { sqlArg.getValue() } );
+        }
+        TypedObjectNode[] outputs = function.evaluate( args );
+        TypedObjectNode value = null;
+        if ( outputs.length > 0 ) {
+            // TODO should we support multiple values here?
+            value = outputs[0];
+        }
+        return value;
+    }
+
+    protected boolean appendParamsFromFunction( Function function, List<SQLExpression> params )
+                            throws UnmappableException, FilterEvaluationException {
+        boolean isConstant = true;
+        for ( Expression param : function.getParameters() ) {
+            SQLExpression sqlParam = toProtoSQL( param );
+            if ( !( sqlParam instanceof SQLArgument ) ) {
+                isConstant = false;
+            }
+            params.add( sqlParam );
+        }
+        return isConstant;
     }
 
     /**

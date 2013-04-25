@@ -38,14 +38,20 @@ package org.deegree.sqldialect.postgis;
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
@@ -131,12 +137,34 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     protected SQLOperation toProtoSQL( PropertyIsLike op )
                             throws UnmappableException, FilterEvaluationException {
 
-        if ( !( op.getPattern() instanceof Literal ) ) {
-            String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
-            throw new UnsupportedOperationException( msg );
+        Expression pattern = op.getPattern();
+        if ( pattern instanceof Literal ) {
+            String literal = ( (Literal<?>) pattern ).getValue().toString();
+            return toProtoSql( op, literal );
+        } else if ( pattern instanceof Function ) {
+            String valueAsString = getStringValueFromFunction( pattern );
+            return toProtoSql( op, valueAsString );
         }
+        String msg = "Mapping of PropertyIsLike with non-literal or non-function comparisons to SQL is not implemented yet.";
+        throw new UnsupportedOperationException( msg );
+    }
 
-        String literal = ( (Literal) op.getPattern() ).getValue().toString();
+    protected String getStringValueFromFunction( Expression pattern )
+                            throws UnmappableException, FilterEvaluationException {
+        Function function = (Function) pattern;
+        List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
+        appendParamsFromFunction( function, params );
+        TypedObjectNode value = evaluateFunction( function, params );
+        if ( !( value instanceof PrimitiveValue ) ) {
+            throw new UnsupportedOperationException(
+                                                     "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
+        }
+        String valueAsString = ( (PrimitiveValue) value ).getAsText();
+        return valueAsString;
+    }
+
+    private SQLOperation toProtoSql( PropertyIsLike op, String literal )
+                            throws UnmappableException, FilterEvaluationException {
         String escape = "" + op.getEscapeChar();
         String wildCard = "" + op.getWildCard();
         String singleChar = "" + op.getSingleChar();
@@ -150,7 +178,10 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             // TODO escaping of pipe symbols
             sqlEncoded = "%|" + sqlEncoded + "|%";
         }
+        return getOperationFromBuilder( op, propName, sqlEncoded );
+    }
 
+    private SQLOperation getOperationFromBuilder( PropertyIsLike op, SQLExpression propName, String sqlEncoded ) {
         SQLOperationBuilder builder = new SQLOperationBuilder();
         if ( !op.isMatchCase() ) {
             builder.add( "LOWER(" );
@@ -172,7 +203,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
-        SQLExpression propNameExpr = toProtoSQLSpatial(  op.getPropName() );
+        SQLExpression propNameExpr = toProtoSQLSpatial( op.getPropName() );
         if ( !propNameExpr.isSpatial() ) {
             String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
                          + "' does not denote a spatial column.";
@@ -348,7 +379,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         return builder.toOperation();
     }
-    
+
     @Override
     protected void addExpression( SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase ) {
         if ( matchCase == null || matchCase ) {
