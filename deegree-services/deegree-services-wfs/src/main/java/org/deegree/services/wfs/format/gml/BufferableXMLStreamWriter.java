@@ -184,7 +184,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             String nsPrefix = inStream.getAttributePrefix( i );
             String value = inStream.getAttributeValue( i );
             String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null || nsURI.equals( NULL_NS_URI ) ) {
+                    if ( nsURI == null || nsURI.equals( "" ) ) {
                 sink.writeAttribute( attrLocalName, value );
             } else {
                 if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
