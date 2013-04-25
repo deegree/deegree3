@@ -134,8 +134,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
 
-    private DeegreeWorkspace workspace;
-
     static int currentid = 0;
 
     private ResourceMetadata<FeatureStore> metadata;
@@ -192,10 +190,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
         throw new FeatureStoreException( "Transactions are not implemented for the simple SQL datastore." );
-    }
-
-    public void destroy() {
-        // nothing to do
     }
 
     @Override
@@ -271,18 +265,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      */
     public GenericFeatureType getFeatureType() {
         return featureType;
-    }
-
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
-        featureType = DbFeatureUtils.determineFeatureType( ftName, connProvider, lods.values().iterator().next() );
-        if ( featureType == null ) {
-            available = false;
-        } else {
-            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
-            available = true;
-        }
     }
 
     @Override
@@ -436,6 +418,23 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     @Override
     public void init() {
-        // nothing to do
+        featureType = DbFeatureUtils.determineFeatureType( ftName, connProvider, lods.values().iterator().next() );
+        if ( featureType == null ) {
+            available = false;
+        } else {
+            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
+            available = true;
+        }
+    }
+
+    @Override
+    public void init( DeegreeWorkspace workspace )
+                            throws ResourceInitException {
+        // obsolete
+    }
+
+    @Override
+    public void destroy() {
+        // obsolete
     }
 }
