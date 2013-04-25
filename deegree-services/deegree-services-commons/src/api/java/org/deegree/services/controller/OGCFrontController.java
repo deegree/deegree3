@@ -1357,8 +1357,8 @@ public class OGCFrontController extends HttpServlet {
     }
 
     /**
-     * Apply workarounds for classloader leaks, see <a
-     * href="https://wiki.deegree.org/deegreeWiki/ClassLoaderLeaks">ClassLoaderLeaks in deegree wiki</a>.
+     * Apply workarounds for classloader leaks, see eg. <a
+     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog post</a>.
      */
     private void plugClassLoaderLeaks() {
         // if the feature store manager does this, it breaks
