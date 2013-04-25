@@ -45,10 +45,20 @@ import static java.sql.DriverManager.deregisterDriver;
 import static java.sql.DriverManager.getDrivers;
 import static java.sql.DriverManager.registerDriver;
 
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.ServiceLoader;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.deegree.commons.jdbc.DriverWrapper;
 import org.deegree.workspace.Workspace;
@@ -69,6 +79,8 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
 
     private static final Logger LOG = LoggerFactory.getLogger( ConnectionProviderManager.class );
 
+    private Workspace workspace;
+
     public ConnectionProviderManager() {
         super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class,
                                                                        "database connections", "jdbc" ) );
@@ -76,6 +88,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
 
     @Override
     public void find( Workspace workspace ) {
+        this.workspace = workspace;
         try {
             for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
                 registerDriver( new DriverWrapper( d ) );
@@ -89,16 +102,61 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
 
     @Override
     public void shutdown() {
+        // unload drivers
         Enumeration<Driver> enumer = getDrivers();
         while ( enumer.hasMoreElements() ) {
             Driver d = enumer.nextElement();
-            if ( d instanceof DriverWrapper ) {
-                try {
-                    deregisterDriver( d );
-                } catch ( SQLException e ) {
-                    LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
+            try {
+                deregisterDriver( d );
+            } catch ( SQLException e ) {
+                LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
+            }
+        }
+
+        // manually remove drivers via reflection if loaded by module class loader (else the driver manager won't let us
+        // remove them)
+        // Yes, this is DangerousStuff.
+        try {
+            List<Object> toRemove = new ArrayList<Object>();
+            Field f = DriverManager.class.getDeclaredField( "registeredDrivers" );
+            f.setAccessible( true );
+            List<?> list = (List<?>) f.get( null );
+            ListIterator<?> iter = list.listIterator();
+            while ( iter.hasNext() ) {
+                Object o = iter.next();
+                if ( o.getClass().getClassLoader() == workspace.getModuleClassLoader()
+                     || o.getClass().getClassLoader() == null ) {
+                    // iter.remove not supported by used list
+                    toRemove.add( o );
                 }
             }
+            for ( Object o : toRemove ) {
+                list.remove( o );
+            }
+        } catch ( Exception ex ) {
+            // well...
+        }
+
+        // Oracle managed beans: Enterprise to the rescue (but expect classloader leaks)
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
+        }
+        cl = workspace.getModuleClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
         }
     }
 

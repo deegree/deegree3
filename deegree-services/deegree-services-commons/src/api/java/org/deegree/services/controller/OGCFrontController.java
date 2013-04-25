@@ -62,9 +62,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -1353,15 +1350,15 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        destroyWorkspace();
         if ( mainConfig.isPreventClassloaderLeaks() == null || mainConfig.isPreventClassloaderLeaks() ) {
             plugClassLoaderLeaks();
         }
+        destroyWorkspace();
     }
 
     /**
-     * Apply workarounds for classloader leaks, see <a
-     * href="https://wiki.deegree.org/deegreeWiki/ClassLoaderLeaks">ClassLoaderLeaks in deegree wiki</a>.
+     * Apply workarounds for classloader leaks, see eg. <a
+     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog post</a>.
      */
     private void plugClassLoaderLeaks() {
         // if the feature store manager does this, it breaks
@@ -1371,18 +1368,6 @@ public class OGCFrontController extends HttpServlet {
             // just eat it
         }
         Executor.getInstance().shutdown();
-
-        // deregister all JDBC drivers loaded by webapp classloader
-        Enumeration<Driver> e = DriverManager.getDrivers();
-        while ( e.hasMoreElements() ) {
-            Driver driver = e.nextElement();
-            try {
-                if ( driver.getClass().getClassLoader() == getClass().getClassLoader() )
-                    DriverManager.deregisterDriver( driver );
-            } catch ( SQLException e1 ) {
-                LOG.error( "Cannot unload driver: " + driver );
-            }
-        }
 
         LogFactory.releaseAll();
         LogManager.shutdown();
@@ -1402,6 +1387,7 @@ public class OGCFrontController extends HttpServlet {
             }
         }
 
+        // JSF
         Introspector.flushCaches();
 
         // Batik
