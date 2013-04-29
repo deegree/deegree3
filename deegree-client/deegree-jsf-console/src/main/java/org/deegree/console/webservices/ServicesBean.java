@@ -73,7 +73,7 @@ public class ServicesBean extends AbstractResourceManagerBean<WebServicesConfigu
         DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
         File wsRootDir = ws.getLocation();
         File mainLocation = new File( wsRootDir, "services/main.xml" );
-        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/webservices" );
+        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/services" );
     }
 
     public Config getMainConfig() {

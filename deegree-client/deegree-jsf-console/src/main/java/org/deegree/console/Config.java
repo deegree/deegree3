@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static java.net.URLEncoder.encode;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.copyURLToFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -59,6 +61,7 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.services.OWS;
 import org.deegree.services.controller.WebServicesConfiguration;
@@ -232,8 +235,13 @@ public class Config implements Comparable<Config> {
             copyURLToFile( template, location );
         }
         this.content = readFileToString( location, "UTF-8" );
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "/console/generic/xmleditor?faces-redirect=true";
+        StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
+        sb.append( "?id=").append( id );
+        sb.append( "&fileName=" ).append( location);
+        sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
+        sb.append( "&resourceManagerClass=" ).append( getResourceManagerClass() );
+        sb.append( "&nextView=" ).append( resourceOutcome );
+        return sb.toString();
     }
 
     public void delete() {
@@ -356,6 +364,10 @@ public class Config implements Comparable<Config> {
         return manager;
     }
 
+    public String getResourceManagerClass() {
+        return resourceManager.getClass().getCanonicalName();
+    }
+
     public void setManager( ConfigManager manager ) {
         this.manager = manager;
     }
@@ -402,5 +414,14 @@ public class Config implements Comparable<Config> {
 
     public void setState( ResourceState<?> state ) {
         this.state = state;
+    }
+
+    public String getMetadataSchemaUrl() {
+        return METADATA_SCHEMA_URL.toString();
+    }
+
+    public String getMetadataLocation() {
+        File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
+        return metadataLocation.getAbsolutePath();
     }
 }
