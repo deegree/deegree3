@@ -117,7 +117,7 @@ public class RemoteWMSIntegrationTest {
                 int idx = 0;
                 for ( byte[] response : this.response ) {
                     IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
-                                                                   + "/remoteows_expected" + ++idx + "_" + numFailed
+                                                                   + "/remoteows_expected" + numFailed + "_" + ++idx
                                                                    + ".png" ) );
                 }
                 IOUtils.write( bsin, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
