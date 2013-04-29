@@ -104,7 +104,7 @@
           <replacements>
             <replacement>
               <token>8080</token>
-              <value>${portnumber}</value>
+              <value>${previousportnumber}</value>
             </replacement>
           </replacements>
         </configuration>

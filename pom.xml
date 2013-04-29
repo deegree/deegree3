@@ -103,7 +103,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.18</version>
+          <version>1.19-SNAPSHOT</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
