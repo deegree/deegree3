@@ -661,9 +661,12 @@ public class Filter110XMLDecoder {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
             }
         }
+
         TypedObjectNode value = null;
-        if ( attrs == null || children.size() == 1 ) {
+        if ( attrs.isEmpty() && children.size() == 1 ) {
             value = children.get( 0 );
+        } else if ( attrs.isEmpty() && children.isEmpty() ) {
+            value = new PrimitiveValue( "" );
         } else {
             value = new GenericXMLElement( null, null, attrs, children );
         }
