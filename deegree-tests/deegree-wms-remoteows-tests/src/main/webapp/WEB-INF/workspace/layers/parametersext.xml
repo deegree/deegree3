@@ -1,5 +1,5 @@
 <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/remotewms remotewms.xsd" configVersion="3.1.0">
-  <RemoteWMSId>parametersext</RemoteWMSId>
+  <RemoteWMSId>deegree3</RemoteWMSId>
   <RequestOptions>
     <ImageFormat transparent="false">image/jpeg</ImageFormat>
     <Parameter use="allowOverride" scope="GetMap" name="bgcolor">0xff0000</Parameter>
