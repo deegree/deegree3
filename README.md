@@ -1,6 +1,3 @@
-[deegree3](http://www.deegree.org)
-=================================
-
 deegree is open source software for spatial data infrastructures and the geospatial web. deegree includes components for geospatial data management, including data access, visualization, discovery and security. Open standards are at the heart of deegree. The software is built on the standards of the Open Geospatial Consortium (OGC) and the ISO Technical Committee 211.
 
 # User documentation
