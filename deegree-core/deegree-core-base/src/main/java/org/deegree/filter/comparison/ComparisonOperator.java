@@ -115,7 +115,6 @@ public abstract class ComparisonOperator implements Operator {
      */
     protected Pair<PrimitiveValue, PrimitiveValue> getPrimitiveValues( TypedObjectNode node1, TypedObjectNode node2 )
                             throws FilterEvaluationException {
-
         PrimitiveValue primitive1 = getPrimitiveValue( node1 );
         PrimitiveValue primitive2 = getPrimitiveValue( node2 );
         return new Pair<PrimitiveValue, PrimitiveValue>( primitive1, primitive2 );
@@ -135,7 +134,7 @@ public abstract class ComparisonOperator implements Operator {
             ElementNode elNode = (ElementNode) node;
             List<TypedObjectNode> children = elNode.getChildren();
             if ( children == null || children.isEmpty() ) {
-                return null;
+                return new PrimitiveValue( "null" );
             }
             return getPrimitiveValue( children.get( 0 ) );
         }

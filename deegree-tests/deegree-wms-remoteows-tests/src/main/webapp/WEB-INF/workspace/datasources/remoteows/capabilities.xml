@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<WMT_MS_Capabilities version="1.1.1" updateSequence="0">
+  <Service>
+    <Name>OGC:WMS</Name>
+    <Title>deegree 3 Utah Demo</Title>
+    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>Andreas Schmitz</ContactPerson>
+        <ContactOrganization>lat-lon GmbH</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>Software developer</ContactPosition>
+      <ContactAddress>
+        <AddressType>postal</AddressType>
+        <Address>Aennchenstr. 19</Address>
+        <City>Bonn</City>
+        <StateOrProvince>NRW</StateOrProvince>
+        <PostCode>53177</PostCode>
+        <Country>Germany</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone>0228/18496-0</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>0228/18496-29</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+    </ContactInformation>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>application/vnd.ogc.wms_xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>image/png; subtype=8bit</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/tiff</Format>
+        <Format>image/x-ms-bmp</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>text/xml</Format>
+        <Format>text/plain</Format>
+        <Format>text/html</Format>
+        <Format>application/gml+xml; version=2.1</Format>
+        <Format>application/gml+xml; version=3.0</Format>
+        <Format>application/gml+xml; version=3.1</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+      <GetLegendGraphic>
+        <Format>image/png</Format>
+        <Format>image/png; subtype=8bit</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/tiff</Format>
+        <Format>image/x-ms-bmp</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetLegendGraphic>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+      <Format>application/vnd.ogc.se_inimage</Format>
+      <Format>application/vnd.ogc.se_blank</Format>
+    </Exception>
+    <Layer>
+      <Title>deegree 3 utahDemo</Title>
+      <SRS>EPSG:26912</SRS>
+      <SRS>EPSG:4326</SRS>
+      <SRS>EPSG:4258</SRS>
+      <SRS>CRS:84</SRS>
+      <LatLonBoundingBox minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+      <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653555.55"/>
+      <BoundingBox SRS="EPSG:4326" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+      <BoundingBox SRS="EPSG:4258" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+      <BoundingBox SRS="CRS:84" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+      <Layer queryable="1">
+        <Name>administration</Name>
+        <Title>Administration</Title>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:4258</SRS>
+        <SRS>CRS:84</SRS>
+        <LatLonBoundingBox minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+        <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653555.55"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+        <BoundingBox SRS="EPSG:4258" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+        <BoundingBox SRS="CRS:84" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+        <Layer queryable="1">
+          <Name>zipcodes</Name>
+          <Title>Zip codes of Utah</Title>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:4258</SRS>
+          <SRS>CRS:84</SRS>
+          <LatLonBoundingBox minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+          <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653555.55"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+          <BoundingBox SRS="EPSG:4258" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27907736916224" miny="36.95988741995909" maxx="-108.89784983459953" maxy="42.03402770921499"/>
+          <Style>
+            <Name>default</Name>
+            <Title>default</Title>
+            <LegendURL width="78" height="5967">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=zipcodes&amp;style=default&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+      <Layer>
+        <Title>Transportation</Title>
+        <SRS>EPSG:26912</SRS>
+        <SRS>EPSG:4326</SRS>
+        <SRS>EPSG:4258</SRS>
+        <SRS>CRS:84</SRS>
+        <LatLonBoundingBox minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653316.05"/>
+        <BoundingBox SRS="EPSG:4326" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <BoundingBox SRS="EPSG:4258" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <BoundingBox SRS="CRS:84" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+        <Layer queryable="1">
+          <Name>railroads</Name>
+          <Title>Railroads of Utah</Title>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:4258</SRS>
+          <SRS>CRS:84</SRS>
+          <LatLonBoundingBox minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653316.05"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="EPSG:4258" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <Style>
+            <Name>Railroads</Name>
+            <Title>Railroads</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=railroads&amp;style=Railroads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>default</Name>
+            <Title>default</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=railroads&amp;style=Railroads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+        <Layer queryable="1">
+          <Name>roads</Name>
+          <Title>Roads of Utah</Title>
+          <SRS>EPSG:26912</SRS>
+          <SRS>EPSG:4326</SRS>
+          <SRS>EPSG:4258</SRS>
+          <SRS>CRS:84</SRS>
+          <LatLonBoundingBox minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="EPSG:26912" minx="228364.30312499998" miny="4094773.25" maxx="674058.903125" maxy="4653316.05"/>
+          <BoundingBox SRS="EPSG:4326" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="EPSG:4258" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <BoundingBox SRS="CRS:84" minx="-114.27896674035267" miny="36.95988741995909" maxx="-108.89792084781777" maxy="42.03187062557268"/>
+          <Style>
+            <Name>Roads</Name>
+            <Title>Roads</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=roads&amp;style=Roads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+          <Style>
+            <Name>default</Name>
+            <Title>default</Title>
+            <LegendURL width="32" height="108">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/deegree-wms-remoteows-tests/services/internal?request=GetLegendGraphic&amp;version=1.1.1&amp;service=WMS&amp;layer=roads&amp;style=Roads&amp;format=image/png"/>
+            </LegendURL>
+          </Style>
+        </Layer>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMT_MS_Capabilities>
