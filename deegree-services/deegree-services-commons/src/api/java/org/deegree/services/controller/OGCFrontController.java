@@ -55,15 +55,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -108,7 +106,6 @@ import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
@@ -490,7 +487,7 @@ public class OGCFrontController extends HttpServlet {
                     String dummySystemId = "HTTP Post request from " + request.getRemoteAddr() + ":"
                                            + request.getRemotePort();
                     XMLStreamReader xmlStream = XMLInputFactoryUtils.newSafeInstance().createXMLStreamReader( dummySystemId,
-                                                                                                     requestInputStream );
+                                                                                                              requestInputStream );
                     // skip to start tag of root element
                     XMLStreamUtils.nextElement( xmlStream );
                     if ( isSOAPRequest( xmlStream ) ) {
@@ -1086,7 +1083,6 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( "Initialization failed!" );
             LOG.error( "An unexpected error was caught, stack trace:", e );
         } finally {
-            JAXBUtils.fixThreadLocalLeaks();
             CONTEXT.remove();
         }
     }
@@ -1354,15 +1350,15 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        destroyWorkspace();
         if ( mainConfig.isPreventClassloaderLeaks() == null || mainConfig.isPreventClassloaderLeaks() ) {
             plugClassLoaderLeaks();
         }
+        destroyWorkspace();
     }
 
     /**
-     * Apply workarounds for classloader leaks, see <a
-     * href="https://wiki.deegree.org/deegreeWiki/ClassLoaderLeaks">ClassLoaderLeaks in deegree wiki</a>.
+     * Apply workarounds for classloader leaks, see eg. <a
+     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog post</a>.
      */
     private void plugClassLoaderLeaks() {
         // if the feature store manager does this, it breaks
@@ -1373,21 +1369,10 @@ public class OGCFrontController extends HttpServlet {
         }
         Executor.getInstance().shutdown();
 
-        // deregister all JDBC drivers loaded by webapp classloader
-        Enumeration<Driver> e = DriverManager.getDrivers();
-        while ( e.hasMoreElements() ) {
-            Driver driver = e.nextElement();
-            try {
-                if ( driver.getClass().getClassLoader() == getClass().getClassLoader() )
-                    DriverManager.deregisterDriver( driver );
-            } catch ( SQLException e1 ) {
-                LOG.error( "Cannot unload driver: " + driver );
-            }
-        }
-
         LogFactory.releaseAll();
         LogManager.shutdown();
 
+        // image io
         Iterator<Class<?>> i = IIORegistry.getDefaultInstance().getCategories();
         while ( i.hasNext() ) {
             Class<?> c = i.next();
@@ -1402,8 +1387,24 @@ public class OGCFrontController extends HttpServlet {
             }
         }
 
+        // JSF
         Introspector.flushCaches();
 
+        // Batik
+        try {
+            Class cls = Class.forName( "org.apache.batik.util.CleanerThread" );
+            if ( cls != null ) {
+                Field field = cls.getDeclaredField( "thread" );
+                field.setAccessible( true );
+                Object obj = field.get( null );
+                if ( obj != null ) {
+                    // interrupt is ignored by the thread
+                    ( (Thread) obj ).stop();
+                }
+            }
+        } catch ( Exception ex ) {
+            LOG.warn( "Problem when trying to fix batik class loader leak." );
+        }
     }
 
     /**
