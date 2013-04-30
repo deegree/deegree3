@@ -1,9 +1,12 @@
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
+ This file is part of deegree
  Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -19,23 +22,12 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.console.util;
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
+package org.deegree.console.modules;
 
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -49,33 +41,24 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.deegree.commons.modules.ModuleInfo;
-import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.console.workspace.WorkspaceBean;
-import org.slf4j.Logger;
 
 /**
- * Encapsulates informations about the status of the deegree web services.
+ * Backing bean for modules view.
  * 
- * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
+ * @since 3.3
  */
 @ManagedBean
 @RequestScoped
-public class ApplicationBean implements Serializable {
+public class ModulesBean implements Serializable {
 
     private static final long serialVersionUID = 147824864885285227L;
-
-    static final Logger LOG = getLogger( ApplicationBean.class );
-
-    private String logo = DeegreeAALogoUtils.getAsString();
 
     private String baseVersion;
 
     private List<String> internalModules = new ArrayList<String>();
 
-    public ApplicationBean() {
+    public ModulesBean() {
         for ( ModuleInfo info : getModulesInfo() ) {
             if ( baseVersion == null ) {
                 baseVersion = info.getVersion();
@@ -86,10 +69,6 @@ public class ApplicationBean implements Serializable {
 
     public String getBaseVersion() {
         return baseVersion;
-    }
-
-    public String getLogo() {
-        return logo;
     }
 
     public List<String> getInternalModules() {
