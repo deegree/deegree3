@@ -340,7 +340,35 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( IllegalArgumentException e ) {
             throw new FeatureStoreException( e.getMessage() );
         }
+        fixReferences( fc );
         return features;
+    }
+
+    private void fixReferences( final FeatureCollection fc ) {
+        GMLObjectVisitor visitor = new GMLObjectVisitor() {
+            @Override
+            public boolean visitGeometry( Geometry geom ) {
+                return true;
+            }
+
+            @Override
+            public boolean visitFeature( Feature feature ) {
+                return true;
+            }
+
+            @Override
+            public boolean visitReference( Reference<?> ref ) {
+                fixReference( ref );
+                return true;
+            }
+        };
+        new GMLObjectWalker( visitor ).traverse( fc );
+    }
+
+    private void fixReference( Reference<?> ref ) {
+        if ( ref.isResolved() ) {
+            ref.setURI( "#" + ref.getId() );
+        }
     }
 
     private String getFeatureId( Feature feature, IDGenMode mode ) {
@@ -417,7 +445,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
             }
         }
-        feature.setEnvelope( feature.calcEnvelope() );        
+        feature.setEnvelope( feature.calcEnvelope() );
         return feature;
     }
 

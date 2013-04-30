@@ -44,6 +44,7 @@ package org.deegree.rendering.r2d.context;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.KEY_INTERPOLATION;
 import static java.awt.RenderingHints.KEY_RENDERING;
+import static java.awt.RenderingHints.KEY_STROKE_CONTROL;
 import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
@@ -53,6 +54,9 @@ import static java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
 import static java.awt.RenderingHints.VALUE_RENDER_DEFAULT;
 import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
 import static java.awt.RenderingHints.VALUE_RENDER_SPEED;
+import static java.awt.RenderingHints.VALUE_STROKE_DEFAULT;
+import static java.awt.RenderingHints.VALUE_STROKE_NORMALIZE;
+import static java.awt.RenderingHints.VALUE_STROKE_PURE;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 
@@ -88,12 +92,15 @@ public class Java2DHelper {
         switch ( q ) {
         case HIGH:
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
+            g.setRenderingHint( KEY_STROKE_CONTROL, VALUE_STROKE_PURE );
             break;
         case LOW:
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_SPEED );
+            g.setRenderingHint( KEY_STROKE_CONTROL, VALUE_STROKE_NORMALIZE );
             break;
         case NORMAL:
             g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
+            g.setRenderingHint( KEY_STROKE_CONTROL, VALUE_STROKE_DEFAULT );
             break;
         }
     }

@@ -752,6 +752,10 @@ public class Filter110XMLDecoder {
         ValueReference propName = parsePropertyName( xmlStream, false );
 
         nextElement( xmlStream );
+        if ( !"Literal".equals( xmlStream.getLocalName() ) ) {
+            String message = "FilterEncoding 1.1.0 does not allow other than Literal elements as second expression in PropertyIsLike filters!";
+            throw new XMLStreamException( message );
+        }
         Literal<?> literal = parseLiteral( xmlStream );
         nextElement( xmlStream );
         return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase, null );
