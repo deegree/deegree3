@@ -1,36 +1,36 @@
-
 <ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
-    <ui:define name="center">
-
-        <h:panelGroup rendered="#{!logBean.loggedIn}">
-            <ui:include src="accessForbidden.xhtml" />
-        </h:panelGroup>
-        <h:panelGroup rendered="#{logBean.loggedIn}">
-            <fieldset class="fieldset"><legend><h:outputText styleClass="titel" value="#{labels.render_title}" /></legend> <h:form>
-                <table style="font-size: small" border="0">
-                    <tr>
-                        <td />
-                    </tr>
-                    <tr>
-                        <td />
-                    </tr>
-                    <ui:repeat value="#{configManager.styleManager.configs}" var="config">
-                        <tr>
-                            <td><h:outputFormat styleClass="StatusDeactivated" value="#{labels.render_id}">
-                                <f:param value="#{config.id}" />
-                            </h:outputFormat></td>
-                            <td><h:commandButton styleClass="buttonEdit" value="#{labels.render_edit}" action="#{config.edit}" /></td>
-                            <td><h:commandButton styleClass="buttonDelete"
-                                value="#{labels.featureStores_delete}" action="#{config.delete}" onclick="return confirmDelete();"/></td>
-                        </tr>
-                    </ui:repeat>
-                </table>
-                <br />
-                <h:outputText value="#{labels.render_note}" />
-            </h:form></fieldset>
-        </h:panelGroup>
-    </ui:define>
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <h:panelGroup">
+      <fieldset class="fieldset">
+        <legend>
+          <h:outputText styleClass="titel" value="#{labels.render_title}" />
+        </legend>
+        <h:form>
+          <table style="font-size: small" border="0">
+            <tr>
+              <td />
+            </tr>
+            <tr>
+              <td />
+            </tr>
+            <ui:repeat value="#{configManager.styleManager.configs}" var="config">
+              <tr>
+                <td><h:outputFormat styleClass="StatusDeactivated" value="#{labels.render_id}">
+                    <f:param value="#{config.id}" />
+                  </h:outputFormat></td>
+                <td><h:commandButton styleClass="buttonEdit" value="#{labels.render_edit}" action="#{config.edit}" /></td>
+                <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
+                    action="#{config.delete}" onclick="return confirmDelete();" /></td>
+              </tr>
+            </ui:repeat>
+          </table>
+          <br />
+          <h:outputText value="#{labels.render_note}" />
+        </h:form>
+      </fieldset>
+    </h:panelGroup>
+  </ui:define>
 </ui:composition>

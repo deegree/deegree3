@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -51,6 +50,8 @@ import org.deegree.feature.persistence.FeatureStoreManager;
 @ManagedBean
 @ViewScoped
 public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements Serializable {
+
+    private static final long serialVersionUID = -7258840439551611498L;
 
     public FeatureStoreManagerBean() {
         super( FeatureStoreManager.class );

@@ -9,7 +9,7 @@
       function init(){
         var loc = window.location + ""
         if(loc.lastIndexOf("/") != loc.length - 1) loc = loc.substring(0, loc.lastIndexOf("/") + 1)
-        loc = loc + '../../services'
+        loc = loc + '../../../services'
 
         var capas = WMSUtils.getCapabilities(loc)
         var layers = WMSUtils.layerNames(capas, true)
@@ -20,6 +20,7 @@
   <body onload="init()">
     <div id="tags">
     </div>
-    <div id="map" class="largemap"/>
+    <div id="map" class="largemap">    	
+    </div>
   </body>
 </html>
