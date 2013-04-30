@@ -98,7 +98,7 @@ public class RemoteWMSIntegrationTest {
     public void testSimilarity()
                             throws IOException {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
-        base += "/deegree-wms-remoteows-tests/services" + request;
+        base += "/deegree-wms-remoteows-tests/services/wms" + request;
         LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
         byte[] bsin = IOUtils.toByteArray( in );
@@ -117,7 +117,7 @@ public class RemoteWMSIntegrationTest {
                 int idx = 0;
                 for ( byte[] response : this.response ) {
                     IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
-                                                                   + "/remoteows_expected" + ++idx + "_" + numFailed
+                                                                   + "/remoteows_expected" + numFailed + "_" + ++idx
                                                                    + ".png" ) );
                 }
                 IOUtils.write( bsin, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
