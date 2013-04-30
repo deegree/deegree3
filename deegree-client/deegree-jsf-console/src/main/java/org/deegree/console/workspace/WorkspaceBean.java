@@ -1,7 +1,6 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -99,7 +98,7 @@ public class WorkspaceBean implements Serializable {
     private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
 
     // only used when no build (Maven) module version information is available
-    private static final String DEFAULT_VERSION = "3.2-rc2";
+    private static final String DEFAULT_VERSION = "3.2.2";
 
     private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
                                              "deegree-workspace-utah", "deegree-workspace-wps" };

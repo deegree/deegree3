@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -48,8 +48,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -63,12 +61,10 @@ import org.slf4j.LoggerFactory;
 @SessionScoped
 public class LogBean implements Serializable {
 
-    private static final Logger LOG = LoggerFactory.getLogger( LogBean.class );
-
     private static final long serialVersionUID = -4865071415988778817L;
 
     private static final String PASSWORD_FILE = "console.pw";
-    
+
     public static final String CONSOLE = "/console";
 
     public static final String CHANGE_PASSWORD = "/console/security/password";

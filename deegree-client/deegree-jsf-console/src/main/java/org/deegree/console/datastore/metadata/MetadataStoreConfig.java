@@ -139,5 +139,4 @@ public class MetadataStoreConfig implements Serializable {
         }
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
-
 }

@@ -1,8 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf"
-  xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
-
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:head>
   <title>deegree 3 console</title>
   <h:outputStylesheet name="pagelayout.css" />
@@ -48,14 +46,11 @@
         <ui:include src="/console/security/login.xhtml" />
       </h:panelGroup>
     </h:panelGroup>
-
-
     <h:panelGroup id="left">
       <h:form prependId="false">
         <ui:include src="menu.xhtml" />
       </h:form>
     </h:panelGroup>
-
     <h:panelGroup id="main" styleClass="main" layout="block">
       <h:panelGroup rendered="#{logBean.loggedIn}">
         <ui:insert name="center" />
@@ -64,10 +59,9 @@
         </h:panelGroup>
       </h:panelGroup>
       <h:panelGroup rendered="#{!logBean.loggedIn}">
-        <ui:include src="/console/jsf/accessForbidden.xhtml" />
+        <h:outputText value="#{labels.access_forbidden}" xmlns:h="http://java.sun.com/jsf/html" />
       </h:panelGroup>
     </h:panelGroup>
-
   </h:panelGroup>
 </h:body>
 </html>

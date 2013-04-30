@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -35,7 +34,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.util;
 
-import static java.net.URLEncoder.encode;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.deegree.commons.xml.XMLAdapter.DEFAULT_URL;
@@ -46,7 +44,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.net.URL;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -55,6 +53,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.Resource;
 import org.deegree.commons.config.ResourceManager;
@@ -83,6 +82,8 @@ public class XmlEditorBean implements Serializable {
 
     private ResourceManager resourceManager;
 
+    private String schemaAsText;
+
     public String getFileName() {
         return fileName;
     }
@@ -105,6 +106,13 @@ public class XmlEditorBean implements Serializable {
 
     public void setSchemaUrl( String schemaUrl ) {
         this.schemaUrl = schemaUrl;
+        if ( schemaUrl != null ) {
+            try {
+                schemaAsText = IOUtils.toString( new URL( schemaUrl ).openStream(), "UTF-8" );
+            } catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public String getNextView() {
@@ -122,10 +130,12 @@ public class XmlEditorBean implements Serializable {
     public void setResourceManagerClass( String resourceManagerClass )
                             throws ClassNotFoundException {
         this.resourceManagerClass = resourceManagerClass;
-        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-        @SuppressWarnings("unchecked")
-        Class<? extends ResourceManager> cl = (Class<? extends ResourceManager>) ws.getModuleClassLoader().loadClass( resourceManagerClass );
-        this.resourceManager = (ResourceManager) ws.getSubsystemManager( cl );
+        if ( resourceManagerClass != null && !resourceManagerClass.isEmpty() ) {
+            DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
+            @SuppressWarnings("unchecked")
+            Class<? extends ResourceManager> cl = (Class<? extends ResourceManager>) ws.getModuleClassLoader().loadClass( resourceManagerClass );
+            this.resourceManager = (ResourceManager) ws.getSubsystemManager( cl );
+        }
     }
 
     public String getContent()
@@ -135,6 +145,14 @@ public class XmlEditorBean implements Serializable {
 
     public void setContent( String content ) {
         this.content = content;
+    }
+
+    public String getSchemaAsText() {
+        return schemaAsText;
+    }
+
+    public void setSchemaAsText( String schemaAsText ) {
+        this.schemaAsText = schemaAsText;
     }
 
     public String cancel() {
@@ -190,17 +208,5 @@ public class XmlEditorBean implements Serializable {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
         ws.setModified();
-    }
-
-    public static String getInvokeAction( String id, String fileName, String schemaUrl, String resourceManagerClass,
-                                    String nextView )
-                            throws UnsupportedEncodingException {
-        StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?" );
-        sb.append( "?id=" ).append( encode( id, "UTF-8" ) );
-        sb.append( "&fileName=" ).append( encode( fileName, "UTF-8" ) );
-        sb.append( "&schemaUrl=" ).append( encode( schemaUrl, "UTF-8" ) );
-        sb.append( "&resourceManagerClass=" ).append( encode( resourceManagerClass, "UTF-8" ) );
-        sb.append( "&nextView=" ).append( encode( nextView, "UTF-8" ) );
-        return sb.toString();
     }
 }

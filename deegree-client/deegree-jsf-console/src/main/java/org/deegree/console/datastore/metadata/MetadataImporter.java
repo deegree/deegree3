@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
 @ManagedBean
 @RequestScoped
 public class MetadataImporter implements Serializable {
+
     private static Logger LOG = LoggerFactory.getLogger( MetadataImporter.class );
 
     private static final long serialVersionUID = -1896633353209120888L;

@@ -41,7 +41,10 @@
               </legend>
               <h:form id="xmlForm">
                 <h:panelGroup>
-                  <h:link styleClass="schema" value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank" />
+                  <h:link styleClass="schema" value="#{labels.xmlEditor_schema}" outcome="schema" target="_blank">
+                    <f:param name="fileName" value="#{xmlEditorBean.fileName}" />
+                    <f:param name="schemaUrl" value="#{xmlEditorBean.schemaUrl}" />
+                  </h:link>
                   <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
                     action="${xmlEditorBean.save}" />
                   <h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}"

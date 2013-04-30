@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static java.net.URLEncoder.encode;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.copyURLToFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.deegree.commons.xml.XMLAdapter.DEFAULT_URL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -47,12 +47,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URL;
-import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.Resource;
@@ -61,10 +59,7 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.console.workspace.WorkspaceBean;
-import org.deegree.services.OWS;
-import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -80,55 +75,29 @@ public class Config implements Comparable<Config> {
 
     private static final Logger LOG = getLogger( Config.class );
 
-    private static final URL METADATA_EXAMPLE_URL = Config.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
+    protected File location;
 
-    private static final URL METADATA_SCHEMA_URL = Config.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
+    protected String id;
 
-    private File location;
+    private URL schemaURL;
 
-    private String id;
+    private String content;
 
     private String schemaAsText;
 
     private URL template;
 
-    private String content;
-
-    private ConfigManager manager;
-
     private String resourceOutcome;
 
-    private URL schemaURL;
-
-    private ResourceManager resourceManager;
+    protected ResourceManager resourceManager;
 
     private ResourceState<?> state;
-
-    private boolean requiresWSReload;
-
-    private boolean autoActivate;
-
-    public Config( File location, URL schemaURL, String resourceOutcome ) {
-        this.location = location;
-        this.schemaURL = schemaURL;
-        this.resourceOutcome = resourceOutcome;
-        this.requiresWSReload = true;
-        if ( schemaURL != null ) {
-            try {
-                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
-            } catch ( IOException e ) {
-                LOG.warn( "Schema not available: {}", schemaURL );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
 
     public Config( File location, URL schemaURL, URL template, String resourceOutcome ) {
         this.location = location;
         this.schemaURL = schemaURL;
         this.template = template;
         this.resourceOutcome = resourceOutcome;
-        this.requiresWSReload = true;
         if ( schemaURL != null ) {
             try {
                 schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
@@ -146,10 +115,7 @@ public class Config implements Comparable<Config> {
         this.id = state.getId();
         this.location = state.getConfigLocation();
         this.resourceManager = originalResourceManager;
-        this.manager = manager;
         this.resourceOutcome = resourceOutcome;
-        this.autoActivate = autoActivate;
-
         ResourceProvider provider = state.getProvider();
         if ( provider != null && provider.getConfigSchema() != null ) {
             schemaURL = provider.getConfigSchema();
@@ -162,18 +128,6 @@ public class Config implements Comparable<Config> {
                 LOG.trace( "Stack trace:", e );
             }
         }
-    }
-
-    public String getCapabilitiesURL() {
-        OWS ows = ( (WebServicesConfiguration) resourceManager ).get( id );
-        String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
-
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        StringBuffer sb = req.getRequestURL();
-
-        // HACK HACK HACK
-        int index = sb.indexOf( "/console" );
-        return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
     }
 
     public String getState() {
@@ -221,14 +175,6 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public String editMetadata()
-                            throws IOException {
-        File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
-        Config metadataConfig = new Config( metadataLocation, METADATA_SCHEMA_URL, METADATA_EXAMPLE_URL,
-                                            "/console/webservices/services" );
-        return metadataConfig.edit();
-    }
-
     public String edit()
                             throws IOException {
         if ( !location.exists() ) {
@@ -236,8 +182,8 @@ public class Config implements Comparable<Config> {
         }
         this.content = readFileToString( location, "UTF-8" );
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-        sb.append( "?id=").append( id );
-        sb.append( "&fileName=" ).append( location);
+        sb.append( "?id=" ).append( id );
+        sb.append( "&fileName=" ).append( location );
         sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
         sb.append( "&resourceManagerClass=" ).append( getResourceManagerClass() );
         sb.append( "&nextView=" ).append( resourceOutcome );
@@ -272,13 +218,13 @@ public class Config implements Comparable<Config> {
     public String save() {
 
         try {
-            XMLAdapter adapter = new XMLAdapter( new StringReader( content ), XMLAdapter.DEFAULT_URL );
+            XMLAdapter adapter = new XMLAdapter( new StringReader( content ), DEFAULT_URL );
             File location = getLocation();
             OutputStream os = new FileOutputStream( location );
             adapter.getRootElement().serialize( os );
             os.close();
             content = null;
-            if ( autoActivate && resourceManager != null ) {
+            if ( resourceManager != null ) {
                 if ( state.getType() == StateType.deactivated ) {
                     resourceManager.activate( id );
                 } else {
@@ -307,11 +253,9 @@ public class Config implements Comparable<Config> {
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
 
-        if ( requiresWSReload ) {
-            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-            ws.setModified();
-        }
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+        WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
+        ws.setModified();
 
         return resourceOutcome;
     }
@@ -360,16 +304,11 @@ public class Config implements Comparable<Config> {
         this.content = content;
     }
 
-    public ConfigManager getManager() {
-        return manager;
-    }
-
     public String getResourceManagerClass() {
+        if ( resourceManager == null ) {
+            return "";
+        }
         return resourceManager.getClass().getCanonicalName();
-    }
-
-    public void setManager( ConfigManager manager ) {
-        this.manager = manager;
     }
 
     public String getResourceOutcome() {
@@ -396,32 +335,7 @@ public class Config implements Comparable<Config> {
         this.resourceManager = resourceManager;
     }
 
-    public boolean isRequiresWSReload() {
-        return requiresWSReload;
-    }
-
-    public void setRequiresWSReload( boolean requiresWSReload ) {
-        this.requiresWSReload = requiresWSReload;
-    }
-
-    public boolean isAutoActivate() {
-        return autoActivate;
-    }
-
-    public void setAutoActivate( boolean autoActivate ) {
-        this.autoActivate = autoActivate;
-    }
-
     public void setState( ResourceState<?> state ) {
         this.state = state;
-    }
-
-    public String getMetadataSchemaUrl() {
-        return METADATA_SCHEMA_URL.toString();
-    }
-
-    public String getMetadataLocation() {
-        File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
-        return metadataLocation.getAbsolutePath();
     }
 }

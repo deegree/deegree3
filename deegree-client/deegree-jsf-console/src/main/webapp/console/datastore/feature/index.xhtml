@@ -4,10 +4,7 @@
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
   <ui:define name="center">
     <f:view>
-      <h:panelGroup rendered="#{!logBean.loggedIn}">
-        <p class="welcomeText">You are not logged in.</p>
-      </h:panelGroup>
-      <h:panelGroup rendered="#{logBean.loggedIn}">
+      <h:panelGroup>
         <fieldset class="fieldset">
           <legend>
             <h:outputText styleClass="titel" value="Feature stores" />

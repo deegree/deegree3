@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -38,11 +37,15 @@ package org.deegree.console.webservices;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.services.controller.OGCFrontController;
@@ -78,5 +81,15 @@ public class ServicesBean extends AbstractResourceManagerBean<WebServicesConfigu
 
     public Config getMainConfig() {
         return mainConfig;
+    }
+
+    @Override
+    public List<Config> getConfigs() {
+        List<Config> configs = new ArrayList<Config>();
+        for ( ResourceState<?> state : resourceManager.getStates() ) {
+            configs.add( new ServiceConfig( state, resourceManager ) );
+        }
+        Collections.sort( configs );
+        return configs;
     }
 }

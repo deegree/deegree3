@@ -147,5 +147,4 @@ public class EditBean implements Serializable {
     public Map<String, ConfigurationXML> getMap() {
         return map;
     }
-
 }
