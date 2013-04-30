@@ -14,14 +14,14 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
     xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
     <ui:define name="center">
-      <script type="text/javascript" src="CodeMirror-0.94/js/codemirror.js"></script>
+      <script type="text/javascript" src="../js/CodeMirror-0.94/js/codemirror.js"></script>
       <script type="text/javascript">
     var editor
     function activateEditor(){
         editor = CodeMirror.fromTextArea("xmlForm:inputXML", {
           parserfile: "parsexml.js",
-          path: "CodeMirror-0.94/js/",
-          stylesheet: "CodeMirror-0.94/css/xmlcolors.css"
+          path: "../js/CodeMirror-0.94/js/",
+          stylesheet: "../js/CodeMirror-0.94/css/xmlcolors.css"
         })
         var p = document.getElementById("highlighting")
         p.parentNode.removeChild(p)
