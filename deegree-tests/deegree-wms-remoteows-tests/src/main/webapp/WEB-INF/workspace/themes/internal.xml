@@ -1,0 +1,40 @@
+<Themes xmlns="http://www.deegree.org/themes/standard" xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.2.0" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.2.0/themes.xsd">
+
+  <LayerStoreId>layer_feature_utah_railroads</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_roads</LayerStoreId>
+  <LayerStoreId>layer_feature_utah_zipcodes</LayerStoreId>
+  
+  <Theme>
+    <d:Title>deegree 3 utahDemo</d:Title>
+    <s:CRS>EPSG:26912 EPSG:4326 EPSG:4258 CRS:84</s:CRS>
+    <!-- 
+    <Layer>water</Layer>
+    <Layer>water2</Layer>
+     -->
+    <Theme>
+        <!-- if themes are used to configure WMS 'Identifier' will be the layer name declared in WMS Capabilities-->
+      <Identifier>administration</Identifier>
+      <d:Title>Administration</d:Title>
+      <Theme>
+        <Identifier>zipcodes</Identifier>
+        <d:Title>Zip codes of Utah</d:Title>
+        <Layer>zipcodes</Layer>
+      </Theme>
+    </Theme>
+    <Theme>
+    <d:Title>Transportation</d:Title>
+      <Theme>
+        <Identifier>railroads</Identifier>
+        <d:Title>Railroads of Utah</d:Title>
+        <Layer>railroads</Layer>
+      </Theme>
+      <Theme>
+        <Identifier>roads</Identifier>
+        <d:Title>Roads of Utah</d:Title>
+        <Layer>roads</Layer>
+      </Theme>
+    </Theme>
+  
+  </Theme>
+
+</Themes>
