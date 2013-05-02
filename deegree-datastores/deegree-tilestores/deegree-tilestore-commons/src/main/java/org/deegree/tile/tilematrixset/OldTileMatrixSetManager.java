@@ -77,9 +77,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet> {
+public class OldTileMatrixSetManager extends AbstractResourceManager<TileMatrixSet> {
 
-    private static final Logger LOG = getLogger( TileMatrixSetManager.class );
+    private static final Logger LOG = getLogger( OldTileMatrixSetManager.class );
 
     private TileMatrixSetManagerMetadata metadata;
 
@@ -123,7 +123,7 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet>
 
     private ResourceState<TileMatrixSet> loadTileMatrixSetFromClasspath( String name ) {
         LOG.info( "Adding standard tile matrix set {}.", name );
-        URL url = TileMatrixSetManager.class.getResource( name + ".xml" );
+        URL url = OldTileMatrixSetManager.class.getResource( name + ".xml" );
         ResourceProvider provider = nsToProvider.get( "http://www.deegree.org/datasource/tile/tilematrixset" );
         ResourceState<TileMatrixSet> state = null;
         try {
@@ -159,7 +159,7 @@ public class TileMatrixSetManager extends AbstractResourceManager<TileMatrixSet>
 
     static class TileMatrixSetManagerMetadata extends DefaultResourceManagerMetadata<TileMatrixSet> {
         TileMatrixSetManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "tile matrix sets", "datasources/tile/tilematrixset", TileMatrixSetProvider.class, workspace );
+            super( "tile matrix sets", "datasources/tile/tilematrixset", OldTileMatrixSetProvider.class, workspace );
         }
     }
 }

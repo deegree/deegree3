@@ -60,7 +60,7 @@ import org.deegree.tile.persistence.GenericTileStore;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
+import org.deegree.tile.tilematrixset.OldTileMatrixSetManager;
 import org.slf4j.Logger;
 
 /**
@@ -108,7 +108,7 @@ public class RemoteWMSTileStoreProvider implements TileStoreProvider {
                                                  + wms.getClass().getSimpleName() + ")" );
             }
 
-            TileMatrixSetManager tmsMgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
+            OldTileMatrixSetManager tmsMgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
             TileDataSetBuilder builder = new TileDataSetBuilder( config, (RemoteWMS) wms, tmsMgr );
             Map<String, TileDataSet> map = builder.extractTileDataSets();
             return new GenericTileStore( map );

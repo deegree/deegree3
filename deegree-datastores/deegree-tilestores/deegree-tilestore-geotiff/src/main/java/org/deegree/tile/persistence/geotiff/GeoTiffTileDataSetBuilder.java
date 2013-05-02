@@ -56,7 +56,7 @@ import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.geotiff.jaxb.GeoTIFFTileStoreJAXB;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
+import org.deegree.tile.tilematrixset.OldTileMatrixSetManager;
 
 /**
  * Builds tile data sets from jaxb config beans.
@@ -76,7 +76,7 @@ class GeoTiffTileDataSetBuilder {
 
     TileDataSet buildTileDataSet( GeoTIFFTileStoreJAXB.TileDataSet cfg, URL configUrl, Envelope envelope )
                             throws ResourceInitException, URISyntaxException {
-        TileMatrixSetManager mgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
+        OldTileMatrixSetManager mgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
         String filename = cfg.getFile();
         String format = cfg.getImageFormat();
         String tmsId = cfg.getTileMatrixSetId();

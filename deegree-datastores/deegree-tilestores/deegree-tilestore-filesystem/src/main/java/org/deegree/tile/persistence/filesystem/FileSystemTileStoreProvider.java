@@ -55,7 +55,7 @@ import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
 import org.deegree.tile.persistence.filesystem.layout.TileCacheDiskLayout;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
+import org.deegree.tile.tilematrixset.OldTileMatrixSetManager;
 import org.slf4j.Logger;
 
 /**
@@ -91,7 +91,7 @@ public class FileSystemTileStoreProvider implements TileStoreProvider {
             FileSystemTileStoreJAXB config = (FileSystemTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA,
                                                                                    configUrl, workspace );
 
-            TileMatrixSetManager mgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
+            OldTileMatrixSetManager mgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
 
             Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
 

@@ -72,7 +72,7 @@ import org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class DefaultTileMatrixSetProvider implements TileMatrixSetProvider {
+public class DefaultTileMatrixSetProvider implements OldTileMatrixSetProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset";
 

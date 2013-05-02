@@ -75,7 +75,7 @@ public class TileMatrixSetManagerTest {
 
     @Test
     public void testWellKnownScaleSets() {
-        TileMatrixSetManager mgr = workspace.getSubsystemManager( TileMatrixSetManager.class );
+        OldTileMatrixSetManager mgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
         Assert.assertNotNull( "globalcrs84pixel not defined.", mgr.get( "globalcrs84pixel" ) );
         Assert.assertNotNull( "globalcrs84scale not defined.", mgr.get( "globalcrs84scale" ) );
         Assert.assertNotNull( "googlecrs84quad not defined.", mgr.get( "googlecrs84quad" ) );

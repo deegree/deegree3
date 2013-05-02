@@ -63,7 +63,7 @@ import org.deegree.tile.persistence.remotewms.jaxb.ParameterUseType;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileDataSet.RequestParams;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileDataSet.RequestParams.Parameter;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
+import org.deegree.tile.tilematrixset.OldTileMatrixSetManager;
 
 /**
  * Builds tile data sets from jaxb config beans.
@@ -79,9 +79,9 @@ class TileDataSetBuilder {
 
     private final RemoteWMS wms;
 
-    private final TileMatrixSetManager tmsMgr;
+    private final OldTileMatrixSetManager tmsMgr;
 
-    TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, TileMatrixSetManager tmsMgr ) {
+    TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, OldTileMatrixSetManager tmsMgr ) {
         this.config = config;
         this.wms = wms;
         this.tmsMgr = tmsMgr;

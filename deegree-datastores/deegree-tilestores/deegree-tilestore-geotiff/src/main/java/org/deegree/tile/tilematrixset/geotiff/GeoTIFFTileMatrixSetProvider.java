@@ -71,7 +71,7 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.tilematrixset.DefaultTileMatrixSetProvider;
-import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
+import org.deegree.tile.tilematrixset.OldTileMatrixSetProvider;
 import org.deegree.tile.tilematrixset.geotiff.jaxb.GeoTIFFTileMatrixSetConfig;
 import org.slf4j.Logger;
 
@@ -83,7 +83,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class GeoTIFFTileMatrixSetProvider implements TileMatrixSetProvider {
+public class GeoTIFFTileMatrixSetProvider implements OldTileMatrixSetProvider {
 
     private static final Logger LOG = getLogger( GeoTIFFTileMatrixSetProvider.class );
 
