@@ -1,10 +1,12 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ This file is part of deegree
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -20,25 +22,9 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
- Occam Labs UG (haftungsbeschränkt)
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.tile.tilematrixset.geotiff;
 
 import static java.util.Collections.singletonList;
@@ -51,7 +37,6 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -60,53 +45,44 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
-import org.deegree.tile.tilematrixset.DefaultTileMatrixSetProvider;
-import org.deegree.tile.tilematrixset.OldTileMatrixSetProvider;
 import org.deegree.tile.tilematrixset.geotiff.jaxb.GeoTIFFTileMatrixSetConfig;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
- * <code>GeoTIFFTileMatrixSetProvider</code>
+ * This class is responsible for building geotiff based tile matrix sets.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
+ * @since 3.3
  */
-public class GeoTIFFTileMatrixSetProvider implements OldTileMatrixSetProvider {
+public class GeoTiffTileMatrixSetBuilder implements ResourceBuilder<TileMatrixSet> {
 
-    private static final Logger LOG = getLogger( GeoTIFFTileMatrixSetProvider.class );
+    private static final Logger LOG = getLogger( GeoTiffTileMatrixSetBuilder.class );
 
-    private static final URL SCHEMA_URL = DefaultTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/3.2.0/geotiff/geotiff.xsd" );
+    private GeoTIFFTileMatrixSetConfig cfg;
 
-    private DeegreeWorkspace workspace;
+    private ResourceMetadata<TileMatrixSet> metadata;
 
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
+    public GeoTiffTileMatrixSetBuilder( GeoTIFFTileMatrixSetConfig cfg, ResourceMetadata<TileMatrixSet> metadata ) {
+        this.cfg = cfg;
+        this.metadata = metadata;
     }
 
     @Override
-    public TileMatrixSet create( URL configUrl )
-                            throws ResourceInitException {
+    public TileMatrixSet build() {
         ImageReader reader = null;
         ImageInputStream iis = null;
 
         try {
-            GeoTIFFTileMatrixSetConfig cfg = (GeoTIFFTileMatrixSetConfig) JAXBUtils.unmarshall( "org.deegree.tile.tilematrixset.geotiff.jaxb",
-                                                                                                SCHEMA_URL, configUrl,
-                                                                                                workspace );
-
             ICRS crs = null;
             if ( cfg.getStorageCRS() != null ) {
                 crs = CRSManager.lookup( cfg.getStorageCRS() );
@@ -117,7 +93,7 @@ public class GeoTIFFTileMatrixSetProvider implements OldTileMatrixSetProvider {
                 reader = readers.next();
             }
 
-            File file = new File( configUrl.toURI().resolve( cfg.getFile() ) );
+            File file = metadata.getLocation().resolveToFile( cfg.getFile() );
 
             if ( !file.exists() ) {
                 throw new ResourceInitException( "The file " + file + " does not exist." );
@@ -157,25 +133,11 @@ public class GeoTIFFTileMatrixSetProvider implements OldTileMatrixSetProvider {
                                                                                                        tw, th, res } );
             }
 
-            return new TileMatrixSet( file.getName().substring( 0, file.getName().length() - 4 ), null, matrices, smd );
-        } catch ( Throwable e ) {
+            return new TileMatrixSet( file.getName().substring( 0, file.getName().length() - 4 ), null, matrices, smd,
+                                      metadata );
+        } catch ( Exception e ) {
             throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
         }
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/tile/tilematrixset/geotiff";
-    }
-
-    @Override
-    public URL getConfigSchema() {
-        return SCHEMA_URL;
     }
 
 }

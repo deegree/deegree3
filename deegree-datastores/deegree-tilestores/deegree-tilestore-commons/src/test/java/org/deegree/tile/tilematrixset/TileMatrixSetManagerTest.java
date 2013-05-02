@@ -43,6 +43,7 @@ package org.deegree.tile.tilematrixset;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.workspace.Workspace;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,12 +76,17 @@ public class TileMatrixSetManagerTest {
 
     @Test
     public void testWellKnownScaleSets() {
-        OldTileMatrixSetManager mgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
-        Assert.assertNotNull( "globalcrs84pixel not defined.", mgr.get( "globalcrs84pixel" ) );
-        Assert.assertNotNull( "globalcrs84scale not defined.", mgr.get( "globalcrs84scale" ) );
-        Assert.assertNotNull( "googlecrs84quad not defined.", mgr.get( "googlecrs84quad" ) );
-        Assert.assertNotNull( "googlemapscompatible not defined.", mgr.get( "googlemapscompatible" ) );
-        Assert.assertNotNull( "inspirecrs84quad not defined.", mgr.get( "inspirecrs84quad" ) );
+        Workspace ws = workspace.getNewWorkspace();
+        Assert.assertNotNull( "globalcrs84pixel not defined.",
+                              ws.getResource( TileMatrixSetProvider.class, "globalcrs84pixel" ) );
+        Assert.assertNotNull( "globalcrs84scale not defined.",
+                              ws.getResource( TileMatrixSetProvider.class, "globalcrs84scale" ) );
+        Assert.assertNotNull( "googlecrs84quad not defined.",
+                              ws.getResource( TileMatrixSetProvider.class, "googlecrs84quad" ) );
+        Assert.assertNotNull( "googlemapscompatible not defined.",
+                              ws.getResource( TileMatrixSetProvider.class, "googlemapscompatible" ) );
+        Assert.assertNotNull( "inspirecrs84quad not defined.",
+                              ws.getResource( TileMatrixSetProvider.class, "inspirecrs84quad" ) );
     }
 
 }

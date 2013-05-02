@@ -98,9 +98,22 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         while ( iter.hasNext() ) {
             ResourceProvider<T> prov = iter.next();
             nsToProvider.put( prov.getNamespace(), prov );
+        }
+
+        List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
+
+        read( list, workspace );
+
+        iter = nsToProvider.values().iterator();
+
+        while ( iter.hasNext() ) {
+            ResourceProvider<T> prov = iter.next();
             try {
                 for ( ResourceMetadata<T> md : prov.getAdditionalResources( workspace ) ) {
-                    metadataMap.put( md.getIdentifier(), md );
+                    // only overrides if the resource has not been overridden
+                    if ( !metadataMap.containsKey( md.getIdentifier() ) ) {
+                        metadataMap.put( md.getIdentifier(), md );
+                    }
                 }
             } catch ( Exception e ) {
                 LOG.error( "Unable to obtain additional resources from {}: {}", prov.getClass().getSimpleName(),
@@ -108,10 +121,6 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
                 LOG.trace( "Stack trace:", e );
             }
         }
-
-        List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
-
-        read( list, workspace );
     }
 
     private void read( List<ResourceLocation<T>> list, Workspace workspace ) {

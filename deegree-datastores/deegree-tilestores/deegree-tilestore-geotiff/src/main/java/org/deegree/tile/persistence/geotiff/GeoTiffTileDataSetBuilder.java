@@ -56,7 +56,7 @@ import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.geotiff.jaxb.GeoTIFFTileStoreJAXB;
-import org.deegree.tile.tilematrixset.OldTileMatrixSetManager;
+import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
 
 /**
  * Builds tile data sets from jaxb config beans.
@@ -76,14 +76,13 @@ class GeoTiffTileDataSetBuilder {
 
     TileDataSet buildTileDataSet( GeoTIFFTileStoreJAXB.TileDataSet cfg, URL configUrl, Envelope envelope )
                             throws ResourceInitException, URISyntaxException {
-        OldTileMatrixSetManager mgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
         String filename = cfg.getFile();
         String format = cfg.getImageFormat();
         String tmsId = cfg.getTileMatrixSetId();
 
         File file = new File( configUrl.toURI().resolve( filename ) );
 
-        TileMatrixSet tms = mgr.get( tmsId );
+        TileMatrixSet tms = workspace.getNewWorkspace().getResource( TileMatrixSetProvider.class, tmsId );
         if ( tms == null ) {
             throw new ResourceInitException( "The tile matrix set with id " + tmsId + " was not available." );
         }

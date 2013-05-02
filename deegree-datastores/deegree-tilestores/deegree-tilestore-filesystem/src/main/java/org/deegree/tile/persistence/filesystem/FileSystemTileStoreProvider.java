@@ -55,7 +55,7 @@ import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
 import org.deegree.tile.persistence.filesystem.layout.TileCacheDiskLayout;
-import org.deegree.tile.tilematrixset.OldTileMatrixSetManager;
+import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
 import org.slf4j.Logger;
 
 /**
@@ -91,8 +91,6 @@ public class FileSystemTileStoreProvider implements TileStoreProvider {
             FileSystemTileStoreJAXB config = (FileSystemTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA,
                                                                                    configUrl, workspace );
 
-            OldTileMatrixSetManager mgr = workspace.getSubsystemManager( OldTileMatrixSetManager.class );
-
             Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
 
             for ( FileSystemTileStoreJAXB.TileDataSet tds : config.getTileDataSet() ) {
@@ -108,7 +106,7 @@ public class FileSystemTileStoreProvider implements TileStoreProvider {
 
                 TileCacheDiskLayout layout = new TileCacheDiskLayout( baseDir, lay.getFileType() );
 
-                TileMatrixSet tms = mgr.get( tmsId );
+                TileMatrixSet tms = workspace.getNewWorkspace().getResource( TileMatrixSetProvider.class, tmsId );
                 if ( tms == null ) {
                     throw new ResourceInitException( "No tile matrix set with id " + tmsId + " is available!" );
                 }

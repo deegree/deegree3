@@ -41,100 +41,88 @@
 
 package org.deegree.tile.tilematrixset;
 
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.MapUtils;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.tile.TileMatrix;
+import org.apache.commons.io.IOUtils;
 import org.deegree.tile.TileMatrixSet;
-import org.deegree.tile.tilematrixset.jaxb.TileMatrixSetConfig;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
+import org.slf4j.Logger;
 
 /**
- * <code>DefaultTileMatrixSetProvider</code>
+ * <code>DefaultTileMatrixSetProvider</code> is responsible for reading the default tile matrices as well as overriding
+ * them with configured ones.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class DefaultTileMatrixSetProvider implements OldTileMatrixSetProvider {
+public class DefaultTileMatrixSetProvider extends TileMatrixSetProvider {
+
+    private static final Logger LOG = getLogger( DefaultTileMatrixSetProvider.class );
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset";
 
-    private static final String JAXB_PACKAGE = "org.deegree.tile.tilematrixset.jaxb";
-
     private static final URL SCHEMA_URL = DefaultTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/3.2.0/tilematrixset.xsd" );
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public TileMatrixSet create( URL configUrl )
-                            throws ResourceInitException {
-        try {
-            TileMatrixSetConfig cfg = (TileMatrixSetConfig) unmarshall( JAXB_PACKAGE, SCHEMA_URL, configUrl, workspace );
-
-            ICRS crs = CRSManager.getCRSRef( cfg.getCRS() );
-            List<TileMatrix> matrices = new ArrayList<TileMatrix>();
-            for ( TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
-                double res;
-                if ( crs.getUnits()[0].equals( Unit.DEGREE ) ) {
-                    res = MapUtils.calcDegreeResFromScale( tm.getScaleDenominator() );
-                } else {
-                    res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
-                }
-                double minx = tm.getTopLeftCorner().get( 0 );
-                double maxy = tm.getTopLeftCorner().get( 1 );
-                double maxx = tm.getTileWidth().longValue() * tm.getMatrixWidth().longValue() * res + minx;
-                double miny = maxy - tm.getTileHeight().longValue() * tm.getMatrixHeight().longValue() * res;
-                Envelope env = new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, crs );
-                SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-                TileMatrix md = new TileMatrix( tm.getIdentifier(), smd, tm.getTileWidth(), tm.getTileHeight(), res,
-                                                tm.getMatrixWidth(), tm.getMatrixHeight() );
-                matrices.add( md );
-            }
-
-            String identifier = new File( configUrl.getPath() ).getName();
-            identifier = identifier.substring( 0, identifier.length() - 4 ).toLowerCase();
-            String wknScaleSet = cfg.getWellKnownScaleSet();
-            return new TileMatrixSet( identifier, wknScaleSet, matrices, matrices.get( 0 ).getSpatialMetadata() );
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NAMESPACE;
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<TileMatrixSet> createFromLocation( Workspace workspace,
+                                                               ResourceLocation<TileMatrixSet> location ) {
+        return new DefaultTileMatrixSetMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return SCHEMA_URL;
     }
+
+    @Override
+    public List<ResourceMetadata<TileMatrixSet>> getAdditionalResources( Workspace workspace ) {
+        List<ResourceMetadata<TileMatrixSet>> list = new ArrayList<ResourceMetadata<TileMatrixSet>>();
+        addStandardConfig( workspace, "inspirecrs84quad", null, list );
+        addStandardConfig( workspace, "googlecrs84quad", "urn:ogc:def:wkss:OGC:1.0:GoogleCRS84Quad", list );
+        addStandardConfig( workspace, "globalcrs84pixel", "urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Pixel", list );
+        addStandardConfig( workspace, "globalcrs84scale", "urn:ogc:def:wkss:OGC:1.0:GlobalCRS84Scale", list );
+        addStandardConfig( workspace, "googlemapscompatible", "urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible", list );
+        return list;
+    }
+
+    private void addStandardConfig( Workspace workspace, String name, String wkssId,
+                                    List<ResourceMetadata<TileMatrixSet>> list ) {
+        URL url = DefaultTileMatrixSetProvider.class.getResource( name + ".xml" );
+        ResourceIdentifier<TileMatrixSet> id = new DefaultResourceIdentifier<TileMatrixSet>(
+                                                                                             TileMatrixSetProvider.class,
+                                                                                             name );
+        byte[] bs;
+        try {
+            bs = IOUtils.toByteArray( url );
+            ResourceLocation<TileMatrixSet> loc = new IncorporealResourceLocation<TileMatrixSet>( bs, id );
+            DefaultTileMatrixSetMetadata md = new DefaultTileMatrixSetMetadata( workspace, loc, this );
+            list.add( md );
+            if ( wkssId != null ) {
+                id = new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class, wkssId );
+                loc = new IncorporealResourceLocation<TileMatrixSet>( bs, id );
+                md = new DefaultTileMatrixSetMetadata( workspace, loc, this );
+                list.add( md );
+            }
+        } catch ( IOException e ) {
+            LOG.error( "Unable to load standard tile matrix set config {}.", id );
+        }
+    }
+
 }
