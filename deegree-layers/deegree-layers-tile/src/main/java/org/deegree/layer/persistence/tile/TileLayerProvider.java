@@ -50,7 +50,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.Layer;
-import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayers;
@@ -65,7 +65,7 @@ import org.deegree.tile.persistence.TileStoreManager;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class TileLayerProvider implements LayerStoreProvider {
+public class TileLayerProvider implements OldLayerStoreProvider {
 
     private static final URL SCHEMA = TileLayerProvider.class.getResource( "/META-INF/schemas/layers/tile/3.2.0/tile.xsd" );
 

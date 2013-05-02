@@ -51,7 +51,7 @@ import org.deegree.style.persistence.StyleStoreManager;
  * @author stranger
  * 
  */
-public class LayerStoreManager extends AbstractResourceManager<LayerStore> {
+public class OldLayerStoreManager extends AbstractResourceManager<LayerStore> {
 
     private LayerManagerMetadata metadata;
 
@@ -62,7 +62,7 @@ public class LayerStoreManager extends AbstractResourceManager<LayerStore> {
 
     static class LayerManagerMetadata extends DefaultResourceManagerMetadata<LayerStore> {
         LayerManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "layers", "layers/", LayerStoreProvider.class, workspace );
+            super( "layers", "layers/", OldLayerStoreProvider.class, workspace );
         }
     }
 

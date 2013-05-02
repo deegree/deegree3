@@ -45,7 +45,7 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
 import org.deegree.style.persistence.StyleStoreManager;
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CoverageLayerProvider implements LayerStoreProvider {
+public class CoverageLayerProvider implements OldLayerStoreProvider {
 
     private static final Logger LOG = getLogger( CoverageLayerProvider.class );
 

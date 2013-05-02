@@ -54,7 +54,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.layer.persistence.LayerStoreManager;
+import org.deegree.layer.persistence.OldLayerStoreManager;
 import org.deegree.tools.migration.FeatureLayerExtractor.FeatureLayer;
 
 /**
@@ -76,7 +76,7 @@ class FeatureLayerWriter {
     void writeLayerConfigs( HashMap<String, List<FeatureLayer>> map, String crs )
                             throws XMLStreamException {
         XMLOutputFactory outfac = XMLOutputFactory.newInstance();
-        LayerStoreManager lmgr = workspace.getSubsystemManager( LayerStoreManager.class );
+        OldLayerStoreManager lmgr = workspace.getSubsystemManager( OldLayerStoreManager.class );
 
         for ( Entry<String, List<FeatureLayer>> e : map.entrySet() ) {
             String id = e.getKey();

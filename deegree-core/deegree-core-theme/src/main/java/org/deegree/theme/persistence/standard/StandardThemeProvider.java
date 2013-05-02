@@ -53,7 +53,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreManager;
+import org.deegree.layer.persistence.OldLayerStoreManager;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.theme.persistence.standard.jaxb.ThemeType;
@@ -91,7 +91,7 @@ public class StandardThemeProvider implements ThemeProvider {
 
             List<String> storeIds = cfg.getLayerStoreId();
             Map<String, LayerStore> stores = new LinkedHashMap<String, LayerStore>( storeIds.size() );
-            LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
+            OldLayerStoreManager mgr = workspace.getSubsystemManager( OldLayerStoreManager.class );
 
             for ( String id : storeIds ) {
                 LayerStore store = mgr.get( id );

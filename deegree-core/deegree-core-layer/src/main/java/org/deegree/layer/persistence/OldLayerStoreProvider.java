@@ -46,7 +46,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * @author stranger
  * 
  */
-public interface LayerStoreProvider extends ExtendedResourceProvider<LayerStore> {
+public interface OldLayerStoreProvider extends ExtendedResourceProvider<LayerStore> {
 
     // specializes type parameter
 

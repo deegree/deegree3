@@ -50,7 +50,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
-import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayers;
 import org.deegree.style.persistence.StyleStoreManager;
@@ -63,7 +63,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FeatureLayerProvider implements LayerStoreProvider {
+public class FeatureLayerProvider implements OldLayerStoreProvider {
 
     private static final Logger LOG = getLogger( FeatureLayerProvider.class );
 

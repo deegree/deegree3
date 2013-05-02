@@ -10,14 +10,14 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.wms.RemoteWMS;
 
-public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
+public class RemoteWMSLayerStoreProvider implements OldLayerStoreProvider {
 
     private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.2.0/remotewms.xsd" );
 
