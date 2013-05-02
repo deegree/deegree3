@@ -54,13 +54,12 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Assert;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.param.DefaultJDBCParams;
 import org.deegree.commons.jdbc.param.JDBCParams;
+import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -96,6 +95,7 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SQLDialectManager;
 import org.deegree.sqldialect.filter.function.SQLFunctionManager;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -176,6 +176,7 @@ public class SQLFeatureStoreAIXMTest {
         ws = DeegreeWorkspace.getInstance( "deegree-featurestore-sql-tests" );
         ws.initManagers();
         ws.getSubsystemManager( ConnectionManager.class ).startup( ws );
+        ws.getSubsystemManager( JDBCParamsManager.class ).startup( ws );
         ws.getSubsystemManager( SQLDialectManager.class ).startup( ws );
         ws.getSubsystemManager( FeatureStoreManager.class ).startup( ws );
         ws.getSubsystemManager( FunctionManager.class ).startup( ws );

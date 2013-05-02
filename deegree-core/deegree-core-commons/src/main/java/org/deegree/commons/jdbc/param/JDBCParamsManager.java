@@ -89,6 +89,7 @@ public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         }
+        System.out.println(workspace);
         super.startup( workspace );
     }
 
