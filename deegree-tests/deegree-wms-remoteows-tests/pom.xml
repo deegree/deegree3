@@ -100,7 +100,7 @@
           </execution>
         </executions>
         <configuration>
-          <file>target/${project.artifactId}-${project.version}/WEB-INF/workspace/datasources/remoteows/capabilities.xml</file>
+          <file>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspace/datasources/remoteows/capabilities.xml</file>
           <replacements>
             <replacement>
               <token>8080</token>
