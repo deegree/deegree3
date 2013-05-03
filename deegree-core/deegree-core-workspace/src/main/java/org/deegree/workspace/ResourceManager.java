@@ -72,6 +72,14 @@ public interface ResourceManager<T extends Resource> {
     Collection<ResourceMetadata<T>> getResourceMetadata();
 
     /**
+     * Called when workspace is searching for and preparing all resource managers for work.
+     * 
+     * @param workspace
+     *            never <code>null</code>
+     */
+    void startup( Workspace workspace );
+
+    /**
      * Called when workspace is going down. Can be used to do preparatory work needed for all resources of this type.
      */
     void shutdown();

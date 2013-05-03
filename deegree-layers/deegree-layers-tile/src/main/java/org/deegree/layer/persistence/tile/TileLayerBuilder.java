@@ -62,7 +62,8 @@ import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -77,10 +78,10 @@ class TileLayerBuilder {
 
     private static final Logger LOG = getLogger( TileLayerProvider.class );
 
-    private TileStoreManager mgr;
+    private Workspace workspace;
 
-    TileLayerBuilder( TileStoreManager mgr ) {
-        this.mgr = mgr;
+    TileLayerBuilder( Workspace workspace ) {
+        this.workspace = workspace;
     }
 
     TileLayer createLayer( TileLayerType cfg )
@@ -90,7 +91,7 @@ class TileLayerBuilder {
         Set<ICRS> crsSet = new LinkedHashSet<ICRS>();
         for ( TileLayerType.TileDataSet tds : cfg.getTileDataSet() ) {
             String id = tds.getTileStoreId();
-            TileStore store = mgr.get( id );
+            TileStore store = workspace.getResource( TileStoreProvider.class, id );
             if ( store == null ) {
                 LOG.warn( "Tile store with id {} was not available, skipping tile data set.", id );
                 continue;

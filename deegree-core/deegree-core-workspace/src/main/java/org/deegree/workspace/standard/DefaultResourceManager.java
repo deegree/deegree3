@@ -162,4 +162,9 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         return metadataMap.get( location.getIdentifier() );
     }
 
+    @Override
+    public void startup( Workspace workspace ) {
+        // nothing to do
+    }
+
 }

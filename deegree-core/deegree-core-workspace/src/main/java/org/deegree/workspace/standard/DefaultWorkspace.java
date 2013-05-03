@@ -92,7 +92,7 @@ public class DefaultWorkspace implements Workspace {
 
     private List<ModuleInfo> wsModules;
 
-    private Map<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>> resourceManagers;
+    private Map<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>> resourceManagers;
 
     private Map<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>> resourceMetadata;
 
@@ -268,7 +268,12 @@ public class DefaultWorkspace implements Workspace {
 
     @Override
     public <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass ) {
-        return (T) resourceManagers.get( managerClass );
+        for ( ResourceManager<?> mgr : resourceManagers.values() ) {
+            if ( mgr.getClass().equals( managerClass ) ) {
+                return (T) mgr;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -284,7 +289,7 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public void startup() {
         wsModules = new ArrayList<ModuleInfo>();
-        resourceManagers = new HashMap<Class<? extends ResourceManager<? extends Resource>>, ResourceManager<? extends Resource>>();
+        resourceManagers = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>>();
         resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
         resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
         graph = new ResourceGraph( Collections.<ResourceMetadata<? extends Resource>> emptyList() );
@@ -294,7 +299,11 @@ public class DefaultWorkspace implements Workspace {
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();
         while ( iter.hasNext() ) {
             ResourceManager<?> mgr = iter.next();
-            resourceManagers.put( (Class) mgr.getClass(), mgr );
+            LOG.info( "Found resource manager {}.", mgr.getClass().getSimpleName() );
+            resourceManagers.put( mgr.getMetadata().getProviderClass(), mgr );
+            LOG.info( "Starting up resource manager {}.", mgr.getClass().getSimpleName() );
+            // try/catch?
+            mgr.startup( this );
         }
     }
 

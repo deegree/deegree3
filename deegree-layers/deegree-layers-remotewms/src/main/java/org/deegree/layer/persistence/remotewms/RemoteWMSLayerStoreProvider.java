@@ -10,11 +10,12 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
+import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.wms.RemoteWMS;
 
 public class RemoteWMSLayerStoreProvider implements OldLayerStoreProvider {
@@ -36,8 +37,7 @@ public class RemoteWMSLayerStoreProvider implements OldLayerStoreProvider {
                                                                 SCHEMA_URL, configUrl, workspace );
             String id = cfg.getRemoteWMSId();
 
-            RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-            RemoteOWS store = mgr.get( id );
+            RemoteOWS store = workspace.getNewWorkspace().getResource( RemoteOWSProvider.class, id );
             if ( !( store instanceof RemoteWMS ) ) {
                 throw new ResourceInitException( "The remote WMS store with id " + id
                                                  + " is not available or not of type WMS." );

@@ -44,6 +44,7 @@ package org.deegree.workspace.standard;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
@@ -83,6 +84,11 @@ public class IncorporealResourceLocation<T extends Resource> extends DefaultReso
 
     @Override
     public File resolveToFile( String path ) {
+        return null;
+    }
+
+    @Override
+    public URL resolveToUrl( String path ) {
         return null;
     }
 

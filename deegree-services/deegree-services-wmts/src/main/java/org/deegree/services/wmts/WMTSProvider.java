@@ -50,7 +50,6 @@ import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.wmts.controller.WMTSController;
 import org.deegree.theme.persistence.ThemeManager;
-import org.deegree.tile.persistence.TileStoreManager;
 
 /**
  * <code>WMTSProvider</code>
@@ -96,7 +95,7 @@ public class WMTSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { TileStoreManager.class, ThemeManager.class };
+        return new Class[] { ThemeManager.class };
     }
 
     @Override

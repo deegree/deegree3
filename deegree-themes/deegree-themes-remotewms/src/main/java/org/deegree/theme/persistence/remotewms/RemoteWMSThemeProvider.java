@@ -53,6 +53,7 @@ import org.deegree.layer.persistence.OldLayerStoreManager;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
+import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.wms.RemoteWMS;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
@@ -100,7 +101,6 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
             RemoteWMSThemes cfg = (RemoteWMSThemes) unmarshall( "org.deegree.theme.persistence.remotewms.jaxb",
                                                                 CONFIG_SCHEMA, configUrl, workspace );
             String id = cfg.getRemoteWMSId();
-            RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
 
             String lid = cfg.getLayerStoreId();
             OldLayerStoreManager lmgr = workspace.getSubsystemManager( OldLayerStoreManager.class );
@@ -109,7 +109,7 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
                 throw new ResourceInitException( "The layer store with id " + lid + " was not available." );
             }
 
-            RemoteOWS ows = mgr.get( id );
+            RemoteOWS ows = workspace.getNewWorkspace().getResource( RemoteOWSProvider.class, id );
             if ( !( ows instanceof RemoteWMS ) ) {
                 throw new ResourceInitException( "The remote OWS store with id " + id
                                                  + " was not of type WMS or was not available." );

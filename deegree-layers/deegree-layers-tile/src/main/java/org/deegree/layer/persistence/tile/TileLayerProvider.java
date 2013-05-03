@@ -50,11 +50,10 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.layer.Layer;
-import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.OldLayerStoreProvider;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayers;
-import org.deegree.tile.persistence.TileStoreManager;
 
 /**
  * <code>TileLayerProvider</code>
@@ -83,8 +82,7 @@ public class TileLayerProvider implements OldLayerStoreProvider {
             TileLayers cfg = (TileLayers) unmarshall( "org.deegree.layer.persistence.tile.jaxb", SCHEMA, configUrl,
                                                       workspace );
             Map<String, Layer> map = new HashMap<String, Layer>();
-            TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-            TileLayerBuilder builder = new TileLayerBuilder( mgr );
+            TileLayerBuilder builder = new TileLayerBuilder( workspace.getNewWorkspace() );
             for ( TileLayerType lay : cfg.getTileLayer() ) {
                 TileLayer l = builder.createLayer( lay );
                 map.put( l.getMetadata().getName(), l );
@@ -98,7 +96,7 @@ public class TileLayerProvider implements OldLayerStoreProvider {
     @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { TileStoreManager.class };
+        return new Class[] {};
     }
 
     @Override

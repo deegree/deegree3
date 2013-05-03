@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tile.persistence.remotewms;
+package org.deegree.tile.persistence.geotiff;
 
 import java.net.URL;
 
@@ -49,32 +49,31 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * {@link TileStoreProvider} for the {@link RemoteWMSTileStore}.
+ * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
+ * BIGTIFF).
  * 
- * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$
+ * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class RemoteWMSTileStoreProvider extends TileStoreProvider {
+public class GeoTiffTileStoreProvider extends TileStoreProvider {
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/remotewms";
-
-    private static final URL CONFIG_SCHEMA = RemoteWMSTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/remotewms/3.2.0/remotewms.xsd" );
+    private static final URL SCHEMA = GeoTiffTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/geotiff/3.2.0/geotiff.xsd" );
 
     @Override
     public String getNamespace() {
-        return CONFIG_NAMESPACE;
+        return "http://www.deegree.org/datasource/tile/geotiff";
     }
 
     @Override
     public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
-        return new RemoteWmsTileStoreMetadata( workspace, location, this );
+        return new GeoTiffTileStoreMetadata( workspace, location, this );
     }
 
     @Override
     public URL getSchema() {
-        return CONFIG_SCHEMA;
+        return SCHEMA;
     }
 
 }

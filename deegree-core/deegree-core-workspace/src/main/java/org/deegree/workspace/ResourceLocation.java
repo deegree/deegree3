@@ -43,6 +43,7 @@ package org.deegree.workspace;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * A resource location is responsible for being able to fetch the configuration content.
@@ -92,5 +93,14 @@ public interface ResourceLocation<T extends Resource> {
      * @return the file, or <code>null</code>, if resolving is not supported
      */
     File resolveToFile( String path );
+
+    /**
+     * Resolves a path possibly relative to this location to a file. May not be available in all implementations!
+     * 
+     * @param path
+     *            never <code>null</code>
+     * @return the URL, or <code>null</code>, if resolving is not supported
+     */
+    URL resolveToUrl( String path );
 
 }

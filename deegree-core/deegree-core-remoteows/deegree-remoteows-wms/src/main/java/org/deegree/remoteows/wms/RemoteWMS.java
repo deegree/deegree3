@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows.wms;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * 
@@ -51,11 +51,14 @@ public class RemoteWMS implements RemoteOWS {
 
     private WMSClient client;
 
+    private ResourceMetadata<RemoteOWS> metadata;
+
     /**
      * @param client
      */
-    public RemoteWMS( WMSClient client ) {
+    public RemoteWMS( WMSClient client, ResourceMetadata<RemoteOWS> metadata ) {
         this.client = client;
+        this.metadata = metadata;
     }
 
     public WMSClient getClient() {
@@ -68,9 +71,13 @@ public class RemoteWMS implements RemoteOWS {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to do
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 
 }

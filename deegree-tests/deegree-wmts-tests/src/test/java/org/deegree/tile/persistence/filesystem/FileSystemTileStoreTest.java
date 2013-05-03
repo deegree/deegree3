@@ -56,7 +56,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.junit.After;
 import org.junit.Before;
@@ -93,9 +93,8 @@ public class FileSystemTileStoreTest {
     @Test
     public void testTileStoreCopy()
                             throws InterruptedException {
-        TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-        TileStore src = mgr.get( "pyramid" );
-        TileStore dest = mgr.get( "filesystem" );
+        TileStore src = workspace.getNewWorkspace().getResource( TileStoreProvider.class, "pyramid" );
+        TileStore dest = workspace.getNewWorkspace().getResource( TileStoreProvider.class, "filesystem" );
 
         TileStoreTransaction ta = dest.acquireTransaction( "filesystem" );
 

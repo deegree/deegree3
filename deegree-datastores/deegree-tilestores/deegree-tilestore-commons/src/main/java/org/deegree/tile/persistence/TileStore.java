@@ -43,7 +43,7 @@ package org.deegree.tile.persistence;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.deegree.commons.config.Resource;
+import org.deegree.workspace.Resource;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataSet;
@@ -111,4 +111,5 @@ public interface TileStore extends Resource {
      * @return transaction object that allows to perform transactions operations on the store, never <code>null</code>
      */
     TileStoreTransaction acquireTransaction( String tileDataSet );
+
 }

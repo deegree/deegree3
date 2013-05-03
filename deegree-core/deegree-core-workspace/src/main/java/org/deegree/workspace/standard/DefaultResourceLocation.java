@@ -45,6 +45,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -135,6 +137,24 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
     @Override
     public File resolveToFile( String path ) {
         return new File( file.toURI().resolve( path ) );
+    }
+
+    @Override
+    public URL resolveToUrl( String path ) {
+        try {
+            try {
+                URL url = new URL( path );
+                if ( url.toURI().isAbsolute() ) {
+                    return url;
+                }
+            } catch ( Exception e ) {
+                // try as relative
+            }
+            return file.toURI().resolve( path ).toURL();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

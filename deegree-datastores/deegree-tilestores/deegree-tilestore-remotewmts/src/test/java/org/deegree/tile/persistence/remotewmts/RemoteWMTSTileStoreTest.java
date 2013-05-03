@@ -53,7 +53,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,7 +89,7 @@ public class RemoteWMTSTileStoreTest {
 
     @Test
     public void testTileDataSet() {
-        TileStore store = ws.getSubsystemManager( TileStoreManager.class ).get( "medford_buildings" );
+        TileStore store = ws.getNewWorkspace().getResource( TileStoreProvider.class, "medford_buildings" );
         assertNotNull( store );
         assertEquals( 1, store.getTileDataSetIds().size() );
         TileDataSet tileDataSet = store.getTileDataSet( "medford:buildings" );

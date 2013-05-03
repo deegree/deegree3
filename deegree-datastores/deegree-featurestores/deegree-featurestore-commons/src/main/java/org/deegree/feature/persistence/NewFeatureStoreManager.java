@@ -75,7 +75,7 @@ public class NewFeatureStoreManager extends DefaultResourceManager<FeatureStore>
     }
 
     @Override
-    public void find( Workspace workspace ) {
+    public void startup( Workspace workspace ) {
         try {
             if ( workspace instanceof DefaultWorkspace ) {
                 File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
@@ -85,8 +85,6 @@ public class NewFeatureStoreManager extends DefaultResourceManager<FeatureStore>
         } catch ( IOException e ) {
             LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
         }
-
-        super.find( workspace );
     }
 
     public BBoxCache getBBoxCache() {
