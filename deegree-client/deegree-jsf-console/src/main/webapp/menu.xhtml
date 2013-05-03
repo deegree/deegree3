@@ -6,13 +6,13 @@
     <h:outputText styleClass="menutopic" value="general" />
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
-    <dgc:menuitem displayname="workspaces" target="/console/workspace/workspace.xhtml" />
-    <dgc:menuitem displayname="proxy" target="/console/jsf/proxy.xhtml" />
-    <dgc:menuitem displayname="password" target="/console/security/password.xhtml" />
-    <dgc:menuitem displayname="module info" target="/console/jsf/modules.xhtml" />
+    <dgc:menuitem displayname="workspaces" target="/console/workspace/index" />
+    <dgc:menuitem displayname="proxy" target="/console/proxy/index" />
+    <dgc:menuitem displayname="password" target="/console/security/password" />
+    <dgc:menuitem displayname="module info" target="/console/moduleinfo/index" />
   </h:panelGroup>
   <h:panelGroup layout="block" style="margin-bottom:20px;">
-    <dgc:menuitem displayname="#{labels.link_genericClient}" target="/console/client/client.xhtml" />
+    <dgc:menuitem displayname="#{labels.link_genericClient}" target="/console/client/index" />
     <h:outputLink styleClass="navi menuitem"
       value="#{facesContext.externalContext.requestContextPath}/console/webservices/wms/wms.html">
       <h:outputText value="#{labels.link_wmsClient}" />
@@ -23,37 +23,37 @@
       <h:outputText styleClass="menutopic" value="webservices" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="services" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="services" target="/console/webservices/index" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="data stores" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="coverage" target="/console/datastore/coverage/index.xhtml" />
-      <dgc:menuitem displayname="feature" target="/console/datastore/feature/index.xhtml" />
-      <dgc:menuitem displayname="metadata" target="/console/webservices/services.xhtml" />
-      <dgc:menuitem displayname="tile" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="coverage" target="/console/datastore/coverage/index" />
+      <dgc:menuitem displayname="feature" target="/console/datastore/feature/index" />
+      <dgc:menuitem displayname="metadata" target="/console/datastore/metadata/index" />
+      <dgc:menuitem displayname="tile" target="/console/datastore/tile/index" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="map layers" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="layers" target="/console/webservices/services.xhtml" />
-      <dgc:menuitem displayname="styles" target="/console/webservices/services.xhtml" />
-      <dgc:menuitem displayname="themes" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="layers" target="/console/layer/layer/index" />
+      <dgc:menuitem displayname="styles" target="/console/layer/style/index" />
+      <dgc:menuitem displayname="themes" target="/console/layer/theme/index" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="connections" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="databases" target="/console/webservices/services.xhtml" />
-      <dgc:menuitem displayname="remote services" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="databases" target="/console/connection/sql/index" />
+      <dgc:menuitem displayname="remote services" target="/console/connection/ows/index" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="processes" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="provider" target="/console/webservices/services.xhtml" />
+      <dgc:menuitem displayname="provider" target="/console/process/index" />
     </h:panelGroup>
   </h:panelGroup>
 </h:panelGroup>

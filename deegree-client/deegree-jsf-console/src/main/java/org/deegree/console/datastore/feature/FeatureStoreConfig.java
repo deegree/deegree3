@@ -68,7 +68,7 @@ import org.deegree.feature.types.FeatureType;
 public class FeatureStoreConfig extends Config {
 
     public FeatureStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
-        super( state, null, resourceManager, "/console/datastore/feature/index", true );
+        super( state, resourceManager, "/console/datastore/feature/index", true );
     }
 
     private FeatureStoreManager getFeatureStoreManager() {

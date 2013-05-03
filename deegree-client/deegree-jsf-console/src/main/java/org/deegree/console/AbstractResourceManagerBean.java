@@ -34,17 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
@@ -89,7 +82,7 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager> {
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
         for ( ResourceState<?> state : resourceManager.getStates() ) {
-            configs.add( new Config( state, null, resourceManager, null, true ) );
+            configs.add( new Config( state, resourceManager, null, true ) );
         }
         Collections.sort( configs );
         return configs;
@@ -131,61 +124,5 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager> {
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
-    }
-    
-    public String startWizard() {
-
-        ResourceProvider provider = metadata.getProvider( newConfigType );
-        if ( provider == null ) {
-            provider = metadata.getProviders().get( 0 );
-        }
-
-        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
-        String nextView = md.getConfigWizardView();
-
-        Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        map.put( "newConfigId", newConfigId );
-        map.put( "configManager", this );
-        map.put( "resourceManagerMetadata", metadata );
-        if ( "/console/jsf/wizard".equals( nextView ) ) {
-            if ( md.getExamples().size() == 1 ) {
-                setNewConfigTypeTemplate( md.getExamples().keySet().iterator().next() );
-                return createConfig();
-            }
-        }
-        return nextView;
-    }
-
-    public String createConfig() {
-
-        ResourceProvider provider = metadata.getProvider( newConfigType );
-        if ( provider == null ) {
-            provider = metadata.getProviders().get( 0 );
-        }
-        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
-
-        // lookup template
-        URL templateURL = null;
-        if ( newConfigTypeTemplate != null ) {
-            templateURL = md.getExamples().get( newConfigTypeTemplate ).getContentLocation();
-//            LOG.info( "Found template URL: " + templateURL );
-        } else {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "No template for config.", null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return null;
-        }
-
-        // let the resource manager do the dirty work
-        ResourceState<?> rs = null;
-        try {
-            rs = resourceManager.createResource( newConfigId, templateURL.openStream() );
-            Config c = new Config( rs, null, metadata.getManager(),
-                                   metadata.getStartView(), true );
-            return c.edit();
-        } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return null;
-        }
     }
 }

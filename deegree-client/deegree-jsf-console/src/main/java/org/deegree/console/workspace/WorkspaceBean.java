@@ -67,8 +67,7 @@ import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;
-import org.deegree.console.ConfigManager;
-import org.deegree.console.util.RequestBean;
+import org.deegree.console.client.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -240,10 +239,6 @@ public class WorkspaceBean implements Serializable {
         RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );
         if ( bean != null ) {
             bean.init();
-        }
-        ConfigManager configManager = (ConfigManager) ctx.getExternalContext().getSessionMap().get( "configManager" );
-        if ( configManager != null ) {
-            configManager.refresh();
         }
         return ctx.getViewRoot().getViewId();
     }

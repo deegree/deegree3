@@ -33,16 +33,7 @@
             </table>
           </h:form>
           <h:form>
-            <h:panelGroup>
-              <h:outputLabel styleClass="label" for="newFSBt" value="#{labels.featureStores_name}" />
-              <h:inputText styleClass="liste" id="newFSBt" value="#{coverageManagerBean.newConfigId}" size="16"
-                required="true" requiredMessage="#{labels.resource_name_req}" />
-              <h:selectOneMenu styleClass="liste" value="#{coverageManagerBean.newConfigType}">
-                <f:selectItems value="#{coverageManagerBean.metadata.providerNames}" />
-              </h:selectOneMenu>
-              <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-                action="#{coverageManagerBean.startWizard}" />
-            </h:panelGroup>
+            <h:link styleClass="buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
           </h:form>
         </fieldset>
       </h:panelGroup>

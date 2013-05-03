@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -36,12 +36,9 @@
 package org.deegree.console.datastore.metadata;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -50,29 +47,23 @@ import javax.faces.event.ActionEvent;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
 
-/**
- * TODO add class documentation here
- * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-@ManagedBean
-@SessionScoped
-public class MetadataStoreConfig implements Serializable {
-
-    private static final long serialVersionUID = -6283943364868062095L;
+public class MetadataStoreConfig extends Config {
 
     private String id;
+
+    public MetadataStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
+        super( state, resourceManager, "/console/datastore/metadata/index", true );
+    }
 
     private MetadataStoreManager getMetadataStoreManager() {
         return getWorkspace().getSubsystemManager( MetadataStoreManager.class );
@@ -118,7 +109,7 @@ public class MetadataStoreConfig implements Serializable {
 
                 sql = provider.getCreateStatements( connManager.getType( connId ) );
 
-                SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons", ws );
+                SQLExecution execution = new SQLExecution( connId, sql, "/console/datastore/metadata/index", ws );
 
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
             } catch ( UnsupportedEncodingException e ) {

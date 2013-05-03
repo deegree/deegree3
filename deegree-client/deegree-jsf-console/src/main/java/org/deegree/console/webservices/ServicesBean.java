@@ -1,9 +1,12 @@
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
+ This file is part of deegree
  Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -19,19 +22,9 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
 import java.io.File;
@@ -76,7 +69,7 @@ public class ServicesBean extends AbstractResourceManagerBean<WebServicesConfigu
         DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
         File wsRootDir = ws.getLocation();
         File mainLocation = new File( wsRootDir, "services/main.xml" );
-        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/services" );
+        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/index" );
     }
 
     public Config getMainConfig() {

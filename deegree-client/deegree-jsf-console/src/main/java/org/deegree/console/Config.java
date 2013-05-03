@@ -108,13 +108,11 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public Config( ResourceState<?> state, ConfigManager manager,
-                   org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome,
-                   boolean autoActivate ) {
+    public Config( ResourceState<?> state, ResourceManager resourceManager, String resourceOutcome, boolean autoActivate ) {
         this.state = state;
         this.id = state.getId();
         this.location = state.getConfigLocation();
-        this.resourceManager = originalResourceManager;
+        this.resourceManager = resourceManager;
         this.resourceOutcome = resourceOutcome;
         ResourceProvider provider = state.getProvider();
         if ( provider != null && provider.getConfigSchema() != null ) {
@@ -182,7 +180,7 @@ public class Config implements Comparable<Config> {
         }
         this.content = readFileToString( location, "UTF-8" );
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-        sb.append( "?id=" ).append( id );
+        sb.append( "&id=" ).append( id );
         sb.append( "&fileName=" ).append( location );
         sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
         sb.append( "&resourceManagerClass=" ).append( getResourceManagerClass() );

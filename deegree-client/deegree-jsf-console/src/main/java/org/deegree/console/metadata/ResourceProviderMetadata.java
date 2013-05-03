@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.deegree.commons.config.ResourceProvider;
-import org.deegree.console.ConfigExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
