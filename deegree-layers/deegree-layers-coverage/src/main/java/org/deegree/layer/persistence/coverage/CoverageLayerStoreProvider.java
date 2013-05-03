@@ -25,22 +25,40 @@
  e-mail: info@deegree.org
  website: http://www.deegree.org/
 ----------------------------------------------------------------------------*/
-package org.deegree.layer.persistence;
+package org.deegree.layer.persistence.coverage;
 
-import org.deegree.workspace.standard.DefaultResourceManager;
-import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import java.net.URL;
+
+import org.deegree.layer.persistence.LayerStore;
+import org.deegree.layer.persistence.LayerStoreProvider;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
- * The resource manager for layers.
+ * SPI class for coverage layer stores.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
  * @since 3.3
  */
-public class LayerStoreManager extends DefaultResourceManager<LayerStore> {
+public class CoverageLayerStoreProvider extends LayerStoreProvider {
 
-    public LayerStoreManager() {
-        super( new DefaultResourceManagerMetadata<LayerStore>( LayerStoreProvider.class, "layers", "layers" ) );
+    private static final URL CONFIG_SCHEMA = CoverageLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/coverage/3.2.0/coverage.xsd" );
+
+    @Override
+    public String getNamespace() {
+        return "http://www.deegree.org/layers/coverage";
+    }
+
+    @Override
+    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
+        return new CoverageLayerStoreMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
     }
 
 }

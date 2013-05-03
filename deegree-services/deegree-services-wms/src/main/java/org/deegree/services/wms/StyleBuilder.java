@@ -48,12 +48,13 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.jaxb.wms.DirectStyleType;
 import org.deegree.style.persistence.StyleStore;
-import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.persistence.StyleStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -68,19 +69,16 @@ class StyleBuilder {
 
     private static final Logger LOG = getLogger( StyleBuilder.class );
 
-    private StyleStoreManager styleManager;
-
     private HashSet<String> soleStyleFiles;
 
     private HashSet<String> soleLegendFiles;
 
     private StyleRegistry registry;
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    StyleBuilder( StyleStoreManager styleManager, HashSet<String> soleStyleFiles, HashSet<String> soleLegendFiles,
-                  StyleRegistry registry, DeegreeWorkspace workspace ) {
-        this.styleManager = styleManager;
+    StyleBuilder( HashSet<String> soleStyleFiles, HashSet<String> soleLegendFiles, StyleRegistry registry,
+                  Workspace workspace ) {
         this.soleStyleFiles = soleStyleFiles;
         this.soleLegendFiles = soleLegendFiles;
         this.registry = registry;
@@ -88,7 +86,7 @@ class StyleBuilder {
     }
 
     void parse( String layerName, List<DirectStyleType> styles, XMLAdapter adapter ) {
-        File stylesDir = new File( workspace.getLocation(), "styles" );
+        File stylesDir = new File( ( (DefaultWorkspace) workspace ).getLocation(), "styles" );
         for ( DirectStyleType sty : styles ) {
             handleStyleConfig( sty, adapter, stylesDir, layerName, styles );
             handleLegendConfig( sty, adapter, stylesDir, layerName, styles );
@@ -104,7 +102,7 @@ class StyleBuilder {
             if ( file.getParentFile().equals( stylesDir ) ) {
                 // already loaded from style store
                 String styleId = file.getName().substring( 0, file.getName().length() - 4 );
-                StyleStore store = styleManager.get( styleId );
+                StyleStore store = workspace.getResource( StyleStoreProvider.class, styleId );
                 if ( store != null ) {
                     style = store.getStyle( null ).copy();
                 } else {
@@ -150,7 +148,7 @@ class StyleBuilder {
                 if ( file.getParentFile().equals( stylesDir ) ) {
                     // already loaded from style store
                     String styleId = file.getName().substring( 0, file.getName().length() - 4 );
-                    StyleStore store = styleManager.get( styleId );
+                    StyleStore store = workspace.getResource( StyleStoreProvider.class, styleId );
                     if ( store != null ) {
                         style = store.getStyle( null ).copy();
                     } else {

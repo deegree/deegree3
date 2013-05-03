@@ -51,14 +51,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.jaxb.wms.DirectStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType;
-import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -86,17 +85,14 @@ public class StyleRegistry extends TimerTask {
 
     private HashSet<String> soleLegendFiles = new HashSet<String>();
 
-    private StyleStoreManager styleManager;
-
     private StyleBuilder builder;
 
     private SldStyleBuilder sldBuilder;
 
-    public StyleRegistry( DeegreeWorkspace workspace ) {
-        this.styleManager = workspace.getSubsystemManager( StyleStoreManager.class );
+    public StyleRegistry( Workspace workspace ) {
         // please take note that the style builder instance modifies field values from this class!
-        builder = new StyleBuilder( styleManager, soleStyleFiles, soleLegendFiles, this, workspace );
-        sldBuilder = new SldStyleBuilder( styleManager, this, workspace );
+        builder = new StyleBuilder( soleStyleFiles, soleLegendFiles, this, workspace );
+        sldBuilder = new SldStyleBuilder( this, workspace );
     }
 
     /**

@@ -57,7 +57,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
@@ -65,8 +64,10 @@ import org.deegree.services.jaxb.wms.SLDStyleType;
 import org.deegree.services.jaxb.wms.SLDStyleType.LegendGraphicFile;
 import org.deegree.style.StyleRef;
 import org.deegree.style.persistence.StyleStore;
-import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.persistence.StyleStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -81,20 +82,17 @@ class SldStyleBuilder {
 
     private static final Logger LOG = getLogger( StyleBuilder.class );
 
-    private StyleStoreManager styleManager;
-
     private StyleRegistry registry;
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    SldStyleBuilder( StyleStoreManager styleManager, StyleRegistry registry, DeegreeWorkspace workspace ) {
-        this.styleManager = styleManager;
+    SldStyleBuilder( StyleRegistry registry, Workspace workspace ) {
         this.registry = registry;
         this.workspace = workspace;
     }
 
     void parse( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
-        File stylesDir = new File( workspace.getLocation(), "styles" );
+        File stylesDir = new File( ( (DefaultWorkspace) workspace ).getLocation(), "styles" );
 
         for ( SLDStyleType sty : styles ) {
             try {
@@ -165,7 +163,7 @@ class SldStyleBuilder {
         if ( legendFile.getParentFile().equals( stylesDir ) ) {
             // already loaded from style store
             String styleId = legendFile.getName().substring( 0, legendFile.getName().length() - 4 );
-            StyleStore store = styleManager.get( styleId );
+            StyleStore store = workspace.getResource( StyleStoreProvider.class, styleId );
             if ( store != null ) {
                 style = store.getStyle( null ).copy();
             } else {
@@ -182,7 +180,7 @@ class SldStyleBuilder {
                                           Map<String, Pair<File, URL>> legends, Map<String, Boolean> glgUrls ) {
         // already loaded from workspace
         String styleId = file.getName().substring( 0, file.getName().length() - 4 );
-        StyleStore store = styleManager.get( styleId );
+        StyleStore store = workspace.getResource( StyleStoreProvider.class, styleId );
 
         if ( store != null ) {
             LOG.info( "Using SLD file loaded from style store." );

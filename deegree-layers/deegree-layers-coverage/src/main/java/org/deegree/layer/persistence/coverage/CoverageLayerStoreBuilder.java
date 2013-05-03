@@ -25,40 +25,52 @@
  e-mail: info@deegree.org
  website: http://www.deegree.org/
 ----------------------------------------------------------------------------*/
-package org.deegree.layer.persistence.remotewms;
+package org.deegree.layer.persistence.coverage;
 
-import java.net.URL;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreProvider;
-import org.deegree.workspace.ResourceLocation;
+import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
+import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
+import org.slf4j.Logger;
 
 /**
- * SPI provider class for remote WMS layer stores.
+ * This class is responsible for building coverage layer stores.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
  * @since 3.3
  */
-public class RemoteWMSLayerStoreProvider extends LayerStoreProvider {
+public class CoverageLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.2.0/remotewms.xsd" );
+    private static final Logger LOG = getLogger( CoverageLayerStoreBuilder.class );
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/remotewms";
+    private CoverageLayers cfg;
+
+    private Workspace workspace;
+
+    private ResourceMetadata<LayerStore> metadata;
+
+    public CoverageLayerStoreBuilder( CoverageLayers cfg, Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
+        this.cfg = cfg;
+        this.workspace = workspace;
+        this.metadata = metadata;
     }
 
     @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new RemoteWmsLayerStoreMetadata( workspace, location, this );
-    }
+    public LayerStore build() {
+        if ( cfg.getAutoLayers() != null ) {
+            LOG.debug( "Using auto configuration for coverage layers." );
+            AutoCoverageLayerBuilder builder = new AutoCoverageLayerBuilder( workspace, metadata );
+            return builder.createFromAutoLayers( cfg.getAutoLayers() );
+        }
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
+        LOG.debug( "Using manual configuration for coverage layers." );
+
+        ManualCoverageLayerBuilder builder = new ManualCoverageLayerBuilder( workspace, metadata );
+        return builder.buildManual( cfg );
     }
 
 }

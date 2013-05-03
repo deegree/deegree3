@@ -50,7 +50,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -76,7 +75,7 @@ import org.slf4j.Logger;
  */
 class TileLayerBuilder {
 
-    private static final Logger LOG = getLogger( TileLayerProvider.class );
+    private static final Logger LOG = getLogger( TileLayerStoreProvider.class );
 
     private Workspace workspace;
 
@@ -84,18 +83,13 @@ class TileLayerBuilder {
         this.workspace = workspace;
     }
 
-    TileLayer createLayer( TileLayerType cfg )
-                            throws ResourceInitException {
+    TileLayer createLayer( TileLayerType cfg ) {
         List<TileDataSet> datasets = new ArrayList<TileDataSet>();
         Envelope envelope = null;
         Set<ICRS> crsSet = new LinkedHashSet<ICRS>();
         for ( TileLayerType.TileDataSet tds : cfg.getTileDataSet() ) {
             String id = tds.getTileStoreId();
             TileStore store = workspace.getResource( TileStoreProvider.class, id );
-            if ( store == null ) {
-                LOG.warn( "Tile store with id {} was not available, skipping tile data set.", id );
-                continue;
-            }
 
             String tdsId = tds.getValue();
 

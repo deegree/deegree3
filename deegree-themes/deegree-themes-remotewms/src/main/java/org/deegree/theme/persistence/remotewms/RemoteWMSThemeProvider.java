@@ -49,7 +49,7 @@ import org.deegree.commons.struct.Tree;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.OldLayerStoreManager;
+import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSManager;
@@ -103,8 +103,7 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
             String id = cfg.getRemoteWMSId();
 
             String lid = cfg.getLayerStoreId();
-            OldLayerStoreManager lmgr = workspace.getSubsystemManager( OldLayerStoreManager.class );
-            LayerStore store = lmgr.get( lid );
+            LayerStore store = workspace.getNewWorkspace().getResource( LayerStoreProvider.class, lid );
             if ( store == null ) {
                 throw new ResourceInitException( "The layer store with id " + lid + " was not available." );
             }

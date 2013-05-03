@@ -43,7 +43,7 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
-import org.deegree.layer.persistence.OldLayerStoreManager;
+import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
 import org.junit.After;
 import org.junit.Assert;
@@ -74,8 +74,7 @@ public class TileLayerTest {
 
     @Test
     public void testMetadataId() {
-        OldLayerStoreManager mgr = workspace.getSubsystemManager( OldLayerStoreManager.class );
-        Layer l = mgr.get( "tilelayers" ).get( "pyramid" );
+        Layer l = workspace.getNewWorkspace().getResource( LayerStoreProvider.class, "tilelayers" ).get( "pyramid" );
         Assert.assertEquals( "mdsetid", l.getMetadata().getMetadataId() );
     }
 

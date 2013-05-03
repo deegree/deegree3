@@ -38,9 +38,9 @@ package org.deegree.layer.persistence;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * 
@@ -53,13 +53,15 @@ public class SingleLayerStore implements LayerStore {
 
     private final Layer layer;
 
-    public SingleLayerStore( Layer layer ) {
+    private ResourceMetadata<LayerStore> metadata;
+
+    public SingleLayerStore( Layer layer, ResourceMetadata<LayerStore> metadata ) {
         this.layer = layer;
+        this.metadata = metadata;
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to do
     }
 
@@ -79,6 +81,11 @@ public class SingleLayerStore implements LayerStore {
             return layer;
         }
         return null;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 
 }

@@ -40,75 +40,37 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.persistence.se;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-
-import java.io.InputStream;
 import java.net.URL;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreProvider;
-import org.deegree.style.se.parser.SymbologyParser;
-import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
- * @author stranger
+ * SPI provider class for SE style stores.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.3
  */
-public class SEStyleStoreProvider implements StyleStoreProvider {
+public class SEStyleStoreProvider extends StyleStoreProvider {
 
     private static final URL CONFIG_SCHEMA = SEStyleStoreProvider.class.getResource( "/META-INF/schemas/se/1.1.0/symbology.xsd" );
 
-    // private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // this.workspace = workspace;
-    }
-
-    @Override
-    public SEStyleStore create( URL configUrl )
-                            throws ResourceInitException {
-        InputStream in = null;
-        XMLStreamReader reader = null;
-        try {
-            in = configUrl.openStream();
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            reader = fac.createXMLStreamReader( configUrl.toExternalForm(), in );
-            Style style = SymbologyParser.INSTANCE.parse( reader );
-            return new SEStyleStore( style );
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Could not read SE style file.", e );
-        } finally {
-            try {
-                if ( reader != null ) {
-                    reader.close();
-                }
-            } catch ( XMLStreamException e ) {
-                // eat it
-            }
-            closeQuietly( in );
-        }
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.opengis.net/se";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<StyleStore> createFromLocation( Workspace workspace, ResourceLocation<StyleStore> location ) {
+        return new SeStyleStoreMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return CONFIG_SCHEMA;
     }
 

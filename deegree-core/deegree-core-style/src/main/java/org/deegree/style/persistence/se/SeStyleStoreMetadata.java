@@ -25,22 +25,32 @@
  e-mail: info@deegree.org
  website: http://www.deegree.org/
 ----------------------------------------------------------------------------*/
-package org.deegree.layer.persistence;
+package org.deegree.style.persistence.se;
 
-import org.deegree.workspace.standard.DefaultResourceManager;
-import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import org.deegree.style.persistence.StyleStore;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * The resource manager for layers.
+ * Resource metadata for SE style stores.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
  * @since 3.3
  */
-public class LayerStoreManager extends DefaultResourceManager<LayerStore> {
+public class SeStyleStoreMetadata extends AbstractResourceMetadata<StyleStore> {
 
-    public LayerStoreManager() {
-        super( new DefaultResourceManagerMetadata<LayerStore>( LayerStoreProvider.class, "layers", "layers" ) );
+    public SeStyleStoreMetadata( Workspace workspace, ResourceLocation<StyleStore> location,
+                                 AbstractResourceProvider<StyleStore> provider ) {
+        super( workspace, location, provider );
+    }
+
+    @Override
+    public ResourceBuilder<StyleStore> prepare() {
+        return new SeStyleStoreBuilder( this );
     }
 
 }

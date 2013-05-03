@@ -25,40 +25,50 @@
  e-mail: info@deegree.org
  website: http://www.deegree.org/
 ----------------------------------------------------------------------------*/
-package org.deegree.layer.persistence.remotewms;
+package org.deegree.layer.persistence.tile;
 
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreProvider;
-import org.deegree.workspace.ResourceLocation;
+import org.deegree.layer.persistence.MultipleLayerStore;
+import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
+import org.deegree.layer.persistence.tile.jaxb.TileLayers;
+import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * SPI provider class for remote WMS layer stores.
+ * This class is responsible for building tile layer stores.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
  * @since 3.3
  */
-public class RemoteWMSLayerStoreProvider extends LayerStoreProvider {
+public class TileLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.2.0/remotewms.xsd" );
+    private TileLayers cfg;
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/remotewms";
+    private ResourceMetadata<LayerStore> metadata;
+
+    private Workspace workspace;
+
+    public TileLayerStoreBuilder( TileLayers cfg, ResourceMetadata<LayerStore> metadata, Workspace workspace ) {
+        this.cfg = cfg;
+        this.metadata = metadata;
+        this.workspace = workspace;
     }
 
     @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new RemoteWmsLayerStoreMetadata( workspace, location, this );
-    }
-
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
+    public LayerStore build() {
+        Map<String, Layer> map = new HashMap<String, Layer>();
+        TileLayerBuilder builder = new TileLayerBuilder( workspace );
+        for ( TileLayerType lay : cfg.getTileLayer() ) {
+            TileLayer l = builder.createLayer( lay );
+            map.put( l.getMetadata().getName(), l );
+        }
+        return new MultipleLayerStore( map, metadata );
     }
 
 }

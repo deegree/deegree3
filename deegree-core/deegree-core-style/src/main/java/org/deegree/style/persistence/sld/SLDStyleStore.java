@@ -47,14 +47,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
- * @author stranger
+ * SLD style store resource implementation.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.3
  */
 public class SLDStyleStore implements StyleStore {
 
@@ -62,8 +65,11 @@ public class SLDStyleStore implements StyleStore {
 
     private HashMap<String, Style> stylesByName = new HashMap<String, Style>();
 
-    public SLDStyleStore( Map<String, LinkedList<Style>> styles ) {
+    private ResourceMetadata<StyleStore> metadata;
+
+    public SLDStyleStore( Map<String, LinkedList<Style>> styles, ResourceMetadata<StyleStore> metadata ) {
         this.styles = styles;
+        this.metadata = metadata;
         for ( List<Style> l : styles.values() ) {
             for ( Style s : l ) {
                 if ( s.getName() != null ) {
@@ -74,9 +80,8 @@ public class SLDStyleStore implements StyleStore {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        // this.workspace = workspace;
+    public void init() {
+        // nothing to do
     }
 
     @Override
@@ -123,6 +128,11 @@ public class SLDStyleStore implements StyleStore {
         List<Style> list = new ArrayList<Style>();
         Collections.addAll( list, styles.values().toArray( new Style[0] ) );
         return list;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 
 }

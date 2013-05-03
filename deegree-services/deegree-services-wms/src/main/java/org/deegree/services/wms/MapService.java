@@ -152,7 +152,7 @@ public class MapService {
      */
     public MapService( ServiceConfigurationType conf, XMLAdapter adapter, DeegreeWorkspace workspace )
                             throws MalformedURLException {
-        this.registry = new StyleRegistry( workspace );
+        this.registry = new StyleRegistry( workspace.getNewWorkspace() );
         layers = new HashMap<String, Layer>();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf, adapter, layerOptions, this, workspace, dynamics );
@@ -198,7 +198,7 @@ public class MapService {
      * Empty map service with an empty root layer.
      */
     public MapService( DeegreeWorkspace workspace ) {
-        this.registry = new StyleRegistry( workspace );
+        this.registry = new StyleRegistry( workspace.getNewWorkspace() );
         this.defaultLayerOptions = new MapOptions( Quality.NORMAL, Interpolation.NEARESTNEIGHBOR, Antialias.BOTH, -1, 3 );
         layers = new HashMap<String, Layer>();
         root = new EmptyLayer( this, null, "Root Layer", null );

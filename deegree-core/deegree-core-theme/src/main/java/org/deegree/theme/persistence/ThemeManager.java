@@ -45,7 +45,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.layer.persistence.OldLayerStoreManager;
 import org.deegree.theme.Theme;
 
 /**
@@ -74,7 +73,7 @@ public class ThemeManager extends AbstractResourceManager<Theme> {
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { OldLayerStoreManager.class };
+        return new Class[] {};
     }
 
 }
