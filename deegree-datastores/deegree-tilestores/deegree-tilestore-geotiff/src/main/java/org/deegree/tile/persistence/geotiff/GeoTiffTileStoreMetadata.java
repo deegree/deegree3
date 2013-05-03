@@ -29,9 +29,10 @@ package org.deegree.tile.persistence.geotiff;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.geotiff.jaxb.GeoTIFFTileStoreJAXB;
+import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
@@ -61,8 +62,8 @@ public class GeoTiffTileStoreMetadata extends AbstractResourceMetadata<TileStore
                                                                           provider.getSchema(), location.getAsStream(),
                                                                           workspace );
             for ( GeoTIFFTileStoreJAXB.TileDataSet tds : cfg.getTileDataSet() ) {
-                dependencies.add( new DefaultResourceIdentifier<TileStore>( TileStoreProvider.class,
-                                                                            tds.getTileMatrixSetId() ) );
+                dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class,
+                                                                                tds.getTileMatrixSetId() ) );
             }
             return new GeoTiffTileStoreBuilder( cfg, workspace, this );
         } catch ( Exception e ) {

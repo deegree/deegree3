@@ -72,6 +72,10 @@ public class CachingTileStoreBuilder implements ResourceBuilder<TileStore> {
 
             TileStore tileStore = workspace.getResource( TileStoreProvider.class, cfg.getTileStoreId() );
 
+            System.out.println("need " + cfg.getTileStoreId() + ", got " + tileStore);
+
+            System.out.println(metadata.getDependencies());
+            
             return new CachingTileStore( tileStore, cmgr, cfg.getCacheName(), metadata );
         } catch ( Exception e ) {
             throw new ResourceInitException( "Unable to create tile store.", e );

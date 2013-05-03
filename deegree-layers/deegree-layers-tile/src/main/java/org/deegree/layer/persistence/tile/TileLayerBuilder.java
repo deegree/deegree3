@@ -93,6 +93,8 @@ class TileLayerBuilder {
 
             String tdsId = tds.getValue();
 
+            System.out.println("need " + id);
+            
             TileDataSet dataset = store.getTileDataSet( tdsId );
             if ( dataset == null ) {
                 LOG.warn( "Tile data set with id {} not found in tile store {}, skipping.", tdsId, id );

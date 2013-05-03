@@ -43,14 +43,12 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.remoteows.RemoteOWSStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.theme.persistence.ThemeManager;
 
 /**
@@ -96,8 +94,7 @@ public class WMSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSStoreManager.class, CoverageBuilderManager.class, MetadataStoreManager.class,
-                            StyleStoreManager.class, ThemeManager.class };
+        return new Class[] { RemoteOWSStoreManager.class, MetadataStoreManager.class, ThemeManager.class };
     }
 
     @Override

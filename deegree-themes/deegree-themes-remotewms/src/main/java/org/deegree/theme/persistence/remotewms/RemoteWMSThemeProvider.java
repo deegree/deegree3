@@ -52,7 +52,6 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
-import org.deegree.remoteows.RemoteOWSManager;
 import org.deegree.remoteows.RemoteOWSProvider;
 import org.deegree.remoteows.wms.RemoteWMS;
 import org.deegree.theme.Theme;
@@ -127,7 +126,7 @@ public class RemoteWMSThemeProvider implements ThemeProvider {
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSManager.class };
+        return new Class[] {};
     }
 
     @Override

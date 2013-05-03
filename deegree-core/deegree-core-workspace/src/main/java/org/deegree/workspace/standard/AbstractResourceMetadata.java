@@ -111,15 +111,25 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
 
     @Override
     public int compareTo( ResourceMetadata<? extends Resource> o ) {
+        // TODO comparing needs fixing, need to build a complete dependency chain (comparison between just two resources
+        // is not decidable). Probably comparable/sorting is just not enough
         Set<ResourceMetadata<? extends Resource>> deps = new HashSet<ResourceMetadata<? extends Resource>>();
         collectDependencies( deps, getDependencies() );
         if ( deps.contains( o ) ) {
             return 1;
         }
-        deps = new HashSet<ResourceMetadata<? extends Resource>>();
+        deps.clear();
         collectDependencies( deps, o.getDependencies() );
         if ( deps.contains( this ) ) {
             return -1;
+        }
+
+        // else see if one has dependencies and the other hasn't (special case for same-class resources)
+        if ( getDependencies().isEmpty() ) {
+            return -1;
+        }
+        if ( o.getDependencies().isEmpty() ) {
+            return 1;
         }
 
         // else compare the identifiers
@@ -138,9 +148,9 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
             newDeps.add( md );
         }
         for ( ResourceMetadata<? extends Resource> md : newDeps ) {
+            // TODO how to deal with duplicate dependencies but no circles
             if ( visited.contains( md ) ) {
-                LOG.error( "Circular dependencies chain detected when loading resource {}!", getIdentifier() );
-                return;
+                LOG.warn( "Possibly circular dependencies chain detected when loading resource {}!", getIdentifier() );
             }
             visited.add( md );
             collectDependencies( visited, md.getDependencies() );

@@ -131,6 +131,7 @@ public class DefaultWorkspace implements Workspace {
                 res.init();
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
+                ex.printStackTrace();
                 String msg = "Unable to build resource " + md.getIdentifier() + ": " + ex.getLocalizedMessage();
                 errors.registerError( md.getIdentifier(), msg );
                 LOG.error( msg );
