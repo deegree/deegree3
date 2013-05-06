@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,26 +40,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
- * TODO add class documentation here
+ * Can be used to cache resource builders while operating on a workspace. Usually used by the workspace internally.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class PreparedResources {
 
     private Workspace workspace;
 
-    private TreeMap<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> map;
+    private Map<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> map;
 
     public PreparedResources( Workspace workspace ) {
         this.workspace = workspace;
-        map = new TreeMap<ResourceMetadata<?>, ResourceBuilder<?>>();
+        map = new HashMap<ResourceMetadata<?>, ResourceBuilder<?>>();
     }
 
     public <T extends Resource> ResourceBuilder<T> getBuilder( ResourceIdentifier<T> id ) {
@@ -79,5 +76,5 @@ public class PreparedResources {
     public Set<ResourceMetadata<? extends Resource>> getMetadata() {
         return map.keySet();
     }
-    
+
 }

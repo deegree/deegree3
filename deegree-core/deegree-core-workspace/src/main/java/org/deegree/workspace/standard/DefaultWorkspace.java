@@ -118,7 +118,12 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "Building and initializing resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
+        // probably better to implement an insert bulk operation on the graph
         for ( ResourceMetadata<? extends Resource> md : prepared.getMetadata() ) {
+            graph.insertNode( md );
+        }
+
+        for ( ResourceMetadata<? extends Resource> md : graph.toSortedList() ) {
             LOG.info( "Building resource {}.", md.getIdentifier() );
             try {
                 Resource res = prepared.getBuilder( md.getIdentifier() ).build();
@@ -138,16 +143,11 @@ public class DefaultWorkspace implements Workspace {
                 LOG.trace( "Stack trace:", ex );
             }
         }
-        graph = new ResourceGraph( new ArrayList<ResourceMetadata<? extends Resource>>( resourceMetadata.values() ) );
     }
 
     @Override
     public void destroy() {
-        List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
-        for ( Resource res : resources.values() ) {
-            list.add( res.getMetadata() );
-        }
-        Collections.sort( list );
+        List<ResourceMetadata<? extends Resource>> list = graph.toSortedList();
         Collections.reverse( list );
         for ( ResourceMetadata<? extends Resource> md : list ) {
             Resource res = resources.get( md.getIdentifier() );
@@ -293,7 +293,7 @@ public class DefaultWorkspace implements Workspace {
         resourceManagers = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>>();
         resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
         resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
-        graph = new ResourceGraph( Collections.<ResourceMetadata<? extends Resource>> emptyList() );
+        graph = new ResourceGraph();
         initClassloader();
 
         // setup managers
@@ -320,7 +320,8 @@ public class DefaultWorkspace implements Workspace {
         for ( ResourceIdentifier<? extends Resource> did : md.getRelatedResources() ) {
             mdList.add( resourceMetadata.get( did ) );
         }
-        Collections.sort( mdList );
+        ResourceGraph g = new ResourceGraph( mdList );
+        mdList = g.toSortedList();
 
         for ( ResourceMetadata<? extends Resource> metadata : mdList ) {
             if ( resources.get( metadata.getIdentifier() ) != null ) {

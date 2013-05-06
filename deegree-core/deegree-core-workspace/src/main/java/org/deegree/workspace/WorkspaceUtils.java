@@ -44,9 +44,9 @@ package org.deegree.workspace;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import org.deegree.workspace.graph.ResourceGraph;
 import org.deegree.workspace.graph.ResourceNode;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultResourceLocation;
@@ -76,7 +76,8 @@ public class WorkspaceUtils {
         list.add( workspace.getResourceMetadata( id.getProvider(), id.getId() ) );
         collectDependencies( list, node );
         collectDependents( list, node );
-        Collections.sort( list );
+        ResourceGraph g = new ResourceGraph( list );
+        list = g.toSortedList();
         workspace.destroy( list.get( 0 ).getIdentifier() );
         for ( ResourceMetadata<? extends Resource> md : list ) {
             workspace.init( md.getIdentifier(), null );

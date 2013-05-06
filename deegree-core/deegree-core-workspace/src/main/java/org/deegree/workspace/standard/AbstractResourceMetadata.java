@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -46,25 +45,17 @@ import java.util.Set;
 
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract resource metadata implementation that can be used as a base for all metadata implementations. Just make sure
  * to add your dependencies to the <code>dependencies</code> field upon #prepare.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
-
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractResourceMetadata.class );
 
     protected Workspace workspace;
 
@@ -107,54 +98,6 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
             set.addAll( md.getRelatedResources() );
         }
         return set;
-    }
-
-    @Override
-    public int compareTo( ResourceMetadata<? extends Resource> o ) {
-        // TODO comparing needs fixing, need to build a complete dependency chain (comparison between just two resources
-        // is not decidable). Probably comparable/sorting is just not enough
-        Set<ResourceMetadata<? extends Resource>> deps = new HashSet<ResourceMetadata<? extends Resource>>();
-        collectDependencies( deps, getDependencies() );
-        if ( deps.contains( o ) ) {
-            return 1;
-        }
-        deps.clear();
-        collectDependencies( deps, o.getDependencies() );
-        if ( deps.contains( this ) ) {
-            return -1;
-        }
-
-        // else see if one has dependencies and the other hasn't (special case for same-class resources)
-        if ( getDependencies().isEmpty() ) {
-            return -1;
-        }
-        if ( o.getDependencies().isEmpty() ) {
-            return 1;
-        }
-
-        // else compare the identifiers
-        return getIdentifier().compareTo( (ResourceIdentifier) o.getIdentifier() );
-    }
-
-    private void collectDependencies( Set<ResourceMetadata<? extends Resource>> visited,
-                                      Set<ResourceIdentifier<? extends Resource>> deps ) {
-        Set<ResourceMetadata<? extends Resource>> newDeps = new HashSet<ResourceMetadata<? extends Resource>>();
-        for ( ResourceIdentifier<? extends Resource> id : deps ) {
-            ResourceMetadata<? extends Resource> md = workspace.getResourceMetadata( id.getProvider(), id.getId() );
-            if ( md == null ) {
-                throw new ResourceInitException( "The dependency " + id + " was missing for resource "
-                                                 + getIdentifier() );
-            }
-            newDeps.add( md );
-        }
-        for ( ResourceMetadata<? extends Resource> md : newDeps ) {
-            // TODO how to deal with duplicate dependencies but no circles
-            if ( visited.contains( md ) ) {
-                LOG.warn( "Possibly circular dependencies chain detected when loading resource {}!", getIdentifier() );
-            }
-            visited.add( md );
-            collectDependencies( visited, md.getDependencies() );
-        }
     }
 
     @Override

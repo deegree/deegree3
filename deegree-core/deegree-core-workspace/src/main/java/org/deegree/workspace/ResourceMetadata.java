@@ -48,11 +48,10 @@ import java.util.Set;
  * originating object for creating resources.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.3
  */
-public interface ResourceMetadata<T extends Resource> extends Comparable<ResourceMetadata<? extends Resource>> {
+public interface ResourceMetadata<T extends Resource> {
 
     /**
      * @return the location, never <code>null</code>

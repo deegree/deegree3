@@ -43,6 +43,7 @@ package org.deegree.workspace.graph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -63,15 +64,19 @@ public class ResourceGraph {
 
     private Map<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>> nodeMap;
 
+    public ResourceGraph() {
+        nodeMap = new HashMap<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>>();
+    }
+
     /**
      * @param metadata
      *            a list of prepared metadata objects, never <code>null</code>
      */
     public ResourceGraph( List<ResourceMetadata<? extends Resource>> metadata ) {
-        nodeMap = new HashMap<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>>();
+        this();
         List<ResourceNode<? extends Resource>> nodes = new ArrayList<ResourceNode<? extends Resource>>();
         for ( ResourceMetadata<? extends Resource> md : metadata ) {
-            ResourceNode<? extends Resource> node = new ResourceNode( md );
+            ResourceNode<? extends Resource> node = new ResourceNode( this, md );
             nodes.add( node );
             nodeMap.put( md.getIdentifier(), node );
         }
@@ -79,9 +84,7 @@ public class ResourceGraph {
             ResourceMetadata<? extends Resource> md = node.getMetadata();
             for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
                 ResourceNode<? extends Resource> depNode = nodeMap.get( id );
-                if ( depNode == null ) {
-                    node.setDependenciesUnavailable();
-                } else {
+                if ( depNode != null ) {
                     node.addDependency( depNode );
                     depNode.addDependent( node );
                 }
@@ -91,10 +94,70 @@ public class ResourceGraph {
 
     /**
      * @param id
+     *            may not be <code>null</code>
      * @return a single node of the dependency network, <code>null</code> if no such node exists
      */
     public <T extends Resource> ResourceNode<T> getNode( ResourceIdentifier<T> id ) {
         return (ResourceNode) nodeMap.get( id );
+    }
+
+    /**
+     * @param metadata
+     *            may not be <code>null</code>
+     * @return the new node, never <code>null</code>
+     */
+    public synchronized <T extends Resource> ResourceNode<T> insertNode( ResourceMetadata<T> metadata ) {
+        ResourceNode<T> node = new ResourceNode<T>( this, metadata );
+        nodeMap.put( metadata.getIdentifier(), node );
+
+        updateDependencies();
+
+        return node;
+    }
+
+    private void updateDependencies() {
+        // better algorithm possible?
+        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
+            node.getDependencies().clear();
+            node.getDependents().clear();
+        }
+        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
+            ResourceMetadata<? extends Resource> md = node.getMetadata();
+            for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
+                ResourceNode<? extends Resource> depNode = nodeMap.get( id );
+                if ( depNode != null ) {
+                    node.addDependency( depNode );
+                    depNode.addDependent( node );
+                }
+            }
+        }
+    }
+
+    public List<ResourceMetadata<? extends Resource>> toSortedList() {
+        HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<ResourceNode<?>>( nodeMap.values() );
+
+        List<ResourceMetadata<? extends Resource>> roots = new ArrayList<ResourceMetadata<? extends Resource>>();
+        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
+            if ( node.getDependencies().isEmpty() ) {
+                roots.add( node.getMetadata() );
+                nodes.remove( node );
+            }
+        }
+
+        outer: while ( !nodes.isEmpty() ) {
+            inner: for ( ResourceNode<? extends Resource> node : nodes ) {
+                for ( ResourceNode<? extends Resource> dep : node.getDependencies() ) {
+                    if ( !roots.contains( dep.getMetadata() ) ) {
+                        continue inner;
+                    }
+                }
+                roots.add( node.getMetadata() );
+                nodes.remove( node );
+                continue outer;
+            }
+        }
+
+        return roots;
     }
 
 }

@@ -42,19 +42,18 @@
 package org.deegree.workspace.standard;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.List;
 
-import junit.framework.Assert;
-
-import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.graph.ResourceGraph;
+import org.deegree.workspace.graph.ResourceNode;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * TODO add class documentation here
+ * Tests for resource metadata.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -65,13 +64,13 @@ public class AbstractResourceMetadataTest {
 
     @Test
     public void testSorting() {
-        ResourceIdentifier id1 = new DefaultResourceIdentifier( ResourceProvider.class, "md1" );
+        final ResourceIdentifier id1 = new DefaultResourceIdentifier( ResourceProvider.class, "md1" );
         DefaultResourceLocation loc1 = new DefaultResourceLocation( new File( "/tmp/" ), id1 );
-        ResourceIdentifier id2 = new DefaultResourceIdentifier( ResourceProvider.class, "md2" );
+        final ResourceIdentifier id2 = new DefaultResourceIdentifier( ResourceProvider.class, "md2" );
         DefaultResourceLocation loc2 = new DefaultResourceLocation( new File( "/tmp/" ), id2 );
-        ResourceIdentifier id3 = new DefaultResourceIdentifier( ResourceProvider.class, "md3" );
+        final ResourceIdentifier id3 = new DefaultResourceIdentifier( ResourceProvider.class, "md3" );
         DefaultResourceLocation loc3 = new DefaultResourceLocation( new File( "/tmp/" ), id3 );
-        ResourceIdentifier id4 = new DefaultResourceIdentifier( ResourceProvider.class, "md4" );
+        final ResourceIdentifier id4 = new DefaultResourceIdentifier( ResourceProvider.class, "md4" );
         DefaultResourceLocation loc4 = new DefaultResourceLocation( new File( "/tmp/" ), id4 );
         final AbstractResourceMetadata md4 = new AbstractResourceMetadata( null, loc4, null ) {
             @Override
@@ -82,38 +81,60 @@ public class AbstractResourceMetadataTest {
         final AbstractResourceMetadata md3 = new AbstractResourceMetadata( null, loc3, null ) {
             @Override
             public ResourceBuilder prepare() {
-                dependencies.add( md4 );
+                dependencies.add( id4 );
                 return null;
             }
         };
         final AbstractResourceMetadata md2 = new AbstractResourceMetadata( null, loc2, null ) {
             @Override
             public ResourceBuilder prepare() {
-                dependencies.add( md4 );
+                dependencies.add( id4 );
                 return null;
             }
         };
         final AbstractResourceMetadata md1 = new AbstractResourceMetadata( null, loc1, null ) {
             @Override
             public ResourceBuilder prepare() {
-                dependencies.add( md2 );
-                dependencies.add( md3 );
+                dependencies.add( id2 );
+                dependencies.add( id3 );
                 return null;
             }
         };
 
-        TreeSet<AbstractResourceMetadata> list = new TreeSet();
+        md1.prepare();
+        md2.prepare();
+        md3.prepare();
+        md4.prepare();
 
-        list.add( md4 );
-        list.add( md2 );
-        list.add( md3 );
-        list.add( md1 );
+        ResourceGraph graph = new ResourceGraph();
 
-        Iterator iter = list.iterator();
-        Assert.assertEquals( iter.next(), md1 );
-        Assert.assertEquals( iter.next(), md2 );
-        Assert.assertEquals( iter.next(), md3 );
-        Assert.assertEquals( iter.next(), md4 );
+        graph.insertNode( md1 );
+        ResourceNode node1 = graph.getNode( md1.getIdentifier() );
+
+        graph.insertNode( md4 );
+        ResourceNode node4 = graph.getNode( md4.getIdentifier() );
+
+        graph.insertNode( md2 );
+        ResourceNode node2 = graph.getNode( md2.getIdentifier() );
+
+        graph.insertNode( md3 );
+        ResourceNode node3 = graph.getNode( md3.getIdentifier() );
+
+        List deps = node1.getDependencies();
+        Assert.assertEquals( 2, deps.size() );
+        Assert.assertTrue( deps.contains( node2 ) );
+        Assert.assertTrue( deps.contains( node3 ) );
+
+        deps = node2.getDependencies();
+        Assert.assertEquals( 1, deps.size() );
+        Assert.assertTrue( deps.contains( node4 ) );
+
+        deps = node3.getDependencies();
+        Assert.assertEquals( 1, deps.size() );
+        Assert.assertTrue( deps.contains( node4 ) );
+
+        deps = node4.getDependencies();
+        Assert.assertTrue( deps.isEmpty() );
     }
 
 }

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
 
 /**
@@ -55,7 +56,9 @@ import org.deegree.workspace.ResourceMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ResourceNode<T extends Resource> implements Comparable<ResourceNode<T>> {
+public class ResourceNode<T extends Resource> {
+
+    private ResourceGraph graph;
 
     private ResourceMetadata<T> metadata;
 
@@ -63,13 +66,14 @@ public class ResourceNode<T extends Resource> implements Comparable<ResourceNode
 
     private List<ResourceNode<? extends Resource>> dependents = new ArrayList<ResourceNode<? extends Resource>>();
 
-    private boolean dependenciesAvailable = true;
-
     /**
+     * @param graph
+     *            never <code>null</code>
      * @param metadata
      *            never <code>null</code>
      */
-    public ResourceNode( ResourceMetadata<T> metadata ) {
+    public ResourceNode( ResourceGraph graph, ResourceMetadata<T> metadata ) {
+        this.graph = graph;
         this.metadata = metadata;
     }
 
@@ -78,7 +82,9 @@ public class ResourceNode<T extends Resource> implements Comparable<ResourceNode
      *            never <code>null</code>
      */
     public void addDependent( ResourceNode<? extends Resource> node ) {
-        dependents.add( node );
+        if ( !dependents.contains( node ) ) {
+            dependents.add( node );
+        }
     }
 
     /**
@@ -86,7 +92,9 @@ public class ResourceNode<T extends Resource> implements Comparable<ResourceNode
      *            never <code>null</code>
      */
     public void addDependency( ResourceNode<? extends Resource> node ) {
-        dependencies.add( node );
+        if ( !dependencies.contains( node ) ) {
+            dependencies.add( node );
+        }
     }
 
     /**
@@ -100,7 +108,12 @@ public class ResourceNode<T extends Resource> implements Comparable<ResourceNode
      * @return true, if all dependencies are available
      */
     public boolean areDependenciesAvailable() {
-        return dependenciesAvailable;
+        for ( ResourceIdentifier<? extends Resource> id : metadata.getDependencies() ) {
+            if ( graph.getNode( id ) == null ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -115,13 +128,6 @@ public class ResourceNode<T extends Resource> implements Comparable<ResourceNode
      */
     public List<ResourceNode<? extends Resource>> getDependents() {
         return dependents;
-    }
-
-    /**
-     * If called, signals the node that not all its dependencies are available.
-     */
-    public void setDependenciesUnavailable() {
-        dependenciesAvailable = false;
     }
 
     /**
@@ -163,11 +169,6 @@ public class ResourceNode<T extends Resource> implements Comparable<ResourceNode
     @Override
     public String toString() {
         return metadata.getIdentifier().toString();
-    }
-
-    @Override
-    public int compareTo( ResourceNode<T> o ) {
-        return metadata.compareTo( o.metadata );
     }
 
 }
