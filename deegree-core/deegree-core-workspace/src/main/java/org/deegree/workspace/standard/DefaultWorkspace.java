@@ -152,11 +152,12 @@ public class DefaultWorkspace implements Workspace {
         for ( ResourceMetadata<? extends Resource> md : list ) {
             Resource res = resources.get( md.getIdentifier() );
             try {
-                LOG.info( "Shutting down {}.", md.getIdentifier() );
-                res.destroy();
+                if ( res != null ) {
+                    LOG.info( "Shutting down {}.", md.getIdentifier() );
+                    res.destroy();
+                }
             } catch ( Exception e ) {
-                LOG.warn( "Unable to destroy resource {}: {}", res.getMetadata().getIdentifier(),
-                          e.getLocalizedMessage() );
+                LOG.warn( "Unable to destroy resource {}: {}", md.getIdentifier(), e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
             }
         }
@@ -360,7 +361,12 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Preparing resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
-        for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
+        outer: for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
+            for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
+                if ( !prepared.hasBuilder( resourceMetadata.get( id ) ) ) {
+                    continue outer;
+                }
+            }
             LOG.info( "Preparing resource {}.", md.getIdentifier() );
             try {
                 ResourceBuilder<? extends Resource> builder = md.prepare();

@@ -77,4 +77,8 @@ public class PreparedResources {
         return map.keySet();
     }
 
+    public boolean hasBuilder( ResourceMetadata<? extends Resource> md ) {
+        return map.containsKey( md );
+    }
+
 }
