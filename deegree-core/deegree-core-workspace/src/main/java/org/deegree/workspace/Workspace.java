@@ -191,4 +191,11 @@ public interface Workspace {
      */
     ErrorHandler getErrorHandler();
 
+    /**
+     * Returns the current resource states.
+     * 
+     * @return never <code>null</code>
+     */
+    ResourceStates getStates();
+
 }

@@ -66,7 +66,7 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Builds tile layers from jaxb beans.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -93,8 +93,11 @@ class TileLayerBuilder {
 
             String tdsId = tds.getValue();
 
-            System.out.println("need " + id);
-            
+            if ( store == null ) {
+                LOG.warn( "Tile store with id {} was not available, skipping.", id );
+                continue;
+            }
+
             TileDataSet dataset = store.getTileDataSet( tdsId );
             if ( dataset == null ) {
                 LOG.warn( "Tile data set with id {} not found in tile store {}, skipping.", tdsId, id );
