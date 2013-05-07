@@ -62,6 +62,7 @@ import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -94,8 +95,7 @@ class TileLayerBuilder {
             String tdsId = tds.getValue();
 
             if ( store == null ) {
-                LOG.warn( "Tile store with id {} was not available, skipping.", id );
-                continue;
+                throw new ResourceInitException( "The tile store with id " + id + " was not available." );
             }
 
             TileDataSet dataset = store.getTileDataSet( tdsId );
