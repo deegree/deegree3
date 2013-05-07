@@ -49,10 +49,9 @@ import javax.xml.bind.JAXBException;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.remoteows.RemoteOWSStoreProvider;
 import org.deegree.remoteows.RemoteOWSStore;
+import org.deegree.remoteows.RemoteOWSStoreProvider;
 import org.deegree.remoteows.wms.RemoteWMSStore.LayerOptions;
 import org.deegree.remoteows.wms.jaxb.AuthenticationType;
 import org.deegree.remoteows.wms.jaxb.HTTPBasicAuthenticationType;
@@ -217,7 +216,7 @@ public class RemoteWMSStoreProvider implements RemoteOWSStoreProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+        return new Class[] {};
     }
 
     @Override

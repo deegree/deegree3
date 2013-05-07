@@ -52,7 +52,6 @@ import javax.xml.bind.Unmarshaller;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.filter.function.FunctionManager;
@@ -185,7 +184,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, FunctionManager.class };
+        return new Class[] { FunctionManager.class };
     }
 
     public void init( DeegreeWorkspace workspace ) {

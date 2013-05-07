@@ -46,11 +46,9 @@ import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
-import org.deegree.filter.function.FunctionManager;
 import org.slf4j.Logger;
 
 /**
@@ -92,7 +90,7 @@ public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, FunctionManager.class, CRSManager.class };
+        return new Class[] { CRSManager.class };
     }
 
     static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {

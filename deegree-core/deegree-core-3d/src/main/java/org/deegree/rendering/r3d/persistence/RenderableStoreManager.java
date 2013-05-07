@@ -59,7 +59,6 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.slf4j.Logger;
@@ -198,7 +197,7 @@ public class RenderableStoreManager extends AbstractBasicResourceManager {
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
         // TODO verify deps
-        return new Class[] { ProxyUtils.class, CoverageBuilderManager.class };
+        return new Class[] { CoverageBuilderManager.class };
     }
 
     public void shutdown() {

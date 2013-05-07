@@ -40,7 +40,6 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.DefaultResourceManagerMetadata;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.utils.ProxyUtils;
 
 /**
  * 
@@ -62,7 +61,7 @@ public class RemoteOWSStoreManager extends AbstractResourceManager<RemoteOWSStor
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+        return new Class[] {};
     }
 
     @Override

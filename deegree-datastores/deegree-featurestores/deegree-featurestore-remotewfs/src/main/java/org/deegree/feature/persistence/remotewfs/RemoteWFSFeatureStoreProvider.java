@@ -44,7 +44,6 @@ import javax.xml.bind.JAXBException;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.feature.persistence.remotewfs.jaxb.RemoteWFSFeatureStoreConfig;
@@ -109,7 +108,7 @@ public class RemoteWFSFeatureStoreProvider extends NewFeatureStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+        return new Class[] {};
     }
 
     /*

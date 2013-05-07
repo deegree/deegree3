@@ -35,18 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.cs.persistence.CRSManager;
 import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.Initializable;
 import org.deegree.workspace.Workspace;

@@ -61,7 +61,6 @@ import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.slf4j.Logger;
 
@@ -103,7 +102,7 @@ public class OWSMetadataProviderManager extends AbstractResourceManager<OWSMetad
 
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+        return new Class[] {};
     }
 
     @Override
