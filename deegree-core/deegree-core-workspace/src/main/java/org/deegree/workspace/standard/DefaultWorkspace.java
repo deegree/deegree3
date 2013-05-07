@@ -300,7 +300,6 @@ public class DefaultWorkspace implements Workspace {
         if ( list == null ) {
             list = new ArrayList<ResourceLocation<? extends Resource>>();
             extraResources.put( location.getIdentifier().getProvider(), list );
-            states.setState( location.getIdentifier(), Scanned );
         }
         list.add( location );
     }
