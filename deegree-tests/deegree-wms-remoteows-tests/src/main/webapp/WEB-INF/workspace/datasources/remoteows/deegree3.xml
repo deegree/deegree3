@@ -2,5 +2,5 @@
 <RemoteWMS xmlns="http://www.deegree.org/remoteows/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/remoteows/wms remotewms.xsd" configVersion="3.1.0">
   <CapabilitiesDocumentLocation
-    location="file:capabilities.xml" />
+    location="capabilities.xml" />
 </RemoteWMS>
