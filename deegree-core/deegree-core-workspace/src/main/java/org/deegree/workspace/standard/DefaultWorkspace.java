@@ -134,7 +134,8 @@ public class DefaultWorkspace implements Workspace {
 
         outer: for ( ResourceMetadata<? extends Resource> md : graph.toSortedList() ) {
             for ( ResourceIdentifier<? extends Resource> dep : md.getDependencies() ) {
-                if ( states.getState( dep ) != Prepared ) {
+                if ( states.getState( dep ) != Initialized ) {
+                    LOG.error( "Dependency {} for resource {} failed to initialize.", dep, md );
                     continue outer;
                 }
             }
