@@ -59,7 +59,6 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.junit.XMLAssert;
@@ -84,7 +83,8 @@ public class Filter110XMLEncoderTest {
     @Before
     public void setUp()
                             throws Exception {
-        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+        ws.initAll();
     }
 
     private Filter testImportExportImport( String resource )

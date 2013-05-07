@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -40,19 +39,19 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
-import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
+import org.deegree.workspace.Initializable;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -65,11 +64,8 @@ import org.slf4j.Logger;
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
-public final class ProxyUtils extends AbstractBasicResourceManager implements ResourceManager {
+public final class ProxyUtils implements Initializable {
 
     private static final Logger LOG = getLogger( ProxyUtils.class );
 
@@ -112,15 +108,15 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
     /**
      * Sets/augments the VM's proxy configuration.
      * 
-     * @throws IllegalArgumentException
+     * @param dir
+     *            fallback directory, in case the workspace root has no proxy.xml
+     * 
      */
-    @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws IllegalArgumentException {
+    public void init( Workspace workspace ) {
 
         File globalProxy = new File( DeegreeWorkspace.getWorkspaceRoot(), "proxy.xml" );
 
-        File proxyConfigFile = new File( workspace.getLocation(), "proxy.xml" );
+        File proxyConfigFile = new File( ( (DefaultWorkspace) workspace ).getLocation(), "proxy.xml" );
         if ( proxyConfigFile.exists() ) {
             LOG.info( "Using 'proxy.xml' from workspace." );
         } else if ( globalProxy.exists() ) {
@@ -136,14 +132,14 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
         LOG.info( "--------------------------------------------------------------------------------" );
         try {
             ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                              proxyConfigFile.toURI().toURL(),
+                                                                              new FileInputStream( proxyConfigFile ),
                                                                               workspace );
             if ( proxyConfig != null ) {
                 setupProxyParameters( proxyConfig );
             }
         } catch ( Exception e ) {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
-            throw new IllegalArgumentException( msg, e );
+            throw new ResourceInitException( msg, e );
         }
         logProxyConfiguration( LOG );
         LOG.info( "" );
@@ -456,38 +452,4 @@ public final class ProxyUtils extends AbstractBasicResourceManager implements Re
                   + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    public void shutdown() {
-        // reset settings?
-    }
-
-    public ResourceManagerMetadata getMetadata() {
-        return null;
-    }
-
-    @Override
-    public ResourceState activate( String id ) {
-        return null;
-    }
-
-    @Override
-    public ResourceState deactivate( String id ) {
-        return null;
-    }
-
-    @Override
-    protected ResourceProvider getProvider( URL file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
-    }
 }

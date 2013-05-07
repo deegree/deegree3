@@ -63,7 +63,9 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.commons.io.FileUtils;
+import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.ErrorHandler;
+import org.deegree.workspace.Initializable;
 import org.deegree.workspace.PreparedResources;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
@@ -180,6 +182,17 @@ public class DefaultWorkspace implements Workspace {
 
         for ( ResourceManager<? extends Resource> mgr : resourceManagers.values() ) {
             mgr.shutdown();
+        }
+
+        Iterator<Destroyable> it = ServiceLoader.load( Destroyable.class, moduleClassLoader ).iterator();
+        while ( it.hasNext() ) {
+            Destroyable init = it.next();
+            try {
+                init.destroy( this );
+            } catch ( Exception e ) {
+                LOG.error( "Could not destroy {}: {}", init.getClass().getSimpleName(), e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
         }
 
         moduleClassLoader = null;
@@ -314,6 +327,17 @@ public class DefaultWorkspace implements Workspace {
         graph = new ResourceGraph();
         states = new ResourceStates();
         initClassloader();
+
+        Iterator<Initializable> it = ServiceLoader.load( Initializable.class, moduleClassLoader ).iterator();
+        while ( it.hasNext() ) {
+            Initializable init = it.next();
+            try {
+                init.init( this );
+            } catch ( Exception e ) {
+                LOG.error( "Could not initialize {}: {}", init.getClass().getSimpleName(), e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
 
         // setup managers
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, moduleClassLoader ).iterator();

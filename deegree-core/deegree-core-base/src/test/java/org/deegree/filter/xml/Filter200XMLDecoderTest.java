@@ -65,7 +65,6 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.spatial.Disjoint;
@@ -95,7 +94,8 @@ public class Filter200XMLDecoderTest {
     @Before
     public void setUp()
                             throws Exception {
-        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+        ws.initAll();
     }
 
     @Test

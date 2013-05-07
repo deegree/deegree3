@@ -61,7 +61,6 @@ import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
@@ -69,7 +68,6 @@ import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Disjoint;
 import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.Within;
-import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LinearRing;
@@ -94,7 +92,8 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Before
     public void setUp()
                             throws Exception {
-        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+        ws.initAll();
     }
 
     /**

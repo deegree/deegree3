@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -55,6 +53,8 @@ import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link FunctionProvider} for the <code>Area</code> function (calculates the area of a {@link Surface}).
@@ -94,7 +94,7 @@ public class Area implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
+    public void init( Workspace ws )
                             throws ResourceInitException {
         // nothing to do
     }

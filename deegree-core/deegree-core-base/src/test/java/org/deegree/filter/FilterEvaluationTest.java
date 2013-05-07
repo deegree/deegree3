@@ -94,7 +94,7 @@ public class FilterEvaluationTest {
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
-        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+        new FunctionManager().init( DeegreeWorkspace.getInstance().getNewWorkspace() );
     }
 
     @Test

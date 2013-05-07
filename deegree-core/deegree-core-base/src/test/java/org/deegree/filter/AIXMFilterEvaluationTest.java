@@ -86,7 +86,7 @@ public class AIXMFilterEvaluationTest {
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml/3.2" );
         nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
-        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+        new FunctionManager().init( DeegreeWorkspace.getInstance().getNewWorkspace() );
     }
 
     @Test
