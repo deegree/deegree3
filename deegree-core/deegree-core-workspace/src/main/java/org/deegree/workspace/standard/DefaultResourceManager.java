@@ -123,7 +123,7 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         }
     }
 
-    private void read( List<ResourceLocation<T>> list, Workspace workspace ) {
+    protected void read( List<ResourceLocation<T>> list, Workspace workspace ) {
         for ( ResourceLocation<T> loc : list ) {
             try {
                 ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );

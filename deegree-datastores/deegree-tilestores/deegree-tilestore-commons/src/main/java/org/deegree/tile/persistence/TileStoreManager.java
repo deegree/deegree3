@@ -27,6 +27,11 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import java.util.List;
+import java.util.ListIterator;
+
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
@@ -42,6 +47,18 @@ public class TileStoreManager extends DefaultResourceManager<TileStore> {
     public TileStoreManager() {
         super( new DefaultResourceManagerMetadata<TileStore>( TileStoreProvider.class, "tile stores",
                                                               "datasources/tile/" ) );
+    }
+
+    @Override
+    protected void read( List<ResourceLocation<TileStore>> list, Workspace workspace ) {
+        ListIterator<ResourceLocation<TileStore>> iter = list.listIterator();
+        while ( iter.hasNext() ) {
+            ResourceLocation<TileStore> loc = iter.next();
+            if ( loc.getIdentifier().getId().startsWith( "tilematrixset" ) ) {
+                iter.remove();
+            }
+        }
+        super.read( list, workspace );
     }
 
 }
