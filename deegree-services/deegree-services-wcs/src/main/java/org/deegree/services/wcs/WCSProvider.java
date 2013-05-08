@@ -44,7 +44,6 @@ import java.net.URL;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -92,7 +91,7 @@ public class WCSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { CoverageBuilderManager.class };
+        return new Class[] {};
     }
 
     @Override

@@ -51,7 +51,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.Coverage;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -268,7 +268,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param tileProviders
      */
     private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
-        Coverage coverage = workspace.getSubsystemManager( CoverageBuilderManager.class ).get( coverageStoreId );
+        Coverage coverage = workspace.getNewWorkspace().getResource( CoverageProvider.class, coverageStoreId );
         if ( coverage == null ) {
             LOG.warn( "The coverage builder with id: " + coverageStoreId
                       + " could not create a coverage, ignoring dataset." );

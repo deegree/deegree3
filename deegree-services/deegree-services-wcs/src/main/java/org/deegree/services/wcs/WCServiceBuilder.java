@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.Interval.Closure;
@@ -142,7 +142,8 @@ public class WCServiceBuilder {
     private WCSCoverage extractCoverage( Coverage coverage )
                             throws ServiceInitException {
         String id = coverage.getCoverageStoreId();
-        org.deegree.coverage.Coverage cov = getServiceWorkspace().getSubsystemManager( CoverageBuilderManager.class ).get( id );
+        org.deegree.coverage.Coverage cov = getServiceWorkspace().getNewWorkspace().getResource( CoverageProvider.class,
+                                                                                                 id );
         if ( cov == null ) {
             throw new ServiceInitException( "No coverage store with id '" + id + "' is known." );
         }
