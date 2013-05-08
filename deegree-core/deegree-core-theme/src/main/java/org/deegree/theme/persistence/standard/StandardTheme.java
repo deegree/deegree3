@@ -44,19 +44,20 @@ import static org.deegree.commons.utils.StringUtils.repeat;
 
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
- * @author stranger
+ * Standard theme implementation.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.3
  */
 public class StandardTheme implements Theme {
-
-    // private DeegreeWorkspace workspace;
 
     private final List<Theme> themes;
 
@@ -64,16 +65,19 @@ public class StandardTheme implements Theme {
 
     private LayerMetadata metadata;
 
-    public StandardTheme( LayerMetadata metadata, List<Theme> themes, List<Layer> layers ) {
+    private ResourceMetadata<Theme> resourceMetadata;
+
+    public StandardTheme( LayerMetadata metadata, List<Theme> themes, List<Layer> layers,
+                          ResourceMetadata<Theme> resourceMetadata ) {
         this.metadata = metadata;
         this.themes = themes;
         this.layers = layers;
+        this.resourceMetadata = resourceMetadata;
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        // this.workspace = workspace;
+    public void init() {
+        // nothing to do
     }
 
     @Override
@@ -82,7 +86,7 @@ public class StandardTheme implements Theme {
     }
 
     @Override
-    public LayerMetadata getMetadata() {
+    public LayerMetadata getLayerMetadata() {
         return metadata;
     }
 
@@ -118,6 +122,11 @@ public class StandardTheme implements Theme {
     @Override
     public String toString() {
         return toString( 0 );
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return resourceMetadata;
     }
 
 }

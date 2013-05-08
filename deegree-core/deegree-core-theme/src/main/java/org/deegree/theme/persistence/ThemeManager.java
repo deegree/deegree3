@@ -40,40 +40,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.theme.Theme;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
- * @author stranger
+ * The resource manager for themes.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.3
  */
-public class ThemeManager extends AbstractResourceManager<Theme> {
+public class ThemeManager extends DefaultResourceManager<Theme> {
 
-    private ThemeManagerMetadata metadata;
-
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        metadata = new ThemeManagerMetadata( workspace );
-    }
-
-    static class ThemeManagerMetadata extends DefaultResourceManagerMetadata<Theme> {
-        ThemeManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "themes", "themes/", ThemeProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public ResourceManagerMetadata<Theme> getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
+    public ThemeManager() {
+        super( new DefaultResourceManagerMetadata<Theme>( ThemeProvider.class, "themes", "themes" ) );
     }
 
 }

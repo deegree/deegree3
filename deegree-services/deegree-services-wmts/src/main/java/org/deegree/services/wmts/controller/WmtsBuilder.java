@@ -55,7 +55,7 @@ import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.theme.Theme;
-import org.deegree.theme.persistence.ThemeManager;
+import org.deegree.theme.persistence.ThemeProvider;
 import org.slf4j.Logger;
 
 /**
@@ -91,15 +91,13 @@ class WmtsBuilder {
                                              + e.getLinkedException().getMessage(), e );
         }
 
-        ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
-
         this.metadataUrlTemplate = conf.getMetadataURLTemplate();
 
         themes = new ArrayList<Theme>();
 
         List<String> ids = conf.getServiceConfiguration().getThemeId();
         for ( String id : ids ) {
-            Theme t = mgr.get( id );
+            Theme t = workspace.getNewWorkspace().getResource( ThemeProvider.class, id );
             if ( t == null ) {
                 LOG.warn( "Theme with id {} was not available.", id );
                 continue;

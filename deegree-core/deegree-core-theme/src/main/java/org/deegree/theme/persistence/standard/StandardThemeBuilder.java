@@ -42,6 +42,7 @@
 package org.deegree.theme.persistence.standard;
 
 import static java.util.Collections.singletonList;
+import static org.deegree.theme.Themes.aggregateSpatialMetadata;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
@@ -51,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.DescriptionConverter;
 import org.deegree.commons.tom.ows.LanguageString;
@@ -63,9 +63,14 @@ import org.deegree.layer.Layer;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.LayerStore;
+import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.jaxb.ThemeType;
+import org.deegree.theme.persistence.standard.jaxb.Themes;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -76,11 +81,23 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-class StandardThemeBuilder {
+public class StandardThemeBuilder implements ResourceBuilder<Theme> {
 
     private static final Logger LOG = getLogger( StandardThemeBuilder.class );
 
-    private static Layer findLayer( ThemeType.Layer l, Map<String, LayerStore> stores ) {
+    private Themes config;
+
+    private ResourceMetadata<Theme> metadata;
+
+    private Workspace workspace;
+
+    public StandardThemeBuilder( Themes config, ResourceMetadata<Theme> metadata, Workspace workspace ) {
+        this.config = config;
+        this.metadata = metadata;
+        this.workspace = workspace;
+    }
+
+    private Layer findLayer( ThemeType.Layer l, Map<String, LayerStore> stores ) {
         Layer lay = null;
         if ( l.getLayerStore() != null ) {
             LayerStore s = stores.get( l.getLayerStore() );
@@ -106,9 +123,8 @@ class StandardThemeBuilder {
         return lay;
     }
 
-    static StandardTheme buildTheme( ThemeType current, List<ThemeType.Layer> layers, List<ThemeType> themes,
-                                     Map<String, LayerStore> stores )
-                            throws ResourceInitException {
+    private StandardTheme buildTheme( ThemeType current, List<ThemeType.Layer> layers, List<ThemeType> themes,
+                                      Map<String, LayerStore> stores ) {
         List<Layer> lays = new ArrayList<Layer>( layers.size() );
 
         LinkedHashMap<String, Dimension<?>> dims = new LinkedHashMap<String, Dimension<?>>();
@@ -141,20 +157,20 @@ class StandardThemeBuilder {
         md.setDimensions( dims );
         md.setStyles( styles );
         md.setLegendStyles( legendStyles );
-        return new StandardTheme( md, thms, lays );
+        return new StandardTheme( md, thms, lays, metadata );
     }
 
-    private static Theme buildAutoTheme( Layer layer ) {
+    private Theme buildAutoTheme( Layer layer ) {
         LayerMetadata md = new LayerMetadata( null, null, null );
         LayerMetadata lmd = layer.getMetadata();
         md.merge( lmd );
         md.setDimensions( new LinkedHashMap<String, Dimension<?>>( lmd.getDimensions() ) );
         md.setStyles( new LinkedHashMap<String, Style>( lmd.getStyles() ) );
         md.setLegendStyles( new LinkedHashMap<String, Style>( lmd.getLegendStyles() ) );
-        return new StandardTheme( md, Collections.<Theme> emptyList(), singletonList( layer ) );
+        return new StandardTheme( md, Collections.<Theme> emptyList(), singletonList( layer ), metadata );
     }
 
-    private static Theme buildAutoTheme( String id, LayerStore store ) {
+    private Theme buildAutoTheme( String id, LayerStore store ) {
         Description desc = new Description( id, singletonList( new LanguageString( id, null ) ), null, null );
         LayerMetadata md = new LayerMetadata( null, desc, new SpatialMetadata( null, Collections.<ICRS> emptyList() ) );
         List<Theme> themes = new ArrayList<Theme>();
@@ -163,10 +179,10 @@ class StandardThemeBuilder {
             themes.add( buildAutoTheme( l ) );
         }
 
-        return new StandardTheme( md, themes, new ArrayList<Layer>() );
+        return new StandardTheme( md, themes, new ArrayList<Layer>(), metadata );
     }
 
-    static Theme buildAutoTheme( Map<String, LayerStore> stores ) {
+    private Theme buildAutoTheme( Map<String, LayerStore> stores ) {
         Description desc = new Description( null, Collections.singletonList( new LanguageString( "root", null ) ),
                                             null, null );
         LayerMetadata md = new LayerMetadata( null, desc, new SpatialMetadata( null, Collections.<ICRS> emptyList() ) );
@@ -176,7 +192,32 @@ class StandardThemeBuilder {
             themes.add( buildAutoTheme( e.getKey(), e.getValue() ) );
         }
 
-        return new StandardTheme( md, themes, new ArrayList<Layer>() );
+        return new StandardTheme( md, themes, new ArrayList<Layer>(), metadata );
+    }
+
+    @Override
+    public Theme build() {
+        List<String> storeIds = config.getLayerStoreId();
+        Map<String, LayerStore> stores = new LinkedHashMap<String, LayerStore>( storeIds.size() );
+
+        for ( String id : storeIds ) {
+            LayerStore store = workspace.getResource( LayerStoreProvider.class, id );
+            if ( store == null ) {
+                LOG.warn( "Layer store with id {} is not available.", id );
+                continue;
+            }
+            stores.put( id, store );
+        }
+
+        ThemeType root = config.getTheme();
+        Theme theme;
+        if ( root == null ) {
+            theme = buildAutoTheme( stores );
+        } else {
+            theme = buildTheme( root, root.getLayer(), root.getTheme(), stores );
+        }
+        aggregateSpatialMetadata( theme );
+        return theme;
     }
 
 }

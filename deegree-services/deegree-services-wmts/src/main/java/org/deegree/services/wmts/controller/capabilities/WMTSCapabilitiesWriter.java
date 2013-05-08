@@ -151,7 +151,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
     private void exportTheme( Theme t )
                             throws XMLStreamException {
         writer.writeStartElement( WMTSNS, "Theme" );
-        exportMetadata( t.getMetadata(), false, null );
+        exportMetadata( t.getLayerMetadata(), false, null );
 
         for ( Theme t2 : t.getThemes() ) {
             exportTheme( t2 );

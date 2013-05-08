@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.migration;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Transformer;
@@ -52,7 +52,8 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.services.controller.WebServicesConfiguration;
 import org.deegree.services.wms.controller.WMSController;
-import org.deegree.theme.persistence.ThemeManager;
+import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.WorkspaceUtils;
 
 /**
  * 
@@ -77,7 +78,6 @@ public class ThemeExtractor {
     public void transform()
                             throws TransformerException, XMLStreamException {
         WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
-        ThemeManager tmgr = workspace.getSubsystemManager( ThemeManager.class );
         ResourceState<?>[] states = mgr.getStates();
         for ( ResourceState<?> s : states ) {
             if ( s.getResource() instanceof WMSController ) {
@@ -87,8 +87,8 @@ public class ThemeExtractor {
 
                 ThemeXmlStreamEncoder.writeOut( bos );
 
-                tmgr.createResource( s.getId(), new ByteArrayInputStream( bos.toByteArray() ) );
-                tmgr.activate( s.getId() );
+                WorkspaceUtils.activateSynthetic( workspace.getNewWorkspace(), ThemeProvider.class, s.getId(),
+                                                  new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
             }
         }
     }

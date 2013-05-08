@@ -40,14 +40,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.theme.Theme;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * @author stranger
+ * SPI extension point for themes.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ *
+ * @since 3.3
  */
-public interface ThemeProvider extends ExtendedResourceProvider<Theme> {
+public abstract class ThemeProvider extends AbstractResourceProvider<Theme> {
 
     // specialized type parameter
 
