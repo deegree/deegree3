@@ -361,6 +361,7 @@ public class DefaultWorkspace implements Workspace {
         List<ResourceMetadata<? extends Resource>> mdList = new ArrayList<ResourceMetadata<? extends Resource>>();
         ResourceMetadata<? extends Resource> md = resourceMetadata.get( id );
         mdList.add( md );
+        graph.insertNode( md );
         List<ResourceMetadata<? extends Resource>> dependencies = new ArrayList<ResourceMetadata<?>>();
         WorkspaceUtils.collectDependencies( dependencies, graph.getNode( id ) );
         mdList.addAll( dependencies );
