@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
@@ -88,6 +89,8 @@ public class GeoTiffTileMatrixSetBuilder implements ResourceBuilder<TileMatrixSe
                 crs = CRSManager.lookup( cfg.getStorageCRS() );
             }
 
+            ImageIO.scanForPlugins();
+            
             Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
             while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
                 reader = readers.next();
