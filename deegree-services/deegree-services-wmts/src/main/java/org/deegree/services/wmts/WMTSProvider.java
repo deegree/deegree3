@@ -49,7 +49,6 @@ import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.wmts.controller.WMTSController;
-import org.deegree.theme.persistence.ThemeManager;
 
 /**
  * <code>WMTSProvider</code>
@@ -95,7 +94,7 @@ public class WMTSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ThemeManager.class };
+        return new Class[] {};
     }
 
     @Override

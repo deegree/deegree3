@@ -83,4 +83,12 @@ public interface Layer {
      */
     void destroy();
 
+    /**
+     * Can be used to signal to a theme that a layer is currently not available. Is used to avoid having a complete
+     * theme not available if one layer dependency fails.
+     * 
+     * @return if the layer is currently available
+     */
+    boolean isAvailable();
+
 }
