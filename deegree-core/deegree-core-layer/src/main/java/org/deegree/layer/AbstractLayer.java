@@ -81,9 +81,4 @@ public abstract class AbstractLayer implements Layer {
         // nothing to do
     }
 
-    @Override
-    public boolean isAvailable() {
-        return true;
-    }
-
 }
