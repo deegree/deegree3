@@ -47,12 +47,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO add class documentation here
+ * Can be used to obtain and log more detailed error messages related to resource initialization.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ErrorHandler {
 

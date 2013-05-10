@@ -142,13 +142,7 @@ public class ResourceGraph {
         // sketch: first add resources without dependencies, then add resources whose dependencies are met until done
         HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<ResourceNode<?>>( nodeMap.values() );
 
-        List<ResourceMetadata<? extends Resource>> roots = new ArrayList<ResourceMetadata<? extends Resource>>();
-        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
-            if ( node.getDependencies().isEmpty() && node.getSoftDependencies().isEmpty() ) {
-                roots.add( node.getMetadata() );
-                nodes.remove( node );
-            }
-        }
+        List<ResourceMetadata<? extends Resource>> roots = getRoots( nodes );
 
         boolean changed = true;
 
@@ -177,6 +171,17 @@ public class ResourceGraph {
             }
         }
 
+        return roots;
+    }
+
+    private List<ResourceMetadata<? extends Resource>> getRoots( HashSet<ResourceNode<? extends Resource>> nodes ) {
+        List<ResourceMetadata<? extends Resource>> roots = new ArrayList<ResourceMetadata<? extends Resource>>();
+        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
+            if ( node.getDependencies().isEmpty() && node.getSoftDependencies().isEmpty() ) {
+                roots.add( node.getMetadata() );
+                nodes.remove( node );
+            }
+        }
         return roots;
     }
 
