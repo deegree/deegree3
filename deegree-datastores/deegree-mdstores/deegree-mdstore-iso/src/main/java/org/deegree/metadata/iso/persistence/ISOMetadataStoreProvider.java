@@ -54,7 +54,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
-import org.deegree.filter.function.FunctionManager;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
@@ -184,7 +183,7 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
 
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { FunctionManager.class };
+        return new Class[] {};
     }
 
     public void init( DeegreeWorkspace workspace ) {

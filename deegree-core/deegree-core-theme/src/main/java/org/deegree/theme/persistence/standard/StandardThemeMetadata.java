@@ -29,6 +29,8 @@ package org.deegree.theme.persistence.standard;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
+import org.deegree.layer.persistence.LayerStore;
+import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.jaxb.Themes;
 import org.deegree.workspace.ResourceBuilder;
@@ -37,6 +39,7 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Metadata implementation for standard themes.
@@ -59,8 +62,10 @@ public class StandardThemeMetadata extends AbstractResourceMetadata<Theme> {
             Themes cfg;
             cfg = (Themes) unmarshall( pkg, provider.getSchema(), location.getAsStream(), workspace );
 
-            // TODO add layers as dependencies? will probably break some setups
-            
+            for ( String id : cfg.getLayerStoreId() ) {
+                dependencies.add( new DefaultResourceIdentifier<LayerStore>( LayerStoreProvider.class, id ) );
+            }
+
             return new StandardThemeBuilder( cfg, this, workspace );
         } catch ( Exception e ) {
             throw new ResourceInitException( "Could not parse theme configuration file.", e );
