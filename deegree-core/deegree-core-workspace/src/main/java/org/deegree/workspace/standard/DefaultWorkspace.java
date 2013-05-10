@@ -411,7 +411,6 @@ public class DefaultWorkspace implements Workspace {
         outer: for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
             for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
                 ResourceState state = states.getState( id );
-                System.out.println( id + ": " + state );
                 if ( state == null || state == Scanned || state == Deactivated ) {
                     continue outer;
                 }
@@ -423,6 +422,7 @@ public class DefaultWorkspace implements Workspace {
                     LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
                     continue;
                 }
+                graph.insertNode( md );
                 states.setState( md.getIdentifier(), Prepared );
                 prepared.addBuilder( (ResourceIdentifier) md.getIdentifier(), builder );
             } catch ( Exception e ) {
@@ -456,6 +456,7 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "Preparing {}", id );
         ResourceMetadata<T> md = (ResourceMetadata) resourceMetadata.get( id );
         ResourceBuilder<T> builder = md.prepare();
+        graph.insertNode( md );
         states.setState( id, Prepared );
         return builder;
     }
