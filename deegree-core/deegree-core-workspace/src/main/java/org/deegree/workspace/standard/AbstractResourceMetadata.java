@@ -65,6 +65,8 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
 
     protected Set<ResourceIdentifier<? extends Resource>> dependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
 
+    protected Set<ResourceIdentifier<? extends Resource>> softDependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
+
     public AbstractResourceMetadata( Workspace workspace, ResourceLocation<T> location,
                                      AbstractResourceProvider<T> provider ) {
         this.workspace = workspace;
@@ -85,6 +87,11 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     @Override
     public Set<ResourceIdentifier<? extends Resource>> getDependencies() {
         return new HashSet<ResourceIdentifier<? extends Resource>>( dependencies );
+    }
+
+    @Override
+    public Set<ResourceIdentifier<? extends Resource>> getSoftDependencies() {
+        return new HashSet<ResourceIdentifier<? extends Resource>>( softDependencies );
     }
 
     @Override

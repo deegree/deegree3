@@ -63,7 +63,7 @@ public class StandardThemeMetadata extends AbstractResourceMetadata<Theme> {
             cfg = (Themes) unmarshall( pkg, provider.getSchema(), location.getAsStream(), workspace );
 
             for ( String id : cfg.getLayerStoreId() ) {
-                dependencies.add( new DefaultResourceIdentifier<LayerStore>( LayerStoreProvider.class, id ) );
+                softDependencies.add( new DefaultResourceIdentifier<LayerStore>( LayerStoreProvider.class, id ) );
             }
 
             return new StandardThemeBuilder( cfg, this, workspace );

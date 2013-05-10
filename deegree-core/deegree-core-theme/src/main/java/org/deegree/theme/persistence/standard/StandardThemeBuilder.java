@@ -69,6 +69,7 @@ import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.jaxb.ThemeType;
 import org.deegree.theme.persistence.standard.jaxb.Themes;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
@@ -146,7 +147,16 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
         }
         List<Theme> thms = new ArrayList<Theme>( themes.size() );
         for ( ThemeType tt : themes ) {
-            thms.add( buildTheme( tt, tt.getLayer(), tt.getTheme(), stores ) );
+            StandardTheme thm = buildTheme( tt, tt.getLayer(), tt.getTheme(), stores );
+            if ( thm != null ) {
+                thms.add( thm );
+            }
+        }
+
+        if ( lays.isEmpty() && themes.isEmpty() ) {
+            LOG.warn( "Skipping theme or subtheme with id {} because it is empty (no subthemes and no layers).",
+                      current.getIdentifier() );
+            return null;
         }
 
         SpatialMetadata smd = SpatialMetadataConverter.fromJaxb( current.getEnvelope(), current.getCRS() );
@@ -215,6 +225,9 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
             theme = buildAutoTheme( stores );
         } else {
             theme = buildTheme( root, root.getLayer(), root.getTheme(), stores );
+        }
+        if ( theme == null ) {
+            throw new ResourceInitException( "Root theme contains no layers and no themes." );
         }
         aggregateSpatialMetadata( theme );
         return theme;

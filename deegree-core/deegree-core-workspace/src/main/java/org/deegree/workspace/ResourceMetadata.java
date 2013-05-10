@@ -71,8 +71,22 @@ public interface ResourceMetadata<T extends Resource> {
      */
     ResourceIdentifier<T> getIdentifier();
 
+    /**
+     * Initialization of the resource connected to this metadata will not be attempted unless all dependencies are
+     * available.
+     * 
+     * @return a set of dependencies, may be empty but never <code>null</code>
+     */
     Set<ResourceIdentifier<? extends Resource>> getDependencies();
 
     Set<ResourceIdentifier<? extends Resource>> getRelatedResources();
+
+    /**
+     * Soft dependencies are dependencies that must be initialized before the resource connected to this metadata, but
+     * may also be missing.
+     * 
+     * @return a set of dependencies, may be empty but never <code>null</code>
+     */
+    Set<ResourceIdentifier<? extends Resource>> getSoftDependencies();
 
 }

@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
 
@@ -80,16 +81,7 @@ public class ResourceGraph {
             nodes.add( node );
             nodeMap.put( md.getIdentifier(), node );
         }
-        for ( ResourceNode<? extends Resource> node : nodes ) {
-            ResourceMetadata<? extends Resource> md = node.getMetadata();
-            for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
-                ResourceNode<? extends Resource> depNode = nodeMap.get( id );
-                if ( depNode != null ) {
-                    node.addDependency( depNode );
-                    depNode.addDependent( node );
-                }
-            }
-        }
+        updateDependencies();
     }
 
     /**
@@ -130,29 +122,57 @@ public class ResourceGraph {
                     depNode.addDependent( node );
                 }
             }
+            for ( ResourceIdentifier<? extends Resource> id : md.getSoftDependencies() ) {
+                ResourceNode<? extends Resource> depNode = nodeMap.get( id );
+                if ( depNode != null ) {
+                    node.addSoftDependency( depNode );
+                    depNode.addDependent( node );
+                }
+            }
         }
     }
 
+    /**
+     * The list is sorted by initialization order, with resources that need to be initialized first at the beginning of
+     * the list.
+     * 
+     * @return a sorted list of resource metadata objects, never <code>null</code>
+     */
     public List<ResourceMetadata<? extends Resource>> toSortedList() {
+        // sketch: first add resources without dependencies, then add resources whose dependencies are met until done
         HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<ResourceNode<?>>( nodeMap.values() );
 
         List<ResourceMetadata<? extends Resource>> roots = new ArrayList<ResourceMetadata<? extends Resource>>();
         for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
-            if ( node.getDependencies().isEmpty() ) {
+            if ( node.getDependencies().isEmpty() && node.getSoftDependencies().isEmpty() ) {
                 roots.add( node.getMetadata() );
                 nodes.remove( node );
             }
         }
 
+        boolean changed = true;
+
         outer: while ( !nodes.isEmpty() ) {
+            if ( changed ) {
+                changed = false;
+            } else {
+                throw new ResourceException( "There are inconsistent dependency chains." );
+            }
             inner: for ( ResourceNode<? extends Resource> node : nodes ) {
                 for ( ResourceNode<? extends Resource> dep : node.getDependencies() ) {
                     if ( !roots.contains( dep.getMetadata() ) ) {
                         continue inner;
                     }
                 }
+                for ( ResourceNode<? extends Resource> dep : node.getSoftDependencies() ) {
+                    if ( !roots.contains( dep.getMetadata() ) ) {
+                        continue inner;
+                    }
+                }
                 roots.add( node.getMetadata() );
                 nodes.remove( node );
+                changed = true;
+                // could be optimized by continuing to inner, needs a little rewrite
                 continue outer;
             }
         }

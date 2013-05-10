@@ -64,6 +64,8 @@ public class ResourceNode<T extends Resource> {
 
     private List<ResourceNode<? extends Resource>> dependencies = new ArrayList<ResourceNode<? extends Resource>>();
 
+    private List<ResourceNode<? extends Resource>> softDependencies = new ArrayList<ResourceNode<? extends Resource>>();
+
     private List<ResourceNode<? extends Resource>> dependents = new ArrayList<ResourceNode<? extends Resource>>();
 
     /**
@@ -97,6 +99,12 @@ public class ResourceNode<T extends Resource> {
         }
     }
 
+    public void addSoftDependency( ResourceNode<? extends Resource> node ) {
+        if ( !softDependencies.contains( node ) ) {
+            softDependencies.add( node );
+        }
+    }
+
     /**
      * @return the metadata, never <code>null</code>
      */
@@ -121,6 +129,13 @@ public class ResourceNode<T extends Resource> {
      */
     public List<ResourceNode<? extends Resource>> getDependencies() {
         return dependencies;
+    }
+
+    /**
+     * @return the list of soft dependency nodes, never <code>null</code>
+     */
+    public List<ResourceNode<? extends Resource>> getSoftDependencies() {
+        return softDependencies;
     }
 
     /**
