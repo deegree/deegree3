@@ -79,6 +79,7 @@ import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.ResourceStates;
 import org.deegree.workspace.ResourceStates.ResourceState;
 import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.graph.ResourceGraph;
 import org.deegree.workspace.graph.ResourceNode;
 import org.slf4j.Logger;
@@ -360,9 +361,10 @@ public class DefaultWorkspace implements Workspace {
         List<ResourceMetadata<? extends Resource>> mdList = new ArrayList<ResourceMetadata<? extends Resource>>();
         ResourceMetadata<? extends Resource> md = resourceMetadata.get( id );
         mdList.add( md );
-        for ( ResourceIdentifier<? extends Resource> did : md.getRelatedResources() ) {
-            mdList.add( resourceMetadata.get( did ) );
-        }
+        List<ResourceMetadata<? extends Resource>> dependencies = new ArrayList<ResourceMetadata<?>>();
+        WorkspaceUtils.collectDependencies( dependencies, graph.getNode( id ) );
+        mdList.addAll( dependencies );
+
         ResourceGraph g = new ResourceGraph( mdList );
         mdList = g.toSortedList();
 

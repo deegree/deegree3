@@ -95,19 +95,6 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     }
 
     @Override
-    public Set<ResourceIdentifier<? extends Resource>> getRelatedResources() {
-        Set<ResourceIdentifier<? extends Resource>> set = new HashSet<ResourceIdentifier<? extends Resource>>();
-        Set<ResourceIdentifier<? extends Resource>> deps = getDependencies();
-
-        set.addAll( deps );
-        for ( ResourceIdentifier<? extends Resource> id : deps ) {
-            ResourceMetadata<? extends Resource> md = workspace.getResourceMetadata( id.getProvider(), id.getId() );
-            set.addAll( md.getRelatedResources() );
-        }
-        return set;
-    }
-
-    @Override
     public int hashCode() {
         return location.getIdentifier().hashCode();
     }
