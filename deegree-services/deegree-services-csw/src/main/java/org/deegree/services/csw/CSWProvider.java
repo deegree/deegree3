@@ -41,7 +41,6 @@ import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -96,7 +95,7 @@ public class CSWProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { MetadataStoreManager.class };
+        return new Class[] {};
     }
 
     @Override
