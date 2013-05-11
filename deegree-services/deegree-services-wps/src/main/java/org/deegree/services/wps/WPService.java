@@ -188,7 +188,7 @@ public class WPService extends AbstractOWS {
         }
         storageManager = new StorageManager( storageDir, inputDiskSwitchLimit );
 
-        this.processManager = workspace.getSubsystemManager( ProcessManager.class );
+        this.processManager = workspace.getNewWorkspace().getResourceManager( ProcessManager.class );
 
         validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
@@ -551,7 +551,9 @@ public class WPService extends AbstractOWS {
         sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), ex, response );
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#getMetadata()
      */
     @Override
@@ -560,12 +562,14 @@ public class WPService extends AbstractOWS {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#init()
      */
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        
+
     }
 }

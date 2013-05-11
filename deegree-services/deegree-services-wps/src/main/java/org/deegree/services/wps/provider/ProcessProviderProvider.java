@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Implementations are responsible for providing {@link ProcessProvider} instances.
@@ -45,7 +45,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface ProcessProviderProvider extends ExtendedResourceProvider<ProcessProvider> {
+public abstract class ProcessProviderProvider extends AbstractResourceProvider<ProcessProvider> {
 
     // specified type parameter
 

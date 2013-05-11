@@ -40,11 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.ProcessProvider;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,14 @@ public class JrxmlProcessProvider implements ProcessProvider {
 
     private final Map<CodeType, AbstractJrxmlWPSProcess> idToProcess = new HashMap<CodeType, AbstractJrxmlWPSProcess>();
 
-    public JrxmlProcessProvider( List<JrxmlProcessDescription> idToURL ) {
+    private ResourceMetadata<ProcessProvider> metadata;
+
+    private Workspace workspace;
+
+    public JrxmlProcessProvider( List<JrxmlProcessDescription> idToURL, ResourceMetadata<ProcessProvider> metadata,
+                                 Workspace workspace ) {
+        this.metadata = metadata;
+        this.workspace = workspace;
         Map<String, URL> idToTemplateId = new HashMap<String, URL>();
         for ( JrxmlProcessDescription p : idToURL ) {
             LOG.debug( "add process with id " + p.getId() + " from " + p.getUrl() );
@@ -78,8 +86,7 @@ public class JrxmlProcessProvider implements ProcessProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         LOG.info( "init jrxml process provider" );
         for ( AbstractJrxmlWPSProcess process : idToProcess.values() ) {
             process.init( workspace );
@@ -101,6 +108,11 @@ public class JrxmlProcessProvider implements ProcessProvider {
     @Override
     public WPSProcess getProcess( CodeType id ) {
         return idToProcess.get( id );
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 
 }

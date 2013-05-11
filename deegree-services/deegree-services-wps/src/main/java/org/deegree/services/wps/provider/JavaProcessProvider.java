@@ -40,8 +40,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.ExceptionAwareProcesslet;
@@ -49,6 +47,10 @@ import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.GenericWPSProcess;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,16 +70,21 @@ public class JavaProcessProvider implements ProcessProvider {
 
     private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
+    private Workspace workspace;
+
+    private ResourceMetadata<ProcessProvider> metadata;
+
     /**
      * @param processDef
      */
-    JavaProcessProvider( ProcessDefinition processDef ) {
+    JavaProcessProvider( ProcessDefinition processDef, Workspace workspace, ResourceMetadata<ProcessProvider> metadata ) {
+        this.workspace = workspace;
+        this.metadata = metadata;
         processDefs = Collections.singletonList( processDef );
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         for ( ProcessDefinition processDefinition : processDefs ) {
             CodeType processId = new CodeType( processDefinition.getIdentifier().getValue(),
                                                processDefinition.getIdentifier().getCodeSpace() );
@@ -118,5 +125,10 @@ public class JavaProcessProvider implements ProcessProvider {
     @Override
     public Map<CodeType, WPSProcess> getProcesses() {
         return idToProcess;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 }

@@ -41,9 +41,9 @@ import static org.deegree.services.wps.provider.jrxml.JrxmlUtils.getAsLanguageSt
 import java.math.BigInteger;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.process.jaxb.java.ProcessletInputDefinition;
 import org.deegree.services.wps.provider.jrxml.ParameterDescription;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -55,9 +55,9 @@ import org.deegree.services.wps.provider.jrxml.ParameterDescription;
  */
 public abstract class AbstractJrxmlContentProvider implements JrxmlContentProvider {
 
-    protected final DeegreeWorkspace workspace;
+    protected final Workspace workspace;
 
-    public AbstractJrxmlContentProvider( DeegreeWorkspace workspace ) {
+    public AbstractJrxmlContentProvider( Workspace workspace ) {
         this.workspace = workspace;
     }
 

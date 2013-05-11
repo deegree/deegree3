@@ -37,10 +37,10 @@ package org.deegree.services.wps.provider;
 
 import java.util.Map;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.wps.ProcessManager;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.workspace.Resource;
 
 /**
  * Implementations are responsible for making {@link WPSProcess} instances available to the {@link ProcessManager}.
