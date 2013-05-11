@@ -106,7 +106,7 @@ import org.deegree.layer.LayerRef;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
@@ -219,8 +219,8 @@ public class WMSController extends AbstractOWS {
         HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {
-            MetadataStoreManager mdmanager = workspace.getSubsystemManager( MetadataStoreManager.class );
-            MetadataStore<ISORecord> store = mdmanager.get( storeid );
+            MetadataStore<ISORecord> store = (MetadataStore<ISORecord>) workspace.getNewWorkspace().getResource( MetadataStoreProvider.class,
+                                                                                                                 storeid );
             if ( store == null ) {
                 LOG.warn( "Metadata store with id {} is not available, metadata ids will not be checked.", storeid );
                 return;
@@ -927,7 +927,9 @@ public class WMSController extends AbstractOWS {
                                 throws OWSException;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#getMetadata()
      */
     @Override
@@ -936,13 +938,15 @@ public class WMSController extends AbstractOWS {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#init()
      */
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

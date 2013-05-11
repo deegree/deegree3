@@ -87,4 +87,9 @@ public interface ResourceMetadata<T extends Resource> {
      */
     Set<ResourceIdentifier<? extends Resource>> getSoftDependencies();
 
+    /**
+     * @return the actual resource provider used by this resource, never <code>null</code>
+     */
+    ResourceProvider<T> getProvider();
+
 }

@@ -71,7 +71,6 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.ArrayUtils;
@@ -80,8 +79,9 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
@@ -125,6 +125,7 @@ import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.csw.ElementName;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,17 +194,16 @@ public class CSWController extends AbstractOWS {
         super.init( serviceMetadata, mainConf, md, controllerConf );
         DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
-        MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
-        if ( mgr == null )
-            throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
-
         String metadataStoreId = jaxbConfig.getMetadataStoreId();
         if ( metadataStoreId == null ) {
             LOG.info( "Metadata store id is not configured. Initializing/looking up configured record stores." );
-            List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
-            for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
-                if ( state.getResource() != null ) {
-                    availableStores.add( state.getResource() );
+            List<ResourceIdentifier<MetadataStore<? extends MetadataRecord>>> stores = workspace.getNewWorkspace().getResourcesOfType( MetadataStoreProvider.class );
+            List<MetadataStore<? extends MetadataRecord>> availableStores = new ArrayList<MetadataStore<?>>();
+            for ( ResourceIdentifier<MetadataStore<? extends MetadataRecord>> id : stores ) {
+                MetadataStore<? extends MetadataRecord> str = workspace.getNewWorkspace().getResource( id.getProvider(),
+                                                                                                       id.getId() );
+                if ( str != null ) {
+                    availableStores.add( str );
                 }
             }
             if ( availableStores.size() == 0 )
@@ -214,13 +214,7 @@ public class CSWController extends AbstractOWS {
                                                     + availableStores.size() + " stores!" );
             store = availableStores.get( 0 );
         } else {
-            ResourceState<MetadataStore> state = mgr.getState( metadataStoreId );
-            if ( state == null || state.getResource() == null ) {
-                String msg = "Cannot add metadata store '" + metadataStoreId
-                             + "': no such metadata store has been configured.";
-                throw new ResourceInitException( msg );
-            }
-            store = state.getResource();
+            store = workspace.getNewWorkspace().getResource( MetadataStoreProvider.class, metadataStoreId );
         }
         profile = ServiceProfileManager.createProfile( store );
 
@@ -654,7 +648,9 @@ public class CSWController extends AbstractOWS {
         return store;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#getMetadata()
      */
     @Override
@@ -663,12 +659,14 @@ public class CSWController extends AbstractOWS {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#init()
      */
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        
+
     }
 }

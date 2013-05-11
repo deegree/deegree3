@@ -105,16 +105,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
                             MetadataInspectorException, ResourceInitException, URISyntaxException {
         LOG.info( "START Test: testInsert" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
-            prov.init( workspace );
-            store = (ISOMetadataStore) prov.create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        store.init( workspace );
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         String test_folder = TestProperties.getProperty( "test_folder" );
 
@@ -162,16 +154,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
                             MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testDelete" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
-            prov.init( workspace );
-            store = (ISOMetadataStore) prov.create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        store.init( workspace );
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
 
@@ -529,16 +513,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testUpdate" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
-            prov.init( workspace );
-            store = (ISOMetadataStore) prov.create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return null;
-        }
-        store.init( workspace );
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_9 );
         LOG.info( "Inserted records with ids: " + ids + ". Now: update " + ids );

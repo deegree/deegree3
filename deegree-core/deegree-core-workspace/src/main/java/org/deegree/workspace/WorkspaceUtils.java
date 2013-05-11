@@ -42,10 +42,12 @@
 package org.deegree.workspace;
 
 import java.io.File;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.graph.ResourceGraph;
 import org.deegree.workspace.graph.ResourceNode;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
@@ -163,6 +165,34 @@ public class WorkspaceUtils {
         workspace.add( loc );
         workspace.prepare( identifier );
         return workspace.init( identifier, null );
+    }
+
+    /**
+     * Adds and completely initializes a synthetic resource from an URL.
+     * 
+     * @param workspace
+     *            may not be <code>null</code>
+     * @param providerClass
+     *            may not be <code>null</code>
+     * @param id
+     *            may not be <code>null</code>
+     * @param content
+     *            configuration content, may not be <code>null</code>
+     * @return the initialized resource
+     */
+    public static <T extends Resource> T activateFromUrl( Workspace workspace,
+                                                          Class<? extends ResourceProvider<T>> providerClass,
+                                                          String id, URL content ) {
+        IncorporealResourceLocation<? extends Resource> loc;
+        ResourceIdentifier<T> identifier = new DefaultResourceIdentifier<T>( providerClass, id );
+        try {
+            loc = new IncorporealResourceLocation<T>( IOUtils.toByteArray( content ), identifier );
+            workspace.add( loc );
+            workspace.prepare( identifier );
+            return workspace.init( identifier, null );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( "Unable to load URL " + content + ": " + e.getLocalizedMessage(), e );
+        }
     }
 
 }

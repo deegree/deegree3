@@ -38,8 +38,9 @@ package org.deegree.metadata.persistence;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Implementations plug-in {@link MetadataStore}s.
@@ -49,7 +50,7 @@ import org.deegree.sqldialect.SQLDialect;
  * 
  * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
-public interface MetadataStoreProvider extends ExtendedResourceProvider<MetadataStore> {
+public abstract class MetadataStoreProvider extends AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> {
 
     /**
      * Requests a list of sql statements to setup the database required for a {@link MetadataStore} implementation.
@@ -60,7 +61,7 @@ public interface MetadataStoreProvider extends ExtendedResourceProvider<Metadata
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    String[] getCreateStatements( SQLDialect dbType )
+    public abstract String[] getCreateStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException;
 
     /**
@@ -72,7 +73,7 @@ public interface MetadataStoreProvider extends ExtendedResourceProvider<Metadata
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    String[] getDropStatements( SQLDialect dbType )
+    public abstract String[] getDropStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException;
 
 }

@@ -50,12 +50,10 @@ import javax.faces.event.ActionEvent;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
 
@@ -75,10 +73,6 @@ public class MetadataStoreConfig implements Serializable {
 
     private String id;
 
-    private MetadataStoreManager getMetadataStoreManager() {
-        return getWorkspace().getSubsystemManager( MetadataStoreManager.class );
-    }
-
     private DeegreeWorkspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
@@ -95,7 +89,7 @@ public class MetadataStoreConfig implements Serializable {
 
     public String openImporter()
                             throws Exception {
-        MetadataStore<?> ms = getMetadataStoreManager().get( getId() );
+        MetadataStore<?> ms = getWorkspace().getNewWorkspace().getResource( MetadataStoreProvider.class, getId() );
         if ( ms == null ) {
             throw new Exception( "No metadata store with id '" + getId() + "' known / active." );
         }
@@ -107,35 +101,28 @@ public class MetadataStoreConfig implements Serializable {
 
     public String createTables()
                             throws MetadataStoreException {
-        MetadataStore<?> ms = getMetadataStoreManager().get( getId() );
-        ResourceState<?> state = getMetadataStoreManager().getState( getId() );
-        if ( state.getProvider() instanceof MetadataStoreProvider ) {
-            MetadataStoreProvider provider = (MetadataStoreProvider) state.getProvider();
-            String[] sql;
-            try {
-                String connId = ms.getConnId();
-                DeegreeWorkspace ws = getWorkspace();
-                ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+        MetadataStore<?> ms = getWorkspace().getNewWorkspace().getResource( MetadataStoreProvider.class, getId() );
+        MetadataStoreProvider provider = (MetadataStoreProvider) ms.getMetadata().getProvider();
+        String[] sql;
+        try {
+            String connId = ms.getConnId();
+            DeegreeWorkspace ws = getWorkspace();
+            ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
 
-                sql = provider.getCreateStatements( prov.getDialect() );
+            sql = provider.getCreateStatements( prov.getDialect() );
 
-                SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons", ws );
+            SQLExecution execution = new SQLExecution( connId, sql, "/console/metadatastore/buttons", ws );
 
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
-            } catch ( UnsupportedEncodingException e ) {
-                FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
-                                                                 e.getMessage() );
-                FacesContext.getCurrentInstance().addMessage( null, msg );
-            } catch ( IOException e ) {
-                FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
-                                                                 e.getMessage() );
-                FacesContext.getCurrentInstance().addMessage( null, msg );
-            }
-        } else {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
+        } catch ( UnsupportedEncodingException e ) {
             FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                             "METADATASTORE_UNSUPPORTED_PROVIDER", state.getProvider() );
+                                                             "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
+                                                             e.getMessage() );
+            FacesContext.getCurrentInstance().addMessage( null, msg );
+        } catch ( IOException e ) {
+            FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
+                                                             "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
+                                                             e.getMessage() );
             FacesContext.getCurrentInstance().addMessage( null, msg );
         }
         return "/console/generic/sql.jsf?faces-redirect=true";

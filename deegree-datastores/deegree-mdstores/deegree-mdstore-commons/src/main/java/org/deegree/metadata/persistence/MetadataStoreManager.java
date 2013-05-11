@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/MetadataStoreManager.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -35,41 +34,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * Entry point for creating {@link MetadataStore} providers and instances.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29972 $, $Date: 2011-03-09 23:50:45 +0100 (Mi, 09. Mär 2011) $
  */
-public class MetadataStoreManager extends AbstractResourceManager<MetadataStore> {
+public class MetadataStoreManager extends DefaultResourceManager<MetadataStore<? extends MetadataRecord>> {
 
-    private MetadataStoreManagerMetadata metadata;
-
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
+    public MetadataStoreManager() {
+        super(
+               new DefaultResourceManagerMetadata<MetadataStore<? extends MetadataRecord>>(
+                                                                                            MetadataStoreProvider.class,
+                                                                                            "metadata stores",
+                                                                                            "datasources/metadata" ) );
     }
 
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        metadata = new MetadataStoreManagerMetadata( workspace );
-    }
-
-    static class MetadataStoreManagerMetadata extends DefaultResourceManagerMetadata<MetadataStore> {
-        public MetadataStoreManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "metadata stores", "datasources/metadata/", MetadataStoreProvider.class, workspace );
-        }
-    }
-
-    public ResourceManagerMetadata<MetadataStore> getMetadata() {
-        return metadata;
-    }
 }

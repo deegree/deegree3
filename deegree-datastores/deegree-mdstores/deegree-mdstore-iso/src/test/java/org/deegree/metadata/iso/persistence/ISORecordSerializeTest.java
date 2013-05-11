@@ -70,6 +70,7 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -92,16 +93,8 @@ public class ISORecordSerializeTest extends AbstractISOTest {
                             MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testNamespaces" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            ISOMetadataStoreProvider prov = new ISOMetadataStoreProvider();
-            prov.init( workspace );
-            store = (ISOMetadataStore) prov.create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
-        store.init( workspace );
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12 );
         resultSet = store.getRecordById( ids, null );

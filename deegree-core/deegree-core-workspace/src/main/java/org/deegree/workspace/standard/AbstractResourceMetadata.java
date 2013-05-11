@@ -47,6 +47,7 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 
 /**
@@ -110,6 +111,11 @@ public abstract class AbstractResourceMetadata<T extends Resource> implements Re
     @Override
     public String toString() {
         return location.getIdentifier().toString();
+    }
+
+    @Override
+    public ResourceProvider<T> getProvider() {
+        return provider;
     }
 
 }

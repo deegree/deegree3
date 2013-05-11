@@ -63,8 +63,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.FileUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -84,6 +82,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.metadata.ebrim.AliasedRIMType;
@@ -105,6 +104,10 @@ import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -125,8 +128,6 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
     private final String connId;
 
-    private DeegreeWorkspace workspace;
-
     private boolean useLegacyPredicates;
 
     private Map<String, AdhocQuery> idToQuery = new HashMap<String, AdhocQuery>();
@@ -138,6 +139,10 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
     private Date lastModified;
 
     private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+
+    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
+
+    private Workspace workspace;
 
     static {
         nsContext.addNamespace( "rim", RegistryObject.RIM_NS );
@@ -156,12 +161,15 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
      *            number of milliseconds to allow for queries, or <code>0</code> (unlimited)
      * @throws ResourceInitException
      */
-    public EbrimEOMDStore( String connId, File queriesDir, RegistryPackage profile, Date lastModified, long queryTimeout )
-                            throws ResourceInitException {
+    public EbrimEOMDStore( String connId, File queriesDir, RegistryPackage profile, Date lastModified,
+                           long queryTimeout, ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata,
+                           Workspace workspace ) throws ResourceInitException {
         this.connId = connId;
         this.profile = profile;
         this.lastModified = lastModified;
         this.queryTimeout = queryTimeout;
+        this.metadata = metadata;
+        this.workspace = workspace;
         if ( queriesDir != null ) {
             File[] listFiles = queriesDir.listFiles( new FilenameFilter() {
                 @Override
@@ -197,9 +205,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
+    public void init() {
         Connection conn = null;
         try {
             conn = getConnection( true );
@@ -339,7 +345,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
         Connection conn = getConnection( true );
         try {
             EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames(), useLegacyPredicates );
@@ -439,7 +445,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
         Connection conn = getConnection( true );
         try {
             EOPropertyNameMapper propMapper = new EOPropertyNameMapper( query.getQueryTypeNames(), useLegacyPredicates );
@@ -541,7 +547,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
         Connection conn = getConnection( true );
 
         try {
@@ -643,7 +649,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
      */
     private Connection getConnection( boolean autoCommit )
                             throws MetadataStoreException {
-        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
         try {
             Connection conn = prov.getConnection();
             conn.setAutoCommit( autoCommit );
@@ -674,5 +680,10 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
     @Override
     public String getType() {
         return "ebrimeo";
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 }
