@@ -90,7 +90,7 @@ public class WPSProvider implements OWSProvider {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProcessManager.class };
+        return new Class[] {};
     }
 
     @Override
