@@ -49,7 +49,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -88,8 +87,6 @@ public abstract class AbstractISOTest {
 
     protected MetadataResultSet<?> resultSet;
 
-    protected Connection conn;
-
     protected Workspace workspace;
 
     static {
@@ -113,7 +110,7 @@ public abstract class AbstractISOTest {
 
         assumeNotNull( prov );
 
-        conn = prov.getConnection();
+        Connection conn = prov.getConnection();
         try {
             setUpTables( conn );
         } catch ( Exception e ) {
@@ -124,6 +121,7 @@ public abstract class AbstractISOTest {
         } catch ( Exception e ) {
             // ignore
         }
+
         conn.close();
     }
 
@@ -135,7 +133,6 @@ public abstract class AbstractISOTest {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-
             for ( String sql : new ISOMetadataStoreProvider().getDropStatements( prov.getDialect() ) ) {
                 try {
                     stmt.executeUpdate( sql );
@@ -146,10 +143,10 @@ public abstract class AbstractISOTest {
             }
 
             for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( prov.getDialect() ) ) {
-
                 stmt.execute( sql );
             }
 
+            conn.commit();
         } finally {
             if ( stmt != null ) {
                 stmt.close();
@@ -166,7 +163,6 @@ public abstract class AbstractISOTest {
             LOG.info( "------------------" );
             resultSet.close();
         }
-        JDBCUtils.close( conn );
         workspace.destroy();
     }
 

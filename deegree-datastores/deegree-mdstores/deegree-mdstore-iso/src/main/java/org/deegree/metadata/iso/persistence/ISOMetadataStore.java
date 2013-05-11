@@ -126,6 +126,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws ResourceInitException {
         this.dialect = dialect;
         this.metadata = metadata;
+        this.workspace = workspace;
         this.connectionId = config.getJDBCConnId();
         this.config = config;
 

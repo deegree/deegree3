@@ -336,6 +336,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
     public void testUpdateOMElementRemove()
                             throws FactoryConfigurationError, MetadataStoreException, MetadataInspectorException,
                             ResourceInitException {
+        
+
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -361,6 +363,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
 
+
         OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( xPath, nsContext ) );
         assertNotNull( updatedNode );
 
@@ -369,6 +372,9 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         UpdateOperation update = new UpdateOperation( null, null, null, constraint, recordProperties );
         mst.performUpdate( update );
         mst.commit();
+        
+        resultSet.close();
+        
 
         // get record which should be updated
         resultSet = store.getRecords( query );
