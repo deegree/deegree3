@@ -99,11 +99,10 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
     public DefaultTransactionService( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
         super( dialect, queryables );
         this.anyTextConfig = anyTextConfig;
-
     }
 
     @Override
-    public int executeInsert( Connection conn, ISORecord rec )
+    public synchronized int executeInsert( Connection conn, ISORecord rec )
                             throws MetadataStoreException, XMLStreamException {
         int internalId = 0;
         InsertRow ir = new InsertRow( new TableName( mainTable ), null );
