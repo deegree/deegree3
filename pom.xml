@@ -28,7 +28,7 @@
     </repository>
     <repository>
       <id>latlon-repo</id>
-      <url>http://artefacts.lat-lon/</url>
+      <url>http://artefacts.lat-lon/repo</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
