@@ -59,20 +59,20 @@
   </dependencies>
 
   <profiles>
-    <profile>
-      <id>mssql</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <dependency>
-          <artifactId>latlon-sqldialect-mssql</artifactId>
-          <groupId>de.latlon</groupId>
-          <version>${project.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
+<!--     <profile> -->
+<!--       <id>mssql</id> -->
+<!--       <activation> -->
+<!--         <activeByDefault>true</activeByDefault> -->
+<!--       </activation> -->
+<!--       <dependencies> -->
+<!--         <dependency> -->
+<!--           <artifactId>latlon-sqldialect-mssql</artifactId> -->
+<!--           <groupId>de.latlon</groupId> -->
+<!--           <version>${project.version}</version> -->
+<!--           <scope>test</scope> -->
+<!--         </dependency> -->
+<!--       </dependencies> -->
+<!--     </profile> -->
     <profile>
       <id>oracle</id>
       <activation>
