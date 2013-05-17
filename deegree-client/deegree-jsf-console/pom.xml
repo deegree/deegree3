@@ -60,72 +60,72 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wms</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wps</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wfs</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-csw</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-config</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-shape</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-themes-remotewms</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-layers-remotewms</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>    
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

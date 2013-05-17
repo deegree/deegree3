@@ -131,12 +131,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>

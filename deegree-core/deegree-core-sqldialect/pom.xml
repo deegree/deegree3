@@ -27,6 +27,9 @@
   <profiles>
     <profile>
       <id>oracle</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <modules>
         <module>deegree-sqldialect-oracle</module>
       </modules>

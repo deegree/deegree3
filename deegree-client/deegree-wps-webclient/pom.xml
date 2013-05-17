@@ -40,12 +40,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>

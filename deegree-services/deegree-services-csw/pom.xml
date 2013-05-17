@@ -37,12 +37,12 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-commons</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-commons</artifactId>
-      <version>3.1.3-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
