@@ -49,9 +49,8 @@ import org.deegree.workspace.ResourceProvider;
  * Default resource manager metadata.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public class DefaultResourceManagerMetadata<T extends Resource> implements ResourceManagerMetadata<T> {
 

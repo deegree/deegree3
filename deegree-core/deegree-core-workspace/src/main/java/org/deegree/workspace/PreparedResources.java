@@ -48,6 +48,8 @@ import java.util.Set;
  * Can be used to cache resource builders while operating on a workspace. Usually used by the workspace internally.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
 public class PreparedResources {
 

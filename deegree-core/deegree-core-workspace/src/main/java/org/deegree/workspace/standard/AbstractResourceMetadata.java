@@ -55,6 +55,8 @@ import org.deegree.workspace.Workspace;
  * to add your dependencies to the <code>dependencies</code> field upon #prepare.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
 public abstract class AbstractResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
 

@@ -55,9 +55,8 @@ import org.deegree.workspace.Workspace;
  * Abstract resource provider implementation for schema based providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public abstract class AbstractResourceProvider<T extends Resource> implements ResourceProvider<T> {
 

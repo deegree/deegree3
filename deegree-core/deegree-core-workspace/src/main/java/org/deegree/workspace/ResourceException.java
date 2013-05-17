@@ -45,9 +45,8 @@ package org.deegree.workspace;
  * An exception class thrown during normal workspace operation.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public class ResourceException extends RuntimeException {
 

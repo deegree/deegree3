@@ -46,9 +46,8 @@ package org.deegree.workspace;
  * resource cannot be constructed, a ResourceInitException should be thrown.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public interface ResourceBuilder<T extends Resource> {
 

@@ -52,9 +52,8 @@ import org.deegree.workspace.ResourceMetadata;
  * A node in the dependency graph. Coupled with a resource metadata object.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public class ResourceNode<T extends Resource> {
 

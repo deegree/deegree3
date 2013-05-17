@@ -50,6 +50,8 @@ import java.util.Map;
  * Can be used to obtain and log more detailed error messages related to resource initialization.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
 public class ErrorHandler {
 
