@@ -124,13 +124,9 @@ class GetLegendHandler {
 
     private Style findLegendStyle( LayerRef layer, StyleRef styleRef ) {
         Style style;
-        if ( service.isNewStyle() ) {
-            style = service.themeMap.get( layer.getName() ).getMetadata().getLegendStyles().get( styleRef.getName() );
-            if ( style == null ) {
-                style = service.themeMap.get( layer.getName() ).getMetadata().getStyles().get( styleRef.getName() );
-            }
-        } else {
-            style = service.registry.getLegendStyle( layer.getName(), styleRef.getName() );
+        style = service.themeMap.get( layer.getName() ).getMetadata().getLegendStyles().get( styleRef.getName() );
+        if ( style == null ) {
+            style = service.themeMap.get( layer.getName() ).getMetadata().getStyles().get( styleRef.getName() );
         }
         return style;
     }
