@@ -132,7 +132,7 @@ import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
-import org.deegree.services.metadata.OWSMetadataProviderManager;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
@@ -761,15 +761,12 @@ public class WMSController extends AbstractOWS {
             }
         }
         if ( configId != null ) {
-            OWSMetadataProviderManager mgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
-            ResourceState<OWSMetadataProvider> state = mgr.getState( configId );
-            if ( state != null ) {
-                metadata = state.getResource();
-                if ( metadata != null ) {
-                    identification = metadata.getServiceIdentification();
-                    provider = metadata.getServiceProvider();
-                    extendedCaps = metadata.getExtendedCapabilities();
-                }
+            metadata = workspace.getNewWorkspace().getResource( OWSMetadataProviderProvider.class,
+                                                                configId + "_metadata" );
+            if ( metadata != null ) {
+                identification = metadata.getServiceIdentification();
+                provider = metadata.getServiceProvider();
+                extendedCaps = metadata.getExtendedCapabilities();
             }
         }
 

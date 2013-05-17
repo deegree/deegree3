@@ -77,7 +77,6 @@ import javax.xml.transform.dom.DOMSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
@@ -160,8 +159,8 @@ import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
 import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
-import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
@@ -416,11 +415,8 @@ public class WebFeatureService extends AbstractOWS {
                             throws ResourceInitException {
         OWSMetadataProvider provider = null;
         if ( getId() != null ) {
-            OWSMetadataProviderManager mgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
-            ResourceState<OWSMetadataProvider> state = mgr.getState( getId() );
-            if ( state != null ) {
-                provider = state.getResource();
-            }
+            provider = workspace.getNewWorkspace().getResource( OWSMetadataProviderProvider.class,
+                                                                getId() + "_metadata" );
         }
         if ( provider == null ) {
             ServiceIdentification serviceId = MetadataUtils.convertFromJAXB( serviceMetadata.getServiceIdentification() );
@@ -503,7 +499,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
             }
             provider = new DefaultOWSMetadataProvider( serviceId, serviceProvider, wfsVersionToExtendedCaps,
-                                                       ftMetadata, Collections.<String, String> emptyMap() );
+                                                       ftMetadata, Collections.<String, String> emptyMap(), null );
         }
         return provider;
     }
@@ -1015,7 +1011,9 @@ public class WebFeatureService extends AbstractOWS {
         return version;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#getMetadata()
      */
     @Override
@@ -1024,12 +1022,14 @@ public class WebFeatureService extends AbstractOWS {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#init()
      */
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        
+
     }
 }
