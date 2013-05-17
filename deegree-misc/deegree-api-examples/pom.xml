@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.1.3-latlon-SNAPSHOT</version>
+    <version>3.1.3-latlon</version>
   </parent>
 
   <repositories>
