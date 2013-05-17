@@ -43,7 +43,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ServiceLoader;
@@ -55,17 +54,15 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.config.AbstractBasicResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.CredentialsProviderManager;
 import org.deegree.services.controller.security.authorities.AuthenticationAuthority;
 import org.deegree.services.controller.security.authorities.AuthenticationAuthorityProvider;
+import org.deegree.workspace.Initializable;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -75,11 +72,13 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class SecurityConfiguration extends AbstractBasicResourceManager implements ResourceManager {
+public class SecurityConfiguration implements Initializable {
 
     private static final Logger LOG = getLogger( SecurityConfiguration.class );
 
     private static HashMap<String, AuthenticationAuthorityProvider> authenticationAuthorityProviders = new HashMap<String, AuthenticationAuthorityProvider>();
+
+    private static SecurityConfiguration INSTANCE;
 
     private CredentialsProvider providers;
 
@@ -92,9 +91,17 @@ public class SecurityConfiguration extends AbstractBasicResourceManager implemen
         }
     }
 
-    public void startup( DeegreeWorkspace workspace ) {
-        File securityFile = new File( workspace.getLocation(), "services" + separator + "security" + separator
-                                                               + "security.xml" );
+    public static SecurityConfiguration getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public void init( Workspace workspace ) {
+        INSTANCE = this;
+
+        File securityFile = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" + separator
+                                                                                      + "security" + separator
+                                                                                      + "security.xml" );
         if ( !securityFile.exists() ) {
             LOG.info( "No security.xml found." );
             return;
@@ -114,8 +121,9 @@ public class SecurityConfiguration extends AbstractBasicResourceManager implemen
             LOG.trace( "Stack trace:", e );
         }
 
-        File authorities = new File( workspace.getLocation(), "services" + separator + "security" + separator
-                                                              + "authorities" );
+        File authorities = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" + separator
+                                                                                     + "security" + separator
+                                                                                     + "authorities" );
         XMLInputFactory fac = XMLInputFactory.newInstance();
         if ( authorities.exists() && authorities.isDirectory() ) {
             for ( File f : authorities.listFiles( new FileFilter() {
@@ -191,33 +199,4 @@ public class SecurityConfiguration extends AbstractBasicResourceManager implemen
         return new Class[] {};
     }
 
-    public void shutdown() {
-        // no cleanup needed?
-    }
-
-    public ResourceManagerMetadata getMetadata() {
-        return null;
-    }
-
-    @Override
-    public ResourceState activate( String id ) {
-        throw new UnsupportedOperationException( "Needs implementation." );
-    }
-
-    @Override
-    public ResourceState deactivate( String id ) {
-        throw new UnsupportedOperationException( "Needs implementation." );
-    }
-
-    @Override
-    protected ResourceProvider getProvider( URL file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
-    }
 }
