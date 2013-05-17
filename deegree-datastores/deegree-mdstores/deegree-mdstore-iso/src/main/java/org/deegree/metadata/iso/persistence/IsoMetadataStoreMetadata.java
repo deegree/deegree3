@@ -60,7 +60,7 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
- * @since 3.3
+ * @since 3.4
  */
 public class IsoMetadataStoreMetadata extends AbstractResourceMetadata<MetadataStore<? extends MetadataRecord>> {
 

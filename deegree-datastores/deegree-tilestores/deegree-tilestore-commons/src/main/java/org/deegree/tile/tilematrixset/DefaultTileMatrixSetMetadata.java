@@ -43,7 +43,7 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
- * @since 3.3
+ * @since 3.4
  */
 public class DefaultTileMatrixSetMetadata extends AbstractResourceMetadata<TileMatrixSet> {
 

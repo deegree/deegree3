@@ -43,7 +43,7 @@ import org.deegree.workspace.Workspace;
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * 
- * @since 3.3
+ * @since 3.4
  */
 public class CachingTileStoreBuilder implements ResourceBuilder<TileStore> {
 
