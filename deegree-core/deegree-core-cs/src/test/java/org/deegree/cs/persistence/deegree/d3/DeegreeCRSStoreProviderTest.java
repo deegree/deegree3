@@ -36,13 +36,12 @@
 
 package org.deegree.cs.persistence.deegree.d3;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
@@ -66,8 +65,6 @@ import org.deegree.cs.refs.components.DatumRef;
 import org.deegree.cs.refs.projections.ProjectionRef;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -82,20 +79,6 @@ import org.junit.Test;
  * 
  */
 public class DeegreeCRSStoreProviderTest {
-
-    private DeegreeWorkspace workspace;
-
-    @Before
-    public void setUp()
-                            throws ResourceInitException {
-        workspace = DeegreeWorkspace.getInstance();
-        workspace.initAll();
-    }
-
-    @After
-    public void shutDown() {
-        workspace.destroyAll();
-    }
 
     /**
      * Tries to load the default configuration, when no workspace is set!
@@ -121,7 +104,7 @@ public class DeegreeCRSStoreProviderTest {
     @Test
     public void testCRSByID()
                             throws CRSStoreException {
-        CRSStore defaultStore = workspace.getSubsystemManager( CRSManager.class ).create( CRSManager.class.getResource( "default.xml" ) );
+        CRSStore defaultStore = new CRSManager().create( CRSManager.class.getResource( "default.xml" ) );
         assertNotNull( defaultStore );
         assertTrue( defaultStore instanceof DeegreeCRSStore );
         DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
@@ -160,11 +143,11 @@ public class DeegreeCRSStoreProviderTest {
 
         // do stuff with projection
         ITransverseMercator proj = (ITransverseMercator) referencedObject;
-        assertEquals( 0.0, proj.getProjectionLatitude() );
-        assertEquals( Math.toRadians( 6.0 ), proj.getProjectionLongitude() );
-        assertEquals( 1.0, proj.getScale() );
-        assertEquals( 2500000.0, proj.getFalseEasting() );
-        assertEquals( 0.0, proj.getFalseNorthing() );
+        assertEquals( 0.0, proj.getProjectionLatitude(), 1.0E-9 );
+        assertEquals( Math.toRadians( 6.0 ), proj.getProjectionLongitude(), 1.0E-9 );
+        assertEquals( 1.0, proj.getScale(), 1.0E-9 );
+        assertEquals( 2500000.0, proj.getFalseEasting(), 1.0E-9 );
+        assertEquals( 0.0, proj.getFalseNorthing(), 1.0E-9 );
         assertTrue( proj.getHemisphere() );
 
         // test the datum.
@@ -178,8 +161,8 @@ public class DeegreeCRSStoreProviderTest {
         assertNotNull( ellips );
         assertEquals( "7004", ellips.getCode().getCode() );
         assertEquals( Unit.METRE, ellips.getUnits() );
-        assertEquals( 6377397.155, ellips.getSemiMajorAxis() );
-        assertEquals( 299.1528128, ellips.getInverseFlattening() );
+        assertEquals( 6377397.155, ellips.getSemiMajorAxis(), 1.0E-9 );
+        assertEquals( 299.1528128, ellips.getInverseFlattening(), 1.0E-9 );
 
         // test towgs84 params
         Helmert toWGS = datum.getWGS84Conversion();
@@ -192,13 +175,13 @@ public class DeegreeCRSStoreProviderTest {
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
         assertEquals( "1777", toWGS.getCode().getCode() );
-        assertEquals( 598.1, toWGS.dx );
-        assertEquals( 73.7, toWGS.dy );
-        assertEquals( 418.2, toWGS.dz );
-        assertEquals( 0.202, toWGS.ex );
-        assertEquals( 0.045, toWGS.ey );
-        assertEquals( -2.455, toWGS.ez );
-        assertEquals( 6.7, toWGS.ppm );
+        assertEquals( 598.1, toWGS.dx, 1.0E-9 );
+        assertEquals( 73.7, toWGS.dy, 1.0E-9 );
+        assertEquals( 418.2, toWGS.dz, 1.0E-9 );
+        assertEquals( 0.202, toWGS.ex, 1.0E-9 );
+        assertEquals( 0.045, toWGS.ey, 1.0E-9 );
+        assertEquals( -2.455, toWGS.ez, 1.0E-9 );
+        assertEquals( 6.7, toWGS.ppm, 1.0E-9 );
 
         // test the geographic
         IGeographicCRS geographic = realCRS.getGeographicCRS();
