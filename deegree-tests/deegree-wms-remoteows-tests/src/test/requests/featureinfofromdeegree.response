@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:noNamespaceSchemaLocation="http://localhost:8080/deegree-wms-remoteows-tests/services?request=GetFeatureInfoSchema&amp;layers=single" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+<FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:noNamespaceSchemaLocation="http://localhost:8080/deegree-wms-remoteows-tests/services/wms?request=GetFeatureInfoSchema&amp;layers=single" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
   <gml:boundedBy>
     <gml:null>missing</gml:null>
   </gml:boundedBy>

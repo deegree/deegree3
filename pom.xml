@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.3-pre3-SNAPSHOT</version>
+  <version>3.4-pre1-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -75,6 +75,11 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>com.google.code.maven-replacer-plugin</groupId>
+          <artifactId>replacer</artifactId>
+          <version>1.5.2</version>
+        </plugin>
+        <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
           <version>0.8.0</version>
@@ -98,7 +103,7 @@
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.18</version>
+          <version>1.20</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

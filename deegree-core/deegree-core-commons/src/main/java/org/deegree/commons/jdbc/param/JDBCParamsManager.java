@@ -37,11 +37,21 @@ package org.deegree.commons.jdbc.param;
 
 import static java.sql.DriverManager.registerDriver;
 
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.ServiceLoader;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -79,6 +89,7 @@ public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         }
+        System.out.println(workspace);
         super.startup( workspace );
     }
 
@@ -121,4 +132,65 @@ public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
             super( "jdbc params", "jdbc/", JDBCParamsProvider.class, workspace );
         }
     }
+
+    @Override
+    public void shutdown() {
+        Enumeration<Driver> e = DriverManager.getDrivers();
+        while ( e.hasMoreElements() ) {
+            Driver driver = e.nextElement();
+            try {
+                // no need to check for class loader, the driver manager does that already
+                DriverManager.deregisterDriver( driver );
+            } catch ( SQLException e1 ) {
+                LOG.error( "Cannot unload driver: " + driver );
+            }
+        }
+
+        // manually remove drivers via reflection if loaded by module class loader (else the driver manager won't let us
+        // remove them)
+        // Yes, this is DangerousStuff.
+        try {
+            List<Object> toRemove = new ArrayList<Object>();
+            Field f = DriverManager.class.getDeclaredField( "registeredDrivers" );
+            f.setAccessible( true );
+            List<?> list = (List<?>) f.get( null );
+            ListIterator<?> iter = list.listIterator();
+            while ( iter.hasNext() ) {
+                Object o = iter.next();
+                if ( o.getClass().getClassLoader() == workspace.getModuleClassLoader()
+                     || o.getClass().getClassLoader() == null ) {
+                    // iter.remove not supported by used list
+                    toRemove.add( o );
+                }
+            }
+            for ( Object o : toRemove ) {
+                list.remove( o );
+            }
+        } catch ( Exception ex ) {
+            // well...
+        }
+
+        // Oracle managed beans: Enterprise to the rescue
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
+        }
+        cl = workspace.getModuleClassLoader();
+        try {
+            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            final Hashtable<String, String> keys = new Hashtable<String, String>();
+            keys.put( "type", "diagnosability" );
+            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
+            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
+        } catch ( Exception ex ) {
+            // perhaps no oracle, or other classloader
+        }
+    }
+
 }
