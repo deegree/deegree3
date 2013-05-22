@@ -42,7 +42,7 @@ import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.services.controller.OwsManager;
+import org.deegree.services.OwsManager;
 import org.deegree.services.wmts.controller.WMTSController;
 import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
 import org.junit.After;
