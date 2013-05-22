@@ -54,7 +54,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -83,10 +82,13 @@ public class RemoteWMSIntegrationTest {
 
     private List<byte[]> response;
 
-    public RemoteWMSIntegrationTest( Object wasXml, String request, List<byte[]> response ) {
+    private String name;
+
+    public RemoteWMSIntegrationTest( Object wasXml, String request, List<byte[]> response, String name ) {
         // we only use .kvp for WMS
         this.request = request;
         this.response = response;
+        this.name = name;
     }
 
     @Parameters
@@ -126,7 +128,7 @@ public class RemoteWMSIntegrationTest {
             }
         }
 
-        Assert.assertEquals( "Images are not similar enough (" + base + ").", 1.0, sim, 0.01 );
+        Assert.assertEquals( "Images are not similar enough for " + name + " (" + base + ").", 1.0, sim, 0.01 );
     }
 
 }
