@@ -89,7 +89,7 @@ import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.controller.OwsManager;
 import org.slf4j.Logger;
 
 /**
@@ -637,7 +637,7 @@ public class RequestBean implements Serializable {
         activeServices.add( "" );
         
         DeegreeWorkspace workspace = OGCFrontController.getServiceWorkspace();
-        WebServicesConfiguration config = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager config = workspace.getSubsystemManager( OwsManager.class );
         if ( config != null ) {
             for ( ResourceState state : config.getStates() ) {
                 StateType type = state.getType();

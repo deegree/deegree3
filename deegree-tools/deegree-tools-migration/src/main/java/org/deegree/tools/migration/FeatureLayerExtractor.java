@@ -48,7 +48,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OwsManager;
 import org.deegree.services.wms.controller.WMSController;
 
 /**
@@ -82,7 +82,7 @@ class FeatureLayerExtractor {
                             throws XMLStreamException {
         String crs = null;
 
-        WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
         ResourceState<?>[] states = mgr.getStates();
 
         XMLInputFactory infac = XMLInputFactory.newInstance();

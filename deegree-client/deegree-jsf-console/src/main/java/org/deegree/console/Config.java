@@ -61,7 +61,7 @@ import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.console.webservices.WebServiceConfigManager;
 import org.deegree.services.OWS;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.controller.OwsManager;
 import org.slf4j.Logger;
 
 /**
@@ -162,7 +162,7 @@ public class Config implements Comparable<Config> {
     }
 
     public String getCapabilitiesURL() {
-        OWS ows = ( (WebServicesConfiguration) resourceManager ).get( id );
+        OWS ows = ( (OwsManager) resourceManager ).get( id );
         String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
 
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

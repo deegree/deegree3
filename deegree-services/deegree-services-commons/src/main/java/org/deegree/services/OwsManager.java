@@ -33,20 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller;
+package org.deegree.services;
 
-import static java.lang.Class.forName;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.config.AbstractResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -59,12 +54,10 @@ import org.deegree.commons.config.ResourceManagerMetadata;
 import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.services.OWS;
-import org.deegree.services.OWSProvider;
-import org.deegree.services.controller.utils.StandardRequestLogger;
+import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.OwsGlobalConfigLoader;
+import org.deegree.services.controller.RequestLogger;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
 
@@ -76,17 +69,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
+public class OwsManager extends AbstractResourceManager<OWS> {
 
-    private static final Logger LOG = getLogger( WebServicesConfiguration.class );
-
-    private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
-
-    private static final URL CONTROLLER_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
-
-    private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
-
-    private static final URL METADATA_CONFIG_SCHEMA = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
+    private static final Logger LOG = getLogger( OwsManager.class );
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to OWS instances
     private final Map<String, List<OWS>> ogcNameToService = new HashMap<String, List<OWS>>();
@@ -96,14 +81,6 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
 
     // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to OWS instances
     private final Map<String, List<OWS>> requestNameToService = new HashMap<String, List<OWS>>();
-
-    private DeegreeServicesMetadataType metadataConfig;
-
-    private DeegreeServiceControllerType mainConfig;
-
-    private RequestLogger requestLogger;
-
-    private boolean logOnlySuccessful;
 
     private WebServiceManagerMetadata metadata;
 
@@ -117,45 +94,6 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
                             throws ResourceInitException {
 
         this.workspace = workspace;
-
-        File metadata = new File( workspace.getLocation(), "services" + File.separator + "metadata.xml" );
-        File main = new File( workspace.getLocation(), "services" + File.separator + "main.xml" );
-
-        try {
-            URL mdurl;
-            if ( !metadata.exists() ) {
-                mdurl = WebServicesConfiguration.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
-                String msg = "No 'services/metadata.xml' file, assuming defaults.";
-                LOG.debug( msg );
-            } else {
-                mdurl = metadata.toURI().toURL();
-            }
-            metadataConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) JAXBUtils.unmarshall( METADATA_JAXB_PACKAGE,
-                                                                                                    METADATA_CONFIG_SCHEMA,
-                                                                                                    mdurl, workspace ) ).getValue();
-        } catch ( Exception e ) {
-            String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
-            LOG.error( msg );
-            throw new ResourceInitException( msg, e );
-        }
-        if ( !main.exists() ) {
-            LOG.debug( "No 'services/main.xml' file, assuming defaults." );
-            mainConfig = new DeegreeServiceControllerType();
-        } else {
-            try {
-                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) JAXBUtils.unmarshall( CONTROLLER_JAXB_PACKAGE,
-                                                                                                     CONTROLLER_CONFIG_SCHEMA,
-                                                                                                     main.toURI().toURL(),
-                                                                                                     workspace ) ).getValue();
-            } catch ( Exception e ) {
-                mainConfig = new DeegreeServiceControllerType();
-                LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
-                LOG.debug( "Error was: '{}'.", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-
-        initRequestLogger();
 
         // @SuppressWarnings("unchecked")
         // Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader()
@@ -299,81 +237,32 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
      * @return the JAXB main configuration
      */
     public DeegreeServiceControllerType getMainConfiguration() {
-        return mainConfig;
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        return loader.getMainConfig();
     }
 
     /**
      * @return the JAXB metadata configuration
      */
     public DeegreeServicesMetadataType getMetadataConfiguration() {
-        return metadataConfig;
-    }
-
-    private void initRequestLogger() {
-        RequestLogging requestLogging = mainConfig.getRequestLogging();
-        if ( requestLogging != null ) {
-            org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestLogging.RequestLogger logger = requestLogging.getRequestLogger();
-            requestLogger = instantiateRequestLogger( logger );
-            this.logOnlySuccessful = requestLogging.isOnlySuccessful() != null && requestLogging.isOnlySuccessful();
-        }
-    }
-
-    private static RequestLogger instantiateRequestLogger( RequestLogging.RequestLogger conf ) {
-        if ( conf != null ) {
-            String cls = conf.getClazz();
-            try {
-                Object o = conf.getConfiguration();
-                if ( o == null ) {
-                    return (RequestLogger) forName( cls ).newInstance();
-                }
-                return (RequestLogger) forName( cls ).getDeclaredConstructor( Object.class ).newInstance( o );
-            } catch ( ClassNotFoundException e ) {
-                LOG.info( "The request logger class '{}' could not be found on the classpath.", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( ClassCastException e ) {
-                LOG.info( "The request logger class '{}' does not implement the RequestLogger interface.", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( InstantiationException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (needs a default constructor without arguments if no configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( IllegalAccessException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (default constructor needs to be accessible if no configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( IllegalArgumentException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (constructor needs to take an object argument if configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( java.lang.SecurityException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (JVM does have insufficient rights to instantiate the class).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( InvocationTargetException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (constructor call threw an exception).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( NoSuchMethodException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (constructor needs to take an object argument if configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        return new StandardRequestLogger();
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        return loader.getMetadataConfig();
     }
 
     /**
      * @return null, if none was configured
      */
     public RequestLogger getRequestLogger() {
-        return requestLogger;
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        return loader.getRequestLogger();
     }
 
     /**
      * @return true, if the option was set in the logging configuration
      */
     public boolean logOnlySuccessful() {
-        return logOnlySuccessful;
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        return loader.isLogOnlySuccessful();
     }
 
     @Override
@@ -460,7 +349,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         }
     }
 
-    OWS getSingleConfiguredService() {
+    public OWS getSingleConfiguredService() {
         ResourceState<OWS>[] states = getStates();
         OWS found = null;
         for ( ResourceState<OWS> s : states ) {
@@ -473,7 +362,7 @@ public class WebServicesConfiguration extends AbstractResourceManager<OWS> {
         return found;
     }
 
-    boolean isSingleServiceConfigured() {
+    public boolean isSingleServiceConfigured() {
         return getSingleConfiguredService() != null;
     }
 

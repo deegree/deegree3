@@ -110,6 +110,7 @@ import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.services.OWS;
+import org.deegree.services.OwsManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.security.SecurityConfiguration;
@@ -181,7 +182,7 @@ public class OGCFrontController extends HttpServlet {
 
     private transient SecurityConfiguration securityConfiguration;
 
-    private transient WebServicesConfiguration serviceConfiguration;
+    private transient OwsManager serviceConfiguration;
 
     private transient DeegreeWorkspace workspace;
 
@@ -232,7 +233,7 @@ public class OGCFrontController extends HttpServlet {
     /**
      * @return the service configuration
      */
-    public static WebServicesConfiguration getServiceConfiguration() {
+    public static OwsManager getServiceConfiguration() {
         return getInstance().serviceConfiguration;
     }
 
@@ -1117,7 +1118,7 @@ public class OGCFrontController extends HttpServlet {
 
         workspace = getActiveWorkspace();
         workspace.initAll();
-        serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        serviceConfiguration = workspace.getSubsystemManager( OwsManager.class );
         mainConfig = serviceConfiguration.getMainConfiguration();
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );

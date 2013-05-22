@@ -50,7 +50,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OwsManager;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.workspace.WorkspaceUtils;
@@ -77,7 +77,7 @@ public class ThemeExtractor {
 
     public void transform()
                             throws TransformerException, XMLStreamException {
-        WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
         ResourceState<?>[] states = mgr.getStates();
         for ( ResourceState<?> s : states ) {
             if ( s.getResource() instanceof WMSController ) {

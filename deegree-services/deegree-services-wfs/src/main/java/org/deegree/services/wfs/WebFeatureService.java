@@ -142,7 +142,7 @@ import org.deegree.services.OWS;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.controller.OwsManager;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -439,7 +439,7 @@ public class WebFeatureService extends AbstractOWS {
             String metadataUrlTemplate = jaxbConfig.getMetadataURLTemplate();
             if ( metadataUrlTemplate == null ) {
                 // use local CSW (if running)
-                WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+                OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
                 Map<String, List<OWS>> ctrls = mgr.getAll();
                 for ( List<OWS> lists : ctrls.values() ) {
                     for ( OWS o : lists ) {

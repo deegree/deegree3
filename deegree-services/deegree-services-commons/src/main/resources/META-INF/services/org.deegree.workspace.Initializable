@@ -1,1 +1,2 @@
 org.deegree.services.controller.security.SecurityConfiguration
+org.deegree.services.controller.OwsGlobalConfigLoader

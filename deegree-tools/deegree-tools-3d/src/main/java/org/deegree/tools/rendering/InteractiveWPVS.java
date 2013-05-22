@@ -94,7 +94,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManage
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.OWS;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OwsManager;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
@@ -228,7 +228,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        WebServicesConfiguration wsConfig = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager wsConfig = workspace.getSubsystemManager( OwsManager.class );
         List<OWS> wpvsControllers = wsConfig.getByOWSClass( WPVSController.class );
         if ( wpvsControllers.isEmpty() ) {
             throw new ServiceInitException( "No active WPVS found in workspace." );
@@ -952,10 +952,10 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             return null;
         }
 
-        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ) == null ) {
+        if ( workspace.getSubsystemManager( OwsManager.class ) == null ) {
             throw new FileNotFoundException( "No web service configurations were found in the workspace." );
         }
-        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ).getByOWSClass( WPVSController.class ) == null ) {
+        if ( workspace.getSubsystemManager( OwsManager.class ).getByOWSClass( WPVSController.class ) == null ) {
             throw new FileNotFoundException( "No WPVS configuration was found in the workspace." );
         }
 

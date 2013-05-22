@@ -121,7 +121,7 @@ import org.deegree.services.OWS;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.controller.OwsManager;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -752,7 +752,7 @@ public class WMSController extends AbstractOWS {
 
         // override service metadata if available from manager
         OWSMetadataProvider metadata = null;
-        WebServicesConfiguration wsc = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager wsc = workspace.getSubsystemManager( OwsManager.class );
         ResourceState<OWS>[] states = wsc.getStates();
         String configId = null;
         for ( ResourceState<OWS> st : states ) {
@@ -847,7 +847,7 @@ public class WMSController extends AbstractOWS {
     public String getMetadataURLTemplate() {
         // TODO handle this properly in init(), needs service level dependency management
         if ( metadataURLTemplate == null ) {
-            WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+            OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
             Map<String, List<OWS>> ctrls = mgr.getAll();
             for ( List<OWS> lists : ctrls.values() ) {
                 for ( OWS o : lists ) {

@@ -42,7 +42,7 @@ import java.net.URL;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.controller.OwsManager;
 import org.deegree.services.wmts.controller.WMTSController;
 import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
 import org.junit.After;
@@ -74,7 +74,7 @@ public class WMTSControllerTest {
 
     @Test
     public void testMetadataId() {
-        WebServicesConfiguration mgr = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
         WMTSController wmts = (WMTSController) mgr.get( "wmts" );
         Assert.assertEquals( "http://someLink/services?service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}",
                              wmts.getMetadataUrlTemplate() );

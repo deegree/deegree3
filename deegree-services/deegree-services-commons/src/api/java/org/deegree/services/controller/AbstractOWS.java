@@ -74,6 +74,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.OWS;
+import org.deegree.services.OwsManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.SOAPException;
@@ -160,7 +161,7 @@ public abstract class AbstractOWS implements OWS {
             exceptionSerializers.add( p );
         }
 
-        WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager ws = workspace.getSubsystemManager( OwsManager.class );
 
         // Copying to temporary input stream is necessary to avoid config file locks (on Windows)
         // Only remove this if you know what you are doing! It may break the services-console!

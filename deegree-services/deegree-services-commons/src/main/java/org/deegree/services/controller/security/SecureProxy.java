@@ -80,10 +80,10 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
+import org.deegree.services.OwsManager;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.RequestLogger;
-import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -108,7 +108,7 @@ public class SecureProxy extends HttpServlet {
 
     transient XMLOutputFactory outFac = XMLOutputFactory.newInstance();
 
-    private transient WebServicesConfiguration serviceConfig;
+    private transient OwsManager serviceConfig;
 
     private transient SecurityConfiguration securityConfiguration;
 
@@ -172,7 +172,7 @@ public class SecureProxy extends HttpServlet {
             throw new ServletException( msg );
         }
 
-        serviceConfig = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        serviceConfig = workspace.getSubsystemManager( OwsManager.class );
         requestLogger = serviceConfig.getRequestLogger();
 
         LOG.info( "deegree 3 secure proxy initialized." );
