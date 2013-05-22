@@ -43,10 +43,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -81,6 +79,7 @@ import org.deegree.services.controller.exception.SOAPException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SOAPExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SerializerProvider;
+import org.deegree.services.controller.exception.serializer.SerializerProviderInitializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -145,21 +144,10 @@ public abstract class AbstractOWS implements OWS {
         }
     }
 
-    private static List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
-
     @Override
     public void init( DeegreeWorkspace workspace )
                             throws ResourceInitException {
         this.workspace = workspace;
-
-        exceptionSerializers.clear();
-        Iterator<SerializerProvider> serializers = ServiceLoader.load( SerializerProvider.class,
-                                                                       workspace.getModuleClassLoader() ).iterator();
-        while ( serializers.hasNext() ) {
-            SerializerProvider p = serializers.next();
-            p.init( workspace );
-            exceptionSerializers.add( p );
-        }
 
         OwsManager ws = workspace.getSubsystemManager( OwsManager.class );
 
@@ -521,8 +509,10 @@ public abstract class AbstractOWS implements OWS {
                                OWSException exception, HttpResponseBuffer response )
                             throws ServletException {
 
+        SerializerProviderInitializer spi = workspace.getNewWorkspace().getInitializable( SerializerProviderInitializer.class );
+
         ImplementationMetadata<?> md = getImplementationMetadata();
-        for ( SerializerProvider p : exceptionSerializers ) {
+        for ( SerializerProvider p : spi.getExceptionSerializers() ) {
             if ( p.matches( md ) ) {
                 serializer = p.getSerializer( md, serializer );
             }
