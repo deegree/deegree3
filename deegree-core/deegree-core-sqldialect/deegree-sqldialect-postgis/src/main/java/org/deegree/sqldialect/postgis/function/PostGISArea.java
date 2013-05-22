@@ -39,12 +39,11 @@ import static java.sql.Types.VARCHAR;
 
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.function.SQLFunctionProvider;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link SQLFunctionProvider} for the <code>Area</code> function.
@@ -83,8 +82,7 @@ public class PostGISArea implements SQLFunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

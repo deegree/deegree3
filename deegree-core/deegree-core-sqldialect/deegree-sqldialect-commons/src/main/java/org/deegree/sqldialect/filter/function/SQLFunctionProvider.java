@@ -37,11 +37,11 @@ package org.deegree.sqldialect.filter.function;
 
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.filter.expression.Function;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
+import org.deegree.workspace.Workspace;
 
 /**
  * Implementations map {@link Function}s to SQL functions.
@@ -61,8 +61,7 @@ public interface SQLFunctionProvider {
      * @throws ResourceInitException
      *             if the initialization fails
      */
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException;
+    public void init( Workspace ws );
 
     /**
      * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is being taken out of service.

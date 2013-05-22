@@ -39,11 +39,10 @@ import static java.sql.Types.VARCHAR;
 
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link SQLFunctionProvider} for the <code>Upper</code> function.
@@ -82,8 +81,7 @@ public class SQLUpper implements SQLFunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 
