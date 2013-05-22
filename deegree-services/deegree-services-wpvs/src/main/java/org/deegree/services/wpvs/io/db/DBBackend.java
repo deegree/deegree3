@@ -49,7 +49,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -65,6 +64,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
+import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackend;
@@ -73,6 +73,8 @@ import org.deegree.services.wpvs.io.serializer.BillBoardSerializer;
 import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;
 import org.deegree.services.wpvs.io.serializer.WROSerializer;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -266,17 +268,20 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 
     private Type dataType;
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
+
+    private ResourceMetadata<RenderableStore> metadata;
 
     /**
      * @param connectionID
      *            to be used to get a connection from the {@link ConnectionProvider}
      * @param type
      */
-    DBBackend( String connectionID, Type type, DeegreeWorkspace workspace ) {
+    DBBackend( String connectionID, Type type, Workspace workspace, ResourceMetadata<RenderableStore> metadata ) {
         this.connectionID = connectionID;
         this.dataType = type;
         this.workspace = workspace;
+        this.metadata = metadata;
     }
 
     @Override
@@ -970,8 +975,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
      */
     public Connection getConnection()
                             throws SQLException {
-        ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
-                                                                           connectionID );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connectionID );
         Connection connection = prov.getConnection();
         connection.setAutoCommit( true );
         return connection;
@@ -1089,5 +1093,10 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
      */
     protected abstract Envelope getDatasetEnvelope( Connection con, String tableName, String geomColumn )
                             throws SQLException;
+
+    @Override
+    public ResourceMetadata<RenderableStore> getMetadata() {
+        return metadata;
+    }
 
 }

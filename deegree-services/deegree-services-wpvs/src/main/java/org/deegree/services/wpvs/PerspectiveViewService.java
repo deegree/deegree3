@@ -311,7 +311,7 @@ public class PerspectiveViewService {
                                                                            -this.translationToLocalCRS[1]
                                                                                                    + RenderableDataset.DEFAULT_SPAN,
                                                                            RenderableDataset.DEFAULT_SPAN }, defaultCRS );
-        renderableDatasets = new RenderableDataset();
+        renderableDatasets = new RenderableDataset( workspace.getNewWorkspace() );
         sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                        configAdapter, dsd );
 
@@ -324,7 +324,7 @@ public class PerspectiveViewService {
         demDatasets = new DEMDataset( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
                                       ConfiguredOpenGLInitValues.getTerrainDiffuse(),
                                       ConfiguredOpenGLInitValues.getTerrainSpecular(),
-                                      ConfiguredOpenGLInitValues.getTerrainShininess() );
+                                      ConfiguredOpenGLInitValues.getTerrainShininess(), workspace.getNewWorkspace() );
         sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                 configAdapter, dsd );
 

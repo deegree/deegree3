@@ -48,11 +48,12 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStore;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.RenderFragmentManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.services.jaxb.wpvs.DEMDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -77,6 +78,8 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
 
     private float shininess;
 
+    private Workspace workspace;
+
     /**
      * @param numberOfDEMFragmentsCached
      *            defines the number of dem fragments to be cached on the gpu.
@@ -89,7 +92,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
      * @param shininess
      */
     public DEMDataset( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize, float[] ambientColor,
-                       float[] diffuseColor, float[] specularColor, float shininess ) {
+                       float[] diffuseColor, float[] specularColor, float shininess, Workspace workspace ) {
         this.numberOfDEMFragmentsCached = numberOfDEMFragmentsCached;
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
@@ -97,6 +100,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
         this.shininess = shininess;
         // this.directMeshfragmentPool = new DirectByteBufferPool( directMeshfragmentPoolSize * 1024 * 1024,
         // "fragment_data" );
+        this.workspace = workspace;
     }
 
     /**
@@ -167,7 +171,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
 
         if ( demDataset != null ) {
             String storeId = demDataset.getBatchedMTStoreId();
-            BatchedMTStore store = BatchedMTStoreManager.get( storeId );
+            BatchedMTStore store = workspace.getResource( BatchedMTStoreProvider.class, storeId );
             MultiresolutionMesh mrModel = store.getMesh();
 
             if ( mrModel != null ) {

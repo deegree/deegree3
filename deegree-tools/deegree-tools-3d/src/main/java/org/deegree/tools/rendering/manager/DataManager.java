@@ -324,7 +324,7 @@ public class DataManager {
                 File prototypesFile = new File( fileBackendDir + "/prototypes" );
                 FileBackend.initFiles( objectsFile );
                 FileBackend.initFiles( prototypesFile );
-                return new FileBackend( objectsFile, prototypesFile );
+                return new FileBackend( objectsFile, prototypesFile, null );
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -338,7 +338,7 @@ public class DataManager {
                 workspace.getNewWorkspace().addExtraResource( loc );
             }
         }
-        ModelBackend<?> result = ModelBackend.getInstance( hostURL, fileBackendDir );
+        ModelBackend<?> result = ModelBackend.getInstance( hostURL, workspace.getNewWorkspace() );
         return result;
     }
 

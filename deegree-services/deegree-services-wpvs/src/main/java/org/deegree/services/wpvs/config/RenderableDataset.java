@@ -55,13 +55,14 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypePool;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStoreProvider;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.RenderableDatasetConfig;
 import org.deegree.services.jaxb.wpvs.SwitchLevels;
 import org.deegree.services.jaxb.wpvs.SwitchLevels.Level;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -78,6 +79,12 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
 
     /** span of the default envelope */
     public final static double DEFAULT_SPAN = 0.001;
+
+    private Workspace workspace;
+
+    public RenderableDataset( Workspace workspace ) {
+        this.workspace = workspace;
+    }
 
     /**
      * Analyzes the ModelDataset from the {@link DatasetDefinitions}, fills the renderers with data from the defined
@@ -113,7 +120,8 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
                         clarifyInheritance( bds, parentMaxPixelError );
                         String renderableStoreId = bds.getRenderableStoreId();
                         if ( renderableStoreId != null ) {
-                            RenderableStore renderableStore = RenderableStoreManager.get( renderableStoreId );
+                            RenderableStore renderableStore = workspace.getResource( RenderableStoreProvider.class,
+                                                                                     renderableStoreId );
                             if ( renderableStore != null ) {
                                 if ( renderableStore.isBillboard() ) {
                                     sceneEnvelope = initBillboards( sceneEnvelope, toLocalCRS, bds, renderableStore );
