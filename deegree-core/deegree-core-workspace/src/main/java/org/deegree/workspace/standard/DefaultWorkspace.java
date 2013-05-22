@@ -109,6 +109,8 @@ public class DefaultWorkspace implements Workspace {
 
     private Map<Class<? extends ResourceProvider<? extends Resource>>, List<ResourceLocation<? extends Resource>>> extraResources = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, List<ResourceLocation<? extends Resource>>>();
 
+    private Map<Class<? extends Initializable>, Initializable> initializables = new HashMap<Class<? extends Initializable>, Initializable>();
+
     private ResourceGraph graph;
 
     private ErrorHandler errors = new ErrorHandler();
@@ -201,6 +203,7 @@ public class DefaultWorkspace implements Workspace {
         resourceManagers = null;
         wsModules = null;
         extraResources.clear();
+        initializables.clear();
         states = null;
     }
 
@@ -324,6 +327,7 @@ public class DefaultWorkspace implements Workspace {
         resourceManagers = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>>();
         resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
         resources = new HashMap<ResourceIdentifier<? extends Resource>, Resource>();
+        initializables.clear();
         graph = new ResourceGraph();
         states = new ResourceStates();
         initClassloader();
@@ -333,6 +337,7 @@ public class DefaultWorkspace implements Workspace {
             Initializable init = it.next();
             try {
                 init.init( this );
+                initializables.put( init.getClass(), init );
             } catch ( Exception e ) {
                 LOG.error( "Could not initialize {}: {}", init.getClass().getSimpleName(), e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
@@ -505,6 +510,11 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public ResourceStates getStates() {
         return states;
+    }
+
+    @Override
+    public <T extends Initializable> T getInitializable( Class<T> className ) {
+        return (T) initializables.get( className );
     }
 
 }

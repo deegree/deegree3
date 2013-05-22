@@ -197,4 +197,11 @@ public interface Workspace {
      */
     ResourceStates getStates();
 
+    /**
+     * Can be used to obtain an Initializable object which has been loaded and started up during #startup.
+     * 
+     * @return null, if no such initializable has been loaded
+     */
+    <T extends Initializable> T getInitializable( Class<T> className );
+
 }
