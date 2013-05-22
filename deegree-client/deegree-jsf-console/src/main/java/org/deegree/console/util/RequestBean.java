@@ -88,8 +88,8 @@ import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.OwsManager;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.OwsManager;
 import org.slf4j.Logger;
 
 /**

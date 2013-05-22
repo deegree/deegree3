@@ -61,7 +61,7 @@ import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.console.webservices.WebServiceConfigManager;
 import org.deegree.services.OWS;
-import org.deegree.services.controller.OwsManager;
+import org.deegree.services.OwsManager;
 import org.slf4j.Logger;
 
 /**

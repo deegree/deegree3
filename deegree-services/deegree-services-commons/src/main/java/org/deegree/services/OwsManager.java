@@ -95,19 +95,6 @@ public class OwsManager extends AbstractResourceManager<OWS> {
 
         this.workspace = workspace;
 
-        // @SuppressWarnings("unchecked")
-        // Iterator<OWSProvider> iter = ServiceLoader.load( OWSProvider.class, workspace.getModuleClassLoader()
-        // ).iterator();
-        // Map<String, OWSProvider<? extends Enum<?>>> providers = new HashMap<String, OWSProvider<? extends
-        // Enum<?>>>();
-        // while ( iter.hasNext() ) {
-        // OWSProvider<?> p = iter.next();
-        // for ( String serviceName : p.getImplementationMetadata().getImplementedServiceName() ) {
-        // providers.put( serviceName.toUpperCase(), p );
-        // }
-        // }
-
-        this.workspace = workspace;
         ResourceManagerMetadata<OWS> md = getMetadata();
         if ( md != null ) {
             for ( ResourceProvider p : md.getResourceProviders() ) {
