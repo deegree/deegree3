@@ -162,7 +162,8 @@ public abstract class AbstractOWS implements OWS {
         }
 
         XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ), configURL.toString() );
-        init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        init( loader.getMetadataConfig(), loader.getMainConfig(), serviceInfo, adapter );
     }
 
     public ImplementationMetadata<?> getImplementationMetadata() {

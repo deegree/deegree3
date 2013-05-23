@@ -56,9 +56,6 @@ import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OwsGlobalConfigLoader;
-import org.deegree.services.controller.RequestLogger;
-import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
 
 /**
@@ -218,30 +215,6 @@ public class OwsManager extends AbstractResourceManager<OWS> {
         }
         LOG.info( "deegree OGC webservices shut down." );
         LOG.info( "--------------------------------------------------------------------------------" );
-    }
-
-    /**
-     * @return the JAXB main configuration
-     */
-    public DeegreeServiceControllerType getMainConfiguration() {
-        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
-        return loader.getMainConfig();
-    }
-
-    /**
-     * @return the JAXB metadata configuration
-     */
-    public DeegreeServicesMetadataType getMetadataConfiguration() {
-        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
-        return loader.getMetadataConfig();
-    }
-
-    /**
-     * @return null, if none was configured
-     */
-    public RequestLogger getRequestLogger() {
-        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
-        return loader.getRequestLogger();
     }
 
     /**

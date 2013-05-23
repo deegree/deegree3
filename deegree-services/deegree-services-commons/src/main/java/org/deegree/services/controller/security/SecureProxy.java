@@ -83,6 +83,7 @@ import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.services.OwsManager;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
+import org.deegree.services.controller.OwsGlobalConfigLoader;
 import org.deegree.services.controller.RequestLogger;
 import org.slf4j.Logger;
 
@@ -173,7 +174,8 @@ public class SecureProxy extends HttpServlet {
         }
 
         serviceConfig = workspace.getSubsystemManager( OwsManager.class );
-        requestLogger = serviceConfig.getRequestLogger();
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        requestLogger = loader.getRequestLogger();
 
         LOG.info( "deegree 3 secure proxy initialized." );
         LOG.info( "Secured service is '{}'", proxiedUrl );
@@ -185,8 +187,9 @@ public class SecureProxy extends HttpServlet {
 
         try {
             File tmpFile = null;
-            if ( serviceConfig.getRequestLogger() != null ) {
-                String dir = serviceConfig.getMainConfiguration().getRequestLogging().getOutputDirectory();
+            OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+            if ( loader.getRequestLogger() != null ) {
+                String dir = loader.getMainConfig().getRequestLogging().getOutputDirectory();
                 if ( dir == null ) {
                     tmpFile = createTempFile( "request", ".body" );
                 } else {
