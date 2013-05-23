@@ -252,8 +252,9 @@ public class SecureProxy extends HttpServlet {
                 OutputStream out = response.getOutputStream();
                 XMLStreamReader responseReader = inFac.createXMLStreamReader( in );
                 responseReader.next();
+                OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
                 boolean successful = copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL )
-                                     || !serviceConfig.logOnlySuccessful();
+                                     || !loader.isLogOnlySuccessful();
                 if ( requestLogger != null && successful ) {
                     requestLogger.logXML( proxiedUrl + "?" + request.getRequestURL(), tmpFile, startTime,
                                           System.currentTimeMillis(), creds );
@@ -303,7 +304,8 @@ public class SecureProxy extends HttpServlet {
                     // TODO determine from content type if it was successful, for WFS this should not be a problem
                     copy( in, out );
                 }
-                successful = successful || !serviceConfig.logOnlySuccessful();
+                OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+                successful = successful || !loader.isLogOnlySuccessful();
                 if ( requestLogger != null && successful ) {
                     requestLogger.logKVP( proxiedUrl + "?" + request.getRequestURL(),
                                           toQueryString( normalizedKVPParams ), startTime, System.currentTimeMillis(),

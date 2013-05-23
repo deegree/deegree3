@@ -55,7 +55,6 @@ import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.OwsGlobalConfigLoader;
 import org.slf4j.Logger;
 
 /**
@@ -217,21 +216,9 @@ public class OwsManager extends AbstractResourceManager<OWS> {
         LOG.info( "--------------------------------------------------------------------------------" );
     }
 
-    /**
-     * @return true, if the option was set in the logging configuration
-     */
-    public boolean logOnlySuccessful() {
-        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
-        return loader.isLogOnlySuccessful();
-    }
-
     @Override
     public Class<? extends ResourceManager>[] getDependencies() {
         return new Class[] {};
-    }
-
-    public DeegreeWorkspace getWorkspace() {
-        return workspace;
     }
 
     static class WebServiceManagerMetadata extends DefaultResourceManagerMetadata<OWS> {
