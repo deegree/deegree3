@@ -80,7 +80,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
-import org.deegree.services.OwsManager;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.OwsGlobalConfigLoader;
@@ -108,8 +107,6 @@ public class SecureProxy extends HttpServlet {
     transient XMLInputFactory inFac = XMLInputFactoryUtils.newSafeInstance();
 
     transient XMLOutputFactory outFac = XMLOutputFactory.newInstance();
-
-    private transient OwsManager serviceConfig;
 
     private transient SecurityConfiguration securityConfiguration;
 
@@ -173,7 +170,6 @@ public class SecureProxy extends HttpServlet {
             throw new ServletException( msg );
         }
 
-        serviceConfig = workspace.getSubsystemManager( OwsManager.class );
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         requestLogger = loader.getRequestLogger();
 
@@ -252,7 +248,6 @@ public class SecureProxy extends HttpServlet {
                 OutputStream out = response.getOutputStream();
                 XMLStreamReader responseReader = inFac.createXMLStreamReader( in );
                 responseReader.next();
-                OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
                 boolean successful = copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL )
                                      || !loader.isLogOnlySuccessful();
                 if ( requestLogger != null && successful ) {
