@@ -35,20 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.csw.profile.CommonCSWProfile;
+import org.deegree.services.csw.profile.EbrimProfile;
 import org.deegree.services.csw.profile.ServiceProfile;
-import org.deegree.services.csw.profile.ServiceProfileManager;
-import org.slf4j.Logger;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -57,50 +54,28 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class CSWProvider implements OWSProvider {
+public class CSWProvider extends OWSProvider {
 
-    private static final Logger LOG = getLogger( CSWProvider.class );
-
-    // pre-initialized to avoid NPE in WebServicesConfiguration if no CSW is configured
-    private ServiceProfile profile = new CommonCSWProfile();
-
-    private CSWController cswController;
-
-    private DeegreeWorkspace ws;
+    private ServiceProfile profile = new EbrimProfile();
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/csw";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return CSWProvider.class.getResource( "/META-INF/schemas/services/csw/3.2.0/csw_configuration.xsd" );
     }
 
     @Override
     public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
-        if ( cswController != null && cswController.getStore() != null ) {
-            this.profile = ServiceProfileManager.createProfile( cswController.getStore() );
-        }
         return profile.getImplementationMetadata();
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        cswController = new CSWController( configURL, getImplementationMetadata() );
-        return cswController;
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new CswMetadata( workspace, location, this );
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        LOG.info( "Init CSW Provider" );
-        this.ws = workspace;
-    }
 }

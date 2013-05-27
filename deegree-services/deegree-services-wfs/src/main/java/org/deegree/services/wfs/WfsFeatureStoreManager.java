@@ -51,7 +51,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
@@ -61,6 +60,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,16 +93,16 @@ public class WfsFeatureStoreManager {
      * @param baseURL
      * @throws FeatureStoreException
      */
-    public void init( DeegreeWFS sc, String baseURL, DeegreeWorkspace workspace )
+    public void init( DeegreeWFS sc, String baseURL, Workspace workspace )
                             throws ResourceInitException {
 
         List<String> ids = sc.getFeatureStoreId();
 
         if ( ids.isEmpty() ) {
             LOG.debug( "Feature store ids not configured. Adding all active feature stores." );
-            List<ResourceIdentifier<FeatureStore>> stores = workspace.getNewWorkspace().getResourcesOfType( NewFeatureStoreProvider.class );
+            List<ResourceIdentifier<FeatureStore>> stores = workspace.getResourcesOfType( NewFeatureStoreProvider.class );
             for ( ResourceIdentifier<FeatureStore> id : stores ) {
-                FeatureStore store = workspace.getNewWorkspace().getResource( id.getProvider(), id.getId() );
+                FeatureStore store = workspace.getResource( id.getProvider(), id.getId() );
                 if ( store != null ) {
                     addStore( store );
                     addNotYetHintedNamespaces( store.getSchema().getNamespaceBindings().values() );
@@ -111,7 +111,7 @@ public class WfsFeatureStoreManager {
         } else {
             LOG.debug( "Adding configured feature stores." );
             for ( String id : ids ) {
-                FeatureStore store = workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, id );
+                FeatureStore store = workspace.getResource( NewFeatureStoreProvider.class, id );
                 if ( store == null ) {
                     String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
                     throw new ResourceInitException( msg );

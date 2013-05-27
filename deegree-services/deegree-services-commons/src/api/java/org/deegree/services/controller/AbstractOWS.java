@@ -36,16 +36,12 @@
 package org.deegree.services.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -56,15 +52,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -72,6 +65,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.SOAPException;
@@ -85,6 +79,11 @@ import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +104,7 @@ public abstract class AbstractOWS implements OWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWS.class );
 
-    private ImplementationMetadata<?> implementationMetadata;
+    private ResourceMetadata<OWS> metadata;
 
     /** Common configuration (metadata) of parent {@link OGCFrontController}. */
     protected DeegreeServicesMetadataType mainMetadataConf;
@@ -120,51 +119,29 @@ public abstract class AbstractOWS implements OWS {
      */
     protected SortedSet<Version> offeredVersions = new TreeSet<Version>();
 
-    protected DeegreeWorkspace workspace;
+    protected Workspace workspace;
 
-    private URL configURL;
-
-    protected ImplementationMetadata<?> serviceInfo;
-
-    private String configId;
-
-    protected AbstractOWS( URL configURL, ImplementationMetadata<?> serviceInfo ) {
-        this.configURL = configURL;
-        this.serviceInfo = serviceInfo;
-        try {
-            File f = new File( configURL.toURI() );
-            this.configId = f.getName().substring( 0, f.getName().length() - 4 );
-        } catch ( URISyntaxException e ) {
-            // then no configId will be available
-        }
+    protected AbstractOWS( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+        this.metadata = metadata;
+        this.workspace = workspace;
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
-
+    public void init() {
         // Copying to temporary input stream is necessary to avoid config file locks (on Windows)
         // Only remove this if you know what you are doing! It may break the services-console!
         byte[] bytes = null;
+        ResourceLocation<OWS> loc = metadata.getLocation();
         try {
-            bytes = FileUtils.readFileToByteArray( new File( configURL.toURI() ) );
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            throw new ResourceInitException( t.getMessage() );
+            bytes = IOUtils.toByteArray( loc.getAsStream() );
+        } catch ( Exception t ) {
+            throw new ResourceInitException( t.getMessage(), t );
         }
 
-        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ), configURL.toString() );
-        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
-        init( loader.getMetadataConfig(), loader.getMainConfig(), serviceInfo, adapter );
-    }
-
-    public ImplementationMetadata<?> getImplementationMetadata() {
-        return serviceInfo;
-    }
-
-    public String getId() {
-        return configId;
+        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ),
+                                             loc.resolveToUrl( loc.getIdentifier().getId() + ".xml" ).toExternalForm() );
+        OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
+        init( loader.getMetadataConfig(), loader.getMainConfig(), adapter );
     }
 
     /**
@@ -178,31 +155,12 @@ public abstract class AbstractOWS implements OWS {
      *             if the config version does not match one of the supported versions
      */
     protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
-                         ImplementationMetadata<?> serviceInformation, XMLAdapter controllerConfig )
+                         XMLAdapter controllerConfig )
                             throws ResourceInitException {
         this.mainMetadataConf = mainMetadataConf;
         this.mainControllerConf = mainControllerConf;
-        this.implementationMetadata = serviceInformation;
         String configVersion = controllerConfig.getRootElement().getAttributeValue( new QName( "configVersion" ) );
         checkConfigVersion( controllerConfig.getSystemId(), configVersion );
-    }
-
-    /**
-     * Returns the names of all requests that are handled by this controller.
-     * 
-     * @return names of handled requests
-     */
-    public final Set<String> getHandledRequests() {
-        return implementationMetadata.getHandledRequests();
-    }
-
-    /**
-     * Returns all namespaces that are handled by this controller.
-     * 
-     * @return handled namespaces
-     */
-    public final Set<String> getHandledNamespaces() {
-        return implementationMetadata.getHandledNamespaces();
     }
 
     /**
@@ -213,7 +171,7 @@ public abstract class AbstractOWS implements OWS {
                             throws ResourceInitException {
         for ( String requestedVersion : requestedVersions ) {
             Version version = Version.parseVersion( requestedVersion );
-            if ( !implementationMetadata.getImplementedVersions().contains( Version.parseVersion( requestedVersion ) ) ) {
+            if ( !( ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getImplementedVersions().contains( Version.parseVersion( requestedVersion ) ) ) ) {
                 String msg = "Version '" + requestedVersion + "' is not supported by the service implementation.";
                 throw new ResourceInitException( msg );
             }
@@ -372,14 +330,14 @@ public abstract class AbstractOWS implements OWS {
                             throws ResourceInitException {
 
         Version configVersion = Version.parseVersion( configVersionString );
-        if ( !implementationMetadata.getSupportedConfigVersions().contains( configVersion ) ) {
+        if ( !( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getSupportedConfigVersions().contains( configVersion ) ) {
             LOG.error( "" );
             LOG.error( "*** Configuration version mismatch ***", confFileURL );
             LOG.error( "" );
             StringBuilder msg = new StringBuilder( "File uses config version " ).append( configVersion );
             msg.append( ", but this deegree build only supports version(s): " );
             boolean separatorNeeded = false;
-            for ( Version supportedVersion : implementationMetadata.getSupportedConfigVersions() ) {
+            for ( Version supportedVersion : ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getSupportedConfigVersions() ) {
                 msg.append( supportedVersion );
                 if ( separatorNeeded ) {
                     msg.append( "," );
@@ -391,16 +349,11 @@ public abstract class AbstractOWS implements OWS {
         }
     }
 
-    protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, OMElement element )
-                            throws ResourceInitException {
-        XMLAdapter adapter = new XMLAdapter( element );
-        return unmarshallConfig( jaxbPackage, schemaLocation, adapter );
-    }
-
-    protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
-                            throws ResourceInitException {
+    protected Object unmarshallConfig( String jaxbPackage ) {
         try {
-            return JAXBUtils.unmarshall( jaxbPackage, schemaLocation, xmlAdapter, workspace );
+            return JAXBUtils.unmarshall( jaxbPackage,
+                                         ( (AbstractResourceProvider<OWS>) metadata.getProvider() ).getSchema(),
+                                         metadata.getLocation().getAsStream(), workspace );
         } catch ( JAXBException e ) {
             LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
             throw new ResourceInitException( "Error parsing service configuration: "
@@ -503,9 +456,9 @@ public abstract class AbstractOWS implements OWS {
                                OWSException exception, HttpResponseBuffer response )
                             throws ServletException {
 
-        SerializerProviderInitializer spi = workspace.getNewWorkspace().getInitializable( SerializerProviderInitializer.class );
+        SerializerProviderInitializer spi = workspace.getInitializable( SerializerProviderInitializer.class );
 
-        ImplementationMetadata<?> md = getImplementationMetadata();
+        ImplementationMetadata<?> md = ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata();
         for ( SerializerProvider p : spi.getExceptionSerializers() ) {
             if ( p.matches( md ) ) {
                 serializer = p.getSerializer( md, serializer );
@@ -605,4 +558,10 @@ public abstract class AbstractOWS implements OWS {
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new OWS110ExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
     }
+
+    @Override
+    public ResourceMetadata<OWS> getMetadata() {
+        return metadata;
+    }
+
 }

@@ -47,7 +47,6 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.services.wfs.WFSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -76,7 +75,6 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
@@ -139,7 +137,7 @@ import org.deegree.protocol.wfs.transaction.kvp.TransactionKVPAdapter;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReaderFactory;
 import org.deegree.services.OWS;
-import org.deegree.services.OwsManager;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
@@ -166,8 +164,10 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.query.StoredQueryHandler;
-import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -198,8 +198,6 @@ public class WebFeatureService extends AbstractOWS {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wfs/3.2.0/wfs_configuration.xsd";
-
     private static final int DEFAULT_MAX_FEATURES = 15000;
 
     private WfsFeatureStoreManager service;
@@ -228,19 +226,18 @@ public class WebFeatureService extends AbstractOWS {
 
     private OWSMetadataProvider mdProvider;
 
-    public WebFeatureService( URL configURL, @SuppressWarnings("rawtypes") ImplementationMetadata serviceInfo ) {
-        super( configURL, serviceInfo );
+    public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+        super( metadata, workspace );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
+                      XMLAdapter controllerConf ) {
 
         LOG.info( "Initializing WFS." );
-        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, controllerConf );
 
-        DeegreeWFS jaxbConfig = (DeegreeWFS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
+        DeegreeWFS jaxbConfig = (DeegreeWFS) unmarshallConfig( CONFIG_JAXB_PACKAGE );
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
@@ -307,8 +304,7 @@ public class WebFeatureService extends AbstractOWS {
         return StringUtils.replaceAll( metadataUrlTemplate, "${metadataSetId}", ftMd.getMetadataSetId() );
     }
 
-    private void initOfferedVersions( SupportedVersions supportedVersions )
-                            throws ResourceInitException {
+    private void initOfferedVersions( SupportedVersions supportedVersions ) {
 
         List<String> versions = null;
         if ( supportedVersions != null ) {
@@ -316,8 +312,9 @@ public class WebFeatureService extends AbstractOWS {
         }
         if ( versions == null || versions.isEmpty() ) {
             LOG.info( "No protocol versions specified. Activating all implemented versions." );
-            versions = new ArrayList<String>( serviceInfo.getImplementedVersions().size() );
-            for ( Version version : serviceInfo.getImplementedVersions() ) {
+            ImplementationMetadata<?> md = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+            versions = new ArrayList<String>( md.getImplementedVersions().size() );
+            for ( Version version : md.getImplementedVersions() ) {
                 versions.add( version.toString() );
             }
         }
@@ -345,8 +342,7 @@ public class WebFeatureService extends AbstractOWS {
         defaultQueryCRS = this.queryCRS.get( 0 );
     }
 
-    private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList )
-                            throws ResourceInitException {
+    private void initFormats( List<JAXBElement<? extends AbstractFormatType>> formatList ) {
 
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
@@ -414,10 +410,9 @@ public class WebFeatureService extends AbstractOWS {
     private OWSMetadataProvider initMetadataProvider( DeegreeServicesMetadataType serviceMetadata, DeegreeWFS jaxbConfig )
                             throws ResourceInitException {
         OWSMetadataProvider provider = null;
-        if ( getId() != null ) {
-            provider = workspace.getNewWorkspace().getResource( OWSMetadataProviderProvider.class,
-                                                                getId() + "_metadata" );
-        }
+        provider = workspace.getResource( OWSMetadataProviderProvider.class, getMetadata().getIdentifier().getId()
+                                                                             + "_metadata" );
+
         if ( provider == null ) {
             ServiceIdentification serviceId = MetadataUtils.convertFromJAXB( serviceMetadata.getServiceIdentification() );
             if ( serviceId.getTitles().isEmpty() ) {
@@ -439,12 +434,11 @@ public class WebFeatureService extends AbstractOWS {
             String metadataUrlTemplate = jaxbConfig.getMetadataURLTemplate();
             if ( metadataUrlTemplate == null ) {
                 // use local CSW (if running)
-                OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
-                Map<String, List<OWS>> ctrls = mgr.getAll();
-                for ( List<OWS> lists : ctrls.values() ) {
-                    for ( OWS o : lists ) {
-                        @SuppressWarnings("deprecation")
-                        ImplementationMetadata<?> md = o.getImplementationMetadata();
+                List<ResourceIdentifier<OWS>> owss = workspace.getResourcesOfType( OWSProvider.class );
+                for ( ResourceIdentifier<OWS> id : owss ) {
+                    OWS o = workspace.getResource( OWSProvider.class, id.getId() );
+                    if ( o != null ) {
+                        ImplementationMetadata<?> md = ( (OWSProvider) o.getMetadata().getProvider() ).getImplementationMetadata();
                         for ( String s : md.getImplementedServiceName() ) {
                             if ( s.equalsIgnoreCase( "csw" ) ) {
                                 metadataUrlTemplate = OGCFrontController.getHttpGetURL();
@@ -485,7 +479,7 @@ public class WebFeatureService extends AbstractOWS {
                     XMLStreamReader xmlStream;
                     try {
                         xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
-                    } catch ( Throwable t ) {
+                    } catch ( Exception t ) {
                         throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
                     }
                     OMElement omEl = new XMLAdapter( xmlStream ).getRootElement();
@@ -805,7 +799,8 @@ public class WebFeatureService extends AbstractOWS {
     private WFSRequestType getRequestTypeByName( String requestName )
                             throws OWSException {
         @SuppressWarnings("rawtypes")
-        WFSRequestType requestType = (WFSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
+        ImplementationMetadata<?> md = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+        WFSRequestType requestType = (WFSRequestType) md.getRequestTypeByName( requestName );
         if ( requestType == null ) {
             String msg = "Request type '" + requestName + "' is not supported.";
             throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );
@@ -1011,25 +1006,4 @@ public class WebFeatureService extends AbstractOWS {
         return version;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.Resource#getMetadata()
-     */
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.Resource#init()
-     */
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
-
-    }
 }

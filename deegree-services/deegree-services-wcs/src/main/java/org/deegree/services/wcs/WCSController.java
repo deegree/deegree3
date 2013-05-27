@@ -44,7 +44,6 @@ import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -61,7 +60,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -80,6 +78,8 @@ import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -103,8 +103,9 @@ import org.deegree.services.wcs.getcoverage.GetCoverage100KVPAdapter;
 import org.deegree.services.wcs.getcoverage.GetCoverage100XMLAdapter;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
-import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,26 +134,23 @@ public class WCSController extends AbstractOWS {
 
     private ServiceProviderType provider;
 
-    private URL configUrl;
-
     private static final String CONFIG_PRE = "dwcs";
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
 
     private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/3.0.0/wcs_published_information.xsd";
 
-    public WCSController( URL configURL, ImplementationMetadata serviceInfo ) {
-        super( configURL, serviceInfo );
-        this.configUrl = configURL;
+    public WCSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+        super( metadata, workspace );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
+                      XMLAdapter controllerConf )
                             throws ResourceInitException {
 
         LOG.info( "Initializing WCS." );
-        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, controllerConf );
         UPDATE_SEQUENCE++;
 
         NamespaceBindings nsContext = new NamespaceBindings();
@@ -160,7 +158,7 @@ public class WCSController extends AbstractOWS {
         nsContext.addNamespace( WCSConstants.WCS_110_PRE, WCSConstants.WCS_110_NS );
         nsContext.addNamespace( CONFIG_PRE, CONFIG_NS );
 
-        this.wcsService = new WCServiceBuilder( workspace, configUrl ).buildService();
+        this.wcsService = new WCServiceBuilder( workspace, getMetadata() ).buildService();
 
         PublishedInformation publishedInformation = parsePublishedInformation( controllerConf, nsContext );
         syncWithMainController( publishedInformation );
@@ -191,8 +189,7 @@ public class WCSController extends AbstractOWS {
         XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );
         OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
         if ( elem != null ) {
-            pubInf = (PublishedInformation) unmarshallConfig( "org.deegree.services.jaxb.wcs", PUBLISHED_SCHEMA_FILE,
-                                                              elem );
+            pubInf = (PublishedInformation) unmarshallConfig( "org.deegree.services.jaxb.wcs" );
             if ( pubInf != null ) {
                 // mandatory
                 allowedOperations.add( WCSRequestType.GetCapabilities.name() );
@@ -503,18 +500,20 @@ public class WCSController extends AbstractOWS {
     private void checkRequiredKeys( Map<String, String> param )
                             throws OWSException {
         try {
+            ImplementationMetadata<?> imd = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+
             String service = KVPUtils.getRequired( param, "SERVICE" );
             if ( !"WCS".equalsIgnoreCase( service ) ) {
                 throw new OWSException( "SERVICE " + service + " is not supported",
                                         OWSException.INVALID_PARAMETER_VALUE, "SERVICE" );
             }
             String request = KVPUtils.getRequired( param, "REQUEST" );
-            if ( !getHandledRequests().contains( request ) ) {
+            if ( !imd.getHandledRequests().contains( request ) ) {
                 throw new OWSException( "REQUEST " + request + " is not supported",
                                         OWSException.OPERATION_NOT_SUPPORTED, "REQUEST" );
             }
             String version;
-            if ( ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
+            if ( imd.getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
                 // no version required
                 version = KVPUtils.getRequired( param, "VERSION" );
                 if ( version != null && !offeredVersions.contains( Version.parseVersion( version ) ) ) {
@@ -548,21 +547,4 @@ public class WCSController extends AbstractOWS {
         return new WCS100ServiceExceptionReportSerializer();
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.workspace.Resource#getMetadata()
-     */
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.deegree.workspace.Resource#init()
-     */
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
-        
-    }
 }

@@ -35,99 +35,46 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ExtendedResourceManager;
-import org.deegree.commons.config.ExtendedResourceProvider;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.utils.FileUtils;
-import org.deegree.services.controller.ImplementationMetadata;
-import org.slf4j.Logger;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
- * {@link ExtendedResourceManager} for {@link OWS} (and web service configuration).
+ * {@link ResourceManager} for {@link OWS} (and web service configuration).
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class OwsManager extends AbstractResourceManager<OWS> {
+public class OwsManager extends DefaultResourceManager<OWS> {
 
-    private static final Logger LOG = getLogger( OwsManager.class );
+    private Workspace workspace;
 
-    // maps service names (e.g. 'WMS', 'WFS', ...) to OWS instances
-    private final Map<String, List<OWS>> ogcNameToService = new HashMap<String, List<OWS>>();
-
-    // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to OWS instances
-    private final Map<String, List<OWS>> requestNsToService = new HashMap<String, List<OWS>>();
-
-    // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to OWS instances
-    private final Map<String, List<OWS>> requestNameToService = new HashMap<String, List<OWS>>();
-
-    private WebServiceManagerMetadata metadata;
-
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        metadata = new WebServiceManagerMetadata( workspace );
+    public OwsManager() {
+        super( new DefaultResourceManagerMetadata<OWS>( OWSProvider.class, "web services", "services/" ) );
     }
 
     @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-
+    protected void read( List<ResourceLocation<OWS>> list, Workspace workspace ) {
         this.workspace = workspace;
-
-        ResourceManagerMetadata<OWS> md = getMetadata();
-        if ( md != null ) {
-            for ( ResourceProvider p : md.getResourceProviders() ) {
-                try {
-                    ( (OWSProvider) p ).init( workspace );
-                    nsToProvider.put( p.getConfigNamespace(), (ExtendedResourceProvider<OWS>) p );
-                } catch ( Throwable t ) {
-                    LOG.error( "Initializing of service provider " + p.getClass() + " failed.", t );
-                }
+        ListIterator<ResourceLocation<OWS>> iter = list.listIterator();
+        while ( iter.hasNext() ) {
+            ResourceLocation<OWS> loc = iter.next();
+            if ( loc.getIdentifier().getId().endsWith( "_metadata" ) ) {
+                iter.remove();
             }
-
-            dir = new File( workspace.getLocation(), md.getPath() );
-            name = md.getName();
-            if ( !dir.exists() ) {
-                LOG.info( "No '{}' directory -- skipping initialization of {}.", md.getPath(), name );
-                return;
-            }
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up {}.", name );
-            LOG.info( "--------------------------------------------------------------------------------" );
-
-            List<File> files = FileUtils.findFilesForExtensions( dir, true, "xml,ignore" );
-
-            for ( File configFile : files ) {
-                String fileName = configFile.getName();
-                if ( !fileName.endsWith( "_metadata.xml" ) && !fileName.equals( "metadata.xml" )
-                     && !fileName.equals( "main.xml" ) ) {
-                    try {
-                        ResourceState<OWS> state = processResourceConfig( configFile );
-                        idToState.put( state.getId(), state );
-                    } catch ( Throwable t ) {
-                        LOG.error( t.getMessage(), t );
-                    }
-                }
-            }
-            LOG.info( "" );
         }
+        super.read( list, workspace );
     }
 
     /**
@@ -139,7 +86,20 @@ public class OwsManager extends AbstractResourceManager<OWS> {
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
     public List<OWS> getByServiceType( String serviceType ) {
-        return ogcNameToService.get( serviceType.toUpperCase() );
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
+        List<OWS> services = new ArrayList<OWS>();
+        for ( ResourceIdentifier<OWS> id : list ) {
+            OWS ows = workspace.getResource( OWSProvider.class, id.getId() );
+            if ( ows == null ) {
+                continue;
+            }
+            for ( String name : ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName() ) {
+                if ( name.equalsIgnoreCase( serviceType ) ) {
+                    services.add( ows );
+                }
+            }
+        }
+        return services;
     }
 
     /**
@@ -151,7 +111,23 @@ public class OwsManager extends AbstractResourceManager<OWS> {
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
     public List<OWS> getByRequestName( String requestName ) {
-        return requestNameToService.get( requestName );
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
+        List<OWS> services = new ArrayList<OWS>();
+        for ( ResourceIdentifier<OWS> id : list ) {
+            OWS ows = workspace.getResource( OWSProvider.class, id.getId() );
+            if ( ows == null ) {
+                continue;
+            }
+            for ( String name : ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getHandledRequests() ) {
+                if ( name.equalsIgnoreCase( "GetCapabilities" ) ) {
+                    continue;
+                }
+                if ( name.equalsIgnoreCase( requestName ) ) {
+                    services.add( ows );
+                }
+            }
+        }
+        return services;
     }
 
     /**
@@ -162,7 +138,20 @@ public class OwsManager extends AbstractResourceManager<OWS> {
      * @return responsible <code>OWS</code> or null, if no responsible service was found
      */
     public List<OWS> getByRequestNS( String ns ) {
-        return requestNsToService.get( ns );
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
+        List<OWS> services = new ArrayList<OWS>();
+        for ( ResourceIdentifier<OWS> id : list ) {
+            OWS ows = workspace.getResource( OWSProvider.class, id.getId() );
+            if ( ows == null ) {
+                continue;
+            }
+            for ( String name : ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getHandledNamespaces() ) {
+                if ( name.equalsIgnoreCase( ns ) ) {
+                    services.add( ows );
+                }
+            }
+        }
+        return services;
     }
 
     /**
@@ -172,7 +161,25 @@ public class OwsManager extends AbstractResourceManager<OWS> {
      *         registered.
      */
     public Map<String, List<OWS>> getAll() {
-        return ogcNameToService;
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
+        Map<String, List<OWS>> services = new HashMap<String, List<OWS>>();
+        for ( ResourceIdentifier<OWS> id : list ) {
+            OWS ows = workspace.getResource( OWSProvider.class, id.getId() );
+            if ( ows == null ) {
+                continue;
+            }
+
+            String[] names = ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName();
+            for ( String name : names ) {
+                List<OWS> owss = services.get( name );
+                if ( owss == null ) {
+                    owss = new ArrayList<OWS>();
+                    services.put( name, owss );
+                }
+                owss.add( ows );
+            }
+        }
+        return services;
     }
 
     /**
@@ -184,9 +191,10 @@ public class OwsManager extends AbstractResourceManager<OWS> {
      *         is active
      */
     public List<OWS> getByOWSClass( Class<?> c ) {
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
         List<OWS> services = new ArrayList<OWS>();
-        for ( ResourceState<OWS> state : getStates() ) {
-            OWS ows = state.getResource();
+        for ( ResourceIdentifier<OWS> id : list ) {
+            OWS ows = workspace.getResource( OWSProvider.class, id.getId() );
             if ( ows != null ) {
                 if ( c == ows.getClass() ) {
                     services.add( ows );
@@ -196,117 +204,12 @@ public class OwsManager extends AbstractResourceManager<OWS> {
         return services;
     }
 
-    @Override
-    public void shutdown() {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Shutting down deegree web services in context..." );
-        for ( ResourceState<OWS> state : getStates() ) {
-            OWS ows = state.getResource();
-            if ( ows != null ) {
-                LOG.info( "Shutting down service: " + state.getId() + "" );
-                try {
-                    ows.destroy();
-                } catch ( Throwable e ) {
-                    String msg = "Error shutting down service '" + state.getId() + "': " + e.getMessage();
-                    LOG.error( msg, e );
-                }
-            }
-        }
-        LOG.info( "deegree OGC webservices shut down." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    static class WebServiceManagerMetadata extends DefaultResourceManagerMetadata<OWS> {
-        WebServiceManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "web services", "services/", OWSProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public ResourceManagerMetadata getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    protected void add( OWS ows ) {
-        ImplementationMetadata<?> md = ows.getImplementationMetadata();
-        for ( String serviceName : md.getImplementedServiceName() ) {
-            LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            put( ogcNameToService, serviceName.toUpperCase(), ows );
-        }
-
-        // associate request types with controller instance
-        for ( String request : md.getHandledRequests() ) {
-            // skip GetCapabilities requests
-            if ( !( "GetCapabilities".equals( request ) ) ) {
-                LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                put( requestNameToService, request, ows );
-            }
-        }
-
-        // associate namespaces with controller instance
-        for ( String ns : md.getHandledNamespaces() ) {
-            LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            put( requestNsToService, ns, ows );
-        }
-    }
-
-    @Override
-    protected void remove( OWS ows ) {
-        ImplementationMetadata<?> md = ows.getImplementationMetadata();
-        for ( String serviceName : md.getImplementedServiceName() ) {
-            LOG.debug( "Service name '" + serviceName + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            remove( ogcNameToService, serviceName.toUpperCase(), ows );
-        }
-
-        for ( String request : md.getHandledRequests() ) {
-            // skip GetCapabilities requests
-            if ( !( "GetCapabilities".equals( request ) ) ) {
-                LOG.debug( "Request type '" + request + "' -> '" + ows.getClass().getSimpleName() + "'" );
-                remove( requestNameToService, request, ows );
-            }
-        }
-
-        for ( String ns : md.getHandledNamespaces() ) {
-            LOG.debug( "Namespace '" + ns + "' -> '" + ows.getClass().getSimpleName() + "'" );
-            remove( requestNsToService, ns, ows );
-        }
-    }
-
-    private void put( Map<String, List<OWS>> map, String key, OWS value ) {
-        List<OWS> values = map.get( key );
-        if ( values == null ) {
-            values = new ArrayList<OWS>();
-            map.put( key, values );
-        }
-        if ( !values.contains( value ) ) {
-            values.add( value );
-        }
-    }
-
-    private void remove( Map<String, List<OWS>> map, String key, OWS value ) {
-        List<OWS> values = map.get( key );
-        if ( values != null ) {
-            values.remove( value );
-        }
-    }
-
     public OWS getSingleConfiguredService() {
-        ResourceState<OWS>[] states = getStates();
-        OWS found = null;
-        for ( ResourceState<OWS> s : states ) {
-            if ( s.getResource() != null && found == null ) {
-                found = s.getResource();
-            } else if ( s.getResource() != null ) {
-                return null;
-            }
+        List<ResourceIdentifier<OWS>> owss = workspace.getResourcesOfType( OWSProvider.class );
+        if ( owss.size() == 1 ) {
+            return workspace.getResource( OWSProvider.class, owss.get( 0 ).getId() );
         }
-        return found;
+        return null;
     }
 
     public boolean isSingleServiceConfigured() {

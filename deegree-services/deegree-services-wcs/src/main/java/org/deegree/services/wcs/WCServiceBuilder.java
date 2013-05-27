@@ -37,7 +37,6 @@ package org.deegree.services.wcs;
 
 import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -62,6 +61,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryUtils;
+import org.deegree.services.OWS;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wcs.AxisValue;
 import org.deegree.services.jaxb.wcs.Interpolation;
@@ -76,6 +76,8 @@ import org.deegree.services.wcs.coverages.MultiResolutionCoverage;
 import org.deegree.services.wcs.coverages.SimpleCoverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.model.CoverageOptions;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,17 +98,17 @@ public class WCServiceBuilder {
 
     private SupportOptions defaultOptions;
 
-    private final DeegreeWorkspace workspace;
+    private final Workspace workspace;
 
-    private final URL configUrl;
+    private ResourceMetadata<OWS> metadata;
 
     /**
      * @param adapter
      * @param workspace
      */
-    public WCServiceBuilder( DeegreeWorkspace workspace, URL configUrl ) {
+    public WCServiceBuilder( Workspace workspace, ResourceMetadata<OWS> metadata ) {
         this.workspace = workspace;
-        this.configUrl = configUrl;
+        this.metadata = metadata;
     }
 
     /**
@@ -114,7 +116,7 @@ public class WCServiceBuilder {
      */
     public WCService buildService() {
         wcsService = new WCService();
-        ServiceConfiguration wcsConf = ServiceConfigurationXMLAdapter.parse( workspace, configUrl );
+        ServiceConfiguration wcsConf = ServiceConfigurationXMLAdapter.parse( workspace, metadata );
 
         RasterDataContainerFactory.setDefaultLoadingPolicy( LoadingPolicy.CACHED );
 

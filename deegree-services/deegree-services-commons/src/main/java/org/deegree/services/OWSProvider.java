@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Implementations provide {@link OWS} instances.
@@ -46,11 +46,11 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OWSProvider extends ExtendedResourceProvider<OWS> {
+public abstract class OWSProvider extends AbstractResourceProvider<OWS> {
 
     /**
      * @return information about handled requests, namespaces and so on
      */
-    ImplementationMetadata<?> getImplementationMetadata();
+    public abstract ImplementationMetadata<?> getImplementationMetadata();
 
 }

@@ -110,6 +110,7 @@ import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.OwsManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -567,7 +568,7 @@ public class OGCFrontController extends HttpServlet {
         if ( pathInfo != null ) {
             // remove start "/"
             String serviceId = pathInfo.substring( 1 );
-            ows = serviceConfiguration.get( serviceId );
+            ows = workspace.getNewWorkspace().getResource( OWSProvider.class, serviceId );
             if ( ows == null && serviceConfiguration.isSingleServiceConfigured() ) {
                 ows = serviceConfiguration.getSingleConfiguredService();
             }
@@ -598,7 +599,7 @@ public class OGCFrontController extends HttpServlet {
                 serviceId = pathInfo.substring( 1 );
             }
 
-            ows = serviceConfiguration.get( serviceId );
+            ows = workspace.getNewWorkspace().getResource( OWSProvider.class, serviceId );
             if ( ows == null && serviceConfiguration.isSingleServiceConfigured() ) {
                 ows = serviceConfiguration.getSingleConfiguredService();
             }
@@ -785,7 +786,7 @@ public class OGCFrontController extends HttpServlet {
             // Once all services properly check their requests (WFS and SOS have this problem), this workaround can be
             // removed.
             if ( service == null
-                 && !( ows.getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
+                 && !( ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
                 OWSException ex = new OWSException( "The 'SERVICE' parameter is missing.", "MissingParameterValue",
                                                     "service" );
                 sendException( ows, ex, response, null );
@@ -1121,7 +1122,7 @@ public class OGCFrontController extends HttpServlet {
 
         workspace = getActiveWorkspace();
         workspace.initAll();
-        serviceConfiguration = workspace.getSubsystemManager( OwsManager.class );
+        serviceConfiguration = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         mainConfig = loader.getMainConfig();
         if ( mainConfig != null ) {
