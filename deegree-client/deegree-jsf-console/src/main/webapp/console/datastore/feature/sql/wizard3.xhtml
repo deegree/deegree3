@@ -1,0 +1,43 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <h:panelGroup>
+      <h:form>
+        <p>
+          Mapping
+          <h:outputText value="#{mappingWizardSQL.appSchemaInfo.numFtsTotal}" />
+          feature type(s).
+          <h:commandButton styleClass="buttonCreateNew" value="Details"
+            action="/console/featurestore/sql/schema_details" onclick="show();" />
+        </p>
+        <p>
+          Select storage mode:
+          <h:selectOneRadio styleClass="label" value="#{mappingWizardSQL.storageMode}" layout="pageDirection">
+            <f:selectItem itemValue="blob" itemLabel="BLOB: GML_OBJECTS table stores binary representations of features" />
+            <f:selectItem itemValue="relational"
+              itemLabel="Relational: One table per feature type (and additional tables for multi properties)" />
+            <f:selectItem itemDisabled="true" itemValue="hybrid" itemLabel="Hybrid: Relational + BLOB (TODO)" />
+          </h:selectOneRadio>
+        </p>
+        <p>
+          <h:outputLabel styleClass="label" for="storageCrs" value="Storage CRS" />
+          <h:inputText styleClass="liste" id="storageCrs" value="#{mappingWizardSQL.storageCrs}" size="32" />
+        </p>
+        <p>
+          <h:outputLabel styleClass="label" for="tableLen" value="Maximum length for table names" />
+          <h:inputText styleClass="liste" id="tableLen" value="#{mappingWizardSQL.tableNameLength}" size="3" />
+          <h:outputLabel styleClass="label" for="columnLen" value="Maximum length for column names" />
+          <h:inputText styleClass="liste" id="columnLen" value="#{mappingWizardSQL.columnNameLength}" size="3" />
+        </p>
+        <p>
+          <h:commandButton styleClass="buttonCreateNew" value="Back" action="#{mappingWizardSQL.selectMode}"
+            onclick="show();" />
+          <h:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}"
+            onclick="show();" />
+        </p>
+      </h:form>
+    </h:panelGroup>
+  </ui:define>
+</ui:composition>
