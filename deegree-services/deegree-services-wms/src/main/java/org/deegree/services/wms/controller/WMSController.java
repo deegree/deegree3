@@ -36,7 +36,6 @@
 
 package org.deegree.services.wms.controller;
 
-import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.write;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
@@ -44,7 +43,6 @@ import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
-import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
@@ -65,7 +63,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -85,11 +82,9 @@ import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.FeatureCollection;
@@ -99,11 +94,6 @@ import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerRef;
-import org.deegree.metadata.iso.ISORecord;
-import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreProvider;
-import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
@@ -131,10 +121,7 @@ import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
-import org.deegree.services.wms.controller.ops.GetFeatureInfo;
-import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
-import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -189,75 +176,8 @@ public class WMSController extends AbstractOWS {
         return service;
     }
 
-    private void traverseMetadataIds( Layer l, HashMap<String, String> dataMetadataIds ) {
-        if ( l.getName() != null && l.getDataMetadataSetId() != null ) {
-            dataMetadataIds.put( l.getName(), l.getDataMetadataSetId() );
-        }
-        if ( l.getChildren() != null ) {
-            for ( Layer c : l.getChildren() ) {
-                traverseMetadataIds( c, dataMetadataIds );
-            }
-        }
-    }
-
     private void handleMetadata( String metadataURLTemplate, String storeid ) {
         this.metadataURLTemplate = metadataURLTemplate;
-
-        if ( service.isNewStyle() ) {
-            return;
-        }
-
-        HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
-        traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
-        if ( storeid != null ) {
-            MetadataStore<ISORecord> store = (MetadataStore<ISORecord>) workspace.getResource( MetadataStoreProvider.class,
-                                                                                               storeid );
-            if ( store == null ) {
-                LOG.warn( "Metadata store with id {} is not available, metadata ids will not be checked.", storeid );
-                return;
-            }
-            if ( !store.getType().equals( "iso" ) ) {
-                LOG.warn( "Metadata store with id {} is not an ISO metadata store, metadata ids will not be checked.",
-                          storeid );
-                return;
-            }
-
-            MetadataResultSet<ISORecord> rs = null;
-            try {
-                for ( Entry<String, String> e : dataMetadataIds.entrySet() ) {
-                    rs = store.getRecordById( singletonList( e.getValue() ), null );
-                    if ( !rs.next() ) {
-                        LOG.warn( "Metadata store with id {} does not have a record with id {} (referenced from layer {}).",
-                                  new Object[] { storeid, e.getValue(), e.getKey() } );
-                        return;
-                    }
-
-                    ISORecord rec = rs.getRecord();
-                    String prefix = "//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/";
-                    String code = rec.getStringFromXPath( new XPath( prefix + "gmd:code/gco:CharacterString",
-                                                                     getNamespaceContext() ) );
-                    String codeSpace = rec.getStringFromXPath( new XPath( prefix + "gmd:codeSpace/gco:CharacterString",
-                                                                          getNamespaceContext() ) );
-
-                    Layer l = service.getLayer( e.getKey() );
-                    l.setAuthorityURL( codeSpace );
-                    l.setAuthorityIdentifier( code );
-
-                    rs.close();
-                }
-            } catch ( Throwable e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } finally {
-                if ( rs != null ) {
-                    try {
-                        rs.close();
-                    } catch ( MetadataStoreException e ) {
-                        // ignore
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -362,13 +282,6 @@ public class WMSController extends AbstractOWS {
             throw new ResourceInitException( e.getMessage(), e );
         }
 
-    }
-
-    @Override
-    public void destroy() {
-        if ( service != null ) {
-            service.close();
-        }
     }
 
     @Override
@@ -505,38 +418,22 @@ public class WMSController extends AbstractOWS {
         FeatureType type = null;
         ICRS crs;
         Map<String, String> nsBindings = new HashMap<String, String>();
-        if ( service.isNewStyle() ) {
-            LinkedList<String> headers = new LinkedList<String>();
-            org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map,
-                                                                                                              version );
-            checkGetFeatureInfo( version, fi );
-            crs = fi.getCoordinateSystem();
-            geometries = fi.returnGeometries();
-            queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
 
-            RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
-                                                    fi.getEnvelope(), 0.28, map );
-            format = fi.getInfoFormat();
-            info.setFormat( format );
-            info.setFeatureCount( fi.getFeatureCount() );
-            info.setX( fi.getX() );
-            info.setY( fi.getY() );
-            pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, headers ), headers );
-        } else {
-            GetFeatureInfo fi = new GetFeatureInfo( map, version, service );
-            crs = fi.getCoordinateSystem();
-            geometries = fi.returnGeometries();
-            format = fi.getInfoFormat();
-            checkGetFeatureInfo( fi );
-            pair = service.getFeatures( fi );
-            Mapper<String, Layer> layerNameMapper = new Mapper<String, Layer>() {
-                @Override
-                public String apply( Layer u ) {
-                    return u.getName();
-                }
-            };
-            queryLayers = map( fi.getQueryLayers(), layerNameMapper );
-        }
+        LinkedList<String> headers = new LinkedList<String>();
+        org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map, version );
+        checkGetFeatureInfo( version, fi );
+        crs = fi.getCoordinateSystem();
+        geometries = fi.returnGeometries();
+        queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
+
+        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
+                                                fi.getEnvelope(), 0.28, map );
+        format = fi.getInfoFormat();
+        info.setFormat( format );
+        info.setFeatureCount( fi.getFeatureCount() );
+        info.setX( fi.getX() );
+        info.setY( fi.getY() );
+        pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, headers ), headers );
 
         FeatureCollection col = pair.first;
         addHeaders( response, pair.second );
@@ -600,39 +497,20 @@ public class WMSController extends AbstractOWS {
 
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
+        org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
+                                                                                           service.getExtensions() );
 
-        if ( service.isNewStyle() ) {
-            org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
-                                                                                               service.getExtensions() );
+        checkGetMap( version, gm2 );
 
-            checkGetMap( version, gm2 );
-
-            RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(),
-                                                    gm2.getTransparent(), gm2.getBgColor(), gm2.getBoundingBox(),
-                                                    gm2.getPixelSize(), map );
-            RenderContext ctx = new DefaultRenderContext( info );
-            ctx.setOutput( response.getOutputStream() );
-            LinkedList<String> headers = new LinkedList<String>();
-            service.getMap( gm2, headers, ctx );
-            response.setContentType( gm2.getFormat() );
-            ctx.close();
-            addHeaders( response, headers );
-        } else {
-            GetMap gm = new GetMap( map, version, service );
-            checkGetMap( version, gm );
-
-            final Pair<BufferedImage, LinkedList<String>> pair = service.getMapImage( gm );
-            addHeaders( response, pair.second );
-            sendImage( pair.first, response, gm.getFormat() );
-        }
-    }
-
-    private void checkGetFeatureInfo( GetFeatureInfo gfi )
-                            throws OWSException {
-        if ( gfi.getInfoFormat() != null && !gfi.getInfoFormat().equals( "" )
-             && !featureInfoManager.getSupportedFormats().contains( gfi.getInfoFormat() ) ) {
-            throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), OWSException.INVALID_FORMAT );
-        }
+        RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
+                                                gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
+        RenderContext ctx = new DefaultRenderContext( info );
+        ctx.setOutput( response.getOutputStream() );
+        LinkedList<String> headers = new LinkedList<String>();
+        service.getMap( gm2, headers, ctx );
+        response.setContentType( gm2.getFormat() );
+        ctx.close();
+        addHeaders( response, headers );
     }
 
     private void checkGetFeatureInfo( Version version, org.deegree.protocol.wms.ops.GetFeatureInfo gfi )
@@ -641,16 +519,14 @@ public class WMSController extends AbstractOWS {
              && !featureInfoManager.getSupportedFormats().contains( gfi.getInfoFormat() ) ) {
             throw new OWSException( get( "WMS.INVALID_INFO_FORMAT", gfi.getInfoFormat() ), OWSException.INVALID_FORMAT );
         }
-        if ( service.isNewStyle() ) {
-            for ( LayerRef lr : gfi.getQueryLayers() ) {
-                if ( !service.hasTheme( lr.getName() ) ) {
-                    throw new OWSException( "The layer with name " + lr.getName() + " is not defined.",
-                                            "LayerNotDefined", "layers" );
-                }
+        for ( LayerRef lr : gfi.getQueryLayers() ) {
+            if ( !service.hasTheme( lr.getName() ) ) {
+                throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
+                                        "layers" );
             }
-            for ( StyleRef sr : gfi.getStyles() ) {
-                // TODO check style availability
-            }
+        }
+        for ( StyleRef sr : gfi.getStyles() ) {
+            // TODO check style availability
         }
         try {
             if ( gfi.getCoordinateSystem() == null ) {
@@ -668,44 +544,19 @@ public class WMSController extends AbstractOWS {
         }
     }
 
-    private void checkGetMap( Version version, GetMap gm )
-                            throws OWSException {
-        if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
-            throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), OWSException.INVALID_FORMAT );
-        }
-        try {
-            // check for existence/validity
-            if ( gm.getCoordinateSystem() == null ) {
-                // this can happen if some AUTO SRS id was invalid
-                controllers.get( version ).throwSRSException( "automatic" );
-            }
-            ICRS crs = gm.getCoordinateSystem();
-            if ( crs instanceof CRSRef ) {
-                ( (CRSRef) crs ).getReferencedObject();
-            }
-        } catch ( ReferenceResolvingException e ) {
-            // only throw an exception if a truly invalid srs is found
-            // this makes it possible to request srs that are not advertised, which may be useful
-            controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
-        }
-
-    }
-
     private void checkGetMap( Version version, org.deegree.protocol.wms.ops.GetMap gm )
                             throws OWSException {
         if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
             throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), OWSException.INVALID_FORMAT );
         }
-        if ( service.isNewStyle() ) {
-            for ( LayerRef lr : gm.getLayers() ) {
-                if ( !service.hasTheme( lr.getName() ) ) {
-                    throw new OWSException( "The layer with name " + lr.getName() + " is not defined.",
-                                            "LayerNotDefined", "layers" );
-                }
+        for ( LayerRef lr : gm.getLayers() ) {
+            if ( !service.hasTheme( lr.getName() ) ) {
+                throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
+                                        "layers" );
             }
-            for ( StyleRef sr : gm.getStyles() ) {
-                // TODO check style availability here instead of the layer
-            }
+        }
+        for ( StyleRef sr : gm.getStyles() ) {
+            // TODO check style availability here instead of the layer
         }
         try {
             // check for existence/validity
@@ -729,6 +580,7 @@ public class WMSController extends AbstractOWS {
 
         String version = map.get( "VERSION" );
         // not putting it into the bean, why should I? It's used just a few lines below...
+
         String updateSequence = map.get( "UPDATESEQUENCE" );
         if ( version == null ) {
             version = map.get( "WMTVER" );
@@ -743,23 +595,14 @@ public class WMSController extends AbstractOWS {
         // override service metadata if available from manager
         String configId = getMetadata().getIdentifier().getId();
         OWSMetadataProvider metadata = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
+
+        controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                      identification, provider, map, this, metadata );
+
         if ( metadata != null ) {
             identification = metadata.getServiceIdentification();
             provider = metadata.getServiceProvider();
             extendedCaps = metadata.getExtendedCapabilities();
-        }
-
-        if ( service.getDynamics().isEmpty() ) {
-            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                          identification, provider, map, this, metadata );
-        } else {
-            // need to synchronize here as well, else the layer list may be updating right now (the service.update()
-            // does not strictly need to be synchronized for this use case, but it sure is a Good Thing to do it anyway)
-            synchronized ( this ) {
-                service.update();
-                controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                              identification, provider, map, this, metadata );
-            }
         }
 
         response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
@@ -901,6 +744,11 @@ public class WMSController extends AbstractOWS {
          */
         void throwSRSException( String name )
                                 throws OWSException;
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 
 }

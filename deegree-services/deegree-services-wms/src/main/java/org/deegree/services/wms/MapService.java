@@ -36,9 +36,6 @@
 
 package org.deegree.services.wms;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
@@ -54,15 +51,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Timer;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
@@ -72,23 +66,13 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.LayerRef;
-import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
-import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.rendering.r2d.context.MapOptions;
-import org.deegree.rendering.r2d.context.MapOptions.Antialias;
-import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
-import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
-import org.deegree.services.wms.controller.ops.GetFeatureInfo;
-import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.services.wms.dynamic.LayerUpdater;
-import org.deegree.services.wms.model.layers.EmptyLayer;
-import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.ImageUtils;
@@ -114,27 +98,16 @@ public class MapService {
     /**
      * 
      */
-    public HashMap<String, Layer> layers;
-
-    private Layer root;
-
-    /**
-     * 
-     */
     public StyleRegistry registry;
 
     MapOptionsMaps layerOptions = new MapOptionsMaps();
 
     MapOptions defaultLayerOptions;
 
-    private LinkedList<LayerUpdater> dynamics = new LinkedList<LayerUpdater>();
-
     /**
      * The current update sequence.
      */
     public int updateSequence = 0; // TODO how to restore this after restart?
-
-    private Timer styleUpdateTimer;
 
     private List<Theme> themes;
 
@@ -144,8 +117,6 @@ public class MapService {
 
     private GetLegendHandler getLegendHandler;
 
-    private OldStyleMapService oldStyleMapService;
-
     /**
      * @param conf
      * @param adapter
@@ -153,22 +124,12 @@ public class MapService {
      */
     public MapService( ServiceConfigurationType conf, XMLAdapter adapter, Workspace workspace )
                             throws MalformedURLException {
-        this.registry = new StyleRegistry( workspace );
-        layers = new HashMap<String, Layer>();
+        this.registry = new StyleRegistry();
 
-        MapServiceBuilder builder = new MapServiceBuilder( conf, adapter, layerOptions, this, workspace, dynamics );
+        MapServiceBuilder builder = new MapServiceBuilder( conf );
 
         defaultLayerOptions = builder.buildMapOptions();
 
-        if ( conf != null && conf.getAbstractLayer() != null ) {
-            root = builder.parseLayers();
-            fillInheritedInformation( root, new LinkedList<ICRS>( root.getSrs() ) );
-            // update the dynamic layers once on startup to avoid having a disappointingly long initial GetCapabilities
-            // request...
-            update();
-            styleUpdateTimer = new Timer();
-            styleUpdateTimer.schedule( registry, 0, 1000 );
-        }
         if ( conf != null && conf.getThemeId() != null && !conf.getThemeId().isEmpty() ) {
             themes = new ArrayList<Theme>();
             newLayers = new HashMap<String, org.deegree.layer.Layer>();
@@ -191,19 +152,6 @@ public class MapService {
             }
         }
         getLegendHandler = new GetLegendHandler( this );
-        oldStyleMapService = new OldStyleMapService( this );
-    }
-
-    /**
-     * Empty map service with an empty root layer.
-     */
-    public MapService( DeegreeWorkspace workspace ) {
-        this.registry = new StyleRegistry( workspace.getNewWorkspace() );
-        this.defaultLayerOptions = new MapOptions( Quality.NORMAL, Interpolation.NEARESTNEIGHBOR, Antialias.BOTH, -1, 3 );
-        layers = new HashMap<String, Layer>();
-        root = new EmptyLayer( this, null, "Root Layer", null );
-        getLegendHandler = new GetLegendHandler( this );
-        oldStyleMapService = new OldStyleMapService( this );
     }
 
     /**
@@ -211,72 +159,6 @@ public class MapService {
      */
     public List<Theme> getThemes() {
         return themes;
-    }
-
-    /**
-     * @return true, if configuration is based on themes
-     */
-    public boolean isNewStyle() {
-        return themes != null;
-    }
-
-    /**
-     * @param layer
-     * @param srs
-     */
-    public static void fillInheritedInformation( Layer layer, List<ICRS> srs ) {
-        if ( layer.getParent() == null ) {
-            if ( layer.getScaleHint() == null ) {
-                layer.setScaleHint( new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY ) );
-            }
-        }
-
-        for ( Layer l : layer.getChildren() ) {
-            List<ICRS> curSrs = new LinkedList<ICRS>( srs );
-            curSrs.addAll( l.getSrs() );
-            removeDuplicates( curSrs );
-            l.setSrs( curSrs );
-            if ( l.getScaleHint() == null ) {
-                l.setScaleHint( layer.getScaleHint() );
-            }
-
-            fillInheritedInformation( l, curSrs );
-        }
-    }
-
-    /**
-     * Updates any dynamic layers.
-     */
-    public synchronized void update() {
-        boolean changed = false;
-        for ( LayerUpdater u : dynamics ) {
-            changed |= u.update();
-        }
-        if ( changed ) {
-            ++updateSequence;
-        }
-    }
-
-    /**
-     * @return the dynamic layer updaters for this map service
-     */
-    public ArrayList<LayerUpdater> getDynamics() {
-        return new ArrayList<LayerUpdater>( dynamics );
-    }
-
-    /**
-     * @return the root layer
-     */
-    public Layer getRootLayer() {
-        return root;
-    }
-
-    /**
-     * @param name
-     * @return the named layer, or null
-     */
-    public Layer getLayer( String name ) {
-        return layers.get( name );
     }
 
     /**
@@ -289,14 +171,7 @@ public class MapService {
         int width = 0, height = 0;
         Color bgcolor = null;
         boolean transparent = false;
-        if ( req instanceof GetMap ) {
-            GetMap gm = (GetMap) req;
-            format = gm.getFormat();
-            width = gm.getWidth();
-            height = gm.getHeight();
-            transparent = gm.getTransparent();
-            bgcolor = gm.getBgColor();
-        } else if ( req instanceof GetLegendGraphic ) {
+        if ( req instanceof GetLegendGraphic ) {
             GetLegendGraphic glg = (GetLegendGraphic) req;
             format = glg.getFormat();
             width = glg.getWidth();
@@ -431,38 +306,6 @@ public class MapService {
         return queries;
     }
 
-    /**
-     * @param gm
-     * @return a rendered image, containing the requested maps
-     * @throws InvalidDimensionValue
-     * @throws MissingDimensionValue
-     */
-    public Pair<BufferedImage, LinkedList<String>> getMapImage( GetMap gm )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        return oldStyleMapService.getMapImage( gm );
-    }
-
-    /**
-     * @param fi
-     * @return a collection of feature values for the selected area, and warning headers
-     * @throws InvalidDimensionValue
-     * @throws MissingDimensionValue
-     */
-    public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi )
-                            throws MissingDimensionValue, InvalidDimensionValue {
-        return oldStyleMapService.getFeatures( fi );
-    }
-
-    private void getFeatureTypes( Collection<FeatureType> types, Layer l ) {
-        FeatureType type = l.getFeatureType();
-        if ( type != null ) {
-            types.add( type );
-        }
-        for ( Layer c : l.getChildren() ) {
-            getFeatureTypes( types, c );
-        }
-    }
-
     private void getFeatureTypes( Collection<FeatureType> types, String name ) {
         for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( name ) ) ) {
             types.addAll( l.getMetadata().getFeatureTypes() );
@@ -476,30 +319,9 @@ public class MapService {
     public List<FeatureType> getSchema( GetFeatureInfoSchema fis ) {
         List<FeatureType> list = new LinkedList<FeatureType>();
         for ( String l : fis.getLayers() ) {
-            if ( isNewStyle() ) {
-                getFeatureTypes( list, l );
-            } else {
-                getFeatureTypes( list, layers.get( l ) );
-            }
+            getFeatureTypes( list, l );
         }
         return list;
-    }
-
-    private void close( Layer l ) {
-        l.close();
-        for ( Layer c : l.getChildren() ) {
-            close( c );
-        }
-    }
-
-    /***/
-    public void close() {
-        if ( styleUpdateTimer != null ) {
-            styleUpdateTimer.cancel();
-        }
-        if ( root != null ) {
-            close( root );
-        }
     }
 
     /**

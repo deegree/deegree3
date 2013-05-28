@@ -53,21 +53,21 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
+import org.deegree.filter.MatchAction;
+import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.ResourceId;
-import org.deegree.filter.Operator;
-import org.deegree.filter.MatchAction;
-import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.Or;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.layer.LayerRef;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.parser.SymbologyParser;
@@ -97,7 +97,8 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
-    public static Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> parse( XMLStreamReader in, RequestBase gm )
+    public static Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> parse( XMLStreamReader in,
+                                                                                                        RequestBase gm )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
@@ -141,25 +142,29 @@ public class SLDParser {
 
                             if ( in.getLocalName().equals( "Filter" ) ) {
                                 Filter filter = Filter110XMLDecoder.parse( in );
-                                if( filter instanceof OperatorFilter ) {
-                                    operatorFilter = (OperatorFilter)filter;
-                                } else if( filter instanceof IdFilter ) {
-                                    IdFilter idFilter = (IdFilter)filter;
+                                if ( filter instanceof OperatorFilter ) {
+                                    operatorFilter = (OperatorFilter) filter;
+                                } else if ( filter instanceof IdFilter ) {
+                                    IdFilter idFilter = (IdFilter) filter;
                                     List<ResourceId> ids = idFilter.getSelectedIds();
-                                    
+
                                     NamespaceBindings nsContext = new NamespaceBindings();
                                     nsContext.addNamespace( "gml", GMLNS );
-                                    ValueReference idReference = new ValueReference( "@gml:id", nsContext );                                    
-                                    
+                                    ValueReference idReference = new ValueReference( "@gml:id", nsContext );
+
                                     int idCount = ids.size(), i = 0;
-                                    Operator[] operators = new Operator[idCount];                                    
-                                    for( ResourceId id : ids ) {
-                                        operators[i++] = new PropertyIsEqualTo( idReference, new Literal<PrimitiveValue>( id.getRid() ), Boolean.TRUE, MatchAction.ONE );
+                                    Operator[] operators = new Operator[idCount];
+                                    for ( ResourceId id : ids ) {
+                                        operators[i++] = new PropertyIsEqualTo(
+                                                                                idReference,
+                                                                                new Literal<PrimitiveValue>(
+                                                                                                             id.getRid() ),
+                                                                                Boolean.TRUE, MatchAction.ONE );
                                     }
-                                    
-                                    if( idCount == 1) {
+
+                                    if ( idCount == 1 ) {
                                         operatorFilter = new OperatorFilter( operators[0] );
-                                    } else {                                                                        
+                                    } else {
                                         operatorFilter = new OperatorFilter( new Or( operators ) );
                                     }
                                 }
@@ -190,7 +195,7 @@ public class SLDParser {
                     }
 
                     in.nextTag();
-                }                
+                }
 
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
                     in.nextTag();
@@ -248,10 +253,14 @@ public class SLDParser {
                 }
 
                 in.nextTag();
+            } else {
+                throw new OWSException( "UserLayer requests are currently not supported.",
+                                        OWSException.NO_APPLICABLE_CODE );
             }
         }
 
-        return new Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>>( layers, styles, filters );
+        return new Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>>( layers, styles,
+                                                                                                   filters );
     }
 
     /**
