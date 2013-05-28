@@ -81,7 +81,7 @@ public class IntegrationTestUtils {
                                                                 + ++idx );
                     }
 
-                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses };
+                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses, name };
                     list.add( o );
                 } catch ( FileNotFoundException e ) {
                     // TODO Auto-generated catch block

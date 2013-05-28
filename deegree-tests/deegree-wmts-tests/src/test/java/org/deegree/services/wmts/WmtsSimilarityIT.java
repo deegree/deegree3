@@ -78,10 +78,13 @@ public class WmtsSimilarityIT {
 
     private List<byte[]> response;
 
-    public WmtsSimilarityIT( Object wasXml, String request, List<byte[]> response ) {
+    private String name;
+
+    public WmtsSimilarityIT( Object wasXml, String request, List<byte[]> response, String name ) {
         // we only use .kvp for WMTS
         this.request = request;
         this.response = response;
+        this.name = name;
     }
 
     @Parameters
@@ -100,7 +103,7 @@ public class WmtsSimilarityIT {
         for ( byte[] response : this.response ) {
             sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
         }
-        Assert.assertEquals( "Images are not similar enough for " + base + ".", 1.0, sim, 0.01 );
+        Assert.assertEquals( "Images are not similar enough for " + name + ", request: " + base + ".", 1.0, sim, 0.01 );
     }
 
 }
