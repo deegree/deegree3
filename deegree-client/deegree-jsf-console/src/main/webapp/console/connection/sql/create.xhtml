@@ -6,78 +6,31 @@
     <h:panelGroup>
       <fieldset class="fieldset">
         <legend>
-          <h:outputText styleClass="titel" value="jdbc" />
+          <h:outputText styleClass="titel" value="Create new database connection" />
         </legend>
         <h:form>
-          <table style="font-size: small" border="0">
-            <tr>
-              <td />
-            </tr>
-            <h:commandButton styleClass="buttonEdit" value="Use XML editor" action="#{jdbcBean.editAsXml}"></h:commandButton>
-            <tr>
-              <td />
-            </tr>
-            <tr>
-              <td><h:outputText value="DB type: " /></td>
-              <td><h:selectOneMenu styleClass="liste" value="#{jdbcBean.dbType}">
-                  <f:selectItem itemValue="mssql" itemLabel="MSSQL" />
-                  <f:selectItem itemValue="oracle" itemLabel="Oracle" />
-                  <f:selectItem itemValue="postgis" itemLabel="PostGIS" />
-                  <f:ajax render="dbConn dbPort" />
-                </h:selectOneMenu></td>
-            </tr>
-            <tr>
-              <td><h:outputText value="Host: " /></td>
-              <td><h:inputText id="dbHost" size="25" required="true" requiredMessage="#{labels.jdbc_edit_host_req}"
-                  value="#{jdbcBean.dbHost}">
-                  <f:ajax render="dbConn" />
-                </h:inputText> <h:outputText value=" Port: " /> <h:inputText id="dbPort" size="5" required="true"
-                  requiredMessage="#{labels.jdbc_edit_port_req}" value="#{jdbcBean.dbPort}">
-                  <f:validateLongRange minimum="0" maximum="65535" />
-                  <f:ajax render="dbConn" />
-                </h:inputText></td>
-            </tr>
-            <tr>
-              <td><h:outputText value="DB name: " /></td>
-              <td><h:inputText id="dbName" size="25" required="true"
-                  requiredMessage="#{labels.jdbc_edit_dbname_req}" value="#{jdbcBean.dbName}">
-                  <f:ajax render="dbConn" />
-                </h:inputText></td>
-            </tr>
-            <tr>
-              <td><h:outputText value="Username: " /></td>
-              <td><h:inputText id="dbUser" size="25" required="true" requiredMessage="#{labels.jdbc_edit_user_req}"
-                  value="#{jdbcBean.dbUser}">
-                  <f:ajax render="dbConn" />
-                </h:inputText></td>
-            </tr>
-            <tr>
-              <td><h:outputText value="Password: " /></td>
-              <td><h:inputText id="dbPwd" size="10" value="#{jdbcBean.dbPwd}">
-                  <f:ajax render="dbConn" />
-                </h:inputText></td>
-            </tr>
-            <tr>
-              <td><h:outputText value="jdbc URL: " /></td>
-              <td><h:inputText id="dbConn" size="50" required="true" requiredMessage="#{labels.jdbc_edit_conn_req}"
-                  redisplay="false" value="#{jdbcBean.dbConn}" /></td>
-            </tr>
-            <tr>
-              <td><br /> <h:commandButton styleClass="buttonInfo" value="#{labels.jdbc_test}"
-                  action="#{jdbcBean.testConnection}" alt="#{config.id}">
-                </h:commandButton></td>
-            </tr>
-          </table>
-          <br />
-          <div>
-            <h:commandButton styleClass="buttonCreateNew" value="Create" action="#{jdbcBean.save}">
-              <f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" />
-            </h:commandButton>
-            <h:outputLink styleClass="buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf"
-              action="#{jdbcBean.cancel}">
-              <h:outputText value="Cancel" />
-            </h:outputLink>
-          </div>
+          <h:panelGroup>
+            <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+            <h:inputText styleClass="liste" id="newFSBt" value="#{createSqlConnectionBean.id}" size="16" required="true"
+              requiredMessage="#{labels.resource_name_req}" />
+            <br />
+            <h:panelGroup>
+              <h:outputLabel styleClass="label" for="newFSBt" value="Type" />
+              <h:selectOneMenu styleClass="liste" value="#{createSqlConnectionBean.type}">
+                <f:selectItems value="#{createSqlConnectionBean.types}" />
+                <f:ajax listener="#{createSqlConnectionBean.changeType}" render="templates" />
+              </h:selectOneMenu>
+            </h:panelGroup>
+            <h:panelGroup id="templates">
+              <h:outputText value="XML config template" />
+              <h:selectOneMenu styleClass="liste" value="#{createSqlConnectionBean.configTemplate}">
+                <f:selectItems value="#{createSqlConnectionBean.configTemplates}" />
+              </h:selectOneMenu>
+            </h:panelGroup>
+            <br />
+            <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+              action="#{createSqlConnectionBean.create}" />
+          </h:panelGroup>
         </h:form>
       </fieldset>
     </h:panelGroup>
