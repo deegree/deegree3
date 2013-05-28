@@ -35,20 +35,35 @@
 package org.deegree.console.connection.sql;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.config.ResourceState;
+import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.AbstractResourceManagerBean;
+import org.deegree.console.Config;
 
 @ManagedBean
 @ViewScoped
-public class SqlConnectionManagerBean extends AbstractResourceManagerBean<ConnectionManager> implements Serializable {
+public class SqlConnectionManagerBean extends AbstractResourceManagerBean<JDBCParamsManager> implements Serializable {
 
     private static final long serialVersionUID = 2946865645336970064L;
 
     public SqlConnectionManagerBean() {
-        super( ConnectionManager.class );
+        super( JDBCParamsManager.class );
+    }
+
+    @Override
+    public List<Config> getConfigs() {
+        List<Config> configs = new ArrayList<Config>();
+        for ( ResourceState<?> state : resourceManager.getStates() ) {
+            configs.add( new Config( state, resourceManager, "/console/connection/sql/index", true ) );
+        }
+        Collections.sort( configs );
+        return configs;
     }
 }

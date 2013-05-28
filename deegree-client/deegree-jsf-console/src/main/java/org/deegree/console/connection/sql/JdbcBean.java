@@ -205,7 +205,7 @@ public class JdbcBean implements Serializable {
     public String save() {
         create();
         clearFields();
-        return "/console/jdbc/index";
+        return "/console/connection/sql/index";
     }
 
     private void create() {
@@ -228,8 +228,6 @@ public class JdbcBean implements Serializable {
             String newId = (String) sMap.get( "newConfigId" );
             rs = mgr.createResource( newId, is );
             rs = mgr.activate( rs.getId() );
-            ResourceManagerMetadata rsMetadata = (ResourceManagerMetadata) sMap.get( "resourceManagerMetadata" );
-            this.config = new Config( rs, mgr, rsMetadata.getStartView(), true );
             ConnectionManager poolMgr = ws.getSubsystemManager( ConnectionManager.class );
             poolMgr.shutdown();
             poolMgr.startup( ws );

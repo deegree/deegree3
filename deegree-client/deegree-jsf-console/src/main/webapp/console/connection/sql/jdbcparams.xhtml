@@ -1,0 +1,85 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <h:panelGroup>
+      <fieldset class="fieldset">
+        <legend>
+          <h:outputText styleClass="titel" value="jdbc" />
+        </legend>
+        <h:form>
+          <table style="font-size: small" border="0">
+            <tr>
+              <td />
+            </tr>
+            <h:commandButton styleClass="buttonEdit" value="Use XML editor" action="#{jdbcBean.editAsXml}"></h:commandButton>
+            <tr>
+              <td />
+            </tr>
+            <tr>
+              <td><h:outputText value="DB type: " /></td>
+              <td><h:selectOneMenu styleClass="liste" value="#{jdbcBean.dbType}">
+                  <f:selectItem itemValue="mssql" itemLabel="MSSQL" />
+                  <f:selectItem itemValue="oracle" itemLabel="Oracle" />
+                  <f:selectItem itemValue="postgis" itemLabel="PostGIS" />
+                  <f:ajax render="dbConn dbPort" />
+                </h:selectOneMenu></td>
+            </tr>
+            <tr>
+              <td><h:outputText value="Host: " /></td>
+              <td><h:inputText id="dbHost" size="25" required="true" requiredMessage="#{labels.jdbc_edit_host_req}"
+                  value="#{jdbcBean.dbHost}">
+                  <f:ajax render="dbConn" />
+                </h:inputText> <h:outputText value=" Port: " /> <h:inputText id="dbPort" size="5" required="true"
+                  requiredMessage="#{labels.jdbc_edit_port_req}" value="#{jdbcBean.dbPort}">
+                  <f:validateLongRange minimum="0" maximum="65535" />
+                  <f:ajax render="dbConn" />
+                </h:inputText></td>
+            </tr>
+            <tr>
+              <td><h:outputText value="DB name: " /></td>
+              <td><h:inputText id="dbName" size="25" required="true"
+                  requiredMessage="#{labels.jdbc_edit_dbname_req}" value="#{jdbcBean.dbName}">
+                  <f:ajax render="dbConn" />
+                </h:inputText></td>
+            </tr>
+            <tr>
+              <td><h:outputText value="Username: " /></td>
+              <td><h:inputText id="dbUser" size="25" required="true" requiredMessage="#{labels.jdbc_edit_user_req}"
+                  value="#{jdbcBean.dbUser}">
+                  <f:ajax render="dbConn" />
+                </h:inputText></td>
+            </tr>
+            <tr>
+              <td><h:outputText value="Password: " /></td>
+              <td><h:inputText id="dbPwd" size="10" value="#{jdbcBean.dbPwd}">
+                  <f:ajax render="dbConn" />
+                </h:inputText></td>
+            </tr>
+            <tr>
+              <td><h:outputText value="jdbc URL: " /></td>
+              <td><h:inputText id="dbConn" size="50" required="true" requiredMessage="#{labels.jdbc_edit_conn_req}"
+                  redisplay="false" value="#{jdbcBean.dbConn}" /></td>
+            </tr>
+            <tr>
+              <td><br /> <h:commandButton styleClass="buttonInfo" value="#{labels.jdbc_test}"
+                  action="#{jdbcBean.testConnection}" alt="#{config.id}">
+                </h:commandButton></td>
+            </tr>
+          </table>
+          <br />
+          <div>
+            <h:commandButton styleClass="buttonCreateNew" value="Create" action="#{jdbcBean.save}">
+              <f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" />
+            </h:commandButton>
+            <h:outputLink styleClass="buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf"
+              action="#{jdbcBean.cancel}">
+              <h:outputText value="Cancel" />
+            </h:outputLink>
+          </div>
+        </h:form>
+      </fieldset>
+    </h:panelGroup>
+  </ui:define>
+</ui:composition>
