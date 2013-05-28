@@ -45,29 +45,29 @@
             method="parse">
          <with-param name="documentlocations">
             <documentlocations xmlns="">
+               <!-- <parm> -->
+               <!--    <name>http://www.galdosinc.com/xml/properties/schemaLocation</name> -->
+               <!--    <value>http://schemas.opengis.net/gml/2.1.2/feature.xsd</value> -->
+               <!-- </parm> -->
                <parm>
                   <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://schemas.opengis.net/gml/2.1.2/feature.xsd</value>
+                  <value>http://download.deegree.org/schemas/OGC-1.0.0/OGC_Wrapper.xsd</value>
                </parm>
                <parm>
                   <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/OGC-1.0.0/OGC_Wrapper.xsd</value>
+                  <value>http://download.deegree.org/schemas/WFS-1.0.0/WFS_Wrapper.xsd</value>
                </parm>
                <parm>
                   <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/WFS-1.0.0/WFS_Wrapper.xsd</value>
+                  <value>http://download.deegree.org/schemas/complexFeatures.xsd</value>
                </parm>
                <parm>
                   <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/complexFeatures.xsd</value>
+                  <value>http://download.deegree.org/schemas/dataFeatures.xsd</value>
                </parm>
                <parm>
                   <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/dataFeatures.xsd</value>
-               </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/geometryFeatures.xsd</value>
+                  <value>http://download.deegree.org/schemas/geometryFeatures.xsd</value>
                </parm>
             </documentlocations>
          </with-param>
