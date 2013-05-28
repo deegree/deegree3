@@ -6,30 +6,30 @@
     <h:panelGroup>
       <fieldset class="fieldset">
         <legend>
-          <h:outputText styleClass="titel" value="Create new coverage" />
+          <h:outputText styleClass="titel" value="Create new remote OWS connection" />
         </legend>
         <h:form>
           <h:panelGroup>
             <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
-            <h:inputText styleClass="liste" id="newFSBt" value="#{createCoverageBean.id}" size="16" required="true"
+            <h:inputText styleClass="liste" id="newFSBt" value="#{createRemoteOwsBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
             <h:panelGroup>
               <h:outputLabel styleClass="label" for="newFSBt" value="Type" />
-              <h:selectOneMenu styleClass="liste" value="#{createCoverageBean.type}">
-                <f:selectItems value="#{createCoverageBean.types}" />
-                <f:ajax listener="#{createCoverageBean.changeType}" render="templates" />
+              <h:selectOneMenu styleClass="liste" value="#{createRemoteOwsBean.type}">
+                <f:selectItems value="#{createRemoteOwsBean.types}" />
+                <f:ajax listener="#{createRemoteOwsBean.changeType}" render="templates" />
               </h:selectOneMenu>
             </h:panelGroup>
             <h:panelGroup id="templates">
               <h:outputText value="XML config template" />
-              <h:selectOneMenu styleClass="liste" value="#{createCoverageBean.configTemplate}">
-                <f:selectItems value="#{createCoverageBean.configTemplates}" />
+              <h:selectOneMenu styleClass="liste" value="#{createRemoteOwsBean.configTemplate}">
+                <f:selectItems value="#{createRemoteOwsBean.configTemplates}" />
               </h:selectOneMenu>
             </h:panelGroup>
             <br />
             <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-              action="#{createCoverageBean.create}" />
+              action="#{createRemoteOwsBean.create}" />
           </h:panelGroup>
         </h:form>
       </fieldset>
