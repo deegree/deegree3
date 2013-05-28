@@ -104,7 +104,7 @@ public abstract class AbstractOWS implements OWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWS.class );
 
-    private ResourceMetadata<OWS> metadata;
+    protected ResourceMetadata<OWS> metadata;
 
     /** Common configuration (metadata) of parent {@link OGCFrontController}. */
     protected DeegreeServicesMetadataType mainMetadataConf;

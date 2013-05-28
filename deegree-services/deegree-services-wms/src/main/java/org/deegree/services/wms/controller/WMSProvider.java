@@ -40,14 +40,14 @@ import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.remoteows.RemoteOWSStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -56,7 +56,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WMSProvider implements OWSProvider {
+public class WMSProvider extends OWSProvider {
 
     protected static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
         {
@@ -70,12 +70,12 @@ public class WMSProvider implements OWSProvider {
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wms";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/3.2.0/wms_configuration.xsd" );
     }
 
@@ -85,19 +85,8 @@ public class WMSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        return new WMSController( configURL, getImplementationMetadata() );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSStoreManager.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // nothing to do
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WmsMetadata( workspace, location, this );
     }
 
 }

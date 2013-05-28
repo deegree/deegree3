@@ -70,8 +70,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
@@ -106,7 +104,10 @@ import org.deegree.services.wpvs.controller.WPVSController;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +144,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     private final static double zFar = 300000.0;
 
-    private static DeegreeWorkspace workspace;
+    private static Workspace workspace;
 
     private final GLU glu = new GLU();
 
@@ -215,7 +216,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
      * @throws UnsupportedOperationException
      * @throws ServiceInitException
      */
-    private InteractiveWPVS( DeegreeWorkspace workspace, ViewParams params, float zScale ) throws IOException,
+    private InteractiveWPVS( Workspace workspace, ViewParams params, float zScale ) throws IOException,
                             UnsupportedOperationException, ServiceInitException {
 
         this.zScale = zScale;
@@ -228,7 +229,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        OwsManager wsConfig = workspace.getSubsystemManager( OwsManager.class );
+        OwsManager wsConfig = workspace.getResourceManager( OwsManager.class );
         List<OWS> wpvsControllers = wsConfig.getByOWSClass( WPVSController.class );
         if ( wpvsControllers.isEmpty() ) {
             throw new ServiceInitException( "No active WPVS found in workspace." );
@@ -927,7 +928,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
 
         // TODO adapt to workspace concept
-        workspace = DeegreeWorkspace.getInstance( null, baseDir );
+        workspace = new DefaultWorkspace( baseDir );
 
         String dbURL = line.getOptionValue( OPT_WPVS_DB_CONNECTION );
         if ( dbURL != null && !"".equals( dbURL ) ) {
@@ -936,7 +937,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             String id = line.getOptionValue( OPT_WPVS_DB_ID );
             ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( id, dbURL, user,
                                                                                                      pass );
-            workspace.getNewWorkspace().addExtraResource( loc );
+            workspace.addExtraResource( loc );
         }
 
         File dsDir = new File( baseDir, "/datasources/" );
@@ -952,10 +953,10 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             return null;
         }
 
-        if ( workspace.getSubsystemManager( OwsManager.class ) == null ) {
+        if ( workspace.getResourceManager( OwsManager.class ) == null ) {
             throw new FileNotFoundException( "No web service configurations were found in the workspace." );
         }
-        if ( workspace.getSubsystemManager( OwsManager.class ).getByOWSClass( WPVSController.class ) == null ) {
+        if ( workspace.getResourceManager( OwsManager.class ).getByOWSClass( WPVSController.class ) == null ) {
             throw new FileNotFoundException( "No WPVS configuration was found in the workspace." );
         }
 

@@ -95,6 +95,7 @@ import org.deegree.style.utils.ImageUtils;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -150,9 +151,9 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, XMLAdapter adapter, DeegreeWorkspace workspace )
+    public MapService( ServiceConfigurationType conf, XMLAdapter adapter, Workspace workspace )
                             throws MalformedURLException {
-        this.registry = new StyleRegistry( workspace.getNewWorkspace() );
+        this.registry = new StyleRegistry( workspace );
         layers = new HashMap<String, Layer>();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf, adapter, layerOptions, this, workspace, dynamics );
@@ -173,7 +174,7 @@ public class MapService {
             newLayers = new HashMap<String, org.deegree.layer.Layer>();
             themeMap = new HashMap<String, Theme>();
             for ( String id : conf.getThemeId() ) {
-                Theme thm = workspace.getNewWorkspace().getResource( ThemeProvider.class, id );
+                Theme thm = workspace.getResource( ThemeProvider.class, id );
                 if ( thm == null ) {
                     LOG.warn( "Theme with id {} was not available.", id );
                 } else {

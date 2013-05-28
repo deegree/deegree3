@@ -47,7 +47,6 @@ import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.Coverage;
@@ -71,6 +70,7 @@ import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +94,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 
     private final int maxTexturesInGPU;
 
-    private final DeegreeWorkspace workspace;
+    private final Workspace workspace;
 
     /**
      * 
@@ -107,7 +107,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      *            the workspace to be used to load data
      */
     public DEMTextureDataset( DirectByteBufferPool textureByteBufferPool, int maxTexturesInGPU,
-                              int maxCachedTextureTiles, DeegreeWorkspace workspace ) {
+                              int maxCachedTextureTiles, Workspace workspace ) {
         // super( sceneEnvelope, translationToLocalCRS, configAdapter );
         this.textureByteBufferPool = textureByteBufferPool;
         this.maxTexturesInGPU = maxTexturesInGPU;
@@ -268,7 +268,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param tileProviders
      */
     private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
-        Coverage coverage = workspace.getNewWorkspace().getResource( CoverageProvider.class, coverageStoreId );
+        Coverage coverage = workspace.getResource( CoverageProvider.class, coverageStoreId );
         if ( coverage == null ) {
             LOG.warn( "The coverage builder with id: " + coverageStoreId
                       + " could not create a coverage, ignoring dataset." );
@@ -298,7 +298,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
         // FeatureStore store = null;
         String featureStoreId = styledGeometryProvider.getFeatureStoreId();
 
-        FeatureStore store = workspace.getNewWorkspace().getResource( NewFeatureStoreProvider.class, featureStoreId );
+        FeatureStore store = workspace.getResource( NewFeatureStoreProvider.class, featureStoreId );
 
         // String styleId = styledGeometryProvider.getStyleId();
         // Styl

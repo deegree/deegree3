@@ -40,7 +40,6 @@ import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-import static org.deegree.services.wps.WPSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +61,6 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
@@ -78,6 +76,8 @@ import org.deegree.protocol.wps.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequest;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestKVPAdapter;
 import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestXMLAdapter;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
@@ -100,8 +100,9 @@ import org.deegree.services.wps.storage.OutputStorage;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageManager;
 import org.deegree.services.wps.wsdl.WSDL;
-import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,8 +133,6 @@ public class WPService extends AbstractOWS {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wps/3.0.0/wps_configuration.xsd";
-
     private static final CodeType ALL_PROCESSES_IDENTIFIER = new CodeType( "ALL" );
 
     private ProcessManager processManager;
@@ -142,20 +141,18 @@ public class WPService extends AbstractOWS {
 
     private ExecutionManager executeHandler;
 
-    public WPService( URL configURL, ImplementationMetadata serviceInfo ) {
-        super( configURL, serviceInfo );
+    public WPService( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+        super( metadata, workspace );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
+                      XMLAdapter controllerConf ) {
 
         LOG.info( "Initializing WPS." );
-        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConf, controllerConf );
 
-        DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                       controllerConf.getRootElement() );
+        DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE );
 
         String storage = "../var/wps";
         int trackedExecutions = 100;
@@ -188,7 +185,7 @@ public class WPService extends AbstractOWS {
         }
         storageManager = new StorageManager( storageDir, inputDiskSwitchLimit );
 
-        this.processManager = workspace.getNewWorkspace().getResourceManager( ProcessManager.class );
+        this.processManager = workspace.getResourceManager( ProcessManager.class );
 
         validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
@@ -392,7 +389,7 @@ public class WPService extends AbstractOWS {
                             throws OWSException {
         WPSRequestType requestType = null;
         try {
-            requestType = (WPSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
+            requestType = (WPSRequestType) ( (ImplementationMetadata) ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata() ).getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
         }
@@ -551,25 +548,4 @@ public class WPService extends AbstractOWS {
         sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), ex, response );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.Resource#getMetadata()
-     */
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.Resource#init()
-     */
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
-
-    }
 }

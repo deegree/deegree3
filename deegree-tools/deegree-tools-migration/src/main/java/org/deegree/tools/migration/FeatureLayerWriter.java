@@ -51,11 +51,11 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.tools.migration.FeatureLayerExtractor.FeatureLayer;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 
 /**
@@ -68,9 +68,9 @@ import org.deegree.workspace.WorkspaceUtils;
  */
 class FeatureLayerWriter {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    FeatureLayerWriter( DeegreeWorkspace workspace ) {
+    FeatureLayerWriter( Workspace workspace ) {
         this.workspace = workspace;
     }
 
@@ -127,7 +127,7 @@ class FeatureLayerWriter {
             writer.writeEndElement();
             writer.close();
 
-            WorkspaceUtils.activateSynthetic( workspace.getNewWorkspace(), LayerStoreProvider.class, id,
+            WorkspaceUtils.activateSynthetic( workspace, LayerStoreProvider.class, id,
                                               new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
         }
     }

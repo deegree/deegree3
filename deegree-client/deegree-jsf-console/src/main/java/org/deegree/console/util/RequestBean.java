@@ -149,8 +149,8 @@ public class RequestBean implements Serializable {
     private TreeMap<String, Map<String, Map<String, List<String>>>> allRequests = new TreeMap<String, Map<String, Map<String, List<String>>>>();
 
     private String responseFile;
-    
-    private String workspaceService= "";
+
+    private String workspaceService = "";
 
     public File getRequestsBaseDir() {
         return requestsBaseDir;
@@ -352,18 +352,16 @@ public class RequestBean implements Serializable {
         allRequests.clear();
         initRequestMap();
     }
-    
+
     public String getEndpoint() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        
-        return ctx.getRequestScheme() + "://" 
-                            + ctx.getRequestServerName() + ":" 
-                            + ctx.getRequestServerPort()
-                            + ctx.getRequestContextPath() + "/services";
+
+        return ctx.getRequestScheme() + "://" + ctx.getRequestServerName() + ":" + ctx.getRequestServerPort()
+               + ctx.getRequestContextPath() + "/services";
     }
-    
+
     public String getTargetUrl() {
-        if(workspaceService.equals( "" )) {
+        if ( workspaceService.equals( "" ) ) {
             return getEndpoint();
         } else {
             return getEndpoint() + "/" + workspaceService;
@@ -375,7 +373,7 @@ public class RequestBean implements Serializable {
         if ( !request.startsWith( "<?xml" ) ) {
             request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + request;
         }
-        
+
         String targetUrl = getTargetUrl();
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + request );
         if ( targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0 ) {
@@ -582,7 +580,7 @@ public class RequestBean implements Serializable {
      */
     public void sendKVPRequest() {
         String targetUrl = getTargetUrl();
-        
+
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + kvpRequestSel );
         if ( targetUrl != null && targetUrl.length() > 0 && kvpRequestSel != null && kvpRequestSel.length() > 0 ) {
             Map<String, String> header = new HashMap<String, String>();
@@ -626,31 +624,32 @@ public class RequestBean implements Serializable {
                             throws UnsupportedEncodingException {
         return "mt=" + URLEncoder.encode( mimeType, "UTF-8" ) + "&file=" + URLEncoder.encode( responseFile, "UTF-8" );
     }
+
     // @Override
     // public String toString() {
     // return generateToString( this );
     // }
-    
+
     @SuppressWarnings("rawtypes")
     public List<String> getWorkspaceServices() {
         ArrayList<String> activeServices = new ArrayList<String>();
         activeServices.add( "" );
-        
+
         DeegreeWorkspace workspace = OGCFrontController.getServiceWorkspace();
-        OwsManager config = workspace.getSubsystemManager( OwsManager.class );
+        OwsManager config = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
         if ( config != null ) {
-            for ( ResourceState state : config.getStates() ) {
-                StateType type = state.getType();
-                if ( type == StateType.init_ok ) {
-                    activeServices.add( state.getId() );
-                }
-            }
+            // for ( ResourceState state : config.getStates() ) {
+            // StateType type = state.getType();
+            // if ( type == StateType.init_ok ) {
+            // activeServices.add( state.getId() );
+            // }
+            // }
         }
 
         return activeServices;
     }
-    
-    public void setWorkspaceService(String workspaceService) {
+
+    public void setWorkspaceService( String workspaceService ) {
         for ( String currentWorkspaceService : getWorkspaceServices() ) {
             if ( currentWorkspaceService.equals( workspaceService ) ) {
                 this.workspaceService = workspaceService;
@@ -658,7 +657,7 @@ public class RequestBean implements Serializable {
             }
         }
     }
-    
+
     public String getWorkspaceService() {
         return workspaceService;
     }

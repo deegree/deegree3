@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Transformer;
@@ -48,11 +49,14 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.services.OWS;
 import org.deegree.services.OwsManager;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 
 /**
@@ -64,11 +68,11 @@ import org.deegree.workspace.WorkspaceUtils;
  */
 public class ThemeExtractor {
 
-    private final DeegreeWorkspace workspace;
+    private final Workspace workspace;
 
     private Transformer transformer;
 
-    public ThemeExtractor( DeegreeWorkspace workspace ) throws TransformerConfigurationException {
+    public ThemeExtractor( Workspace workspace ) throws TransformerConfigurationException {
         this.workspace = workspace;
         TransformerFactory fac = TransformerFactory.newInstance();
         InputStream xsl = ThemeExtractor.class.getResourceAsStream( "extracttheme.xsl" );
@@ -77,19 +81,19 @@ public class ThemeExtractor {
 
     public void transform()
                             throws TransformerException, XMLStreamException {
-        OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
-        ResourceState<?>[] states = mgr.getStates();
-        for ( ResourceState<?> s : states ) {
-            if ( s.getResource() instanceof WMSController ) {
-                File loc = s.getConfigLocation();
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                transformer.transform( new StreamSource( loc ), new StreamResult( bos ) );
+        OwsManager mgr = workspace.getResourceManager( OwsManager.class );
+        List<OWS> wmss = mgr.getByOWSClass( WMSController.class );
+        for ( OWS ows : wmss ) {
+            ResourceMetadata<? extends Resource> md = ows.getMetadata();
+            ResourceIdentifier<? extends Resource> id = md.getIdentifier();
+            File loc = md.getLocation().resolveToFile( id.getId() + ".xml" );
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            transformer.transform( new StreamSource( loc ), new StreamResult( bos ) );
 
-                ThemeXmlStreamEncoder.writeOut( bos );
+            ThemeXmlStreamEncoder.writeOut( bos );
 
-                WorkspaceUtils.activateSynthetic( workspace.getNewWorkspace(), ThemeProvider.class, s.getId(),
-                                                  new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
-            }
+            WorkspaceUtils.activateSynthetic( workspace, ThemeProvider.class, id.getId(),
+                                              new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
         }
     }
 

@@ -162,15 +162,16 @@ public class Config implements Comparable<Config> {
     }
 
     public String getCapabilitiesURL() {
-        OWS ows = ( (OwsManager) resourceManager ).get( id );
-        String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
+        // OWS ows = ( (OwsManager) resourceManager ).get( id );
+        // String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
 
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         StringBuffer sb = req.getRequestURL();
 
         // HACK HACK HACK
         int index = sb.indexOf( "/console" );
-        return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
+        return "";
+        // return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
     }
 
     public String getState() {

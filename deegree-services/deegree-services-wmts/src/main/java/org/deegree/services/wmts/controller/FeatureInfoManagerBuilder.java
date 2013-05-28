@@ -43,14 +43,14 @@ package org.deegree.services.wmts.controller;
 
 import java.io.File;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.gml.GMLVersion;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 
 /**
  * Builds a {@link FeatureInfoManager} from jaxb config.
@@ -63,7 +63,7 @@ import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType.GetFeatureInfoForma
 class FeatureInfoManagerBuilder {
 
     static FeatureInfoManager buildFeatureInfoManager( FeatureInfoFormatsType conf, XMLAdapter controllerConf,
-                                                       DeegreeWorkspace workspace )
+                                                       Workspace workspace )
                             throws ResourceInitException {
         FeatureInfoManager featureInfoManager = new FeatureInfoManager( true );
 
@@ -82,7 +82,7 @@ class FeatureInfoManagerBuilder {
                     }
                 }
             }
-        } catch ( Throwable e ) {
+        } catch ( Exception e ) {
             throw new ResourceInitException( "GetFeatureInfo format handler could not be initialized: "
                                              + e.getLocalizedMessage(), e );
         }

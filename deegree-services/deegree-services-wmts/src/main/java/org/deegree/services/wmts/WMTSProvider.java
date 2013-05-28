@@ -42,24 +42,22 @@ package org.deegree.services.wmts;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
+import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.wmts.controller.WMTSController;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
- * <code>WMTSProvider</code>
+ * SPI provider class for WMTS services.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class WMTSProvider implements OWSProvider {
+public class WMTSProvider extends OWSProvider {
 
     public static final ImplementationMetadata<WMTSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMTSRequestType>() {
         {
@@ -72,12 +70,12 @@ public class WMTSProvider implements OWSProvider {
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wmts";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return WMTSProvider.class.getResource( "/META-INF/schemas/services/wmts/3.2.0/wmts.xsd" );
     }
 
@@ -87,19 +85,8 @@ public class WMTSProvider implements OWSProvider {
     }
 
     @Override
-    public WMTSController create( URL configURL ) {
-        return new WMTSController( configURL, getImplementationMetadata() );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // nothing to do
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WmtsMetadata( workspace, location, this );
     }
 
 }

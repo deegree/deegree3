@@ -49,7 +49,6 @@ import java.util.List;
 
 import javax.media.opengl.GLPbuffer;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
@@ -84,6 +83,7 @@ import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.services.wpvs.rendering.jogl.GLPBufferPool;
 import org.deegree.services.wpvs.rendering.jogl.GetViewRenderer;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,7 +149,7 @@ public class PerspectiveViewService {
 
     private double latitudeOfScene;
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     /**
      * Creates a new {@link PerspectiveViewService} from the given parameters.
@@ -162,7 +162,7 @@ public class PerspectiveViewService {
      *            the workspace used to load data
      * @throws ServiceInitException
      */
-    public PerspectiveViewService( XMLAdapter configAdapter, ServiceConfiguration sc, DeegreeWorkspace workspace )
+    public PerspectiveViewService( XMLAdapter configAdapter, ServiceConfiguration sc, Workspace workspace )
                             throws ServiceInitException {
         DatasetDefinitions dsd = sc.getDatasetDefinitions();
         serviceConfiguration = sc;
@@ -311,7 +311,7 @@ public class PerspectiveViewService {
                                                                            -this.translationToLocalCRS[1]
                                                                                                    + RenderableDataset.DEFAULT_SPAN,
                                                                            RenderableDataset.DEFAULT_SPAN }, defaultCRS );
-        renderableDatasets = new RenderableDataset( workspace.getNewWorkspace() );
+        renderableDatasets = new RenderableDataset( workspace );
         sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                        configAdapter, dsd );
 
@@ -324,7 +324,7 @@ public class PerspectiveViewService {
         demDatasets = new DEMDataset( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
                                       ConfiguredOpenGLInitValues.getTerrainDiffuse(),
                                       ConfiguredOpenGLInitValues.getTerrainSpecular(),
-                                      ConfiguredOpenGLInitValues.getTerrainShininess(), workspace.getNewWorkspace() );
+                                      ConfiguredOpenGLInitValues.getTerrainShininess(), workspace );
         sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                 configAdapter, dsd );
 

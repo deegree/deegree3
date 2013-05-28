@@ -56,7 +56,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.rendering.r2d.context.MapOptions;
@@ -78,6 +77,7 @@ import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.model.layers.RasterLayer;
 import org.deegree.services.wms.model.layers.RemoteWMSLayer;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -108,12 +108,12 @@ class MapServiceBuilder {
 
     private Interpolation interpol;
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     private List<LayerUpdater> dynamics;
 
     MapServiceBuilder( ServiceConfigurationType conf, XMLAdapter adapter, MapOptionsMaps layerOptions,
-                       MapService service, DeegreeWorkspace workspace, List<LayerUpdater> dynamics ) {
+                       MapService service, Workspace workspace, List<LayerUpdater> dynamics ) {
         this.conf = conf;
         this.adapter = adapter;
         this.layerOptions = layerOptions;
@@ -194,7 +194,7 @@ class MapServiceBuilder {
         Layer res = null;
         if ( aLayer.getFeatureStoreId() != null ) {
             try {
-                res = new FeatureLayer( service, aLayer, parent, workspace );
+                res = new FeatureLayer( service, aLayer, parent, null );
             } catch ( Throwable e ) {
                 LOG.warn( "Layer '{}' could not be loaded: '{}'",
                           aLayer.getName() == null ? aLayer.getTitle() : aLayer.getName(), e.getLocalizedMessage() );

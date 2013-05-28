@@ -50,8 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
@@ -63,6 +62,7 @@ import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.DynamicSQLLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.se.parser.PostgreSQLReader;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -90,7 +90,7 @@ public class PostGISUpdater extends LayerUpdater {
 
     private final String schema;
 
-    private final DeegreeWorkspace workspace;
+    private final Workspace workspace;
 
     private ConnectionProvider connProvider;
 
@@ -102,8 +102,8 @@ public class PostGISUpdater extends LayerUpdater {
      *            to resolve relative references in sld blobs
      */
     public PostGISUpdater( String connId, String schema, Layer parent, MapService service, String baseSystemId,
-                           DeegreeWorkspace workspace ) {
-        this.connProvider = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+                           Workspace workspace ) {
+        this.connProvider = workspace.getResource( ConnectionProviderProvider.class, connId );
         this.workspace = workspace;
         this.schema = schema == null ? "public" : schema;
         this.parent = parent;
@@ -116,7 +116,7 @@ public class PostGISUpdater extends LayerUpdater {
         Connection conn = null;
         ResultSet rs = null;
         try {
-            ConnectionProvider prov = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, connid );
+            ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connid );
             conn = prov.getConnection();
             String tableName = sourcetable;
 
@@ -204,8 +204,7 @@ public class PostGISUpdater extends LayerUpdater {
                 if ( connectionid == null ) {
                     connProvider = this.connProvider;
                 } else {
-                    connProvider = workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class,
-                                                                            connectionid );
+                    connProvider = workspace.getResource( ConnectionProviderProvider.class, connectionid );
                 }
 
                 String sourcetable = rs.getString( "sourcetable" );
@@ -240,7 +239,7 @@ public class PostGISUpdater extends LayerUpdater {
                                                     namespace, "app", bbox,
                                                     Collections.<Pair<Integer, String>> emptyList(), null );
                     try {
-                        ds.init( workspace );
+                        ds.init();
                     } catch ( ResourceInitException e ) {
                         LOG.info( "Data source of layer '{}' could not be initialized: '{}'.", title,
                                   e.getLocalizedMessage() );

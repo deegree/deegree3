@@ -48,14 +48,13 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -78,8 +77,7 @@ class WmtsRequestDispatcher {
     private FeatureInfoHandler featureInfoHandler;
 
     WmtsRequestDispatcher( XMLAdapter controllerConf, DeegreeServicesMetadataType mainMetadataConf,
-                           DeegreeWorkspace workspace, WmtsBuilder builder, String wmtsId )
-                            throws ResourceInitException {
+                           Workspace workspace, WmtsBuilder builder, String wmtsId ) {
         featureInfoHandler = new FeatureInfoHandler( builder.getFeatureInfoFormatsConf(), controllerConf, workspace,
                                                      builder.getThemes() );
         capabilitiesHandler = new CapabilitiesHandler( mainMetadataConf, workspace, builder.getMetadataUrlTemplate(),

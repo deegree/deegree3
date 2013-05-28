@@ -49,7 +49,6 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.featureinfo.FeatureInfoManager;
@@ -59,6 +58,7 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wmts.controller.capabilities.WMTSCapabilitiesWriter;
 import org.deegree.theme.Theme;
+import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for handling capabilities requests.
@@ -81,15 +81,14 @@ class CapabilitiesHandler {
 
     private FeatureInfoManager mgr;
 
-    CapabilitiesHandler( DeegreeServicesMetadataType mainMetadataConf, DeegreeWorkspace workspace,
-                         String metadataUrlTemplate, String wmtsId, List<Theme> themes, FeatureInfoManager mgr ) {
+    CapabilitiesHandler( DeegreeServicesMetadataType mainMetadataConf, Workspace workspace, String metadataUrlTemplate,
+                         String wmtsId, List<Theme> themes, FeatureInfoManager mgr ) {
         this.themes = themes;
         this.mgr = mgr;
         identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
         provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
 
-        OWSMetadataProvider metadata = workspace.getNewWorkspace().getResource( OWSMetadataProviderProvider.class,
-                                                                                wmtsId + "_metadata" );
+        OWSMetadataProvider metadata = workspace.getResource( OWSMetadataProviderProvider.class, wmtsId + "_metadata" );
         if ( metadata != null ) {
             identification = metadata.getServiceIdentification();
             provider = metadata.getServiceProvider();

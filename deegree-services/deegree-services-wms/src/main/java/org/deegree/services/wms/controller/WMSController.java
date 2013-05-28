@@ -50,7 +50,6 @@ import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
-import static org.deegree.services.wms.controller.WMSProvider.IMPLEMENTATION_METADATA;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
@@ -60,7 +59,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -81,8 +79,6 @@ import javax.xml.transform.dom.DOMSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -118,6 +114,7 @@ import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.OwsManager;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -139,8 +136,9 @@ import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.style.StyleRef;
-import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -157,8 +155,6 @@ public class WMSController extends AbstractOWS {
     private static final Logger LOG = getLogger( WMSController.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
-
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wms/3.2.0/wms_configuration.xsd";
 
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
 
@@ -181,13 +177,8 @@ public class WMSController extends AbstractOWS {
 
     private FeatureInfoManager featureInfoManager;
 
-    public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
-        super( configURL, serviceInfo );
-        try {
-            File f = new File( configURL.toURI() );
-        } catch ( URISyntaxException e ) {
-            // then no configId will be available
-        }
+    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+        super( metadata, workspace );
         featureInfoManager = new FeatureInfoManager( true );
     }
 
@@ -219,8 +210,8 @@ public class WMSController extends AbstractOWS {
         HashMap<String, String> dataMetadataIds = new HashMap<String, String>();
         traverseMetadataIds( service.getRootLayer(), dataMetadataIds );
         if ( storeid != null ) {
-            MetadataStore<ISORecord> store = (MetadataStore<ISORecord>) workspace.getNewWorkspace().getResource( MetadataStoreProvider.class,
-                                                                                                                 storeid );
+            MetadataStore<ISORecord> store = (MetadataStore<ISORecord>) workspace.getResource( MetadataStoreProvider.class,
+                                                                                               storeid );
             if ( store == null ) {
                 LOG.warn( "Metadata store with id {} is not available, metadata ids will not be checked.", storeid );
                 return;
@@ -271,10 +262,9 @@ public class WMSController extends AbstractOWS {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
+                      XMLAdapter controllerConf ) {
 
-        super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
+        super.init( serviceMetadata, mainConfig, controllerConf );
 
         identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
         provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
@@ -282,7 +272,7 @@ public class WMSController extends AbstractOWS {
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
-        DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
+        DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE );
 
         if ( conf.getExtendedCapabilities() != null ) {
             this.extendedCaps = new HashMap<String, List<OMElement>>();
@@ -293,7 +283,7 @@ public class WMSController extends AbstractOWS {
                 XMLStreamReader xmlStream;
                 try {
                     xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
-                } catch ( Throwable t ) {
+                } catch ( Exception t ) {
                     throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
                 }
                 caps.add( new XMLAdapter( xmlStream ).getRootElement() );
@@ -393,7 +383,7 @@ public class WMSController extends AbstractOWS {
 
         WMSRequestType req;
         try {
-            req = (WMSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) ( (ImplementationMetadata) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
@@ -751,23 +741,12 @@ public class WMSController extends AbstractOWS {
         String postUrl = OGCFrontController.getHttpPostURL();
 
         // override service metadata if available from manager
-        OWSMetadataProvider metadata = null;
-        OwsManager wsc = workspace.getSubsystemManager( OwsManager.class );
-        ResourceState<OWS>[] states = wsc.getStates();
-        String configId = null;
-        for ( ResourceState<OWS> st : states ) {
-            if ( st.getResource() == this ) {
-                configId = st.getId();
-            }
-        }
-        if ( configId != null ) {
-            metadata = workspace.getNewWorkspace().getResource( OWSMetadataProviderProvider.class,
-                                                                configId + "_metadata" );
-            if ( metadata != null ) {
-                identification = metadata.getServiceIdentification();
-                provider = metadata.getServiceProvider();
-                extendedCaps = metadata.getExtendedCapabilities();
-            }
+        String configId = getMetadata().getIdentifier().getId();
+        OWSMetadataProvider metadata = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
+        if ( metadata != null ) {
+            identification = metadata.getServiceIdentification();
+            provider = metadata.getServiceProvider();
+            extendedCaps = metadata.getExtendedCapabilities();
         }
 
         if ( service.getDynamics().isEmpty() ) {
@@ -847,11 +826,11 @@ public class WMSController extends AbstractOWS {
     public String getMetadataURLTemplate() {
         // TODO handle this properly in init(), needs service level dependency management
         if ( metadataURLTemplate == null ) {
-            OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
+            OwsManager mgr = workspace.getResourceManager( OwsManager.class );
             Map<String, List<OWS>> ctrls = mgr.getAll();
             for ( List<OWS> lists : ctrls.values() ) {
                 for ( OWS o : lists ) {
-                    ImplementationMetadata<?> md = o.getImplementationMetadata();
+                    ImplementationMetadata<?> md = ( (OWSProvider) o.getMetadata().getProvider() ).getImplementationMetadata();
                     for ( String s : md.getImplementedServiceName() ) {
                         if ( s.equalsIgnoreCase( "csw" )
                              && md.getImplementedVersions().contains( new Version( 2, 0, 2 ) ) ) {
@@ -922,28 +901,6 @@ public class WMSController extends AbstractOWS {
          */
         void throwSRSException( String name )
                                 throws OWSException;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.Resource#getMetadata()
-     */
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.workspace.Resource#init()
-     */
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
-
     }
 
 }

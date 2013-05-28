@@ -46,10 +46,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.services.OWS;
 import org.deegree.services.OwsManager;
 import org.deegree.services.wms.controller.WMSController;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -60,13 +60,13 @@ import org.deegree.services.wms.controller.WMSController;
  */
 class FeatureLayerExtractor {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     private Pattern stylepattern;
 
     private int logicalLayerCount = 0;
 
-    FeatureLayerExtractor( DeegreeWorkspace workspace ) {
+    FeatureLayerExtractor( Workspace workspace ) {
         this.workspace = workspace;
         stylepattern = Pattern.compile( "\\.\\./styles/([A-Za-z_0-9]+)\\.xml" );
     }
@@ -82,27 +82,26 @@ class FeatureLayerExtractor {
                             throws XMLStreamException {
         String crs = null;
 
-        OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
-        ResourceState<?>[] states = mgr.getStates();
+        OwsManager mgr = workspace.getResourceManager( OwsManager.class );
 
         XMLInputFactory infac = XMLInputFactory.newInstance();
 
-        for ( ResourceState<?> s : states ) {
-            if ( s.getResource() instanceof WMSController ) {
-                XMLStreamReader reader = infac.createXMLStreamReader( new StreamSource( s.getConfigLocation() ) );
-                reader.next();
+        List<OWS> wmss = mgr.getByOWSClass( WMSController.class );
+        for ( OWS ows : wmss ) {
+            StreamSource streamSource = new StreamSource( ows.getMetadata().getLocation().getAsStream() );
+            XMLStreamReader reader = infac.createXMLStreamReader( streamSource );
+            reader.next();
 
-                while ( reader.hasNext() ) {
-                    if ( crs == null && reader.isStartElement() && reader.getLocalName().equals( "CRS" ) ) {
-                        crs = reader.getElementText();
-                    }
-
-                    if ( reader.isStartElement()
-                         && ( reader.getLocalName().equals( "RequestableLayer" ) || reader.getLocalName().equals( "LogicalLayer" ) ) ) {
-                        extractLayer( reader, map );
-                    }
-                    reader.next();
+            while ( reader.hasNext() ) {
+                if ( crs == null && reader.isStartElement() && reader.getLocalName().equals( "CRS" ) ) {
+                    crs = reader.getElementText();
                 }
+
+                if ( reader.isStartElement()
+                     && ( reader.getLocalName().equals( "RequestableLayer" ) || reader.getLocalName().equals( "LogicalLayer" ) ) ) {
+                    extractLayer( reader, map );
+                }
+                reader.next();
             }
         }
         return crs;

@@ -40,13 +40,14 @@ import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wps.WPSConstants.WPSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -55,7 +56,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WPSProvider implements OWSProvider {
+public class WPSProvider extends OWSProvider {
 
     protected static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
         {
@@ -68,12 +69,12 @@ public class WPSProvider implements OWSProvider {
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wps";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/3.1.0/wps_configuration.xsd" );
     }
 
@@ -83,18 +84,8 @@ public class WPSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        return new WPService( configURL, getImplementationMetadata() );
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WpsMetadata( workspace, location, this );
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
-    }
 }

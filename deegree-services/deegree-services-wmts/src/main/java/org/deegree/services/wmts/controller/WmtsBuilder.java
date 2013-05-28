@@ -48,14 +48,16 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -81,10 +83,12 @@ class WmtsBuilder {
 
     private FeatureInfoFormatsType featureInfoConf;
 
-    WmtsBuilder( XMLAdapter controllerConf, DeegreeWorkspace workspace ) throws ResourceInitException {
+    WmtsBuilder( ResourceMetadata<OWS> md, Workspace workspace ) {
         DeegreeWMTS conf;
         try {
-            conf = (DeegreeWMTS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf, workspace );
+            conf = (DeegreeWMTS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                       ( (OWSProvider) md.getProvider() ).getSchema(),
+                                                       md.getLocation().getAsStream(), workspace );
         } catch ( JAXBException e ) {
             LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
             throw new ResourceInitException( "Error parsing service configuration: "
@@ -97,7 +101,7 @@ class WmtsBuilder {
 
         List<String> ids = conf.getServiceConfiguration().getThemeId();
         for ( String id : ids ) {
-            Theme t = workspace.getNewWorkspace().getResource( ThemeProvider.class, id );
+            Theme t = workspace.getResource( ThemeProvider.class, id );
             if ( t == null ) {
                 LOG.warn( "Theme with id {} was not available.", id );
                 continue;

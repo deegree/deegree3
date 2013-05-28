@@ -40,11 +40,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.services.OwsManager;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.wmts.controller.WMTSController;
 import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +60,7 @@ import org.junit.Test;
  */
 public class WMTSControllerTest {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     @Before
     public void setup()
@@ -68,21 +69,20 @@ public class WMTSControllerTest {
         File dir = new File( new File( u.toURI() ).getParentFile(),
                              "../../../../../../../src/main/webapp/WEB-INF/workspace" );
         dir = dir.getCanonicalFile();
-        workspace = DeegreeWorkspace.getInstance( "deegree-wmts-tests", dir );
+        workspace = new DefaultWorkspace( dir );
         workspace.initAll();
     }
 
     @Test
     public void testMetadataId() {
-        OwsManager mgr = workspace.getSubsystemManager( OwsManager.class );
-        WMTSController wmts = (WMTSController) mgr.get( "wmts" );
+        WMTSController wmts = (WMTSController) workspace.getResource( OWSProvider.class, "wmts" );
         Assert.assertEquals( "http://someLink/services?service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}",
                              wmts.getMetadataUrlTemplate() );
     }
 
     @After
     public void shutdown() {
-        workspace.destroyAll();
+        workspace.destroy();
     }
 
 }
