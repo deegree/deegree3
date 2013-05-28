@@ -53,13 +53,15 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.Resource;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceProvider;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.console.workspace.WorkspaceBean;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 
 /**
@@ -89,9 +91,8 @@ public class Config implements Comparable<Config> {
 
     private String resourceOutcome;
 
-    protected ResourceManager resourceManager;
+    protected ResourceManager<?> resourceManager;
 
-    private ResourceState<?> state;
 
     public Config( File location, URL schemaURL, URL template, String resourceOutcome ) {
         this.location = location;
@@ -108,15 +109,12 @@ public class Config implements Comparable<Config> {
         }
     }
 
-    public Config( ResourceState<?> state, ResourceManager resourceManager, String resourceOutcome, boolean autoActivate ) {
-        this.state = state;
-        this.id = state.getId();
-        this.location = state.getConfigLocation();
+    public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome, boolean autoActivate ) {
+        this.id = metadata.getIdentifier().getId();
         this.resourceManager = resourceManager;
         this.resourceOutcome = resourceOutcome;
-        ResourceProvider provider = state.getProvider();
-        if ( provider != null && provider.getConfigSchema() != null ) {
-            schemaURL = provider.getConfigSchema();
+        if(metadata.getProvider() instanceof AbstractResourceProvider<?>){
+            schemaURL = ( (AbstractResourceProvider<?>) metadata.getProvider() ).getSchema();
         }
         if ( schemaURL != null ) {
             try {
@@ -126,15 +124,6 @@ public class Config implements Comparable<Config> {
                 LOG.trace( "Stack trace:", e );
             }
         }
-    }
-
-        // return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
-    public String getState() {
-        ResourceState<?> stateType = resourceManager.getState( id );
-        if ( stateType == null ) {
-            return "unknown";
-        }
-        return stateType.getType().name();
     }
 
     public void activate() {

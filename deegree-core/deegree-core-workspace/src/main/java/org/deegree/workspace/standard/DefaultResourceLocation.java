@@ -54,6 +54,7 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 
 /**
  * File based resource location.
@@ -152,6 +153,11 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         } catch ( Exception e ) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public ResourceLocation<T> persist( Workspace workspace ) {
         return null;
     }
 

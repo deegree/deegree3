@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -164,6 +165,11 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     @Override
     public void startup( Workspace workspace ) {
         // nothing to do
+    }
+
+    @Override
+    public List<ResourceProvider<T>> getProviders() {
+        return new ArrayList<ResourceProvider<T>>( nsToProvider.values() );
     }
 
 }

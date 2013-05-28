@@ -78,4 +78,8 @@ public class ErrorHandler {
         errors.clear();
     }
 
+    public boolean hasErrors() {
+        return !errors.isEmpty();
+    }
+
 }

@@ -42,6 +42,7 @@
 package org.deegree.workspace;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The resource managers are responsible for finding resources of a specific type.
@@ -93,5 +94,12 @@ public interface ResourceManager<T extends Resource> {
      * @return metadata for the new resource, never <code>null</code>
      */
     ResourceMetadata<T> add( ResourceLocation<T> location, Workspace workspace );
+
+    /**
+     * Returns a list of available resource providers after find has been called.
+     * 
+     * @return never <code>null</code>
+     */
+    List<ResourceProvider<T>> getProviders();
 
 }
