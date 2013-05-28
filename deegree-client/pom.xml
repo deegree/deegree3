@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.3-pre2-SNAPSHOT</version>
+    <version>3.4-pre1-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -28,7 +28,6 @@
   <modules>
     <module>deegree-jsf-console</module>
     <module>deegree-jsf-core</module>
-    <module>deegree-sos-webclient</module>
     <module>deegree-wps-webclient</module>
     <module>deegree-wpsprinter-webclient</module>
   </modules>

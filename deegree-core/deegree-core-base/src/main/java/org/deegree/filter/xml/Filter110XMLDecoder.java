@@ -661,9 +661,12 @@ public class Filter110XMLDecoder {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
             }
         }
+
         TypedObjectNode value = null;
-        if ( attrs == null || children.size() == 1 ) {
+        if ( attrs.isEmpty() && children.size() == 1 ) {
             value = children.get( 0 );
+        } else if ( attrs.isEmpty() && children.isEmpty() ) {
+            value = new PrimitiveValue( "" );
         } else {
             value = new GenericXMLElement( null, null, attrs, children );
         }
@@ -752,6 +755,10 @@ public class Filter110XMLDecoder {
         ValueReference propName = parsePropertyName( xmlStream, false );
 
         nextElement( xmlStream );
+        if ( !"Literal".equals( xmlStream.getLocalName() ) ) {
+            String message = "FilterEncoding 1.1.0 does not allow other than Literal elements as second expression in PropertyIsLike filters!";
+            throw new XMLStreamException( message );
+        }
         Literal<?> literal = parseLiteral( xmlStream );
         nextElement( xmlStream );
         return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase, null );

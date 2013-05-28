@@ -413,6 +413,7 @@ public class DeegreeWorkspace {
         }
         managers.clear();
         managerMap.clear();
+        moduleClassLoader = null;
     }
 
     public ClassLoader getModuleClassLoader() {

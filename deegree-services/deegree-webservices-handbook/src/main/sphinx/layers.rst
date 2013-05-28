@@ -169,7 +169,7 @@ If a ``Style`` element is specified, you must first specify what style you want 
 
 The ``StyleName`` specifies the name under which the style will be known in the WMS. The ``LayerNameRef`` and ``StyleNameRef`` are used to extract the style from the style store.
 
-The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic (which is unfortunately not supported yet). Referencing a different legend style is straightforward:
+The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic. Referencing a different legend style is straightforward:
 
 .. code-block:: xml
 
@@ -179,6 +179,24 @@ The next part to configure within the ``Style`` element is the legend generation
       <l:LayerNameRef>highways</l:LayerNameRef>
       <l:StyleNameRef>highways_legend</l:StyleNameRef>
     </l:LegendStyle>
+  </l:Style>
+
+With specifying the external graphic, you have the option of referencing a local file, or referencing a remote URL. Specifying a file is straightforward, and will result in the contents of that file being used as legend:
+
+.. code-block:: xml
+
+  <l:Style>
+  ...
+    <l:LegendGraphic>legendimages/mylegend.png</l:LegendGraphic>
+  </l:Style>
+
+If you specify an HTTP URL instead of a relative path the behaviour is the same by default, the remote images' content is used as legend. If you set the optional attribute ``outputGetLegendGraphicUrl`` to ``false`` (it's true by default), the specified URL is written as ``LegendURL`` in the WMS capabilities (the behaviour for ``GetLegendGraphic`` requests is the same anyway):
+
+.. code-block:: xml
+
+  <l:Style>
+  ...
+    <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
   </l:Style>
 
 ^^^^^^^^^^^^^^^^^

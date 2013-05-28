@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/layers/remotewms remotewms.xsd" configVersion="3.1.0">
-  <RemoteWMSId>optionssingle</RemoteWMSId>
+  <RemoteWMSId>deegree3</RemoteWMSId>
   <RequestOptions>
     <ImageFormat transparent="false">image/tiff</ImageFormat>
     <DefaultCRS useAlways="true">EPSG:4326</DefaultCRS>

@@ -18996,7 +18996,7 @@ boolean(/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:Operations
          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
          </message>
          <message>Pausing for 120 seconds...</message>
-         <xsl:value-of select="wfs:sleep(120000)"/>
+         <xsl:value-of select="wfs:sleep(60500)"/>
          <xsl:variable name="request3">
             <request>
                <url>
@@ -19224,7 +19224,7 @@ boolean(/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:Operations
          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
          </message>
          <message>Pausing for 120 seconds...</message>
-         <xsl:value-of select="wfs:sleep(120000)"/>
+         <xsl:value-of select="wfs:sleep(60500)"/>
          <xsl:variable name="request3">
             <request>
                <url>
@@ -22317,7 +22317,7 @@ count(/wfs:WFS_LockFeatureResponse/wfs:FeaturesNotLocked/ogc:FeatureId) = 0)</xs
          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
          </message>
          <message>Pausing for 120 seconds...</message>
-         <xsl:value-of select="wfs:sleep(120000)"/>
+         <xsl:value-of select="wfs:sleep(60500)"/>
          <xsl:variable name="request3">
             <request>
                <url>
@@ -22545,7 +22545,7 @@ count(/wfs:WFS_LockFeatureResponse/wfs:FeaturesNotLocked/ogc:FeatureId) = 0)</xs
          <message>VAR_lockId: <xsl:value-of select="$VAR_lockId"/>
          </message>
          <message>Pausing for 120 seconds...</message>
-         <xsl:value-of select="wfs:sleep(120000)"/>
+         <xsl:value-of select="wfs:sleep(60500)"/>
          <xsl:variable name="request3">
             <request>
                <url>

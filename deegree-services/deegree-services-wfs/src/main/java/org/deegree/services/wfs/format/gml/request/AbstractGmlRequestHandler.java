@@ -427,7 +427,7 @@ abstract class AbstractGmlRequestHandler {
                     }
                 }
 
-                if ( !VERSION_100.equals( version ) ) {
+                if ( VERSION_110.equals( version ) ) {
                     baseUrl.append( "&NAMESPACE=xmlns(" );
                     int i = 0;
                     for ( Entry<String, String> entry : bindings.entrySet() ) {
@@ -437,8 +437,24 @@ abstract class AbstractGmlRequestHandler {
                         if ( i != bindings.size() - 1 ) {
                             baseUrl.append( ',' );
                         }
+                        ++i;
                     }
                     baseUrl.append( ')' );
+                }
+                if ( VERSION_200.equals( version ) ) {
+                    baseUrl.append( "&NAMESPACES=" );
+                    int i = 0;
+                    for ( Entry<String, String> e : bindings.entrySet() ) {
+                        baseUrl.append( "xmlns(" );
+                        baseUrl.append( URLEncoder.encode( e.getKey(), "UTF-8" ) );
+                        baseUrl.append( ',' );
+                        baseUrl.append( URLEncoder.encode( e.getValue(), "UTF-8" ) );
+                        baseUrl.append( ")" );
+                        if ( i != bindings.size() - 1 ) {
+                            baseUrl.append( "," );
+                        }
+                        ++i;
+                    }
                 }
             }
         } catch ( UnsupportedEncodingException e ) {

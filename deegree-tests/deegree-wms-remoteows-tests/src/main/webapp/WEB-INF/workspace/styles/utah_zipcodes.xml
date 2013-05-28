@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
+    xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+  <Name>ZipCodes</Name>
+  <Rule>
+    <Name>ZipCodes</Name>
+    <ogc:Filter>
+      <ogc:Not>
+        <ogc:Or>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+          <ogc:Literal></ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+          <ogc:Literal>00100</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+          <ogc:Literal>00071</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+        <ogc:PropertyIsNull>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+        </ogc:PropertyIsNull>
+        </ogc:Or>
+      </ogc:Not>
+    </ogc:Filter>
+      <PolygonSymbolizer>
+        <Fill>
+          <SvgParameter name="fill-opacity">0.3</SvgParameter>
+          <SvgParameter name="fill">
+            <Interpolate fallbackValue="#000000" method="color">
+                <LookupValue>
+                    <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+                </LookupValue>
+                <InterpolationPoint>
+                    <Data>80000</Data>
+                    <Value>#FFFDC9</Value>
+                </InterpolationPoint>
+                <InterpolationPoint>
+                    <Data>85000</Data>
+                    <Value>#FFF500</Value>
+                </InterpolationPoint>
+            </Interpolate>
+            </SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke">#000000</SvgParameter>
+          <SvgParameter name="stroke-opacity">1.0</SvgParameter>
+          <SvgParameter name="stroke-width">1</SvgParameter>
+        </Stroke>
+      </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Name>ZipCodes</Name>
+    <ogc:Filter>
+      <ogc:Or>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+          <ogc:Literal>00100</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+          <ogc:Literal>00071</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+      </ogc:Or>  
+    </ogc:Filter>
+      <PolygonSymbolizer>
+        <Fill>
+          <SvgParameter name="fill-opacity">0.3</SvgParameter>
+          <SvgParameter name="fill">#ffffff</SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke">#000000</SvgParameter>
+          <SvgParameter name="stroke-opacity">1.0</SvgParameter>
+          <SvgParameter name="stroke-width">1</SvgParameter>
+        </Stroke>
+      </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Name>ZipCodes</Name>
+    <ogc:Filter>
+      <ogc:PropertyIsNull>
+        <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+      </ogc:PropertyIsNull>
+    </ogc:Filter>
+      <PolygonSymbolizer>
+        <Fill>
+          <SvgParameter name="fill-opacity">0.3</SvgParameter>
+          <SvgParameter name="fill">#ffffff</SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke">#000000</SvgParameter>
+          <SvgParameter name="stroke-opacity">1.0</SvgParameter>
+          <SvgParameter name="stroke-width">1</SvgParameter>
+        </Stroke>
+      </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Name>ZipCodes</Name>
+    <ogc:Filter>
+      <ogc:Not>
+        <ogc:PropertyIsNull>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+        </ogc:PropertyIsNull>
+      </ogc:Not>
+    </ogc:Filter>
+    <MaxScaleDenominator>100000</MaxScaleDenominator>
+    <TextSymbolizer>
+        <Label>
+          <ogc:PropertyName>app:ZIP</ogc:PropertyName>
+        </Label>
+        <Font>
+          <SvgParameter name="font-family">Arial</SvgParameter>
+          <SvgParameter name="font-family">Sans-Serif</SvgParameter>
+          <SvgParameter name="font-weight">bold</SvgParameter>
+          <SvgParameter name="font-size">12</SvgParameter>
+       </Font>
+       <Halo>
+         <Radius>3</Radius>
+         <Fill>
+           <SvgParameter name="fill-opacity">1</SvgParameter>
+           <SvgParameter name="fill">#FFFFFF</SvgParameter>
+         </Fill>
+       </Halo>
+       <Fill>
+         <SvgParameter name="fill">#000000</SvgParameter>
+       </Fill> 
+      </TextSymbolizer>
+  </Rule>  
+</FeatureTypeStyle>                    
