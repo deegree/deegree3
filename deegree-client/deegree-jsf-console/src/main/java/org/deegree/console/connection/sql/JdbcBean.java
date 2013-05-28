@@ -6,6 +6,7 @@ import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ import org.deegree.console.workspace.WorkspaceBean;
 
 @ManagedBean
 @ViewScoped
-public class JdbcBean {
+public class JdbcBean implements Serializable {
 
     private String dbType = "mssql";
 
