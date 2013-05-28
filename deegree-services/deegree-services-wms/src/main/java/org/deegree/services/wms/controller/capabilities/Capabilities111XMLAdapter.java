@@ -56,7 +56,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.style.se.unevaluated.Style;
@@ -80,10 +79,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
     private MapService service;
 
-    private WMSController controller;
-
-    private final OWSMetadataProvider metadata;
-
     private WmsCapabilities111MetadataWriter metadataWriter;
 
     private WmsCapabilities111ThemeWriter themeWriter;
@@ -96,13 +91,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
      * @param service
      * @param controller
      */
-    public Capabilities111XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
-                                      OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
-                                      WMSController controller ) {
-        this.metadata = metadata;
+    public Capabilities111XMLAdapter( ServiceIdentification identification, ServiceProvider provider, String getUrl,
+                                      String postUrl, MapService service, WMSController controller ) {
         this.getUrl = getUrl;
         this.service = service;
-        this.controller = controller;
         metadataWriter = new WmsCapabilities111MetadataWriter( identification, provider, getUrl, postUrl, controller );
         themeWriter = new WmsCapabilities111ThemeWriter( controller, getUrl, this );
     }
@@ -143,13 +135,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writeElement( writer, "Format", "application/vnd.ogc.se_blank" );
         writer.writeEndElement();
 
-        if ( service.isNewStyle() ) {
-            writeThemes( writer, service.getThemes() );
-        } else {
-            WmsCapabilities111LegacyWriter lw = new WmsCapabilities111LegacyWriter( service, getUrl, metadata,
-                                                                                    controller, this );
-            lw.writeLayers( writer, service.getRootLayer() );
-        }
+        writeThemes( writer, service.getThemes() );
 
         writer.writeEndElement();
     }
