@@ -27,12 +27,24 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller;
 
+import java.util.Collection;
+
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
+import org.deegree.services.OwsManager;
+import org.deegree.services.jaxb.wms.DeegreeWMS;
+import org.deegree.theme.Theme;
+import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata for WMS services.
@@ -43,13 +55,42 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  */
 public class WmsMetadata extends AbstractResourceMetadata<OWS> {
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
+
     public WmsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
         super( workspace, location, provider );
     }
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        return new WmsBuilder( this, workspace );
+        try {
+            DeegreeWMS cfg = (DeegreeWMS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
+                                                                location.getAsStream(), workspace );
+
+            String id = cfg.getMetadataStoreId();
+            if ( id != null ) {
+                dependencies.add( new DefaultResourceIdentifier( MetadataStoreProvider.class, id ) );
+            }
+
+            for ( String tid : cfg.getServiceConfiguration().getThemeId() ) {
+                dependencies.add( new DefaultResourceIdentifier<Theme>( ThemeProvider.class, tid ) );
+            }
+
+            OwsManager mgr = workspace.getResourceManager( OwsManager.class );
+            Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
+            for ( ResourceMetadata<OWS> md : mds ) {
+                OWSProvider prov = (OWSProvider) md.getProvider();
+                for ( String name : prov.getImplementationMetadata().getImplementedServiceName() ) {
+                    if ( name.equalsIgnoreCase( "CSW" ) ) {
+                        softDependencies.add( md.getIdentifier() );
+                    }
+                }
+            }
+
+            return new WmsBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

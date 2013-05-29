@@ -28,6 +28,7 @@
 package org.deegree.services.wps;
 
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wps.DeegreeWPS;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -45,14 +46,17 @@ public class WpsBuilder implements ResourceBuilder<OWS> {
 
     private Workspace workspace;
 
-    public WpsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private DeegreeWPS config;
+
+    public WpsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWPS config ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.config = config;
     }
 
     @Override
     public OWS build() {
-        return new WPService( metadata, workspace );
+        return new WPService( metadata, workspace, config );
     }
 
 }

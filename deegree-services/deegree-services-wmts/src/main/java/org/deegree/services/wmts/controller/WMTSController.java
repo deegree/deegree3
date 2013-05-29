@@ -87,8 +87,8 @@ public class WMTSController extends AbstractOWS {
 
     private WmtsRequestDispatcher dispatcher;
 
-    public WMTSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
+    public WMTSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override
@@ -100,11 +100,6 @@ public class WMTSController extends AbstractOWS {
 
         dispatcher = new WmtsRequestDispatcher( (DeegreeWMTS) controllerConf, serviceMetadata, workspace, builder,
                                                 getMetadata().getIdentifier().getId(), getMetadata().getLocation() );
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return "org.deegree.services.wmts.jaxb";
     }
 
     @Override

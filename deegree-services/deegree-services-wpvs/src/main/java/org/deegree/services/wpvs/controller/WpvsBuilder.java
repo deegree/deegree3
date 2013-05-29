@@ -28,6 +28,7 @@
 package org.deegree.services.wpvs.controller;
 
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wpvs.DeegreeWPVS;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -45,14 +46,17 @@ public class WpvsBuilder implements ResourceBuilder<OWS> {
 
     private Workspace workspace;
 
-    public WpvsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private DeegreeWPVS config;
+
+    public WpvsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWPVS config ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.config = config;
     }
 
     @Override
     public OWS build() {
-        return new WPVSController( metadata, workspace );
+        return new WPVSController( metadata, workspace, config );
     }
 
 }

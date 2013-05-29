@@ -138,8 +138,6 @@ public class WMSController extends AbstractOWS {
 
     private static final Logger LOG = getLogger( WMSController.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
-
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
 
     /** The list of supported image formats. */
@@ -161,8 +159,8 @@ public class WMSController extends AbstractOWS {
 
     private FeatureInfoManager featureInfoManager;
 
-    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
+    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
         featureInfoManager = new FeatureInfoManager( true );
     }
 
@@ -275,11 +273,6 @@ public class WMSController extends AbstractOWS {
             throw new ResourceInitException( e.getMessage(), e );
         }
 
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return CONFIG_JAXB_PACKAGE;
     }
 
     @Override

@@ -66,7 +66,6 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -143,13 +142,8 @@ public class WCSController extends AbstractOWS {
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
 
-    public WCSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return "org.deegree.services.jaxb.wcs";
+    public WCSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override

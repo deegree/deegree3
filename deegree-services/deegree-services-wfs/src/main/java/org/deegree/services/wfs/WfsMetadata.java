@@ -28,18 +28,24 @@
 package org.deegree.services.wfs;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.NewFeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreProvider;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.OwsManager;
+import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for WFS.
@@ -50,27 +56,45 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  */
 public class WfsMetadata extends AbstractResourceMetadata<OWS> {
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
+
     public WfsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
         super( workspace, location, provider );
     }
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        OwsManager mgr = workspace.getResourceManager( OwsManager.class );
-        Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
-        for ( ResourceMetadata<OWS> md : mds ) {
-            OWSProvider prov = (OWSProvider) md.getProvider();
-            for ( String name : prov.getImplementationMetadata().getImplementedServiceName() ) {
-                if ( name.equalsIgnoreCase( "CSW" ) ) {
+        try {
+            DeegreeWFS cfg = (DeegreeWFS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
+                                                                location.getAsStream(), workspace );
+
+            List<String> list = cfg.getFeatureStoreId();
+            if ( list != null && !list.isEmpty() ) {
+                for ( String id : list ) {
+                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, id ) );
+                }
+            } else {
+                NewFeatureStoreManager fmgr = workspace.getResourceManager( NewFeatureStoreManager.class );
+                for ( ResourceMetadata<FeatureStore> md : fmgr.getResourceMetadata() ) {
                     softDependencies.add( md.getIdentifier() );
                 }
             }
+
+            OwsManager mgr = workspace.getResourceManager( OwsManager.class );
+            Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
+            for ( ResourceMetadata<OWS> md : mds ) {
+                OWSProvider prov = (OWSProvider) md.getProvider();
+                for ( String name : prov.getImplementationMetadata().getImplementedServiceName() ) {
+                    if ( name.equalsIgnoreCase( "CSW" ) ) {
+                        softDependencies.add( md.getIdentifier() );
+                    }
+                }
+            }
+
+            return new WfsBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
-        NewFeatureStoreManager fmgr = workspace.getResourceManager( NewFeatureStoreManager.class );
-        for ( ResourceMetadata<FeatureStore> md : fmgr.getResourceMetadata() ) {
-            softDependencies.add( md.getIdentifier() );
-        }
-        return new WfsBuilder( this, workspace );
     }
 
 }

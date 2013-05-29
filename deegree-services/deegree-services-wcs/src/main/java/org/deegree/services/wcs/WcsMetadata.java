@@ -27,12 +27,18 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.coverage.Coverage;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wcs.DeegreeWCS;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for WCS services.
@@ -49,8 +55,19 @@ public class WcsMetadata extends AbstractResourceMetadata<OWS> {
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        // TODO dependencies
-        return new WcsBuilder( this, workspace );
+        try {
+            DeegreeWCS cfg = (DeegreeWCS) JAXBUtils.unmarshall( "org.deegree.services.jaxb.wcs", provider.getSchema(),
+                                                                location.getAsStream(), workspace );
+
+            for ( org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage cov : cfg.getServiceConfiguration().getCoverage() ) {
+                String id = cov.getCoverageStoreId();
+                dependencies.add( new DefaultResourceIdentifier<Coverage>( CoverageProvider.class, id ) );
+            }
+
+            return new WcsBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

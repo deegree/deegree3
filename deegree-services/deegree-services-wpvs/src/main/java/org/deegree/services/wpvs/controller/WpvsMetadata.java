@@ -27,9 +27,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.controller;
 
+import java.util.Collection;
+
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStore;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStore;
+import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wpvs.DeegreeWPVS;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
@@ -43,13 +53,34 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  */
 public class WpvsMetadata extends AbstractResourceMetadata<OWS> {
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
+
     public WpvsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
         super( workspace, location, provider );
     }
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        return new WpvsBuilder( this, workspace );
+        try {
+            DeegreeWPVS cfg = (DeegreeWPVS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
+                                                                  location.getAsStream(), workspace );
+
+            BatchedMTStoreManager mgr = workspace.getResourceManager( BatchedMTStoreManager.class );
+            Collection<ResourceMetadata<BatchedMTStore>> mds = mgr.getResourceMetadata();
+            for ( ResourceMetadata<BatchedMTStore> md : mds ) {
+                softDependencies.add( md.getIdentifier() );
+            }
+
+            RenderableStoreManager rmgr = workspace.getResourceManager( RenderableStoreManager.class );
+            Collection<ResourceMetadata<RenderableStore>> mds2 = rmgr.getResourceMetadata();
+            for ( ResourceMetadata<RenderableStore> md : mds2 ) {
+                softDependencies.add( md.getIdentifier() );
+            }
+
+            return new WpvsBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

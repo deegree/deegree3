@@ -46,7 +46,6 @@ import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -58,7 +57,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -77,7 +75,6 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,21 +107,19 @@ public abstract class AbstractOWS implements OWS {
 
     protected Workspace workspace;
 
-    protected AbstractOWS( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private Object jaxbConfig;
+
+    protected AbstractOWS( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.jaxbConfig = jaxbConfig;
     }
 
     @Override
     public void init() {
         OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
-
-        Object cfg = unmarshallConfig( getJaxbPackage() );
-
-        init( loader.getMetadataConfig(), loader.getMainConfig(), cfg );
+        init( loader.getMetadataConfig(), loader.getMainConfig(), jaxbConfig );
     }
-
-    protected abstract String getJaxbPackage();
 
     /**
      * Initializes the {@link AbstractOWS} instance.
@@ -320,18 +315,6 @@ public abstract class AbstractOWS implements OWS {
             }
             msg.append( " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. " );
             throw new ResourceInitException( msg.toString() );
-        }
-    }
-
-    protected Object unmarshallConfig( String jaxbPackage ) {
-        try {
-            return JAXBUtils.unmarshall( jaxbPackage,
-                                         ( (AbstractResourceProvider<OWS>) metadata.getProvider() ).getSchema(),
-                                         metadata.getLocation().getAsStream(), workspace );
-        } catch ( JAXBException e ) {
-            LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
-            throw new ResourceInitException( "Error parsing service configuration: "
-                                             + e.getLinkedException().getMessage(), e );
         }
     }
 

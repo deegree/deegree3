@@ -195,8 +195,6 @@ public class WebFeatureService extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( WebFeatureService.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
-
     private static final int DEFAULT_MAX_FEATURES = 15000;
 
     private WfsFeatureStoreManager service;
@@ -225,13 +223,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private OWSMetadataProvider mdProvider;
 
-    public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return CONFIG_JAXB_PACKAGE;
+    public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override

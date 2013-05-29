@@ -28,6 +28,7 @@
 package org.deegree.services.csw;
 
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -45,14 +46,17 @@ public class CswBuilder implements ResourceBuilder<OWS> {
 
     private Workspace workspace;
 
-    public CswBuilder( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private DeegreeCSW config;
+
+    public CswBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeCSW config ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.config = config;
     }
 
     @Override
     public OWS build() {
-        return new CSWController( metadata, workspace );
+        return new CSWController( metadata, workspace, config );
     }
 
 }

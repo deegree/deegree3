@@ -27,12 +27,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
+import org.deegree.commons.xml.jaxb.JAXBUtils;
+import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata for CSW services.
@@ -43,14 +50,31 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  */
 public class CswMetadata extends AbstractResourceMetadata<OWS> {
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.csw";
+
     public CswMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
         super( workspace, location, provider );
     }
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        // TODO extract proper deps from config
-        return new CswBuilder( this, workspace );
+        try {
+            DeegreeCSW cfg = (DeegreeCSW) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
+                                                                location.getAsStream(), workspace );
+
+            String id = cfg.getMetadataStoreId();
+            if ( id != null ) {
+                dependencies.add( new DefaultResourceIdentifier( MetadataStoreProvider.class, id ) );
+            } else {
+                for ( ResourceMetadata<?> md : workspace.getResourceManager( MetadataStoreManager.class ).getResourceMetadata() ) {
+                    softDependencies.add( md.getIdentifier() );
+                }
+            }
+
+            return new CswBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

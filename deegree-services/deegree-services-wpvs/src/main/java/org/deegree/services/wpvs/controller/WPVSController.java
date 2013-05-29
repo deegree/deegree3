@@ -121,26 +121,18 @@ public class WPVSController extends AbstractOWS {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
-
     private PerspectiveViewService service;
 
     private ServiceIdentificationType identification;
 
     private ServiceProviderType provider;
 
-    @SuppressWarnings("unused")
     private PublishedInformation publishedInformation;
 
     private List<String> allowedOperations = new LinkedList<String>();
 
-    public WPVSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return CONFIG_JAXB_PACKAGE;
+    public WPVSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override

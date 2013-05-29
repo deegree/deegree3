@@ -27,12 +27,23 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts;
 
+import java.util.Collection;
+
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
+import org.deegree.services.OwsManager;
+import org.deegree.services.wmts.jaxb.DeegreeWMTS;
+import org.deegree.theme.Theme;
+import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata for WMTS services.
@@ -49,7 +60,30 @@ public class WmtsMetadata extends AbstractResourceMetadata<OWS> {
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        return new WmtsBuilder( this, workspace );
+        try {
+            DeegreeWMTS cfg = (DeegreeWMTS) JAXBUtils.unmarshall( "org.deegree.services.wmts.jaxb",
+                                                                  provider.getSchema(), location.getAsStream(),
+                                                                  workspace );
+
+            for ( String tid : cfg.getServiceConfiguration().getThemeId() ) {
+                dependencies.add( new DefaultResourceIdentifier<Theme>( ThemeProvider.class, tid ) );
+            }
+
+            OwsManager mgr = workspace.getResourceManager( OwsManager.class );
+            Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
+            for ( ResourceMetadata<OWS> md : mds ) {
+                OWSProvider prov = (OWSProvider) md.getProvider();
+                for ( String name : prov.getImplementationMetadata().getImplementedServiceName() ) {
+                    if ( name.equalsIgnoreCase( "CSW" ) ) {
+                        softDependencies.add( md.getIdentifier() );
+                    }
+                }
+            }
+
+            return new WmtsBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

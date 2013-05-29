@@ -28,6 +28,7 @@
 package org.deegree.services.wcs;
 
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wcs.DeegreeWCS;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -45,14 +46,17 @@ public class WcsBuilder implements ResourceBuilder<OWS> {
 
     private Workspace workspace;
 
-    public WcsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private DeegreeWCS config;
+
+    public WcsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWCS config ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.config = config;
     }
 
     @Override
     public OWS build() {
-        return new WCSController( metadata, workspace );
+        return new WCSController( metadata, workspace, config );
     }
 
 }

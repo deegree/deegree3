@@ -28,6 +28,7 @@
 package org.deegree.services.wfs;
 
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -45,14 +46,17 @@ public class WfsBuilder implements ResourceBuilder<OWS> {
 
     private Workspace workspace;
 
-    public WfsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private DeegreeWFS config;
+
+    public WfsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWFS config ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.config = config;
     }
 
     @Override
     public OWS build() {
-        return new WebFeatureService( metadata, workspace );
+        return new WebFeatureService( metadata, workspace, config );
     }
 
 }

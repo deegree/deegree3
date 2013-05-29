@@ -28,6 +28,7 @@
 package org.deegree.services.wms.controller;
 
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -45,14 +46,17 @@ public class WmsBuilder implements ResourceBuilder<OWS> {
 
     private Workspace workspace;
 
-    public WmsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace ) {
+    private DeegreeWMS config;
+
+    public WmsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS config ) {
         this.metadata = metadata;
         this.workspace = workspace;
+        this.config = config;
     }
 
     @Override
     public OWS build() {
-        return new WMSController( metadata, workspace );
+        return new WMSController( metadata, workspace, config );
     }
 
 }

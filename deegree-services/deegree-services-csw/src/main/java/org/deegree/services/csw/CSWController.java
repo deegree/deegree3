@@ -156,8 +156,6 @@ public class CSWController extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.csw";
-
     private static final String SCHEMA_LOCATION = CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + GMD_NS + " "
                                                   + "http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd";
 
@@ -183,13 +181,8 @@ public class CSWController extends AbstractOWS {
 
     private DeegreeServiceControllerType mainControllerConf;
 
-    protected CSWController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return CONFIG_JAXB_PACKAGE;
+    protected CSWController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override

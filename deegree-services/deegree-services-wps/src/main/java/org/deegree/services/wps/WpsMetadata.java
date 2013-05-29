@@ -27,9 +27,16 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wps;
 
+import java.util.Collection;
+
+import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wps.DeegreeWPS;
+import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
@@ -43,13 +50,28 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  */
 public class WpsMetadata extends AbstractResourceMetadata<OWS> {
 
+    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
+
     public WpsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
         super( workspace, location, provider );
     }
 
     @Override
     public ResourceBuilder<OWS> prepare() {
-        return new WpsBuilder( this, workspace );
+        try {
+            DeegreeWPS cfg = (DeegreeWPS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
+                                                                location.getAsStream(), workspace );
+
+            ProcessManager mgr = workspace.getResourceManager( ProcessManager.class );
+            Collection<ResourceMetadata<ProcessProvider>> mds = mgr.getResourceMetadata();
+            for ( ResourceMetadata<ProcessProvider> md : mds ) {
+                softDependencies.add( md.getIdentifier() );
+            }
+
+            return new WpsBuilder( this, workspace, cfg );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

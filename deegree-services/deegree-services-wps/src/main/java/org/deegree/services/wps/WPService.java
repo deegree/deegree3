@@ -129,8 +129,6 @@ public class WPService extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
-
     private static final CodeType ALL_PROCESSES_IDENTIFIER = new CodeType( "ALL" );
 
     private ProcessManager processManager;
@@ -141,13 +139,8 @@ public class WPService extends AbstractOWS {
 
     private DeegreeServicesMetadataType mainMetadataConf;
 
-    public WPService( ResourceMetadata<OWS> metadata, Workspace workspace ) {
-        super( metadata, workspace );
-    }
-
-    @Override
-    protected String getJaxbPackage() {
-        return CONFIG_JAXB_PACKAGE;
+    public WPService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override
