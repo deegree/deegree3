@@ -108,6 +108,7 @@ public class ProcessManager extends DefaultResourceManager<ProcessProvider> {
     @Override
     public void startup( Workspace workspace ) {
         this.workspace = workspace;
+        super.startup( workspace );
     }
 
 }
