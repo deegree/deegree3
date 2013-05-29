@@ -69,7 +69,8 @@ public class WmsMetadata extends AbstractResourceMetadata<OWS> {
 
             String id = cfg.getMetadataStoreId();
             if ( id != null ) {
-                dependencies.add( new DefaultResourceIdentifier( MetadataStoreProvider.class, id ) );
+                // is that really a metadata store id? Saw services with UUID here.
+                softDependencies.add( new DefaultResourceIdentifier( MetadataStoreProvider.class, id ) );
             }
 
             for ( String tid : cfg.getServiceConfiguration().getThemeId() ) {
