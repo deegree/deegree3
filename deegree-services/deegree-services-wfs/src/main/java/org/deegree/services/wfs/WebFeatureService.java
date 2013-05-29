@@ -49,7 +49,6 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -231,13 +230,17 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     @Override
+    protected String getJaxbPackage() {
+        return CONFIG_JAXB_PACKAGE;
+    }
+
+    @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      XMLAdapter controllerConf ) {
+                      Object controllerConf ) {
 
         LOG.info( "Initializing WFS." );
-        super.init( serviceMetadata, mainConf, controllerConf );
 
-        DeegreeWFS jaxbConfig = (DeegreeWFS) unmarshallConfig( CONFIG_JAXB_PACKAGE );
+        DeegreeWFS jaxbConfig = (DeegreeWFS) controllerConf;
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
@@ -257,7 +260,7 @@ public class WebFeatureService extends AbstractOWS {
 
         service = new WfsFeatureStoreManager();
         try {
-            service.init( jaxbConfig, controllerConf.getSystemId(), workspace );
+            service.init( jaxbConfig, workspace );
         } catch ( Exception e ) {
             throw new ResourceInitException( "Error initializing WFS/FeatureStores: " + e.getMessage(), e );
         }
@@ -265,11 +268,11 @@ public class WebFeatureService extends AbstractOWS {
         lockFeatureHandler = new LockFeatureHandler( this );
         List<URL> list = new ArrayList<URL>();
         for ( String file : jaxbConfig.getStoredQuery() ) {
-            try {
-                list.add( controllerConf.resolve( file ) );
-            } catch ( MalformedURLException e ) {
-                LOG.warn( "Could not resolve {}: {}", file, e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
+            URL url = metadata.getLocation().resolveToUrl( file );
+            if ( url == null ) {
+                LOG.warn( "Could not resolve {}.", file );
+            } else {
+                list.add( url );
             }
         }
         storedQueryHandler = new StoredQueryHandler( this, list );

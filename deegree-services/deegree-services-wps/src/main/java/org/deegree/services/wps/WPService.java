@@ -43,7 +43,6 @@ import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +65,6 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
@@ -141,18 +139,22 @@ public class WPService extends AbstractOWS {
 
     private ExecutionManager executeHandler;
 
+    private DeegreeServicesMetadataType mainMetadataConf;
+
     public WPService( ResourceMetadata<OWS> metadata, Workspace workspace ) {
         super( metadata, workspace );
     }
 
     @Override
+    protected String getJaxbPackage() {
+        return CONFIG_JAXB_PACKAGE;
+    }
+
+    @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      XMLAdapter controllerConf ) {
-
+                      Object controllerConf ) {
         LOG.info( "Initializing WPS." );
-        super.init( serviceMetadata, mainConf, controllerConf );
-
-        DeegreeWPS sc = (DeegreeWPS) unmarshallConfig( CONFIG_JAXB_PACKAGE );
+        DeegreeWPS sc = (DeegreeWPS) controllerConf;
 
         String storage = "../var/wps";
         int trackedExecutions = 100;
@@ -173,7 +175,7 @@ public class WPService extends AbstractOWS {
 
         File storageDir = null;
         try {
-            File base = new File( new URL( controllerConf.getSystemId() ).toURI() ).getParentFile();
+            File base = metadata.getLocation().resolveToFile( "." );
             storageDir = new File( storage );
             if ( !storageDir.isAbsolute() ) {
                 storageDir = new File( base, storage ).getCanonicalFile();
@@ -190,6 +192,7 @@ public class WPService extends AbstractOWS {
         validateAndSetOfferedVersions( sc.getSupportedVersions().getVersion() );
 
         executeHandler = new ExecutionManager( this, storageManager, trackedExecutions );
+        mainMetadataConf = serviceMetadata;
     }
 
     @Override

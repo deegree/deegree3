@@ -44,7 +44,6 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,7 +125,6 @@ import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.csw.ElementName;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
@@ -181,18 +179,26 @@ public class CSWController extends AbstractOWS {
 
     private URL extendedCapabilities;
 
+    private DeegreeServicesMetadataType mainMetadataConf;
+
+    private DeegreeServiceControllerType mainControllerConf;
+
     protected CSWController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
         super( metadata, workspace );
     }
 
     @Override
-    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      XMLAdapter controllerConf )
-                            throws ResourceInitException {
+    protected String getJaxbPackage() {
+        return CONFIG_JAXB_PACKAGE;
+    }
 
+    @Override
+    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                      Object controllerConf ) {
+        this.mainMetadataConf = serviceMetadata;
+        this.mainControllerConf = mainConf;
         LOG.info( "Initializing CSW controller." );
-        super.init( serviceMetadata, mainConf, controllerConf );
-        DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE );
+        DeegreeCSW jaxbConfig = (DeegreeCSW) controllerConf;
 
         String metadataStoreId = jaxbConfig.getMetadataStoreId();
         if ( metadataStoreId == null ) {
@@ -239,9 +245,8 @@ public class CSWController extends AbstractOWS {
             LOG.info( "Inspire extensions are deactivated" );
         }
         if ( jaxbConfig.getExtendedCapabilities() != null ) {
-            try {
-                extendedCapabilities = controllerConf.resolve( jaxbConfig.getExtendedCapabilities() );
-            } catch ( MalformedURLException e ) {
+            extendedCapabilities = metadata.getLocation().resolveToUrl( jaxbConfig.getExtendedCapabilities() );
+            if ( extendedCapabilities == null ) {
                 LOG.warn( "Could not resolve path to extended capabilities : " + extendedCapabilities
                           + ". Ignore extended capabilities." );
             }

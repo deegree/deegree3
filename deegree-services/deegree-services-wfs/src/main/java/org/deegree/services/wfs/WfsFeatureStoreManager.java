@@ -93,7 +93,7 @@ public class WfsFeatureStoreManager {
      * @param baseURL
      * @throws FeatureStoreException
      */
-    public void init( DeegreeWFS sc, String baseURL, Workspace workspace )
+    public void init( DeegreeWFS sc, Workspace workspace )
                             throws ResourceInitException {
 
         List<String> ids = sc.getFeatureStoreId();

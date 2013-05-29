@@ -51,12 +51,9 @@ import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -182,17 +179,15 @@ public class WMSController extends AbstractOWS {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      XMLAdapter controllerConf ) {
+                      Object controllerConf ) {
 
-        super.init( serviceMetadata, mainConfig, controllerConf );
-
-        identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
-        provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
+        identification = convertFromJAXB( serviceMetadata.getServiceIdentification() );
+        provider = convertFromJAXB( serviceMetadata.getServiceProvider() );
 
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
-        DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE );
+        DeegreeWMS conf = (DeegreeWMS) controllerConf;
 
         if ( conf.getExtendedCapabilities() != null ) {
             this.extendedCaps = new HashMap<String, List<OMElement>>();
@@ -224,12 +219,12 @@ public class WMSController extends AbstractOWS {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     if ( t.getFile() != null ) {
                         featureInfoManager.addOrReplaceFormat( t.getFormat(),
-                                                               new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
+                                                               metadata.getLocation().resolveToFile( t.getFile() ).toString() );
                     } else {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
                         featureInfoManager.addOrReplaceXsltFormat( t.getFormat(),
-                                                                   controllerConf.resolve( xsltFile.getValue() ),
+                                                                   metadata.getLocation().resolveToUrl( xsltFile.getValue() ),
                                                                    version, workspace );
                     }
                 }
@@ -272,16 +267,19 @@ public class WMSController extends AbstractOWS {
             }
 
             ServiceConfigurationType sc = conf.getServiceConfiguration();
-            service = new MapService( sc, controllerConf, workspace );
+            service = new MapService( sc, workspace );
 
             // after the service knows what layers are available:
             handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
-        } catch ( MalformedURLException e ) {
-            throw new ResourceInitException( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
+        } catch ( Exception e ) {
             throw new ResourceInitException( e.getMessage(), e );
         }
 
+    }
+
+    @Override
+    protected String getJaxbPackage() {
+        return CONFIG_JAXB_PACKAGE;
     }
 
     @Override

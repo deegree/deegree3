@@ -88,6 +88,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wcs.DeegreeWCS;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
@@ -134,24 +135,31 @@ public class WCSController extends AbstractOWS {
 
     private ServiceProviderType provider;
 
+    private DeegreeServiceControllerType mainControllerConf;
+
+    private DeegreeServicesMetadataType mainMetadataConf;
+
     private static final String CONFIG_PRE = "dwcs";
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
-
-    private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/3.0.0/wcs_published_information.xsd";
 
     public WCSController( ResourceMetadata<OWS> metadata, Workspace workspace ) {
         super( metadata, workspace );
     }
 
     @Override
+    protected String getJaxbPackage() {
+        return "org.deegree.services.jaxb.wcs";
+    }
+
+    @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      XMLAdapter controllerConf )
-                            throws ResourceInitException {
+                      Object controllerConf ) {
 
         LOG.info( "Initializing WCS." );
-        super.init( serviceMetadata, mainConf, controllerConf );
         UPDATE_SEQUENCE++;
+
+        DeegreeWCS cfg = (DeegreeWCS) controllerConf;
 
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( WCSConstants.WCS_100_PRE, WCS_100_NS );
@@ -160,10 +168,13 @@ public class WCSController extends AbstractOWS {
 
         this.wcsService = new WCServiceBuilder( workspace, getMetadata() ).buildService();
 
-        PublishedInformation publishedInformation = parsePublishedInformation( controllerConf, nsContext );
-        syncWithMainController( publishedInformation );
+        PublishedInformation publishedInformation = cfg.getPublishedInformation();
+        parsePublishedInformation( publishedInformation, nsContext );
+        syncWithMainController( publishedInformation, serviceMetadata );
 
         validateAndSetOfferedVersions( publishedInformation.getSupportedVersions().getVersion() );
+        mainControllerConf = mainConf;
+        mainMetadataConf = serviceMetadata;
     }
 
     /**
@@ -172,7 +183,8 @@ public class WCSController extends AbstractOWS {
      * 
      * @param publishedInformation
      */
-    private void syncWithMainController( PublishedInformation publishedInformation ) {
+    private void syncWithMainController( PublishedInformation publishedInformation,
+                                         DeegreeServicesMetadataType mainMetadataConf ) {
         identification = mainMetadataConf.getServiceIdentification();
         provider = mainMetadataConf.getServiceProvider();
     }
@@ -182,29 +194,21 @@ public class WCSController extends AbstractOWS {
         // *Kaaboooom!*
     }
 
-    private PublishedInformation parsePublishedInformation( XMLAdapter controllerConf, NamespaceBindings nsContext )
+    private void parsePublishedInformation( PublishedInformation pubInf, NamespaceBindings nsContext )
                             throws ResourceInitException {
-
-        PublishedInformation pubInf = null;
-        XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );
-        OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-        if ( elem != null ) {
-            pubInf = (PublishedInformation) unmarshallConfig( "org.deegree.services.jaxb.wcs" );
-            if ( pubInf != null ) {
-                // mandatory
-                allowedOperations.add( WCSRequestType.GetCapabilities.name() );
-                AllowedOperations configuredOperations = pubInf.getAllowedOperations();
-                if ( configuredOperations != null ) {
-                    // if ( configuredOperations.getDescribeCoverage() != null ) {
-                    // if
-                    // }
-                    LOG.info( "WCS specification implies support for all three operations." );
-                }
-                allowedOperations.add( WCSRequestType.DescribeCoverage.name() );
-                allowedOperations.add( WCSRequestType.GetCoverage.name() );
+        if ( pubInf != null ) {
+            // mandatory
+            allowedOperations.add( WCSRequestType.GetCapabilities.name() );
+            AllowedOperations configuredOperations = pubInf.getAllowedOperations();
+            if ( configuredOperations != null ) {
+                // if ( configuredOperations.getDescribeCoverage() != null ) {
+                // if
+                // }
+                LOG.info( "WCS specification implies support for all three operations." );
             }
+            allowedOperations.add( WCSRequestType.DescribeCoverage.name() );
+            allowedOperations.add( WCSRequestType.GetCoverage.name() );
         }
-        return pubInf;
     }
 
     @Override

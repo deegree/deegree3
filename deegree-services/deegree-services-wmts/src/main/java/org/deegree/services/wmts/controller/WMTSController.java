@@ -57,7 +57,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.RequestUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -67,6 +66,7 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
+import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
@@ -93,15 +93,18 @@ public class WMTSController extends AbstractOWS {
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      XMLAdapter controllerConf ) {
-        super.init( serviceMetadata, mainConfig, controllerConf );
-
-        WmtsBuilder builder = new WmtsBuilder( getMetadata(), workspace );
+                      Object controllerConf ) {
+        WmtsBuilder builder = new WmtsBuilder( workspace, (DeegreeWMTS) controllerConf );
 
         this.metadataUrlTemplate = builder.getMetadataUrlTemplate();
 
-        dispatcher = new WmtsRequestDispatcher( controllerConf, mainMetadataConf, workspace, builder,
-                                                getMetadata().getIdentifier().getId() );
+        dispatcher = new WmtsRequestDispatcher( (DeegreeWMTS) controllerConf, serviceMetadata, workspace, builder,
+                                                getMetadata().getIdentifier().getId(), getMetadata().getLocation() );
+    }
+
+    @Override
+    protected String getJaxbPackage() {
+        return "org.deegree.services.wmts.jaxb";
     }
 
     @Override

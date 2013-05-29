@@ -53,10 +53,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
@@ -122,8 +120,7 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, XMLAdapter adapter, Workspace workspace )
-                            throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace ) throws MalformedURLException {
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );

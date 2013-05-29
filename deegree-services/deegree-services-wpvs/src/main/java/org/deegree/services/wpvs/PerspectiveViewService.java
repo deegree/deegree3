@@ -40,7 +40,6 @@ import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ import javax.media.opengl.GLPbuffer;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -83,6 +81,7 @@ import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.services.wpvs.rendering.jogl.GLPBufferPool;
 import org.deegree.services.wpvs.rendering.jogl.GetViewRenderer;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,7 +161,7 @@ public class PerspectiveViewService {
      *            the workspace used to load data
      * @throws ServiceInitException
      */
-    public PerspectiveViewService( XMLAdapter configAdapter, ServiceConfiguration sc, Workspace workspace )
+    public PerspectiveViewService( ResourceLocation<?> location, ServiceConfiguration sc, Workspace workspace )
                             throws ServiceInitException {
         DatasetDefinitions dsd = sc.getDatasetDefinitions();
         serviceConfiguration = sc;
@@ -184,10 +183,10 @@ public class PerspectiveViewService {
         this.latitudeOfScene = sc.getLatitudeOfScene() == null ? 51.7 : sc.getLatitudeOfScene();
         if ( dsd != null ) {
             initValuesFromDatasetDefinitions( dsd );
-            this.boundingBox = initDatasets( configAdapter, sc, dsd );
+            this.boundingBox = initDatasets( location, sc, dsd );
             LOG.debug( "The scene envelope after loading all datasets: {} ", this.boundingBox );
-            initBackgroundImages( configAdapter );
-            initCopyright( configAdapter );
+            initBackgroundImages( location );
+            initCopyright( location );
             initGL();
         } else {
             throw new ServiceInitException( "Datasetdefinitions must be provided." );
@@ -200,7 +199,7 @@ public class PerspectiveViewService {
     /**
      * @param configAdapter
      */
-    private void initCopyright( XMLAdapter configAdapter ) {
+    private void initCopyright( ResourceLocation<?> location ) {
         if ( serviceConfiguration.getCopyright() != null ) {
             Copyright copy = serviceConfiguration.getCopyright();
             Image image = copy.getImage();
@@ -208,7 +207,7 @@ public class PerspectiveViewService {
                 String url = image.getUrl();
                 if ( url != null && !"".equals( url ) ) {
                     try {
-                        URL resolved = configAdapter.resolve( url );
+                        URL resolved = location.resolveToUrl( url );
                         File f = new File( resolved.toURI() );
                         this.copyrightKey = TexturePool.addTexture( f );
                         Double cs = copy.getPercentageOfResult();
@@ -216,10 +215,6 @@ public class PerspectiveViewService {
                             // this.copyrighScale = copy.getPercentageOfResult() * 0.01;
                             LOG.warn( "Copyright scaling will be ignored, please make your copyright image your preferred size." );
                         }
-                    } catch ( MalformedURLException e ) {
-                        LOG.error( "Unable to load copyright image from: " + url + " because: "
-                                   + e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
                     } catch ( URISyntaxException e ) {
                         LOG.error( "Unable to load copyright image from: " + url + " because: "
                                    + e.getLocalizedMessage() );
@@ -270,7 +265,7 @@ public class PerspectiveViewService {
     /**
      * @param configAdapter
      */
-    private void initBackgroundImages( XMLAdapter configAdapter ) {
+    private void initBackgroundImages( ResourceLocation<?> location ) {
         SkyImages images = serviceConfiguration.getSkyImages();
         if ( images != null ) {
             List<SkyImage> skyImage = images.getSkyImage();
@@ -279,17 +274,8 @@ public class PerspectiveViewService {
                     if ( image != null && image.getName() != null && image.getFile() != null ) {
                         String name = image.getName();
                         String file = image.getFile();
-                        try {
-                            URL fileURL = configAdapter.resolve( file );
-                            File f = new File( fileURL.toURI() );
-                            TexturePool.addTexture( name, f );
-                        } catch ( MalformedURLException e ) {
-                            LOG.error( "Unable to load sky image: " + name + " because: " + e.getLocalizedMessage() );
-                            LOG.trace( "Stack trace:", e );
-                        } catch ( URISyntaxException e ) {
-                            LOG.error( "Unable to load sky image: " + name + " because: " + e.getLocalizedMessage() );
-                            LOG.trace( "Stack trace:", e );
-                        }
+                        File f = location.resolveToFile( file );
+                        TexturePool.addTexture( name, f );
                     }
                 }
             }
@@ -300,7 +286,7 @@ public class PerspectiveViewService {
      * @param dsd
      * @throws ServiceInitException
      */
-    private Envelope initDatasets( XMLAdapter configAdapter, ServiceConfiguration sc, DatasetDefinitions dsd )
+    private Envelope initDatasets( ResourceLocation<?> location, ServiceConfiguration sc, DatasetDefinitions dsd )
                             throws ServiceInitException {
         // create a minimal bounding box
         Envelope sceneEnvelope = geomFactory.createEnvelope( new double[] { -this.translationToLocalCRS[0],
@@ -313,7 +299,7 @@ public class PerspectiveViewService {
                                                                            RenderableDataset.DEFAULT_SPAN }, defaultCRS );
         renderableDatasets = new RenderableDataset( workspace );
         sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
-                                                                       configAdapter, dsd );
+                                                                       location, dsd );
 
         LOG.debug( "The scene envelope after loading the renderables: {} ", sceneEnvelope );
 
@@ -325,8 +311,8 @@ public class PerspectiveViewService {
                                       ConfiguredOpenGLInitValues.getTerrainDiffuse(),
                                       ConfiguredOpenGLInitValues.getTerrainSpecular(),
                                       ConfiguredOpenGLInitValues.getTerrainShininess(), workspace );
-        sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
-                                                                configAdapter, dsd );
+        sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS, location,
+                                                                dsd );
 
         LOG.debug( "The scene envelope after loading the dem: {} ", sceneEnvelope );
 
@@ -339,7 +325,7 @@ public class PerspectiveViewService {
 
         // the colormap
         this.colormapDatasets = new ColormapDataset();
-        this.colormapDatasets.fillFromDatasetDefinitions( sceneEnvelope, translationToLocalCRS, configAdapter, dsd );
+        this.colormapDatasets.fillFromDatasetDefinitions( sceneEnvelope, translationToLocalCRS, location, dsd );
 
         int dTM = sc.getDirectTextureMemory() == null ? 400 : sc.getDirectTextureMemory();
         textureByteBufferPool = new DirectByteBufferPool( dTM * 1024 * 1024, "texture coordinates buffer pool." );
@@ -347,7 +333,7 @@ public class PerspectiveViewService {
         int cTT = sc.getCachedTextureTiles() == null ? 400 : sc.getCachedTextureTiles();
         textureDatasets = new DEMTextureDataset( textureByteBufferPool, cTT, tIG, workspace );
         sceneEnvelope = textureDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
-                                                                    configAdapter, dsd );
+                                                                    location, dsd );
 
         return sceneEnvelope;
     }

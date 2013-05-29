@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
@@ -62,6 +61,7 @@ import org.deegree.services.jaxb.wpvs.SwitchLevels;
 import org.deegree.services.jaxb.wpvs.SwitchLevels.Level;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -97,8 +97,8 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
      * @param dsd
      */
     @Override
-    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
-                                                DatasetDefinitions dsd ) {
+    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS,
+                                                ResourceLocation<?> location, DatasetDefinitions dsd ) {
         List<RenderableDatasetConfig> datsets = dsd.getRenderableDataset();
         if ( !datsets.isEmpty() ) {
             sceneEnvelope = initDatasets( datsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError() );

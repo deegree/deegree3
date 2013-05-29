@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +47,6 @@ import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -57,17 +55,14 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.SOAPException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SOAPExceptionSerializer;
@@ -80,7 +75,6 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.workspace.ResourceInitException;
-import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceProvider;
@@ -106,11 +100,6 @@ public abstract class AbstractOWS implements OWS {
 
     protected ResourceMetadata<OWS> metadata;
 
-    /** Common configuration (metadata) of parent {@link OGCFrontController}. */
-    protected DeegreeServicesMetadataType mainMetadataConf;
-
-    protected DeegreeServiceControllerType mainControllerConf;
-
     /**
      * Versions offered by the {@link AbstractOWS} instance (depends on configuration).
      * <p>
@@ -128,21 +117,14 @@ public abstract class AbstractOWS implements OWS {
 
     @Override
     public void init() {
-        // Copying to temporary input stream is necessary to avoid config file locks (on Windows)
-        // Only remove this if you know what you are doing! It may break the services-console!
-        byte[] bytes = null;
-        ResourceLocation<OWS> loc = metadata.getLocation();
-        try {
-            bytes = IOUtils.toByteArray( loc.getAsStream() );
-        } catch ( Exception t ) {
-            throw new ResourceInitException( t.getMessage(), t );
-        }
-
-        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ),
-                                             loc.resolveToUrl( loc.getIdentifier().getId() + ".xml" ).toExternalForm() );
         OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
-        init( loader.getMetadataConfig(), loader.getMainConfig(), adapter );
+
+        Object cfg = unmarshallConfig( getJaxbPackage() );
+
+        init( loader.getMetadataConfig(), loader.getMainConfig(), cfg );
     }
+
+    protected abstract String getJaxbPackage();
 
     /**
      * Initializes the {@link AbstractOWS} instance.
@@ -151,17 +133,9 @@ public abstract class AbstractOWS implements OWS {
      * @param serviceInformation
      * @param controllerConfig
      *            controller configuration, must not be null
-     * @throws ControllerInitException
-     *             if the config version does not match one of the supported versions
      */
-    protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
-                         XMLAdapter controllerConfig )
-                            throws ResourceInitException {
-        this.mainMetadataConf = mainMetadataConf;
-        this.mainControllerConf = mainControllerConf;
-        String configVersion = controllerConfig.getRootElement().getAttributeValue( new QName( "configVersion" ) );
-        checkConfigVersion( controllerConfig.getSystemId(), configVersion );
-    }
+    protected abstract void init( DeegreeServicesMetadataType mainMetadataConf,
+                                  DeegreeServiceControllerType mainControllerConf, Object controllerConfig );
 
     /**
      * @param requestedVersions
