@@ -27,9 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import java.io.File;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,12 +35,10 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OwsManager;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * TODO add class documentation here
@@ -54,22 +50,22 @@ import org.deegree.services.controller.WebServicesConfiguration;
  */
 @ManagedBean
 @ViewScoped
-public class ServicesBean extends AbstractResourceManagerBean<WebServicesConfiguration> implements Serializable {
+public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implements Serializable {
 
     private static final long serialVersionUID = -8669333203479413121L;
 
-    private static final URL MAIN_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
+//    private static final URL MAIN_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
+//
+//    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
 
-    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
-
-    private final Config mainConfig;
+    private  Config mainConfig;
 
     public ServicesBean() {
-        super( WebServicesConfiguration.class );
-        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-        File wsRootDir = ws.getLocation();
-        File mainLocation = new File( wsRootDir, "services/main.xml" );
-        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/index" );
+        super( OwsManager.class );
+//        Workspace ws = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+//        File wsRootDir = ws.getLocation();
+//        File mainLocation = new File( wsRootDir, "services/main.xml" );
+//        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/index" );
     }
 
     public Config getMainConfig() {
@@ -79,7 +75,7 @@ public class ServicesBean extends AbstractResourceManagerBean<WebServicesConfigu
     @Override
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
-        for ( ResourceState<?> state : resourceManager.getStates() ) {
+        for ( ResourceMetadata<?> state : resourceManager.getResourceMetadata() ) {
             configs.add( new ServiceConfig( state, resourceManager ) );
         }
         Collections.sort( configs );

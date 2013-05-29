@@ -31,7 +31,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageManager;
 
 /**
  * JSF backing bean for "Create new coverage" view.
@@ -45,7 +45,7 @@ import org.deegree.coverage.persistence.CoverageBuilderManager;
 public class CreateCoverageBean extends AbstractCreateResourceBean {
 
     public CreateCoverageBean() {
-        super( CoverageBuilderManager.class );
+        super( CoverageManager.class );
     }
 
     @Override

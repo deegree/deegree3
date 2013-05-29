@@ -52,8 +52,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.workspace.ResourceManager;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
@@ -64,11 +63,12 @@ import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.workspace.ResourceMetadata;
 
 public class FeatureStoreConfig extends Config {
 
-    public FeatureStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
-        super( state, resourceManager, "/console/datastore/feature/index", true );
+    public FeatureStoreConfig( ResourceMetadata metadata, ResourceManager resourceManager ) {
+        super( metadata, resourceManager, "/console/datastore/feature/index", true );
     }
 
     private DeegreeWorkspace getWorkspace() {

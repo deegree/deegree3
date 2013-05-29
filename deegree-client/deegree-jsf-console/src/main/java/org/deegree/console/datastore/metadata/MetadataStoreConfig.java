@@ -47,19 +47,21 @@ import javax.faces.event.ActionEvent;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
+import org.deegree.workspace.ResourceManager;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.workspace.ResourceMetadata;
 
 public class MetadataStoreConfig extends Config {
 
     private String id;
 
-    public MetadataStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
+    public MetadataStoreConfig( ResourceMetadata<?> state, ResourceManager<?> resourceManager ) {
         super( state, resourceManager, "/console/datastore/metadata/index", true );
     }
 
@@ -101,7 +103,7 @@ public class MetadataStoreConfig extends Config {
 
             sql = provider.getCreateStatements( prov.getDialect() );
 
-                SQLExecution execution = new SQLExecution( connId, sql, "/console/datastore/metadata/index", ws );
+            SQLExecution execution = new SQLExecution( connId, sql, "/console/datastore/metadata/index", ws );
 
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         } catch ( UnsupportedEncodingException e ) {
@@ -117,4 +119,5 @@ public class MetadataStoreConfig extends Config {
         }
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
+
 }

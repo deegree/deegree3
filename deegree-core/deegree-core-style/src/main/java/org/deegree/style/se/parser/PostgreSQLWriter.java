@@ -595,7 +595,7 @@ public class PostgreSQLWriter {
         }
     }
 
-    private void write( Styling styling, DoublePair scales, String name, String labelexpr ) {
+    private void write( Styling<?> styling, DoublePair scales, String name, String labelexpr ) {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
@@ -738,7 +738,7 @@ public class PostgreSQLWriter {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public static void smain( String[] args )
+    public static void main( String[] args )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(
                                                                                                                                    args[0] ) ) );
@@ -747,7 +747,7 @@ public class PostgreSQLWriter {
         ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( "configtool",
                                                                                                  "jdbc:postgresql://localhost/configtool",
                                                                                                  "postgres", "postgres" );
-        workspace.addExtraResource( loc );
+        workspace.getLocationHandler().addExtraResource( loc );
         workspace.initAll();
 
         if ( style.isSimple() ) {

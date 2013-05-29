@@ -250,7 +250,9 @@ public class StyleChecker {
             file.delete();
             file.mkdir();
             Workspace workspace = new DefaultWorkspace( file );
-            workspace.addExtraResource( ConnectionProviderUtils.getSyntheticProvider( "style", url, user, pass ) );
+            workspace.getLocationHandler().addExtraResource( ConnectionProviderUtils.getSyntheticProvider( "style",
+                                                                                                           url, user,
+                                                                                                           pass ) );
             workspace.initAll();
             connProvider = workspace.getResource( ConnectionProviderProvider.class, "style" );
 

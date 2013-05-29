@@ -79,32 +79,23 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
 
     private Map<String, ResourceProvider<T>> nsToProvider;
 
+    private Workspace workspace;
+
     public DefaultResourceManager( ResourceManagerMetadata<T> metadata ) {
         this.metadata = metadata;
     }
 
     @Override
-    public void find( Workspace workspace ) {
-        nsToProvider = new HashMap<String, ResourceProvider<T>>();
-        metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
-
+    public void find() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Scanning for {}.", metadata.getName() );
         LOG.info( "--------------------------------------------------------------------------------" );
 
-        // load providers
-        Iterator<? extends ResourceProvider<T>> iter = ServiceLoader.load( metadata.getProviderClass(),
-                                                                           workspace.getModuleClassLoader() ).iterator();
-        while ( iter.hasNext() ) {
-            ResourceProvider<T> prov = iter.next();
-            nsToProvider.put( prov.getNamespace(), prov );
-        }
+        List<ResourceLocation<T>> list = workspace.getLocationHandler().findResourceLocations( metadata );
 
-        List<ResourceLocation<T>> list = workspace.findResourceLocations( metadata );
+        read( list );
 
-        read( list, workspace );
-
-        iter = nsToProvider.values().iterator();
+        Iterator<ResourceProvider<T>> iter = nsToProvider.values().iterator();
 
         while ( iter.hasNext() ) {
             ResourceProvider<T> prov = iter.next();
@@ -123,7 +114,7 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
         }
     }
 
-    protected void read( List<ResourceLocation<T>> list, Workspace workspace ) {
+    protected void read( List<ResourceLocation<T>> list ) {
         for ( ResourceLocation<T> loc : list ) {
             try {
                 ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
@@ -157,14 +148,24 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     }
 
     @Override
-    public ResourceMetadata<T> add( ResourceLocation<T> location, Workspace workspace ) {
-        read( Collections.singletonList( location ), workspace );
+    public ResourceMetadata<T> add( ResourceLocation<T> location ) {
+        read( Collections.singletonList( location ) );
         return metadataMap.get( location.getIdentifier() );
     }
 
     @Override
     public void startup( Workspace workspace ) {
-        // nothing to do
+        this.workspace = workspace;
+        nsToProvider = new HashMap<String, ResourceProvider<T>>();
+        metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
+
+        // load providers
+        Iterator<? extends ResourceProvider<T>> iter = ServiceLoader.load( metadata.getProviderClass(),
+                                                                           workspace.getModuleClassLoader() ).iterator();
+        while ( iter.hasNext() ) {
+            ResourceProvider<T> prov = iter.next();
+            nsToProvider.put( prov.getNamespace(), prov );
+        }
     }
 
     @Override

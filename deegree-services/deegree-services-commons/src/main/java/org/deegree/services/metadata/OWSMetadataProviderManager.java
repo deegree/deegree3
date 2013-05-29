@@ -46,7 +46,6 @@ import java.util.ListIterator;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
@@ -66,7 +65,7 @@ public class OWSMetadataProviderManager extends DefaultResourceManager<OWSMetada
     }
 
     @Override
-    protected void read( List<ResourceLocation<OWSMetadataProvider>> list, Workspace workspace ) {
+    protected void read( List<ResourceLocation<OWSMetadataProvider>> list ) {
         ListIterator<ResourceLocation<OWSMetadataProvider>> iter = list.listIterator();
         while ( iter.hasNext() ) {
             ResourceLocation<OWSMetadataProvider> loc = iter.next();
@@ -74,7 +73,7 @@ public class OWSMetadataProviderManager extends DefaultResourceManager<OWSMetada
                 iter.remove();
             }
         }
-        super.read( list, workspace );
+        super.read( list );
     }
 
 }

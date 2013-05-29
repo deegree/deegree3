@@ -50,7 +50,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -62,10 +61,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.apache.commons.io.FileUtils;
 import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.ErrorHandler;
 import org.deegree.workspace.Initializable;
+import org.deegree.workspace.LocationHandler;
 import org.deegree.workspace.PreparedResources;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
@@ -73,7 +72,6 @@ import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
-import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.ResourceStates;
@@ -107,15 +105,17 @@ public class DefaultWorkspace implements Workspace {
 
     private Map<ResourceIdentifier<? extends Resource>, Resource> resources;
 
-    private Map<Class<? extends ResourceProvider<? extends Resource>>, List<ResourceLocation<? extends Resource>>> extraResources = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, List<ResourceLocation<? extends Resource>>>();
-
     private Map<Class<? extends Initializable>, Initializable> initializables = new HashMap<Class<? extends Initializable>, Initializable>();
 
     private ResourceGraph graph;
 
     private ErrorHandler errors = new ErrorHandler();
 
+    private LocationHandler locationHandler;
+
     private ResourceStates states;
+
+    private boolean startedUp = false;
 
     public DefaultWorkspace( File directory ) {
         this.directory = directory;
@@ -202,9 +202,10 @@ public class DefaultWorkspace implements Workspace {
         resources = null;
         resourceManagers = null;
         wsModules = null;
-        extraResources.clear();
         initializables.clear();
         states = null;
+        locationHandler = null;
+        startedUp = false;
     }
 
     private void initClassloader() {
@@ -260,30 +261,6 @@ public class DefaultWorkspace implements Workspace {
     }
 
     @Override
-    public <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata ) {
-        List<ResourceLocation<T>> list = new ArrayList<ResourceLocation<T>>();
-
-        if ( extraResources.get( metadata.getProviderClass() ) != null ) {
-            list.addAll( (Collection) extraResources.get( metadata.getProviderClass() ) );
-        }
-
-        File dir = new File( directory, metadata.getWorkspacePath() );
-        if ( !dir.isDirectory() ) {
-            return list;
-        }
-        URI base = dir.getAbsoluteFile().toURI();
-        for ( File f : FileUtils.listFiles( dir, new String[] { "xml" }, true ) ) {
-            URI uri = f.getAbsoluteFile().toURI();
-            uri = base.relativize( uri );
-            String p = uri.getPath();
-            p = p.substring( 0, p.length() - 4 );
-            list.add( new DefaultResourceLocation<T>( f, new DefaultResourceIdentifier<T>( metadata.getProviderClass(),
-                                                                                           p ) ) );
-        }
-        return list;
-    }
-
-    @Override
     public <T extends Resource> ResourceMetadata<T> getResourceMetadata( Class<? extends ResourceProvider<T>> providerClass,
                                                                          String id ) {
         return (ResourceMetadata<T>) resourceMetadata.get( new DefaultResourceIdentifier<T>( providerClass, id ) );
@@ -312,17 +289,10 @@ public class DefaultWorkspace implements Workspace {
     }
 
     @Override
-    public void addExtraResource( ResourceLocation<? extends Resource> location ) {
-        List<ResourceLocation<? extends Resource>> list = extraResources.get( location.getIdentifier().getProvider() );
-        if ( list == null ) {
-            list = new ArrayList<ResourceLocation<? extends Resource>>();
-            extraResources.put( location.getIdentifier().getProvider(), list );
-        }
-        list.add( location );
-    }
-
-    @Override
     public void startup() {
+        if ( startedUp ) {
+            return;
+        }
         wsModules = new ArrayList<ModuleInfo>();
         resourceManagers = new HashMap<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>>();
         resourceMetadata = new HashMap<ResourceIdentifier<? extends Resource>, ResourceMetadata<? extends Resource>>();
@@ -330,6 +300,7 @@ public class DefaultWorkspace implements Workspace {
         initializables.clear();
         graph = new ResourceGraph();
         states = new ResourceStates();
+        locationHandler = new DefaultLocationHandler( directory, resourceManagers );
         initClassloader();
 
         Iterator<Initializable> it = ServiceLoader.load( Initializable.class, moduleClassLoader ).iterator();
@@ -354,6 +325,7 @@ public class DefaultWorkspace implements Workspace {
             // try/catch?
             mgr.startup( this );
         }
+        startedUp = true;
     }
 
     @Override
@@ -446,7 +418,7 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "--------------------------------------------------------------------------------" );
 
         for ( ResourceManager<? extends Resource> mgr : resourceManagers.values() ) {
-            mgr.find( this );
+            mgr.find();
             Collection<? extends ResourceMetadata<? extends Resource>> mds = mgr.getResourceMetadata();
             for ( ResourceMetadata<? extends Resource> md : mds ) {
                 resourceMetadata.put( md.getIdentifier(), md );
@@ -485,7 +457,7 @@ public class DefaultWorkspace implements Workspace {
     public <T extends Resource> void add( ResourceLocation<T> location ) {
         LOG.info( "Scanning {}", location.getIdentifier() );
         ResourceManager<T> mgr = (ResourceManager) resourceManagers.get( location.getIdentifier().getProvider() );
-        ResourceMetadata<T> md = mgr.add( location, this );
+        ResourceMetadata<T> md = mgr.add( location );
         resourceMetadata.put( md.getIdentifier(), md );
     }
 
@@ -515,6 +487,11 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public <T extends Initializable> T getInitializable( Class<T> className ) {
         return (T) initializables.get( className );
+    }
+
+    @Override
+    public LocationHandler getLocationHandler() {
+        return locationHandler;
     }
 
 }

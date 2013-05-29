@@ -65,8 +65,13 @@ public class OwsManager extends DefaultResourceManager<OWS> {
     }
 
     @Override
-    protected void read( List<ResourceLocation<OWS>> list, Workspace workspace ) {
+    public void startup( Workspace workspace ) {
         this.workspace = workspace;
+        super.startup( workspace );
+    }
+
+    @Override
+    protected void read( List<ResourceLocation<OWS>> list ) {
         ListIterator<ResourceLocation<OWS>> iter = list.listIterator();
         while ( iter.hasNext() ) {
             ResourceLocation<OWS> loc = iter.next();
@@ -74,7 +79,7 @@ public class OwsManager extends DefaultResourceManager<OWS> {
                 iter.remove();
             }
         }
-        super.read( list, workspace );
+        super.read( list );
     }
 
     /**

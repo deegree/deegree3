@@ -42,26 +42,27 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreManager;
+import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
-public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements Serializable {
+public class FeatureStoreManagerBean extends AbstractResourceManagerBean<NewFeatureStoreManager> implements
+                                                                                                Serializable {
 
     private static final long serialVersionUID = -7258840439551611498L;
 
     public FeatureStoreManagerBean() {
-        super( FeatureStoreManager.class );
+        super( NewFeatureStoreManager.class );
     }
 
     @Override
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
-        for ( ResourceState<?> state : resourceManager.getStates() ) {
-            configs.add( new FeatureStoreConfig( state, resourceManager ) );
+        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
+            configs.add( new FeatureStoreConfig( md, resourceManager ) );
         }
         Collections.sort( configs );
         return configs;

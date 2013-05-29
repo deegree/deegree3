@@ -335,7 +335,7 @@ public class DataManager {
                 ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( hostURL, testFileBackend,
                                                                                  line.getOptionValue( OPT_DB_USER ),
                                                                                  line.getOptionValue( OPT_DB_PASS ) );
-                workspace.getNewWorkspace().addExtraResource( loc );
+                workspace.getNewWorkspace().getLocationHandler().addExtraResource( loc );
             }
         }
         ModelBackend<?> result = ModelBackend.getInstance( hostURL, workspace.getNewWorkspace() );

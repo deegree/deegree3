@@ -87,7 +87,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
     }
 
     @Override
-    public void find( Workspace workspace ) {
+    public void startup( Workspace workspace ) {
         this.workspace = workspace;
         try {
             for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
@@ -97,7 +97,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         }
-        super.find( workspace );
+        super.startup( workspace );
     }
 
     @Override

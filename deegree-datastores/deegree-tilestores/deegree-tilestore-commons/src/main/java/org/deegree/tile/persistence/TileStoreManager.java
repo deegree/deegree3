@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
@@ -50,7 +49,7 @@ public class TileStoreManager extends DefaultResourceManager<TileStore> {
     }
 
     @Override
-    protected void read( List<ResourceLocation<TileStore>> list, Workspace workspace ) {
+    protected void read( List<ResourceLocation<TileStore>> list ) {
         ListIterator<ResourceLocation<TileStore>> iter = list.listIterator();
         while ( iter.hasNext() ) {
             ResourceLocation<TileStore> loc = iter.next();
@@ -58,7 +57,7 @@ public class TileStoreManager extends DefaultResourceManager<TileStore> {
                 iter.remove();
             }
         }
-        super.read( list, workspace );
+        super.read( list );
     }
 
 }

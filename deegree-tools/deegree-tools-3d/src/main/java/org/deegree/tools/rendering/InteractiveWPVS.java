@@ -937,7 +937,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             String id = line.getOptionValue( OPT_WPVS_DB_ID );
             ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( id, dbURL, user,
                                                                                                      pass );
-            workspace.addExtraResource( loc );
+            workspace.getLocationHandler().addExtraResource( loc );
         }
 
         File dsDir = new File( baseDir, "/datasources/" );

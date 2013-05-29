@@ -104,7 +104,9 @@ public abstract class AbstractISOTest {
         jdbcPass = TestProperties.getProperty( "iso_store_pass" );
 
         workspace = new DefaultWorkspace( new File( "/tmp/" ) );
-        workspace.addExtraResource( getSyntheticProvider( "iso_pg_set_up_tables", jdbcURL, jdbcUser, jdbcPass ) );
+        workspace.startup();
+        workspace.getLocationHandler().addExtraResource( getSyntheticProvider( "iso_pg_set_up_tables", jdbcURL,
+                                                                               jdbcUser, jdbcPass ) );
         workspace.initAll();
         ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "iso_pg_set_up_tables" );
 

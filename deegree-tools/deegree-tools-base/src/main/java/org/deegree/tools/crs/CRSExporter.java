@@ -145,7 +145,7 @@ public class CRSExporter extends CRSExporterBase {
                 db_id = "epsg_db_id";
                 ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( db_id, con,
                                                                                                          user, pass );
-                workspace.addExtraResource( loc );
+                workspace.getLocationHandler().addExtraResource( loc );
                 workspace.initAll();
                 connProvider = workspace.getResource( ConnectionProviderProvider.class, db_id );
             } else {

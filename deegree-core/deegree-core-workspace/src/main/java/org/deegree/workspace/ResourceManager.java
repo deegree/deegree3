@@ -55,11 +55,8 @@ public interface ResourceManager<T extends Resource> {
 
     /**
      * Called during initialization to make the manager find its resources.
-     * 
-     * @param workspace
-     *            never <code>null</code>
      */
-    void find( Workspace workspace );
+    void find();
 
     /**
      * @return the manager's metadata, never <code>null</code>
@@ -89,11 +86,9 @@ public interface ResourceManager<T extends Resource> {
      * 
      * @param location
      *            never <code>null</code>
-     * @param workspace
-     *            never <code>null</code>
      * @return metadata for the new resource, never <code>null</code>
      */
-    ResourceMetadata<T> add( ResourceLocation<T> location, Workspace workspace );
+    ResourceMetadata<T> add( ResourceLocation<T> location );
 
     /**
      * Returns a list of available resource providers after find has been called.

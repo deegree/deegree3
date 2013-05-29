@@ -39,13 +39,16 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceLocation;
 
 /**
  * JSF backing bean for views of type "Create new XYZ resource".
@@ -68,10 +71,12 @@ public abstract class AbstractCreateResourceBean {
 
     private final transient ResourceManagerMetadata metadata;
 
+    private Workspace workspace;
+
     public AbstractCreateResourceBean( Class<? extends ResourceManager<?>> resourceMgrClass ) {
-        Workspace ws = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        ResourceManager<?> mgr = (ResourceManager<?>) ws.getResourceManager( resourceMgrClass );
-        metadata = ResourceManagerMetadata.getMetadata( mgr, ws );
+        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        ResourceManager<?> mgr = (ResourceManager<?>) workspace.getResourceManager( resourceMgrClass );
+        metadata = ResourceManagerMetadata.getMetadata( mgr, workspace );
         if ( !getTypes().isEmpty() ) {
             type = getTypes().get( 0 );
             changeType( null );
@@ -124,8 +129,12 @@ public abstract class AbstractCreateResourceBean {
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         URL templateURL = md.getExamples().get( configTemplate ).getContentLocation();
         try {
-            rs = metadata.getManager().createResource( id, templateURL.openStream() );
-            Config c = new Config( rs, metadata.getManager(), getOutcome(), true );
+            DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( provider.getClass(), id );
+            ResourceLocation<?> loc = new DefaultResourceLocation( null, ident );
+            workspace.add( loc );
+            ResourceMetadata<?> rmd = workspace.getResourceMetadata( ident.getProvider(), ident.getId() );
+            Config c = new Config( rmd, metadata.getManager(), getOutcome(), true );
+            c.setTemplate( templateURL );
             return c.edit();
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );

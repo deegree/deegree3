@@ -135,7 +135,8 @@ public class PostgreSQLImporter {
             Workspace workspace = new DefaultWorkspace( new File( "nonexistant" ) );
             ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( "style", url,
                                                                                                      user, pass );
-            workspace.addExtraResource( loc );
+            workspace.startup();
+            workspace.getLocationHandler().addExtraResource( loc );
             workspace.initAll();
 
             if ( style.isSimple() ) {

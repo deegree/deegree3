@@ -34,8 +34,8 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.AbstractCreateResourceBean;
+import org.deegree.db.ConnectionProviderManager;
 
 /**
  * JSF backing bean for "Create new database connection" view.
@@ -49,19 +49,19 @@ import org.deegree.console.AbstractCreateResourceBean;
 public class CreateSqlConnectionBean extends AbstractCreateResourceBean {
 
     public CreateSqlConnectionBean() {
-        super( JDBCParamsManager.class );
+        super( ConnectionProviderManager.class );
     }
 
     @Override
     protected String getOutcome() {
         return "/console/connection/sql/index";
     }
-    
+
     @Override
     public String create() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sMap = ctx.getSessionMap();
-        sMap.put("newConfigId", getId());
+        sMap.put( "newConfigId", getId() );
         return "/console/connection/sql/jdbcparams";
     }
 }

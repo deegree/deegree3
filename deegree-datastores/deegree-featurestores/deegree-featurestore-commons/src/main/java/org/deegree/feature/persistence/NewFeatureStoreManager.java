@@ -85,6 +85,7 @@ public class NewFeatureStoreManager extends DefaultResourceManager<FeatureStore>
         } catch ( IOException e ) {
             LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
         }
+        super.startup( workspace );
     }
 
     public BBoxCache getBBoxCache() {

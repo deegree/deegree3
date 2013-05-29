@@ -31,7 +31,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.NewFeatureStoreManager;
 
 /**
  * JSF backing bean for "Create new feature store" view.
@@ -45,7 +45,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
 public class CreateFeatureStoreBean extends AbstractCreateResourceBean {
 
     public CreateFeatureStoreBean() {
-        super( FeatureStoreManager.class );
+        super( NewFeatureStoreManager.class );
     }
 
     @Override

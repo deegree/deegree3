@@ -36,16 +36,9 @@
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.apache.commons.io.FileUtils.copyURLToFile;
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.deegree.commons.xml.XMLAdapter.DEFAULT_URL;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.URL;
 
 import javax.faces.application.FacesMessage;
@@ -53,15 +46,15 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.console.workspace.WorkspaceBean;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -77,8 +70,6 @@ public class Config implements Comparable<Config> {
 
     private static final Logger LOG = getLogger( Config.class );
 
-    protected File location;
-
     protected String id;
 
     private URL schemaURL;
@@ -93,27 +84,19 @@ public class Config implements Comparable<Config> {
 
     protected ResourceManager<?> resourceManager;
 
+    private ResourceMetadata<?> metadata;
 
-    public Config( File location, URL schemaURL, URL template, String resourceOutcome ) {
-        this.location = location;
-        this.schemaURL = schemaURL;
-        this.template = template;
-        this.resourceOutcome = resourceOutcome;
-        if ( schemaURL != null ) {
-            try {
-                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
-            } catch ( IOException e ) {
-                LOG.warn( "Schema not available: {}", schemaURL );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
+    protected Workspace workspace;
 
-    public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome, boolean autoActivate ) {
+    public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
+                   boolean autoActivate ) {
+        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        this.workspace = workspace;
         this.id = metadata.getIdentifier().getId();
+        this.metadata = metadata;
         this.resourceManager = resourceManager;
         this.resourceOutcome = resourceOutcome;
-        if(metadata.getProvider() instanceof AbstractResourceProvider<?>){
+        if ( metadata.getProvider() instanceof AbstractResourceProvider<?> ) {
             schemaURL = ( (AbstractResourceProvider<?>) metadata.getProvider() ).getSchema();
         }
         if ( schemaURL != null ) {
@@ -128,50 +111,42 @@ public class Config implements Comparable<Config> {
 
     public void activate() {
         try {
-            resourceManager.activate( id );
-        } catch ( Throwable t ) {
+            workspace.getLocationHandler().activate( metadata.getLocation() );
+            workspace.prepare( metadata.getIdentifier() );
+            workspace.init( metadata.getIdentifier(), null );
+        } catch ( Exception t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        state = resourceManager.getState( id );
         WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
         ws.setModified();
-        if ( state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
     }
 
     public void deactivate() {
         try {
-            resourceManager.deactivate( id );
+            workspace.destroy( metadata.getIdentifier() );
+            workspace.getLocationHandler().deactivate( metadata.getLocation() );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
                                                 null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        state = resourceManager.getState( id );
         WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
         ws.setModified();
-        if ( state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
     }
 
     public String edit()
                             throws IOException {
-        if ( !location.exists() ) {
-            copyURLToFile( template, location );
+        try {
+            content = IOUtils.toString( metadata.getLocation().getAsStream() );
+        } catch ( Exception e ) {
+            content = IOUtils.toString( template );
         }
-        this.content = readFileToString( location, "UTF-8" );
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&id=" ).append( id );
-        sb.append( "&fileName=" ).append( location );
+        sb.append( "&fileName=" ).append( metadata.getIdentifier() );
         sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
         sb.append( "&resourceManagerClass=" ).append( getResourceManagerClass() );
         sb.append( "&nextView=" ).append( resourceOutcome );
@@ -180,7 +155,7 @@ public class Config implements Comparable<Config> {
 
     public void delete() {
         try {
-            resourceManager.deleteResource( id );
+            workspace.getLocationHandler().delete( metadata.getLocation() );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
                                                 null );
@@ -189,16 +164,14 @@ public class Config implements Comparable<Config> {
     }
 
     public void showErrors() {
-        ResourceState<?> state = resourceManager.getState( id );
+        String msg = "Initialization of resource with id '" + id + "' failed:";
 
-        String msg = "Initialization of resource with id '" + id + "' failed";
-
-        if ( state.getLastException() != null ) {
-            msg += ": " + state.getLastException().getMessage();
-        } else {
-            msg += ".";
+        for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
+            msg += error;
         }
+
         msg += " (The application server log may contain additional information.)";
+
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }
@@ -206,37 +179,29 @@ public class Config implements Comparable<Config> {
     public String save() {
 
         try {
-            XMLAdapter adapter = new XMLAdapter( new StringReader( content ), DEFAULT_URL );
-            File location = getLocation();
-            OutputStream os = new FileOutputStream( location );
-            adapter.getRootElement().serialize( os );
-            os.close();
+            ResourceLocation<?> loc = new IncorporealResourceLocation( content.getBytes(), metadata.getIdentifier() );
+
+            workspace.add( loc );
+            workspace.prepare( loc.getIdentifier() );
+            workspace.init( loc.getIdentifier(), null );
+
+            workspace.getLocationHandler().persist( loc );
+
             content = null;
-            if ( resourceManager != null ) {
-                if ( state.getType() == StateType.deactivated ) {
-                    resourceManager.activate( id );
-                } else {
-                    resourceManager.deactivate( id );
-                    resourceManager.activate( id );
-                }
-            }
-        } catch ( Throwable t ) {
-            if ( resourceManager != null ) {
-                state = resourceManager.getState( id );
-            }
-            String msg = "Error adapting changes: " + t.getMessage();
-            if ( state.getLastException() != null ) {
-                msg = state.getLastException().getMessage();
+        } catch ( Exception e ) {
+            String msg = "Error adapting changes: " + e.getMessage();
+            for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
+                msg += error;
             }
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return resourceOutcome;
         }
-        if ( resourceManager != null ) {
-            state = resourceManager.getState( id );
-        }
-        if ( state != null && state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
+        if ( !workspace.getErrorHandler().getErrors( metadata.getIdentifier() ).isEmpty() ) {
+            String msg = "";
+            for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
+                msg += error;
+            }
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
@@ -250,14 +215,6 @@ public class Config implements Comparable<Config> {
 
     public int compareTo( Config o ) {
         return id.compareTo( o.id );
-    }
-
-    public File getLocation() {
-        return location;
-    }
-
-    public void setLocation( File location ) {
-        this.location = location;
     }
 
     public String getId() {
@@ -315,15 +272,12 @@ public class Config implements Comparable<Config> {
         this.schemaURL = schemaURL;
     }
 
-    public ResourceManager getResourceManager() {
+    public ResourceManager<?> getResourceManager() {
         return resourceManager;
     }
 
-    public void setResourceManager( ResourceManager resourceManager ) {
+    public void setResourceManager( ResourceManager<?> resourceManager ) {
         this.resourceManager = resourceManager;
     }
 
-    public void setState( ResourceState<?> state ) {
-        this.state = state;
-    }
 }

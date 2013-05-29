@@ -207,7 +207,7 @@ public class ModelGeneralizor {
             ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( id, line.getOptionValue( DB_HOST ),
                                                                              line.getOptionValue( OPT_DB_USER ),
                                                                              line.getOptionValue( OPT_DB_PASS ) );
-            workspace.getNewWorkspace().addExtraResource( loc );
+            workspace.getNewWorkspace().getLocationHandler().addExtraResource( loc );
         }
 
         return ModelBackend.getInstance( id, null );

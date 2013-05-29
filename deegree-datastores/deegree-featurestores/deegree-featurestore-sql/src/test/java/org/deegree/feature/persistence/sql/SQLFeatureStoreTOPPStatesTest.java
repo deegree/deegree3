@@ -185,11 +185,13 @@ public class SQLFeatureStoreTOPPStatesTest {
         File dir = new File( url.toURI() );
         ws = new DefaultWorkspace( dir );
 
+        ws.startup();
+
         ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( "deegree-test", settings.getUrl(),
                                                                          settings.getUser(), settings.getPass() );
-        ws.addExtraResource( loc );
+        ws.getLocationHandler().addExtraResource( loc );
         loc = getSyntheticProvider( "admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
-        ws.addExtraResource( loc );
+        ws.getLocationHandler().addExtraResource( loc );
         ws.startup();
         prepared = ws.prepare();
     }

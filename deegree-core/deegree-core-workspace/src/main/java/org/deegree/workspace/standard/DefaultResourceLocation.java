@@ -161,4 +161,8 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         return null;
     }
 
+    public File getFile() {
+        return file;
+    }
+
 }

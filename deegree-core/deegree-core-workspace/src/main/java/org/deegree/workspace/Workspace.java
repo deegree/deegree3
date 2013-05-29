@@ -98,15 +98,6 @@ public interface Workspace {
     PreparedResources prepare();
 
     /**
-     * Adds a single extra resource. Can be used after startup to include the new resource in the initialization
-     * process.
-     * 
-     * @param location
-     *            never <code>null</code>
-     */
-    void addExtraResource( ResourceLocation<? extends Resource> location );
-
-    /**
      * Retrieves a single resource metadata.
      * 
      * @param providerClass
@@ -167,15 +158,6 @@ public interface Workspace {
     <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass );
 
     /**
-     * Can be used to obtain a list of natural resource locations for a specific resource manager.
-     * 
-     * @param metadata
-     *            never <code>null</code>
-     * @return the locations, never <code>null</code>
-     */
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
-
-    /**
      * Can be used to obtain a list of resource ids for a specific resource type.
      * 
      * @param providerClass
@@ -203,5 +185,12 @@ public interface Workspace {
      * @return null, if no such initializable has been loaded
      */
     <T extends Initializable> T getInitializable( Class<T> className );
+
+    /**
+     * Returns a location handler that can be used to persist and query for resource locations.
+     * 
+     * @return never <code>null</code>
+     */
+    LocationHandler getLocationHandler();
 
 }
