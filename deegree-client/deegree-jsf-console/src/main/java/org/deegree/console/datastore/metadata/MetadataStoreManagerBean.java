@@ -66,4 +66,10 @@ public class MetadataStoreManagerBean extends AbstractResourceManagerBean<Metada
         Collections.sort( configs );
         return configs;
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/datastore/metadata/index";
+    }
+
 }

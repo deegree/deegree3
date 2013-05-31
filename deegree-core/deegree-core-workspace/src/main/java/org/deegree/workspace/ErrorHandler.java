@@ -83,6 +83,10 @@ public class ErrorHandler {
         errors.clear();
     }
 
+    public void clear( ResourceIdentifier<? extends Resource> id ) {
+        errors.remove( id );
+    }
+
     public boolean hasErrors() {
         return !errors.isEmpty();
     }

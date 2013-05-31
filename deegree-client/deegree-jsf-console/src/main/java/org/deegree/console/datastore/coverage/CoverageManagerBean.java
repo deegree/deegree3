@@ -51,4 +51,10 @@ public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageMan
     public CoverageManagerBean() {
         super( CoverageManager.class );
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/datastore/coverage/index";
+    }
+
 }

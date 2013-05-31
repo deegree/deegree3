@@ -211,6 +211,7 @@ public class DefaultWorkspace implements Workspace {
         states = null;
         locationHandler = null;
         startedUp = false;
+        errors.clear();
     }
 
     private void initClassloader() {
@@ -503,6 +504,7 @@ public class DefaultWorkspace implements Workspace {
         }
         states.setState( id, Scanned );
         resources.remove( id );
+        errors.clear( id );
     }
 
     @Override

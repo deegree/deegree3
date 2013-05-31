@@ -52,4 +52,5 @@ public class CreateCoverageBean extends AbstractCreateResourceBean {
     protected String getOutcome() {
         return "/console/datastore/coverage/index";
     }
+
 }
