@@ -71,7 +71,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
@@ -153,7 +153,7 @@ public class SQLFeatureStoreTOPPStatesTest {
         ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "deegree-test" ),
                  prepared );
         createTables();
-        fs = (SQLFeatureStore) ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class,
+        fs = (SQLFeatureStore) ws.init( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
                                                                                      "topp_states" ), prepared );
 
         populateStore();

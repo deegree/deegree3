@@ -30,7 +30,7 @@ package org.deegree.layer.persistence.feature;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayers;
 import org.deegree.workspace.ResourceBuilder;
@@ -73,7 +73,7 @@ public class FeatureLayerStoreBuilder implements ResourceBuilder<LayerStore> {
             LOG.debug( "Creating configured feature layers only." );
 
             String id = config.getFeatureStoreId();
-            FeatureStore store = workspace.getResource( NewFeatureStoreProvider.class, id );
+            FeatureStore store = workspace.getResource( FeatureStoreProvider.class, id );
             if ( store == null ) {
                 throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
                                                  + " is not available." );

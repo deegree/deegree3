@@ -55,7 +55,7 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
@@ -100,7 +100,7 @@ public class WfsFeatureStoreManager {
 
         if ( ids.isEmpty() ) {
             LOG.debug( "Feature store ids not configured. Adding all active feature stores." );
-            List<ResourceIdentifier<FeatureStore>> stores = workspace.getResourcesOfType( NewFeatureStoreProvider.class );
+            List<ResourceIdentifier<FeatureStore>> stores = workspace.getResourcesOfType( FeatureStoreProvider.class );
             for ( ResourceIdentifier<FeatureStore> id : stores ) {
                 FeatureStore store = workspace.getResource( id.getProvider(), id.getId() );
                 if ( store != null ) {
@@ -111,7 +111,7 @@ public class WfsFeatureStoreManager {
         } else {
             LOG.debug( "Adding configured feature stores." );
             for ( String id : ids ) {
-                FeatureStore store = workspace.getResource( NewFeatureStoreProvider.class, id );
+                FeatureStore store = workspace.getResource( FeatureStoreProvider.class, id );
                 if ( store == null ) {
                     String msg = "Cannot add feature store '" + id + "': no such feature store has been configured.";
                     throw new ResourceInitException( msg );

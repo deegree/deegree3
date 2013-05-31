@@ -44,18 +44,18 @@ import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
-import org.deegree.feature.persistence.NewFeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
-public class FeatureStoreManagerBean extends AbstractResourceManagerBean<NewFeatureStoreManager> implements
+public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements
                                                                                                 Serializable {
 
     private static final long serialVersionUID = -7258840439551611498L;
 
     public FeatureStoreManagerBean() {
-        super( NewFeatureStoreManager.class );
+        super( FeatureStoreManager.class );
     }
 
     @Override

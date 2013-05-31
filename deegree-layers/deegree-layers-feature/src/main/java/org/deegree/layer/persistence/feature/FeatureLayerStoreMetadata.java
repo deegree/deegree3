@@ -30,7 +30,7 @@ package org.deegree.layer.persistence.feature;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayerType;
@@ -69,14 +69,14 @@ public class FeatureLayerStoreMetadata extends AbstractResourceMetadata<LayerSto
             if ( lays.getAutoLayers() != null ) {
                 String fid = lays.getAutoLayers().getFeatureStoreId();
                 if ( fid != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, fid ) );
+                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class, fid ) );
                 }
                 String sid = lays.getAutoLayers().getStyleStoreId();
                 if ( sid != null ) {
                     dependencies.add( new DefaultResourceIdentifier<StyleStore>( StyleStoreProvider.class, sid ) );
                 }
             } else {
-                dependencies.add( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class,
+                dependencies.add( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
                                                                                lays.getFeatureStoreId() ) );
                 for ( FeatureLayerType flt : lays.getFeatureLayer() ) {
                     dependencies.addAll( ConfigUtils.getStyleDeps( flt.getStyleRef() ) );

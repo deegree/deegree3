@@ -32,8 +32,8 @@ import java.util.List;
 
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreManager;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.OwsManager;
@@ -71,10 +71,10 @@ public class WfsMetadata extends AbstractResourceMetadata<OWS> {
             List<String> list = cfg.getFeatureStoreId();
             if ( list != null && !list.isEmpty() ) {
                 for ( String id : list ) {
-                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, id ) );
+                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class, id ) );
                 }
             } else {
-                NewFeatureStoreManager fmgr = workspace.getResourceManager( NewFeatureStoreManager.class );
+                FeatureStoreManager fmgr = workspace.getResourceManager( FeatureStoreManager.class );
                 for ( ResourceMetadata<FeatureStore> md : fmgr.getResourceMetadata() ) {
                     softDependencies.add( md.getIdentifier() );
                 }

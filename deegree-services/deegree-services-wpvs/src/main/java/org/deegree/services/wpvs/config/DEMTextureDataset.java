@@ -56,7 +56,7 @@ import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager;
@@ -297,7 +297,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
         // FeatureStore store = null;
         String featureStoreId = styledGeometryProvider.getFeatureStoreId();
 
-        FeatureStore store = workspace.getResource( NewFeatureStoreProvider.class, featureStoreId );
+        FeatureStore store = workspace.getResource( FeatureStoreProvider.class, featureStoreId );
 
         // String styleId = styledGeometryProvider.getStyleId();
         // Styl

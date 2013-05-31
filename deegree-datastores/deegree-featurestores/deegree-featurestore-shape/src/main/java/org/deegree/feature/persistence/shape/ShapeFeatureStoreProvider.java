@@ -38,20 +38,20 @@ package org.deegree.feature.persistence.shape;
 import java.net.URL;
 
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * {@link NewFeatureStoreProvider} for the {@link ShapeFeatureStore}.
+ * {@link FeatureStoreProvider} for the {@link ShapeFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ShapeFeatureStoreProvider extends NewFeatureStoreProvider {
+public class ShapeFeatureStoreProvider extends FeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
 

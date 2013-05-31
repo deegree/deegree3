@@ -1,10 +1,12 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,82 +33,59 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.io.IOException;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for creating and retrieving {@link FeatureStore} providers and instances.
+ * Responsible for finding feature store resources.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class FeatureStoreManager extends AbstractResourceManager<FeatureStore> {
+public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 
-    private static final Logger LOG = getLogger( FeatureStoreManager.class );
+    private static Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
 
     private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
 
     private BBoxPropertiesCache bboxCache;
 
-    private FeatureStoreManagerMetadata metadata;
-
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        metadata = new FeatureStoreManagerMetadata( workspace );
+    public FeatureStoreManager() {
+        super( new DefaultResourceManagerMetadata<FeatureStore>( FeatureStoreProvider.class, "feature stores",
+                                                                 "datasources/feature" ) );
     }
 
     @Override
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void startup( Workspace workspace ) {
         try {
-            File dir = new File( workspace.getLocation(), metadata.getPath() );
-            bboxCache = new BBoxPropertiesCache( new File( dir, BBOX_CACHE_FILE ) );
+            if ( workspace instanceof DefaultWorkspace ) {
+                File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
+                bboxCache = new BBoxPropertiesCache( new File( dir, BBOX_CACHE_FILE ) );
+            }
+            // else?
         } catch ( IOException e ) {
             LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
         }
-
-        // stores startup
         super.startup( workspace );
-    }
-
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { CRSManager.class };
-    }
-
-    static class FeatureStoreManagerMetadata extends DefaultResourceManagerMetadata<FeatureStore> {
-        FeatureStoreManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "feature stores", "datasources/feature/", FeatureStoreProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public ResourceManagerMetadata<FeatureStore> getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    public void shutdown() {
-        // workspace.getSubsystemManager( ConnectionManager.class ).deactivate( "LOCK_DB" );
     }
 
     public BBoxCache getBBoxCache() {

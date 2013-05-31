@@ -59,7 +59,7 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.tools.i18n.Messages;
@@ -149,7 +149,7 @@ public class FeatureTypesToLayerTree {
             DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
             ws.initAll();
             DefaultResourceIdentifier<FeatureStore> identifier = new DefaultResourceIdentifier<FeatureStore>(
-                                                                                                              NewFeatureStoreProvider.class,
+                                                                                                              FeatureStoreProvider.class,
                                                                                                               "unknown" );
             ws.getNewWorkspace().add( new DefaultResourceLocation<FeatureStore>( new File( storeFile ), identifier ) );
             ws.getNewWorkspace().prepare( identifier );

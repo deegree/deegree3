@@ -73,7 +73,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.stream.FeatureInputStream;
@@ -203,13 +203,13 @@ public class SQLFeatureStoreAIXMTest {
         } finally {
             adminConn.close();
         }
-        fs = ws.init( new DefaultResourceIdentifier<FeatureStore>( NewFeatureStoreProvider.class, "aixm" ), prepared );
+        fs = ws.init( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class, "aixm" ), prepared );
     }
 
     private void createTables()
                             throws Exception {
         // create tables
-        FeatureStore fs = ws.getResource( NewFeatureStoreProvider.class, "aixm" );
+        FeatureStore fs = ws.getResource( FeatureStoreProvider.class, "aixm" );
         String[] ddl = DDLCreator.newInstance( (MappedAppSchema) fs.getSchema(), dialect ).getDDL();
 
         ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );

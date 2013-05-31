@@ -58,7 +58,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -186,7 +186,7 @@ public class FeatureStoreLoader {
             DeegreeWorkspace ws = DeegreeWorkspace.getInstance( workspace, new File( workspace ) );
             ws.initAll();
 
-            FeatureStore fs = ws.getNewWorkspace().getResource( NewFeatureStoreProvider.class, fsConfigId );
+            FeatureStore fs = ws.getNewWorkspace().getResource( FeatureStoreProvider.class, fsConfigId );
 
             switch ( action ) {
             case insert:

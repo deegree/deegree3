@@ -1,10 +1,12 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2012 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,25 +33,26 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * TODO add class documentation here
  * 
- * @see FeatureStore
- * @see FeatureStoreManager
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @author last edited by: $Author: stranger $
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public interface FeatureStoreProvider extends ExtendedResourceProvider<FeatureStore> {
+public abstract class FeatureStoreProvider extends AbstractResourceProvider<FeatureStore> {
 
-    // specializes type parameter
+    // marker class to specialize type parameter
 
 }

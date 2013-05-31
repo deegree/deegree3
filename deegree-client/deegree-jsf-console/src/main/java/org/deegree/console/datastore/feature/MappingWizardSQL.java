@@ -37,7 +37,6 @@ package org.deegree.console.datastore.feature;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -56,12 +55,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -72,13 +68,13 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
-import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,7 +274,7 @@ public class MappingWizardSQL {
 
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+            Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
 
             CRSRef storageCrs = CRSManager.getCRSRef( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
@@ -306,7 +302,7 @@ public class MappingWizardSQL {
 
             // let the resource manager do the dirty work
             try {
-                FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
+                FeatureStoreManager fsMgr = ws.getResourceManager( FeatureStoreManager.class );
 //                this.resourceState = fsMgr.createResource( getFeatureStoreId(), new FileInputStream( tmpConfigFile ) );
 //                Config c = new Config( this.resourceState, fsMgr, "/console/featurestore/sql/wizard4", false );
 //                return c.edit();
@@ -328,8 +324,8 @@ public class MappingWizardSQL {
 
     public String createTables() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
+        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
+        FeatureStoreManager fsMgr = ws.getResourceManager( FeatureStoreManager.class );
 //        resourceState = fsMgr.activate( resourceState.getId() );
 //        SQLFeatureStore store = (SQLFeatureStore) resourceState.getResource();
 //        String[] createStmts = DDLCreator.newInstance( store.getSchema(), store.getDialect() ).getDDL();
@@ -359,9 +355,9 @@ public class MappingWizardSQL {
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             WorkspaceBean workspaceBean = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-            DeegreeWorkspace ws = workspaceBean.getActiveWorkspace();
-            FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
-            fsMgr.activate( getFeatureStoreId() );
+            Workspace ws = workspaceBean.getActiveWorkspace().getNewWorkspace();
+            FeatureStoreManager fsMgr = ws.getResourceManager( FeatureStoreManager.class );
+//            fsMgr.activate( getFeatureStoreId() );
             workspaceBean.setModified();
         } catch ( Throwable t ) {
             t.printStackTrace();

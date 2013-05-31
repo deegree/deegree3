@@ -56,7 +56,7 @@ import org.deegree.workspace.ResourceManager;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
@@ -78,7 +78,7 @@ public class FeatureStoreConfig extends Config {
     }
 
     public boolean getSql() {
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         return fs != null && fs instanceof SQLFeatureStore;
     }
 
@@ -90,7 +90,7 @@ public class FeatureStoreConfig extends Config {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return "/console/featurestore/buttons";
         }
-        SQLFeatureStore fs = (SQLFeatureStore) getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class,
+        SQLFeatureStore fs = (SQLFeatureStore) getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class,
                                                                                              getId() );
         String connId = fs.getConnId();
         String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
@@ -107,7 +107,7 @@ public class FeatureStoreConfig extends Config {
 
     public String openLoader()
                             throws Exception {
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         if ( fs == null ) {
             throw new Exception( "No feature store with id '" + getId() + "' known / active." );
         }
@@ -119,7 +119,7 @@ public class FeatureStoreConfig extends Config {
 
     public List<NamespaceBinding> getNamespaces() {
         Set<NamespaceBinding> namespaces = new TreeSet<NamespaceBinding>();
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         if ( fs == null ) {
             return Collections.emptyList();
         }
@@ -133,14 +133,14 @@ public class FeatureStoreConfig extends Config {
     }
 
     public String getNumFtsTotal() {
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         return "" + numFtsTotal;
     }
 
     public String getNumFtsAbstract() {
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
@@ -148,7 +148,7 @@ public class FeatureStoreConfig extends Config {
     }
 
     public String getNumFtsConcrete() {
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
         return "" + numFtsConcrete;
@@ -157,7 +157,7 @@ public class FeatureStoreConfig extends Config {
     public String getFtInfo()
                             throws IOException {
         StringBuffer sb = new StringBuffer();
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 
@@ -184,7 +184,7 @@ public class FeatureStoreConfig extends Config {
     public String getFcInfo()
                             throws IOException {
         StringBuffer sb = new StringBuffer();
-        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( NewFeatureStoreProvider.class, getId() );
+        FeatureStore fs = getWorkspace().getNewWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 

@@ -45,7 +45,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.remotewfs.jaxb.RemoteWFSFeatureStoreConfig;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
@@ -54,14 +54,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link NewFeatureStoreProvider} for the {@link RemoteWFSFeatureStore}.
+ * {@link FeatureStoreProvider} for the {@link RemoteWFSFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteWFSFeatureStoreProvider extends NewFeatureStoreProvider {
+public class RemoteWFSFeatureStoreProvider extends FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( RemoteWFSFeatureStoreProvider.class );
 

@@ -85,7 +85,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.NewFeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
@@ -290,7 +290,7 @@ public class SQLFeatureStore implements FeatureStore {
         }
 
         // TODO make this configurable
-        NewFeatureStoreManager fsMgr = this.workspace.getResourceManager( NewFeatureStoreManager.class );
+        FeatureStoreManager fsMgr = this.workspace.getResourceManager( FeatureStoreManager.class );
         if ( fsMgr != null ) {
             this.bboxCache = fsMgr.getBBoxCache();
         } else {

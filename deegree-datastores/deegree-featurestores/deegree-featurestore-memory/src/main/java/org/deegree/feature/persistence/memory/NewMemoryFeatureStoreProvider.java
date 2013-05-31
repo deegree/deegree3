@@ -44,7 +44,7 @@ package org.deegree.feature.persistence.memory;
 import java.net.URL;
 
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -57,7 +57,7 @@ import org.deegree.workspace.Workspace;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public class NewMemoryFeatureStoreProvider extends NewFeatureStoreProvider {
+public class NewMemoryFeatureStoreProvider extends FeatureStoreProvider {
 
     static final URL CONFIG_SCHEMA = NewMemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/memory/3.0.0/memory.xsd" );
 

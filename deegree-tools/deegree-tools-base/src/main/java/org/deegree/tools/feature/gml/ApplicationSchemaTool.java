@@ -71,7 +71,7 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.NewFeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
@@ -372,7 +372,7 @@ public class ApplicationSchemaTool {
             try {
                 DefaultResourceLocation<FeatureStore> loc;
                 ResourceIdentifier<FeatureStore> id = new DefaultResourceIdentifier<FeatureStore>(
-                                                                                                   NewFeatureStoreProvider.class,
+                                                                                                   FeatureStoreProvider.class,
                                                                                                    "deegree_postgis" );
                 loc = new DefaultResourceLocation<FeatureStore>( new File( inputFileName ), id );
                 DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
