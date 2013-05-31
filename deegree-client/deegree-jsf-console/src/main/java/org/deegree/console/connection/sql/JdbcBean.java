@@ -21,7 +21,6 @@ import javax.faces.context.FacesContext;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceState;
 import org.deegree.console.Config;
-import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.workspace.ResourceLocation;

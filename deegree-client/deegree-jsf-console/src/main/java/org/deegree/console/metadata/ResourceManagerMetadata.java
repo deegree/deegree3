@@ -76,7 +76,7 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
     private List<String> providerNames = new ArrayList<String>();
 
     private Workspace workspace;
-
+    
     private ResourceManagerMetadata( ResourceManager<?> mgr, Workspace workspace ) {
         this.workspace = workspace;
         if ( mgr.getMetadata() != null ) {

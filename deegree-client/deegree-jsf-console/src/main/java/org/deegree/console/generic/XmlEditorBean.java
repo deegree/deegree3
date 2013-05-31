@@ -35,7 +35,6 @@
 package org.deegree.console.generic;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.deegree.commons.config.ResourceState.StateType.deactivated;
 import static org.deegree.commons.xml.XMLAdapter.DEFAULT_URL;
 
 import java.io.File;
@@ -49,18 +48,16 @@ import java.net.URL;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.Resource;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 @ManagedBean
 @ViewScoped
@@ -74,15 +71,13 @@ public class XmlEditorBean implements Serializable {
 
     private String schemaUrl;
 
-    private String resourceManagerClass;
-
     private String nextView;
 
     private String content;
 
-    private ResourceManager resourceManager;
-
     private String schemaAsText;
+
+    private String resourceProviderClass;
 
     public String getFileName() {
         return fileName;
@@ -123,25 +118,13 @@ public class XmlEditorBean implements Serializable {
         this.nextView = nextView;
     }
 
-    public String getResourceManagerClass() {
-        return resourceManagerClass;
-    }
-
-    public void setResourceManagerClass( String resourceManagerClass )
-                            throws ClassNotFoundException {
-        this.resourceManagerClass = resourceManagerClass;
-        if ( resourceManagerClass != null && !resourceManagerClass.isEmpty() ) {
-            DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-            @SuppressWarnings("unchecked")
-            Class<? extends ResourceManager> cl = (Class<? extends ResourceManager>) ws.getModuleClassLoader().loadClass( resourceManagerClass );
-            this.resourceManager = (ResourceManager) ws.getSubsystemManager( cl );
-        }
-    }
-
     public String getContent()
-                            throws IOException {
+                            throws IOException, ClassNotFoundException {
         if ( content == null ) {
-            content = FileUtils.readFileToString( new File( fileName ) );
+            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+            content = IOUtils.toString( md.getLocation().getAsStream() );
         }
         return content;
     }
@@ -174,42 +157,34 @@ public class XmlEditorBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return nextView;
         }
-        if ( resourceManager != null ) {
-            activate();
-        }
+        activate();
         return nextView;
     }
 
-    private void activate() {
-        ResourceState<? extends Resource> state = resourceManager.getState( id );
+    public String getResourceProviderClass() {
+        return resourceProviderClass;
+    }
 
+    public void setResourceProviderClass( String providerClass ) {
+        this.resourceProviderClass = providerClass;
+    }
+
+    private void activate() {
         try {
-            if ( state.getType() == deactivated ) {
-                resourceManager.activate( id );
-            } else {
-                resourceManager.deactivate( id );
-                resourceManager.activate( id );
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            String msg = "Error applying resource configuration changes: " + e.getMessage();
-            state = resourceManager.getState( id );
-            if ( state != null && state.getLastException() != null ) {
-                msg = state.getLastException().getMessage();
-            }
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
+            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+
+            workspace.destroy( md.getIdentifier() );
+
+            workspace.getLocationHandler().activate( md.getLocation() );
+            workspace.prepare( md.getIdentifier() );
+            workspace.init( md.getIdentifier(), null );
+        } catch ( Exception t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        state = resourceManager.getState( id );
-        if ( state != null && state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
-
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-        ws.setModified();
     }
+
 }

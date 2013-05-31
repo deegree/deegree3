@@ -111,4 +111,14 @@ public interface ResourceLocation<T extends Resource> {
      */
     ResourceLocation<T> persist( Workspace workspace );
 
+    /**
+     * Deactivates this resource location.
+     */
+    void deactivate();
+    
+    /**
+     * Activates this resource location.
+     */
+    void activate();
+    
 }

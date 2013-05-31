@@ -88,7 +88,11 @@ public class ResourceStates {
          * The resource is deactivated, and will not be started up automatically when initializing the
          * workspace.
          */
-        Deactivated
+        Deactivated,
+        /**
+         * Scanning, preparing, building or initializing failed with an error.
+         */
+        Error
     }
 
 }

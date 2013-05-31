@@ -27,6 +27,9 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
+import static org.deegree.workspace.ResourceStates.ResourceState.Deactivated;
+import static org.deegree.workspace.ResourceStates.ResourceState.Scanned;
+
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
@@ -39,10 +42,13 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.workspace.LocationHandler;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.ResourceStates;
+import org.deegree.workspace.ResourceStates.ResourceState;
 
 /**
  * Default implementation of a location handler based on a standard workspace directory.
@@ -59,6 +65,8 @@ public class DefaultLocationHandler implements LocationHandler {
 
     private Map<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>> managers;
 
+    private ResourceStates states;
+
     /**
      * @param directory
      *            the workspace directory, may not be <code>null</code>
@@ -66,9 +74,11 @@ public class DefaultLocationHandler implements LocationHandler {
      *            the resource managers, may not be <code>null</code>
      */
     public DefaultLocationHandler( File directory,
-                                   Map<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>> managers ) {
+                                   Map<Class<? extends ResourceProvider<? extends Resource>>, ResourceManager<? extends Resource>> managers,
+                                   ResourceStates states ) {
         this.directory = directory;
         this.managers = managers;
+        this.states = states;
     }
 
     @Override
@@ -84,13 +94,23 @@ public class DefaultLocationHandler implements LocationHandler {
             return list;
         }
         URI base = dir.getAbsoluteFile().toURI();
-        for ( File f : FileUtils.listFiles( dir, new String[] { "xml" }, true ) ) {
+        for ( File f : FileUtils.listFiles( dir, new String[] { "xml", "ignore" }, true ) ) {
             URI uri = f.getAbsoluteFile().toURI();
             uri = base.relativize( uri );
             String p = uri.getPath();
-            p = p.substring( 0, p.length() - 4 );
-            list.add( new DefaultResourceLocation<T>( f, new DefaultResourceIdentifier<T>( metadata.getProviderClass(),
-                                                                                           p ) ) );
+            ResourceState state = null;
+            if ( p.endsWith( "xml" ) ) {
+                p = p.substring( 0, p.length() - 4 );
+            } else {
+                p = p.substring( 0, p.length() - 7 );
+                state = ResourceState.Deactivated;
+            }
+            DefaultResourceIdentifier<T> identifier = new DefaultResourceIdentifier<T>( metadata.getProviderClass(), p );
+            if ( state != null ) {
+                states.setState( identifier, state );
+            }
+            list.add( new DefaultResourceLocation<T>( f, identifier ) );
+
         }
         return list;
     }
@@ -128,20 +148,14 @@ public class DefaultLocationHandler implements LocationHandler {
 
     @Override
     public <T extends Resource> void activate( ResourceLocation<T> location ) {
-        if ( location instanceof DefaultResourceLocation ) {
-            DefaultResourceLocation<T> loc = (DefaultResourceLocation<T>) location;
-            File file = new File( loc.getFile().getParentFile(), loc.getIdentifier().getId() + ".ignored" );
-            file.renameTo( loc.getFile() );
-        }
+        location.activate();
+        states.setState( location.getIdentifier(), Scanned );
     }
 
     @Override
     public <T extends Resource> void deactivate( ResourceLocation<T> location ) {
-        if ( location instanceof DefaultResourceLocation ) {
-            DefaultResourceLocation<T> loc = (DefaultResourceLocation<T>) location;
-            File file = new File( loc.getFile().getParentFile(), loc.getIdentifier().getId() + ".ignored" );
-            loc.getFile().renameTo( file );
-        }
+        location.deactivate();
+        states.setState( location.getIdentifier(), Deactivated );
     }
 
 }

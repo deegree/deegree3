@@ -42,6 +42,7 @@
 package org.deegree.workspace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,11 @@ public class ErrorHandler {
     }
 
     public List<String> getErrors( ResourceIdentifier<? extends Resource> id ) {
-        return errors.get( id );
+        List<String> list = errors.get( id );
+        if ( list == null ) {
+            return Collections.emptyList();
+        }
+        return list;
     }
 
     public void clear() {

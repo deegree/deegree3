@@ -165,4 +165,18 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         return file;
     }
 
+    @Override
+    public void deactivate() {
+        File f = new File( file.getParentFile(), identifier.getId() + ".ignore" );
+        file.renameTo( f );
+        file = f;
+    }
+
+    @Override
+    public void activate() {
+        File f = new File( file.getParentFile(), identifier.getId() + ".xml" );
+        file.renameTo( f );
+        file = f;
+    }
+
 }

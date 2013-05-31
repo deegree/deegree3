@@ -38,23 +38,22 @@ package org.deegree.console;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceStates.ResourceState;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceProvider;
-import org.deegree.workspace.standard.IncorporealResourceLocation;
+import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -74,15 +73,11 @@ public class Config implements Comparable<Config> {
 
     private URL schemaURL;
 
-    private String content;
-
     private String schemaAsText;
 
     private URL template;
 
     private String resourceOutcome;
-
-    protected ResourceManager<?> resourceManager;
 
     private ResourceMetadata<?> metadata;
 
@@ -91,10 +86,8 @@ public class Config implements Comparable<Config> {
     public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
                    boolean autoActivate ) {
         workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        this.workspace = workspace;
         this.id = metadata.getIdentifier().getId();
         this.metadata = metadata;
-        this.resourceManager = resourceManager;
         this.resourceOutcome = resourceOutcome;
         if ( metadata.getProvider() instanceof AbstractResourceProvider<?> ) {
             schemaURL = ( (AbstractResourceProvider<?>) metadata.getProvider() ).getSchema();
@@ -112,6 +105,7 @@ public class Config implements Comparable<Config> {
     public void activate() {
         try {
             workspace.getLocationHandler().activate( metadata.getLocation() );
+            workspace.add( metadata.getLocation() );
             workspace.prepare( metadata.getIdentifier() );
             workspace.init( metadata.getIdentifier(), null );
         } catch ( Exception t ) {
@@ -119,8 +113,6 @@ public class Config implements Comparable<Config> {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
-        ws.setModified();
     }
 
     public void deactivate() {
@@ -133,22 +125,21 @@ public class Config implements Comparable<Config> {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
-        ws.setModified();
     }
 
     public String edit()
                             throws IOException {
-        try {
-            content = IOUtils.toString( metadata.getLocation().getAsStream() );
-        } catch ( Exception e ) {
-            content = IOUtils.toString( template );
-        }
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&id=" ).append( id );
-        sb.append( "&fileName=" ).append( metadata.getIdentifier() );
+        File file = ( (DefaultResourceLocation<?>) metadata.getLocation() ).getFile();
+        if ( getState().equals( ResourceState.Deactivated.toString() ) ) {
+            file = new File( file.getParentFile(), id + ".ignore" );
+            sb.append( "&fileName=" ).append( file );
+        } else {
+            sb.append( "&fileName=" ).append( file );
+        }
         sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
-        sb.append( "&resourceManagerClass=" ).append( getResourceManagerClass() );
+        sb.append( "&resourceProviderClass=" ).append( metadata.getIdentifier().getProvider().getCanonicalName() );
         sb.append( "&nextView=" ).append( resourceOutcome );
         return sb.toString();
     }
@@ -174,43 +165,6 @@ public class Config implements Comparable<Config> {
 
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
-    }
-
-    public String save() {
-
-        try {
-            ResourceLocation<?> loc = new IncorporealResourceLocation( content.getBytes(), metadata.getIdentifier() );
-
-            workspace.add( loc );
-            workspace.prepare( loc.getIdentifier() );
-            workspace.init( loc.getIdentifier(), null );
-
-            workspace.getLocationHandler().persist( loc );
-
-            content = null;
-        } catch ( Exception e ) {
-            String msg = "Error adapting changes: " + e.getMessage();
-            for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
-                msg += error;
-            }
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return resourceOutcome;
-        }
-        if ( !workspace.getErrorHandler().getErrors( metadata.getIdentifier() ).isEmpty() ) {
-            String msg = "";
-            for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
-                msg += error;
-            }
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
-
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-        ws.setModified();
-
-        return resourceOutcome;
     }
 
     public int compareTo( Config o ) {
@@ -241,21 +195,6 @@ public class Config implements Comparable<Config> {
         this.template = template;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent( String content ) {
-        this.content = content;
-    }
-
-    public String getResourceManagerClass() {
-        if ( resourceManager == null ) {
-            return "";
-        }
-        return resourceManager.getClass().getCanonicalName();
-    }
-
     public String getResourceOutcome() {
         return resourceOutcome;
     }
@@ -272,12 +211,8 @@ public class Config implements Comparable<Config> {
         this.schemaURL = schemaURL;
     }
 
-    public ResourceManager<?> getResourceManager() {
-        return resourceManager;
-    }
-
-    public void setResourceManager( ResourceManager<?> resourceManager ) {
-        this.resourceManager = resourceManager;
+    public String getState() {
+        return workspace.getStates().getState( metadata.getIdentifier() ).toString();
     }
 
 }

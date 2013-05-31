@@ -49,8 +49,7 @@ import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
-public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements
-                                                                                                Serializable {
+public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements Serializable {
 
     private static final long serialVersionUID = -7258840439551611498L;
 
@@ -67,4 +66,5 @@ public class FeatureStoreManagerBean extends AbstractResourceManagerBean<Feature
         Collections.sort( configs );
         return configs;
     }
+
 }

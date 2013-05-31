@@ -43,6 +43,7 @@ package org.deegree.workspace.standard;
 
 import static org.deegree.workspace.ResourceStates.ResourceState.Built;
 import static org.deegree.workspace.ResourceStates.ResourceState.Deactivated;
+import static org.deegree.workspace.ResourceStates.ResourceState.Error;
 import static org.deegree.workspace.ResourceStates.ResourceState.Initialized;
 import static org.deegree.workspace.ResourceStates.ResourceState.Prepared;
 import static org.deegree.workspace.ResourceStates.ResourceState.Scanned;
@@ -124,6 +125,7 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public void initAll() {
         startup();
+        errors.clear();
         scan();
         PreparedResources prepared = prepare();
 
@@ -139,6 +141,7 @@ public class DefaultWorkspace implements Workspace {
         outer: for ( ResourceMetadata<? extends Resource> md : graph.toSortedList() ) {
             for ( ResourceIdentifier<? extends Resource> dep : md.getDependencies() ) {
                 if ( states.getState( dep ) != Initialized ) {
+                    states.setState( md.getIdentifier(), Error );
                     LOG.error( "Dependency {} for resource {} failed to initialize.", dep, md );
                     continue outer;
                 }
@@ -148,6 +151,7 @@ public class DefaultWorkspace implements Workspace {
                 Resource res = prepared.getBuilder( md.getIdentifier() ).build();
                 if ( res == null ) {
                     errors.registerError( md.getIdentifier(), "Unable to prepare." );
+                    states.setState( md.getIdentifier(), Error );
                     LOG.error( "Unable to build resource {}.", md.getIdentifier() );
                     continue;
                 }
@@ -157,6 +161,7 @@ public class DefaultWorkspace implements Workspace {
                 states.setState( md.getIdentifier(), Initialized );
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
+                states.setState( md.getIdentifier(), Error );
                 String msg = "Unable to build resource " + md.getIdentifier() + ": " + ex.getLocalizedMessage();
                 errors.registerError( md.getIdentifier(), msg );
                 LOG.error( msg );
@@ -300,7 +305,8 @@ public class DefaultWorkspace implements Workspace {
         initializables.clear();
         graph = new ResourceGraph();
         states = new ResourceStates();
-        locationHandler = new DefaultLocationHandler( directory, resourceManagers );
+        locationHandler = new DefaultLocationHandler( directory, resourceManagers, states );
+        errors.clear();
         initClassloader();
 
         Iterator<Initializable> it = ServiceLoader.load( Initializable.class, moduleClassLoader ).iterator();
@@ -330,6 +336,9 @@ public class DefaultWorkspace implements Workspace {
 
     @Override
     public <T extends Resource> T init( ResourceIdentifier<T> id, PreparedResources prepared ) {
+        if ( states.getState( id ) == Deactivated ) {
+            return null;
+        }
         if ( prepared == null ) {
             prepared = new PreparedResources( this );
         }
@@ -355,6 +364,7 @@ public class DefaultWorkspace implements Workspace {
             try {
                 Resource res = builder.build();
                 if ( res == null ) {
+                    states.setState( metadata.getIdentifier(), Error );
                     errors.registerError( metadata.getIdentifier(), "Unable to build resource." );
                     LOG.error( "Unable to build resource {}.", metadata.getIdentifier() );
                     throw new ResourceInitException( "Unable to build resource " + metadata.getIdentifier() + "." );
@@ -365,6 +375,7 @@ public class DefaultWorkspace implements Workspace {
                 states.setState( metadata.getIdentifier(), Initialized );
                 resources.put( res.getMetadata().getIdentifier(), res );
             } catch ( Exception ex ) {
+                states.setState( metadata.getIdentifier(), Error );
                 String msg = "Unable to build resource " + metadata.getIdentifier() + ": " + ex.getLocalizedMessage();
                 errors.registerError( metadata.getIdentifier(), msg );
                 LOG.error( msg );
@@ -385,8 +396,13 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "Preparing resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
         outer: for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
+            ResourceState state = states.getState( md.getIdentifier() );
+            if ( state == null || state == Deactivated ) {
+                continue outer;
+            }
+
             for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
-                ResourceState state = states.getState( id );
+                state = states.getState( id );
                 if ( state == null || state == Scanned || state == Deactivated ) {
                     continue outer;
                 }
@@ -396,6 +412,7 @@ public class DefaultWorkspace implements Workspace {
                 ResourceBuilder<? extends Resource> builder = md.prepare();
                 if ( builder == null ) {
                     LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
+                    states.setState( md.getIdentifier(), Error );
                     continue;
                 }
                 graph.insertNode( md );
@@ -422,18 +439,27 @@ public class DefaultWorkspace implements Workspace {
             Collection<? extends ResourceMetadata<? extends Resource>> mds = mgr.getResourceMetadata();
             for ( ResourceMetadata<? extends Resource> md : mds ) {
                 resourceMetadata.put( md.getIdentifier(), md );
-                states.setState( md.getIdentifier(), Scanned );
+                if ( states.getState( md.getIdentifier() ) != Deactivated ) {
+                    states.setState( md.getIdentifier(), Scanned );
+                }
             }
         }
     }
 
     @Override
     public <T extends Resource> ResourceBuilder<T> prepare( ResourceIdentifier<T> id ) {
+        if ( states.getState( id ) == Deactivated ) {
+            return null;
+        }
         LOG.info( "Preparing {}", id );
         ResourceMetadata<T> md = (ResourceMetadata) resourceMetadata.get( id );
         ResourceBuilder<T> builder = md.prepare();
-        graph.insertNode( md );
-        states.setState( id, Prepared );
+        if ( builder == null ) {
+            states.setState( id, Error );
+        } else {
+            graph.insertNode( md );
+            states.setState( id, Prepared );
+        }
         return builder;
     }
 
@@ -464,12 +490,17 @@ public class DefaultWorkspace implements Workspace {
     @Override
     public <T extends Resource> void destroy( ResourceIdentifier<T> id ) {
         ResourceNode<T> node = graph.getNode( id );
+        if ( node == null ) {
+            return;
+        }
         for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
             destroy( n.getMetadata().getIdentifier() );
         }
         T res = (T) resources.get( id );
-        LOG.info( "Shutting down {}.", id );
-        res.destroy();
+        if ( res != null ) {
+            LOG.info( "Shutting down {}.", id );
+            res.destroy();
+        }
         states.setState( id, Scanned );
         resources.remove( id );
     }

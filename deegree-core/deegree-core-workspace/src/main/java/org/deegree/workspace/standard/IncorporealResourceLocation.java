@@ -91,4 +91,14 @@ public class IncorporealResourceLocation<T extends Resource> extends DefaultReso
         return null;
     }
 
+    @Override
+    public void deactivate() {
+        // ignore
+    }
+
+    @Override
+    public void activate() {
+        // ignore
+    }
+
 }

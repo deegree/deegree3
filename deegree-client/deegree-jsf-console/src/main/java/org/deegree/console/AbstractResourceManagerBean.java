@@ -84,7 +84,7 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
         for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
-            configs.add( new Config( md, resourceManager, null, true ) );
+            configs.add( new Config( md, resourceManager, getStartView(), true ) );
         }
         Collections.sort( configs );
         return configs;
@@ -126,6 +126,10 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
+    }
+
+    public String getStartView() {
+        return null;
     }
 
 }
