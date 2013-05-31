@@ -524,7 +524,6 @@ public class WebFeatureService extends AbstractOWS {
         Version requestVersion = null;
         try {
             requestVersion = getVersion( kvpParamsUC.get( "VERSION" ) );
-
             String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
@@ -536,14 +535,14 @@ public class WebFeatureService extends AbstractOWS {
                 }
 
                 checkVersion( requestVersion );
+            }
 
-                // needed for CITE 1.1.0 compliance
-                if ( requestVersion.equals( VERSION_110 ) ) {
-                    String serviceAttr = KVPUtils.getRequired( kvpParamsUC, "SERVICE" );
-                    if ( !"WFS".equals( serviceAttr ) ) {
-                        throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
-                                                OWSException.INVALID_PARAMETER_VALUE, "service" );
-                    }
+            // needed for CITE 1.1.0 compliance
+            if ( requestVersion.equals( VERSION_110 ) ) {
+                String serviceAttr = KVPUtils.getRequired( kvpParamsUC, "SERVICE" );
+                if ( !"WFS".equals( serviceAttr ) ) {
+                    throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
+                                            OWSException.INVALID_PARAMETER_VALUE, "service" );
                 }
             }
 
@@ -794,7 +793,6 @@ public class WebFeatureService extends AbstractOWS {
 
     private WFSRequestType getRequestTypeByName( String requestName )
                             throws OWSException {
-        @SuppressWarnings("rawtypes")
         ImplementationMetadata<?> md = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
         WFSRequestType requestType = (WFSRequestType) md.getRequestTypeByName( requestName );
         if ( requestType == null ) {
