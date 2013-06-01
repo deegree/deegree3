@@ -43,10 +43,13 @@ package org.deegree.workspace.standard;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceIdentifier;
 
 /**
@@ -99,6 +102,15 @@ public class IncorporealResourceLocation<T extends Resource> extends DefaultReso
     @Override
     public void activate() {
         // ignore
+    }
+
+    @Override
+    public void setContent( InputStream in ) {
+        try {
+            bytes = IOUtils.toByteArray( in );
+        } catch ( IOException e ) {
+            throw new ResourceException( e.getLocalizedMessage(), e );
+        }
     }
 
 }

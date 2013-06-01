@@ -42,7 +42,6 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.workspace.LocationHandler;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
-import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceManagerMetadata;
@@ -129,7 +128,8 @@ public class DefaultLocationHandler implements LocationHandler {
     public <T extends Resource> ResourceLocation<T> persist( ResourceLocation<T> location ) {
         ResourceManager<?> mgr = managers.get( location.getIdentifier().getProvider() );
         File file = new File( directory, mgr.getMetadata().getWorkspacePath() );
-        file = new File( file, location.getIdentifier().getId() );
+        file = new File( file, location.getIdentifier().getId() + ".xml" );
+        file.getParentFile().mkdirs();
         try {
             FileUtils.copyInputStreamToFile( location.getAsStream(), file );
             return new DefaultResourceLocation<T>( file, location.getIdentifier() );

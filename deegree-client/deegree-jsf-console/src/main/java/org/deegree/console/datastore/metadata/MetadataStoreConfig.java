@@ -59,8 +59,6 @@ import org.deegree.workspace.ResourceMetadata;
 
 public class MetadataStoreConfig extends Config {
 
-    private String id;
-
     public MetadataStoreConfig( ResourceMetadata<?> state, ResourceManager<?> resourceManager ) {
         super( state, resourceManager, "/console/datastore/metadata/index", true );
     }
@@ -69,10 +67,6 @@ public class MetadataStoreConfig extends Config {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
         DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
         return ws;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public void updateId( ActionEvent evt ) {

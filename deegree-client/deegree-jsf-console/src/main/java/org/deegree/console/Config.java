@@ -38,7 +38,6 @@ package org.deegree.console;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -53,7 +52,6 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceStates.ResourceState;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceProvider;
-import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -109,6 +107,7 @@ public class Config implements Comparable<Config> {
             workspace.prepare( metadata.getIdentifier() );
             workspace.init( metadata.getIdentifier(), null );
         } catch ( Exception t ) {
+            t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
@@ -131,13 +130,6 @@ public class Config implements Comparable<Config> {
                             throws IOException {
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&id=" ).append( id );
-        File file = ( (DefaultResourceLocation<?>) metadata.getLocation() ).getFile();
-        if ( getState().equals( ResourceState.Deactivated.toString() ) ) {
-            file = new File( file.getParentFile(), id + ".ignore" );
-            sb.append( "&fileName=" ).append( file );
-        } else {
-            sb.append( "&fileName=" ).append( file );
-        }
         sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
         sb.append( "&resourceProviderClass=" ).append( metadata.getIdentifier().getProvider().getCanonicalName() );
         sb.append( "&nextView=" ).append( resourceOutcome );
@@ -212,7 +204,8 @@ public class Config implements Comparable<Config> {
     }
 
     public String getState() {
-        return workspace.getStates().getState( metadata.getIdentifier() ).toString();
+        ResourceState state = workspace.getStates().getState( metadata.getIdentifier() );
+        return state == null ? "Deactivated" : state.toString();
     }
 
 }

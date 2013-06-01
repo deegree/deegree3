@@ -35,14 +35,9 @@
 package org.deegree.console.generic;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.deegree.commons.xml.XMLAdapter.DEFAULT_URL;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.net.URL;
 
 import javax.faces.application.FacesMessage;
@@ -50,14 +45,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 @ManagedBean
 @ViewScoped
@@ -146,17 +137,6 @@ public class XmlEditorBean implements Serializable {
     }
 
     public String save() {
-        try {
-            XMLAdapter adapter = new XMLAdapter( new StringReader( content ), DEFAULT_URL );
-            OutputStream os = new FileOutputStream( fileName );
-            adapter.getRootElement().serialize( os );
-            os.close();
-        } catch ( Exception e ) {
-            String msg = "Error saving XML configuration file: " + e.getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return nextView;
-        }
         activate();
         return nextView;
     }
@@ -177,10 +157,14 @@ public class XmlEditorBean implements Serializable {
 
             workspace.destroy( md.getIdentifier() );
 
+            md.getLocation().setContent( IOUtils.toInputStream( content ) );
+            workspace.getLocationHandler().persist( md.getLocation() );
+
             workspace.getLocationHandler().activate( md.getLocation() );
             workspace.prepare( md.getIdentifier() );
             workspace.init( md.getIdentifier(), null );
         } catch ( Exception t ) {
+            t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;

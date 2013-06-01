@@ -103,22 +103,21 @@ public interface ResourceLocation<T extends Resource> {
     URL resolveToUrl( String path );
 
     /**
-     * Persists this resource location to a new workspace (or possibly the same one, useful eg. for in-memory resource
-     * locations).
-     * 
-     * @param workspace
-     * @return a new resource location object corresponding to the new location, never <code>null</code>
-     */
-    ResourceLocation<T> persist( Workspace workspace );
-
-    /**
      * Deactivates this resource location.
      */
     void deactivate();
-    
+
     /**
      * Activates this resource location.
      */
     void activate();
-    
+
+    /**
+     * Overwrites the resources' location with the content from the input stream.
+     * 
+     * @param in
+     *            may not be <code>null</code>
+     */
+    void setContent( InputStream in );
+
 }

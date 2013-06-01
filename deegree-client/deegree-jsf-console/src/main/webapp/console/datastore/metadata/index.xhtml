@@ -26,7 +26,7 @@
                       action="#{config.edit}" /></td>
                   <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
-                  <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='Initialized'}"
+                  <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='Error'}"
                       value="Show errors" action="#{config.showErrors}" /></td>
                   <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
                       value="#{labels.featureStores_info}" action="#{config.showInfo}" alt="#{config.id}" /></td>

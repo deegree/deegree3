@@ -44,17 +44,19 @@ package org.deegree.workspace.standard;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.Workspace;
 
 /**
  * File based resource location.
@@ -156,11 +158,6 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         return null;
     }
 
-    @Override
-    public ResourceLocation<T> persist( Workspace workspace ) {
-        return null;
-    }
-
     public File getFile() {
         return file;
     }
@@ -177,6 +174,16 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         File f = new File( file.getParentFile(), identifier.getId() + ".xml" );
         file.renameTo( f );
         file = f;
+    }
+
+    @Override
+    public void setContent( InputStream in ) {
+        try {
+            file.getParentFile().mkdirs();
+            FileUtils.copyInputStreamToFile( in, file );
+        } catch ( IOException e ) {
+            throw new ResourceException( e.getLocalizedMessage(), e );
+        }
     }
 
 }
