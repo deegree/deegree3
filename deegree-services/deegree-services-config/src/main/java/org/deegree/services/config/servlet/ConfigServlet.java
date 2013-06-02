@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.servlet;
 
+import static org.deegree.services.config.actions.Crs.checkCrs;
+import static org.deegree.services.config.actions.Crs.listCrs;
 import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.Invalidate.invalidate;
@@ -87,6 +89,8 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n" );
             data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
             data.append( "GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n" );
+            data.append( "GET /config/crs/list                                         - list available CRS definitions\n" );
+            data.append( "GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n" );
             data.append( "PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n" );
             data.append( "PUT /config/upload/path/file                                 - upload file into current workspace\n" );
             data.append( "PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>\n" );
@@ -134,6 +138,12 @@ public class ConfigServlet extends HttpServlet {
 
         if ( path.toLowerCase().startsWith( "/delete" ) ) {
             delete( path.substring( 7 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/crs/list" ) ) {
+            listCrs( resp );
+        } else if ( path.toLowerCase().startsWith( "/crs" ) ) {
+            checkCrs( path.substring( 4 ), resp );
         }
     }
 
