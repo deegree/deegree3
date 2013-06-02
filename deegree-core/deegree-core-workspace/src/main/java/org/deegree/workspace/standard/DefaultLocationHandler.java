@@ -131,7 +131,10 @@ public class DefaultLocationHandler implements LocationHandler {
         file = new File( file, location.getIdentifier().getId() + ".xml" );
         file.getParentFile().mkdirs();
         try {
-            FileUtils.copyInputStreamToFile( location.getAsStream(), file );
+            // copy to avoid persisting from same file
+            File tmp = File.createTempFile( "config", ".xml" );
+            FileUtils.copyInputStreamToFile( location.getAsStream(), tmp );
+            tmp.renameTo( file );
             return new DefaultResourceLocation<T>( file, location.getIdentifier() );
         } catch ( Exception e ) {
             throw new ResourceException( "Could not persist resource location: " + e.getLocalizedMessage(), e );

@@ -74,4 +74,5 @@ public class ServiceConfig extends Config {
         int index = sb.indexOf( "/console" );
         return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
     }
+
 }

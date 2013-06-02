@@ -49,6 +49,7 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 @ManagedBean
 @ViewScoped
@@ -87,6 +88,18 @@ public class XmlEditorBean implements Serializable {
     }
 
     public String getSchemaUrl() {
+        if ( schemaUrl == null ) {
+            try {
+                Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+                Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+                ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+                if ( md.getProvider() instanceof AbstractResourceProvider ) {
+                    setSchemaUrl( ( (AbstractResourceProvider) md.getProvider() ).getSchema().toExternalForm() );
+                }
+            } catch ( Exception e ) {
+                // ignore
+            }
+        }
         return schemaUrl;
     }
 

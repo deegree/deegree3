@@ -62,10 +62,6 @@ public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implem
 
     public ServicesBean() {
         super( OwsManager.class );
-//        Workspace ws = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-//        File wsRootDir = ws.getLocation();
-//        File mainLocation = new File( wsRootDir, "services/main.xml" );
-//        mainConfig = new Config( mainLocation, MAIN_SCHEMA_URL, MAIN_EXAMPLE_URL, "/console/webservices/index" );
     }
 
     public Config getMainConfig() {
