@@ -27,9 +27,12 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.proxy;
 
+import java.io.File;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.ProxyUtils;
 
 /**
@@ -42,6 +45,12 @@ import org.deegree.commons.utils.ProxyUtils;
 @ManagedBean
 @RequestScoped
 public class ProxyBean {
+
+    public ProxyConfig getProxyConfig() {
+        File file = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        file = new File( file, "proxy.xml" );
+        return new ProxyConfig( file.getAbsolutePath() );
+    }
 
     public String getNonftpProxyHosts() {
         return ProxyUtils.getFtpNonProxyHosts( true );
