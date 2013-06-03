@@ -115,9 +115,7 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     }
 
     protected void read( List<ResourceLocation<T>> list ) {
-        System.out.println(list);
         for ( ResourceLocation<T> loc : list ) {
-            System.out.println(loc.getIdentifier());
             try {
                 ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
                 if ( prov != null ) {
@@ -151,7 +149,6 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
 
     @Override
     public ResourceMetadata<T> add( ResourceLocation<T> location ) {
-        System.out.println("add: " + location.getIdentifier());
         read( Collections.singletonList( location ) );
         return metadataMap.get( location.getIdentifier() );
     }

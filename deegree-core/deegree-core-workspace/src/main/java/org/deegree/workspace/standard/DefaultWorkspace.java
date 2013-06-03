@@ -484,9 +484,7 @@ public class DefaultWorkspace implements Workspace {
     public <T extends Resource> void add( ResourceLocation<T> location ) {
         LOG.info( "Scanning {}", location.getIdentifier() );
         ResourceManager<T> mgr = (ResourceManager) resourceManagers.get( location.getIdentifier().getProvider() );
-        System.out.println(": " +mgr);
         ResourceMetadata<T> md = mgr.add( location );
-        System.out.println(": " + md);
         resourceMetadata.put( md.getIdentifier(), md );
     }
 

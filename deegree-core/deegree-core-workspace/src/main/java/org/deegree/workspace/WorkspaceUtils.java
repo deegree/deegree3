@@ -95,6 +95,9 @@ public class WorkspaceUtils {
      */
     public static void collectDependencies( List<ResourceMetadata<? extends Resource>> list,
                                             ResourceNode<? extends Resource> node ) {
+        if ( node == null ) {
+            return;
+        }
         for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
             list.add( n.getMetadata() );
             collectDependencies( list, n );
