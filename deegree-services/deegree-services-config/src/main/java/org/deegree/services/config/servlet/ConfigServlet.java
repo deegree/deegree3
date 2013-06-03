@@ -36,6 +36,7 @@
 package org.deegree.services.config.servlet;
 
 import static org.deegree.services.config.actions.Crs.checkCrs;
+import static org.deegree.services.config.actions.Crs.getCodes;
 import static org.deegree.services.config.actions.Crs.listCrs;
 import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
@@ -90,6 +91,7 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
             data.append( "GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n" );
             data.append( "GET /config/crs/list                                         - list available CRS definitions\n" );
+            data.append( "POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n" );
             data.append( "GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n" );
             data.append( "PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n" );
             data.append( "PUT /config/upload/path/file                                 - upload file into current workspace\n" );
@@ -142,6 +144,8 @@ public class ConfigServlet extends HttpServlet {
 
         if ( path.toLowerCase().startsWith( "/crs/list" ) ) {
             listCrs( resp );
+        } else if ( path.toLowerCase().startsWith( "/crs/getcodes" ) ) {
+            getCodes( req, resp );
         } else if ( path.toLowerCase().startsWith( "/crs" ) ) {
             checkCrs( path.substring( 4 ), resp );
         }
@@ -169,6 +173,9 @@ public class ConfigServlet extends HttpServlet {
         }
         if ( path.startsWith( "/upload" ) ) {
             upload( path.substring( 7 ), req, resp );
+        }
+        if ( path.startsWith( "/crs" ) ) {
+            dispatch( path, req, resp );
         }
     }
 

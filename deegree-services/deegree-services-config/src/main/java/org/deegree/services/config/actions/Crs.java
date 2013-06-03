@@ -30,6 +30,7 @@ package org.deegree.services.config.actions;
 import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,12 +38,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSCodeType;
+import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -98,6 +101,25 @@ public class Crs {
             IOUtils.write( "true", resp.getOutputStream() );
         } catch ( UnknownCRSException e ) {
             IOUtils.write( "false", resp.getOutputStream() );
+        }
+    }
+
+    public static void getCodes( HttpServletRequest req, HttpServletResponse resp )
+                            throws IOException {
+        ServletOutputStream out = resp.getOutputStream();
+
+        String s = req.getParameter( "wkt" );
+        s = URLDecoder.decode( s, "UTF-8" );
+        ICRS crs = WKTParser.parse( s );
+        Collection<CRSStore> all = CRSManager.getAll();
+        for ( CRSStore crsStore : all ) {
+            for ( ICRS c : crsStore.getAvailableCRSs() ) {
+                if ( c.equals( crs ) ) {
+                    for ( CRSCodeType ct : c.getCodes() ) {
+                        IOUtils.write( ct.toString(), out );
+                    }
+                }
+            }
         }
     }
 
