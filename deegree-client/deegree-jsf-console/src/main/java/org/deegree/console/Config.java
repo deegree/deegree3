@@ -87,10 +87,12 @@ public class Config implements Comparable<Config> {
     public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
                    boolean autoActivate ) {
         workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        this.id = metadata.getIdentifier().getId();
+        if ( metadata != null ) {
+            this.id = metadata.getIdentifier().getId();
+        }
         this.metadata = metadata;
         this.resourceOutcome = resourceOutcome;
-        if ( metadata.getProvider() instanceof AbstractResourceProvider<?> ) {
+        if ( metadata != null && metadata.getProvider() instanceof AbstractResourceProvider<?> ) {
             schemaURL = ( (AbstractResourceProvider<?>) metadata.getProvider() ).getSchema();
         }
         if ( schemaURL != null ) {

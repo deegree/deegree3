@@ -27,6 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,10 @@ import javax.faces.bean.ViewScoped;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.services.OwsManager;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
@@ -54,14 +58,16 @@ public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implem
 
     private static final long serialVersionUID = -8669333203479413121L;
 
-//    private static final URL MAIN_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
-//
-//    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
-
-    private  Config mainConfig;
+    private Config mainConfig;
 
     public ServicesBean() {
         super( OwsManager.class );
+        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        if ( workspace instanceof DefaultWorkspace ) {
+            File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
+            file = new File( file, "main.xml" );
+            mainConfig = new MainConfig( file.getAbsolutePath() );
+        }
     }
 
     public Config getMainConfig() {
@@ -77,4 +83,5 @@ public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implem
         Collections.sort( configs );
         return configs;
     }
+
 }

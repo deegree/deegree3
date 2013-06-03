@@ -78,6 +78,9 @@ public class OwsManager extends DefaultResourceManager<OWS> {
             if ( loc.getIdentifier().getId().endsWith( "_metadata" ) ) {
                 iter.remove();
             }
+            if ( loc.getIdentifier().getId().equals( "metadata" ) | loc.getIdentifier().getId().equals( "main" ) ) {
+                iter.remove();
+            }
         }
         super.read( list );
     }

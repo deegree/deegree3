@@ -134,6 +134,10 @@ public class XmlEditorBean implements Serializable {
     public String getContent()
                             throws IOException, ClassNotFoundException {
         if ( content == null ) {
+            if ( resourceProviderClass == null ) {
+                content = FileUtils.readFileToString( new File( fileName ) );
+                return content;
+            }
             Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
             Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
             ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
@@ -175,6 +179,11 @@ public class XmlEditorBean implements Serializable {
 
     private void activate() {
         try {
+            if ( resourceProviderClass == null ) {
+                FileUtils.write( new File( fileName ), content );
+                return;
+            }
+
             Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
             Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
             ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
