@@ -35,7 +35,9 @@
 package org.deegree.console.generic;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
@@ -45,17 +47,23 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultWorkspace;
+import org.slf4j.Logger;
 
 @ManagedBean
 @ViewScoped
 public class XmlEditorBean implements Serializable {
 
     private static final long serialVersionUID = -2345424266499294734L;
+
+    private static final Logger LOG = getLogger( XmlEditorBean.class );
 
     private String id;
 
@@ -105,7 +113,7 @@ public class XmlEditorBean implements Serializable {
 
     public void setSchemaUrl( String schemaUrl ) {
         this.schemaUrl = schemaUrl;
-        if ( schemaUrl != null ) {
+        if ( schemaUrl != null && !schemaUrl.isEmpty() ) {
             try {
                 schemaAsText = IOUtils.toString( new URL( schemaUrl ).openStream(), "UTF-8" );
             } catch ( IOException e ) {
@@ -128,7 +136,9 @@ public class XmlEditorBean implements Serializable {
             Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
             Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
             ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
-            content = IOUtils.toString( md.getLocation().getAsStream() );
+            if ( md != null ) {
+                content = IOUtils.toString( md.getLocation().getAsStream() );
+            }
         }
         return content;
     }
@@ -171,7 +181,18 @@ public class XmlEditorBean implements Serializable {
             workspace.destroy( md.getIdentifier() );
 
             md.getLocation().setContent( IOUtils.toInputStream( content ) );
-            workspace.getLocationHandler().persist( md.getLocation() );
+            // special handling because of non-identity between id and filename:
+            if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
+                if ( workspace instanceof DefaultWorkspace ) {
+                    File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
+                    file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
+                    FileUtils.write( file, content );
+                } else {
+                    LOG.warn( "Could not persist metadata configuration." );
+                }
+            } else {
+                workspace.getLocationHandler().persist( md.getLocation() );
+            }
 
             workspace.getLocationHandler().activate( md.getLocation() );
             workspace.prepare( md.getIdentifier() );

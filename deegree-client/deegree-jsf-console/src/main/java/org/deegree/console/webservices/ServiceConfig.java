@@ -27,13 +27,13 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.console.Config;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -44,9 +44,11 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.deegree.workspace.standard.DefaultResourceLocation;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 public class ServiceConfig extends Config {
+
+    private static final URL METADATA_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
 
     public ServiceConfig( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager ) {
         super( metadata, resourceManager, "/console/webservices/index", true );
@@ -54,12 +56,18 @@ public class ServiceConfig extends Config {
 
     public String editMetadata()
                             throws IOException {
-        ResourceIdentifier ident = new DefaultResourceIdentifier( OWSMetadataProviderProvider.class, id );
-        ResourceLocation loc = new DefaultResourceLocation( null, ident );
-        workspace.add( loc );
-        ResourceMetadata md = workspace.getResourceMetadata( ident.getProvider(), id );
         ResourceManager mgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
-        Config metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
+        Config metadataConfig;
+        if ( workspace.getResource( OWSMetadataProviderProvider.class, id ) != null ) {
+            ResourceMetadata<?> md = workspace.getResourceMetadata( OWSMetadataProviderProvider.class, id );
+            metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
+        } else {
+            ResourceIdentifier ident = new DefaultResourceIdentifier( OWSMetadataProviderProvider.class, id );
+            ResourceLocation loc = new IncorporealResourceLocation( IOUtils.toByteArray( METADATA_EXAMPLE_URL ), ident );
+            workspace.add( loc );
+            ResourceMetadata md = workspace.getResourceMetadata( ident.getProvider(), id );
+            metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
+        }
         return metadataConfig.edit();
     }
 

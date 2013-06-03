@@ -30,10 +30,8 @@
                     </h:link></td>
                   <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
-                  <td><h:link outcome="/console/generic/xmleditor" styleClass="buttonInfo" value="Edit metadata">
-                      <f:param name="nextView" value="/console/webservices/index" />
-                      <f:param name="resourceProviderClass" value="org.deegree.services.metadata.OWSMetadataProvider" />
-                    </h:link></td>
+                  <td><h:commandButton styleClass="buttonInfo" value="Edit Metadata"
+                      action="#{config.editMetadata}" /></td>
                   <td><h:panelGroup rendered="#{config.state=='Initialized'}">
                       <dg:externalLink styleClass="buttonInfo" target="_blank" href="#{config.capabilitiesUrl}"
                         title="#{labels.webservices_cap}" />

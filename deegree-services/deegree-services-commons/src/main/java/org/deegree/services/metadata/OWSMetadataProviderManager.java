@@ -40,12 +40,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
@@ -66,6 +69,7 @@ public class OWSMetadataProviderManager extends DefaultResourceManager<OWSMetada
 
     @Override
     protected void read( List<ResourceLocation<OWSMetadataProvider>> list ) {
+        list = new ArrayList<ResourceLocation<OWSMetadataProvider>>( list );
         ListIterator<ResourceLocation<OWSMetadataProvider>> iter = list.listIterator();
         while ( iter.hasNext() ) {
             ResourceLocation<OWSMetadataProvider> loc = iter.next();
@@ -74,6 +78,13 @@ public class OWSMetadataProviderManager extends DefaultResourceManager<OWSMetada
             }
         }
         super.read( list );
+    }
+
+    @Override
+    public ResourceMetadata<OWSMetadataProvider> add( ResourceLocation<OWSMetadataProvider> location ) {
+        // else new locations will be filtered out
+        super.read( Collections.singletonList( location ) );
+        return metadataMap.get( location.getIdentifier() );
     }
 
 }
