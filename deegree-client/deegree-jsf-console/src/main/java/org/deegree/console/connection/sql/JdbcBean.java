@@ -5,7 +5,6 @@ import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,16 +17,17 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 
 @ManagedBean
 @ViewScoped
 public class JdbcBean implements Serializable {
+
+    private static final long serialVersionUID = -425251614342669735L;
 
     private String dbType = "mssql";
 
@@ -182,12 +182,6 @@ public class JdbcBean implements Serializable {
     }
 
     public void cancel() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        // JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
-        Map<String, Object> sMap = ctx.getSessionMap();
-        String newId = (String) sMap.get( "newConfigId" );
-        // mgr.deleteResource( newId );
         clearFields();
     }
 
@@ -209,35 +203,16 @@ public class JdbcBean implements Serializable {
 
     private void create() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        // JDBCParamsManager mgr = ws.getSubsystemManager( JDBCParamsManager.class );
-        // StringBuffer sb = new StringBuffer();
-        // sb.append( "<?xml version='1.0' encoding='UTF-8'?>\n" );
-        // sb.append(
-        // "<JDBCConnection configVersion='3.0.0'  xmlns='http://www.deegree.org/jdbc' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd'>\n"
-        // );
-        // sb.append( "  <Url>" + dbConn + "</Url>\n" );
-        // sb.append( "  <User>" + dbUser + "</User>\n" );
-        // sb.append( "  <Password>" + dbPwd + "</Password>\n" );
-        // sb.append( "  <ReadOnly>false</ReadOnly>\n" );
-        // sb.append( "</JDBCConnection>\n" );
-        ResourceState rs = null;
-        InputStream is = null;
+        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
         try {
-            // is = new ByteArrayInputStream( sb.toString().getBytes( "UTF-8" ) );
             Map<String, Object> sMap = ctx.getSessionMap();
             String newId = (String) sMap.get( "newConfigId" );
 
             ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( newId, dbConn, dbUser, dbPwd );
-            ws.getNewWorkspace().add( loc );
-            ws.getNewWorkspace().init( loc.getIdentifier(), null );
+            ws.add( loc );
+            ws.init( loc.getIdentifier(), null );
 
-            // rs = mgr.createResource( newId, is );
-            // rs = mgr.activate( rs.getId() );
-            // true );
-            // ConnectionManager poolMgr = ws.getSubsystemManager( ConnectionManager.class );
-            // poolMgr.shutdown();
-            // poolMgr.startup( ws );
+            ws.getLocationHandler().persist( loc );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
