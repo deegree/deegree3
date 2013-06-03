@@ -40,6 +40,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -49,9 +51,9 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.ResourceStates.ResourceState;
 import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 
@@ -118,6 +120,11 @@ public class Config implements Comparable<Config> {
         try {
             workspace.destroy( metadata.getIdentifier() );
             workspace.getLocationHandler().deactivate( metadata.getLocation() );
+            List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
+            WorkspaceUtils.collectDependents( list, workspace.getDependencyGraph().getNode( metadata.getIdentifier() ) );
+            for ( ResourceMetadata<?> md : list ) {
+                workspace.getLocationHandler().deactivate( md.getLocation() );
+            }
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
                                                 null );

@@ -139,6 +139,10 @@ public class DefaultWorkspace implements Workspace {
         }
 
         outer: for ( ResourceMetadata<? extends Resource> md : graph.toSortedList() ) {
+            if ( states.getState( md.getIdentifier() ) == Deactivated ) {
+                continue;
+            }
+
             for ( ResourceIdentifier<? extends Resource> dep : md.getDependencies() ) {
                 if ( states.getState( dep ) != Initialized ) {
                     states.setState( md.getIdentifier(), Error );
@@ -398,13 +402,13 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "--------------------------------------------------------------------------------" );
         outer: for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
             ResourceState state = states.getState( md.getIdentifier() );
-            if ( state == null || state == Deactivated ) {
+            if ( state == null ) {
                 continue outer;
             }
 
             for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
                 state = states.getState( id );
-                if ( state == null || state == Scanned || state == Deactivated ) {
+                if ( state == null || state == Scanned ) {
                     continue outer;
                 }
             }
@@ -413,11 +417,15 @@ public class DefaultWorkspace implements Workspace {
                 ResourceBuilder<? extends Resource> builder = md.prepare();
                 if ( builder == null ) {
                     LOG.error( "Could not prepare resource {}.", md.getIdentifier() );
-                    states.setState( md.getIdentifier(), Error );
+                    if ( states.getState( md.getIdentifier() ) != Deactivated ) {
+                        states.setState( md.getIdentifier(), Error );
+                    }
                     continue;
                 }
                 graph.insertNode( md );
-                states.setState( md.getIdentifier(), Prepared );
+                if ( states.getState( md.getIdentifier() ) != Deactivated ) {
+                    states.setState( md.getIdentifier(), Prepared );
+                }
                 prepared.addBuilder( (ResourceIdentifier) md.getIdentifier(), builder );
             } catch ( Exception e ) {
                 String msg = "Error preparing resource " + md.getIdentifier() + ": " + e.getLocalizedMessage();
