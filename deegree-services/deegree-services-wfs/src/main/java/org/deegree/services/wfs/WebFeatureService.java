@@ -538,7 +538,7 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             // needed for CITE 1.1.0 compliance
-            if ( requestVersion.equals( VERSION_110 ) ) {
+            if ( requestVersion != null && requestVersion.equals( VERSION_110 ) ) {
                 String serviceAttr = KVPUtils.getRequired( kvpParamsUC, "SERVICE" );
                 if ( !"WFS".equals( serviceAttr ) ) {
                     throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
@@ -631,7 +631,7 @@ public class WebFeatureService extends AbstractOWS {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, new OWSException( e ), response );
-        } catch ( Throwable e ) {
+        } catch ( Exception e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
