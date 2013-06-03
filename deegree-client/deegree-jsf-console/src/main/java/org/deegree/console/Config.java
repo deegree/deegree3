@@ -49,6 +49,7 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.ResourceStates.ResourceState;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceProvider;
@@ -104,8 +105,7 @@ public class Config implements Comparable<Config> {
         try {
             workspace.getLocationHandler().activate( metadata.getLocation() );
             workspace.add( metadata.getLocation() );
-            workspace.prepare( metadata.getIdentifier() );
-            workspace.init( metadata.getIdentifier(), null );
+            WorkspaceUtils.reinitializeChain( workspace, metadata.getIdentifier() );
         } catch ( Exception t ) {
             t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );

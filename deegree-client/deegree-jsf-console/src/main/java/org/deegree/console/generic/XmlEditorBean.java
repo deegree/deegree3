@@ -53,6 +53,7 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
@@ -195,8 +196,7 @@ public class XmlEditorBean implements Serializable {
             }
 
             workspace.getLocationHandler().activate( md.getLocation() );
-            workspace.prepare( md.getIdentifier() );
-            workspace.init( md.getIdentifier(), null );
+            WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
         } catch ( Exception t ) {
             t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
