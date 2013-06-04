@@ -50,8 +50,6 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -428,13 +426,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        // obsolete
+    public void destroy() {
+        // unused
     }
 
-    @Override
-    public void destroy() {
-        // obsolete
-    }
 }

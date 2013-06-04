@@ -40,7 +40,6 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.db.ConnectionProvider;
@@ -110,11 +109,6 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public void destroy() {
-        // nothing to do
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
         // nothing to do
     }
 

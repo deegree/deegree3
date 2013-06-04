@@ -40,15 +40,12 @@ import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_110;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -79,8 +76,6 @@ import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStore} implementation that is backed by a (remote) WFS instance.
@@ -95,9 +90,9 @@ import org.slf4j.LoggerFactory;
  */
 public class RemoteWFSFeatureStore implements FeatureStore {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RemoteWFSFeatureStore.class );
-
-    private final RemoteWFSFeatureStoreConfig config;
+    // private static final Logger LOG = LoggerFactory.getLogger( RemoteWFSFeatureStore.class );
+    //
+    // private final RemoteWFSFeatureStoreConfig config;
 
     private WFSClient client;
 
@@ -110,22 +105,22 @@ public class RemoteWFSFeatureStore implements FeatureStore {
      *            config, must not be <code>null</code>
      */
     RemoteWFSFeatureStore( RemoteWFSFeatureStoreConfig config ) {
-        this.config = config;
+        // this.config = config;
     }
 
-    @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        try {
-            LOG.info( "Connecting to " + config.getCapabilitiesURL() + "..." );
-            this.client = new WFSClient( new URL( config.getCapabilitiesURL() ) );
-            this.appSchema = client.getAppSchema();
-            LOG.info( "Ok." );
-        } catch ( Exception e ) {
-            LOG.info( "Error: " + e.getMessage() );
-            throw new ResourceInitException( "Error connecting to WFS: " + e.getMessage(), e );
-        }
-    }
+    // @Override
+    // public void init( DeegreeWorkspace workspace )
+    // throws ResourceInitException {
+    // try {
+    // LOG.info( "Connecting to " + config.getCapabilitiesURL() + "..." );
+    // this.client = new WFSClient( new URL( config.getCapabilitiesURL() ) );
+    // this.appSchema = client.getAppSchema();
+    // LOG.info( "Ok." );
+    // } catch ( Exception e ) {
+    // LOG.info( "Error: " + e.getMessage() );
+    // throw new ResourceInitException( "Error connecting to WFS: " + e.getMessage(), e );
+    // }
+    // }
 
     @Override
     public void destroy() {
@@ -319,7 +314,9 @@ public class RemoteWFSFeatureStore implements FeatureStore {
         throw new UnsupportedOperationException( "RemoteWFSFeatureStore doesn't implement #getLockManager() (yet)." );
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#getMetadata()
      */
     @Override
@@ -328,12 +325,14 @@ public class RemoteWFSFeatureStore implements FeatureStore {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.workspace.Resource#init()
      */
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        
+
     }
 }

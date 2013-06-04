@@ -38,7 +38,6 @@ package org.deegree.feature.persistence;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -48,6 +47,7 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.workspace.Resource;
 
 /**
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
@@ -64,7 +64,7 @@ import org.deegree.geometry.Geometry;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface FeatureStore extends Resource, org.deegree.workspace.Resource {
+public interface FeatureStore extends Resource {
 
     /**
      * Returns whether the store is currently able to perform operations.
