@@ -40,6 +40,7 @@ package org.deegree.cs.persistence.deegree.d3.parsers;
 
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredElementTextAsDouble;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -121,7 +122,7 @@ public class EllipsoidParser extends DefinitionParser {
      */
     protected Ellipsoid parseEllipsoid( XMLStreamReader reader )
                             throws XMLStreamException {
-        if ( reader == null || !super.moveReaderToNextIdentifiable( reader, ELLIPS_ELEM ) ) {
+        if ( reader == null || !moveReaderToFirstMatch( reader, ELLIPS_ELEM ) ) {
             LOG.debug( "Could not get ellipsoid no more definitions found." );
             return null;
         }
