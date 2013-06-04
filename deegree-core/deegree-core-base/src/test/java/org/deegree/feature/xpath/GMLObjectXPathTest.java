@@ -43,11 +43,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -62,6 +62,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReaderTest;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,8 +104,7 @@ public class GMLObjectXPathTest {
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
-        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
-        ws.initAll();
+        new DefaultWorkspace( new File( "nix" ) ).initAll();
     }
 
     @Test
