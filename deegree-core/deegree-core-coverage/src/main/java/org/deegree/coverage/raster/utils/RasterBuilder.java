@@ -40,19 +40,12 @@ package org.deegree.coverage.raster.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.AbstractCoverage;
-import org.deegree.coverage.Coverage;
-import org.deegree.coverage.persistence.CoverageBuilder;
-import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
@@ -78,15 +71,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterBuilder implements CoverageBuilder {
-
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/coverage/raster";
-
-    private static final URL CONFIG_SCHEMA = RasterBuilder.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.0.0/raster.xsd" );
+public class RasterBuilder {
 
     private final static Logger LOG = LoggerFactory.getLogger( RasterBuilder.class );
-
-    private DeegreeWorkspace workspace;
 
     /**
      * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by
@@ -153,11 +140,6 @@ public class RasterBuilder implements CoverageBuilder {
             }
         }
         return mrr;
-    }
-
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NS;
     }
 
     /**
@@ -400,26 +382,4 @@ public class RasterBuilder implements CoverageBuilder {
         return Math.max( 3, (int) Math.ceil( leafSize / rw ) );
     }
 
-    @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public Coverage create( URL configUrl )
-                            throws ResourceInitException {
-        String id = workspace.determineId( configUrl, "datasources.coverage" );
-        return workspace.getNewWorkspace().getResource( CoverageProvider.class, id );
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
 }

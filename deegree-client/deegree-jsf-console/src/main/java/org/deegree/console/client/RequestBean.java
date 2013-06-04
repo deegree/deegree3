@@ -40,6 +40,7 @@ import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
+import static org.deegree.workspace.ResourceStates.ResourceState.Initialized;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -82,14 +83,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.deegree.client.core.utils.MessageUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.OwsManager;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -625,25 +626,16 @@ public class RequestBean implements Serializable {
         return "mt=" + URLEncoder.encode( mimeType, "UTF-8" ) + "&file=" + URLEncoder.encode( responseFile, "UTF-8" );
     }
 
-    // @Override
-    // public String toString() {
-    // return generateToString( this );
-    // }
-
-    @SuppressWarnings("rawtypes")
     public List<String> getWorkspaceServices() {
         ArrayList<String> activeServices = new ArrayList<String>();
         activeServices.add( "" );
 
-        DeegreeWorkspace workspace = OGCFrontController.getServiceWorkspace();
-        OwsManager config = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
-        if ( config != null ) {
-            // for ( ResourceState state : config.getStates() ) {
-            // StateType type = state.getType();
-            // if ( type == StateType.init_ok ) {
-            // activeServices.add( state.getId() );
-            // }
-            // }
+        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
+        for ( ResourceIdentifier<OWS> id : list ) {
+            if ( workspace.getStates().getState( id ) == Initialized ) {
+                activeServices.add( id.getId() );
+            }
         }
 
         return activeServices;

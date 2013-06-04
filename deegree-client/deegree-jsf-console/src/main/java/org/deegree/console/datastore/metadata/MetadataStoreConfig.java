@@ -46,8 +46,6 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.workspace.ResourceManager;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
@@ -55,7 +53,9 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 public class MetadataStoreConfig extends Config {
 
@@ -63,9 +63,9 @@ public class MetadataStoreConfig extends Config {
         super( state, resourceManager, "/console/datastore/metadata/index", true );
     }
 
-    private DeegreeWorkspace getWorkspace() {
+    private Workspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
         return ws;
     }
 
@@ -75,7 +75,7 @@ public class MetadataStoreConfig extends Config {
 
     public String openImporter()
                             throws Exception {
-        MetadataStore<?> ms = getWorkspace().getNewWorkspace().getResource( MetadataStoreProvider.class, getId() );
+        MetadataStore<?> ms = getWorkspace().getResource( MetadataStoreProvider.class, getId() );
         if ( ms == null ) {
             throw new Exception( "No metadata store with id '" + getId() + "' known / active." );
         }
@@ -87,13 +87,13 @@ public class MetadataStoreConfig extends Config {
 
     public String createTables()
                             throws MetadataStoreException {
-        MetadataStore<?> ms = getWorkspace().getNewWorkspace().getResource( MetadataStoreProvider.class, getId() );
+        MetadataStore<?> ms = getWorkspace().getResource( MetadataStoreProvider.class, getId() );
         MetadataStoreProvider provider = (MetadataStoreProvider) ms.getMetadata().getProvider();
         String[] sql;
         try {
             String connId = ms.getConnId();
-            DeegreeWorkspace ws = getWorkspace();
-            ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, connId );
+            Workspace ws = getWorkspace();
+            ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, connId );
 
             sql = provider.getCreateStatements( prov.getDialect() );
 
