@@ -49,7 +49,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLParsingException;
@@ -57,13 +56,15 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.tools.i18n.Messages;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * Imports feature datasets into a feature store.
@@ -183,10 +184,10 @@ public class FeatureStoreLoader {
 
             String inputFileName = cmdline.getOptionValue( OPT_DATASET_FILE );
 
-            DeegreeWorkspace ws = DeegreeWorkspace.getInstance( workspace, new File( workspace ) );
+            Workspace ws = new DefaultWorkspace( new File( workspace ) );
             ws.initAll();
 
-            FeatureStore fs = ws.getNewWorkspace().getResource( FeatureStoreProvider.class, fsConfigId );
+            FeatureStore fs = ws.getResource( FeatureStoreProvider.class, fsConfigId );
 
             switch ( action ) {
             case insert:

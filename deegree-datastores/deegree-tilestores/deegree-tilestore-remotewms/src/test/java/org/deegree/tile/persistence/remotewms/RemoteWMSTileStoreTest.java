@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -57,6 +56,8 @@ import org.deegree.tile.TileDataSet;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.persistence.GenericTileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,25 +76,24 @@ import org.junit.Test;
  */
 public class RemoteWMSTileStoreTest {
 
-    private DeegreeWorkspace ws;
+    private Workspace ws;
 
     @Before
     public void setup()
                             throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
         URL wsUrl = RemoteWMSTileStoreTest.class.getResource( "workspace" );
-        ws = DeegreeWorkspace.getInstance( "remotewmstilestoretest", new File( wsUrl.toURI() ) );
+        ws = new DefaultWorkspace( new File( wsUrl.toURI() ) );
         ws.initAll();
     }
 
     @After
     public void tearDown() {
-        ws.destroyAll();
+        ws.destroy();
     }
 
     @Test
     public void testGetMetdataEPSG26912() {
-        GenericTileStore store = (GenericTileStore) ws.getNewWorkspace().getResource( TileStoreProvider.class,
-                                                                                      "tiles26912" );
+        GenericTileStore store = (GenericTileStore) ws.getResource( TileStoreProvider.class, "tiles26912" );
         SpatialMetadata metadata = store.getTileDataSet( "tiles26912" ).getTileMatrixSet().getSpatialMetadata();
         assertEquals( 1, metadata.getCoordinateSystems().size() );
         assertEquals( "urn:opengis:def:crs:epsg::26912", metadata.getCoordinateSystems().get( 0 ).getId() );
@@ -105,8 +105,7 @@ public class RemoteWMSTileStoreTest {
 
     @Test
     public void testGetTileMatrixSetEPSG26912() {
-        GenericTileStore store = (GenericTileStore) ws.getNewWorkspace().getResource( TileStoreProvider.class,
-                                                                                      "tiles26912" );
+        GenericTileStore store = (GenericTileStore) ws.getResource( TileStoreProvider.class, "tiles26912" );
         TileDataSet dataSet = store.getTileDataSet( "tiles26912" );
 
         assertEquals( 10, dataSet.getTileDataLevels().size() );

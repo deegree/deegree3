@@ -51,9 +51,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.junit.Assert;
-
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
@@ -79,7 +76,9 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,6 +96,8 @@ public class MemoryFeatureStoreTest {
 
     private MemoryFeatureStore store;
 
+    private DefaultWorkspace workspace;
+
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
@@ -104,14 +105,14 @@ public class MemoryFeatureStoreTest {
                             ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
                             ResourceInitException {
 
-        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
-        ws.initAll();
+        workspace = new DefaultWorkspace( new File( "nix" ) );
+        workspace.initAll();
         String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = adapter.extractAppSchema();
 
         URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        ConnectionProvider prov = ws.getNewWorkspace().getResource( ConnectionProviderProvider.class, "LOCK_DB" );
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
         store = new MemoryFeatureStore( schema, null, null, prov );
 
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
@@ -126,7 +127,7 @@ public class MemoryFeatureStoreTest {
 
     @After
     public void shutDown() {
-        DeegreeWorkspace.getInstance().destroyAll();
+        workspace.destroy();
     }
 
     @Test

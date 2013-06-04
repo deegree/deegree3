@@ -53,8 +53,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
@@ -63,8 +61,11 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.tools.i18n.Messages;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultResourceLocation;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -146,14 +147,14 @@ public class FeatureTypesToLayerTree {
             out = new IndentingXMLStreamWriter( fac.createXMLStreamWriter( os ) );
             out.setDefaultNamespace( ns );
 
-            DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+            Workspace ws = new DefaultWorkspace( new File( "nix" ) );
             ws.initAll();
             DefaultResourceIdentifier<FeatureStore> identifier = new DefaultResourceIdentifier<FeatureStore>(
                                                                                                               FeatureStoreProvider.class,
                                                                                                               "unknown" );
-            ws.getNewWorkspace().add( new DefaultResourceLocation<FeatureStore>( new File( storeFile ), identifier ) );
-            ws.getNewWorkspace().prepare( identifier );
-            FeatureStore store = ws.getNewWorkspace().init( identifier, null );
+            ws.add( new DefaultResourceLocation<FeatureStore>( new File( storeFile ), identifier ) );
+            ws.prepare( identifier );
+            FeatureStore store = ws.init( identifier, null );
 
             AppSchema schema = store.getSchema();
 

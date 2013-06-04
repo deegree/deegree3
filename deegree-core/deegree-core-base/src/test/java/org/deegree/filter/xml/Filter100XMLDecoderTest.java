@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -46,7 +47,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -73,6 +73,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -92,8 +93,7 @@ public class Filter100XMLDecoderTest extends TestCase {
     @Before
     public void setUp()
                             throws Exception {
-        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
-        ws.initAll();
+        new DefaultWorkspace( new File( "nix" ) ).initAll();
     }
 
     /**

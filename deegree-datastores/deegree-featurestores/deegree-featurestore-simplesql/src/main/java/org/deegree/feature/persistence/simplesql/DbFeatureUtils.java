@@ -70,7 +70,6 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.JDBCUtils;
@@ -80,6 +79,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.WKTWriter;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -171,7 +171,7 @@ public class DbFeatureUtils {
      * @param prov
      * @return a list of all schemas with geometry tables
      */
-    public static LinkedList<String> fetchGeometrySchemas( ConnectionProvider prov, DeegreeWorkspace workspace ) {
+    public static LinkedList<String> fetchGeometrySchemas( ConnectionProvider prov, Workspace workspace ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;

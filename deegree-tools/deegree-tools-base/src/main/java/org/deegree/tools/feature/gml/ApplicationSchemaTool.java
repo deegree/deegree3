@@ -65,8 +65,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tools.CommandUtils;
@@ -81,8 +79,11 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.tools.i18n.Messages;
 import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultResourceLocation;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * Swiss Army knife for GML/deegree application schemas.
@@ -375,11 +376,11 @@ public class ApplicationSchemaTool {
                                                                                                    FeatureStoreProvider.class,
                                                                                                    "deegree_postgis" );
                 loc = new DefaultResourceLocation<FeatureStore>( new File( inputFileName ), id );
-                DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
+                Workspace ws = new DefaultWorkspace( new File( "nix" ) );
                 ws.initAll();
-                ws.getNewWorkspace().add( loc );
-                ws.getNewWorkspace().prepare( id );
-                SQLFeatureStore fs = (SQLFeatureStore) ws.getNewWorkspace().init( id, null );
+                ws.add( loc );
+                ws.prepare( id );
+                SQLFeatureStore fs = (SQLFeatureStore) ws.init( id, null );
                 String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
                 for ( String string : sql ) {
                     System.out.println( string + ";" );

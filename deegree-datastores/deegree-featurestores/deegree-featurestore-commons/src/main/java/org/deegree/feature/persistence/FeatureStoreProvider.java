@@ -44,12 +44,11 @@ package org.deegree.feature.persistence;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * TODO add class documentation here
+ * SPI provider class for feature stores.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public abstract class FeatureStoreProvider extends AbstractResourceProvider<FeatureStore> {
 

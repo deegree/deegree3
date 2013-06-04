@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -50,7 +51,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -63,6 +63,7 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,8 +84,7 @@ public class Filter110XMLEncoderTest {
     @Before
     public void setUp()
                             throws Exception {
-        DeegreeWorkspace ws = DeegreeWorkspace.getInstance();
-        ws.initAll();
+        new DefaultWorkspace( new File( "nix" ) ).initAll();
     }
 
     private Filter testImportExportImport( String resource )

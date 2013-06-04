@@ -51,7 +51,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.db.ConnectionProvider;
@@ -66,6 +65,8 @@ import org.deegree.tools.rendering.manager.buildings.PrototypeManager;
 import org.deegree.tools.rendering.manager.stage.StageManager;
 import org.deegree.tools.rendering.manager.trees.TreeManager;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * The <code>DataManager</code> is the user interface to the WPVS model backend. It can insert, update and delete
@@ -187,7 +188,7 @@ public class DataManager {
      */
     public static final String OPT_USE_OPENGIS = "use_opengis_ns";
 
-    private static DeegreeWorkspace workspace;
+    private static Workspace workspace;
 
     /**
      * Creates the commandline parser and adds the options.
@@ -207,7 +208,7 @@ public class DataManager {
             printHelp( options );
         }
 
-        workspace = DeegreeWorkspace.getInstance();
+        workspace = new DefaultWorkspace( new File( "nix" ) );
 
         try {
             CommandLine line = parser.parse( options, args );
@@ -331,14 +332,14 @@ public class DataManager {
                 throw new RuntimeException( e.getMessage(), e );
             }
         } else {
-            if ( workspace.getNewWorkspace().getResource( ConnectionProviderProvider.class, hostURL ) == null ) {
+            if ( workspace.getResource( ConnectionProviderProvider.class, hostURL ) == null ) {
                 ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( hostURL, testFileBackend,
                                                                                  line.getOptionValue( OPT_DB_USER ),
                                                                                  line.getOptionValue( OPT_DB_PASS ) );
-                workspace.getNewWorkspace().getLocationHandler().addExtraResource( loc );
+                workspace.getLocationHandler().addExtraResource( loc );
             }
         }
-        ModelBackend<?> result = ModelBackend.getInstance( hostURL, workspace.getNewWorkspace() );
+        ModelBackend<?> result = ModelBackend.getInstance( hostURL, workspace );
         return result;
     }
 

@@ -40,11 +40,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +60,7 @@ import org.junit.Test;
  */
 public class TileLayerTest {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     @Before
     public void setup()
@@ -68,19 +69,19 @@ public class TileLayerTest {
         File dir = new File( new File( u.toURI() ).getParentFile(),
                              "../../../../../../../src/main/webapp/WEB-INF/workspace" );
         dir = dir.getCanonicalFile();
-        workspace = DeegreeWorkspace.getInstance( "deegree-wmts-tests", dir );
+        workspace = new DefaultWorkspace( dir );
         workspace.initAll();
     }
 
     @Test
     public void testMetadataId() {
-        Layer l = workspace.getNewWorkspace().getResource( LayerStoreProvider.class, "tilelayers" ).get( "pyramid" );
+        Layer l = workspace.getResource( LayerStoreProvider.class, "tilelayers" ).get( "pyramid" );
         Assert.assertEquals( "mdsetid", l.getMetadata().getMetadataId() );
     }
 
     @After
     public void shutdown() {
-        workspace.destroyAll();
+        workspace.destroy();
     }
 
 }

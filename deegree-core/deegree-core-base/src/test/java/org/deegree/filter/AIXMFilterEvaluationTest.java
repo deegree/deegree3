@@ -37,6 +37,7 @@ package org.deegree.filter;
 
 import static org.deegree.gml.GMLVersion.GML_32;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
@@ -47,7 +48,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
@@ -55,6 +55,8 @@ import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -78,6 +80,9 @@ public class AIXMFilterEvaluationTest {
     public void setUp()
                             throws Exception {
 
+        Workspace workspace = new DefaultWorkspace( new File( "nix" ) );
+        workspace.initAll();
+
         URL docURL = this.getClass().getResource( "../gml/aixm/feature/AIXM51_BasicMessage.gml" );
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
         fc = (FeatureCollection) gmlStream.readFeature();
@@ -86,7 +91,7 @@ public class AIXMFilterEvaluationTest {
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml/3.2" );
         nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
-        new FunctionManager().init( DeegreeWorkspace.getInstance().getNewWorkspace() );
+        new FunctionManager().init( workspace );
     }
 
     @Test
