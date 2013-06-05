@@ -33,7 +33,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.utils;
+package org.deegree.commons.proxy;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -65,13 +65,13 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
-public final class ProxyUtils implements Initializable {
+public final class ProxySettings implements Initializable {
 
-    private static final Logger LOG = getLogger( ProxyUtils.class );
+    private static final Logger LOG = getLogger( ProxySettings.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
 
-    private static final URL CONFIG_SCHEMA = ProxyUtils.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
+    private static final URL CONFIG_SCHEMA = ProxySettings.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
 
     private static final String PROXY_HOST = "proxyHost";
 

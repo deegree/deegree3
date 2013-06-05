@@ -33,7 +33,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.proxy.ProxySettings;
 
 /**
  * 
@@ -53,62 +53,62 @@ public class ProxyBean {
     }
 
     public String getNonftpProxyHosts() {
-        return ProxyUtils.getFtpNonProxyHosts( true );
+        return ProxySettings.getFtpNonProxyHosts( true );
     }
 
     public String getFtpProxyPassword() {
-        return ProxyUtils.getFtpProxyPassword( true );
+        return ProxySettings.getFtpProxyPassword( true );
     }
 
     public String getFtpProxyUser() {
-        return ProxyUtils.getFtpProxyUser( true );
+        return ProxySettings.getFtpProxyUser( true );
     }
 
     public String getFtpProxyPort() {
-        return ProxyUtils.getFtpProxyPort( true );
+        return ProxySettings.getFtpProxyPort( true );
     }
 
     public String getFtpProxyHost() {
-        return ProxyUtils.getFtpProxyHost( true );
+        return ProxySettings.getFtpProxyHost( true );
     }
 
     public String getNonhttpProxyHosts() {
-        return ProxyUtils.getHttpNonProxyHosts( true );
+        return ProxySettings.getHttpNonProxyHosts( true );
     }
 
     public String getHttpProxyPassword() {
-        return ProxyUtils.getHttpProxyPassword( true );
+        return ProxySettings.getHttpProxyPassword( true );
     }
 
     public String getHttpProxyUser() {
-        return ProxyUtils.getHttpProxyUser( true );
+        return ProxySettings.getHttpProxyUser( true );
     }
 
     public String getHttpProxyPort() {
-        return ProxyUtils.getHttpProxyPort( true );
+        return ProxySettings.getHttpProxyPort( true );
     }
 
     public String getHttpProxyHost() {
-        return ProxyUtils.getHttpProxyHost( true );
+        return ProxySettings.getHttpProxyHost( true );
     }
 
     public String getNonProxyHosts() {
-        return ProxyUtils.getNonProxyHosts();
+        return ProxySettings.getNonProxyHosts();
     }
 
     public String getProxyPassword() {
-        return ProxyUtils.getProxyPassword();
+        return ProxySettings.getProxyPassword();
     }
 
     public String getProxyUser() {
-        return ProxyUtils.getProxyUser();
+        return ProxySettings.getProxyUser();
     }
 
     public String getProxyPort() {
-        return ProxyUtils.getProxyPort();
+        return ProxySettings.getProxyPort();
     }
 
     public String getProxyHost() {
-        return ProxyUtils.getProxyHost();
+        return ProxySettings.getProxyHost();
     }
 }

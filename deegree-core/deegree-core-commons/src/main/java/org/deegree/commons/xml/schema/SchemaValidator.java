@@ -58,7 +58,7 @@ import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.apache.xerces.xs.LSInputList;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.proxy.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
@@ -132,7 +132,7 @@ public class SchemaValidator {
      */
     public static List<String> validate( String url, String... schemaUris )
                             throws MalformedURLException, IOException {
-        InputStream is = ProxyUtils.openURLConnection( new URL( url ), null, null ).getInputStream();
+        InputStream is = ProxySettings.openURLConnection( new URL( url ), null, null ).getInputStream();
         return validate( new XMLInputSource( null, null, null, is, null ), schemaUris );
     }
 

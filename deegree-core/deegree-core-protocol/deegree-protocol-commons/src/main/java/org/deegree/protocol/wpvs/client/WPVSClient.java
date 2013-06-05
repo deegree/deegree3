@@ -37,7 +37,6 @@
 package org.deegree.protocol.wpvs.client;
 
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
-import static org.deegree.commons.utils.net.HttpUtils.XML;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -54,7 +53,6 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.XmlHttpUtils;
-import org.deegree.commons.xml.XmlHttpUtils.XML;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

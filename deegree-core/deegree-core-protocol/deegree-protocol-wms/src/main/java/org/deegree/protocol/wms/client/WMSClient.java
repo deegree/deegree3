@@ -39,13 +39,12 @@ package org.deegree.protocol.wms.client;
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.abs;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.proxy.ProxySettings.getHttpProxyPassword;
+import static org.deegree.commons.proxy.ProxySettings.getHttpProxyUser;
 import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.deegree.commons.utils.ProxyUtils.getHttpProxyPassword;
-import static org.deegree.commons.utils.ProxyUtils.getHttpProxyUser;
 import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
-import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
@@ -82,13 +81,12 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XmlHttpUtils;
-import org.deegree.commons.xml.XmlHttpUtils.XML;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -555,9 +553,9 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
                 URL theUrl = new URL( url );
                 LOG.debug( "Connecting to URL " + theUrl );
-                URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
-                                                                   ProxyUtils.getHttpProxyPassword( true ),
-                                                                   httpBasicUser, httpBasicPass );
+                URLConnection conn = ProxySettings.openURLConnection( theUrl, ProxySettings.getHttpProxyUser( true ),
+                                                                      ProxySettings.getHttpProxyPassword( true ),
+                                                                      httpBasicUser, httpBasicPass );
                 conn.setConnectTimeout( connectionTimeout * 1000 );
                 conn.setReadTimeout( requestTimeout * 1000 );
                 conn.connect();
@@ -767,8 +765,9 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
         URL theUrl = new URL( query );
         LOG.debug( "Connecting to URL " + theUrl );
-        URLConnection conn = ProxyUtils.openURLConnection( theUrl, getHttpProxyUser( true ),
-                                                           getHttpProxyPassword( true ), httpBasicUser, httpBasicPass );
+        URLConnection conn = ProxySettings.openURLConnection( theUrl, getHttpProxyUser( true ),
+                                                              getHttpProxyPassword( true ), httpBasicUser,
+                                                              httpBasicPass );
         conn.setConnectTimeout( connectionTimeout * 1000 );
         conn.setReadTimeout( requestTimeout * 1000 );
         conn.connect();
