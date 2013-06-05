@@ -1,10 +1,73 @@
 /* Layout classes */
 body {
-	color: grey;
+	color: gray;
+	background-color: #ddd;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	font-size: small;
-	padding: 5pt;
+}
+
+#container {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	width: auto;
+	height: auto;
+	min-height: 550px;
+	margin: 10px;
+	background-color: #fcfcfc;
+	opacity: 0.95;
+	border-radius: 3px;
+	box-shadow: 4px 4px 1px #111;
+	padding: 40px;	
+}
+
+#top {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	right: 20px;
+	height: 60px;
+    padding: 20px;	    
+}
+
+#left {
+	position: absolute;
+	top: 100px;
+	bottom: 20px;	
+	left: 20px;	
+	width: 140px;
+    padding: 20px;
+}
+
+#main {
+	position: absolute;
+	top: 100px;
+	left: 200px;
+	right: 20px;
+	bottom: 20px;
+	text-align: left;
+	overflow-x: auto;
+	overflow-y: auto;
+	padding: 20px;
+}
+
+#login {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+#logo {
+	position: absolute;
+	top: 0px;
+}
+
+#status {
+	position: absolute;
+	bottom: 25px;
 }
 
 .error {
@@ -28,60 +91,4 @@ body {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	margin-right: 10px;
-}
-
-#container {
-	position: relative;
-	left: 0px;
-	top: 0px;
-	width: 930px;
-	height: 690px;
-	z-index: 1;
-	background-image: url("#{resource['images:bg.png']}");
-	background-repeat: no-repeat;
-	text-align: justify;
-	margin-top: 0px;
-	margin-right: auto;
-	margin-bottom: 0px;
-	margin-left: auto;
-	text-decoration: none;
-}
-
-#header {
-	position: absolute;
-	top: 50px;
-	left: 50px;
-	width: 830px;
-	height: 90px;
-}
-
-#logo {
-	position: absolute;
-	bottom: 30px;
-	float: left;
-}
-
-#login {
-	position: absolute;
-	bottom: 20px;
-	right: 10px;
-}
-
-#left {
-	position: absolute;
-	top: 140px;
-	left: 50px;
-	width: 160px;
-	height: 500px;
-}
-
-.main {
-	position: absolute;
-	top: 140px;
-	right: 50px;
-	width: 670px;
-	height: 500px;
-	text-align: left;
-	overflow-x: auto;
-	overflow-y: auto;
 }
