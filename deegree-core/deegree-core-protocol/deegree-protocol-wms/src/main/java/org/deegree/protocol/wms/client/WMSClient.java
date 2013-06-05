@@ -87,6 +87,8 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XmlHttpUtils;
+import org.deegree.commons.xml.XmlHttpUtils.XML;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -569,12 +571,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                     res.first = IMAGE.work( conn.getInputStream() );
                 } else if ( conn.getContentType() != null
                             && conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
-                    res.second = XML.work( conn.getInputStream() ).toString();
+                    res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
                 } else { // try and find out the hard way
                     res.first = IMAGE.work( conn.getInputStream() );
                     if ( res.first == null ) {
                         conn = theUrl.openConnection();
-                        res.second = XML.work( conn.getInputStream() ).toString();
+                        res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
                     }
                 }
 
