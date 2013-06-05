@@ -77,7 +77,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.parsers.DOMParser;
-import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
@@ -296,7 +295,7 @@ public class XMLStreamUtils {
         } else if ( "false".equals( s ) || "0".equals( s ) ) {
             return false;
         } else {
-            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_BOOLEAN", s );
+            String msg = "'" + s + "' is not a valid xsd:boolean value. Must be 'true', '1', 'false' or '0'.";
             throw new XMLParsingException( xmlStream, msg );
         }
     }
@@ -410,12 +409,14 @@ public class XMLStreamUtils {
 
     public static void requireStartElement( XMLStreamReader xmlStream, QName elName ) {
         if ( xmlStream.getEventType() != START_ELEMENT ) {
-            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_1", getEventTypeString( xmlStream.getEventType() ),
-                                              elName );
+            String msg = "Found a '" + getEventTypeString( xmlStream.getEventType() )
+                         + "' event, but one of the following elements is required at this position: '" + elName + "'.";
             throw new XMLParsingException( xmlStream, msg );
         }
         if ( !elName.equals( xmlStream.getName() ) ) {
-            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_2", xmlStream.getName(), elName );
+            String msg = "Found a '" + xmlStream.getName()
+                         + "' element, but one of the following elements is required at this position: '" + elName
+                         + "'.";
             throw new XMLParsingException( xmlStream, msg );
         }
     }
@@ -423,13 +424,15 @@ public class XMLStreamUtils {
     public static void requireStartElement( XMLStreamReader xmlStream, Collection<QName> expectedElements )
                             throws XMLParsingException {
         if ( xmlStream.getEventType() != START_ELEMENT ) {
-            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_1", getEventTypeString( xmlStream.getEventType() ),
-                                              ArrayUtils.join( ",", expectedElements ) );
+            String msg = "Found a '" + getEventTypeString( xmlStream.getEventType() )
+                         + "' event, but one of the following elements is required at this position: '"
+                         + ArrayUtils.join( ",", expectedElements ) + "'.";
             throw new XMLParsingException( xmlStream, msg );
         }
         if ( !expectedElements.contains( xmlStream.getName() ) ) {
-            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_2", xmlStream.getName(),
-                                              ArrayUtils.join( ",", expectedElements ) );
+            String msg = "Found a '" + xmlStream.getName()
+                         + "' element, but one of the following elements is required at this position: '"
+                         + ArrayUtils.join( ",", expectedElements ) + "'.";
             throw new XMLParsingException( xmlStream, msg );
         }
     }
@@ -437,8 +440,8 @@ public class XMLStreamUtils {
     public static void require( XMLStreamReader xmlStream, int eventType )
                             throws XMLParsingException {
         if ( xmlStream.getEventType() != eventType ) {
-            String msg = Messages.getMessage( "XML_UNEXPECTED_TYPE", getEventTypeString( xmlStream.getEventType() ),
-                                              getEventTypeString( eventType ) );
+            String msg = "Encountered a " + getEventTypeString( xmlStream.getEventType() ) + " event, but a "
+                         + getEventTypeString( eventType ) + " event is required at this position.";
             throw new XMLParsingException( xmlStream, msg );
         }
     }
@@ -446,8 +449,8 @@ public class XMLStreamUtils {
     public static void requireNextTag( XMLStreamReader xmlStream, int eventType )
                             throws XMLParsingException, XMLStreamException {
         if ( xmlStream.nextTag() != eventType ) {
-            String msg = Messages.getMessage( "XML_UNEXPECTED_TYPE", getEventTypeString( xmlStream.getEventType() ),
-                                              getEventTypeString( eventType ) );
+            String msg = "Encountered a " + getEventTypeString( xmlStream.getEventType() ) + " event, but a "
+                         + getEventTypeString( eventType ) + " event is required at this position.";
             throw new XMLParsingException( xmlStream, msg );
         }
     }
