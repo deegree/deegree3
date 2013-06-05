@@ -35,17 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -166,125 +157,6 @@ public class FileUtils {
     }
 
     /**
-     * Writes the given {@link String} to the specified file.
-     * 
-     * @param file
-     *            file to write to
-     * @param content
-     */
-    public static void writeFile( File file, String content ) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter( new FileWriter( file ) );
-            writer.write( content );
-        } catch ( IOException e ) {
-            LOG.error( "Could not write to file '" + file.getAbsolutePath() + "'.", e );
-        } finally {
-            if ( writer != null ) {
-                try {
-                    writer.close();
-                } catch ( IOException e ) {
-                    LOG.error( "Error closing file '" + file.getAbsolutePath() + "'.", e );
-                }
-            }
-        }
-    }
-
-    /**
-     * Writes the given {@link String} to a temporary file (created from specified prefix and suffix).
-     * 
-     * @see File#createTempFile(String, String)
-     * @param filePrefix
-     *            prefix for the temp file name, must be at least three characters long
-     * @param fileSuffix
-     *            suffix for the temp file name, can be null (then ".tmp" is used)
-     * @param content
-     */
-    public static void writeTempFile( String filePrefix, String fileSuffix, String content ) {
-        try {
-            File tmpFile = File.createTempFile( filePrefix, fileSuffix );
-            writeFile( tmpFile, content );
-        } catch ( IOException e ) {
-            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".",
-                       e );
-        }
-    }
-
-    /**
-     * Writes the given binary data to the specified file.
-     * 
-     * @param file
-     *            file to write to
-     * @param data
-     *            binary data to be written
-     */
-    public static void writeBinaryFile( File file, byte[] data ) {
-        BufferedOutputStream out = null;
-        try {
-            out = new BufferedOutputStream( new FileOutputStream( file ) );
-            out.write( data );
-        } catch ( IOException e ) {
-            LOG.error( "Could not write to file '" + file.getAbsolutePath() + "'.", e );
-        } finally {
-            if ( out != null ) {
-                try {
-                    out.close();
-                } catch ( IOException e ) {
-                    LOG.error( "Error closing file '" + file.getAbsolutePath() + "'.", e );
-                }
-            }
-        }
-    }
-
-    /**
-     * Writes the given binary data to a temporary file (created from specified prefix and suffix).
-     * 
-     * @see File#createTempFile(String, String)
-     * @param filePrefix
-     *            prefix for the temp file name, must be at least three characters long
-     * @param fileSuffix
-     *            suffix for the temp file name, can be null (then ".tmp" is used)
-     * @param data
-     *            binary data to be written
-     */
-    public static void writeBinaryTempFile( String filePrefix, String fileSuffix, byte[] data ) {
-        try {
-            File tmpFile = File.createTempFile( filePrefix, fileSuffix );
-            writeBinaryFile( tmpFile, data );
-        } catch ( IOException e ) {
-            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".",
-                       e );
-        }
-    }
-
-    /**
-     * Converts a <code>file:/...</code> <code>URL</code> into a file.
-     * <p>
-     * NOTE: The implementation uses an idea from <a
-     * href="http://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html">Kohsuke Kawaguchi</a>.
-     * </p>
-     * 
-     * @param url
-     *            <code>file:/...</code> URL
-     * @return corresponding file object
-     * @throws IllegalArgumentException
-     *             if the given URL is not a <code>file:/...</code> URL
-     */
-    public static File getAsFile( URL url )
-                            throws IllegalArgumentException {
-
-        LOG.debug( "Protocol: '" + url.getProtocol() + "'" );
-
-        File f;
-        try {
-            f = new File( url.toURI() );
-        } catch ( URISyntaxException e ) {
-            f = new File( url.getPath() );
-        }
-        return f;
-    }
-
-    /**
      * Find the files in the given directory (and sub-directories) which match the given extension pattern(s).
      * 
      * @param topDirectory
@@ -354,52 +226,6 @@ public class FileUtils {
             }
         };
         return filter;
-    }
-
-    /**
-     * reads a Text file from its resource. For accessing the resource an <code>InputStreamReader</code> with encoding
-     * read from <code>CharsetUtils.getSystemCharset()</code>
-     * 
-     * @param url
-     * @return contents of the url as a {@link StringBuffer}
-     * @throws IOException
-     */
-    public static StringBuffer readTextFile( URL url )
-                            throws IOException {
-        return readTextFile( url.openStream() );
-    }
-
-    /**
-     * reads a Text file from its resource. For accessing the resource an <code>InputStreamReader</code> with encoding
-     * read from <code>CharsetUtils.getSystemCharset()</code>
-     * 
-     * @param is
-     * @return contents of the input stream as a {@link StringBuffer}
-     * @throws IOException
-     */
-    public static StringBuffer readTextFile( InputStream is )
-                            throws IOException {
-        InputStreamReader isr = new InputStreamReader( is, getSystemCharset() );
-        return readTextFile( isr );
-    }
-
-    /**
-     * reads a Text file from its resource.
-     * 
-     * @param reader
-     * @return contents of the reader as a {@link StringBuffer}
-     * @throws IOException
-     */
-    public static StringBuffer readTextFile( Reader reader )
-                            throws IOException {
-        StringBuffer sb = new StringBuffer( 10000 );
-        int c = 0;
-        while ( ( c = reader.read() ) > -1 ) {
-            sb.append( (char) c );
-        }
-        reader.close();
-
-        return sb;
     }
 
     /**

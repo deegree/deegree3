@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.slf4j.Logger;
-
 /**
  * This class contains static utility methods for writing files when a log is set to debug.
  * 
@@ -50,90 +45,6 @@ import org.slf4j.Logger;
  * 
  */
 public class LogUtils {
-
-    /**
-     * Writes the given {@link String} to the specified file, if the log level is set to debug. *
-     * 
-     * @param log
-     *            the log to check for the log level
-     * @param file
-     *            file to write to
-     * @param content
-     */
-    public static void writeFile( Logger log, File file, String content ) {
-        if ( log.isDebugEnabled() ) {
-            log.debug( "Writing debug file '" + file.getAbsolutePath() + "'." );
-            FileUtils.writeFile( file, content );
-        }
-    }
-
-    /**
-     * Writes the given {@link String} to a temporary file (created from specified prefix and suffix), if the log level
-     * is set to debug.
-     * 
-     * @see File#createTempFile(String, String) *
-     * @param log
-     *            the log to check for the log level
-     * @param filePrefix
-     *            prefix for the temp file name, must be at least three characters long
-     * @param fileSuffix
-     *            suffix for the temp file name, can be null (then ".tmp" is used)
-     * @param content
-     */
-    public static void writeTempFile( Logger log, String filePrefix, String fileSuffix, String content ) {
-        if ( log.isDebugEnabled() ) {
-            try {
-                File file = File.createTempFile( filePrefix, fileSuffix );
-                writeFile( log, file, content );
-            } catch ( IOException e ) {
-                log.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix
-                           + ".", e );
-            }
-        }
-    }
-
-    /**
-     * Writes the given binary data to the specified file, if the log level is set to debug.
-     * 
-     * @param log
-     *            the log to check for the log level
-     * @param file
-     *            file to write to
-     * @param data
-     *            binary data to be written
-     */
-    public static void writeBinaryFile( Logger log, File file, byte[] data ) {
-        if ( log.isDebugEnabled() ) {
-            log.debug( "Writing binary debug file '" + file.getAbsolutePath() + "'." );
-            FileUtils.writeBinaryFile( file, data );
-        }
-    }
-
-    /**
-     * Writes the given binary data to a temporary file (created from specified prefix and suffix), if the log level is
-     * set to debug.
-     * 
-     * @see File#createTempFile(String, String) *
-     * @param log
-     *            the log to check for the log level
-     * @param filePrefix
-     *            prefix for the temp file name, must be at least three characters long
-     * @param fileSuffix
-     *            suffix for the temp file name, can be null (then ".tmp" is used)
-     * @param data
-     *            binary data to be written
-     */
-    public static void writeBinaryTempFile( Logger log, String filePrefix, String fileSuffix, byte[] data ) {
-        if ( log.isDebugEnabled() ) {
-            try {
-                File file = File.createTempFile( filePrefix, fileSuffix );
-                writeBinaryFile( log, file, data );
-            } catch ( IOException e ) {
-                log.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix
-                           + ".", e );
-            }
-        }
-    }
 
     /**
      * Create a string as follows: ${message} + took: ... {[ms]}{[second|minute][s]} the current time millis will be
