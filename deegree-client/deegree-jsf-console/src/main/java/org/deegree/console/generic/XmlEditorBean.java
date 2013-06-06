@@ -35,12 +35,17 @@
 package org.deegree.console.generic;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -49,6 +54,7 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.workspace.ResourceMetadata;
@@ -166,7 +172,10 @@ public class XmlEditorBean implements Serializable {
 
     public String save() {
         activate();
-        return nextView;
+        if ( checkValidity() ) {
+            return nextView;
+        }
+        return null;
     }
 
     public String getResourceProviderClass() {
@@ -212,6 +221,32 @@ public class XmlEditorBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
+    }
+
+    public boolean checkValidity() {
+        try {
+            InputStream xml = new ByteArrayInputStream( content.getBytes( "UTF-8" ) );
+            String[] schemas = new String[] { schemaUrl };
+            List<String> results = SchemaValidator.validate( xml, schemas );
+            if ( results.size() > 0 ) {
+                for ( String result : results ) {
+                    FacesMessage fm = getFacesMessage( SEVERITY_ERROR,
+                                                       "org.deegree.client.core.component.HtmlInputConfiguration.VALIDATION_FAILED",
+                                                       result );
+                    FacesContext.getCurrentInstance().addMessage( null, fm );
+                }
+                return false;
+            }
+        } catch ( UnsupportedEncodingException e ) {
+            LOG.error( "UTF-8 is not supported!" );
+            return true;
+        }
+        return true;
+    }
+
+    public String validate() {
+        checkValidity();
+        return null;
     }
 
 }
