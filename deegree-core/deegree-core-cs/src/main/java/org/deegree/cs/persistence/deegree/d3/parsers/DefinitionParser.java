@@ -57,7 +57,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
@@ -198,7 +198,7 @@ public abstract class DefinitionParser {
     private void openReader() {
         try {
             synchronized ( LOCK ) {
-                configStream = ProxyUtils.openURLConnection( configURL ).getInputStream();
+                configStream = ProxySettings.openURLConnection( configURL ).getInputStream();
                 this.configReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.toExternalForm(),
                                                                                          this.configStream );
                 // move from start document.

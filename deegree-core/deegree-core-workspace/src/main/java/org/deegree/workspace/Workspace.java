@@ -158,6 +158,13 @@ public interface Workspace {
     <T extends ResourceManager<? extends Resource>> T getResourceManager( Class<T> managerClass );
 
     /**
+     * Returns all known resource managers.
+     * 
+     * @return never <code>null</code>
+     */
+    List<ResourceManager<? extends Resource>> getResourceManagers();
+
+    /**
      * Can be used to obtain a list of resource ids for a specific resource type.
      * 
      * @param providerClass

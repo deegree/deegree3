@@ -38,7 +38,7 @@ package org.deegree.services.config.actions;
 import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +47,9 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
 
 /**
  * 
@@ -62,16 +65,21 @@ public class Restart {
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
         resp.setContentType( "text/plain" );
-        // TODO handle case of partial workspace restart
 
         try {
+            if ( p.second != null ) {
+                Workspace ws = p.first.getNewWorkspace();
+                List<ResourceIdentifier<?>> ids = WorkspaceUtils.getPossibleIdentifiers( ws, p.second );
+                for ( ResourceIdentifier<?> id : ids ) {
+                    WorkspaceUtils.reinitializeChain( ws, id );
+                }
+                return;
+            }
+
             OGCFrontController fc = OGCFrontController.getInstance();
             fc.setActiveWorkspaceName( p.first.getName() );
             fc.reload();
-        } catch ( IOException e ) {
-            IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            return;
-        } catch ( URISyntaxException e ) {
+        } catch ( Exception e ) {
             IOUtils.write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
             return;
         }

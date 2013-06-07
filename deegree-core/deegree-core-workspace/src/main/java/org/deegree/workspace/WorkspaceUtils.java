@@ -74,7 +74,11 @@ public class WorkspaceUtils {
     public static void reinitializeChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
         ResourceNode<? extends Resource> node = workspace.getDependencyGraph().getNode( id );
         List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
-        list.add( workspace.getResourceMetadata( id.getProvider(), id.getId() ) );
+        ResourceMetadata<? extends Resource> meta = workspace.getResourceMetadata( id.getProvider(), id.getId() );
+        if ( meta == null ) {
+            return;
+        }
+        list.add( meta );
         collectDependencies( list, node );
         collectDependents( list, node );
         ResourceGraph g = new ResourceGraph( list );
@@ -99,8 +103,10 @@ public class WorkspaceUtils {
             return;
         }
         for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
-            list.add( n.getMetadata() );
-            collectDependencies( list, n );
+            if ( n.getMetadata() != null ) {
+                list.add( n.getMetadata() );
+                collectDependencies( list, n );
+            }
         }
     }
 
@@ -114,9 +120,14 @@ public class WorkspaceUtils {
      */
     public static void collectDependents( List<ResourceMetadata<? extends Resource>> list,
                                           ResourceNode<? extends Resource> node ) {
+        if ( node == null ) {
+            return;
+        }
         for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
-            list.add( n.getMetadata() );
-            collectDependents( list, n );
+            if ( n.getMetadata() != null ) {
+                list.add( n.getMetadata() );
+                collectDependents( list, n );
+            }
         }
     }
 
@@ -195,6 +206,46 @@ public class WorkspaceUtils {
         } catch ( Exception e ) {
             throw new ResourceInitException( "Unable to load URL " + content + ": " + e.getLocalizedMessage(), e );
         }
+    }
+
+    /**
+     * Searches for resource managers corresponding to a workspace path.
+     * 
+     * @param workspace
+     *            may not be <code>null</code>
+     * @param path
+     *            may not be <code>null</code>, may contain other path elements
+     * @return a list of matching resource managers, may be empty but never <code>null</code>
+     */
+    public static List<ResourceManager<?>> getManagersForWorkspacePath( Workspace workspace, String path ) {
+        List<ResourceManager<?>> result = new ArrayList<ResourceManager<?>>();
+        List<ResourceManager<?>> list = workspace.getResourceManagers();
+        for ( ResourceManager<?> mgr : list ) {
+            ResourceManagerMetadata<?> md = mgr.getMetadata();
+            if ( path.startsWith( md.getWorkspacePath() ) ) {
+                result.add( mgr );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns a list of possible resource identifiers for a given workspace path.
+     * 
+     * @param workspace
+     * @param path
+     * @return
+     */
+    public static List<ResourceIdentifier<?>> getPossibleIdentifiers( Workspace workspace, String path ) {
+        List<ResourceManager<?>> list = getManagersForWorkspacePath( workspace, path );
+        List<ResourceIdentifier<?>> result = new ArrayList<ResourceIdentifier<?>>();
+        for ( ResourceManager<?> mgr : list ) {
+            Class<?> cls = mgr.getMetadata().getProviderClass();
+            int one = mgr.getMetadata().getWorkspacePath().endsWith( "/" ) ? 0 : 1;
+            String id = path.substring( mgr.getMetadata().getWorkspacePath().length() + one );
+            result.add( new DefaultResourceIdentifier( cls, id ) );
+        }
+        return result;
     }
 
 }

@@ -299,6 +299,11 @@ public class DefaultWorkspace implements Workspace {
     }
 
     @Override
+    public List<ResourceManager<? extends Resource>> getResourceManagers() {
+        return new ArrayList<ResourceManager<?>>( resourceManagers.values() );
+    }
+
+    @Override
     public void startup() {
         if ( startedUp ) {
             return;

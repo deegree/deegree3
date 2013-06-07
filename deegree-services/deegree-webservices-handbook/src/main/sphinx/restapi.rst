@@ -23,11 +23,15 @@ Here's an example output::
    GET /config/download[/path]                                  - download currently running workspace or file in workspace
    GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace
    GET /config/restart                                          - restart currently running workspace
+   GET /config/restart[/path]                                   - restarts all resources connected to the specified one
    GET /config/restart/wsname                                   - restart with workspace <wsname>
    GET /config/listworkspaces                                   - list available workspace names
    GET /config/list[/path]                                      - list currently running workspace or directory in workspace
    GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace
    GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set
+   GET /config/crs/list                                         - list available CRS definitions
+   POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)
+   GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false
    PUT /config/upload/wsname.zip                                - upload workspace <wsname>
    PUT /config/upload/path/file                                 - upload file into current workspace
    PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>
@@ -58,7 +62,7 @@ _____________________
 Restarting
 _____________________
 
-You can restart the currently running workspace using ``http://localhost:8080/deegree-webservices/config/restart``, or start another workspace using ``http://localhost:8080/deegree-webservices/config/restart/anotherworkspace``.
+You can restart the currently running workspace using ``http://localhost:8080/deegree-webservices/config/restart``, or start another workspace using ``http://localhost:8080/deegree-webservices/config/restart/anotherworkspace``. To restart all resources connected a specific one use eg. ``http://localhost:8080/deegree-webservices/config/restart/datasources/feature/inspire``.
 
 ____________________
 Listing
@@ -89,3 +93,9 @@ Invalidating tile store caches
 ________________________________
 
 This is a special operation only possible for ``CachingTileStore`` resources. You can invalidate the whole cache, or just a part of it by requesting ``http://localhost:8080/deegree-webservices/config/invalidate/datasources/tile/configname/matrixsetname``. You can specify a bounding box by appending it in the form ``?bbox=minx,miny,maxx,maxy`` (just like in WMS requests).
+
+________________
+CRS queries
+________________
+
+You can get a list of all available CRS definitions by requesting ``http://localhost:8080/deegree-webservices/config/crs/list``. Check if a specific CRS is configured in deegree by requesting ``http://localhost:8080/deegree-webservices/config/crs/EPSG:12345``. The response will be the text ``true`` or ``false``, depending whether the CRS is defined or not. If you have a WKT CRS definition, you can POST against ``http://localhost:8080/deegree-webservices/config/crs/getcodes`` to get a list of corresponding identifiers (experimental). Use the ``wkt`` parameter when posting to send the WKT definition.

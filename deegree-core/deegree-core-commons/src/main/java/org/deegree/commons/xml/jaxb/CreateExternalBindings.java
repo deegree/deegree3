@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.utils.jaxb;
+package org.deegree.commons.xml.jaxb;
 
 import java.io.BufferedReader;
 import java.io.File;
