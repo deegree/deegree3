@@ -33,6 +33,14 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
+        <dependencies>
+          <!-- workaround for a maven-jaxb2-plugin issue, project dependencies seem not to be added properly -->
+          <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-tilestore-commons</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
