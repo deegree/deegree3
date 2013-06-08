@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
 
 <h:head />
 
@@ -22,10 +22,8 @@
       <h:outputStylesheet name="codemirror-fix.css" />
       <h:outputScript library="codemirror" name="lib/codemirror.js" />
       <h:outputScript library="codemirror" name="mode/xml/xml.js" />
-  
-      <h:form prependId="false">
-        <p:messages id="messages" showSummary="true" autoUpdate="true" closable="true" />
-        <p:editor rendered="false" />
+
+      <h:form prependId="false" styleClass="form-main">
         <h:panelGroup id="xmleditor" layout="block">
           <h:panelGroup id="xmleditor-actions" layout="block">
             <h:outputText value="Editing XML resource: ${xmlEditorBean.id} (${xmlEditorBean.resourceProviderClass})" />
@@ -36,7 +34,7 @@
               action="${xmlEditorBean.cancel}" />
             <h:commandButton styleClass="buttonCancel" value="Validate" onclick="save()"
               action="${xmlEditorBean.validate}">
-              <f:ajax render="messages" />
+              <f:ajax execute="xmltextarea" />
             </h:commandButton>
             <h:commandButton styleClass="button" value="Toggle fullscreen" onclick="toggleFullscreen(); return false" />
           </h:panelGroup>
@@ -70,6 +68,10 @@
 								} else {
 									main.className = 'main';
 								}
+							}
+							function jumpTo(line, column) {
+								editor.focus();
+								editor.getDoc().setCursor(line - 1, column - 1);								
 							}
 							activateEditor();
 						</script>

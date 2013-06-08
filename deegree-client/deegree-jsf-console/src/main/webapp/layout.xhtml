@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
 <h:head>
   <title>deegree 3 console</title>
   <h:outputStylesheet name="pagelayout.css" />
@@ -54,6 +54,11 @@
     </h:panelGroup>
     <h:panelGroup id="main" layout="block" styleClass="main">
       <h:panelGroup rendered="#{logBean.loggedIn}">
+        <p:messages id="messages" escape="false" showSummary="true" autoUpdate="true" closable="true" />
+        <!-- Workaround for JSF bug -->
+        <h:form rendered="false">
+          <p:editor />
+        </h:form>
         <ui:insert name="center" />
       </h:panelGroup>
       <h:panelGroup rendered="#{!logBean.loggedIn}">

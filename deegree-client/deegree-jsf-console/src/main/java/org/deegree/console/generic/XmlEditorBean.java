@@ -35,7 +35,9 @@
 package org.deegree.console.generic;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static javax.faces.application.FacesMessage.SEVERITY_WARN;
+import static javax.faces.context.FacesContext.getCurrentInstance;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
@@ -54,6 +56,8 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.xerces.xni.parser.XMLParseException;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
@@ -171,8 +175,20 @@ public class XmlEditorBean implements Serializable {
     }
 
     public String save() {
-        activate();
         if ( checkValidity() ) {
+            activate();
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Saved configuration.", null );
+            getCurrentInstance().addMessage( null, fm );
+            return nextView;
+        }
+        return null;
+    }
+
+    public String saveAndApply() {
+        if ( checkValidity() ) {
+            activate();
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Saved configuration.", null );
+            getCurrentInstance().addMessage( null, fm );
             return nextView;
         }
         return null;
@@ -184,6 +200,43 @@ public class XmlEditorBean implements Serializable {
 
     public void setResourceProviderClass( String providerClass ) {
         this.resourceProviderClass = providerClass;
+    }
+
+    private void saveFile() {
+        try {
+            if ( resourceProviderClass == null ) {
+                FileUtils.write( new File( fileName ), content );
+                return;
+            }
+
+            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+
+            workspace.destroy( md.getIdentifier() );
+
+            md.getLocation().setContent( IOUtils.toInputStream( content ) );
+            // special handling because of non-identity between id and filename:
+            if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
+                if ( workspace instanceof DefaultWorkspace ) {
+                    File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
+                    file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
+                    FileUtils.write( file, content );
+                } else {
+                    LOG.warn( "Could not persist metadata configuration." );
+                }
+            } else {
+                workspace.getLocationHandler().persist( md.getLocation() );
+            }
+
+            workspace.getLocationHandler().activate( md.getLocation() );
+            WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
+        } catch ( Exception t ) {
+            t.printStackTrace();
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return;
+        }
     }
 
     private void activate() {
@@ -227,13 +280,12 @@ public class XmlEditorBean implements Serializable {
         try {
             InputStream xml = new ByteArrayInputStream( content.getBytes( "UTF-8" ) );
             String[] schemas = new String[] { schemaUrl };
-            List<String> results = SchemaValidator.validate( xml, schemas );
-            if ( results.size() > 0 ) {
-                for ( String result : results ) {
-                    FacesMessage fm = getFacesMessage( SEVERITY_ERROR,
-                                                       "org.deegree.client.core.component.HtmlInputConfiguration.VALIDATION_FAILED",
-                                                       result );
-                    FacesContext.getCurrentInstance().addMessage( null, fm );
+            List<SchemaValidationEvent> events = SchemaValidator.validate( xml, schemas );
+            if ( !events.isEmpty() ) {
+                for ( SchemaValidationEvent event : events ) {
+                    String msg = toString( event );
+                    FacesMessage fm = new FacesMessage( SEVERITY_WARN, msg, null );
+                    getCurrentInstance().addMessage( null, fm );
                 }
                 return false;
             }
@@ -244,9 +296,17 @@ public class XmlEditorBean implements Serializable {
         return true;
     }
 
-    public String validate() {
-        checkValidity();
-        return null;
+    private String toString( SchemaValidationEvent event ) {
+        XMLParseException e = event.getException();
+        return "<a href=\"javascript:jumpTo(" + e.getLineNumber() + "," + e.getColumnNumber() + ")\">Error near line " + e.getLineNumber()
+               + ", column " + e.getColumnNumber() + "</a>: " + e.getLocalizedMessage();
     }
 
+    public String validate() {
+        if ( checkValidity() ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Document is valid.", null );
+            getCurrentInstance().addMessage( null, fm );
+        }
+        return null;
+    }
 }
