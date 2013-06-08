@@ -13,10 +13,7 @@
   </h:panelGroup>
   <h:panelGroup layout="block" style="margin-bottom:20px;">
     <dgc:menuitem displayname="#{labels.link_genericClient}" target="/console/client/index" />
-    <h:outputLink styleClass="navi menuitem"
-      value="#{facesContext.externalContext.requestContextPath}/console/webservices/wms/wms.html">
-      <h:outputText value="#{labels.link_wmsClient}" />
-    </h:outputLink>
+    <dgc:menuitem displayname="#{labels.link_wmsClient}" target="/console/webservices/wms/wms" />
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.loggedIn}">
     <h:panelGroup layout="block">
