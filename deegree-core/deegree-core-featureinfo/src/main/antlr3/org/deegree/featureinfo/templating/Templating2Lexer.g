@@ -12,6 +12,7 @@ TemplateDefinitionStart: '<?template ';
 MapDefinitionStart: '<?map ';
 FeatureCallStart: '<?feature ';
 PropertyCallStart: '<?property ';
+ForcePropertyCallStart: '<?forceproperty ';
 NameStart: '<?name';
 ValueStart: '<?value';
 OddStart: '<?odd';
