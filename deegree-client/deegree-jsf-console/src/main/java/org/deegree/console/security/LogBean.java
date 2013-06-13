@@ -1,9 +1,12 @@
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ This file is part of deegree
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -19,25 +22,13 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.console.security;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static javax.faces.application.FacesMessage.SEVERITY_WARN;
-import static org.deegree.console.Navigation.CHANGE_PASSWORD;
-import static org.deegree.console.Navigation.CONSOLE;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,28 +41,26 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * JSF backing bean for logging in, logging out, checking login status and password change.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: mschneider $
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
+ * @since 3.3
  */
 @ManagedBean
 @SessionScoped
 public class LogBean implements Serializable {
 
-    private static final Logger LOG = LoggerFactory.getLogger( LogBean.class );
+    private static final long serialVersionUID = -4865071415988778817L;
 
     private static final String PASSWORD_FILE = "console.pw";
 
-    private static final long serialVersionUID = -4865071415988778817L;
+    public static final String CONSOLE = "/index";
 
-    private final PasswordFile passwordFile;
+    public static final String CHANGE_PASSWORD = "/console/security/password";
 
     private boolean loggedIn = false;
 
@@ -81,9 +70,7 @@ public class LogBean implements Serializable {
 
     private String newPassword2;
 
-    public LogBean() {
-        passwordFile = new PasswordFile( getPasswordFile() );
-    }
+    private final PasswordFile passwordFile = new PasswordFile( getPasswordFile() );
 
     private File getPasswordFile() {
         File workspace = new File( DeegreeWorkspace.getWorkspaceRoot() );

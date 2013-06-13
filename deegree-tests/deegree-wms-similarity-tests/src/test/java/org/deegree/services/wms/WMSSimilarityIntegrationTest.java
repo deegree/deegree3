@@ -84,9 +84,12 @@ public class WMSSimilarityIntegrationTest {
 
     private List<byte[]> response;
 
-    public WMSSimilarityIntegrationTest( Object wasXml, String request, List<byte[]> response ) {
+    private String name;
+
+    public WMSSimilarityIntegrationTest( Object wasXml, String request, List<byte[]> response, String name ) {
         // we only use .kvp for WMS
         this.request = request;
+        this.name = name;
         if ( !this.request.startsWith( "?" ) ) {
             this.request = "?" + this.request;
         }
@@ -149,7 +152,7 @@ public class WMSSimilarityIntegrationTest {
             } catch ( Throwable t ) {
             }
         }
-        Assert.assertEquals( "Images are not similar enough. Request: " + request, 1.0, sim, 0.01 );
+        Assert.assertEquals( "Images are not similar enough for " + name + ". Request: " + request, 1.0, sim, 0.01 );
     }
 
 }

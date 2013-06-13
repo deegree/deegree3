@@ -89,8 +89,6 @@ public class Capabilities130XMLAdapter {
 
     private final WMSController controller;
 
-    private OWSMetadataProvider metadata;
-
     private WmsCapabilities130MetadataWriter metadataWriter;
 
     private WmsCapabilities130ThemeWriter themeWriter;
@@ -106,7 +104,6 @@ public class Capabilities130XMLAdapter {
     public Capabilities130XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
                                       OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
                                       WMSController controller ) {
-        this.metadata = metadata;
         this.getUrl = getUrl;
         this.service = service;
         this.controller = controller;
@@ -174,13 +171,7 @@ public class Capabilities130XMLAdapter {
 
         writeExtendedCapabilities( writer );
 
-        if ( service.isNewStyle() ) {
-            writeThemes( writer, service.getThemes() );
-        } else {
-            WmsCapabilities130LegacyWriter lw = new WmsCapabilities130LegacyWriter( service, getUrl, metadata,
-                                                                                    controller, this );
-            lw.writeLayers( writer, service.getRootLayer() );
-        }
+        writeThemes( writer, service.getThemes() );
 
         writer.writeEndElement();
     }

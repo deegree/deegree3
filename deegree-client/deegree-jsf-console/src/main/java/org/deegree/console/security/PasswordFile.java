@@ -1,10 +1,12 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-client/deegree-jsf-console/src/main/java/org/deegree/client/generic/ApplicationBean.java $
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ This file is part of deegree
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -20,19 +22,9 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.console.security;
 
 import static java.lang.Character.digit;
@@ -43,11 +35,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-public class PasswordFile {
+public class PasswordFile implements Serializable {
+
+    private static final long serialVersionUID = -8331316987059763053L;
 
     private final File file;
 
