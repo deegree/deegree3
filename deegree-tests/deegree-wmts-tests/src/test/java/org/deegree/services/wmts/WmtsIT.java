@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -124,7 +125,7 @@ public class WmtsIT {
         String[] schemaUrls = new String[2];
         schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
         schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
-        List<String> errors = SchemaValidator.validate( response, schemaUrls );
+        List<SchemaValidationEvent> errors = SchemaValidator.validate( response, schemaUrls );
         Assert.assertEquals( 0, errors.size() );
     }
 
@@ -136,7 +137,7 @@ public class WmtsIT {
         String[] schemaUrls = new String[2];
         schemaUrls[0] = WFSConstants.WFS_110_SCHEMA_URL;
         schemaUrls[1] = WmtsIT.class.getResource( "dominant_vegetation.xsd" ).toExternalForm();
-        List<String> errors = SchemaValidator.validate( response, schemaUrls );
+        List<SchemaValidationEvent> errors = SchemaValidator.validate( response, schemaUrls );
         Assert.assertEquals( 0, errors.size() );
     }
 
