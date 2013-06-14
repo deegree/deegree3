@@ -51,4 +51,10 @@ public class RemoteOwsManagerBean extends AbstractResourceManagerBean<RemoteOWSM
     public RemoteOwsManagerBean() {
         super( RemoteOWSManager.class );
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/connection/ows/index";
+    }
+
 }

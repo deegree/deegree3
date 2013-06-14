@@ -592,14 +592,19 @@ public class ISORecord implements MetadataRecord {
         OMElement rootEl = (OMElement) rootNode;
         OMNode prevSib = null;
 
+        List<OMElement> toDetach = new ArrayList<OMElement>();
+
         // replace them
         Iterator<?> childs = rootEl.getChildrenWithName( newEl.getQName() );
         while ( childs.hasNext() ) {
             Object next = childs.next();
             if ( next instanceof OMElement ) {
                 prevSib = ( (OMElement) next ).getPreviousOMSibling();
-                ( (OMElement) next ).detach();
+                toDetach.add( (OMElement) next );
             }
+        }
+        for ( OMElement om : toDetach ) {
+            om.detach();
         }
         prevSib.insertSiblingAfter( newEl );
     }

@@ -43,11 +43,9 @@ package org.deegree.services.wmts.controller;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.protocol.wmts.WMTSConstants.VERSION_100;
-import static org.deegree.services.wmts.WMTSProvider.IMPLEMENTATION_METADATA;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -56,18 +54,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.RequestUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
+import org.deegree.services.wmts.jaxb.DeegreeWMTS;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -86,25 +87,19 @@ public class WMTSController extends AbstractOWS {
 
     private WmtsRequestDispatcher dispatcher;
 
-    /**
-     * @param configURL
-     * @param serviceInfo
-     */
-    public WMTSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
-        super( configURL, serviceInfo );
+    public WMTSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
-        super.init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
-
-        WmtsBuilder builder = new WmtsBuilder( controllerConf, workspace );
+                      Object controllerConf ) {
+        WmtsBuilder builder = new WmtsBuilder( workspace, (DeegreeWMTS) controllerConf );
 
         this.metadataUrlTemplate = builder.getMetadataUrlTemplate();
 
-        dispatcher = new WmtsRequestDispatcher( controllerConf, mainMetadataConf, workspace, builder, getId() );
+        dispatcher = new WmtsRequestDispatcher( (DeegreeWMTS) controllerConf, serviceMetadata, workspace, builder,
+                                                getMetadata().getIdentifier().getId(), getMetadata().getLocation() );
     }
 
     @Override
@@ -113,6 +108,7 @@ public class WMTSController extends AbstractOWS {
                             throws ServletException, IOException {
         RequestUtils.getCurrentThreadRequestParameters().set( map );
         try {
+            ImplementationMetadata<?> serviceInfo = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
 
             String v = map.get( "VERSION" );
             Version version = v == null ? serviceInfo.getSupportedConfigVersions().iterator().next() : parseVersion( v );

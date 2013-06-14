@@ -51,39 +51,34 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.deegree.client.core.utils.SQLExecution;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 public class FeatureStoreConfig extends Config {
 
-    public FeatureStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
-        super( state, resourceManager, "/console/datastore/feature/index", true );
+    public FeatureStoreConfig( ResourceMetadata metadata, ResourceManager resourceManager ) {
+        super( metadata, resourceManager, "/console/datastore/feature/index", true );
     }
 
-    private FeatureStoreManager getFeatureStoreManager() {
-        DeegreeWorkspace ws = getWorkspace();
-        return ws.getSubsystemManager( FeatureStoreManager.class );
-    }
-
-    private DeegreeWorkspace getWorkspace() {
+    private Workspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
         return ws;
     }
 
     public boolean getSql() {
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         return fs != null && fs instanceof SQLFeatureStore;
     }
 
@@ -95,7 +90,7 @@ public class FeatureStoreConfig extends Config {
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return "/console/featurestore/buttons";
         }
-        SQLFeatureStore fs = (SQLFeatureStore) getFeatureStoreManager().get( getId() );
+        SQLFeatureStore fs = (SQLFeatureStore) getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         String connId = fs.getConnId();
         String[] sql = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
         SQLExecution execution = new SQLExecution( connId, sql, "/console/featurestore/buttons", getWorkspace() );
@@ -111,7 +106,7 @@ public class FeatureStoreConfig extends Config {
 
     public String openLoader()
                             throws Exception {
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         if ( fs == null ) {
             throw new Exception( "No feature store with id '" + getId() + "' known / active." );
         }
@@ -123,7 +118,7 @@ public class FeatureStoreConfig extends Config {
 
     public List<NamespaceBinding> getNamespaces() {
         Set<NamespaceBinding> namespaces = new TreeSet<NamespaceBinding>();
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         if ( fs == null ) {
             return Collections.emptyList();
         }
@@ -137,14 +132,14 @@ public class FeatureStoreConfig extends Config {
     }
 
     public String getNumFtsTotal() {
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         return "" + numFtsTotal;
     }
 
     public String getNumFtsAbstract() {
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
@@ -152,7 +147,7 @@ public class FeatureStoreConfig extends Config {
     }
 
     public String getNumFtsConcrete() {
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
         return "" + numFtsConcrete;
@@ -161,7 +156,7 @@ public class FeatureStoreConfig extends Config {
     public String getFtInfo()
                             throws IOException {
         StringBuffer sb = new StringBuffer();
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 
@@ -188,7 +183,7 @@ public class FeatureStoreConfig extends Config {
     public String getFcInfo()
                             throws IOException {
         StringBuffer sb = new StringBuffer();
-        FeatureStore fs = getFeatureStoreManager().get( getId() );
+        FeatureStore fs = getWorkspace().getResource( FeatureStoreProvider.class, getId() );
         AppSchema schema = fs.getSchema();
         FeatureType[] fts = schema.getRootFeatureTypes();
 

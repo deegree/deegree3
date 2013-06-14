@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.Arrays;
 import java.util.List;
 
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.container.TileContainer;
@@ -54,6 +55,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -79,8 +81,9 @@ public class TiledRaster extends AbstractRaster {
      * @param tileContainer
      *            wraps all tiles
      */
-    public TiledRaster( TileContainer tileContainer ) {
+    public TiledRaster( TileContainer tileContainer, ResourceMetadata<Coverage> metadata ) {
         super();
+        setMetadata( metadata );
         this.tileContainer = tileContainer;
     }
 
@@ -168,7 +171,7 @@ public class TiledRaster extends AbstractRaster {
 
         // use the default tile container.
         MemoryTileContainer resultTC = new MemoryTileContainer( ref, env, getRasterDataInfo() );
-        TiledRaster result = new TiledRaster( resultTC );
+        TiledRaster result = new TiledRaster( resultTC, metadata );
         List<AbstractRaster> tiles = getTileContainer().getTiles( env );
         if ( tiles == null || tiles.isEmpty() ) {
             // a tiledraster with no simple rasters should return the a simple raster with no data values. To do this we
@@ -227,7 +230,7 @@ public class TiledRaster extends AbstractRaster {
                                                              srcREnv.getResolutionY(), x, y );
         Envelope dstEnv = dstREnv.getEnvelope( source.getColumns(), source.getRows(), source.getCoordinateSystem() );
         RasterData srcData = source.getAsSimpleRaster().getRasterData();
-        SimpleRaster movedRaster = new SimpleRaster( srcData, dstEnv, dstREnv );
+        SimpleRaster movedRaster = new SimpleRaster( srcData, dstEnv, dstREnv, metadata );
         setSubRaster( dstEnv, movedRaster );
     }
 
@@ -297,6 +300,11 @@ public class TiledRaster extends AbstractRaster {
     @Override
     public RasterDataInfo getRasterDataInfo() {
         return this.tileContainer.getRasterDataInfo();
+    }
+
+    @Override
+    public void init() {
+        // nothing to do
     }
 
 }

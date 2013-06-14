@@ -40,7 +40,6 @@ import static java.util.Collections.EMPTY_LIST;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_100;
-import static org.deegree.services.wpvs.controller.WPVSProvider.IMPLEMENTATION_METADATA;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -61,9 +60,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
@@ -73,13 +70,13 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
@@ -90,6 +87,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wpvs.DeegreeWPVS;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
@@ -99,6 +97,9 @@ import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
 import org.deegree.services.wpvs.controller.getview.GetViewResponseParameters;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,34 +121,23 @@ public class WPVSController extends AbstractOWS {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
-
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/wpvs/3.0.0/wpvs_service_configuration.xsd";
-
-    private static final String PUBLISHED_SCHEMA = "/META-INF/schemas/wpvs/3.0.0/wpvs_published_information.xsd";
-
     private PerspectiveViewService service;
 
     private ServiceIdentificationType identification;
 
     private ServiceProviderType provider;
 
-    @SuppressWarnings("unused")
     private PublishedInformation publishedInformation;
 
     private List<String> allowedOperations = new LinkedList<String>();
 
-    public WPVSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
-        super( configURL, serviceInfo );
+    public WPVSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
-
-        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
-
+                      Object controllerConf ) {
         LOG.info( "Checking for JOGL." );
         JOGLChecker.check();
         LOG.info( "JOGL status check successful." );
@@ -155,12 +145,15 @@ public class WPVSController extends AbstractOWS {
         identification = serviceMetadata.getServiceIdentification();
         provider = serviceMetadata.getServiceProvider();
 
+        DeegreeWPVS cfg = (DeegreeWPVS) controllerConf;
+
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
         try {
-            publishedInformation = parsePublishedInformation( nsContext, controllerConf );
-            ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
-            service = new PerspectiveViewService( controllerConf, sc, workspace );
+            publishedInformation = cfg.getPublishedInformation();
+            parsePublishedInformation( nsContext, publishedInformation );
+            ServiceConfiguration sc = cfg.getServiceConfiguration();
+            service = new PerspectiveViewService( metadata.getLocation(), sc, workspace );
         } catch ( ServiceInitException e ) {
             throw new ResourceInitException( e.getMessage(), e );
         }
@@ -173,39 +166,23 @@ public class WPVSController extends AbstractOWS {
         return service;
     }
 
-    private PublishedInformation parsePublishedInformation( NamespaceBindings nsContext, XMLAdapter controllerConf )
-                            throws ResourceInitException {
-
-        XPath xp = new XPath( "wpvs:PublishedInformation", nsContext );
-        OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-        PublishedInformation result = null;
-        if ( elem != null ) {
-            result = (PublishedInformation) unmarshallConfig( CONFIG_JAXB_PACKAGE, PUBLISHED_SCHEMA, elem );
-            if ( result != null ) {
-                // mandatory
-                allowedOperations.add( WPVSRequestType.GetCapabilities.name() );
-                allowedOperations.add( WPVSRequestType.GetView.name() );
-                AllowedOperations configuredOperations = result.getAllowedOperations();
-                if ( configuredOperations != null ) {
-                    if ( configuredOperations.getGetDescription() != null ) {
-                        LOG.warn( "The GetDescription operation was configured, this operation is currently not supported by the WPVS." );
-                        allowedOperations.add( WPVSRequestType.GetDescription.name() );
-                    }
-                    if ( configuredOperations.getGetLegendGraphic() != null ) {
-                        LOG.warn( "The GetLegendGraphic operation was configured, this operation is currently not supported by the WPVS." );
-                        allowedOperations.add( WPVSRequestType.GetLegendGraphic.name() );
-                    }
+    private void parsePublishedInformation( NamespaceBindings nsContext, PublishedInformation result ) {
+        if ( result != null ) {
+            // mandatory
+            allowedOperations.add( WPVSRequestType.GetCapabilities.name() );
+            allowedOperations.add( WPVSRequestType.GetView.name() );
+            AllowedOperations configuredOperations = result.getAllowedOperations();
+            if ( configuredOperations != null ) {
+                if ( configuredOperations.getGetDescription() != null ) {
+                    LOG.warn( "The GetDescription operation was configured, this operation is currently not supported by the WPVS." );
+                    allowedOperations.add( WPVSRequestType.GetDescription.name() );
+                }
+                if ( configuredOperations.getGetLegendGraphic() != null ) {
+                    LOG.warn( "The GetLegendGraphic operation was configured, this operation is currently not supported by the WPVS." );
+                    allowedOperations.add( WPVSRequestType.GetLegendGraphic.name() );
                 }
             }
         }
-        return result;
-    }
-
-    private ServiceConfiguration parseServerConfiguration( NamespaceBindings nsContext, XMLAdapter controllerConf )
-                            throws ResourceInitException {
-        XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
-        OMElement elem = controllerConf.getRequiredElement( controllerConf.getRootElement(), xp );
-        return (ServiceConfiguration) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, elem );
     }
 
     @Override
@@ -225,7 +202,7 @@ public class WPVSController extends AbstractOWS {
             sendServiceException( new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE ), response );
             return;
         }
-        mappedRequest = (WPVSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
+        mappedRequest = (WPVSRequestType) ( (ImplementationMetadata) ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata() ).getRequestTypeByName( requestName );
 
         if ( mappedRequest == null ) {
             sendServiceException( new OWSException( "Unknown request: " + requestName + " is not known to the WPVS.",
@@ -385,4 +362,5 @@ public class WPVSController extends AbstractOWS {
         sendServiceException( new OWSException( "Currently only Http Get requests with key value pairs are supported.",
                                                 OWSException.OPERATION_NOT_SUPPORTED ), response );
     }
+
 }

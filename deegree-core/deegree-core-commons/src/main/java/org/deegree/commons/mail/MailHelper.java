@@ -51,7 +51,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.deegree.commons.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,7 +192,8 @@ public final class MailHelper {
             mbps.add( mbp );
             if ( attachment != null ) {
                 if ( attachment.length != mimeType.length ) {
-                    throw new SendMailException( Messages.getMessage( "MAIL_ATTACH" ) );
+                    throw new SendMailException(
+                                                 "Could not send mail because length of attachments and assigned mimetypes are different" );
                 }
                 for ( int i = 0; i < attachment.length; i++ ) {
                     mbp = new MimeBodyPart();
@@ -213,7 +213,7 @@ public final class MailHelper {
             LOG.debug( "Mail sent successfully! Header=" + eMess.getHeader() );
         } catch ( Exception e ) {
             LOG.error( e.getMessage(), e );
-            String s = Messages.getMessage( "MAIL_SEND_ERROR", eMess.getHeader() );
+            String s = "Error while sending message: " + eMess.getHeader();
             throw new SendMailException( s, e );
         }
     }
@@ -255,7 +255,8 @@ public final class MailHelper {
             mbps.add( mbp );
             if ( files != null ) {
                 if ( files.length != mimeType.length ) {
-                    throw new SendMailException( Messages.getMessage( "MAIL_ATTACH" ) );
+                    throw new SendMailException(
+                                                 "Could not send mail because length of attachments and assigned mimetypes are different" );
                 }
                 for ( int i = 0; i < files.length; i++ ) {
                     mbp = new MimeBodyPart();
@@ -275,8 +276,9 @@ public final class MailHelper {
             LOG.debug( "Mail sent successfully! Header=" + eMess.getHeader() );
         } catch ( Exception e ) {
             LOG.error( e.getMessage(), e );
-            String s = Messages.getMessage( "MAIL_SEND_ERROR", eMess.getHeader() );
+            String s = "Error while sending message: " + eMess.getHeader();
             throw new SendMailException( s, e );
         }
     }
+
 }

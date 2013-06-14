@@ -233,7 +233,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         for ( int band = 0; band < data.getBands(); band++ )
             newData = setEnhancedChannelData( newData, rasutil, band, band, contrastEnhancement );
 
-        AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
+        AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference(), null );
         return newRaster;
     }
 
@@ -283,7 +283,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
                                               channels.channelContrastEnhancements.get( "gray" ) );
 
         }
-        AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
+        AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference(), null );
         return newRaster;
     }
 
@@ -343,7 +343,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         double resx = cols * ref.getResolutionX() / ( cols - 2 );
         double resy = rows * ref.getResolutionY() / ( rows - 2 );
         ref = new RasterGeoReference( ref.getOriginLocation(), resx, resy, ref.getOrigin()[0], ref.getOrigin()[1] );
-        SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), ref );
+        SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), ref, null );
 
         final double zenith_rad = Math.toRadians( 90 - style.shaded.alt );
         final double azimuth_rad = Math.toRadians( 90 - style.shaded.azimuthAngle );

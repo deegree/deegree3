@@ -43,8 +43,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -56,6 +54,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
+import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.services.wpvs.config.RenderableDataset;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.DataObjectInfo;
@@ -63,6 +62,8 @@ import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
 import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;
 import org.deegree.services.wpvs.io.serializer.WROSerializer;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,11 +85,14 @@ public class FileBackend extends ModelBackend<Envelope> {
 
     private ModelFile<RenderablePrototype> prototypeFile;
 
+    private ResourceMetadata<RenderableStore> metadata;
+
     /**
      * @param billboardFile
      * @throws IOException
      */
-    public FileBackend( File billboardFile ) throws IOException {
+    public FileBackend( File billboardFile, ResourceMetadata<RenderableStore> metadata ) throws IOException {
+        this.metadata = metadata;
         treeFile = getTreeFile( billboardFile );
     }
 
@@ -98,7 +102,9 @@ public class FileBackend extends ModelBackend<Envelope> {
      * @param prototypeFile
      * @throws IOException
      */
-    public FileBackend( File entityFile, File prototypeFile ) throws IOException {
+    public FileBackend( File entityFile, File prototypeFile, ResourceMetadata<RenderableStore> metadata )
+                            throws IOException {
+        this.metadata = metadata;
         buildingFile = getBuildingFile( entityFile );
         this.prototypeFile = getPrototypeFile( prototypeFile );
     }
@@ -382,12 +388,19 @@ public class FileBackend extends ModelBackend<Envelope> {
         }
     }
 
+    @Override
     public void destroy() {
         // nothing to cleanup
     }
 
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    @Override
+    public void init() {
         // nothing to init
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
 }

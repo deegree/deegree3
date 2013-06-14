@@ -43,7 +43,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
@@ -61,6 +60,7 @@ import org.deegree.services.wfs.format.gml.request.GmlDescribeFeatureTypeHandler
 import org.deegree.services.wfs.format.gml.request.GmlGetFeatureHandler;
 import org.deegree.services.wfs.format.gml.request.GmlGetGmlObjectHandler;
 import org.deegree.services.wfs.format.gml.request.GmlGetPropertyValueHandler;
+import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

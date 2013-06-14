@@ -41,8 +41,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.migration;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -51,11 +51,12 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.layer.persistence.LayerStoreManager;
+import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.tools.migration.FeatureLayerExtractor.FeatureLayer;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
 
 /**
  * Responsible for creating new feature layer configurations.
@@ -67,16 +68,15 @@ import org.deegree.tools.migration.FeatureLayerExtractor.FeatureLayer;
  */
 class FeatureLayerWriter {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    FeatureLayerWriter( DeegreeWorkspace workspace ) {
+    FeatureLayerWriter( Workspace workspace ) {
         this.workspace = workspace;
     }
 
     void writeLayerConfigs( HashMap<String, List<FeatureLayer>> map, String crs )
                             throws XMLStreamException {
         XMLOutputFactory outfac = XMLOutputFactory.newInstance();
-        LayerStoreManager lmgr = workspace.getSubsystemManager( LayerStoreManager.class );
 
         for ( Entry<String, List<FeatureLayer>> e : map.entrySet() ) {
             String id = e.getKey();
@@ -127,8 +127,8 @@ class FeatureLayerWriter {
             writer.writeEndElement();
             writer.close();
 
-            lmgr.createResource( id, new ByteArrayInputStream( bos.toByteArray() ) );
-            lmgr.activate( id );
+            WorkspaceUtils.activateSynthetic( workspace, LayerStoreProvider.class, id,
+                                              new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
         }
     }
 

@@ -48,12 +48,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,24 +73,24 @@ import org.junit.Test;
  */
 public class RemoteWMTSTileStoreTest {
 
-    private DeegreeWorkspace ws;
+    private Workspace ws;
 
     @Before
     public void setup()
                             throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
         URL wsUrl = RemoteWMTSTileStoreTest.class.getResource( "workspace" );
-        ws = DeegreeWorkspace.getInstance( "remotewmstilestoretest", new File( wsUrl.toURI() ) );
+        ws = new DefaultWorkspace( new File( wsUrl.toURI() ) );
         ws.initAll();
     }
 
     @After
     public void tearDown() {
-        ws.destroyAll();
+        ws.destroy();
     }
 
     @Test
     public void testTileDataSet() {
-        TileStore store = ws.getSubsystemManager( TileStoreManager.class ).get( "medford_buildings" );
+        TileStore store = ws.getResource( TileStoreProvider.class, "medford_buildings" );
         assertNotNull( store );
         assertEquals( 1, store.getTileDataSetIds().size() );
         TileDataSet tileDataSet = store.getTileDataSet( "medford:buildings" );

@@ -35,20 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.deegree.commons.config.AbstractBasicResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.cs.persistence.CRSManager;
+import org.deegree.workspace.Destroyable;
+import org.deegree.workspace.Initializable;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FunctionManager extends AbstractBasicResourceManager {
+public class FunctionManager implements Initializable, Destroyable {
 
     private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
 
@@ -107,19 +100,7 @@ public class FunctionManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, CRSManager.class };
-    }
-
-    @Override
-    public ResourceManagerMetadata<?> getMetadata() {
-        return null;
-    }
-
-    @Override
-    public void startup( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         LOG.info( "Loading functions..." );
         functionLoader = ServiceLoader.load( FunctionProvider.class, ws.getModuleClassLoader() );
         for ( FunctionProvider fp : functionLoader ) {
@@ -133,7 +114,7 @@ public class FunctionManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    public void shutdown() {
+    public void destroy( Workspace workspace ) {
         for ( FunctionProvider fp : functionLoader ) {
             try {
                 fp.destroy();
@@ -148,25 +129,4 @@ public class FunctionManager extends AbstractBasicResourceManager {
         nameToFunction = null;
     }
 
-    @Override
-    public ResourceState activate( String id ) {
-        return null;
-    }
-
-    @Override
-    public ResourceState deactivate( String id ) {
-        return null;
-    }
-
-    @Override
-    protected ResourceProvider getProvider( URL file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
-    }
 }

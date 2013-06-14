@@ -36,6 +36,8 @@
 
 package org.deegree.tools.rendering.manager;
 
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,12 +51,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.services.wpvs.exception.DatasourceException;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.ModelBackend;
@@ -64,6 +64,9 @@ import org.deegree.tools.rendering.manager.buildings.BuildingManager;
 import org.deegree.tools.rendering.manager.buildings.PrototypeManager;
 import org.deegree.tools.rendering.manager.stage.StageManager;
 import org.deegree.tools.rendering.manager.trees.TreeManager;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * The <code>DataManager</code> is the user interface to the WPVS model backend. It can insert, update and delete
@@ -185,7 +188,7 @@ public class DataManager {
      */
     public static final String OPT_USE_OPENGIS = "use_opengis_ns";
 
-    private static DeegreeWorkspace workspace;
+    private static Workspace workspace;
 
     /**
      * Creates the commandline parser and adds the options.
@@ -205,7 +208,7 @@ public class DataManager {
             printHelp( options );
         }
 
-        workspace = DeegreeWorkspace.getInstance();
+        workspace = new DefaultWorkspace( new File( "nix" ) );
 
         try {
             CommandLine line = parser.parse( options, args );
@@ -322,21 +325,21 @@ public class DataManager {
                 File prototypesFile = new File( fileBackendDir + "/prototypes" );
                 FileBackend.initFiles( objectsFile );
                 FileBackend.initFiles( prototypesFile );
-                return new FileBackend( objectsFile, prototypesFile );
+                return new FileBackend( objectsFile, prototypesFile, null );
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
                 throw new RuntimeException( e.getMessage(), e );
             }
         } else {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            if ( mgr.getState( hostURL ) == null ) {
-                JDBCParams params = new DefaultJDBCParams( testFileBackend, line.getOptionValue( OPT_DB_USER ),
-                                                           line.getOptionValue( OPT_DB_PASS ), false );
-                mgr.addPool( hostURL, params, workspace );
+            if ( workspace.getResource( ConnectionProviderProvider.class, hostURL ) == null ) {
+                ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( hostURL, testFileBackend,
+                                                                                 line.getOptionValue( OPT_DB_USER ),
+                                                                                 line.getOptionValue( OPT_DB_PASS ) );
+                workspace.getLocationHandler().addExtraResource( loc );
             }
         }
-        ModelBackend<?> result = ModelBackend.getInstance( hostURL, fileBackendDir );
+        ModelBackend<?> result = ModelBackend.getInstance( hostURL, workspace );
         return result;
     }
 

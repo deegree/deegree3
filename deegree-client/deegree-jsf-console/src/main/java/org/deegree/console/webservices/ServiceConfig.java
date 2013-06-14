@@ -27,49 +27,53 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
+import org.apache.commons.io.IOUtils;
 import org.deegree.console.Config;
 import org.deegree.services.OWS;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OWSProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 public class ServiceConfig extends Config {
 
-    private static final URL METADATA_EXAMPLE_URL = Config.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
+    private static final URL METADATA_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
 
-    private static final URL METADATA_SCHEMA_URL = Config.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
-
-    public ServiceConfig( ResourceState<?> state, ResourceManager resourceManager ) {
-        super( state, resourceManager, "/console/webservices/index", true );
+    public ServiceConfig( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager ) {
+        super( metadata, resourceManager, "/console/webservices/index", true );
     }
 
     public String editMetadata()
                             throws IOException {
-        File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
-        Config metadataConfig = new Config( metadataLocation, METADATA_SCHEMA_URL, METADATA_EXAMPLE_URL,
-                                            "/console/webservices/index" );
+        ResourceManager mgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+        Config metadataConfig;
+        if ( workspace.getResource( OWSMetadataProviderProvider.class, id ) != null ) {
+            ResourceMetadata<?> md = workspace.getResourceMetadata( OWSMetadataProviderProvider.class, id );
+            metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
+        } else {
+            ResourceIdentifier ident = new DefaultResourceIdentifier( OWSMetadataProviderProvider.class, id );
+            ResourceLocation loc = new IncorporealResourceLocation( IOUtils.toByteArray( METADATA_EXAMPLE_URL ), ident );
+            workspace.add( loc );
+            ResourceMetadata md = workspace.getResourceMetadata( ident.getProvider(), id );
+            metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
+        }
         return metadataConfig.edit();
     }
 
-    public String getMetadataSchemaUrl() {
-        return METADATA_SCHEMA_URL.toString();
-    }
-
-    public String getMetadataLocation() {
-        File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
-        return metadataLocation.getAbsolutePath();
-    }
-
     public String getCapabilitiesUrl() {
-        OWS ows = ( (WebServicesConfiguration) resourceManager ).get( id );
-        String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
+        OWS ows = workspace.getResource( OWSProvider.class, id );
+        String type = ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName()[0];
 
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         StringBuffer sb = req.getRequestURL();
@@ -78,4 +82,5 @@ public class ServiceConfig extends Config {
         int index = sb.indexOf( "/console" );
         return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
     }
+
 }

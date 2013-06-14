@@ -193,9 +193,9 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                         result++;
                 }
             }
-        } catch ( Throwable t ) {
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
-            LOG.info( msg );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
             throw new MetadataStoreException( msg );
         }
         return result;

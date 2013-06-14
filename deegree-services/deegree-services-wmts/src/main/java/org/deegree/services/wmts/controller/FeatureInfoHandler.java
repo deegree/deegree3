@@ -45,10 +45,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.layer.Layer;
@@ -58,6 +55,9 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for handling GetFeatureInfo requests.
@@ -74,9 +74,9 @@ class FeatureInfoHandler {
 
     private Map<String, TileLayer> layers;
 
-    FeatureInfoHandler( FeatureInfoFormatsType conf, XMLAdapter controllerConf, DeegreeWorkspace workspace,
+    FeatureInfoHandler( FeatureInfoFormatsType conf, ResourceLocation<?> location, Workspace workspace,
                         List<Theme> themes ) throws ResourceInitException {
-        featureInfoManager = FeatureInfoManagerBuilder.buildFeatureInfoManager( conf, controllerConf, workspace );
+        featureInfoManager = FeatureInfoManagerBuilder.buildFeatureInfoManager( conf, location, workspace );
 
         layers = new HashMap<String, TileLayer>();
         for ( Theme theme : themes ) {

@@ -46,18 +46,20 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayers.AutoLayers;
 import org.deegree.style.persistence.StyleStore;
-import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.persistence.StyleStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -72,10 +74,13 @@ class AutoFeatureLayerBuilder {
 
     private static final Logger LOG = getLogger( AutoFeatureLayerBuilder.class );
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    AutoFeatureLayerBuilder( DeegreeWorkspace workspace ) {
+    private ResourceMetadata<LayerStore> metadata;
+
+    AutoFeatureLayerBuilder( Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
         this.workspace = workspace;
+        this.metadata = metadata;
     }
 
     MultipleLayerStore createInAutoMode( AutoLayers auto )
@@ -83,16 +88,14 @@ class AutoFeatureLayerBuilder {
         LOG.debug( "Creating feature layers for all feature types automatically." );
 
         Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
         String id = auto.getFeatureStoreId();
-        FeatureStore store = mgr.get( id );
+        FeatureStore store = workspace.getResource( FeatureStoreProvider.class, id );
         if ( store == null ) {
             throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
                                              + " is not available." );
         }
-        StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
         id = auto.getStyleStoreId();
-        StyleStore sstore = smgr.get( id );
+        StyleStore sstore = workspace.getResource( StyleStoreProvider.class, id );
         if ( id != null && sstore == null ) {
             throw new ResourceInitException( "Feature layer config was invalid, style store with id " + id
                                              + " is not available." );
@@ -102,7 +105,7 @@ class AutoFeatureLayerBuilder {
             addLayer( store, ft, sstore, map );
         }
 
-        return new MultipleLayerStore( map );
+        return new MultipleLayerStore( map, metadata );
     }
 
     private void addLayer( FeatureStore store, FeatureType ft, StyleStore sstore, Map<String, Layer> map ) {

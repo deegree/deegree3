@@ -48,9 +48,9 @@ import java.util.Date;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -77,8 +77,6 @@ class DefaultLock implements Lock {
 
     private final DefaultLockManager manager;
 
-    private final String jdbcConnId;
-
     private final String id;
 
     private final Date acquired;
@@ -88,6 +86,8 @@ class DefaultLock implements Lock {
     private final int numFailed;
 
     private int numLocked;
+
+    private ConnectionProvider connection;
 
     /**
      * Creates a new {@link DefaultLock} instance.
@@ -107,10 +107,10 @@ class DefaultLock implements Lock {
      * @param numFailed
      *            number of features that have been requested to be locked, but which couldn't
      */
-    DefaultLock( DefaultLockManager manager, String jdbcConnId, String id, Date acquired, Date expires, int numLocked,
-                 int numFailed ) {
+    DefaultLock( DefaultLockManager manager, ConnectionProvider connection, String id, Date acquired, Date expires,
+                 int numLocked, int numFailed ) {
         this.manager = manager;
-        this.jdbcConnId = jdbcConnId;
+        this.connection = connection;
         this.id = id;
         this.acquired = acquired;
         this.expires = expires;
@@ -136,8 +136,7 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( jdbcConnId );
+                conn = connection.getConnection();
                 conn.setAutoCommit( false );
                 stmt = conn.prepareStatement( "UPDATE LOCKS SET EXPIRES=? WHERE ID=?" );
                 stmt.setTimestamp( 1, new Timestamp( expiryDate ) );
@@ -180,8 +179,7 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( jdbcConnId );
+                conn = connection.getConnection();
                 stmt = conn.prepareStatement( "SELECT FID FROM LOCKED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 rs = stmt.executeQuery();
@@ -213,8 +211,7 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( jdbcConnId );
+                conn = connection.getConnection();
                 stmt = conn.prepareStatement( "SELECT FID FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 rs = stmt.executeQuery();
@@ -246,8 +243,7 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( jdbcConnId );
+                conn = connection.getConnection();
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?" );
                 stmt.setString( 1, fid );
                 stmt.setString( 2, id );
@@ -274,8 +270,7 @@ class DefaultLock implements Lock {
             PreparedStatement stmt = null;
             try {
                 // delete entries from LOCKED_FIDS table
-                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( jdbcConnId );
+                conn = connection.getConnection();
                 stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 stmt.execute();
@@ -311,8 +306,7 @@ class DefaultLock implements Lock {
                 PreparedStatement stmt = null;
                 ResultSet rs = null;
                 try {
-                    ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                    conn = mgr.get( jdbcConnId );
+                    conn = connection.getConnection();
                     stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE FID=?" );
                     stmt.setString( 1, fid );
                     stmt.executeUpdate();
@@ -344,8 +338,7 @@ class DefaultLock implements Lock {
                 // TODO don't actually fetch the feature collection, but only the fids of the features
                 FeatureCollection fc = manager.getStore().query( query ).toCollection();
 
-                ConnectionManager mgr = manager.getWorkspace().getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( jdbcConnId );
+                conn = connection.getConnection();
                 conn.setAutoCommit( false );
 
                 // delete entries in LOCKED_FIDS table

@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -52,7 +52,7 @@ public abstract class AbstractJrxmlWPSProcess implements WPSProcess {
      * 
      * @param workspace
      */
-    void init( DeegreeWorkspace workspace ) {
+    void init( Workspace workspace ) {
         getProcesslet().init();
     }
 

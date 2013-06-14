@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -202,8 +200,7 @@ public abstract class AbstractCoverage implements Coverage {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to do
     }
 

@@ -43,16 +43,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStore;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.RenderFragmentManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.services.jaxb.wpvs.DEMDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -77,6 +78,8 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
 
     private float shininess;
 
+    private Workspace workspace;
+
     /**
      * @param numberOfDEMFragmentsCached
      *            defines the number of dem fragments to be cached on the gpu.
@@ -89,7 +92,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
      * @param shininess
      */
     public DEMDataset( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize, float[] ambientColor,
-                       float[] diffuseColor, float[] specularColor, float shininess ) {
+                       float[] diffuseColor, float[] specularColor, float shininess, Workspace workspace ) {
         this.numberOfDEMFragmentsCached = numberOfDEMFragmentsCached;
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
@@ -97,6 +100,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
         this.shininess = shininess;
         // this.directMeshfragmentPool = new DirectByteBufferPool( directMeshfragmentPoolSize * 1024 * 1024,
         // "fragment_data" );
+        this.workspace = workspace;
     }
 
     /**
@@ -110,13 +114,13 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
      * @param dsd
      */
     @Override
-    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
-                                                DatasetDefinitions dsd ) {
+    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS,
+                                                ResourceLocation<?> location, DatasetDefinitions dsd ) {
         List<DEMDatasetConfig> demDatsets = new ArrayList<DEMDatasetConfig>();
         DEMDatasetConfig ed = dsd.getDEMDataset();
         demDatsets.add( ed );
         if ( !demDatsets.isEmpty() ) {
-            sceneEnvelope = initDatasets( demDatsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError(), configAdapter );
+            sceneEnvelope = initDatasets( demDatsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError(), location );
         } else {
             LOG.info( "No elevation model dataset has been configured, no buildings, trees and prototypes will be available." );
         }
@@ -124,7 +128,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
     }
 
     private Envelope initDatasets( List<DEMDatasetConfig> demDatsets, Envelope sceneEnvelope, double[] toLocalCRS,
-                                   Double parentMaxPixelError, XMLAdapter configAdapter ) {
+                                   Double parentMaxPixelError, ResourceLocation<?> location ) {
         if ( demDatsets != null && !demDatsets.isEmpty() ) {
             for ( DEMDatasetConfig eds : demDatsets ) {
                 if ( eds != null ) {
@@ -134,7 +138,7 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
                     } else {
                         clarifyInheritance( eds, parentMaxPixelError );
                         try {
-                            sceneEnvelope = handleDEMDataset( eds, sceneEnvelope, toLocalCRS, configAdapter );
+                            sceneEnvelope = handleDEMDataset( eds, sceneEnvelope, toLocalCRS );
                         } catch ( IOException e ) {
                             LOG.error( "Failed to initialize configured demTexture dataset: " + eds.getName() + ": "
                                        + eds.getTitle() + " because: " + e.getLocalizedMessage(), e );
@@ -161,13 +165,12 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
      * @param mds
      * @throws IOException
      */
-    private Envelope handleDEMDataset( DEMDatasetConfig demDataset, Envelope sceneEnvelope, double[] toLocalCRS,
-                                       XMLAdapter configAdapter )
+    private Envelope handleDEMDataset( DEMDatasetConfig demDataset, Envelope sceneEnvelope, double[] toLocalCRS )
                             throws IOException {
 
         if ( demDataset != null ) {
             String storeId = demDataset.getBatchedMTStoreId();
-            BatchedMTStore store = BatchedMTStoreManager.get( storeId );
+            BatchedMTStore store = workspace.getResource( BatchedMTStoreProvider.class, storeId );
             MultiresolutionMesh mrModel = store.getMesh();
 
             if ( mrModel != null ) {

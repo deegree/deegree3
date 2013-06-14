@@ -46,37 +46,27 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 public class MetadataStoreConfig extends Config {
 
-    private String id;
-
-    public MetadataStoreConfig( ResourceState<?> state, ResourceManager resourceManager ) {
+    public MetadataStoreConfig( ResourceMetadata<?> state, ResourceManager<?> resourceManager ) {
         super( state, resourceManager, "/console/datastore/metadata/index", true );
     }
 
-    private MetadataStoreManager getMetadataStoreManager() {
-        return getWorkspace().getSubsystemManager( MetadataStoreManager.class );
-    }
-
-    private DeegreeWorkspace getWorkspace() {
+    private Workspace getWorkspace() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
         return ws;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public void updateId( ActionEvent evt ) {
@@ -85,7 +75,7 @@ public class MetadataStoreConfig extends Config {
 
     public String openImporter()
                             throws Exception {
-        MetadataStore<?> ms = getMetadataStoreManager().get( getId() );
+        MetadataStore<?> ms = getWorkspace().getResource( MetadataStoreProvider.class, getId() );
         if ( ms == null ) {
             throw new Exception( "No metadata store with id '" + getId() + "' known / active." );
         }
@@ -97,37 +87,31 @@ public class MetadataStoreConfig extends Config {
 
     public String createTables()
                             throws MetadataStoreException {
-        MetadataStore<?> ms = getMetadataStoreManager().get( getId() );
-        ResourceState<?> state = getMetadataStoreManager().getState( getId() );
-        if ( state.getProvider() instanceof MetadataStoreProvider ) {
-            MetadataStoreProvider provider = (MetadataStoreProvider) state.getProvider();
-            String[] sql;
-            try {
-                String connId = ms.getConnId();
-                DeegreeWorkspace ws = getWorkspace();
-                ConnectionManager connManager = ws.getSubsystemManager( ConnectionManager.class );
+        MetadataStore<?> ms = getWorkspace().getResource( MetadataStoreProvider.class, getId() );
+        MetadataStoreProvider provider = (MetadataStoreProvider) ms.getMetadata().getProvider();
+        String[] sql;
+        try {
+            String connId = ms.getConnId();
+            Workspace ws = getWorkspace();
+            ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, connId );
 
-                sql = provider.getCreateStatements( connManager.getType( connId ) );
+            sql = provider.getCreateStatements( prov.getDialect() );
 
-                SQLExecution execution = new SQLExecution( connId, sql, "/console/datastore/metadata/index", ws );
+            SQLExecution execution = new SQLExecution( connId, sql, "/console/datastore/metadata/index", ws );
 
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
-            } catch ( UnsupportedEncodingException e ) {
-                FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
-                                                                 e.getMessage() );
-                FacesContext.getCurrentInstance().addMessage( null, msg );
-            } catch ( IOException e ) {
-                FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
-                                                                 e.getMessage() );
-                FacesContext.getCurrentInstance().addMessage( null, msg );
-            }
-        } else {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
+        } catch ( UnsupportedEncodingException e ) {
             FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                             "METADATASTORE_UNSUPPORTED_PROVIDER", state.getProvider() );
+                                                             "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
+                                                             e.getMessage() );
+            FacesContext.getCurrentInstance().addMessage( null, msg );
+        } catch ( IOException e ) {
+            FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
+                                                             "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
+                                                             e.getMessage() );
             FacesContext.getCurrentInstance().addMessage( null, msg );
         }
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
+
 }

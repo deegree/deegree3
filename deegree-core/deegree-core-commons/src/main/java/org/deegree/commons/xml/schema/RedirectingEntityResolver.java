@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
-import static org.deegree.commons.i18n.Messages.getMessage;
-
 import java.io.IOException;
 import java.net.URL;
 
@@ -69,7 +67,9 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
     static {
         baseURL = RedirectingEntityResolver.class.getResource( ROOT );
         if ( baseURL == null ) {
-            LOG.warn( getMessage( "XML_SCHEMAS_NO_LOCAL_COPY", ROOT ) );
+            LOG.warn( "'"
+                      + ROOT
+                      + "' could not be found on the classpath. Schema references to 'http://schemas.opengis.net' will not be redirected, but fetched from their original location.  " );
         }
     }
 

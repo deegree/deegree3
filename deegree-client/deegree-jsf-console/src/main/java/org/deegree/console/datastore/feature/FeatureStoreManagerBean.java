@@ -42,10 +42,10 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
@@ -60,10 +60,11 @@ public class FeatureStoreManagerBean extends AbstractResourceManagerBean<Feature
     @Override
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
-        for ( ResourceState<?> state : resourceManager.getStates() ) {
-            configs.add( new FeatureStoreConfig( state, resourceManager ) );
+        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
+            configs.add( new FeatureStoreConfig( md, resourceManager ) );
         }
         Collections.sort( configs );
         return configs;
     }
+
 }

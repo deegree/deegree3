@@ -1,71 +1,63 @@
+/*----------------------------------------------------------------------------
+ This file is part of deegree
+ Copyright (C) 2001-2013 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ e-mail: info@deegree.org
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.remotewms;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-
 import java.net.URL;
-import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.LayerStoreProvider;
-import org.deegree.layer.persistence.MultipleLayerStore;
-import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
-import org.deegree.remoteows.RemoteOWS;
-import org.deegree.remoteows.RemoteOWSManager;
-import org.deegree.remoteows.wms.RemoteWMS;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
-public class RemoteWMSLayerStoreProvider implements LayerStoreProvider {
+/**
+ * SPI provider class for remote WMS layer stores.
+ * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
+ */
+public class RemoteWMSLayerStoreProvider extends LayerStoreProvider {
 
     private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.2.0/remotewms.xsd" );
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public LayerStore create( URL configUrl )
-                            throws ResourceInitException {
-        try {
-            RemoteWMSLayers cfg = (RemoteWMSLayers) unmarshall( "org.deegree.layer.persistence.remotewms.jaxb",
-                                                                SCHEMA_URL, configUrl, workspace );
-            String id = cfg.getRemoteWMSId();
-
-            RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-            RemoteOWS store = mgr.get( id );
-            if ( !( store instanceof RemoteWMS ) ) {
-                throw new ResourceInitException( "The remote WMS store with id " + id
-                                                 + " is not available or not of type WMS." );
-            }
-
-            RemoteWmsLayerBuilder builder = new RemoteWmsLayerBuilder( ( (RemoteWMS) store ).getClient(), cfg );
-
-            Map<String, Layer> map = builder.buildLayerMap();
-
-            return new MultipleLayerStore( map );
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Could not parse remote WMS layer store config.", e );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSManager.class };
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/layers/remotewms";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
+        return new RemoteWmsLayerStoreMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return SCHEMA_URL;
     }
 

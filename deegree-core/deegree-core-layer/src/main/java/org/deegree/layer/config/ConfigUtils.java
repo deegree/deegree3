@@ -39,11 +39,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.persistence.base.jaxb.DimensionType;
@@ -56,8 +56,11 @@ import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.style.persistence.StyleStore;
-import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.persistence.StyleStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.slf4j.Logger;
 
 /**
@@ -72,22 +75,17 @@ public class ConfigUtils {
 
     private static final Logger LOG = getLogger( ConfigUtils.class );
 
-    public static Pair<Map<String, Style>, Map<String, Style>> parseStyles( DeegreeWorkspace workspace,
-                                                                            String layerName, List<StyleRefType> styles ) {
+    public static Pair<Map<String, Style>, Map<String, Style>> parseStyles( Workspace workspace, String layerName,
+                                                                            List<StyleRefType> styles ) {
         // hail java 7 to finally be able to do some really complicated type inference
         Map<String, Style> styleMap = new LinkedHashMap<String, Style>();
         Map<String, Style> legendStyleMap = new LinkedHashMap<String, Style>();
 
         Style defaultStyle = null, defaultLegendStyle = null;
 
-        StyleStoreManager mgr = workspace.getSubsystemManager( StyleStoreManager.class );
         for ( StyleRefType srt : styles ) {
             String id = srt.getStyleStoreId();
-            StyleStore store = mgr.get( id );
-            if ( store == null ) {
-                LOG.warn( "Style store with id {} was not available, ignoring style definition.", id );
-                continue;
-            }
+            StyleStore store = workspace.getResource( StyleStoreProvider.class, id );
             if ( srt.getStyle() == null || srt.getStyle().isEmpty() ) {
                 if ( store.getAll( layerName ) != null ) {
                     for ( Style s : store.getAll( layerName ) ) {
@@ -110,8 +108,17 @@ public class ConfigUtils {
         return new Pair<Map<String, Style>, Map<String, Style>>( styleMap, legendStyleMap );
     }
 
-    private static Pair<Style, Style> useSelectedStyles( DeegreeWorkspace workspace, StyleStore store,
-                                                         StyleRefType srt, String id, Map<String, Style> styleMap,
+    public static List<ResourceIdentifier<StyleStore>> getStyleDeps( List<StyleRefType> styles ) {
+        List<ResourceIdentifier<StyleStore>> list = new ArrayList<ResourceIdentifier<StyleStore>>();
+        for ( StyleRefType srt : styles ) {
+            String id = srt.getStyleStoreId();
+            list.add( new DefaultResourceIdentifier<StyleStore>( StyleStoreProvider.class, id ) );
+        }
+        return list;
+    }
+
+    private static Pair<Style, Style> useSelectedStyles( Workspace workspace, StyleStore store, StyleRefType srt,
+                                                         String id, Map<String, Style> styleMap,
                                                          Map<String, Style> legendStyleMap, Style defaultStyle,
                                                          Style defaultLegendStyle ) {
         for ( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s : srt.getStyle() ) {
@@ -151,10 +158,7 @@ public class ConfigUtils {
                 }
 
                 if ( url == null ) {
-                    File file = workspace.getLocation();
-                    file = new File( file, "styles" );
-                    file = new File( file, id + ".xml" );
-                    file = new File( file.toURI().resolve( g.getValue() ) );
+                    File file = store.getMetadata().getLocation().resolveToFile( g.getValue() );
                     if ( file.exists() ) {
                         st.setLegendFile( file );
                     } else {

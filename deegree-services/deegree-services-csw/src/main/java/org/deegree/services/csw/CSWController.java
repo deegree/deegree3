@@ -44,7 +44,6 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,8 +69,6 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.ArrayUtils;
@@ -80,12 +77,15 @@ import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
 import org.deegree.services.controller.AbstractOWS;
@@ -124,6 +124,9 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
 import org.deegree.services.jaxb.csw.ElementName;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,10 +156,6 @@ public class CSWController extends AbstractOWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.csw";
-
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/csw/3.1.0/csw_configuration.xsd";
-
     private static final String SCHEMA_LOCATION = CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + GMD_NS + " "
                                                   + "http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd";
 
@@ -178,30 +177,31 @@ public class CSWController extends AbstractOWS {
 
     private URL extendedCapabilities;
 
-    protected CSWController( URL configURL, ImplementationMetadata<CSWRequestType> serviceInfo ) {
-        super( configURL, serviceInfo );
+    private DeegreeServicesMetadataType mainMetadataConf;
+
+    private DeegreeServiceControllerType mainControllerConf;
+
+    protected CSWController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
-
+                      Object controllerConf ) {
+        this.mainMetadataConf = serviceMetadata;
+        this.mainControllerConf = mainConf;
         LOG.info( "Initializing CSW controller." );
-        super.init( serviceMetadata, mainConf, md, controllerConf );
-        DeegreeCSW jaxbConfig = (DeegreeCSW) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
-
-        MetadataStoreManager mgr = workspace.getSubsystemManager( MetadataStoreManager.class );
-        if ( mgr == null )
-            throw new IllegalArgumentException( "Could not find a MetadataStoreManager!" );
+        DeegreeCSW jaxbConfig = (DeegreeCSW) controllerConf;
 
         String metadataStoreId = jaxbConfig.getMetadataStoreId();
         if ( metadataStoreId == null ) {
             LOG.info( "Metadata store id is not configured. Initializing/looking up configured record stores." );
-            List<MetadataStore<?>> availableStores = new ArrayList<MetadataStore<?>>();
-            for ( ResourceState<MetadataStore<?>> state : mgr.getStates() ) {
-                if ( state.getResource() != null ) {
-                    availableStores.add( state.getResource() );
+            List<ResourceIdentifier<MetadataStore<? extends MetadataRecord>>> stores = workspace.getResourcesOfType( MetadataStoreProvider.class );
+            List<MetadataStore<? extends MetadataRecord>> availableStores = new ArrayList<MetadataStore<?>>();
+            for ( ResourceIdentifier<MetadataStore<? extends MetadataRecord>> id : stores ) {
+                MetadataStore<? extends MetadataRecord> str = workspace.getResource( id.getProvider(), id.getId() );
+                if ( str != null ) {
+                    availableStores.add( str );
                 }
             }
             if ( availableStores.size() == 0 )
@@ -212,13 +212,7 @@ public class CSWController extends AbstractOWS {
                                                     + availableStores.size() + " stores!" );
             store = availableStores.get( 0 );
         } else {
-            ResourceState<MetadataStore> state = mgr.getState( metadataStoreId );
-            if ( state == null || state.getResource() == null ) {
-                String msg = "Cannot add metadata store '" + metadataStoreId
-                             + "': no such metadata store has been configured.";
-                throw new ResourceInitException( msg );
-            }
-            store = state.getResource();
+            store = workspace.getResource( MetadataStoreProvider.class, metadataStoreId );
         }
         profile = ServiceProfileManager.createProfile( store );
 
@@ -244,9 +238,8 @@ public class CSWController extends AbstractOWS {
             LOG.info( "Inspire extensions are deactivated" );
         }
         if ( jaxbConfig.getExtendedCapabilities() != null ) {
-            try {
-                extendedCapabilities = controllerConf.resolve( jaxbConfig.getExtendedCapabilities() );
-            } catch ( MalformedURLException e ) {
+            extendedCapabilities = metadata.getLocation().resolveToUrl( jaxbConfig.getExtendedCapabilities() );
+            if ( extendedCapabilities == null ) {
                 LOG.warn( "Could not resolve path to extended capabilities : " + extendedCapabilities
                           + ". Ignore extended capabilities." );
             }
@@ -523,7 +516,7 @@ public class CSWController extends AbstractOWS {
                             throws OWSException {
         CSWRequestType requestType = null;
         try {
-            requestType = (CSWRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( requestName );
+            requestType = (CSWRequestType) ( (ImplementationMetadata) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
             throw new OWSException( e.getMessage(), OWSException.OPERATION_NOT_SUPPORTED );
         }
@@ -651,4 +644,5 @@ public class CSWController extends AbstractOWS {
     public MetadataStore<?> getStore() {
         return store;
     }
+
 }

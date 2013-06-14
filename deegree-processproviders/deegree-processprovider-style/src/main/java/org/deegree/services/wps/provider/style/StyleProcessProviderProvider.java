@@ -37,17 +37,11 @@ package org.deegree.services.wps.provider.style;
 
 import java.net.URL;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -57,53 +51,23 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class StyleProcessProviderProvider implements ProcessProviderProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( StyleProcessProviderProvider.class );
+public class StyleProcessProviderProvider extends ProcessProviderProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/style";
 
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-
-    }
-
-    @Override
-    public ProcessProvider create( URL configUrl )
-                            throws ResourceInitException {
-
-        LOG.info( "Configuring style process provider using file '" + configUrl + "'." );
-
-        try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( configUrl.openStream() );
-            while ( xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT ) {
-                if ( xmlStream.isStartElement() && "Process".equals( xmlStream.getLocalName() ) ) {
-                    return new StyleProcessProvider( xmlStream.getAttributeValue( null, "id" ) );
-                } else {
-                    xmlStream.next();
-                }
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            throw new RuntimeException( "Error parsing style process provider configuration '" + configUrl + "': "
-                                        + e.getMessage() );
-        }
-        throw new ResourceInitException( "Could not parse style process configuration." );
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NAMESPACE;
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
+                                                                 ResourceLocation<ProcessProvider> location ) {
+        return new StyleProcessProviderMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return StyleProcessProviderProvider.class.getResource( "META-INF/schemas/processes/style/0.1.0/styleProvider.xsd" );
     }
 }

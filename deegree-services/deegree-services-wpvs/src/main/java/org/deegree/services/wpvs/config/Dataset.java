@@ -38,8 +38,6 @@ package org.deegree.services.wpvs.config;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -47,11 +45,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.workspace.ResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -88,7 +86,7 @@ public abstract class Dataset<CO> {
      * @return the merged scene envelope
      */
     public abstract Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] translationToLocalCRS,
-                                                         XMLAdapter configAdapter, DatasetDefinitions dsd );
+                                                         ResourceLocation<?> location, DatasetDefinitions dsd );
 
     /**
      * @param parentMaxPixelError
@@ -236,23 +234,6 @@ public abstract class Dataset<CO> {
             }
         }
         return names;
-    }
-
-    /**
-     * Resolve the given url to the config xml file.
-     * 
-     * @param configAdapter
-     * @param url
-     * @return the URL resolved to the configuration xml file.
-     */
-    protected URL resolve( XMLAdapter configAdapter, String url ) {
-        URL result = null;
-        try {
-            result = configAdapter.resolve( url );
-        } catch ( MalformedURLException e ) {
-            LOG.error( "Could not resolve url: " + url + " because: " + e.getLocalizedMessage(), e );
-        }
-        return result;
     }
 
     private class Constraint<DO> {

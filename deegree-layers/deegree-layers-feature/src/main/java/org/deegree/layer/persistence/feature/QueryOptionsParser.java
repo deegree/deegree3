@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
 import static java.util.Collections.singleton;
@@ -48,9 +48,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -76,72 +74,70 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
  * 
  * @version $Revision: $, $Date: $
  */
- class QueryOptionsParser {
+class QueryOptionsParser {
 
-      static OperatorFilter parseFilter( URL configUrl )
-                             throws XMLStreamException, URISyntaxException {
+    static OperatorFilter parseFilter( InputStream in )
+                            throws XMLStreamException {
 
-         File file = new File( configUrl.toURI() );
-         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( in ) );
 
-         if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "Filter" ) ) ) {
-             return null;
-         }
+        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "Filter" ) ) ) {
+            return null;
+        }
 
-         OperatorFilter filter = null;
-         filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
-         reader.close();
-         return filter;
-     }
+        OperatorFilter filter = null;
+        filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
+        reader.close();
+        return filter;
+    }
 
-      static List<SortProperty> parseSortBy( URL configUrl )
-                             throws XMLStreamException, URISyntaxException {
+    static List<SortProperty> parseSortBy( InputStream in )
+                            throws XMLStreamException {
 
-         File file = new File( configUrl.toURI() );
-         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( in ) );
 
-         if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "SortBy" ) ) ) {
-             return null;
-         }
+        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "SortBy" ) ) ) {
+            return null;
+        }
 
-         // ogc:SortBy
-         requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
+        // ogc:SortBy
+        requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
 
-         nextElement( reader );
-         List<SortProperty> sortCrits = new ArrayList<SortProperty>();
-         while ( reader.isStartElement() ) {
-             SortProperty prop = parseSortProperty( reader );
-             sortCrits.add( prop );
-             nextElement( reader );
-         }
-         reader.close();
-         return sortCrits;
-     }
+        nextElement( reader );
+        List<SortProperty> sortCrits = new ArrayList<SortProperty>();
+        while ( reader.isStartElement() ) {
+            SortProperty prop = parseSortProperty( reader );
+            sortCrits.add( prop );
+            nextElement( reader );
+        }
+        reader.close();
+        return sortCrits;
+    }
 
-     private static SortProperty parseSortProperty( XMLStreamReader reader )
-                             throws XMLStreamException {
+    private static SortProperty parseSortProperty( XMLStreamReader reader )
+                            throws XMLStreamException {
 
-         requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
-         nextElement( reader );
+        requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
+        nextElement( reader );
 
-         requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
+        requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
 
-         String xpath = reader.getElementText().trim();
-         Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
-         NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
-         ValueReference propName = new ValueReference( xpath, nsContext );
-         nextElement( reader );
+        String xpath = reader.getElementText().trim();
+        Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
+        NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
+        ValueReference propName = new ValueReference( xpath, nsContext );
+        nextElement( reader );
 
-         boolean sortAscending = true;
-         if ( reader.isStartElement() ) {
-             requireStartElement( reader, singleton( new QName( OGCNS, "SortOrder" ) ) );
-             String s = reader.getElementText().trim();
-             sortAscending = "ASC".equals( s );
-             nextElement( reader );
-         }
+        boolean sortAscending = true;
+        if ( reader.isStartElement() ) {
+            requireStartElement( reader, singleton( new QName( OGCNS, "SortOrder" ) ) );
+            String s = reader.getElementText().trim();
+            sortAscending = "ASC".equals( s );
+            nextElement( reader );
+        }
 
-         reader.require( END_ELEMENT, OGCNS, "SortProperty" );
-         return new SortProperty( propName, sortAscending );
-     }
+        reader.require( END_ELEMENT, OGCNS, "SortProperty" );
+        return new SortProperty( propName, sortAscending );
+    }
 
 }

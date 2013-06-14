@@ -38,14 +38,11 @@ package org.deegree.sqldialect.filter.function;
 import static java.sql.Types.VARCHAR;
 
 import java.util.List;
-import java.util.Set;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link SQLFunctionProvider} for the <code>Lower</code> function.
@@ -62,11 +59,6 @@ public class SQLLower implements SQLFunctionProvider {
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    public Set<Type> getDialects() {
-        return null;
     }
 
     @Override
@@ -89,8 +81,7 @@ public class SQLLower implements SQLFunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

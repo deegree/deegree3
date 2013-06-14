@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.metadata;
 
-import static org.deegree.commons.config.ResourceState.StateType.init_error;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -48,9 +46,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,18 +67,20 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
 
     private String startView = "/console/jsf/resources";
 
-    private ResourceManager mgr;
+    private ResourceManager<?> mgr;
 
-    private Map<String, ResourceProvider> nameToProvider = new HashMap<String, ResourceProvider>();
+    private Map<String, ResourceProvider<?>> nameToProvider = new HashMap<String, ResourceProvider<?>>();
 
-    private List<ResourceProvider> providers = new ArrayList<ResourceProvider>();
+    private List<ResourceProvider<?>> providers = new ArrayList<ResourceProvider<?>>();
 
     private List<String> providerNames = new ArrayList<String>();
 
-    private ResourceManagerMetadata( ResourceManager mgr ) {
+    private Workspace workspace;
+    
+    private ResourceManagerMetadata( ResourceManager<?> mgr, Workspace workspace ) {
+        this.workspace = workspace;
         if ( mgr.getMetadata() != null ) {
-            for ( Object o : mgr.getMetadata().getResourceProviders() ) {
-                ResourceProvider provider = (ResourceProvider) o;
+            for ( ResourceProvider<?> provider : mgr.getProviders() ) {
                 ResourceProviderMetadata providerMd = ResourceProviderMetadata.getMetadata( provider );
                 providers.add( provider );
                 providerNames.add( providerMd.getName() );
@@ -116,8 +116,8 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
         this.mgr = mgr;
     }
 
-    public static synchronized ResourceManagerMetadata getMetadata( ResourceManager rm ) {
-        ResourceManagerMetadata md = new ResourceManagerMetadata( rm );
+    public static synchronized ResourceManagerMetadata getMetadata( ResourceManager<?> rm, Workspace workspace ) {
+        ResourceManagerMetadata md = new ResourceManagerMetadata( rm, workspace );
         if ( md.name == null ) {
             return null;
         }
@@ -136,7 +136,7 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
         return startView;
     }
 
-    public ResourceManager getManager() {
+    public ResourceManager<?> getManager() {
         return mgr;
     }
 
@@ -144,11 +144,11 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
         return mgr.getClass().getName();
     }
 
-    public ResourceProvider getProvider( String name ) {
+    public ResourceProvider<?> getProvider( String name ) {
         return nameToProvider.get( name );
     }
 
-    public List<ResourceProvider> getProviders() {
+    public List<ResourceProvider<?>> getProviders() {
         return providers;
     }
 
@@ -161,12 +161,7 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
     }
 
     public boolean getHasErrors() {
-        for ( ResourceState state : mgr.getStates() ) {
-            if ( state.getType() == init_error ) {
-                return true;
-            }
-        }
-        return false;
+        return workspace.getErrorHandler().hasErrors();
     }
 
     @Override

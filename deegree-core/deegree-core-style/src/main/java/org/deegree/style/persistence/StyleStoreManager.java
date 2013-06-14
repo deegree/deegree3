@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,41 +39,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.persistence;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.filter.function.FunctionManager;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
- * @author stranger
+ * Resource manager for style stores.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
-public class StyleStoreManager extends AbstractResourceManager<StyleStore> {
+public class StyleStoreManager extends DefaultResourceManager<StyleStore> {
 
-    private StyleStoreManagerMetadata metadata;
-
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        this.metadata = new StyleStoreManagerMetadata( workspace );
-    }
-
-    @Override
-    public ResourceManagerMetadata<StyleStore> getMetadata() {
-        return metadata;
-    }
-
-    static class StyleStoreManagerMetadata extends DefaultResourceManagerMetadata<StyleStore> {
-        StyleStoreManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "styles", "styles/", StyleStoreProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, FunctionManager.class };
+    public StyleStoreManager() {
+        super( new DefaultResourceManagerMetadata<StyleStore>( StyleStoreProvider.class, "styles", "styles" ) );
     }
 
 }

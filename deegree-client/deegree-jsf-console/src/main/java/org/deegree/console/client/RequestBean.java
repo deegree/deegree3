@@ -40,6 +40,7 @@ import static java.util.Collections.sort;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
+import static org.deegree.workspace.ResourceStates.ResourceState.Initialized;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -82,14 +83,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.deegree.client.core.utils.MessageUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -149,8 +150,8 @@ public class RequestBean implements Serializable {
     private TreeMap<String, Map<String, Map<String, List<String>>>> allRequests = new TreeMap<String, Map<String, Map<String, List<String>>>>();
 
     private String responseFile;
-    
-    private String workspaceService= "";
+
+    private String workspaceService = "";
 
     public File getRequestsBaseDir() {
         return requestsBaseDir;
@@ -352,18 +353,16 @@ public class RequestBean implements Serializable {
         allRequests.clear();
         initRequestMap();
     }
-    
+
     public String getEndpoint() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        
-        return ctx.getRequestScheme() + "://" 
-                            + ctx.getRequestServerName() + ":" 
-                            + ctx.getRequestServerPort()
-                            + ctx.getRequestContextPath() + "/services";
+
+        return ctx.getRequestScheme() + "://" + ctx.getRequestServerName() + ":" + ctx.getRequestServerPort()
+               + ctx.getRequestContextPath() + "/services";
     }
-    
+
     public String getTargetUrl() {
-        if(workspaceService.equals( "" )) {
+        if ( workspaceService.equals( "" ) ) {
             return getEndpoint();
         } else {
             return getEndpoint() + "/" + workspaceService;
@@ -375,7 +374,7 @@ public class RequestBean implements Serializable {
         if ( !request.startsWith( "<?xml" ) ) {
             request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + request;
         }
-        
+
         String targetUrl = getTargetUrl();
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + request );
         if ( targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0 ) {
@@ -582,7 +581,7 @@ public class RequestBean implements Serializable {
      */
     public void sendKVPRequest() {
         String targetUrl = getTargetUrl();
-        
+
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + kvpRequestSel );
         if ( targetUrl != null && targetUrl.length() > 0 && kvpRequestSel != null && kvpRequestSel.length() > 0 ) {
             Map<String, String> header = new HashMap<String, String>();
@@ -626,31 +625,23 @@ public class RequestBean implements Serializable {
                             throws UnsupportedEncodingException {
         return "mt=" + URLEncoder.encode( mimeType, "UTF-8" ) + "&file=" + URLEncoder.encode( responseFile, "UTF-8" );
     }
-    // @Override
-    // public String toString() {
-    // return generateToString( this );
-    // }
-    
-    @SuppressWarnings("rawtypes")
+
     public List<String> getWorkspaceServices() {
         ArrayList<String> activeServices = new ArrayList<String>();
         activeServices.add( "" );
-        
-        DeegreeWorkspace workspace = OGCFrontController.getServiceWorkspace();
-        WebServicesConfiguration config = workspace.getSubsystemManager( WebServicesConfiguration.class );
-        if ( config != null ) {
-            for ( ResourceState state : config.getStates() ) {
-                StateType type = state.getType();
-                if ( type == StateType.init_ok ) {
-                    activeServices.add( state.getId() );
-                }
+
+        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        List<ResourceIdentifier<OWS>> list = workspace.getResourcesOfType( OWSProvider.class );
+        for ( ResourceIdentifier<OWS> id : list ) {
+            if ( workspace.getStates().getState( id ) == Initialized ) {
+                activeServices.add( id.getId() );
             }
         }
 
         return activeServices;
     }
-    
-    public void setWorkspaceService(String workspaceService) {
+
+    public void setWorkspaceService( String workspaceService ) {
         for ( String currentWorkspaceService : getWorkspaceServices() ) {
             if ( currentWorkspaceService.equals( workspaceService ) ) {
                 this.workspaceService = workspaceService;
@@ -658,7 +649,7 @@ public class RequestBean implements Serializable {
             }
         }
     }
-    
+
     public String getWorkspaceService() {
         return workspaceService;
     }

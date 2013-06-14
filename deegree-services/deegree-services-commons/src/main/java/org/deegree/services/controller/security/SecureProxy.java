@@ -75,15 +75,16 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
+import org.deegree.services.controller.OwsGlobalConfigLoader;
 import org.deegree.services.controller.RequestLogger;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -108,11 +109,9 @@ public class SecureProxy extends HttpServlet {
 
     transient XMLOutputFactory outFac = XMLOutputFactory.newInstance();
 
-    private transient WebServicesConfiguration serviceConfig;
-
     private transient SecurityConfiguration securityConfiguration;
 
-    private transient DeegreeWorkspace workspace;
+    private transient Workspace workspace;
 
     private transient RequestLogger requestLogger;
 
@@ -123,17 +122,12 @@ public class SecureProxy extends HttpServlet {
 
         try {
             File fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-            workspace = DeegreeWorkspace.getInstance( null, fallbackDir );
-            LOG.info( "Using workspace '{}' at '{}'", workspace.getName(), workspace.getLocation() );
+            workspace = new DefaultWorkspace( fallbackDir );
         } catch ( MalformedURLException e ) {
             String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
             LOG.error( msg );
             throw new ServletException( msg );
         } catch ( URISyntaxException e ) {
-            String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
-            LOG.error( msg );
-            throw new ServletException( msg );
-        } catch ( IOException e ) {
             String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
             LOG.error( msg );
             throw new ServletException( msg );
@@ -164,7 +158,7 @@ public class SecureProxy extends HttpServlet {
             return;
         }
 
-        securityConfiguration = workspace.getSubsystemManager( SecurityConfiguration.class );
+        securityConfiguration = SecurityConfiguration.getInstance();
         credentialsProvider = securityConfiguration.getCredentialsProvider();
         if ( credentialsProvider == null ) {
             String msg = "You need to provide an WEB-INF/conf/services/security/security.xml which defines at least one credentials provider.";
@@ -173,8 +167,8 @@ public class SecureProxy extends HttpServlet {
             throw new ServletException( msg );
         }
 
-        serviceConfig = workspace.getSubsystemManager( WebServicesConfiguration.class );
-        requestLogger = serviceConfig.getRequestLogger();
+        OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
+        requestLogger = loader.getRequestLogger();
 
         LOG.info( "deegree 3 secure proxy initialized." );
         LOG.info( "Secured service is '{}'", proxiedUrl );
@@ -186,8 +180,9 @@ public class SecureProxy extends HttpServlet {
 
         try {
             File tmpFile = null;
-            if ( serviceConfig.getRequestLogger() != null ) {
-                String dir = serviceConfig.getMainConfiguration().getRequestLogging().getOutputDirectory();
+            OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
+            if ( loader.getRequestLogger() != null ) {
+                String dir = loader.getMainConfig().getRequestLogging().getOutputDirectory();
                 if ( dir == null ) {
                     tmpFile = createTempFile( "request", ".body" );
                 } else {
@@ -251,7 +246,7 @@ public class SecureProxy extends HttpServlet {
                 XMLStreamReader responseReader = inFac.createXMLStreamReader( in );
                 responseReader.next();
                 boolean successful = copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL )
-                                     || !serviceConfig.logOnlySuccessful();
+                                     || !loader.isLogOnlySuccessful();
                 if ( requestLogger != null && successful ) {
                     requestLogger.logXML( proxiedUrl + "?" + request.getRequestURL(), tmpFile, startTime,
                                           System.currentTimeMillis(), creds );
@@ -301,7 +296,8 @@ public class SecureProxy extends HttpServlet {
                     // TODO determine from content type if it was successful, for WFS this should not be a problem
                     copy( in, out );
                 }
-                successful = successful || !serviceConfig.logOnlySuccessful();
+                OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
+                successful = successful || !loader.isLogOnlySuccessful();
                 if ( requestLogger != null && successful ) {
                     requestLogger.logKVP( proxiedUrl + "?" + request.getRequestURL(),
                                           toQueryString( normalizedKVPParams ), startTime, System.currentTimeMillis(),
@@ -475,7 +471,7 @@ public class SecureProxy extends HttpServlet {
 
     @Override
     public void destroy() {
-        workspace.destroyAll();
+        workspace.destroy();
     }
 
 }

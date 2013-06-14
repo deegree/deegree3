@@ -39,8 +39,6 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +46,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.i18n.Messages;
@@ -57,6 +55,7 @@ import org.deegree.cs.persistence.CRSStoreProvider;
 import org.deegree.cs.persistence.gml.jaxb.GMLCRSStoreConfig;
 import org.deegree.cs.persistence.gml.jaxb.Param;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -88,10 +87,12 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
     }
 
     @Override
-    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
+    public CRSStore getCRSStore( URL configURL, Workspace workspace )
                             throws CRSStoreException {
         try {
-            GMLCRSStoreConfig config = (GMLCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, configURL,
+            GMLCRSStoreConfig config = (GMLCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                       CONFIG_SCHEMA,
+                                                                       new DURL( configURL.toExternalForm() ).openStream(),
                                                                        workspace );
 
             GMLCRSStore crsStore = new GMLCRSStore( DSTransform.fromSchema( config ) );
@@ -123,27 +124,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
                     } else {
                         resource = (GMLResource) constructor.newInstance( crsStore, params );
                     }
-                } catch ( InstantiationException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ) );
-                } catch ( IllegalAccessException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
-                               e );
-                } catch ( ClassNotFoundException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
-                               e );
-                } catch ( SecurityException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
-                               e );
-                } catch ( NoSuchMethodException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
-                               e );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
-                               e );
-                } catch ( InvocationTargetException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, e.getMessage() ),
-                               e );
-                } catch ( Throwable t ) {
+                } catch ( Exception t ) {
                     LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, t.getMessage() ),
                                t );
                 }
@@ -162,7 +143,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
             String msg = "Error in gml crs store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
-        } catch ( MalformedURLException e ) {
+        } catch ( Exception e ) {
             String msg = "Error in GMLFile declaration in gml crs store configuration file '" + configURL + "': "
                          + e.getMessage();
             LOG.error( msg );

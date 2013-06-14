@@ -59,9 +59,6 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -77,6 +74,8 @@ import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
 import org.deegree.feature.persistence.FeatureInspector;
@@ -137,6 +136,10 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -184,8 +187,6 @@ public class SQLFeatureStore implements FeatureStore {
 
     private DefaultLockManager lockManager;
 
-    private DeegreeWorkspace workspace;
-
     private int fetchSize;
 
     private Boolean readAutoCommit;
@@ -193,6 +194,12 @@ public class SQLFeatureStore implements FeatureStore {
     private final List<FeatureInspector> inspectors = new ArrayList<FeatureInspector>();
 
     private VoidEscalationPolicyType escalationPolicy;
+
+    private SqlFeatureStoreMetadata metadata;
+
+    private Workspace workspace;
+
+    private ConnectionProvider connProvider;
 
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
@@ -202,10 +209,13 @@ public class SQLFeatureStore implements FeatureStore {
      * @param configURL
      *            configuration systemid
      */
-    public SQLFeatureStore( SQLFeatureStoreJAXB config, URL configURL, SQLDialect dialect ) {
+    public SQLFeatureStore( SQLFeatureStoreJAXB config, URL configURL, SQLDialect dialect,
+                            SqlFeatureStoreMetadata metadata, Workspace workspace ) {
         this.config = config;
         this.configURL = configURL;
         this.dialect = dialect;
+        this.metadata = metadata;
+        this.workspace = workspace;
         this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
         fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
@@ -219,93 +229,6 @@ public class SQLFeatureStore implements FeatureStore {
             cache = new SimpleFeatureStoreCache( DEFAULT_CACHE_SIZE );
         } else {
             cache = null;
-        }
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-
-        LOG.debug( "init" );
-
-        List<String> resolverClasses = config.getCustomReferenceResolver();
-        List<GMLReferenceResolver> resolvers = new ArrayList<GMLReferenceResolver>();
-        for ( String resolver : resolverClasses ) {
-            try {
-                Class<GMLReferenceResolver> clzz = (Class<GMLReferenceResolver>) Class.forName( resolver );
-                Constructor<GMLReferenceResolver> cons = clzz.getConstructor( FeatureStore.class );
-                GMLReferenceResolver res = cons.newInstance( this );
-                resolvers.add( res );
-                LOG.info( "Added custom reference resolver {}.", clzz.getSimpleName() );
-            } catch ( ClassNotFoundException e ) {
-                LOG.warn( "Custom resolver class {} could not be found on the classpath.", resolver );
-                LOG.trace( "Stack trace:", e );
-            } catch ( NoSuchMethodException e ) {
-                LOG.warn( "Custom resolver class {} needs a constructor with a FeatureStore parameter.", resolver );
-                LOG.trace( "Stack trace:", e );
-            } catch ( SecurityException e ) {
-                LOG.warn( "Insufficient rights to instantiate custom resolver class {}.", resolver );
-                LOG.trace( "Stack trace:", e );
-            } catch ( Throwable e ) {
-                LOG.warn( "Could not instantiate custom resolver class {}.", resolver );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        if ( !resolvers.isEmpty() ) {
-            resolvers.add( resolver );
-            this.resolver = new CombinedReferenceResolver( resolvers );
-        }
-
-        MappedAppSchema schema;
-        try {
-            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect, workspace );
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            throw new ResourceInitException( t.getMessage(), t );
-        }
-
-        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
-
-        this.workspace = workspace;
-        this.schema = schema;
-        this.blobMapping = schema.getBlobMapping();
-        initConverters();
-        try {
-            // however TODO it properly on the DB
-            lockManager = new DefaultLockManager( this, "LOCK_DB", workspace );
-        } catch ( Throwable e ) {
-            LOG.warn( "Lock manager initialization failed, locking will not be available." );
-            LOG.trace( "Stack trace:", e );
-        }
-
-        // TODO make this configurable
-        FeatureStoreManager fsMgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        if ( fsMgr != null ) {
-            this.bboxCache = fsMgr.getBBoxCache();
-        } else {
-            LOG.warn( "Unmanaged feature store." );
-        }
-
-        if ( config.getInspectors() != null ) {
-            for ( CustomInspector inspectorConfig : config.getInspectors().getCustomInspector() ) {
-                String className = inspectorConfig.getClazz();
-                LOG.info( "Adding custom feature inspector '" + className + "' to inspector chain." );
-                try {
-                    @SuppressWarnings("unchecked")
-                    Class<FeatureInspector> inspectorClass = (Class<FeatureInspector>) workspace.getModuleClassLoader().loadClass( className );
-                    inspectors.add( inspectorClass.newInstance() );
-                } catch ( Exception e ) {
-                    String msg = "Unable to instantiate custom feature inspector '" + className + "': "
-                                 + e.getMessage();
-                    throw new ResourceInitException( msg );
-                }
-            }
-        }
-
-        escalationPolicy = config.getVoidEscalationPolicy();
-        if ( escalationPolicy == null ) {
-            // defaults don't work in jaxb for element values
-            escalationPolicy = VoidEscalationPolicyType.NONE;
         }
     }
 
@@ -445,8 +368,7 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( getConnId() );
+            conn = connProvider.getConnection();
             env = calcEnvelope( ftName, conn );
         } finally {
             JDBCUtils.close( conn );
@@ -586,8 +508,7 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( blobMapping.getGMLIdColumn() );
             sql.append( "=?" );
 
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( getConnId() );
+            conn = connProvider.getConnection();
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
@@ -1173,8 +1094,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        Connection conn = mgr.get( getConnId() );
+        Connection conn = connProvider.getConnection();
         conn.setAutoCommit( readAutoCommit );
         return conn;
     }
@@ -1555,6 +1475,96 @@ public class SQLFeatureStore implements FeatureStore {
         protected Feature createElement( ResultSet rs )
                                 throws SQLException {
             return builder.buildFeature( rs );
+        }
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        connProvider = workspace.getResource( ConnectionProviderProvider.class, getConnId() );
+        LOG.debug( "init" );
+
+        List<String> resolverClasses = config.getCustomReferenceResolver();
+        List<GMLReferenceResolver> resolvers = new ArrayList<GMLReferenceResolver>();
+        for ( String resolver : resolverClasses ) {
+            try {
+                Class<GMLReferenceResolver> clzz = (Class<GMLReferenceResolver>) Class.forName( resolver );
+                Constructor<GMLReferenceResolver> cons = clzz.getConstructor( FeatureStore.class );
+                GMLReferenceResolver res = cons.newInstance( this );
+                resolvers.add( res );
+                LOG.info( "Added custom reference resolver {}.", clzz.getSimpleName() );
+            } catch ( ClassNotFoundException e ) {
+                LOG.warn( "Custom resolver class {} could not be found on the classpath.", resolver );
+                LOG.trace( "Stack trace:", e );
+            } catch ( NoSuchMethodException e ) {
+                LOG.warn( "Custom resolver class {} needs a constructor with a FeatureStore parameter.", resolver );
+                LOG.trace( "Stack trace:", e );
+            } catch ( SecurityException e ) {
+                LOG.warn( "Insufficient rights to instantiate custom resolver class {}.", resolver );
+                LOG.trace( "Stack trace:", e );
+            } catch ( Throwable e ) {
+                LOG.warn( "Could not instantiate custom resolver class {}.", resolver );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+        if ( !resolvers.isEmpty() ) {
+            resolvers.add( resolver );
+            this.resolver = new CombinedReferenceResolver( resolvers );
+        }
+
+        MappedAppSchema schema;
+        try {
+            schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect, this.workspace );
+        } catch ( Exception t ) {
+            throw new ResourceInitException( t.getMessage(), t );
+        }
+
+        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
+
+        this.schema = schema;
+        this.blobMapping = schema.getBlobMapping();
+        initConverters();
+        try {
+            // however TODO it properly on the DB
+            ConnectionProvider conn = this.workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
+            lockManager = new DefaultLockManager( this, conn );
+        } catch ( Throwable e ) {
+            LOG.warn( "Lock manager initialization failed, locking will not be available." );
+            LOG.trace( "Stack trace:", e );
+        }
+
+        // TODO make this configurable
+        FeatureStoreManager fsMgr = this.workspace.getResourceManager( FeatureStoreManager.class );
+        if ( fsMgr != null ) {
+            this.bboxCache = fsMgr.getBBoxCache();
+        } else {
+            LOG.warn( "Unmanaged feature store." );
+        }
+
+        if ( config.getInspectors() != null ) {
+            for ( CustomInspector inspectorConfig : config.getInspectors().getCustomInspector() ) {
+                String className = inspectorConfig.getClazz();
+                LOG.info( "Adding custom feature inspector '" + className + "' to inspector chain." );
+                try {
+                    @SuppressWarnings("unchecked")
+                    Class<FeatureInspector> inspectorClass = (Class<FeatureInspector>) workspace.getModuleClassLoader().loadClass( className );
+                    inspectors.add( inspectorClass.newInstance() );
+                } catch ( Exception e ) {
+                    String msg = "Unable to instantiate custom feature inspector '" + className + "': "
+                                 + e.getMessage();
+                    throw new ResourceInitException( msg );
+                }
+            }
+        }
+
+        escalationPolicy = config.getVoidEscalationPolicy();
+        if ( escalationPolicy == null ) {
+            // defaults don't work in jaxb for element values
+            escalationPolicy = VoidEscalationPolicyType.NONE;
         }
     }
 }

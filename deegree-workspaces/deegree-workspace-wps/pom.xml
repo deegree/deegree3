@@ -47,10 +47,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jfree</groupId>
       <artifactId>jcommon</artifactId>
     </dependency>

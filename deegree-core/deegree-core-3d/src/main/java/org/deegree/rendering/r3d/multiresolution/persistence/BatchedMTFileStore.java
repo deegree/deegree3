@@ -40,10 +40,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -57,7 +57,11 @@ public class BatchedMTFileStore implements BatchedMTStore {
 
     private MultiresolutionMesh mesh;
 
-    public BatchedMTFileStore( URL dir, int maxDirectMemBytes ) throws IOException, URISyntaxException {
+    private ResourceMetadata<BatchedMTStore> metadata;
+
+    public BatchedMTFileStore( URL dir, int maxDirectMemBytes, ResourceMetadata<BatchedMTStore> metadata )
+                            throws IOException, URISyntaxException {
+        this.metadata = metadata;
         DirectByteBufferPool pool = new DirectByteBufferPool( maxDirectMemBytes, "TODO" );
         mesh = new MultiresolutionMesh( new File( dir.toURI() ), pool );
     }
@@ -71,8 +75,13 @@ public class BatchedMTFileStore implements BatchedMTStore {
         // nothing to cleanup
     }
 
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
         // nothing to init
     }
 }

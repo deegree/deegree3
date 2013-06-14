@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
@@ -55,13 +54,15 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypePool;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStoreProvider;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.RenderableDatasetConfig;
 import org.deegree.services.jaxb.wpvs.SwitchLevels;
 import org.deegree.services.jaxb.wpvs.SwitchLevels.Level;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -79,6 +80,12 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
     /** span of the default envelope */
     public final static double DEFAULT_SPAN = 0.001;
 
+    private Workspace workspace;
+
+    public RenderableDataset( Workspace workspace ) {
+        this.workspace = workspace;
+    }
+
     /**
      * Analyzes the ModelDataset from the {@link DatasetDefinitions}, fills the renderers with data from the defined
      * {@link RenderableStore} and builds up a the constraint vectors for retrieval of the appropriate renderers.
@@ -90,8 +97,8 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
      * @param dsd
      */
     @Override
-    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
-                                                DatasetDefinitions dsd ) {
+    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS,
+                                                ResourceLocation<?> location, DatasetDefinitions dsd ) {
         List<RenderableDatasetConfig> datsets = dsd.getRenderableDataset();
         if ( !datsets.isEmpty() ) {
             sceneEnvelope = initDatasets( datsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError() );
@@ -113,7 +120,8 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
                         clarifyInheritance( bds, parentMaxPixelError );
                         String renderableStoreId = bds.getRenderableStoreId();
                         if ( renderableStoreId != null ) {
-                            RenderableStore renderableStore = RenderableStoreManager.get( renderableStoreId );
+                            RenderableStore renderableStore = workspace.getResource( RenderableStoreProvider.class,
+                                                                                     renderableStoreId );
                             if ( renderableStore != null ) {
                                 if ( renderableStore.isBillboard() ) {
                                     sceneEnvelope = initBillboards( sceneEnvelope, toLocalCRS, bds, renderableStore );

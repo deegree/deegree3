@@ -40,77 +40,37 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.persistence.sld;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.style.persistence.sld.SLDParser.getStyles;
-
-import java.io.InputStream;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.Map;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.persistence.StyleStoreProvider;
-import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
- * @author stranger
+ * SPI provider implementation for SLD style stores.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
-public class SLDStyleStoreProvider implements StyleStoreProvider {
+public class SLDStyleStoreProvider extends StyleStoreProvider {
 
     private static final URL CONFIG_SCHEMA = SLDStyleStoreProvider.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd" );
 
-    // private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // this.workspace = workspace;
-    }
-
-    @Override
-    public SLDStyleStore create( URL configUrl )
-                            throws ResourceInitException {
-        InputStream in = null;
-        XMLStreamReader reader = null;
-        try {
-            in = configUrl.openStream();
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            reader = fac.createXMLStreamReader( configUrl.toExternalForm(), in );
-            Map<String, LinkedList<Style>> map = getStyles( reader );
-            return new SLDStyleStore( map );
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Could not read SLD style config.", e );
-        } finally {
-            try {
-                if ( reader != null ) {
-                    reader.close();
-                }
-            } catch ( XMLStreamException e ) {
-                // eat it
-            }
-            closeQuietly( in );
-        }
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.opengis.net/sld";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<StyleStore> createFromLocation( Workspace workspace, ResourceLocation<StyleStore> location ) {
+        return new SldStyleStoreMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return CONFIG_SCHEMA;
     }
 

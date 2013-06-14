@@ -35,29 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.remotewms;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.deegree.theme.Themes.aggregateSpatialMetadata;
-
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.struct.Tree;
-import org.deegree.layer.Layer;
-import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreManager;
-import org.deegree.protocol.wms.client.WMSClient;
-import org.deegree.remoteows.RemoteOWS;
-import org.deegree.remoteows.RemoteOWSManager;
-import org.deegree.remoteows.wms.RemoteWMS;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
-import org.deegree.theme.persistence.remotewms.jaxb.RemoteWMSThemes;
-import org.deegree.theme.persistence.standard.StandardTheme;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -66,78 +50,22 @@ import org.deegree.theme.persistence.standard.StandardTheme;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RemoteWMSThemeProvider implements ThemeProvider {
+public class RemoteWMSThemeProvider extends ThemeProvider {
 
     private static final URL CONFIG_SCHEMA = RemoteWMSThemeProvider.class.getResource( "/META-INF/schemas/themes/remotewms/3.1.0/remotewms.xsd" );
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    private Theme buildTheme( Tree<LayerMetadata> tree, LayerStore store ) {
-        List<Theme> thms = new ArrayList<Theme>();
-        List<Layer> lays = new ArrayList<Layer>();
-        if ( tree.value.getName() != null ) {
-            Layer l = store.get( tree.value.getName() );
-            if ( l != null ) {
-                lays.add( l );
-            }
-        }
-        Theme thm = new StandardTheme( tree.value, thms, lays );
-        for ( Tree<LayerMetadata> child : tree.children ) {
-            thms.add( buildTheme( child, store ) );
-        }
-        return thm;
-    }
-
-    @Override
-    public Theme create( URL configUrl )
-                            throws ResourceInitException {
-        try {
-            RemoteWMSThemes cfg = (RemoteWMSThemes) unmarshall( "org.deegree.theme.persistence.remotewms.jaxb",
-                                                                CONFIG_SCHEMA, configUrl, workspace );
-            String id = cfg.getRemoteWMSId();
-            RemoteOWSManager mgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-
-            String lid = cfg.getLayerStoreId();
-            LayerStoreManager lmgr = workspace.getSubsystemManager( LayerStoreManager.class );
-            LayerStore store = lmgr.get( lid );
-            if ( store == null ) {
-                throw new ResourceInitException( "The layer store with id " + lid + " was not available." );
-            }
-
-            RemoteOWS ows = mgr.get( id );
-            if ( !( ows instanceof RemoteWMS ) ) {
-                throw new ResourceInitException( "The remote OWS store with id " + id
-                                                 + " was not of type WMS or was not available." );
-            }
-
-            WMSClient client = ( (RemoteWMS) ows ).getClient();
-            Tree<LayerMetadata> tree = client.getLayerTree();
-
-            Theme theme = buildTheme( tree, store );
-            aggregateSpatialMetadata( theme );
-            return theme;
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Could not parse remote WMS theme config.", e );
-        }
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSManager.class };
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/themes/remotewms";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<Theme> createFromLocation( Workspace workspace, ResourceLocation<Theme> location ) {
+        return new RemoteWmsThemeMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return CONFIG_SCHEMA;
     }
 

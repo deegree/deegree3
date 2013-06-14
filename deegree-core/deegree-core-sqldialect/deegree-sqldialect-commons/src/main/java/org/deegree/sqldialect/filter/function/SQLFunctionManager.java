@@ -35,18 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter.function;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.deegree.commons.config.AbstractBasicResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
+import org.deegree.workspace.Destroyable;
+import org.deegree.workspace.Initializable;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 30337 $, $Date: 2011-04-04 14:21:18 +0200 (Mo, 04. Apr 2011) $
  */
-public class SQLFunctionManager extends AbstractBasicResourceManager {
+public class SQLFunctionManager implements Initializable, Destroyable {
 
     private static final Logger LOG = LoggerFactory.getLogger( SQLFunctionManager.class );
 
@@ -105,18 +100,7 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[0];
-    }
-
-    @Override
-    public ResourceManagerMetadata<?> getMetadata() {
-        return null;
-    }
-
-    @Override
-    public void shutdown() {
+    public void destroy( Workspace workspace ) {
         if ( functionLoader == null ) {
             return;
         }
@@ -135,37 +119,15 @@ public class SQLFunctionManager extends AbstractBasicResourceManager {
     }
 
     @Override
-    public void startup( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         functionLoader = ServiceLoader.load( SQLFunctionProvider.class, ws.getModuleClassLoader() );
         for ( SQLFunctionProvider fp : functionLoader ) {
             try {
                 fp.init( ws );
-            } catch ( Throwable t ) {
+            } catch ( Exception t ) {
                 LOG.error( "Initialization of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
             }
         }
     }
 
-    @Override
-    public ResourceState activate( String id ) {
-        return null;
-    }
-
-    @Override
-    public ResourceState deactivate( String id ) {
-        return null;
-    }
-
-    @Override
-    protected ResourceProvider getProvider( URL file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void remove( String id ) {
-        // TODO Auto-generated method stub
-
-    }
 }

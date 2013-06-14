@@ -40,14 +40,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,21 +73,19 @@ public class WorkspaceTest {
 
     public static final String CRS_UNKNOWN = "unknown";
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     @Before
     public void beforeAll()
-                            throws ResourceInitException {
-        URL resource = WorkspaceTest.class.getResource( "crs" );
-        File file = new File( resource.getPath() );
-        workspace = DeegreeWorkspace.getInstance();
+                            throws URISyntaxException {
+        URL resource = WorkspaceTest.class.getResource( "." );
+        workspace = new DefaultWorkspace( new File( resource.toURI() ) );
         workspace.initAll();
-        workspace.getSubsystemManager( CRSManager.class ).init( file );
     }
 
     @After
     public void afterAll() {
-        workspace.destroyAll();
+        workspace.destroy();
     }
 
     @Test
@@ -132,7 +131,7 @@ public class WorkspaceTest {
     @Test(expected = UnknownCRSException.class)
     public void testLookupUnknownCRSFromGML()
                             throws UnknownCRSException {
-        CRSManager.lookup( STORE_GML1, CRS_FROM_DEEGREE );
+        System.out.println( CRSManager.lookup( STORE_GML1, CRS_FROM_DEEGREE ) );
     }
 
     @Test
@@ -143,4 +142,5 @@ public class WorkspaceTest {
         ICRS crsGML1 = CRSManager.lookup( CRS_FROM_GML1 );
         assertNotNull( crsGML1 );
     }
+
 }

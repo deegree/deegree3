@@ -46,14 +46,13 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.Resource;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.workspace.Resource;
 
 /**
  * Implementations are OGC web services.
@@ -139,13 +138,6 @@ public interface OWS extends Resource {
                             throws ServletException, IOException, SecurityException;
 
     /**
-     * @return the same implementation metadata that the accompanying (if available) OWSProvider would return (it's here
-     *         for backward compatibility regarding custom controller classes)
-     */
-    @Deprecated
-    public ImplementationMetadata<?> getImplementationMetadata();
-
-    /**
      * Returns the {@link ExceptionSerializer} for the given request version.
      * 
      * @param requestVersion
@@ -154,4 +146,5 @@ public interface OWS extends Resource {
      * @return never <code>null</code>
      */
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion );
+
 }

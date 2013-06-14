@@ -43,15 +43,14 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.metadata.OWSMetadataProviderManager;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link OWSProvider} for the {@link WebFeatureService}.
@@ -61,7 +60,7 @@ import org.deegree.services.metadata.OWSMetadataProviderManager;
  * 
  * @version $Revision$, $Date$
  */
-public class WFSProvider implements OWSProvider {
+public class WFSProvider extends OWSProvider {
 
     protected static final ImplementationMetadata<WFSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WFSRequestType>() {
         {
@@ -75,12 +74,12 @@ public class WFSProvider implements OWSProvider {
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wfs";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return WFSProvider.class.getResource( "/META-INF/schemas/services/wfs/3.2.0/wfs_configuration.xsd" );
     }
 
@@ -90,19 +89,8 @@ public class WFSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        return new WebFeatureService( configURL, getImplementationMetadata() );
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WfsMetadata( workspace, location, this );
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { FeatureStoreManager.class, OWSMetadataProviderManager.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
-
-    }
 }

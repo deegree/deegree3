@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.exception.serializer;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * A provider can be used to provide multiple exception serializers for multiple services, identified by their
@@ -54,7 +54,7 @@ public interface SerializerProvider {
      * 
      * @param workspace
      */
-    void init( DeegreeWorkspace workspace );
+    void init( Workspace workspace );
 
     /**
      * @param metadata
@@ -71,4 +71,5 @@ public interface SerializerProvider {
      *         true.
      */
     ExceptionSerializer getSerializer( ImplementationMetadata<?> metadata, ExceptionSerializer originalSerializer );
+
 }

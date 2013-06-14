@@ -31,6 +31,7 @@
     <module>deegree-core-commons</module>
     <module>deegree-core-coverage</module>
     <module>deegree-core-cs</module>
+    <module>deegree-core-db</module>
     <module>deegree-core-feature</module>
     <module>deegree-core-featureinfo</module>
     <module>deegree-core-filter</module>
@@ -46,6 +47,7 @@
     <module>deegree-core-tile</module>    
     <module>deegree-core-time</module>
     <module>deegree-core-protocol</module>
+    <module>deegree-core-workspace</module>
   </modules>
 
 </project>

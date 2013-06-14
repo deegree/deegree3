@@ -47,12 +47,13 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStoreProvider;
 import org.deegree.services.wpvs.exception.DatasourceException;
 import org.deegree.services.wpvs.io.serializer.BillBoardSerializer;
 import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;
 import org.deegree.services.wpvs.io.serializer.WROSerializer;
+import org.deegree.workspace.Workspace;
 
 /**
  * The <code>ModelBackend</code> provides methods for connections to the wpvs model in a database.
@@ -274,9 +275,9 @@ public abstract class ModelBackend<G> implements RenderableStore {
      * @throws UnsupportedOperationException
      *             if the given driver has no implementing backend.
      */
-    public static ModelBackend<?> getInstance( String id, String fileURL )
+    public static ModelBackend<?> getInstance( String id, Workspace workspace )
                             throws DatasourceException, UnsupportedOperationException {
-        RenderableStore renderableStore = RenderableStoreManager.get( id );
+        RenderableStore renderableStore = workspace.getResource( RenderableStoreProvider.class, id );
         if ( renderableStore == null ) {
             throw new DatasourceException( "could not instantiate a model backend from given id." );
         }

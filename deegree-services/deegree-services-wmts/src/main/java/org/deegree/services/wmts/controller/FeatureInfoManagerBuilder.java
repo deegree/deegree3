@@ -41,16 +41,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
-import java.io.File;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.gml.GMLVersion;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 
 /**
  * Builds a {@link FeatureInfoManager} from jaxb config.
@@ -62,8 +60,8 @@ import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType.GetFeatureInfoForma
  */
 class FeatureInfoManagerBuilder {
 
-    static FeatureInfoManager buildFeatureInfoManager( FeatureInfoFormatsType conf, XMLAdapter controllerConf,
-                                                       DeegreeWorkspace workspace )
+    static FeatureInfoManager buildFeatureInfoManager( FeatureInfoFormatsType conf, ResourceLocation<?> location,
+                                                       Workspace workspace )
                             throws ResourceInitException {
         FeatureInfoManager featureInfoManager = new FeatureInfoManager( true );
 
@@ -72,17 +70,17 @@ class FeatureInfoManagerBuilder {
                 for ( GetFeatureInfoFormat t : conf.getGetFeatureInfoFormat() ) {
                     if ( t.getFile() != null ) {
                         featureInfoManager.addOrReplaceFormat( t.getFormat(),
-                                                               new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
+                                                               location.resolveToFile( t.getFile() ).toString() );
                     } else {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
                         featureInfoManager.addOrReplaceXsltFormat( t.getFormat(),
-                                                                   controllerConf.resolve( xsltFile.getValue() ),
+                                                                   location.resolveToUrl( xsltFile.getValue() ),
                                                                    version, workspace );
                     }
                 }
             }
-        } catch ( Throwable e ) {
+        } catch ( Exception e ) {
             throw new ResourceInitException( "GetFeatureInfo format handler could not be initialized: "
                                              + e.getLocalizedMessage(), e );
         }

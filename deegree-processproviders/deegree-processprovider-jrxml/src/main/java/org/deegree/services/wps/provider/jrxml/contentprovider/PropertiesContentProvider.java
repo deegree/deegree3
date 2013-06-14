@@ -45,7 +45,6 @@ import java.util.ResourceBundle;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -57,6 +56,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.ParameterDescription;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public class PropertiesContentProvider extends AbstractJrxmlContentProvider {
 
     private final org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle;
 
-    public PropertiesContentProvider( DeegreeWorkspace workspace,
+    public PropertiesContentProvider( Workspace workspace,
                                       org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle ) {
         super( workspace );
         this.resourceBundle = resourceBundle;

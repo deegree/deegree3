@@ -51,4 +51,10 @@ public class LayerManagerBean extends AbstractResourceManagerBean<LayerStoreMana
     public LayerManagerBean() {
         super( LayerStoreManager.class );
     }
+    
+    @Override
+    public String getStartView() {
+        return "/console/layer/layer/index";
+    }
+
 }

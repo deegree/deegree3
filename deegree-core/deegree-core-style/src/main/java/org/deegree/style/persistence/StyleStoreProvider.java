@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,13 +39,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.persistence;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * @author stranger
+ * SPI provider class for style stores.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
-public interface StyleStoreProvider extends ExtendedResourceProvider<StyleStore> {
+public abstract class StyleStoreProvider extends AbstractResourceProvider<StyleStore> {
 
     // specializes type parameter
 

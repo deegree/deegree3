@@ -44,6 +44,7 @@ import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,12 +61,11 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
@@ -78,6 +78,9 @@ import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Halo;
 import org.deegree.style.styling.components.LinePlacement;
 import org.deegree.style.styling.components.Stroke;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
@@ -93,19 +96,16 @@ public class PostgreSQLWriter {
 
     private static final Logger LOG = getLogger( PostgreSQLWriter.class );
 
-    private final String connId;
-
     private final String schema;
 
-    private DeegreeWorkspace workspace;
+    private ConnectionProvider connProvider;
 
     /**
      * @param connId
      */
-    public PostgreSQLWriter( String connId, String schema, DeegreeWorkspace workspace ) {
-        this.connId = connId;
+    public PostgreSQLWriter( String connId, String schema, Workspace workspace ) {
+        connProvider = workspace.getResource( ConnectionProviderProvider.class, connId );
         this.schema = schema;
-        this.workspace = workspace;
     }
 
     private int write( Connection conn, Graphic graphic )
@@ -595,12 +595,11 @@ public class PostgreSQLWriter {
         }
     }
 
-    private void write( Styling styling, DoublePair scales, String name, String labelexpr ) {
+    private void write( Styling<?> styling, DoublePair scales, String name, String labelexpr ) {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = connProvider.getConnection();
             conn.setAutoCommit( false );
             stmt = conn.prepareStatement( "insert into " + schema
                                           + ".styles (type, fk, minscale, maxscale, name) values (?, ?, ?, ?, ?)" );
@@ -688,8 +687,7 @@ public class PostgreSQLWriter {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
+            conn = connProvider.getConnection();
             conn.setAutoCommit( false );
             stmt = conn.prepareStatement( "insert into styles (sld, name) values (?, ?)" );
 
@@ -745,11 +743,12 @@ public class PostgreSQLWriter {
         Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(
                                                                                                                                    args[0] ) ) );
 
-        DeegreeWorkspace workspace = DeegreeWorkspace.getInstance();
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        JDBCParams params = new DefaultJDBCParams( "jdbc:postgresql://localhost/configtool", "postgres", "postgres",
-                                                   false );
-        mgr.addPool( "configtool", params, workspace );
+        Workspace workspace = new DefaultWorkspace( new File( "nonexistant" ) );
+        ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( "configtool",
+                                                                                                 "jdbc:postgresql://localhost/configtool",
+                                                                                                 "postgres", "postgres" );
+        workspace.getLocationHandler().addExtraResource( loc );
+        workspace.initAll();
 
         if ( style.isSimple() ) {
             new PostgreSQLWriter( "configtool", "schematest", workspace ).write( style, null );
@@ -757,6 +756,8 @@ public class PostgreSQLWriter {
             new PostgreSQLWriter( "configtool", "schematest", workspace ).write( new FileInputStream( args[0] ),
                                                                                  style.getName() );
         }
+
+        workspace.destroy();
     }
 
 }

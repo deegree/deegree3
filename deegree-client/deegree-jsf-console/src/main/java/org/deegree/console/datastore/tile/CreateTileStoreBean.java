@@ -52,4 +52,5 @@ public class CreateTileStoreBean extends AbstractCreateResourceBean {
     protected String getOutcome() {
         return "/console/datastore/tile/index";
     }
+
 }

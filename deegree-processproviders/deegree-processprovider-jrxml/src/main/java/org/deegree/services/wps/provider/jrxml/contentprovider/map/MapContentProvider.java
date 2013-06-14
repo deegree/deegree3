@@ -73,7 +73,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.Pair;
@@ -101,6 +100,7 @@ import org.deegree.services.wps.provider.jrxml.jaxb.map.Detail;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.Layer;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WFSDatasource;
 import org.deegree.services.wps.provider.jrxml.jaxb.map.WMSDatasource;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +116,10 @@ import com.sun.media.jai.codec.PNGEncodeParam;
  * @version $Revision: $, $Date: $
  */
 public class MapContentProvider extends AbstractJrxmlContentProvider {
+
+    public MapContentProvider( Workspace workspace ) {
+        super( workspace );
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger( MapContentProvider.class );
 
@@ -138,10 +142,6 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
             this.text = text;
         }
 
-    }
-
-    public MapContentProvider( DeegreeWorkspace workspace ) {
-        super( workspace );
     }
 
     @Override
@@ -312,7 +312,9 @@ public class MapContentProvider extends AbstractJrxmlContentProvider {
                                         prepareMap( datasources, parameters.get( mapKey ), originalWidth,
                                                     originalHeight, width, height, bbox, resolution ) );
                             // SCALE
-                            double scale = RenderHelper.calcScaleWMS130( width, height, bbox, bbox.getCoordinateSystem(), MapUtils.DEFAULT_PIXEL_SIZE );
+                            double scale = RenderHelper.calcScaleWMS130( width, height, bbox,
+                                                                         bbox.getCoordinateSystem(),
+                                                                         MapUtils.DEFAULT_PIXEL_SIZE );
                             String scaleKey = getParameterFromIdentifier( mapId, SUFFIXES.SCALE_SUFFIX );
                             if ( parameters.containsKey( scaleKey ) ) {
                                 params.put( scaleKey, convert( scale, parameters.get( scaleKey ) ) );

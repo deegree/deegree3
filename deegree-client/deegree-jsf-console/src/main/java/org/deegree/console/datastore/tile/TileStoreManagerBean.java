@@ -51,4 +51,10 @@ public class TileStoreManagerBean extends AbstractResourceManagerBean<TileStoreM
     public TileStoreManagerBean() {
         super( TileStoreManager.class );
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/datastore/tile/index";
+    }
+
 }

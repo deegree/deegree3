@@ -12,13 +12,13 @@ import java.util.Map;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.XsltUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
@@ -29,9 +29,9 @@ public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
 
     private final URL xslt;
 
-    private final DeegreeWorkspace workspace;
+    private final Workspace workspace;
 
-    public XsltFeatureInfoSerializer( GMLVersion version, URL xslt, DeegreeWorkspace workspace ) {
+    public XsltFeatureInfoSerializer( GMLVersion version, URL xslt, Workspace workspace ) {
         this.gmlVersion = version;
         this.xslt = xslt;
         this.workspace = workspace;

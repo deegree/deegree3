@@ -85,6 +85,7 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/download[/path]                                  - download currently running workspace or file in workspace\n" );
             data.append( "GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace\n" );
             data.append( "GET /config/restart                                          - restart currently running workspace\n" );
+            data.append( "GET /config/restart[/path]                                   - restarts all resources connected to the specified one\n" );
             data.append( "GET /config/restart/wsname                                   - restart with workspace <wsname>\n" );
             data.append( "GET /config/listworkspaces                                   - list available workspace names\n" );
             data.append( "GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n" );

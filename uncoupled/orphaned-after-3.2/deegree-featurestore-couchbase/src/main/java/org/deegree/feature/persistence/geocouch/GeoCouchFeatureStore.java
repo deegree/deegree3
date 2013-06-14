@@ -93,6 +93,8 @@ import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 
@@ -472,6 +474,24 @@ public class GeoCouchFeatureStore implements FeatureStore {
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

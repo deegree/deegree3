@@ -39,7 +39,6 @@ package org.deegree.services.wpvs.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,11 +46,9 @@ import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.Coverage;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -59,7 +56,7 @@ import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager;
@@ -71,6 +68,8 @@ import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +93,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 
     private final int maxTexturesInGPU;
 
-    private final DeegreeWorkspace workspace;
+    private final Workspace workspace;
 
     /**
      * 
@@ -107,7 +106,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      *            the workspace to be used to load data
      */
     public DEMTextureDataset( DirectByteBufferPool textureByteBufferPool, int maxTexturesInGPU,
-                              int maxCachedTextureTiles, DeegreeWorkspace workspace ) {
+                              int maxCachedTextureTiles, Workspace workspace ) {
         // super( sceneEnvelope, translationToLocalCRS, configAdapter );
         this.textureByteBufferPool = textureByteBufferPool;
         this.maxTexturesInGPU = maxTexturesInGPU;
@@ -116,12 +115,12 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
     }
 
     @Override
-    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
-                                                DatasetDefinitions dsd ) {
+    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS,
+                                                ResourceLocation<?> location, DatasetDefinitions dsd ) {
         List<DEMTextureDatasetConfig> demTextureDatsets = dsd.getDEMTextureDataset();
         if ( !demTextureDatsets.isEmpty() ) {
             sceneEnvelope = initDatasets( demTextureDatsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError(),
-                                          configAdapter );
+                                          location );
         } else {
             LOG.info( "No texture dataset has been configured." );
         }
@@ -129,7 +128,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
     }
 
     private Envelope initDatasets( List<DEMTextureDatasetConfig> textureDatasets, Envelope sceneEnvelope,
-                                   double[] toLocalCRS, Double parentMaxPixelError, XMLAdapter adapter ) {
+                                   double[] toLocalCRS, Double parentMaxPixelError, ResourceLocation<?> location ) {
         if ( textureDatasets != null && !textureDatasets.isEmpty() ) {
             for ( DEMTextureDatasetConfig dts : textureDatasets ) {
                 if ( dts != null ) {
@@ -139,7 +138,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
                     } else {
                         clarifyInheritance( dts, parentMaxPixelError );
                         try {
-                            sceneEnvelope = handleTextureDataset( dts, sceneEnvelope, toLocalCRS, adapter );
+                            sceneEnvelope = handleTextureDataset( dts, sceneEnvelope, toLocalCRS, location );
                         } catch ( IOException e ) {
                             LOG.error( "Failed to initialize configured demTexture dataset: " + dts.getName() + ": "
                                        + dts.getTitle() + " because: " + e.getLocalizedMessage(), e );
@@ -166,7 +165,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @throws IOException
      */
     private Envelope handleTextureDataset( DEMTextureDatasetConfig textureDataset, Envelope sceneEnvelope,
-                                           double[] toLocalCRS, XMLAdapter adapter )
+                                           double[] toLocalCRS, ResourceLocation<?> location )
                             throws IOException {
 
         List<TextureTileProvider> tileProviders = new ArrayList<TextureTileProvider>();
@@ -175,7 +174,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
             datasetEnvelope = fillFromCoverage( textureDataset.getCoverageStoreId(), tileProviders );
         } else if ( textureDataset.getStyledGeometryProvider() != null ) {
             datasetEnvelope = fillFromStyledGeometries( textureDataset.getStyledGeometryProvider(), tileProviders,
-                                                        sceneEnvelope, toLocalCRS, adapter );
+                                                        sceneEnvelope, toLocalCRS, location );
         } else {
             LOG.warn( "No texture dataset found for texture dataset: " + textureDataset.getTitle() );
             return sceneEnvelope;
@@ -268,7 +267,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param tileProviders
      */
     private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
-        Coverage coverage = workspace.getSubsystemManager( CoverageBuilderManager.class ).get( coverageStoreId );
+        Coverage coverage = workspace.getResource( CoverageProvider.class, coverageStoreId );
         if ( coverage == null ) {
             LOG.warn( "The coverage builder with id: " + coverageStoreId
                       + " could not create a coverage, ignoring dataset." );
@@ -292,14 +291,13 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      */
     private Envelope fillFromStyledGeometries( StyledGeometryProvider styledGeometryProvider,
                                                List<TextureTileProvider> tileProviders, Envelope sceneEnvelope,
-                                               double[] toLocalCRS, XMLAdapter adapter )
+                                               double[] toLocalCRS, ResourceLocation<?> location )
                             throws IOException {
         // JAXBElement<? extends FeatureStoreType> featureStore = ctDS.getFeatureStore();
         // FeatureStore store = null;
         String featureStoreId = styledGeometryProvider.getFeatureStoreId();
 
-        FeatureStoreManager mgr = workspace.getSubsystemManager( FeatureStoreManager.class );
-        FeatureStore store = mgr.get( featureStoreId );
+        FeatureStore store = workspace.getResource( FeatureStoreProvider.class, featureStoreId );
 
         // String styleId = styledGeometryProvider.getStyleId();
         // Styl
@@ -309,7 +307,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
             LOG.warn( "The se-style file was not defined, could not create a closeup layer." );
             return null;
         }
-        URL styleFile = resolve( adapter, unresolved );
+        URL styleFile = location.resolveToUrl( unresolved );
         InputStream styleStream = null;
         Style style;
         try {
@@ -331,14 +329,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
         if ( rasterCache != null ) {
             String cd = rasterCache.getValue();
             if ( cd != null ) {
-                try {
-                    URL resolve = adapter.resolve( cd );
-                    cd = new File( resolve.toURI() ).toString();
-                    cacheDir = new File( resolve.toURI() );
-                } catch ( URISyntaxException e ) {
-                    LOG.error( "The cache dir '{}' could not be resolved.", cd );
-                    LOG.trace( "Stack trace:", e );
-                }
+                cacheDir = location.resolveToFile( cd );
             }
             cacheSize = rasterCache.getCacheSize();
         }
